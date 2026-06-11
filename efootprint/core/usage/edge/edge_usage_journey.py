@@ -1,10 +1,5 @@
-from functools import cached_property
 from typing import List, TYPE_CHECKING
 
-import numpy as np
-
-from efootprint.abstract_modeling_classes.empty_explainable_object import EmptyExplainableObject
-from efootprint.abstract_modeling_classes.explainable_hourly_quantities import divide_or_fallback
 from efootprint.abstract_modeling_classes.explainable_object_dict import ExplainableObjectDict
 from efootprint.abstract_modeling_classes.explainable_quantity import ExplainableQuantity
 from efootprint.abstract_modeling_classes.modeling_object import ModelingObject
@@ -73,16 +68,7 @@ class EdgeUsageJourney(ModelingObject):
     def edge_devices(self) -> List["EdgeDevice"]:
         return list(dict.fromkeys([edge_need.edge_device for edge_need in self.recurrent_edge_device_needs]))
 
-    @property
-    def usage_impact_repartition_weights(self) -> ExplainableObjectDict:
-        return self.fabrication_impact_repartition_weights
-
-    calculated_attributes: List[str] = (
-        ["nb_edge_usage_journeys_in_parallel_per_edge_usage_pattern"]
-        + [attr for attr in ModelingObject.calculated_attributes
-           if attr not in ("usage_impact_repartition_weights",
-                           "usage_impact_repartition_weight_sum",
-                           "usage_impact_repartition")])
+    calculated_attributes: List[str] = ["nb_edge_usage_journeys_in_parallel_per_edge_usage_pattern"]
 
     def update_dict_element_in_nb_edge_usage_journeys_in_parallel_per_edge_usage_pattern(
             self, edge_usage_pattern: "EdgeUsagePattern"):
@@ -97,66 +83,3 @@ class EdgeUsageJourney(ModelingObject):
         self.nb_edge_usage_journeys_in_parallel_per_edge_usage_pattern = ExplainableObjectDict()
         for edge_usage_pattern in self.edge_usage_patterns:
             self.update_dict_element_in_nb_edge_usage_journeys_in_parallel_per_edge_usage_pattern(edge_usage_pattern)
-
-    def _edge_usage_pattern_base_weight(self, usage_pattern: "EdgeUsagePattern"):
-        return (
-            self.nb_edge_usage_journeys_in_parallel_per_edge_usage_pattern[usage_pattern]
-            * self.nb_of_occurrences_per_container[usage_pattern]
-        ).to(u.concurrent)
-
-    def update_dict_element_in_fabrication_impact_repartition_weights(self, usage_pattern: "EdgeUsagePattern"):
-        self.fabrication_impact_repartition_weights[usage_pattern] = self._edge_usage_pattern_base_weight(
-            usage_pattern
-        ).set_label(f"{usage_pattern.name} fabrication weight in impact repartition")
-
-    def update_fabrication_impact_repartition_weights(self):
-        """Per-{class:EdgeUsagePattern} weight used to attribute downstream fabrication-phase emissions back to each pattern, proportional to concurrent edge journeys."""
-        self.fabrication_impact_repartition_weights = ExplainableObjectDict()
-        for usage_pattern in self.edge_usage_patterns:
-            self.update_dict_element_in_fabrication_impact_repartition_weights(usage_pattern)
-
-    @cached_property
-    def attributed_energy_footprint_per_usage_pattern(self) -> ExplainableObjectDict:
-        country_dependent_per_up = {
-            up: up.country_dependent_usage_footprint for up in self.edge_usage_patterns}
-        country_dependent_total = sum(
-            country_dependent_per_up.values(), start=EmptyExplainableObject()
-        ).to(u.kg).set_label("Country-dependent edge usage footprint")
-        neutral_total = (
-            self.attributed_energy_footprint - country_dependent_total
-        ).to(u.kg).set_label("Neutral edge usage footprint")
-        # attributed_energy_footprint and country_dependent_total are computed along
-        # structurally different paths; when they should be equal they can disagree by ULP-scale
-        # float noise. Raise only on a real shortfall, not on that noise.
-        neutral_mag = np.asarray(getattr(neutral_total, "magnitude", 0))
-        attributed_mag = np.asarray(getattr(self.attributed_energy_footprint, "magnitude", 0))
-        peak = float(np.abs(attributed_mag).max()) if attributed_mag.size else 0.0
-        tolerance = max(1e-6, 1e-6 * peak)
-        if np.any(neutral_mag < -tolerance):
-            raise ValueError(
-                f"{self.name}: attributed_energy_footprint must be >= the sum of patterns' "
-                f"country_dependent_usage_footprint at every hour, but the neutral remainder is negative.")
-
-        activity_per_up = {up: up.usage_activity_weight for up in self.edge_usage_patterns}
-        activity_total = sum(activity_per_up.values(), start=EmptyExplainableObject()).set_label(
-            "Edge usage journey activity weight sum")
-
-        attributed = ExplainableObjectDict()
-        for up in self.edge_usage_patterns:
-            neutral_share = self._neutral_activity_share(activity_per_up[up], activity_total, up.name)
-            attributed[up] = (
-                country_dependent_per_up[up] + neutral_total * neutral_share
-            ).to(u.kg).set_label(f"{up.name} attributed energy footprint")
-
-        return attributed
-
-    @staticmethod
-    def _neutral_activity_share(activity_for_pattern, activity_total, pattern_name: str):
-        if isinstance(activity_total, EmptyExplainableObject):
-            return EmptyExplainableObject()
-        if isinstance(activity_total, ExplainableQuantity) and activity_total.magnitude == 0:
-            return EmptyExplainableObject()
-        # Hours with zero total activity have zero neutral footprint by construction (the upstream attribution
-        # chain is itself activity-weighted), so the hourly 0/0 → share = 0 fallback is the correct semantic.
-        share = divide_or_fallback(activity_for_pattern, activity_total, fallback=0)
-        return share.to(u.concurrent).set_label(f"{pattern_name} neutral usage activity share")

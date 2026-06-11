@@ -11,7 +11,6 @@ from efootprint.abstract_modeling_classes.explainable_hourly_quantities import (
 from efootprint.abstract_modeling_classes.explainable_object_dict import ExplainableObjectDict
 from efootprint.abstract_modeling_classes.explainable_quantity import ExplainableQuantity
 from efootprint.abstract_modeling_classes.empty_explainable_object import EmptyExplainableObject
-from efootprint.abstract_modeling_classes.modeling_object import ModelingObject
 from efootprint.core.attribution import Atom
 from efootprint.core.hardware.infra_hardware import InfraHardware
 from efootprint.core.hardware.hardware_base import InsufficientCapacityError
@@ -189,7 +188,6 @@ class ServerBase(InfraHardware):
         self.occupied_compute_per_instance = EmptyExplainableObject()
         self.idle_energy_footprint = EmptyExplainableObject()
         self.load_energy_footprint = EmptyExplainableObject()
-        self.job_repartition_weights = ExplainableObjectDict()
 
     @property
     def modeling_objects_whose_attributes_depend_directly_on_me(self) -> List:
@@ -212,11 +210,6 @@ class ServerBase(InfraHardware):
         "idle_energy_footprint",
         "load_energy_footprint",
         "energy_footprint",
-        "job_repartition_weights",
-    ] + [
-        attr
-        for attr in ModelingObject.calculated_attributes
-        if attr not in {"fabrication_impact_repartition_weights", "usage_impact_repartition_weights"}
     ]
 
     @property
@@ -408,54 +401,6 @@ class ServerBase(InfraHardware):
                 start=EmptyExplainableObject()
             ).set_label(f"Total job volume for {service.name}")
             for service in self.installed_services}
-
-    def update_dict_element_in_job_repartition_weights(self, job: "JobBase"):
-        from efootprint.core.usage.job import DirectServerJob
-        if isinstance(job, DirectServerJob):
-            weight = (
-                    ((job.compute_needed / job.server.compute) + (job.ram_needed / job.server.ram))
-                    * job.hourly_avg_occurrences_across_usage_patterns)
-        else:
-            from efootprint.builders.services.service_job_base_class import ServiceJob
-            assert isinstance(job, ServiceJob)
-            if isinstance(job.hourly_avg_occurrences_across_usage_patterns, EmptyExplainableObject):
-                weight = job.hourly_avg_occurrences_across_usage_patterns.copy()
-            else:
-                service = job.service
-                service_base_weight = (
-                    ((service.base_compute_consumption / self.compute) + (service.base_ram_consumption / self.ram))
-                    * self.nb_of_instances)
-                # Summed inline (not via the lazy service_total_job_volumes cached property): this eager update
-                # runs before the ModelingUpdate flush, so a cached value materialized by a prior attribution
-                # query would be stale. Zero service-total at a given hour means no jobs run on the service then;
-                # the base load attributed to this job is therefore 0 at those hours.
-                service_total_job_volume = sum(
-                    (service_job.hourly_avg_occurrences_across_usage_patterns for service_job in service.jobs),
-                    start=EmptyExplainableObject())
-                job_volume_share = divide_or_fallback(
-                    job.hourly_avg_occurrences_across_usage_patterns, service_total_job_volume, fallback=0)
-                weight = (
-                    service_base_weight * job_volume_share
-                    + ((job.compute_needed / self.compute) + (job.ram_needed / self.ram))
-                    * job.hourly_avg_occurrences_across_usage_patterns)
-
-        self.job_repartition_weights[job] = weight.to(u.concurrent).set_label(
-            f"{job.name} weight in impact repartition"
-        )
-
-    def update_job_repartition_weights(self):
-        """Per-job weight used to attribute the server's fabrication and energy footprint back to its jobs, proportional to each job's share of compute and RAM consumption over the modeling period."""
-        self.job_repartition_weights = ExplainableObjectDict()
-        for job in self.jobs:
-            self.update_dict_element_in_job_repartition_weights(job)
-
-    @property
-    def fabrication_impact_repartition_weights(self):
-        return self.job_repartition_weights
-
-    @property
-    def usage_impact_repartition_weights(self):
-        return self.job_repartition_weights
 
     # --- Attribution-only binding-resource physics and atom builder (lazy cached properties, consumed only by
     # the attribution layer, never by the eager calculated-attribute graph) ---

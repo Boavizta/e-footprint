@@ -1,7 +1,5 @@
 from typing import List, TYPE_CHECKING
 
-from efootprint.abstract_modeling_classes.explainable_object_dict import ExplainableObjectDict
-from efootprint.abstract_modeling_classes.explainable_quantity import ExplainableQuantity
 from efootprint.core.country import Country
 from efootprint.core.hardware.network import Network
 from efootprint.core.usage.edge.edge_usage_journey import EdgeUsageJourney
@@ -51,7 +49,7 @@ class EdgeUsagePattern(ModelingObject):
     def modeling_objects_whose_attributes_depend_directly_on_me(self) -> (List[EdgeUsageJourney]):
         return [self.edge_usage_journey]
 
-    calculated_attributes = ["utc_hourly_edge_usage_journey_starts"] + ModelingObject.calculated_attributes
+    calculated_attributes = ["utc_hourly_edge_usage_journey_starts"]
 
     @property
     def recurrent_edge_device_needs(self) -> List["RecurrentEdgeDeviceNeed"]:
@@ -72,46 +70,3 @@ class EdgeUsagePattern(ModelingObject):
 
         self.utc_hourly_edge_usage_journey_starts = utc_hourly_edge_usage_journey_starts.set_label(
             f"Hourly nb of edge usage journey starts (UTC)")
-
-    def update_dict_element_in_fabrication_impact_repartition_weights(self, country: "Country"):
-        self.fabrication_impact_repartition_weights[country] = ExplainableQuantity(
-            1 * u.dimensionless, label="Impact repartition weight")
-
-    def update_fabrication_impact_repartition_weights(self):
-        """Edge pattern fabrication weights routed entirely to its single {class:Country}, so the country acts as the geographic bucket for fabrication-side accounting."""
-        self.fabrication_impact_repartition_weights = ExplainableObjectDict()
-        self.update_dict_element_in_fabrication_impact_repartition_weights(self.country)
-
-    def update_dict_element_in_usage_impact_repartition_weights(self, country: "Country"):
-        self.usage_impact_repartition_weights[country] = ExplainableQuantity(
-            1 * u.dimensionless, label="Impact repartition weight")
-
-    def update_usage_impact_repartition_weights(self):
-        """Edge pattern usage weights routed entirely to its single {class:Country}."""
-        self.usage_impact_repartition_weights = ExplainableObjectDict()
-        self.update_dict_element_in_usage_impact_repartition_weights(self.country)
-
-    @property
-    def usage_activity_weight(self):
-        return (
-            self.edge_usage_journey.nb_edge_usage_journeys_in_parallel_per_edge_usage_pattern[self]
-            * self.edge_usage_journey.nb_of_occurrences_per_container[self]
-        ).to(u.concurrent)
-
-    @property
-    def country_dependent_usage_footprint(self):
-        footprint = EmptyExplainableObject()
-        for edge_device in self.edge_usage_journey.edge_devices:
-            footprint += edge_device.energy_footprint_per_usage_pattern[self]
-        # Without recurrent server needs the journey has no jobs, so the network never registers
-        # this pattern in its per-usage-pattern dict.
-        footprint += self.network.energy_footprint_per_usage_pattern.get(self, EmptyExplainableObject())
-        return footprint.to(u.kg).set_label(f"{self.name} country-dependent edge usage footprint")
-
-    @property
-    def attributed_energy_footprint(self):
-        return self.edge_usage_journey.attributed_energy_footprint_per_usage_pattern[self]
-
-    @property
-    def attributed_energy_footprint_per_source(self):
-        return ExplainableObjectDict({self.edge_usage_journey: self.attributed_energy_footprint})

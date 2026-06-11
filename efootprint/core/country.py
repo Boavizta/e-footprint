@@ -2,7 +2,6 @@ from typing import List, TYPE_CHECKING
 
 import pytz
 
-from efootprint.abstract_modeling_classes.explainable_object_dict import ExplainableObjectDict
 from efootprint.abstract_modeling_classes.explainable_quantity import ExplainableQuantity
 from efootprint.abstract_modeling_classes.explainable_timezone import ExplainableTimezone
 from efootprint.abstract_modeling_classes.modeling_object import ModelingObject
@@ -11,7 +10,6 @@ from efootprint.constants.units import u
 
 if TYPE_CHECKING:
     from efootprint.core.usage.usage_pattern import UsagePattern
-    from efootprint.core.system import System
 
 
 class Country(ModelingObject):
@@ -53,23 +51,3 @@ class Country(ModelingObject):
     @property
     def usage_patterns(self) -> List["UsagePattern"]:
         return self.modeling_obj_containers
-
-    def update_dict_element_in_fabrication_impact_repartition_weights(self, system: "System"):
-        self.fabrication_impact_repartition_weights[system] = ExplainableQuantity(
-            1 * u.dimensionless, label="Impact repartition weight")
-
-    def update_fabrication_impact_repartition_weights(self):
-        """Country-level fabrication-impact weights, set to 1 per system: a country attributes all of its fabrication-side share to the system that contains it."""
-        self.fabrication_impact_repartition_weights = ExplainableObjectDict()
-        for system in self.systems:
-            self.update_dict_element_in_fabrication_impact_repartition_weights(system)
-
-    def update_dict_element_in_usage_impact_repartition_weights(self, system: "System"):
-        self.usage_impact_repartition_weights[system] = ExplainableQuantity(
-            1 * u.dimensionless, label="Impact repartition weight")
-
-    def update_usage_impact_repartition_weights(self):
-        """Country-level usage-impact weights, set to 1 per system: a country attributes all of its usage-side share to the system that contains it."""
-        self.usage_impact_repartition_weights = ExplainableObjectDict()
-        for system in self.systems:
-            self.update_dict_element_in_usage_impact_repartition_weights(system)

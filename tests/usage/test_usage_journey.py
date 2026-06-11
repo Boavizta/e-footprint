@@ -3,14 +3,12 @@ from unittest import TestCase
 from unittest.mock import MagicMock, patch, PropertyMock
 
 from efootprint.abstract_modeling_classes.empty_explainable_object import EmptyExplainableObject
-from efootprint.abstract_modeling_classes.explainable_object_dict import ExplainableObjectDict
 from efootprint.abstract_modeling_classes.list_linked_to_modeling_obj import ListLinkedToModelingObj
 from efootprint.abstract_modeling_classes.source_objects import SourceValue
 from efootprint.core.usage.usage_journey import UsageJourney
 from efootprint.constants.units import u
-from efootprint.core.usage.usage_pattern import UsagePattern
 from efootprint.core.usage.usage_journey_step import UsageJourneyStep
-from tests.utils import create_mod_obj_mock, set_modeling_obj_containers
+from tests.utils import create_mod_obj_mock
 
 
 class TestUsageJourney(TestCase):
@@ -112,72 +110,6 @@ class TestUsageJourney(TestCase):
         uj.update_duration()
 
         self.assertEqual(SourceValue(8 * u.min), uj.duration)
-
-    def test_update_fabrication_impact_repartition_weights_uses_parallel_journeys_and_container_occurrences(self):
-        usage_pattern_a = create_mod_obj_mock(UsagePattern, name="Usage Pattern A")
-        usage_pattern_b = create_mod_obj_mock(UsagePattern, name="Usage Pattern B")
-        # It is currently not possible for a usage journey to be linked several times to the same
-        # usage pattern, but it might happen someday and the logic will be already tested.
-        set_modeling_obj_containers(self.usage_journey, [usage_pattern_a, usage_pattern_a, usage_pattern_b])
-        self.usage_journey.nb_usage_journeys_in_parallel_per_usage_pattern = ExplainableObjectDict({
-            usage_pattern_a: SourceValue(3 * u.concurrent),
-            usage_pattern_b: SourceValue(4 * u.concurrent),
-        })
-
-        self.usage_journey.update_fabrication_impact_repartition_weights()
-
-        self.assertEqual(6, self.usage_journey.fabrication_impact_repartition_weights[usage_pattern_a].magnitude)
-        self.assertEqual(4, self.usage_journey.fabrication_impact_repartition_weights[usage_pattern_b].magnitude)
-        self.assertEqual(u.concurrent, self.usage_journey.fabrication_impact_repartition_weights[usage_pattern_a].unit)
-
-    def test_usage_impact_repartition_weights_returns_fabrication_weights(self):
-        usage_pattern_a = create_mod_obj_mock(UsagePattern, name="Usage Pattern A")
-        usage_pattern_b = create_mod_obj_mock(UsagePattern, name="Usage Pattern B")
-        set_modeling_obj_containers(self.usage_journey, [usage_pattern_a, usage_pattern_b])
-        self.usage_journey.nb_usage_journeys_in_parallel_per_usage_pattern = ExplainableObjectDict({
-            usage_pattern_a: SourceValue(2 * u.concurrent),
-            usage_pattern_b: SourceValue(4 * u.concurrent),
-        })
-        self.usage_journey.update_fabrication_impact_repartition_weights()
-
-        self.assertIs(
-            self.usage_journey.fabrication_impact_repartition_weights,
-            self.usage_journey.usage_impact_repartition_weights,
-        )
-
-    def test_step_usage_impact_can_route_through_journey_without_journey_usage_repartition(self):
-        usage_pattern = create_mod_obj_mock(UsagePattern, name="Usage Pattern")
-        step = UsageJourneyStep("Step", SourceValue(1 * u.min), [])
-        usage_journey = UsageJourney("test user journey", uj_steps=[step])
-        set_modeling_obj_containers(usage_journey, [usage_pattern])
-        usage_journey.nb_usage_journeys_in_parallel_per_usage_pattern = ExplainableObjectDict({
-            usage_pattern: SourceValue(3 * u.concurrent),
-        })
-        usage_journey.update_fabrication_impact_repartition_weights()
-
-        step.update_usage_impact_repartition_weights()
-
-        self.assertEqual(3, step.usage_impact_repartition_weights[usage_journey].magnitude)
-        self.assertEqual(u.concurrent, step.usage_impact_repartition_weights[usage_journey].unit)
-
-    def test_usage_impact_repartition_is_not_owned_by_usage_journey(self):
-        self.assertNotIn("usage_impact_repartition_weights", self.usage_journey.calculated_attributes)
-        self.assertNotIn("usage_impact_repartition_weight_sum", self.usage_journey.calculated_attributes)
-        self.assertNotIn("usage_impact_repartition", self.usage_journey.calculated_attributes)
-        self.assertFalse(hasattr(self.usage_journey, "usage_impact_repartition"))
-
-    def test_attributed_energy_footprint_per_usage_pattern_raises_when_neutral_total_negative(self):
-        usage_pattern = create_mod_obj_mock(UsagePattern, name="UP")
-        usage_pattern.country_dependent_usage_footprint = SourceValue(10 * u.kg).set_label(
-            "UP country-dependent")
-        usage_pattern.usage_activity_weight = SourceValue(1 * u.concurrent)
-        set_modeling_obj_containers(self.usage_journey, [usage_pattern])
-        self.usage_journey.__dict__["attributed_energy_footprint"] = SourceValue(5 * u.kg).set_label(
-            "Attributed energy footprint")
-
-        with self.assertRaises(ValueError) as ctx:
-            self.usage_journey.attributed_energy_footprint_per_usage_pattern
-        self.assertIn("neutral remainder is negative", str(ctx.exception))
 
 
 if __name__ == "__main__":

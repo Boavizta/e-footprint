@@ -1,7 +1,5 @@
 from typing import List
 
-from efootprint.abstract_modeling_classes.explainable_object_dict import ExplainableObjectDict
-from efootprint.abstract_modeling_classes.explainable_quantity import ExplainableQuantity
 from efootprint.core.country import Country
 from efootprint.constants.units import u
 from efootprint.core.hardware.device import Device
@@ -54,7 +52,7 @@ class UsagePattern(ModelingObject):
     def modeling_objects_whose_attributes_depend_directly_on_me(self) -> List[UsageJourney]:
         return [self.usage_journey]
 
-    calculated_attributes = ["utc_hourly_usage_journey_starts"] + ModelingObject.calculated_attributes
+    calculated_attributes = ["utc_hourly_usage_journey_starts"]
 
     @property
     def jobs(self) -> List[Job]:
@@ -68,43 +66,3 @@ class UsagePattern(ModelingObject):
         self.utc_hourly_usage_journey_starts = utc_hourly_usage_journey_starts.set_label(
             "Hourly nb of usage journey starts (UTC)")
 
-    def update_dict_element_in_fabrication_impact_repartition_weights(self, country: "Country"):
-        self.fabrication_impact_repartition_weights[country] = ExplainableQuantity(
-            1 * u.dimensionless, label="Impact repartition weight")
-
-    def update_fabrication_impact_repartition_weights(self):
-        """All of this usage pattern's fabrication-phase impact attributes to its single {class:Country}, so the country acts as the geographic bucket for device-side fabrication emissions."""
-        self.fabrication_impact_repartition_weights = ExplainableObjectDict()
-        self.update_dict_element_in_fabrication_impact_repartition_weights(self.country)
-
-    def update_dict_element_in_usage_impact_repartition_weights(self, country: "Country"):
-        self.usage_impact_repartition_weights[country] = ExplainableQuantity(
-            1 * u.dimensionless, label="Impact repartition weight")
-
-    def update_usage_impact_repartition_weights(self):
-        """All of this usage pattern's usage-phase impact attributes to its single {class:Country}."""
-        self.usage_impact_repartition_weights = ExplainableObjectDict()
-        self.update_dict_element_in_usage_impact_repartition_weights(self.country)
-
-    @property
-    def usage_activity_weight(self):
-        return (
-            self.usage_journey.nb_usage_journeys_in_parallel_per_usage_pattern[self]
-            * self.usage_journey.nb_of_occurrences_per_container[self]
-        ).to(u.concurrent)
-
-    @property
-    def country_dependent_usage_footprint(self):
-        footprint = EmptyExplainableObject()
-        for device in self.devices:
-            footprint += device.energy_footprint_per_usage_pattern.get(self, EmptyExplainableObject())
-        footprint += self.network.energy_footprint_per_usage_pattern[self]
-        return footprint.to(u.kg).set_label(f"{self.name} country-dependent usage footprint")
-
-    @property
-    def attributed_energy_footprint(self):
-        return self.usage_journey.attributed_energy_footprint_per_usage_pattern[self]
-
-    @property
-    def attributed_energy_footprint_per_source(self):
-        return ExplainableObjectDict({self.usage_journey: self.attributed_energy_footprint})

@@ -1,4 +1,3 @@
-from functools import cached_property
 from typing import List, TYPE_CHECKING
 
 from efootprint.abstract_modeling_classes.explainable_object_dict import ExplainableObjectDict
@@ -56,8 +55,6 @@ class Network(ModelingObject):
         "energy_footprint_per_job",
         "instances_fabrication_footprint",
         "energy_footprint",
-    ] + [
-        attr for attr in ModelingObject.calculated_attributes if attr != "usage_impact_repartition_weights"
     ]
 
     @property
@@ -108,44 +105,6 @@ class Network(ModelingObject):
         self.energy_footprint = sum(self.energy_footprint_per_job.values(), start=EmptyExplainableObject()).set_label(
             f"Hourly energy footprint"
         )
-
-    def update_dict_element_in_fabrication_impact_repartition_weights(self, job: "JobBase"):
-        raise NotImplementedError(
-            f"Fabrication impact repartition is not implemented for {self.name} when Network has a fabrication footprint."
-        )
-
-    def update_fabrication_impact_repartition_weights(self):
-        """Per-job weights for attributing the network's fabrication footprint, currently empty since {class:Network} carries no fabrication footprint."""
-        self.fabrication_impact_repartition_weights = ExplainableObjectDict()
-        if isinstance(self.instances_fabrication_footprint, EmptyExplainableObject):
-            return
-        for job in self.jobs:
-            self.update_dict_element_in_fabrication_impact_repartition_weights(job)
-
-    @property
-    def usage_impact_repartition_weights(self):
-        return self.energy_footprint_per_job
-
-    # --- Attribution-only per-pattern footprint and atom builder (lazy cached properties / generator,
-    # consumed only by the attribution layer, never by the eager calculated-attribute graph) ---
-
-    @cached_property
-    def energy_footprint_per_usage_pattern(self) -> dict:
-        """Hourly carbon emissions caused by network traffic, broken down by usage pattern — data transferred
-        times bandwidth energy intensity times the pattern country's grid carbon intensity, summed across the
-        pattern's jobs. Attribution-only (the eager energy_footprint total sums the per-job dict), hence a
-        cached property rather than a calculated attribute."""
-        footprints = {}
-        for usage_pattern in self.usage_patterns:
-            footprint = EmptyExplainableObject()
-            for job in usage_pattern.jobs:
-                if usage_pattern not in job.hourly_data_transferred_per_usage_pattern:
-                    continue
-                footprint += self._compute_energy_footprint_for_job_and_usage_pattern(job, usage_pattern)
-            footprints[usage_pattern] = footprint.to(u.kg).set_label(
-                f"{usage_pattern.name} network energy footprint")
-
-        return footprints
 
     def attribution_atoms(self, phase: LifeCyclePhases):
         """One single-stream atom per (job, containment cell) routed through this network, computed ground-up

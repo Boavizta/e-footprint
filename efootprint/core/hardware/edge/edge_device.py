@@ -82,7 +82,7 @@ class EdgeDevice(ModelingObject):
         "instances_fabrication_footprint_per_usage_pattern",
         "instances_energy_per_usage_pattern", "energy_footprint_per_usage_pattern",
         "instances_fabrication_footprint", "fabrication_footprint_breakdown_by_source",
-        "instances_energy", "energy_footprint"] + ModelingObject.calculated_attributes
+        "instances_energy", "energy_footprint"]
 
     @property
     def recurrent_edge_device_needs(self) -> List["RecurrentEdgeDeviceNeed"]:
@@ -558,76 +558,3 @@ class EdgeDevice(ModelingObject):
                     value=(pool_shares[usage_pattern] * occurrence_share).set_label(
                         f"{self.name} {phase.value.lower()} footprint via {server_need.name} in "
                         f"{edge_function.name} ({usage_pattern.name})"))
-
-    def _compute_component_need_weight(
-            self, component_need: "RecurrentEdgeComponentNeed", component_impact_per_usage_pattern):
-        from efootprint.core.usage.edge.recurrent_edge_component_need import RecurrentEdgeComponentNeed
-
-        if not isinstance(component_need, RecurrentEdgeComponentNeed):
-            raise TypeError(f"Unsupported edge device impact repartition source: {type(component_need)}")
-
-        component = component_need.edge_component
-        weight = EmptyExplainableObject()
-        for usage_pattern in component_need.edge_usage_patterns:
-            if usage_pattern not in component_need.unitary_hourly_need_per_usage_pattern:
-                raise KeyError(
-                    f"{usage_pattern.name} listed in {component_need.name}.edge_usage_patterns is missing from "
-                    f"{component_need.name}.unitary_hourly_need_per_usage_pattern. The per-pattern need dict must "
-                    f"cover every edge_usage_pattern that references the need.")
-            if usage_pattern not in component.total_unitary_hourly_need_per_usage_pattern:
-                raise KeyError(
-                    f"{usage_pattern.name} is missing from {component.name}.total_unitary_hourly_need_per_usage_pattern."
-                    f" The component must aggregate demand for every pattern that uses it.")
-            component_need_demand = component_need.unitary_hourly_need_per_usage_pattern[usage_pattern]
-            sibling_need_demand = component.total_unitary_hourly_need_per_usage_pattern[usage_pattern]
-            if isinstance(sibling_need_demand, EmptyExplainableObject) or sibling_need_demand.sum().magnitude == 0:
-                continue
-            if usage_pattern not in component_impact_per_usage_pattern:
-                raise KeyError(
-                    f"{usage_pattern.name} is missing from component_impact_per_usage_pattern for "
-                    f"{component.name}. The component's per-pattern impact dict must cover every pattern that "
-                    f"exercises it.")
-            component_pattern_impact = component_impact_per_usage_pattern[usage_pattern]
-            if isinstance(component_pattern_impact, EmptyExplainableObject):
-                continue
-            # Hourly 0/0 means this need contributes nothing during idle hours where total demand is also zero.
-            share = divide_or_fallback(component_need_demand, sibling_need_demand, fallback=0)
-            weight += component_pattern_impact * share
-
-        return weight
-
-    def _fabrication_impact_per_usage_pattern_for_component(self, component: EdgeComponent):
-        structure_component_share = ExplainableQuantity(
-            len(self.components) * u.dimensionless, label=f"Number of components")
-        return ExplainableObjectDict({
-            usage_pattern: (
-                component.fabrication_footprint_per_edge_device_per_usage_pattern.get(
-                    usage_pattern, EmptyExplainableObject())
-                + structure_fabrication / structure_component_share
-            )
-            for usage_pattern, structure_fabrication in self.structure_fabrication_footprint_per_usage_pattern.items()
-        })
-
-    def update_dict_element_in_fabrication_impact_repartition_weights(
-            self, component_need: "RecurrentEdgeComponentNeed"):
-        self.fabrication_impact_repartition_weights[component_need] = self._compute_component_need_weight(
-            component_need,
-            self._fabrication_impact_per_usage_pattern_for_component(component_need.edge_component),
-        ).set_label(f"{component_need.name} fabrication weight in impact repartition")
-
-    def update_fabrication_impact_repartition_weights(self):
-        """Per-{class:RecurrentEdgeComponentNeed} weights used to attribute the device's fabrication footprint to the needs that load each component, proportional to each need's share of demand."""
-        self.fabrication_impact_repartition_weights = ExplainableObjectDict()
-        for recurrent_component_need in self.recurrent_edge_component_needs:
-            self.update_dict_element_in_fabrication_impact_repartition_weights(recurrent_component_need)
-
-    def update_dict_element_in_usage_impact_repartition_weights(self, component_need: "RecurrentEdgeComponentNeed"):
-        self.usage_impact_repartition_weights[component_need] = self._compute_component_need_weight(
-            component_need, component_need.edge_component.energy_footprint_per_edge_device_per_usage_pattern
-        ).set_label(f"{component_need.name} usage weight in impact repartition")
-
-    def update_usage_impact_repartition_weights(self):
-        """Per-{class:RecurrentEdgeComponentNeed} weights used to attribute the device's energy-use footprint to the needs that load each component."""
-        self.usage_impact_repartition_weights = ExplainableObjectDict()
-        for recurrent_component_need in self.recurrent_edge_component_needs:
-            self.update_dict_element_in_usage_impact_repartition_weights(recurrent_component_need)

@@ -200,8 +200,12 @@ class IntegrationTestSimpleSystemBaseClass(IntegrationTestBaseClass):
                 self.storage.fixed_nb_of_instances = SourceValue(1 * u.dimensionless)
 
     def run_test_make_sure_that_storage_fabrication_footprint_is_linked_to_jobs(self):
-        self.assertIn(self.storage, self.job_1.attributed_fabrication_footprint_per_source)
-        self.assertIn(self.storage, self.job_1.attributed_fabrication_footprint_per_source)
+        from efootprint.core.attribution import footprint_per_node_per_source
+        from efootprint.core.lifecycle_phases import LifeCyclePhases
+        from efootprint.core.usage.job import JobBase
+        per_job_per_source = footprint_per_node_per_source(
+            self.system, JobBase, LifeCyclePhases.MANUFACTURING)
+        self.assertIn((self.storage, self.job_1), per_job_per_source)
 
     # OBJECT LINKS UPDATES TESTING
 

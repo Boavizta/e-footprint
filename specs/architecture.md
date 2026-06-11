@@ -14,7 +14,7 @@ efootprint/abstract_modeling_classes/  (framework — dependency tracking, Expla
 
 This separation is constitutional (`specs/constitution.md` §1.1). `core/` is built on top of `abstract_modeling_classes/`, but it must not import from `api_utils/` — modeling code shouldn't know how it gets persisted. `api_utils/` is the only layer allowed to import from both.
 
-**Known back-edge.** `abstract_modeling_classes/modeling_object.py` imports `LifeCyclePhases` from `efootprint/core/` (runtime) and `System` (TYPE_CHECKING). This is a leak of the layering and should be paid down opportunistically; new code must not introduce additional upward imports from `abstract_modeling_classes/` into `core/`.
+**Known back-edge.** `abstract_modeling_classes/modeling_object.py` imports `LifeCyclePhases` from `efootprint/core/` (runtime), `System` (TYPE_CHECKING), and — function-locally — `core.attribution.footprint_per_node` for the two `attributed_*_footprint` convenience cached properties. This is a leak of the layering and should be paid down opportunistically; new code must not introduce additional upward imports from `abstract_modeling_classes/` into `core/`.
 
 **No domain names in the framework layer.** The dependency rule applies to *names*, not just imports: `abstract_modeling_classes/` may not mention `core/` concepts (`UsagePattern`, `Job`, `Server`, …) by name — not in class attributes, not in strings, not in comments load-bearing for behaviour. When the framework needs to be polymorphic over a domain-specific extension (e.g., a cached property that only some subclasses define), it discovers the extension structurally rather than naming it. Example: `class_cached_property_names` auto-discovers every `functools.cached_property` through the class MRO; the flush machinery (`flush_cached_properties`, the system-wide sweep, `to_json` / `__setattr__` skip lists) consumes that discovery, so domain subclasses add cached properties without registering them anywhere. Corollary invariant: every `cached_property` on a `ModelingObject` is a flushable read-time projection (lazy attribution layer), never model state.
 
@@ -43,6 +43,7 @@ Avoid gathering context here unless absolutely necessary — most modeling work 
 
 ## API utils (`efootprint/api_utils/`)
 
+- **Schema version policy.** The schema version bumps only when inputs-only JSONs change; adding or removing calculated attributes (and cached properties, which are never serialized) requires no bump. Cross-version loads of JSONs saved **with** calculated attributes are unsupported — no loader guard, no version handler (settled 2026-06-10).
 - **`json_to_system.py`** / **`system_to_json.py`** — serialization round-trip. Saves systems with or without calculated attributes. **Reference resolution heuristic:** in `ModelingObject.from_json_dict`, a scalar string attribute is interpreted as an object reference when it equals an already-built object's `id`. `id` and `name` are exempt (names are plain labels, never references) — otherwise an object whose `name` equals another object's `id` (e.g. a second "France" country alongside the catalog one keyed `"France"`) would have its name silently resolved into that object.
 - **`version_upgrade_handlers.py`** — migration logic for schema changes. Migrations apply to JSON files saved without calculated attributes.
 - **`Source` is a top-level JSON entity (since v21).** Each `Source` carries a deterministic `id` (uuid in production, name-based in tests via `Source._use_name_as_id`). `ExplainableObject.source` serializes as `"source": "<source_id>"`; the system JSON has a top-level `"Sources": {id: {...}}` block with only the sources actually referenced. Sentinel ids `"user_data"` and `"hypothesis"` are pinned so `Sources.USER_DATA` / `Sources.HYPOTHESIS` re-identify with the live Python singletons across reloads. Source application during JSON load is centralized in `_apply_json_source` (in `explainable_object_base_class.py`); per-subclass `from_json_dict` no longer constructs `Source` instances.
@@ -90,48 +91,31 @@ There are three relationship types between modeling objects:
 
 All three populate `contextual_modeling_obj_containers` on the child objects so they can discover their parents. Dict-based relationships can also be discovered via `explainable_object_dicts_containers`.
 
-## Usage attribution boundary
+## Attribution layer (the atom model)
 
-Generic impact repartition propagates source footprints through the object graph, but shared `UsageJourney` and
-`EdgeUsageJourney` objects are neutral usage pass-throughs: the usage-phase split between their containing
-patterns does not follow grid-carbon-weighted normalization. To keep the framework path uniform while opting
-out of the default usage repartition machinery, they expose `usage_impact_repartition_weights` as a
-`@property` that returns `fabrication_impact_repartition_weights` (pure activity volume), and they do not own
-`usage_impact_repartition_weight_sum` or outgoing `usage_impact_repartition` toward patterns. The same trick
-is used by `Network`, whose `usage_impact_repartition_weights` returns `energy_footprint_per_job`.
+Attribution lives entirely in `efootprint/core/attribution/` and is lazy, read-time-only — calculated
+attributes never read attribution results (the one-way rule that makes wholesale cached-property flushing
+correct). Each impact source decomposes its footprint exactly once into **atoms** — the finest
+`(source, stream, containment cell, usage pattern)` slices of hourly footprint, emitted by the source's
+`attribution_atoms(phase)` generator. Every attribution number is the same operation, a fold: group atoms by
+a key and sum.
 
-The corrected per-pattern usage total is held on the journey side as a `@cached_property`
-(`UsageJourney.attributed_energy_footprint_per_usage_pattern` and its edge counterpart): device/edge-device and
-network usage stays on the country where it occurs, while the remaining neutral journey usage (servers,
-storage/service overhead, external APIs) is split by neutral activity volume. `UsagePattern` and
-`EdgeUsagePattern` look up their own entry from that dict. Like every cached property, it is auto-discovered
-by `class_cached_property_names` and flushed by `flush_cached_properties` — both by the legacy
-`invalidate_impact_repartition_cache` walk and by the system-wide sweep that runs after every
-`ModelingUpdate` and after the initial build.
+- node total at any level = group by that level's key; link between columns = consecutive visible chain nodes
+- **skip a column** = leave its classes out of the fold's `visible_levels` (adjacent visible nodes link
+  directly)
+- **exclude a source** = filter its atoms out — never rescale
+- conservation is structural: Σ(atoms of a stream) == that stream's footprint == the eager totals
+- renderers are presentation-only: `ImpactRepartitionSankey` makes one `node_totals_and_links` call per
+  life-cycle phase and owns nothing but layout, colors and aggregation
 
-## Resolved attribution (skip / exclude semantics)
+Caching is two-tier in each owner's `render_cache` (itself a cached property): atom lists per
+`(source, phase)`, fold results per query. Both are wiped by the system-wide cached-property flush after
+every `ModelingUpdate` and after the initial build.
 
-`ModelingObject` exposes parametrized resolved-attribution methods used by renderers and other callers that need
-to view per-source attribution with intermediate objects collapsed or whole subtrees removed:
-
-- `attributed_fabrication_footprint_per_source_resolved(skipped_object_types=(), excluded_object_types=())`
-- `attributed_energy_footprint_per_source_resolved(skipped_object_types=(), excluded_object_types=())`
-
-Default arguments return the cached `attributed_*_footprint_per_source` dict unchanged. With arguments:
-
-- Skipped non-impact-source intermediates are traversed through: each parent's incoming attribution to a skipped
-  object is rescaled to its resolved descendants, so per-parent flows are preserved instead of using the skipped
-  object's global child mix.
-- Skipped impact sources that expose a `footprint_breakdown_by_source` are replaced by their rescaled breakdown
-  children, so the convention "attribution semantics belong on the model" holds end-to-end. Skipped impact
-  sources without a breakdown are dropped.
-- Excluded subtrees are dropped entirely; remaining values along a branch are recomputed from non-excluded leaves
-  so that the surviving attribution still sums to the right per-source totals.
-
-The implementation lives in `efootprint/abstract_modeling_classes/modeling_object.py` as a public
-`resolve_attributed_footprint_per_source` entry point delegating to a private `_resolve_recursive` helper. The
-public methods delegate to it. Renderers (notably `ImpactRepartitionSankey`) consume the API via the public
-methods and memoize per-build to avoid quadratic re-resolution at deeper tree levels.
+`ModelingObject` keeps two convenience cached properties — `attributed_fabrication_footprint` /
+`attributed_energy_footprint` — that delegate to `attribution.footprint_per_node` at the object's own class
+level. They are the only `attributed_*` surface; everything heavier (per-source dicts, resolve/rescale
+machinery, eager repartition-weight calculated attributes) was deleted with the 2026-06 attribution revamp.
 
 ## `ExplainableObjectDict` as input attribute
 

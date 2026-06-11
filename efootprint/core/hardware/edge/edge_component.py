@@ -56,7 +56,6 @@ class EdgeComponent(ModelingObject):
         self.power = EmptyExplainableObject()
         self.idle_power = EmptyExplainableObject()
         self.unitary_power_per_usage_pattern = ExplainableObjectDict()
-        self.total_unitary_hourly_need_per_usage_pattern = ExplainableObjectDict()
         self.fabrication_footprint_per_edge_device_per_usage_pattern = ExplainableObjectDict()
         self.energy_per_edge_device_per_usage_pattern = ExplainableObjectDict()
         self.energy_footprint_per_edge_device_per_usage_pattern = ExplainableObjectDict()
@@ -77,8 +76,7 @@ class EdgeComponent(ModelingObject):
                              "unitary_power_per_usage_pattern", "fabrication_footprint_per_edge_device_per_usage_pattern",
                              "energy_per_edge_device_per_usage_pattern", "energy_footprint_per_edge_device_per_usage_pattern",
                              "fabrication_footprint_per_edge_device", "energy_per_edge_device",
-                             "energy_footprint_per_edge_device",
-                             "total_unitary_hourly_need_per_usage_pattern"]
+                             "energy_footprint_per_edge_device"]
 
     @property
     def recurrent_edge_component_needs(self) -> List["RecurrentEdgeComponentNeed"]:
@@ -220,17 +218,3 @@ class EdgeComponent(ModelingObject):
         self.energy_footprint_per_edge_device = energy_footprint.set_label(
             "Total energy footprint per edge device across usage patterns")
 
-    def update_dict_element_in_total_unitary_hourly_need_per_usage_pattern(self, usage_pattern: "EdgeUsagePattern"):
-        self.total_unitary_hourly_need_per_usage_pattern[usage_pattern] = sum(
-            [
-                recurrent_need.unitary_hourly_need_per_usage_pattern.get(usage_pattern, EmptyExplainableObject())
-                for recurrent_need in self.recurrent_edge_component_needs
-            ],
-            start=EmptyExplainableObject(),
-        ).set_label(f"Total hourly need for {usage_pattern.name}")
-
-    def update_total_unitary_hourly_need_per_usage_pattern(self):
-        """Aggregate hourly demand on this component for one device, summing every {class:RecurrentEdgeComponentNeed} that targets it."""
-        self.total_unitary_hourly_need_per_usage_pattern = ExplainableObjectDict()
-        for usage_pattern in self.edge_usage_patterns:
-            self.update_dict_element_in_total_unitary_hourly_need_per_usage_pattern(usage_pattern)

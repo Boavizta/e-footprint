@@ -111,32 +111,6 @@ class TestEdgeComponent(TestCase):
         result = self.component.energy_footprint_per_edge_device_per_usage_pattern[mock_pattern]
         self.assertTrue(np.allclose(expected_footprint, result.value.to(u.kg).magnitude))
 
-    def test_update_total_unitary_hourly_need_per_usage_pattern(self):
-        """Test summing unitary hourly need across recurrent component needs."""
-        mock_pattern_1 = create_mod_obj_mock(EdgeUsagePattern, name="Pattern 1", id="pattern_1")
-        mock_pattern_2 = create_mod_obj_mock(EdgeUsagePattern, name="Pattern 2", id="pattern_2")
-        mock_need_1 = create_mod_obj_mock(RecurrentEdgeComponentNeed, "Need 1")
-        mock_need_2 = create_mod_obj_mock(RecurrentEdgeComponentNeed, "Need 2")
-        mock_need_1.edge_usage_patterns = [mock_pattern_1, mock_pattern_2]
-        mock_need_2.edge_usage_patterns = [mock_pattern_1]
-        mock_need_1.unitary_hourly_need_per_usage_pattern = ExplainableObjectDict({
-            mock_pattern_1: create_source_hourly_values_from_list([10, 10], pint_unit=u.cpu_core * u.concurrent),
-            mock_pattern_2: create_source_hourly_values_from_list([4, 4], pint_unit=u.cpu_core * u.concurrent),
-        })
-        mock_need_2.unitary_hourly_need_per_usage_pattern = ExplainableObjectDict({
-            mock_pattern_1: create_source_hourly_values_from_list([6, 6], pint_unit=u.cpu_core * u.concurrent),
-        })
-        set_modeling_obj_containers(self.component, [mock_need_1, mock_need_2])
-
-        self.component.update_total_unitary_hourly_need_per_usage_pattern()
-
-        self.assertTrue(np.allclose(
-            [16, 16], self.component.total_unitary_hourly_need_per_usage_pattern[mock_pattern_1].magnitude
-        ))
-        self.assertTrue(np.allclose(
-            [4, 4], self.component.total_unitary_hourly_need_per_usage_pattern[mock_pattern_2].magnitude
-        ))
-
     def test_update_fabrication_footprint_per_edge_device(self):
         """Test summing fabrication footprint per edge device across patterns."""
         mock_pattern_1 = create_mod_obj_mock(EdgeUsagePattern, name="Pattern 1", id="pattern_1")

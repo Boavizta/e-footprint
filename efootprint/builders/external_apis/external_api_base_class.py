@@ -43,22 +43,6 @@ class ExternalAPIServer(ModelingObject):
         pass
 
     @abstractmethod
-    def update_dict_element_in_fabrication_impact_repartition_weights(self, modeling_obj: "ModelingObject"):
-        pass
-
-    @abstractmethod
-    def update_fabrication_impact_repartition_weights(self):
-        pass
-
-    @abstractmethod
-    def update_dict_element_in_usage_impact_repartition_weights(self, modeling_obj: "ModelingObject"):
-        pass
-
-    @abstractmethod
-    def update_usage_impact_repartition_weights(self):
-        pass
-
-    @abstractmethod
     def job_request_footprint(self, job: "ModelingObject", phase: LifeCyclePhases):
         """The job's duration-aware hourly request footprint for a life-cycle phase — the per-job summand the
         server's eager phase total sums over its jobs. Atom values are built from it, so Σ atoms == the total."""
@@ -131,14 +115,6 @@ class ExternalAPI(ModelingObject):
     @property
     def energy_footprint(self) -> ExplainableHourlyQuantities:
         return self.server.energy_footprint
-
-    @property
-    def fabrication_impact_repartition(self):
-        return self.server.fabrication_impact_repartition
-
-    @property
-    def usage_impact_repartition(self):
-        return self.server.usage_impact_repartition
 
     def self_delete(self):
         super().self_delete()

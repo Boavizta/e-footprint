@@ -384,6 +384,27 @@ e-footprint-interface's `sankey_views.py` works unchanged.
 
 ## Task 7 — Delete legacy attribution paths, docs
 
+**Status:** Done
+
+**Implementation notes:**
+- The kept `attributed_fabrication_footprint` / `attributed_energy_footprint` delegate through a shared
+  `_attributed_footprint(phase)`: the object's entry in `footprint_per_node(system, type(self), phase)`,
+  summed over `self.systems` (Empty when system-less). The fold dict is memoized, so the read copies before
+  unit-converting/labeling. The delegation adds a function-local `core.attribution` import to the documented
+  framework→core back-edge (architecture.md's back-edge note updated accordingly).
+- `ModelingObject.calculated_attributes` is now `[]`; subclass compositions that filtered the legacy base
+  entries were simplified to plain local lists. `is_impact_source` and `Network.energy_footprint_per_usage_pattern`
+  went with the sweep (no consumers left). Eager-vs-lazy audit found one more dead eager entry:
+  `EdgeComponent.total_unitary_hourly_need_per_usage_pattern` (only consumer was the deleted
+  `_compute_component_need_weight` chain) — deleted.
+- `tests/integration_tests/test_per_usage_pattern_impact_cascade.py` repointed: the country-dependent /
+  neutral-split pins became per-source pins via `footprint_per_node_per_source` (same numerical expectations —
+  the fixtures are symmetric); the cache-invalidation test now watches the pattern's own `attributed_energy_footprint`
+  cached property. Delegation + flush tests live in `tests/core/attribution/test_attribution.py`.
+- `tests/builders/external_apis/ecologits/job_serialization.json` regenerated (legacy calculated-attribute keys
+  dropped). `tests/performance_tests/big_system_with_calc_attr.json` (a v20 manual-benchmark artifact) still
+  carries legacy keys — cross-version with-calc-attrs loads are unsupported by policy; left as-is.
+
 **Goal:** Remove everything the fold replaced, in one mechanical sweep. `ModelingObject`: the
 generic `*_impact_repartition*` calculated attributes and update methods,
 `attributed_*_footprint_per_source[_resolved]`, `resolve_attributed_footprint_per_source`,

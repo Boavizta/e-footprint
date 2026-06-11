@@ -7,7 +7,6 @@ import numpy as np
 from pint import Quantity
 
 from efootprint.abstract_modeling_classes.explainable_object_dict import ExplainableObjectDict
-from efootprint.abstract_modeling_classes.modeling_object import ModelingObject
 from efootprint.constants.sources import Sources
 from efootprint.core.attribution import Atom
 from efootprint.core.hardware.infra_hardware import InfraHardware
@@ -143,7 +142,6 @@ class Storage(InfraHardware):
             f"User defined number of instances").to(u.concurrent)
         self.full_cumulative_storage_need = EmptyExplainableObject()
         self.full_cumulative_storage_need_per_job = ExplainableObjectDict()
-        self.shared_storage_per_job = EmptyExplainableObject()
 
     @property
     def server(self) -> Optional["ServerBase"]:
@@ -158,10 +156,7 @@ class Storage(InfraHardware):
 
     calculated_attributes = (
         ["carbon_footprint_fabrication", "full_cumulative_storage_need_per_job", "full_cumulative_storage_need"]
-        + InfraHardware.calculated_attributes
-        + ["shared_storage_per_job"]
-        + [attr for attr in ModelingObject.calculated_attributes
-           if attr not in {"usage_impact_repartition_weights"}])
+        + InfraHardware.calculated_attributes)
 
     @property
     def jobs(self) -> List["JobBase"]:
@@ -258,36 +253,6 @@ class Storage(InfraHardware):
     def update_instances_energy(self):
         """Hourly energy consumed by storage instances. Currently always empty: storage operating energy is folded into the hosting server's energy footprint rather than tracked separately."""
         self.instances_energy = EmptyExplainableObject()
-
-    def update_shared_storage_per_job(self):
-        """Per-job share of capacity not driven by job-specific cumulative needs (unused capacity + base storage need), divided evenly across jobs. Used as the shared term when attributing storage fabrication footprint to jobs."""
-        if not self.jobs:
-            self.shared_storage_per_job = EmptyExplainableObject()
-            return
-        unused_storage = (self.nb_of_instances * self.storage_capacity - self.full_cumulative_storage_need).to(u.GB_stored)
-        self.shared_storage_per_job = (
-            (unused_storage + self.base_storage_need)
-            / ExplainableQuantity(len(self.jobs) * u.dimensionless, "Number of jobs")
-        ).to(u.GB_stored).set_label("Shared storage per job")
-
-    def update_dict_element_in_fabrication_impact_repartition_weights(self, job: "JobBase"):
-        self.fabrication_impact_repartition_weights[job] = (
-            self.full_cumulative_storage_need_per_job[job] + self.shared_storage_per_job
-        ).set_label(f"{job.name} fabrication weight in impact repartition")
-
-    def update_fabrication_impact_repartition_weights(self):
-        """Per-job weights used to attribute storage fabrication footprint to jobs, equal to each job's cumulative storage plus an even share of the unused capacity and base storage need."""
-        self.fabrication_impact_repartition_weights = ExplainableObjectDict()
-        for job in self.jobs:
-            self.update_dict_element_in_fabrication_impact_repartition_weights(job)
-
-    @property
-    def usage_impact_repartition_weights(self):
-        if isinstance(self.energy_footprint, EmptyExplainableObject):
-            return ExplainableObjectDict()
-        raise NotImplementedError(
-            f"Usage impact repartition is not implemented for {self.name} when Storage has a non-empty energy footprint."
-        )
 
     # --- Attribution-only stream split and atom builder (lazy cached properties, consumed only by the
     # attribution layer, never by the eager calculated-attribute graph) ---

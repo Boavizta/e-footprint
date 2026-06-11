@@ -206,6 +206,33 @@ class TestAttributionFold(TestCase):
         finally:
             self.device.power = initial_power
 
+    def test_attributed_footprint_properties_delegate_to_footprint_per_node(self):
+        """Test that the kept attributed_* convenience properties are exact delegations: each object's value
+        equals its node entry in footprint_per_node at its own class level, for each phase."""
+        for obj, level in ((self.device, Device), (self.step_a, UsageJourneyStep), (self.journey, UsageJourney),
+                           (self.up1, UsagePattern), (self.low_ci_country, Country)):
+            assert_hourly_quantities_equal(
+                self, footprint_per_node(self.system, level, LifeCyclePhases.USAGE)[obj],
+                obj.attributed_energy_footprint, msg=f"{obj.name} energy delegation mismatch")
+            assert_hourly_quantities_equal(
+                self, footprint_per_node(self.system, level, LifeCyclePhases.MANUFACTURING)[obj],
+                obj.attributed_fabrication_footprint, msg=f"{obj.name} fabrication delegation mismatch")
+
+    def test_attributed_footprint_properties_flush_on_modeling_update(self):
+        """Test that a ModelingUpdate flushes the materialized attributed_* cached properties so the next
+        read reflects the new inputs."""
+        initial_power = self.device.power
+        _ = self.up1.attributed_energy_footprint
+        self.assertIn("attributed_energy_footprint", self.up1.__dict__)
+        try:
+            self.device.power = SourceValue(100 * u.W)
+            self.assertNotIn("attributed_energy_footprint", self.up1.__dict__)
+            assert_hourly_quantities_equal(
+                self, footprint_per_node(self.system, UsagePattern, LifeCyclePhases.USAGE)[self.up1],
+                self.up1.attributed_energy_footprint)
+        finally:
+            self.device.power = initial_power
+
     def test_initial_build_flushes_cached_properties_materialized_before_system_creation(self):
         """Test that a cached property materialized on a not-yet-linked object is flushed by the initial
         build, so post-build reads see the full graph."""

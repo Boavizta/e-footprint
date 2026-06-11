@@ -14,11 +14,13 @@ from tests.utils import create_mod_obj_mock
 
 class ModelingObjectForContainerTest(ModelingObject):
     default_values = {}
+    calculated_attributes = ["calculated_dict"]
 
     def __init__(self, name):
         super().__init__(name)
         self.attr_name = None
         self.other_attr = None
+        self.calculated_dict = ExplainableObjectDict()
 
     @property
     def modeling_objects_whose_attributes_depend_directly_on_me(self):
@@ -247,11 +249,11 @@ class TestExplainableObjectDictStructuralContext(unittest.TestCase):
         impacted_object = ModelingObjectForContainerTest("impacted_object")
         owner = ModelingObjectForContainerTest("owner_with_calculated_dict")
 
-        owner.usage_impact_repartition = ExplainableObjectDict({
-            impacted_object: SourceValue(1 * u.concurrent, label="impact repartition")})
+        owner.calculated_dict = ExplainableObjectDict({
+            impacted_object: SourceValue(1 * u.concurrent, label="calculated value")})
 
         self.assertEqual([], impacted_object.modeling_obj_containers)
-        self.assertEqual([owner.usage_impact_repartition], impacted_object.explainable_object_dicts_containers)
+        self.assertEqual([owner.calculated_dict], impacted_object.explainable_object_dicts_containers)
 
     def test_replacing_structural_dict_updates_contextual_containers(self):
         old_child = ModelingObjectForContainerTest("old_child")

@@ -10,8 +10,6 @@ from collections import defaultdict
 from IPython.display import HTML
 
 from efootprint.abstract_modeling_classes.explainable_quantity import ExplainableQuantity
-from efootprint.abstract_modeling_classes.explainable_hourly_quantities import (
-    ExplainableHourlyQuantities, divide_or_fallback)
 from efootprint.abstract_modeling_classes.empty_explainable_object import EmptyExplainableObject
 from efootprint.abstract_modeling_classes.utils import css_escape
 from efootprint.logger import logger
@@ -158,7 +156,6 @@ def optimize_mod_objs_computation_chain(mod_objs_computation_chain):
 class ModelingObject(metaclass=ABCAfterInitMeta):
     classes_outside_init_params_needed_for_generating_from_json = []
     _use_name_as_id: bool = False
-    _impact_repartition_phases = ("fabrication", "usage")
 
     @classmethod
     def from_json_dict(cls, object_json_dict: dict, flat_obj_dict: dict, set_trigger_modeling_updates_to_true=False,
@@ -321,24 +318,11 @@ class ModelingObject(metaclass=ABCAfterInitMeta):
         return []
 
     def __init__(self, name):
-        from efootprint.abstract_modeling_classes.explainable_object_dict import ExplainableObjectDict
-
         self.trigger_modeling_updates = False
         self.name = name
         self.id = css_escape(name) if ModelingObject._use_name_as_id else str(uuid.uuid4())[:12]
         self.contextual_modeling_obj_containers = []
         self.explainable_object_dicts_containers = []
-
-        for phase in self._impact_repartition_phases:
-            weights_attr = f"{phase}_impact_repartition_weights"
-            weight_sum_attr = f"{phase}_impact_repartition_weight_sum"
-            repartition_attr = f"{phase}_impact_repartition"
-            if weights_attr in self.calculated_attributes:
-                self.__setattr__(weights_attr, ExplainableObjectDict(), check_input_validity=False)
-            if weight_sum_attr in self.calculated_attributes:
-                self.__setattr__(weight_sum_attr, EmptyExplainableObject(), check_input_validity=False)
-            if repartition_attr in self.calculated_attributes:
-                self.__setattr__(repartition_attr, ExplainableObjectDict(), check_input_validity=False)
 
     @property
     def readable_id(self):
@@ -460,14 +444,7 @@ class ModelingObject(metaclass=ABCAfterInitMeta):
     def modeling_objects_whose_attributes_depend_directly_on_me(self) -> List[Type["ModelingObject"]]:
         pass
 
-    calculated_attributes: List[str] = [
-        "fabrication_impact_repartition_weights",
-        "fabrication_impact_repartition_weight_sum",
-        "fabrication_impact_repartition",
-        "usage_impact_repartition_weights",
-        "usage_impact_repartition_weight_sum",
-        "usage_impact_repartition",
-    ]
+    calculated_attributes: List[str] = []
 
     @property
     def validation_attributes(self) -> List[str]:
@@ -810,317 +787,20 @@ class ModelingObject(metaclass=ABCAfterInitMeta):
             value * u.dimensionless, label=f"Number of occurrences of {self.name} in {key.name}")
             for key, value in output_dict.items()})
 
-    def _compute_default_impact_repartition_weight(
-            self, modeling_object: "ModelingObject", phase: str):
-        weight = (sum([val for val in getattr(modeling_object, f"{phase}_impact_repartition_weights").values()],
-                      start=EmptyExplainableObject())
-                * self.nb_of_occurrences_per_container[modeling_object]).set_label(
-            f"{modeling_object.name} weight in impact repartition")
-        return weight
+    def _attributed_footprint(self, phase: LifeCyclePhases):
+        """This object's node total in the attribution fold for a life-cycle phase: the sum over the object's
+        systems of its entry in ``attribution.footprint_per_node`` at the object's own class level."""
+        from efootprint.core.attribution import footprint_per_node
+        total = EmptyExplainableObject()
+        for system in self.systems:
+            total += footprint_per_node(system, type(self), phase).get(self, EmptyExplainableObject())
 
-    def update_dict_element_in_fabrication_impact_repartition_weights(self, modeling_object: "ModelingObject"):
-        self.fabrication_impact_repartition_weights[modeling_object] = self._compute_default_impact_repartition_weight(
-            modeling_object, "fabrication")
-
-    def update_fabrication_impact_repartition_weights(self):
-        """Weights used to attribute fabrication-phase emissions of upstream impact sources to each container of this object."""
-        from efootprint.abstract_modeling_classes.explainable_object_dict import ExplainableObjectDict
-        self.fabrication_impact_repartition_weights = ExplainableObjectDict()
-        for modeling_object in self.modeling_obj_containers:
-            self.update_dict_element_in_fabrication_impact_repartition_weights(modeling_object)
-
-    def update_dict_element_in_usage_impact_repartition_weights(self, modeling_object: "ModelingObject"):
-        self.usage_impact_repartition_weights[modeling_object] = self._compute_default_impact_repartition_weight(
-            modeling_object, "usage")
-
-    def update_usage_impact_repartition_weights(self):
-        """Weights used to attribute usage-phase emissions of upstream impact sources to each container of this object."""
-        from efootprint.abstract_modeling_classes.explainable_object_dict import ExplainableObjectDict
-        self.usage_impact_repartition_weights = ExplainableObjectDict()
-        for modeling_object in self.modeling_obj_containers:
-            self.update_dict_element_in_usage_impact_repartition_weights(modeling_object)
-
-    def _update_impact_repartition_weight_sum(self, phase: str):
-        impact_repartition_weight_sum = sum(
-            getattr(self, f"{phase}_impact_repartition_weights").values(), start=EmptyExplainableObject())
-        setattr(
-            self,
-            f"{phase}_impact_repartition_weight_sum",
-            impact_repartition_weight_sum.set_label(f"{phase.capitalize()} impact repartition weights sum"),
-        )
-
-    def update_fabrication_impact_repartition_weight_sum(self):
-        """Sum of fabrication impact repartition weights, used as the denominator when normalising into per-container shares."""
-        self._update_impact_repartition_weight_sum("fabrication")
-
-    def update_usage_impact_repartition_weight_sum(self):
-        """Sum of usage impact repartition weights, used as the denominator when normalising into per-container shares."""
-        self._update_impact_repartition_weight_sum("usage")
-
-    def _update_dict_element_in_impact_repartition(self, phase: str, modeling_obj: "ModelingObject"):
-        impact_repartition_weight_sum = getattr(self, f"{phase}_impact_repartition_weight_sum")
-        if ((isinstance(impact_repartition_weight_sum, ExplainableQuantity)
-                or isinstance(impact_repartition_weight_sum, EmptyExplainableObject))
-                and impact_repartition_weight_sum.magnitude == 0):
-            repartition_value = EmptyExplainableObject()
-        elif (isinstance(impact_repartition_weight_sum, ExplainableHourlyQuantities)
-              and impact_repartition_weight_sum.sum().magnitude == 0):
-            repartition_value = EmptyExplainableObject()
-        else:
-            # When weight_sum is zero at a given hour, every sibling weight is also zero at that hour. The
-            # natural fallback is equal-share (1.0 per sibling) so that downstream attribution still distributes
-            # whatever upstream footprint arrives, rather than dropping it on the floor.
-            weight = getattr(self, f"{phase}_impact_repartition_weights")[modeling_obj]
-            repartition_value = divide_or_fallback(weight, impact_repartition_weight_sum, fallback=1).to(
-                u.concurrent).set_label(f"{phase} impact attribution to {modeling_obj.name}")
-
-        getattr(self, f"{phase}_impact_repartition")[modeling_obj] = repartition_value
-        modeling_obj.invalidate_impact_repartition_cache(recursive=True)
-        if self.is_impact_source:
-            # For impact sources, attributed_*_footprint_per_source caches the leaf
-            # `self.energy_footprint` / `self.instances_fabrication_footprint` directly. A
-            # repartition rewrite here typically means the source's own footprint just recomputed,
-            # so the cache is stale; the downstream walk above only flushes `modeling_obj`.
-            # Non-source intermediates derive their cache from upstream containers, not from their
-            # own outgoing repartition, so skip them to avoid invalidating still-valid caches.
-            self.invalidate_impact_repartition_cache(recursive=False)
-
-    def update_dict_element_in_fabrication_impact_repartition(self, modeling_obj: "ModelingObject"):
-        self._update_dict_element_in_impact_repartition("fabrication", modeling_obj)
-
-    def update_dict_element_in_usage_impact_repartition(self, modeling_obj: "ModelingObject"):
-        self._update_dict_element_in_impact_repartition("usage", modeling_obj)
-
-    def _update_impact_repartition(self, phase: str):
-        from efootprint.abstract_modeling_classes.explainable_object_dict import ExplainableObjectDict
-        current_impact_repartition = getattr(self, f"{phase}_impact_repartition", None)
-        old_impacted_objects = set(current_impact_repartition.keys()) if isinstance(current_impact_repartition, dict) else set()
-        repartition_attr_name = f"{phase}_impact_repartition"
-        weights = getattr(self, f"{phase}_impact_repartition_weights")
-        setattr(self, repartition_attr_name, ExplainableObjectDict())
-        for modeling_obj in weights:
-            getattr(self, f"update_dict_element_in_{phase}_impact_repartition")(modeling_obj)
-        # Per-element calls above already invalidated current keys; only the dropped keys still need flushing.
-        removed_objects = old_impacted_objects - set(getattr(self, repartition_attr_name).keys())
-        for modeling_obj in removed_objects:
-            if isinstance(modeling_obj, ModelingObject):
-                modeling_obj.invalidate_impact_repartition_cache(recursive=True)
-
-    def update_fabrication_impact_repartition(self):
-        """Normalised share of fabrication-phase emissions that this object attributes to each container."""
-        self._update_impact_repartition("fabrication")
-
-    def update_usage_impact_repartition(self):
-        """Normalised share of usage-phase emissions that this object attributes to each container."""
-        self._update_impact_repartition("usage")
-
-    def invalidate_impact_repartition_cache(self, recursive=False, visited=None):
-        visited = set() if visited is None else visited
-        if self.id in visited:
-            return
-        visited.add(self.id)
-
-        self.flush_cached_properties()
-
-        if recursive:
-            for phase in self._impact_repartition_phases:
-                impact_repartition = getattr(self, f"{phase}_impact_repartition", None)
-                if not isinstance(impact_repartition, dict):
-                    continue
-                for modeling_obj in impact_repartition:
-                    if isinstance(modeling_obj, ModelingObject):
-                        modeling_obj.invalidate_impact_repartition_cache(recursive=True, visited=visited)
-
-    @property
-    def is_impact_source(self):
-        return hasattr(self, "instances_fabrication_footprint") or hasattr(self, "energy_footprint")
-
-    @property
-    def attributed_footprint_per_source(self):
-        return {
-            LifeCyclePhases.MANUFACTURING: self.attributed_fabrication_footprint_per_source,
-            LifeCyclePhases.USAGE: self.attributed_energy_footprint_per_source
-        }
-            
-    @cached_property
-    def attributed_fabrication_footprint_per_source(self):
-        from efootprint.abstract_modeling_classes.explainable_object_dict import ExplainableObjectDict
-        attributed_fabrication_footprint_per_source = ExplainableObjectDict()
-        if self.is_impact_source:
-            attributed_fabrication_footprint_per_source[self] = self.instances_fabrication_footprint
-        else:
-            for expl_dict in self.explainable_object_dicts_containers:
-                if expl_dict.attr_name_in_mod_obj_container == "fabrication_impact_repartition":
-                    attributed_fabrication_footprint_per_source[expl_dict.modeling_obj_container] = (
-                            expl_dict[self] * expl_dict.modeling_obj_container.attributed_fabrication_footprint
-                    ).set_label(f"Fabrication footprint due to {expl_dict.modeling_obj_container.name}")
-                
-        return attributed_fabrication_footprint_per_source
+        return total.to(u.kg)
 
     @cached_property
     def attributed_fabrication_footprint(self):
-        attributed_fabrication_footprint = sum(
-            [val for val in self.attributed_fabrication_footprint_per_source.values()], start=EmptyExplainableObject())
-        
-        return attributed_fabrication_footprint.to(u.kg).set_label("Attributed fabrication footprint")
-
-    @cached_property
-    def attributed_energy_footprint_per_source(self):
-        from efootprint.abstract_modeling_classes.explainable_object_dict import ExplainableObjectDict
-        attributed_energy_footprint_per_source = ExplainableObjectDict()
-        if self.is_impact_source:
-            attributed_energy_footprint_per_source[self] = self.energy_footprint
-        else:
-            for expl_dict in self.explainable_object_dicts_containers:
-                if expl_dict.attr_name_in_mod_obj_container == "usage_impact_repartition":
-                    attributed_energy_footprint_per_source[expl_dict.modeling_obj_container] = (
-                            expl_dict[self] * expl_dict.modeling_obj_container.attributed_energy_footprint
-                    ).set_label(f"Energy footprint due to {expl_dict.modeling_obj_container.name}")
-
-        return attributed_energy_footprint_per_source
+        return self._attributed_footprint(LifeCyclePhases.MANUFACTURING).set_label("Attributed fabrication footprint")
 
     @cached_property
     def attributed_energy_footprint(self):
-        attributed_energy_footprint = sum(
-            [val for val in self.attributed_energy_footprint_per_source.values()], start=EmptyExplainableObject())
-
-        return attributed_energy_footprint.to(u.kg).set_label("Attributed energy footprint")
-
-    def attributed_fabrication_footprint_per_source_resolved(
-            self, skipped_object_types: tuple = (), excluded_object_types: tuple = ()):
-        """Per-source fabrication attribution after expanding skipped intermediates and dropping excluded subtrees.
-
-        Default args reproduce ``attributed_fabrication_footprint_per_source`` exactly. Skipped intermediates are
-        traversed through and their resolved children are rescaled to preserve the parent's incoming attribution;
-        excluded subtrees are removed and the remaining attribution is preserved on surviving descendants.
-        """
-        if not skipped_object_types and not excluded_object_types:
-            return self.attributed_fabrication_footprint_per_source
-        return resolve_attributed_footprint_per_source(
-            self, LifeCyclePhases.MANUFACTURING, skipped_object_types, excluded_object_types)
-
-    def attributed_energy_footprint_per_source_resolved(
-            self, skipped_object_types: tuple = (), excluded_object_types: tuple = ()):
-        """Per-source energy attribution after expanding skipped intermediates and dropping excluded subtrees.
-
-        Default args reproduce ``attributed_energy_footprint_per_source`` exactly. See
-        :meth:`attributed_fabrication_footprint_per_source_resolved` for the resolution semantics.
-        """
-        if not skipped_object_types and not excluded_object_types:
-            return self.attributed_energy_footprint_per_source
-        return resolve_attributed_footprint_per_source(
-            self, LifeCyclePhases.USAGE, skipped_object_types, excluded_object_types)
-
-
-def _matches_configured_class(obj, configured_classes) -> bool:
-    return any(isinstance(obj, cls) for cls in configured_classes)
-
-
-def _is_positive_attribution_value(value) -> bool:
-    if isinstance(value, EmptyExplainableObject):
-        return False
-    if isinstance(value, ExplainableHourlyQuantities):
-        return float(value.sum().magnitude) > 0
-    return float(value.magnitude) > 0
-
-
-def _sum_values(values):
-    """Sum without forcing an ``EmptyExplainableObject`` start; works for any value type supporting ``+``."""
-    total = None
-    for value in values:
-        if isinstance(value, EmptyExplainableObject):
-            continue
-        total = value if total is None else total + value
-    return total if total is not None else EmptyExplainableObject()
-
-
-def _impact_source_breakdown_for(source, phase):
-    """Return ``(breakdown_dict, source_phase_footprint)`` for an impact source with a breakdown, else ``(None, None)``."""
-    breakdown_by_source = getattr(source, "footprint_breakdown_by_source", None)
-    if not isinstance(breakdown_by_source, dict):
-        return None, None
-    breakdown = breakdown_by_source.get(phase, None)
-    if not breakdown:
-        return None, None
-    source_phase_footprint = (
-        source.instances_fabrication_footprint if phase == LifeCyclePhases.MANUFACTURING
-        else source.energy_footprint)
-    return breakdown, source_phase_footprint
-
-
-def resolve_attributed_footprint_per_source(obj, phase, skipped_object_types=(), excluded_object_types=()):
-    """Flatten ``obj.attributed_footprint_per_source[phase]`` against ``skipped`` and ``excluded`` class lists.
-
-    Skipped non-impact-source intermediates are replaced by their own resolved sources, rescaled so the parent's
-    incoming value is conserved. Skipped impact sources with a ``footprint_breakdown_by_source`` are replaced by
-    their breakdown children, rescaled to the parent's incoming flow. Excluded sources (and their subtrees) are
-    removed; remaining values are recomputed from non-excluded leaves so they reflect only the surviving
-    attribution. Returns a plain ``dict`` so callers operating on duck-typed values (Sankey test doubles) work
-    uniformly with real ``ExplainableObject`` values.
-    """
-    return _resolve_recursive(obj, phase, skipped_object_types, excluded_object_types)
-
-
-def _resolve_recursive(obj, phase, skipped_object_types, excluded_object_types):
-    # The attribution graph follows the modeling-object DAG, so no cycle guard is needed: each descent
-    # eventually terminates at impact sources (which have no further `attributed_footprint_per_source`
-    # to expand) or at nodes with empty attribution.
-    result: dict = {}
-    for source, value in obj.attributed_footprint_per_source[phase].items():
-        # Excluded sources (and the entire subtree below them) disappear from the result.
-        if _matches_configured_class(source, excluded_object_types):
-            continue
-
-        # For non-impact-source intermediates with any skip/exclude rules active, resolve the subtree
-        # before deciding what to do with this entry. When exclusions are active, the post-exclusion
-        # sum *replaces* the parent-recorded `value` — that way the recursive walk is the single source
-        # of truth for the surviving attribution and we don't need a second pass to recompute totals.
-        sub = None
-        if not source.is_impact_source and (skipped_object_types or excluded_object_types):
-            sub = _resolve_recursive(source, phase, skipped_object_types, excluded_object_types)
-            if excluded_object_types:
-                value = _sum_values(sub.values()) if sub else EmptyExplainableObject()
-
-        if not _is_positive_attribution_value(value):
-            continue
-
-        # Skipped sources are dissolved: their contribution flows through to their children, rescaled
-        # so the parent's incoming `value` is conserved across the dissolution. Impact sources are
-        # dissolved into their own breakdown; non-impact intermediates are dissolved into `sub`.
-        if _matches_configured_class(source, skipped_object_types):
-            if source.is_impact_source:
-                breakdown, source_phase_footprint = _impact_source_breakdown_for(source, phase)
-                if breakdown is None or not _is_positive_attribution_value(source_phase_footprint):
-                    continue
-                # Breakdown children that are themselves skipped or excluded are dropped here rather
-                # than recursed into — the breakdown is a flat replacement, not a new node to resolve.
-                children = {
-                    child: child_value for child, child_value in breakdown.items()
-                    if not _matches_configured_class(child, excluded_object_types)
-                    and not _matches_configured_class(child, skipped_object_types)}
-                _merge_rescaled(result, children, incoming=value, total=source_phase_footprint)
-            elif sub:
-                sub_total = _sum_values(sub.values())
-                if _is_positive_attribution_value(sub_total):
-                    _merge_rescaled(result, sub, incoming=value, total=sub_total)
-            continue
-
-        result[source] = value
-    return result
-
-
-def _merge_rescaled(result, children, incoming, total):
-    """Rescale ``children`` so they sum to ``incoming`` (instead of ``total``) and merge into ``result``.
-
-    Used when a node is dissolved into its children: the children's raw values were measured against
-    the dissolved node's own footprint ``total``, but only ``incoming`` actually reached this branch.
-    The ``incoming / total`` factor conserves the parent's contribution across the dissolution.
-    Hours where ``total == 0`` carry no flow at that hour, so the rescaled contribution is 0 there
-    (handled by ``fallback=0``).
-    """
-    scale = divide_or_fallback(incoming, total, fallback=0)
-    for child, child_value in children.items():
-        contribution = child_value * scale
-        if not _is_positive_attribution_value(contribution):
-            continue
-        result[child] = (result[child] + contribution) if child in result else contribution
+        return self._attributed_footprint(LifeCyclePhases.USAGE).set_label("Attributed energy footprint")

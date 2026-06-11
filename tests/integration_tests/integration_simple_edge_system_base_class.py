@@ -593,25 +593,16 @@ class IntegrationTestSimpleEdgeSystemBaseClass(IntegrationTestBaseClass):
             self.system.edge_usage_patterns.append(edge_usage_pattern)
 
             self.assertIn(new_country, self.system.countries)
-            self.assertGreater(len(new_country.fabrication_impact_repartition_weights), 0,
-                               "New country's fabrication_impact_repartition_weights should be computed after append")
-            self.assertGreater(len(new_country.usage_impact_repartition_weights), 0,
-                               "New country's usage_impact_repartition_weights should be computed after append")
 
     def run_test_remove_edge_usage_pattern_clears_old_country(self):
-        """Test that removing an EdgeUsagePattern recomputes the old Country's attributes."""
+        """Test that removing an EdgeUsagePattern detaches the old Country from the system."""
         old_country = self.edge_usage_pattern.country
-        self.assertGreater(len(old_country.fabrication_impact_repartition_weights), 0)
 
         with self.cleanup_stack(verify_total_footprint_changed_before_cleanup=True) as cleanup:
             cleanup.callback(setattr, self.system, "edge_usage_patterns", self.system.edge_usage_patterns)
             self.system.edge_usage_patterns = []
 
             self.assertNotIn(old_country, self.system.countries)
-            self.assertEqual(len(old_country.fabrication_impact_repartition_weights), 0,
-                             "Old country's fabrication_impact_repartition_weights should be cleared after removal")
-            self.assertEqual(len(old_country.usage_impact_repartition_weights), 0,
-                             "Old country's usage_impact_repartition_weights should be cleared after removal")
 
     def run_test_check_all_calculus_graph_dependencies_consistencies(self):
         check_all_calculus_graph_dependencies_consistencies(self.system)

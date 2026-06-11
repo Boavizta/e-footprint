@@ -6,6 +6,7 @@ import numpy as np
 import pytz
 from pint import Quantity
 
+from efootprint.abstract_modeling_classes.empty_explainable_object import EmptyExplainableObject
 from efootprint.abstract_modeling_classes.explainable_object_dict import ExplainableObjectDict
 from efootprint.abstract_modeling_classes.explainable_timezone import ExplainableTimezone
 from efootprint.abstract_modeling_classes.source_objects import SourceRecurrentValues, SourceValue
@@ -109,37 +110,6 @@ class TestNetwork(TestCase):
 
         self.assertTrue(np.allclose(physics_fn_footprint.magnitude, per_job_footprint.magnitude))
 
-    def test_energy_footprint_per_usage_pattern_uses_country_weighted_network_energy(self):
-        """Test per-usage-pattern energy footprint sums each pattern's jobs weighted by its country's carbon intensity."""
-        usage_pattern_fr = create_mod_obj_mock(UsagePattern, name="Usage Pattern FR")
-        usage_pattern_fr.country = MagicMock()
-        usage_pattern_fr.country.average_carbon_intensity = SourceValue(100 * u.g / u.kWh)
-        usage_pattern_us = create_mod_obj_mock(UsagePattern, name="Usage Pattern US")
-        usage_pattern_us.country = MagicMock()
-        usage_pattern_us.country.average_carbon_intensity = SourceValue(200 * u.g / u.kWh)
-
-        job_1 = create_mod_obj_mock(JobBase, name="Job 1")
-        job_1.hourly_data_transferred_per_usage_pattern = {
-            usage_pattern_fr: create_source_hourly_values_from_list([2], pint_unit=u.GB),
-            usage_pattern_us: create_source_hourly_values_from_list([1], pint_unit=u.GB),
-        }
-        job_2 = create_mod_obj_mock(JobBase, name="Job 2")
-        job_2.hourly_data_transferred_per_usage_pattern = {
-            usage_pattern_fr: create_source_hourly_values_from_list([3], pint_unit=u.GB),
-        }
-        usage_pattern_fr.jobs = [job_1, job_2]
-        usage_pattern_us.jobs = [job_1]
-
-        with patch.object(Network, "usage_patterns", new_callable=PropertyMock) as mock_ups, \
-                patch.object(self.network, "bandwidth_energy_intensity", SourceValue(1 * u.kWh / u.GB)):
-            mock_ups.return_value = [usage_pattern_fr, usage_pattern_us]
-
-            energy_footprint_per_usage_pattern = self.network.energy_footprint_per_usage_pattern
-
-        self.assertTrue(np.allclose([0.5], energy_footprint_per_usage_pattern[usage_pattern_fr].magnitude))
-        self.assertTrue(np.allclose([0.2], energy_footprint_per_usage_pattern[usage_pattern_us].magnitude))
-        self.assertEqual(u.kg, energy_footprint_per_usage_pattern[usage_pattern_fr].unit)
-
     def test_update_energy_footprint_sums_precomputed_per_job_values(self):
         job_1 = create_mod_obj_mock(JobBase, name="Job 1")
         job_2 = create_mod_obj_mock(JobBase, name="Job 2")
@@ -152,39 +122,6 @@ class TestNetwork(TestCase):
 
         self.assertEqual(u.kg, self.network.energy_footprint.unit)
         self.assertTrue(np.allclose([0.5, 0.5], self.network.energy_footprint.magnitude))
-
-    def test_update_fabrication_impact_repartition_weights_returns_empty_dict_without_fabrication_footprint(self):
-        usage_pattern = create_mod_obj_mock(UsagePattern, name="Usage Pattern")
-        job_1 = create_mod_obj_mock(JobBase, name="Job 1")
-        job_2 = create_mod_obj_mock(JobBase, name="Job 2")
-        usage_pattern.jobs = [job_1, job_2]
-
-        with patch.object(Network, "usage_patterns", new_callable=PropertyMock) as mock_ups:
-            mock_ups.return_value = [usage_pattern]
-
-            self.network.update_fabrication_impact_repartition_weights()
-
-        self.assertEqual({}, self.network.fabrication_impact_repartition_weights)
-
-    def test_update_fabrication_impact_repartition_weights_raises_if_network_fabrication_is_added_without_logic(self):
-        usage_pattern = create_mod_obj_mock(UsagePattern, name="Usage Pattern")
-        job = create_mod_obj_mock(JobBase, name="Job 1")
-        usage_pattern.jobs = [job]
-        self.network.instances_fabrication_footprint = SourceValue(1 * u.kg)
-
-        with patch.object(Network, "usage_patterns", new_callable=PropertyMock) as mock_ups:
-            mock_ups.return_value = [usage_pattern]
-
-            with self.assertRaises(NotImplementedError):
-                self.network.update_fabrication_impact_repartition_weights()
-
-    def test_usage_impact_repartition_weights_reuses_energy_footprint_per_job(self):
-        job = create_mod_obj_mock(JobBase, name="Job 1")
-        self.network.energy_footprint_per_job = ExplainableObjectDict({
-            job: create_source_hourly_values_from_list([0.2], pint_unit=u.kg)
-        })
-
-        self.assertIs(self.network.energy_footprint_per_job, self.network.usage_impact_repartition_weights)
 
 
 class TestNetworkAttributionAtoms(TestCase):
@@ -244,12 +181,18 @@ class TestNetworkAttributionAtoms(TestCase):
         assert_source_atoms_conserve(self, self.network)
 
     def test_network_atoms_regroup_per_usage_pattern(self):
-        """Test that Σ atoms over each pattern's cells recovers energy_footprint_per_usage_pattern."""
+        """Test that Σ atoms over each pattern's cells recovers the pattern's job traffic converted by the
+        physics fn with the pattern's own carbon intensity."""
         usage_atoms = list(atoms_of(self.network, LifeCyclePhases.USAGE))
         for usage_pattern in (self.low_ci_up, self.high_ci_up, self.edge_up):
+            expected = sum(
+                (self.network.energy_footprint_for_data_volume_and_usage_pattern(
+                    job.hourly_data_transferred_per_usage_pattern[usage_pattern], usage_pattern)
+                 for job in usage_pattern.jobs
+                 if usage_pattern in job.hourly_data_transferred_per_usage_pattern),
+                start=EmptyExplainableObject()).to(u.kg)
             assert_hourly_quantities_equal(
-                self, self.network.energy_footprint_per_usage_pattern[usage_pattern],
-                sum_atom_values(atom for atom in usage_atoms if atom.up == usage_pattern))
+                self, expected, sum_atom_values(atom for atom in usage_atoms if atom.up == usage_pattern))
 
     def test_per_cell_carbon_intensity_never_blended(self):
         """Test that two patterns with identical traffic but a ×10 carbon-intensity ratio carry a ×10 atom

@@ -332,73 +332,6 @@ class TestServer(TestCase):
         self.assertAlmostEqual(40, service_total_job_volumes[service_a].value.magnitude)
         self.assertAlmostEqual(5, service_total_job_volumes[service_b].value.magnitude)
 
-    def test_update_job_repartition_weights_direct_server_job(self):
-        """Test direct-server job repartition weight: (compute/server_compute + ram/server_ram) * occurrences."""
-        job = create_mod_obj_mock(DirectServerJob, "Direct job",
-                                  compute_needed=SourceValue(2 * u.cpu_core),
-                                  ram_needed=SourceValue(4 * u.GB_ram),
-                                  server=self.server_base,
-                                  hourly_avg_occurrences_across_usage_patterns=SourceValue(10 * u.concurrent))
-
-        with patch.object(self.server_base, "compute", SourceValue(10 * u.cpu_core)), \
-                patch.object(self.server_base, "ram", SourceValue(20 * u.GB_ram)), \
-                patch.object(Server, "jobs", new_callable=PropertyMock) as mock_jobs:
-            mock_jobs.return_value = [job]
-            self.server_base.update_job_repartition_weights()
-
-        # weight = (2/10 + 4/20) * 10 = (0.2 + 0.2) * 10 = 4.0
-        self.assertAlmostEqual(4.0, self.server_base.job_repartition_weights[job].value.magnitude)
-
-    def test_update_job_repartition_weights_service_jobs(self):
-        """Test service-job repartition weight: base service consumption is distributed proportionally to job volumes."""
-        service = create_mod_obj_mock(Service, "Test service",
-                                      base_compute_consumption=SourceValue(2 * u.cpu_core),
-                                      base_ram_consumption=SourceValue(4 * u.GB_ram))
-
-        job1 = create_mod_obj_mock(ServiceJob, "Service job 1",
-                                   service=service, server=self.server_base,
-                                   compute_needed=SourceValue(1 * u.cpu_core),
-                                   ram_needed=SourceValue(2 * u.GB_ram),
-                                   hourly_avg_occurrences_across_usage_patterns=SourceValue(30 * u.concurrent))
-
-        job2 = create_mod_obj_mock(ServiceJob, "Service job 2",
-                                   service=service, server=self.server_base,
-                                   compute_needed=SourceValue(1 * u.cpu_core),
-                                   ram_needed=SourceValue(2 * u.GB_ram),
-                                   hourly_avg_occurrences_across_usage_patterns=SourceValue(10 * u.concurrent))
-
-        service.jobs = [job1, job2]
-        nb_of_instances = create_source_hourly_values_from_list([2], pint_unit=u.concurrent)
-
-        with patch.object(self.server_base, "compute", SourceValue(10 * u.cpu_core)), \
-                patch.object(self.server_base, "ram", SourceValue(20 * u.GB_ram)), \
-                patch.object(self.server_base, "nb_of_instances", nb_of_instances), \
-                patch.object(Server, "installed_services", new_callable=PropertyMock) as mock_services, \
-                patch.object(Server, "jobs", new_callable=PropertyMock) as mock_jobs:
-            mock_services.return_value = [service]
-            mock_jobs.return_value = [job1, job2]
-            self.server_base.update_job_repartition_weights()
-
-        # service_base_weight = (2/10 + 4/20) * 2 = 0.4 * 2 = 0.8
-        # total_volume = 30 + 10 = 40
-        # job1_volume_share = 30 / 40 = 0.75
-        # job1_own_weight = (1/10 + 2/20) * 30 = 0.2 * 30 = 6.0
-        # job1_weight = 0.8 * 0.75 + 6.0 = 0.6 + 6.0 = 6.6
-        self.assertAlmostEqual(6.6, self.server_base.job_repartition_weights[job1].value.magnitude, places=5)
-        # job2_volume_share = 10 / 40 = 0.25
-        # job2_own_weight = (1/10 + 2/20) * 10 = 0.2 * 10 = 2.0
-        # job2_weight = 0.8 * 0.25 + 2.0 = 0.2 + 2.0 = 2.2
-        self.assertAlmostEqual(2.2, self.server_base.job_repartition_weights[job2].value.magnitude, places=5)
-
-    def test_phase_impact_repartition_weights_reuse_job_repartition_weights(self):
-        job = create_mod_obj_mock(DirectServerJob, "Direct job")
-        self.server_base.job_repartition_weights = ExplainableObjectDict({
-            job: SourceValue(1 * u.concurrent)
-        })
-
-        self.assertIs(self.server_base.job_repartition_weights, self.server_base.fabrication_impact_repartition_weights)
-        self.assertIs(self.server_base.job_repartition_weights, self.server_base.usage_impact_repartition_weights)
-
     def test_binding_demand_per_job_charges_the_binding_resource_per_hour(self):
         """Test that a job's binding demand follows the server-level binding resource hour by hour: compute
         binds at hour 0, RAM binds at hour 1, so a RAM-heavy job on a compute-bound hour is charged compute."""
@@ -705,11 +638,11 @@ class TestServerAttributionAtoms(TestCase):
         self.assertEqual(0, dynamic_sum.magnitude[idle_hour])
 
 
-class TestJobRepartitionWeightsAfterAttributionQuery(TestCase):
-    def test_modeling_update_recomputes_service_job_weights_after_an_attribution_query(self):
+class TestAttributionCachesAfterModelingUpdate(TestCase):
+    def test_modeling_update_recomputes_lazy_attribution_caches_after_a_query(self):
         """Test the render-then-update sequence on a service model: materializing the lazy attribution caches
-        then changing an input must neither crash the ModelingUpdate nor leave stale service totals in the
-        eager job_repartition_weights."""
+        then changing an input must neither crash the ModelingUpdate nor leave stale binding demands in the
+        attribution layer."""
         server = Server.from_defaults(
             "stale weights server", server_type=ServerTypes.on_premise(),
             storage=Storage.from_defaults("stale weights storage"))
@@ -730,7 +663,6 @@ class TestJobRepartitionWeightsAfterAttributionQuery(TestCase):
 
         up.hourly_usage_journey_starts = create_source_hourly_values_from_list([100, 200], datetime(2026, 1, 1))
 
-        weight_after_update = server.job_repartition_weights[job].magnitude.copy()
+        demand_after_update = server.binding_demand_per_job[job].magnitude.copy()
         server.flush_cached_properties()
-        server.update_job_repartition_weights()
-        self.assertTrue(np.allclose(weight_after_update, server.job_repartition_weights[job].magnitude))
+        self.assertTrue(np.allclose(demand_after_update, server.binding_demand_per_job[job].magnitude))
