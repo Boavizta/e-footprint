@@ -5,22 +5,26 @@ the source's eager phase total, and — when a source splits a phase into severa
 (phase, stream) must equal that stream's footprint. Every source family's task reuses these helpers on its
 own fixture models; a missed cell or share fails them loudly.
 """
+from pint import Quantity
+
 from efootprint.abstract_modeling_classes.empty_explainable_object import EmptyExplainableObject
 from efootprint.core.attribution import atoms_of
 from efootprint.core.lifecycle_phases import LifeCyclePhases
 
 
 def assert_hourly_quantities_equal(test_case, expected, actual, msg=None):
-    """Relative-tolerance equality for explainable values — hourly series (compared via the max absolute
-    point-wise difference) or period-total scalars (e.g. node_totals_and_links values)."""
+    """Relative-tolerance equality for hourly explainable series (compared via the max absolute point-wise
+    difference), scalar explainables, or plain pint Quantities (e.g. node_totals_and_links values)."""
     if isinstance(expected, EmptyExplainableObject) and isinstance(actual, EmptyExplainableObject):
         return
     diff = expected - actual
     if isinstance(diff, EmptyExplainableObject):
         return
 
-    def max_abs_magnitude(explainable):
-        abs_value = explainable.abs()
+    def max_abs_magnitude(value):
+        if isinstance(value, Quantity):
+            return abs(value).magnitude
+        abs_value = value.abs()
         return (abs_value.max() if hasattr(abs_value, "max") else abs_value).magnitude
 
     reference = expected if not isinstance(expected, EmptyExplainableObject) else actual

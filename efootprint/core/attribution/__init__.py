@@ -113,10 +113,12 @@ def atoms(system, phase, exclude: tuple = ()):
 
 @flushed_memo
 def node_totals_and_links(system, phase, visible_levels: tuple, exclude: tuple = ()):
-    """TIER 2 — the Sankey feed: ``({node: total kg}, {(finer, coarser): total kg})`` for one life-cycle
-    phase. Values are period-total scalars, not hourly series: the Sankey renders sums only, so each atom
-    is reduced once here instead of carrying hourly arrays through every node and link of its chain (the
-    folds run cold on every render — see ``footprint_per_node`` for the hourly read).
+    """TIER 2 — the Sankey feed: ``({node: kg Quantity}, {(finer, coarser): kg Quantity})`` for one
+    life-cycle phase. Values are period-total pint Quantities in kg, not hourly explainables: the Sankey
+    renders sums only and reads magnitudes, so each atom is reduced to a kg float once (``.to(u.kg)``
+    raises on a non-mass atom value) and accumulated as plain floats — no explainable ancestry, no pint
+    arithmetic in the hot loop (the folds run cold on every render; see ``footprint_per_node`` for the
+    hourly explainable read).
 
     ``visible_levels`` is a tuple of ModelingObject classes; a chain node is visible iff it is an instance
     of one of them — skipping a column = leaving its classes out (adjacent visible nodes link directly).
@@ -126,13 +128,15 @@ def node_totals_and_links(system, phase, visible_levels: tuple, exclude: tuple =
     node_totals, links = {}, {}
     for atom in atoms(system, phase, exclude):
         chain = [node for node in atom.chain() if isinstance(node, visible_levels)]
-        value = atom.value.sum()
+        summed = atom.value.sum()
+        value = 0.0 if isinstance(summed, EmptyExplainableObject) else summed.value.to(u.kg).magnitude
         for node in chain:
-            node_totals[node] = node_totals.get(node, EmptyExplainableObject()) + value
+            node_totals[node] = node_totals.get(node, 0.0) + value
         for finer, coarser in pairwise(chain):
-            links[(finer, coarser)] = links.get((finer, coarser), EmptyExplainableObject()) + value
+            links[(finer, coarser)] = links.get((finer, coarser), 0.0) + value
 
-    return node_totals, links
+    return ({node: total * u.kg for node, total in node_totals.items()},
+            {pair: total * u.kg for pair, total in links.items()})
 
 
 @flushed_memo
