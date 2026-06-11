@@ -380,21 +380,12 @@ class TestModelingObject(unittest.TestCase):
 
         self.assertIsInstance(restored.calculated_dict, ExplainableObjectDict)
 
-    def test_to_json_skips_cached_attributed_footprint_properties(self):
-        source = CalculatedDictModelingObject("source")
-        _ = source.attributed_energy_footprint
-
-        json_output = source.to_json()
-
-        self.assertNotIn("attributed_energy_footprint", json_output)
-
     def test_class_cached_property_names_discovers_cached_properties_across_mro(self):
         """Test that auto-discovery finds cached properties declared on the base class and on subclasses."""
         names = class_cached_property_names(CachedPropertyModelingObject)
 
         self.assertIn("custom_lazy_projection", names)
-        for inherited_name in ("render_cache", "attributed_energy_footprint", "attributed_fabrication_footprint"):
-            self.assertIn(inherited_name, names)
+        self.assertIn("render_cache", names)
 
     def test_flush_cached_properties_pops_every_materialized_cached_property(self):
         """Test that flush_cached_properties clears subclass-declared cached properties and the render cache,

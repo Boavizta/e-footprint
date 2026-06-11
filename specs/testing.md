@@ -207,7 +207,7 @@ For attribution tests, prefer exercising real share logic instead of only trivia
 
 ## Defending against lazy-attribution bugs
 
-`total_footprint` only walks the impact-source side of the graph; the attribution layer (atom builders, folds, `attributed_*_footprint`, Sankey-facing paths) lives in `cached_property` methods and `render_cache` memos that fire only when something asks for them. Bugs in those paths stay invisible until a UI feature reaches in.
+`total_footprint` only walks the impact-source side of the graph; the attribution layer (atom builders, folds, `attribution.attributed_footprint`, Sankey-facing paths) lives in `cached_property` methods and `render_cache` memos that fire only when something asks for them. Bugs in those paths stay invisible until a UI feature reaches in.
 
 `IntegrationTestBaseClass.run_test_materialize_all_cached_properties` runs on every fixture (code + `_from_json`) and forces every `functools.cached_property` on every linked object to compute. A successfully-built system should always materialize cleanly. When adding a new `cached_property` to a modeling class, this test will cover it automatically — no per-feature assertion needed.
 

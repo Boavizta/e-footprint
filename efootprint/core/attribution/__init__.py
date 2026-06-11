@@ -27,6 +27,8 @@ from itertools import pairwise
 
 from efootprint.abstract_modeling_classes.empty_explainable_object import EmptyExplainableObject
 from efootprint.abstract_modeling_classes.modeling_object import ModelingObject
+from efootprint.constants.units import u
+from efootprint.core.lifecycle_phases import LifeCyclePhases
 
 
 @dataclass(frozen=True, eq=False)
@@ -158,3 +160,15 @@ def footprint_per_node_per_source(system, level, phase, exclude: tuple = ()):
             totals[key] = totals.get(key, EmptyExplainableObject()) + atom.value
 
     return totals
+
+
+def attributed_footprint(obj: ModelingObject, phase: LifeCyclePhases):
+    """The object's total attributed footprint for a life-cycle phase: its node entry in
+    ``footprint_per_node`` at the object's own class level, summed over the object's systems
+    (Empty when system-less)."""
+    total = EmptyExplainableObject()
+    for system in obj.systems:
+        total += footprint_per_node(system, type(obj), phase).get(obj, EmptyExplainableObject())
+    label = ("Attributed fabrication footprint" if phase is LifeCyclePhases.MANUFACTURING
+             else "Attributed energy footprint")
+    return total.to(u.kg).set_label(label)

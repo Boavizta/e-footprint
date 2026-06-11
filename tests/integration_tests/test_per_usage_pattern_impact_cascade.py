@@ -9,7 +9,7 @@ from efootprint.abstract_modeling_classes.explainable_timezone import Explainabl
 from efootprint.abstract_modeling_classes.source_objects import SourceRecurrentValues, SourceValue
 from efootprint.builders.time_builders import create_source_hourly_values_from_list
 from efootprint.constants.units import u
-from efootprint.core.attribution import footprint_per_node_per_source
+from efootprint.core.attribution import attributed_footprint, footprint_per_node_per_source
 from efootprint.core.country import Country
 from efootprint.core.hardware.device import Device
 from efootprint.core.hardware.edge.edge_device import EdgeDevice
@@ -123,14 +123,16 @@ class TestPerUsagePatternImpactCascade(TestCase):
         self.assertAlmostEqual(0.5, per_source[(server, low_carbon_pattern)].sum().to(u.kg).magnitude, places=6)
         self.assertAlmostEqual(0.5, per_source[(server, high_carbon_pattern)].sum().to(u.kg).magnitude, places=6)
         # Aggregate totals.
-        self.assertAlmostEqual(0.7, low_carbon_pattern.attributed_energy_footprint.sum().to(u.kg).magnitude, places=6)
-        self.assertAlmostEqual(0.9, high_carbon_pattern.attributed_energy_footprint.sum().to(u.kg).magnitude, places=6)
+        self.assertAlmostEqual(
+            0.7, attributed_footprint(low_carbon_pattern, LifeCyclePhases.USAGE).sum().to(u.kg).magnitude, places=6)
+        self.assertAlmostEqual(
+            0.9, attributed_footprint(high_carbon_pattern, LifeCyclePhases.USAGE).sum().to(u.kg).magnitude, places=6)
         self.assertAlmostEqual(1.6, system.total_footprint.sum().to(u.kg).magnitude, places=6)
         self.assertAlmostEqual(
             system.total_footprint.sum().to(u.kg).magnitude,
             (
-                low_carbon_pattern.attributed_energy_footprint.sum()
-                + high_carbon_pattern.attributed_energy_footprint.sum()
+                attributed_footprint(low_carbon_pattern, LifeCyclePhases.USAGE).sum()
+                + attributed_footprint(high_carbon_pattern, LifeCyclePhases.USAGE).sum()
             ).to(u.kg).magnitude,
             places=6,
         )
@@ -171,15 +173,15 @@ class TestPerUsagePatternImpactCascade(TestCase):
         System("shared web system", [low_carbon_pattern, high_carbon_pattern], edge_usage_patterns=[])
 
         for pattern in (low_carbon_pattern, high_carbon_pattern):
-            magnitudes = np.asarray(pattern.attributed_energy_footprint.magnitude)
+            magnitudes = np.asarray(attributed_footprint(pattern, LifeCyclePhases.USAGE).magnitude)
             self.assertFalse(
                 np.any(np.isnan(magnitudes)),
-                f"{pattern.name}: NaN in attributed_energy_footprint at zero-activity hours",
+                f"{pattern.name}: NaN in attributed footprint at zero-activity hours",
             )
             self.assertAlmostEqual(0.0, float(magnitudes[0]), places=6)
             self.assertAlmostEqual(0.0, float(magnitudes[2]), places=6)
 
-    def test_leaf_mutation_invalidates_attributed_energy_footprint_cache(self):
+    def test_leaf_mutation_invalidates_attribution_fold_memo(self):
         storage = self._neutral_storage("web storage")
         server = self._server("web server", storage)
         job = Job.from_defaults(
@@ -216,24 +218,25 @@ class TestPerUsagePatternImpactCascade(TestCase):
             "shared web system", [low_carbon_pattern, high_carbon_pattern], edge_usage_patterns=[])
 
         def read_low_footprint():
-            return low_carbon_pattern.attributed_energy_footprint.sum().to(u.kg).magnitude
+            return attributed_footprint(low_carbon_pattern, LifeCyclePhases.USAGE).sum().to(u.kg).magnitude
 
         def assert_invalidates(label: str, mutate):
             before = read_low_footprint()
-            self.assertIn("attributed_energy_footprint", low_carbon_pattern.__dict__, label)
+            # The read memoizes the fold in the system's render_cache; the mutation must wipe it.
+            self.assertIn("render_cache", system.__dict__, label)
             mutate()
             self.assertNotIn(
-                "attributed_energy_footprint", low_carbon_pattern.__dict__,
-                f"{label}: attributed footprint cache not flushed",
+                "render_cache", system.__dict__,
+                f"{label}: attribution fold memo not flushed",
             )
             after = read_low_footprint()
             self.assertNotAlmostEqual(before, after, places=6, msg=f"{label}: footprint unchanged after mutation")
             # Conservation: per-pattern attribution must sum to system total after the mutation,
-            # which fails if any source's own attributed_* cache is left stale post-recompute.
+            # which fails if any stale memo survives the post-recompute flush.
             self.assertAlmostEqual(
                 system.total_footprint.sum().to(u.kg).magnitude,
-                (low_carbon_pattern.attributed_energy_footprint.sum()
-                 + high_carbon_pattern.attributed_energy_footprint.sum()).to(u.kg).magnitude,
+                (attributed_footprint(low_carbon_pattern, LifeCyclePhases.USAGE).sum()
+                 + attributed_footprint(high_carbon_pattern, LifeCyclePhases.USAGE).sum()).to(u.kg).magnitude,
                 places=6,
                 msg=f"{label}: per-pattern attributed footprints do not sum to system total",
             )
@@ -319,14 +322,16 @@ class TestPerUsagePatternImpactCascade(TestCase):
         self.assertAlmostEqual(0.5, per_source[(server, low_carbon_pattern)].sum().to(u.kg).magnitude, places=6)
         self.assertAlmostEqual(0.5, per_source[(server, high_carbon_pattern)].sum().to(u.kg).magnitude, places=6)
         # Aggregate totals.
-        self.assertAlmostEqual(0.6, low_carbon_pattern.attributed_energy_footprint.sum().to(u.kg).magnitude, places=6)
-        self.assertAlmostEqual(0.7, high_carbon_pattern.attributed_energy_footprint.sum().to(u.kg).magnitude, places=6)
+        self.assertAlmostEqual(
+            0.6, attributed_footprint(low_carbon_pattern, LifeCyclePhases.USAGE).sum().to(u.kg).magnitude, places=6)
+        self.assertAlmostEqual(
+            0.7, attributed_footprint(high_carbon_pattern, LifeCyclePhases.USAGE).sum().to(u.kg).magnitude, places=6)
         self.assertAlmostEqual(1.3, system.total_footprint.sum().to(u.kg).magnitude, places=6)
         self.assertAlmostEqual(
             system.total_footprint.sum().to(u.kg).magnitude,
             (
-                low_carbon_pattern.attributed_energy_footprint.sum()
-                + high_carbon_pattern.attributed_energy_footprint.sum()
+                attributed_footprint(low_carbon_pattern, LifeCyclePhases.USAGE).sum()
+                + attributed_footprint(high_carbon_pattern, LifeCyclePhases.USAGE).sum()
             ).to(u.kg).magnitude,
             places=6,
         )

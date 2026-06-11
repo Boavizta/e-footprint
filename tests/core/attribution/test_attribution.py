@@ -10,7 +10,7 @@ from efootprint.abstract_modeling_classes.source_objects import SourceValue
 from efootprint.builders.time_builders import create_source_hourly_values_from_list
 from efootprint.constants.units import u
 from efootprint.core.attribution import (
-    atoms, atoms_of, footprint_per_node, footprint_per_node_per_source, node_totals_and_links)
+    atoms, atoms_of, attributed_footprint, footprint_per_node, footprint_per_node_per_source, node_totals_and_links)
 from efootprint.core.country import Country
 from efootprint.core.hardware.device import Device
 from efootprint.core.hardware.network import Network
@@ -206,30 +206,31 @@ class TestAttributionFold(TestCase):
         finally:
             self.device.power = initial_power
 
-    def test_attributed_footprint_properties_delegate_to_footprint_per_node(self):
-        """Test that the kept attributed_* convenience properties are exact delegations: each object's value
+    def test_attributed_footprint_equals_footprint_per_node_entry(self):
+        """Test that the attributed_footprint convenience read is an exact delegation: each object's value
         equals its node entry in footprint_per_node at its own class level, for each phase."""
         for obj, level in ((self.device, Device), (self.step_a, UsageJourneyStep), (self.journey, UsageJourney),
                            (self.up1, UsagePattern), (self.low_ci_country, Country)):
             assert_hourly_quantities_equal(
                 self, footprint_per_node(self.system, level, LifeCyclePhases.USAGE)[obj],
-                obj.attributed_energy_footprint, msg=f"{obj.name} energy delegation mismatch")
+                attributed_footprint(obj, LifeCyclePhases.USAGE), msg=f"{obj.name} energy delegation mismatch")
             assert_hourly_quantities_equal(
                 self, footprint_per_node(self.system, level, LifeCyclePhases.MANUFACTURING)[obj],
-                obj.attributed_fabrication_footprint, msg=f"{obj.name} fabrication delegation mismatch")
+                attributed_footprint(obj, LifeCyclePhases.MANUFACTURING),
+                msg=f"{obj.name} fabrication delegation mismatch")
 
-    def test_attributed_footprint_properties_flush_on_modeling_update(self):
-        """Test that a ModelingUpdate flushes the materialized attributed_* cached properties so the next
-        read reflects the new inputs."""
+    def test_attributed_footprint_flushes_on_modeling_update(self):
+        """Test that a ModelingUpdate flushes the fold memo behind attributed_footprint so the next read
+        reflects the new inputs."""
         initial_power = self.device.power
-        _ = self.up1.attributed_energy_footprint
-        self.assertIn("attributed_energy_footprint", self.up1.__dict__)
+        _ = attributed_footprint(self.up1, LifeCyclePhases.USAGE)
+        self.assertIn("render_cache", self.system.__dict__)
         try:
             self.device.power = SourceValue(100 * u.W)
-            self.assertNotIn("attributed_energy_footprint", self.up1.__dict__)
+            self.assertNotIn("render_cache", self.system.__dict__)
             assert_hourly_quantities_equal(
                 self, footprint_per_node(self.system, UsagePattern, LifeCyclePhases.USAGE)[self.up1],
-                self.up1.attributed_energy_footprint)
+                attributed_footprint(self.up1, LifeCyclePhases.USAGE))
         finally:
             self.device.power = initial_power
 

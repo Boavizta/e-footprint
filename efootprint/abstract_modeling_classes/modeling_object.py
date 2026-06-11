@@ -22,7 +22,6 @@ from efootprint.utils.object_relationships_graphs import build_object_relationsh
     USAGE_PATTERN_VIEW_CLASSES_TO_IGNORE
 from efootprint.utils.tools import get_init_signature_params
 from efootprint.constants.units import u
-from efootprint.core.lifecycle_phases import LifeCyclePhases
 
 if TYPE_CHECKING:
     from efootprint.abstract_modeling_classes.contextual_modeling_object_attribute import ContextualModelingObjectAttribute
@@ -786,21 +785,3 @@ class ModelingObject(metaclass=ABCAfterInitMeta):
         return ExplainableObjectDict({key: ExplainableQuantity(
             value * u.dimensionless, label=f"Number of occurrences of {self.name} in {key.name}")
             for key, value in output_dict.items()})
-
-    def _attributed_footprint(self, phase: LifeCyclePhases):
-        """This object's node total in the attribution fold for a life-cycle phase: the sum over the object's
-        systems of its entry in ``attribution.footprint_per_node`` at the object's own class level."""
-        from efootprint.core.attribution import footprint_per_node
-        total = EmptyExplainableObject()
-        for system in self.systems:
-            total += footprint_per_node(system, type(self), phase).get(self, EmptyExplainableObject())
-
-        return total.to(u.kg)
-
-    @cached_property
-    def attributed_fabrication_footprint(self):
-        return self._attributed_footprint(LifeCyclePhases.MANUFACTURING).set_label("Attributed fabrication footprint")
-
-    @cached_property
-    def attributed_energy_footprint(self):
-        return self._attributed_footprint(LifeCyclePhases.USAGE).set_label("Attributed energy footprint")

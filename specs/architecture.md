@@ -14,7 +14,7 @@ efootprint/abstract_modeling_classes/  (framework — dependency tracking, Expla
 
 This separation is constitutional (`specs/constitution.md` §1.1). `core/` is built on top of `abstract_modeling_classes/`, but it must not import from `api_utils/` — modeling code shouldn't know how it gets persisted. `api_utils/` is the only layer allowed to import from both.
 
-**Known back-edge.** `abstract_modeling_classes/modeling_object.py` imports `LifeCyclePhases` from `efootprint/core/` (runtime), `System` (TYPE_CHECKING), and — function-locally — `core.attribution.footprint_per_node` for the two `attributed_*_footprint` convenience cached properties. This is a leak of the layering and should be paid down opportunistically; new code must not introduce additional upward imports from `abstract_modeling_classes/` into `core/`.
+**Known back-edge.** `abstract_modeling_classes/modeling_object.py` imports `System` from `efootprint/core/` — a single function-local runtime import in the computation-chain optimizer (to append the System at the end of a chain). This is the only framework→core leak; it should be paid down opportunistically and must not grow. (The 2026-06 attribution revamp removed the former `LifeCyclePhases` import by moving the `attributed_*` convenience surface into `core/attribution`.)
 
 **No domain names in the framework layer.** The dependency rule applies to *names*, not just imports: `abstract_modeling_classes/` may not mention `core/` concepts (`UsagePattern`, `Job`, `Server`, …) by name — not in class attributes, not in strings, not in comments load-bearing for behaviour. When the framework needs to be polymorphic over a domain-specific extension (e.g., a cached property that only some subclasses define), it discovers the extension structurally rather than naming it. Example: `class_cached_property_names` auto-discovers every `functools.cached_property` through the class MRO; the flush machinery (`flush_cached_properties`, the system-wide sweep, `to_json` / `__setattr__` skip lists) consumes that discovery, so domain subclasses add cached properties without registering them anywhere. Corollary invariant: every `cached_property` on a `ModelingObject` is a flushable read-time projection (lazy attribution layer), never model state.
 
@@ -112,10 +112,11 @@ Caching is two-tier in each owner's `render_cache` (itself a cached property): a
 `(source, phase)`, fold results per query. Both are wiped by the system-wide cached-property flush after
 every `ModelingUpdate` and after the initial build.
 
-`ModelingObject` keeps two convenience cached properties — `attributed_fabrication_footprint` /
-`attributed_energy_footprint` — that delegate to `attribution.footprint_per_node` at the object's own class
-level. They are the only `attributed_*` surface; everything heavier (per-source dicts, resolve/rescale
-machinery, eager repartition-weight calculated attributes) was deleted with the 2026-06 attribution revamp.
+The convenience read `attribution.attributed_footprint(obj, phase)` returns any object's total attributed
+footprint for a life-cycle phase — its node entry in `footprint_per_node` at the object's own class level,
+summed over its systems (Empty when system-less). It is the only `attributed_*` surface; everything heavier
+(per-source dicts, resolve/rescale machinery, eager repartition-weight calculated attributes, the former
+`ModelingObject.attributed_*_footprint` cached properties) was deleted with the 2026-06 attribution revamp.
 
 ## `ExplainableObjectDict` as input attribute
 

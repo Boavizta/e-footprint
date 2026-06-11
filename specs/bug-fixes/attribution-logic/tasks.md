@@ -1,6 +1,6 @@
 # Attribution-logic revamp (atom model) — Tasks
 
-**Status:** Tasks — under review.
+**Status:** Done — all 7 tasks implemented (2026-06-11).
 **Spec:** [`analysis.md`](analysis.md) + [`edge-analysis.md`](edge-analysis.md). **Plan:** [`plan.html`](plan.html) (v2, atom model).
 
 Migration sequencing (plan §7) is settled here: tasks 1–5 build the atom layer *alongside* the
@@ -25,6 +25,11 @@ The thin `attributed_fabrication_footprint` / `attributed_energy_footprint` cach
 are **kept** — getting a footprint from any object is part of the package's public surface —
 reimplemented in task 7 as delegations to `attribution.footprint_per_node`. The heavyweight
 `attributed_*_per_source[_resolved]` / `resolve_*` machinery behind them is still deleted.
+*Post-implementation reversal (2026-06-11, task-7 review):* the kept properties were moved off
+`ModelingObject` into `core/attribution` as `attributed_footprint(obj, phase)` — the deletion sweep
+revealed they were the only remaining consumer of the framework→core `LifeCyclePhases` back-edge and
+that nothing outside tests consumed them, so paying the back-edge down won over the object-property
+ergonomics. The tutorial demonstrates the programmatic read.
 
 ---
 
