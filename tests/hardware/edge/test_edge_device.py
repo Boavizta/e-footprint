@@ -712,7 +712,7 @@ class TestEdgeDeviceSelfDelete(TestCase):
 
 class TestEdgeDeviceAttributionAtoms(TestCase):
     """EdgeDevice atom builder on a real multi-pattern, multi-country model exercising the three
-    edge-analysis.md fixes (equal-share zero-demand fallback, held-volume storage weight, equal-share idle
+    attribution-revamp fixes (equal-share zero-demand fallback, held-volume storage weight, equal-share idle
     floor) plus within-journey reuse and chassis consistency with the breakdown-by-source axis."""
 
     @classmethod
@@ -899,7 +899,7 @@ class TestEdgeDeviceAttributionAtoms(TestCase):
 
 
 class TestEdgeDeviceUnusedComponentsChassisPool(TestCase):
-    """Chassis-pool rule of edge-analysis.md: components unused at a pattern are part of the chassis — their
+    """Chassis-pool rule: components unused at a pattern are part of the chassis — their
     embodied carbon is deployment-booked in the eager totals and attributed in an equal split across the
     pattern's carriers (component needs and RecurrentServerNeeds)."""
 

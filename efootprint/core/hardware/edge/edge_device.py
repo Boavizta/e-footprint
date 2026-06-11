@@ -389,7 +389,7 @@ class EdgeDevice(ModelingObject):
 
     @cached_property
     def fabrication_pool_share_per_carrier_and_pattern(self) -> dict:
-        """edge-analysis.md chassis-pool rule: components unused at a pattern are part of the chassis. The
+        """Chassis-pool rule: components unused at a pattern are part of the chassis. The
         pool at a pattern — every unused component's deployment-booked fabrication plus its equal chassis
         share (the full structure when the device has no components) — splits equally across the pattern's
         deployment carriers: the component needs at the pattern and the device's RecurrentServerNeeds reached
@@ -436,7 +436,7 @@ class EdgeDevice(ModelingObject):
 
     @cached_property
     def fabrication_atom_value_per_need_and_pattern(self) -> dict:
-        """edge-analysis.md fabrication atom: (component fabrication + an equal 1/nb_components chassis share,
+        """Fabrication atom value: (component fabrication + an equal 1/nb_components chassis share,
         matching the breakdown-by-source axis) × the need's demand share, plus the need's equal carrier share
         of the pattern's unused-components chassis pool."""
         nb_components = ExplainableQuantity(len(self.components) * u.dimensionless, "Number of components")
@@ -457,7 +457,7 @@ class EdgeDevice(ModelingObject):
 
     @cached_property
     def energy_atom_value_per_need_and_pattern(self) -> dict:
-        """edge-analysis.md energy atom: the idle/base floor of the component's affine power curve — which no
+        """Energy atom value: the idle/base floor of the component's affine power curve — which no
         need's demand changes — split equally across the component's needs at every hour, plus the need's own
         dynamic marginal (the rest of the component's energy footprint, split by demand share — exact by
         linearity of the power curve). EdgeStorage draws no power, so its needs carry an empty energy value;
@@ -497,7 +497,7 @@ class EdgeDevice(ModelingObject):
 
     def atom_value(self, need: "RecurrentEdgeComponentNeed", usage_pattern: "EdgeUsagePattern",
                    phase: LifeCyclePhases):
-        """The per-(need, pattern) atom of edge-analysis.md — the need's footprint at the pattern across every
+        """The per-(need, pattern) atom value — the need's footprint at the pattern across every
         bundle and function it sits in, before the slot-multiplicity split of attribution_atoms."""
         values = (self.fabrication_atom_value_per_need_and_pattern if phase == LifeCyclePhases.MANUFACTURING
                   else self.energy_atom_value_per_need_and_pattern)

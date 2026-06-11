@@ -105,12 +105,27 @@ a key and sum.
   directly)
 - **exclude a source** = filter its atoms out — never rescale
 - conservation is structural: Σ(atoms of a stream) == that stream's footprint == the eager totals
+- **two relay-weight kinds** (carried per containment cell by `JobAttributionCell`): demand streams
+  (dynamic energy, autoscaling/serverless provisioned, storage retention, external-API requests) relay by
+  *hourly* occurrence shares with fallback 0 — zero demand at an hour means zero footprint; always-on
+  streams (on-premise provisioned, storage baseline, edge idle floor) relay by *flat period-total* shares
+  (a scalar), so footprint at idle hours is conserved instead of dropped or double-counted
 - renderers are presentation-only: `ImpactRepartitionSankey` makes one `node_totals_and_links` call per
   life-cycle phase and owns nothing but layout, colors and aggregation
 
 Caching is two-tier in each owner's `render_cache` (itself a cached property): atom lists per
 `(source, phase)`, fold results per query. Both are wiped by the system-wide cached-property flush after
 every `ModelingUpdate` and after the initial build.
+
+**EdgeDevice fabrication is deployment-booked; energy is need-booked.** A component with no needs at a
+pattern the device serves still books its embodied carbon eagerly with the deployment, exactly like the
+chassis (`EdgeDevice.unused_component_fabrication_per_edge_device`, computed from the component's *input*
+attributes because need-less components never enter the calculated-attribute chain), so the eager
+per-pattern fabrication totals always carry the whole device. At attribution, that unused-components pool
+(own fabrication + equal chassis shares) splits equally across the pattern's deployment carriers —
+component needs and `RecurrentServerNeed`s — so RSN-only patterns route the whole device fabrication
+through the RSNs; a pattern with booked fabrication and no carriers raises. Energy has no such rule: the
+device draws nothing for unused components, so unused components book none on either side.
 
 The convenience read `attribution.attributed_footprint(obj, phase)` returns any object's total attributed
 footprint for a life-cycle phase — its node entry in `footprint_per_node` at the object's own class level,
