@@ -216,6 +216,26 @@ class EdgeDevice(ModelingObject):
         for usage_pattern in self.edge_usage_patterns:
             self.update_dict_element_in_structure_fabrication_footprint_per_usage_pattern(usage_pattern)
 
+    def unused_component_fabrication_per_edge_device(self, component: EdgeComponent,
+                                                     usage_pattern: "EdgeUsagePattern"):
+        """Hourly fabrication footprint of a component with no needs at this pattern, booked as part of the
+        chassis: the device is deployed there, so the unused component's embodied carbon amortizes with the
+        deployment exactly like the structure's. Reads only the component's input attributes because need-less
+        components never enter the calculated-attribute computation chain."""
+        fabrication = component.carbon_footprint_fabrication_from_inputs
+        if fabrication.magnitude == 0:
+            return EmptyExplainableObject(
+                left_parent=fabrication, label=f"No unused fabrication for zero-footprint {component.name}")
+        if isinstance(component.lifespan, EmptyExplainableObject):
+            raise ValueError(
+                f"Cannot book the fabrication of unused component {component.name} at pattern "
+                f"{usage_pattern.name}: its lifespan is a calculated attribute that was never computed because "
+                f"the component has no needs. Give the component an input lifespan or link a need to it.")
+        nb_instances = usage_pattern.edge_usage_journey.nb_edge_usage_journeys_in_parallel_per_edge_usage_pattern[
+            usage_pattern]
+        return (nb_instances * fabrication / component.lifespan * ExplainableQuantity(1 * u.hour, "one hour")
+                ).to(u.kg).set_label(f"Hourly unused {component.name} fabrication footprint for {usage_pattern.name}")
+
     def update_dict_element_in_instances_fabrication_footprint_per_usage_pattern(
             self, usage_pattern: "EdgeUsagePattern"):
         total_footprint = self.structure_fabrication_footprint_per_usage_pattern.get(
@@ -224,12 +244,15 @@ class EdgeDevice(ModelingObject):
             if usage_pattern in component.fabrication_footprint_per_edge_device_per_usage_pattern:
                 total_footprint += (self.total_nb_of_units
                                     * component.fabrication_footprint_per_edge_device_per_usage_pattern[usage_pattern])
+            else:
+                total_footprint += (self.total_nb_of_units
+                                    * self.unused_component_fabrication_per_edge_device(component, usage_pattern))
 
         self.instances_fabrication_footprint_per_usage_pattern[usage_pattern] = total_footprint.to(
             u.kg).set_label(f"Hourly instances fabrication footprint for {usage_pattern.name}")
 
     def update_instances_fabrication_footprint_per_usage_pattern(self):
-        """Hourly fabrication-phase emissions of the whole device (chassis plus all components), broken down by usage pattern."""
+        """Hourly fabrication-phase emissions of the whole device (chassis plus all components), broken down by usage pattern. Components with no needs at a pattern count as part of the chassis there: their embodied carbon amortizes with the deployment."""
         self.instances_fabrication_footprint_per_usage_pattern = ExplainableObjectDict()
         for usage_pattern in self.edge_usage_patterns:
             self.update_dict_element_in_instances_fabrication_footprint_per_usage_pattern(usage_pattern)
@@ -295,12 +318,18 @@ class EdgeDevice(ModelingObject):
             self.structure_fabrication_footprint_per_usage_pattern.values(), start=EmptyExplainableObject())
         equal_structure_share = structure_fabrication_total / ExplainableQuantity(
             len(self.components) * u.dimensionless, label=f"Number of components")
+        unused_fabrication = sum(
+            [self.unused_component_fabrication_per_edge_device(component, usage_pattern)
+             for usage_pattern in self.edge_usage_patterns
+             if usage_pattern not in component.fabrication_footprint_per_edge_device_per_usage_pattern],
+            start=EmptyExplainableObject())
         self.fabrication_footprint_breakdown_by_source[component] = (
-            self.total_nb_of_units * component.fabrication_footprint_per_edge_device + equal_structure_share
+            self.total_nb_of_units * (component.fabrication_footprint_per_edge_device + unused_fabrication)
+            + equal_structure_share
         ).set_label(f"Fabrication footprint attributed to {component.name}")
 
     def update_fabrication_footprint_breakdown_by_source(self):
-        """Per-component breakdown of the device's fabrication footprint, attributing each component's own embodied carbon plus an even share of the chassis fabrication."""
+        """Per-component breakdown of the device's fabrication footprint, attributing each component's own embodied carbon (including the deployment-booked part at patterns where it has no needs) plus an even share of the chassis fabrication."""
         self.fabrication_footprint_breakdown_by_source = ExplainableObjectDict()
         if not self.components:
             return
@@ -352,31 +381,76 @@ class EdgeDevice(ModelingObject):
                 total_demand = sum(demand_per_need.values(), start=EmptyExplainableObject())
                 equal_share = 1 / len(needs_at_up)
                 for need, demand in demand_per_need.items():
-                    if isinstance(total_demand, EmptyExplainableObject):
-                        share = ExplainableQuantity(
-                            equal_share * u.dimensionless, left_parent=total_demand,
-                            operator="equal share among component needs derived from")
-                    else:
-                        if isinstance(demand, EmptyExplainableObject):
-                            demand = total_demand * ExplainableQuantity(0 * u.dimensionless, "zero demand")
-                        share = divide_or_fallback(demand, total_demand, fallback=equal_share)
-                    shares[(need, usage_pattern)] = share.set_label(
+                    shares[(need, usage_pattern)] = divide_or_fallback(
+                        demand, total_demand, fallback=equal_share).set_label(
                         f"{need.name} demand share of {component.name} in {usage_pattern.name}")
+
+        return shares
+
+    @cached_property
+    def fabrication_pool_share_per_carrier_and_pattern(self) -> dict:
+        """edge-analysis.md chassis-pool rule: components unused at a pattern are part of the chassis. The
+        pool at a pattern — every unused component's deployment-booked fabrication plus its equal chassis
+        share (the full structure when the device has no components) — splits equally across the pattern's
+        deployment carriers: the component needs at the pattern and the device's RecurrentServerNeeds reached
+        there. Patterns where every component is used carry no entry. Raises when a deployed pattern has
+        booked fabrication but no carriers (an empty RecurrentEdgeDeviceNeed)."""
+        needs_at_pattern = defaultdict(list)
+        for (need, usage_pattern) in self.demand_share_per_need_and_pattern:
+            needs_at_pattern[usage_pattern].append(need)
+
+        shares = {}
+        for usage_pattern in self.edge_usage_patterns:
+            used_component_ids = {need.edge_component.id for need in needs_at_pattern[usage_pattern]}
+            unused_components = [c for c in self.components if c.id not in used_component_ids]
+            if usage_pattern not in self.structure_fabrication_footprint_per_usage_pattern:
+                # The device was never computed (e.g. deployed only through empty RecurrentEdgeDeviceNeeds):
+                # nothing is booked eagerly, so there is nothing to attribute.
+                continue
+            structure_fabrication = self.structure_fabrication_footprint_per_usage_pattern[usage_pattern]
+            if self.components:
+                if not unused_components:
+                    continue
+                chassis_pool = structure_fabrication * ExplainableQuantity(
+                    len(unused_components) / len(self.components) * u.dimensionless,
+                    "Unused components' equal chassis shares")
+            else:
+                chassis_pool = structure_fabrication
+            pool = sum(
+                [self.total_nb_of_units * self.unused_component_fabrication_per_edge_device(
+                    component, usage_pattern) for component in unused_components],
+                start=chassis_pool)
+            rsns_at_pattern = [rsn for rsn in self.recurrent_server_needs
+                               if usage_pattern in rsn.edge_usage_patterns]
+            nb_carriers = len(needs_at_pattern[usage_pattern]) + len(rsns_at_pattern)
+            if nb_carriers == 0:
+                raise ValueError(
+                    f"{self.name} books fabrication at {usage_pattern.name} but has no component needs and no "
+                    f"RecurrentServerNeeds there to attribute it to. Remove the empty RecurrentEdgeDeviceNeed "
+                    f"deploying it or give it component needs.")
+            shares[usage_pattern] = (pool / ExplainableQuantity(
+                nb_carriers * u.dimensionless, "Number of deployment carriers")).to(u.kg).set_label(
+                f"{self.name} unused-components chassis pool share per carrier in {usage_pattern.name}")
 
         return shares
 
     @cached_property
     def fabrication_atom_value_per_need_and_pattern(self) -> dict:
         """edge-analysis.md fabrication atom: (component fabrication + an equal 1/nb_components chassis share,
-        matching the breakdown-by-source axis) × the need's demand share."""
+        matching the breakdown-by-source axis) × the need's demand share, plus the need's equal carrier share
+        of the pattern's unused-components chassis pool."""
         nb_components = ExplainableQuantity(len(self.components) * u.dimensionless, "Number of components")
+        pool_shares = self.fabrication_pool_share_per_carrier_and_pattern
         values = {}
         for (need, usage_pattern), share in self.demand_share_per_need_and_pattern.items():
             component_fabrication = (
                 self.total_nb_of_units
                 * need.edge_component.fabrication_footprint_per_edge_device_per_usage_pattern[usage_pattern])
             chassis_share = self.structure_fabrication_footprint_per_usage_pattern[usage_pattern] / nb_components
-            values[(need, usage_pattern)] = ((component_fabrication + chassis_share) * share).to(u.kg).set_label(
+            value = (component_fabrication + chassis_share) * share
+            if usage_pattern in pool_shares:
+                value = value + pool_shares[usage_pattern]
+            values[(need, usage_pattern)] = value.to(u.kg).set_label(
                 f"{self.name} fabrication footprint attributed to {need.name} in {usage_pattern.name}")
 
         return values
@@ -434,10 +508,15 @@ class EdgeDevice(ModelingObject):
         function's device-need bundles, each bundle's component needs — one atom per (need, bundle, function)
         slot, valued atom_value × slot count / total occurrences of the need in the journey, so the slots of a
         need partition its atom_value exactly: within-journey reuse splits across its bundles and functions by
-        occurrence ratios; the common case is one slot with ratio 1."""
+        occurrence ratios; the common case is one slot with ratio 1. In the fabrication phase the device's
+        RecurrentServerNeeds carry their equal share of the unused-components chassis pool through (rsn, ef)
+        slots, split by the same occurrence ratios."""
+        pool_shares = (self.fabrication_pool_share_per_carrier_and_pattern
+                       if phase == LifeCyclePhases.MANUFACTURING else {})
         for usage_pattern in self.edge_usage_patterns:
             journey = usage_pattern.edge_usage_journey
             slot_counts = {}
+            rsn_slot_counts = {}
             for edge_function in dict.fromkeys(journey.edge_functions):
                 ef_count = journey.edge_functions.count(edge_function)
                 for device_need in dict.fromkeys(edge_function.recurrent_edge_device_needs):
@@ -448,6 +527,12 @@ class EdgeDevice(ModelingObject):
                         recn_count = device_need.recurrent_edge_component_needs.count(component_need)
                         slot_counts[(component_need, device_need, edge_function)] = (
                             ef_count * redn_count * recn_count)
+                if usage_pattern in pool_shares:
+                    for server_need in dict.fromkeys(edge_function.recurrent_server_needs):
+                        if server_need.edge_device != self:
+                            continue
+                        rsn_slot_counts[(server_need, edge_function)] = (
+                            ef_count * edge_function.recurrent_server_needs.count(server_need))
             occurrences_per_need = defaultdict(int)
             for (component_need, _, _), count in slot_counts.items():
                 occurrences_per_need[component_need] += count
@@ -461,6 +546,18 @@ class EdgeDevice(ModelingObject):
                     value=(self.atom_value(component_need, usage_pattern, phase) * occurrence_share).set_label(
                         f"{self.name} {phase.value.lower()} footprint via {component_need.name} through "
                         f"{device_need.name} in {edge_function.name} ({usage_pattern.name})"))
+            occurrences_per_rsn = defaultdict(int)
+            for (server_need, _), count in rsn_slot_counts.items():
+                occurrences_per_rsn[server_need] += count
+            for (server_need, edge_function), count in rsn_slot_counts.items():
+                occurrence_share = ExplainableQuantity(
+                    count / occurrences_per_rsn[server_need] * u.dimensionless,
+                    f"{server_need.name} occurrence share in {edge_function.name}")
+                yield Atom(
+                    source=self, stream="single", up=usage_pattern, rsn=server_need, ef=edge_function,
+                    value=(pool_shares[usage_pattern] * occurrence_share).set_label(
+                        f"{self.name} {phase.value.lower()} footprint via {server_need.name} in "
+                        f"{edge_function.name} ({usage_pattern.name})"))
 
     def _compute_component_need_weight(
             self, component_need: "RecurrentEdgeComponentNeed", component_impact_per_usage_pattern):

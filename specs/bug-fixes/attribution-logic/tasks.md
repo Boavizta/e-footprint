@@ -281,10 +281,13 @@ only attribution consumes after this task.
 - Eager-vs-lazy audit: nothing to move — every attribution-flavoured calculated attribute on the touched edge
   classes (`total_unitary_hourly_need_per_usage_pattern`, the impact-repartition weights) is still consumed by
   the eager legacy `_compute_component_need_weight` chain until task 7.
-- Conservation caveat for task 6/7 review: a pattern that reaches a device only through a
-  `RecurrentServerNeed` (or a component with no needs at a pattern the device serves) has chassis fabrication
-  in the eager per-pattern total but no component-need slots to carry it; no fixture exhibits this and the
-  integration conservation sweep will fail loudly if one appears.
+- Conservation caveat — RESOLVED in review (edge-analysis.md fix 4): unused components are part of the
+  chassis. Their embodied carbon is deployment-booked in the eager per-pattern totals (device-side, from the
+  component's input attributes via `carbon_footprint_fabrication_from_inputs`, because need-less components
+  never enter the computation chain) and attributed by an equal split of the pool across the pattern's
+  carriers — component needs and `RecurrentServerNeed`s (the latter as `(rsn, ef)` atoms). RSN-only patterns
+  send the whole device fabrication through the RSNs; a deployed pattern with booked fabrication and no
+  carriers raises. Full-coverage models (all existing fixtures) are numerically unchanged.
 
 **Goal:** The slot-enumeration builder of `edge_device_sketch.py`, carrying the three
 edge-analysis.md fixes: (1) zero-demand fallback → explicit equal share (not

@@ -127,6 +127,15 @@ class EdgeComponent(ModelingObject):
         curve, consumed only by the attribution layer (EdgeDevice's atom builder)."""
         raise NotImplementedError
 
+    @property
+    def carbon_footprint_fabrication_from_inputs(self) -> ExplainableQuantity:
+        """Embodied carbon of the component computed from input attributes only — must mirror
+        update_carbon_footprint_fabrication. Read by EdgeDevice to book components with no needs at a deployed
+        pattern as part of the chassis: such components never enter the calculated-attribute computation chain,
+        so their calculated carbon_footprint_fabrication stays Empty and cannot be read."""
+        return (self.carbon_footprint_fabrication_per_unit * self.nb_of_units).set_label(
+            f"{self.name} carbon footprint fabrication from inputs")
+
     def update_carbon_footprint_fabrication(self):
         """Embodied carbon of one component, equal to the per-unit fabrication footprint times the number of units in the component."""
         self.carbon_footprint_fabrication = (

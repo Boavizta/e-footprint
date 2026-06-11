@@ -90,7 +90,7 @@ class EdgeRAMComponent(EdgeComponent):
     @property
     def unitary_power_at_zero_recurrent_need(self) -> ExplainableQuantity:
         return (self.idle_power + (self.power - self.idle_power) * self.base_ram_consumption / self.ram
-                ).set_label(f"Idle and base power")
+                ).set_label("Idle and base power")
 
     def update_dict_element_in_unitary_power_per_usage_pattern(self, usage_pattern: "EdgeUsagePattern"):
         if usage_pattern in self.unitary_hourly_ram_need_per_usage_pattern:

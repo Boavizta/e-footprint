@@ -20,6 +20,7 @@ from efootprint.core.hardware.edge.edge_component import EdgeComponent
 from efootprint.core.hardware.edge.edge_cpu_component import EdgeCPUComponent
 from efootprint.core.hardware.edge.edge_device import EdgeDevice
 from efootprint.core.hardware.edge.edge_device_group import EdgeDeviceGroup
+from efootprint.core.hardware.edge.edge_ram_component import EdgeRAMComponent
 from efootprint.core.hardware.edge.edge_storage import EdgeStorage
 from efootprint.core.hardware.edge.edge_workload_component import EdgeWorkloadComponent
 from efootprint.core.hardware.hardware_base import InsufficientCapacityError
@@ -42,6 +43,10 @@ class TestEdgeDevice(TestCase):
     def setUp(self):
         self.mock_component_1 = create_mod_obj_mock(EdgeComponent, "Component 1")
         self.mock_component_2 = create_mod_obj_mock(EdgeComponent, "Component 2")
+        # Zero-footprint components skip the deployment booking of unused components, keeping these unit
+        # tests focused on the structure + used-component paths.
+        self.mock_component_1.carbon_footprint_fabrication_from_inputs = SourceValue(0 * u.kg)
+        self.mock_component_2.carbon_footprint_fabrication_from_inputs = SourceValue(0 * u.kg)
 
         self.edge_device = EdgeDevice(
             name="Test Device",
@@ -241,6 +246,40 @@ class TestEdgeDevice(TestCase):
 
         result = self.edge_device.instances_fabrication_footprint_per_usage_pattern[mock_pattern]
         self.assertTrue(np.allclose(expected_footprint, result.value.to(u.kg).magnitude, rtol=1e-5))
+
+    def test_update_dict_element_in_instances_fabrication_footprint_per_usage_pattern_unused_component(self):
+        """Test that a component with no needs at the pattern is booked as part of the chassis: its embodied
+        carbon amortizes with the deployment, from input attributes."""
+        mock_journey = MagicMock(spec=EdgeUsageJourney)
+        mock_pattern = create_mod_obj_mock(EdgeUsagePattern, name="Test Pattern", edge_usage_journey=mock_journey)
+        mock_journey.nb_edge_usage_journeys_in_parallel_per_edge_usage_pattern = {
+            mock_pattern: create_source_hourly_values_from_list([10, 10], pint_unit=u.concurrent)
+        }
+
+        self.mock_component_1.fabrication_footprint_per_edge_device_per_usage_pattern = ExplainableObjectDict()
+        self.mock_component_1.carbon_footprint_fabrication_from_inputs = SourceValue(50 * u.kg)
+        self.mock_component_1.lifespan = SourceValue(5 * u.year)
+        self.mock_component_2.fabrication_footprint_per_edge_device_per_usage_pattern = ExplainableObjectDict()
+
+        self.edge_device.update_dict_element_in_structure_fabrication_footprint_per_usage_pattern(mock_pattern)
+        self.edge_device.update_dict_element_in_instances_fabrication_footprint_per_usage_pattern(mock_pattern)
+
+        # Structure: 10 * (100 / 5) / (365.25 * 24); unused component 1: 10 * (50 / 5) / (365.25 * 24)
+        hourly = 10 / (365.25 * 24)
+        expected_footprint = [hourly * (100 / 5 + 50 / 5)] * 2
+
+        result = self.edge_device.instances_fabrication_footprint_per_usage_pattern[mock_pattern]
+        self.assertTrue(np.allclose(expected_footprint, result.value.to(u.kg).magnitude, rtol=1e-5))
+
+    def test_unused_component_fabrication_raises_on_uncomputed_lifespan(self):
+        """Test that booking an unused component whose lifespan was never computed fails loudly."""
+        mock_pattern = create_mod_obj_mock(EdgeUsagePattern, name="Test Pattern")
+        self.mock_component_1.carbon_footprint_fabrication_from_inputs = SourceValue(50 * u.kg)
+        self.mock_component_1.lifespan = EmptyExplainableObject()
+
+        with self.assertRaises(ValueError) as context:
+            self.edge_device.unused_component_fabrication_per_edge_device(self.mock_component_1, mock_pattern)
+        self.assertIn("lifespan", str(context.exception))
 
     def test_update_dict_element_in_instances_energy_per_usage_pattern_no_components(self):
         """Test energy calculation with no component contributions."""
@@ -824,6 +863,11 @@ class TestEdgeDeviceAttributionAtoms(TestCase):
             power_per_unit=SourceValue(15 * u.W), lifespan=SourceValue(6 * u.year),
             idle_power_per_unit=SourceValue(3 * u.W), compute_per_unit=SourceValue(4 * u.cpu_core),
             base_compute_consumption=SourceValue(0.4 * u.cpu_core))
+        cls.ram = EdgeRAMComponent(
+            "edge atoms ram", carbon_footprint_fabrication_per_unit=SourceValue(40 * u.kg),
+            power_per_unit=SourceValue(8 * u.W), lifespan=SourceValue(6 * u.year),
+            idle_power_per_unit=SourceValue(2 * u.W), ram_per_unit=SourceValue(8 * u.GB_ram),
+            base_ram_consumption=SourceValue(1 * u.GB_ram))
         cls.workload_component = EdgeWorkloadComponent(
             "edge atoms workload component", carbon_footprint_fabrication_per_unit=SourceValue(100 * u.kg),
             power_per_unit=SourceValue(50 * u.W), lifespan=SourceValue(6 * u.year),
@@ -834,7 +878,7 @@ class TestEdgeDeviceAttributionAtoms(TestCase):
             base_storage_need=SourceValue(30 * u.GB_stored), lifespan=SourceValue(6 * u.year))
         cls.device = EdgeDevice(
             "edge atoms device", structure_carbon_footprint_fabrication=SourceValue(60 * u.kg),
-            components=[cls.cpu, cls.workload_component, cls.storage], lifespan=SourceValue(6 * u.year))
+            components=[cls.cpu, cls.ram, cls.workload_component, cls.storage], lifespan=SourceValue(6 * u.year))
 
         cls.cpu_active_need = RecurrentEdgeComponentNeed(
             "edge atoms active cpu need", edge_component=cls.cpu,
@@ -842,6 +886,9 @@ class TestEdgeDeviceAttributionAtoms(TestCase):
         cls.cpu_idle_need = RecurrentEdgeComponentNeed(
             "edge atoms idle cpu need", edge_component=cls.cpu,
             recurrent_need=SourceRecurrentValues(Quantity(np.array([0] * 168, dtype=np.float32), u.cpu_core)))
+        cls.ram_need = RecurrentEdgeComponentNeed(
+            "edge atoms ram need", edge_component=cls.ram,
+            recurrent_need=SourceRecurrentValues(Quantity(np.array([2] * 168, dtype=np.float32), u.GB_ram)))
         cls.workload_need = RecurrentEdgeComponentNeed(
             "edge atoms workload need", edge_component=cls.workload_component,
             recurrent_need=SourceRecurrentValues(Quantity(np.array([0.3] * 168, dtype=np.float32), u.concurrent)))
@@ -856,7 +903,7 @@ class TestEdgeDeviceAttributionAtoms(TestCase):
         cls.main_bundle = RecurrentEdgeDeviceNeed(
             "edge atoms main bundle", edge_device=cls.device,
             recurrent_edge_component_needs=[
-                cls.cpu_active_need, cls.cpu_idle_need, cls.workload_need, cls.storage_write_need,
+                cls.cpu_active_need, cls.cpu_idle_need, cls.ram_need, cls.workload_need, cls.storage_write_need,
                 cls.storage_cycle_need])
         cls.reuse_bundle = RecurrentEdgeDeviceNeed(
             "edge atoms reuse bundle", edge_device=cls.device,
@@ -990,6 +1037,184 @@ class TestEdgeDeviceAttributionAtoms(TestCase):
             self.assertIsNone(atom.step)
             self.assertIsNone(atom.rsn)
             self.assertEqual("single", atom.stream)
+
+
+class TestEdgeDeviceUnusedComponentsChassisPool(TestCase):
+    """Chassis-pool rule of edge-analysis.md: components unused at a pattern are part of the chassis — their
+    embodied carbon is deployment-booked in the eager totals and attributed in an equal split across the
+    pattern's carriers (component needs and RecurrentServerNeeds)."""
+
+    @classmethod
+    def setUpClass(cls):
+        start_date = datetime(2025, 1, 6)  # a Monday, so weekly patterns align with the series grid
+
+        # Scenario 1 — a RAM component with no needs on a device whose CPU is loaded.
+        cls.cpu = EdgeCPUComponent(
+            "pool cpu", carbon_footprint_fabrication_per_unit=SourceValue(20 * u.kg),
+            power_per_unit=SourceValue(15 * u.W), lifespan=SourceValue(6 * u.year),
+            idle_power_per_unit=SourceValue(3 * u.W), compute_per_unit=SourceValue(4 * u.cpu_core),
+            base_compute_consumption=SourceValue(0.4 * u.cpu_core))
+        cls.ram = EdgeRAMComponent(
+            "pool unused ram", carbon_footprint_fabrication_per_unit=SourceValue(40 * u.kg),
+            power_per_unit=SourceValue(8 * u.W), lifespan=SourceValue(5 * u.year),
+            idle_power_per_unit=SourceValue(2 * u.W), ram_per_unit=SourceValue(8 * u.GB_ram),
+            base_ram_consumption=SourceValue(1 * u.GB_ram))
+        cls.device = EdgeDevice(
+            "pool device", structure_carbon_footprint_fabrication=SourceValue(60 * u.kg),
+            components=[cls.cpu, cls.ram], lifespan=SourceValue(6 * u.year))
+        cls.cpu_need = RecurrentEdgeComponentNeed(
+            "pool cpu need", edge_component=cls.cpu,
+            recurrent_need=SourceRecurrentValues(Quantity(np.array([1] * 168, dtype=np.float32), u.cpu_core)))
+        bundle = RecurrentEdgeDeviceNeed(
+            "pool bundle", edge_device=cls.device, recurrent_edge_component_needs=[cls.cpu_need])
+        function = EdgeFunction("pool function", recurrent_edge_device_needs=[bundle], recurrent_server_needs=[])
+        journey = EdgeUsageJourney("pool journey", edge_functions=[function], usage_span=SourceValue(168 * u.hour))
+        network = Network("pool network", SourceValue(0.05 * u.kWh / u.GB))
+        cls.up = EdgeUsagePattern(
+            "pool pattern", journey, network,
+            Country("pool country", "PC", SourceValue(50 * u.g / u.kWh), ExplainableTimezone(pytz.utc, "UTC tz 1")),
+            create_source_hourly_values_from_list([1, 1], start_date))
+
+        # Scenario 2 — a second device reached at a second pattern only through a RecurrentServerNeed.
+        cls.rsn_cpu = EdgeCPUComponent(
+            "rsn cpu", carbon_footprint_fabrication_per_unit=SourceValue(20 * u.kg),
+            power_per_unit=SourceValue(15 * u.W), lifespan=SourceValue(6 * u.year),
+            idle_power_per_unit=SourceValue(3 * u.W), compute_per_unit=SourceValue(4 * u.cpu_core),
+            base_compute_consumption=SourceValue(0.4 * u.cpu_core))
+        cls.rsn_device = EdgeDevice(
+            "rsn device", structure_carbon_footprint_fabrication=SourceValue(60 * u.kg),
+            components=[cls.rsn_cpu], lifespan=SourceValue(6 * u.year))
+        rsn_cpu_need = RecurrentEdgeComponentNeed(
+            "rsn cpu need", edge_component=cls.rsn_cpu,
+            recurrent_need=SourceRecurrentValues(Quantity(np.array([1] * 168, dtype=np.float32), u.cpu_core)))
+        rsn_bundle = RecurrentEdgeDeviceNeed(
+            "rsn bundle", edge_device=cls.rsn_device, recurrent_edge_component_needs=[rsn_cpu_need])
+        used_function = EdgeFunction(
+            "rsn used function", recurrent_edge_device_needs=[rsn_bundle], recurrent_server_needs=[])
+        used_journey = EdgeUsageJourney(
+            "rsn used journey", edge_functions=[used_function], usage_span=SourceValue(168 * u.hour))
+        cls.used_up = EdgeUsagePattern(
+            "rsn used pattern", used_journey, network,
+            Country("rsn country 1", "RC1", SourceValue(50 * u.g / u.kWh),
+                    ExplainableTimezone(pytz.utc, "UTC tz 2")),
+            create_source_hourly_values_from_list([1, 1], start_date))
+        cls.rsn = RecurrentServerNeed(
+            "rsn", edge_device=cls.rsn_device,
+            recurrent_volume_per_edge_device=SourceRecurrentValues(
+                Quantity(np.array([1.0] * 168, dtype=np.float32), u.occurrence)),
+            jobs=[])
+        cls.rsn_function = EdgeFunction(
+            "rsn only function", recurrent_edge_device_needs=[], recurrent_server_needs=[cls.rsn])
+        rsn_journey = EdgeUsageJourney(
+            "rsn only journey", edge_functions=[cls.rsn_function], usage_span=SourceValue(168 * u.hour))
+        cls.rsn_only_up = EdgeUsagePattern(
+            "rsn only pattern", rsn_journey, network,
+            Country("rsn country 2", "RC2", SourceValue(500 * u.g / u.kWh),
+                    ExplainableTimezone(pytz.utc, "UTC tz 3")),
+            create_source_hourly_values_from_list([3, 3], start_date))
+
+        cls.system = System("pool system", [], edge_usage_patterns=[cls.up, cls.used_up, cls.rsn_only_up])
+
+    def test_unused_component_is_booked_in_eager_totals(self):
+        """Test that the unused RAM's embodied carbon amortizes with the deployment in the eager per-pattern
+        fabrication total, like the chassis."""
+        unused_booking = self.device.unused_component_fabrication_per_edge_device(self.ram, self.up)
+        self.assertGreater(unused_booking.magnitude.sum(), 0)
+        expected = (self.device.structure_fabrication_footprint_per_usage_pattern[self.up]
+                    + self.device.total_nb_of_units
+                    * (self.cpu.fabrication_footprint_per_edge_device_per_usage_pattern[self.up] + unused_booking))
+        assert_hourly_quantities_equal(
+            self, expected.to(u.kg), self.device.instances_fabrication_footprint_per_usage_pattern[self.up])
+
+    def test_unused_component_pool_is_carried_by_the_pattern_needs(self):
+        """Test that the unused RAM's fabrication and chassis share land on the CPU need (the pattern's only
+        carrier) and that the atoms conserve the eager totals."""
+        assert_source_atoms_conserve(self, self.device)
+        fabrication_atoms = list(atoms_of(self.device, LifeCyclePhases.MANUFACTURING))
+        self.assertEqual({self.cpu_need.id}, {a.recn.id for a in fabrication_atoms})
+        pool_share = self.device.fabrication_pool_share_per_carrier_and_pattern[self.up]
+        half = ExplainableQuantity(0.5 * u.dimensionless, "half")
+        expected_pool = (
+            self.device.total_nb_of_units
+            * self.device.unused_component_fabrication_per_edge_device(self.ram, self.up)
+            + self.device.structure_fabrication_footprint_per_usage_pattern[self.up] * half)
+        assert_hourly_quantities_equal(self, expected_pool.to(u.kg), pool_share)
+
+    def test_unused_component_breakdown_entry_includes_deployment_booking(self):
+        """Test that the breakdown-by-source axis shows the unused RAM carrying its deployment-booked
+        fabrication plus its equal chassis share, and still sums to the device total."""
+        unused_booking = self.device.unused_component_fabrication_per_edge_device(self.ram, self.up)
+        half = ExplainableQuantity(0.5 * u.dimensionless, "half")
+        expected_ram = (self.device.total_nb_of_units * unused_booking
+                        + self.device.structure_fabrication_footprint_per_usage_pattern[self.up] * half)
+        assert_hourly_quantities_equal(
+            self, expected_ram.to(u.kg), self.device.fabrication_footprint_breakdown_by_source[self.ram])
+        breakdown_total = sum(
+            self.device.fabrication_footprint_breakdown_by_source.values(), start=EmptyExplainableObject())
+        assert_hourly_quantities_equal(self, self.device.instances_fabrication_footprint, breakdown_total)
+
+    def test_rsn_only_pattern_chassis_flows_through_the_server_need(self):
+        """Test that at a pattern reaching the device only through a RecurrentServerNeed, the whole device
+        fabrication (chassis + unused CPU) is carried by (rsn, ef) atoms and conserves the eager total."""
+        assert_source_atoms_conserve(self, self.rsn_device)
+        rsn_atoms = [a for a in atoms_of(self.rsn_device, LifeCyclePhases.MANUFACTURING)
+                     if a.up == self.rsn_only_up]
+        self.assertEqual(1, len(rsn_atoms))
+        self.assertEqual(self.rsn.id, rsn_atoms[0].rsn.id)
+        self.assertEqual(self.rsn_function.id, rsn_atoms[0].ef.id)
+        self.assertIsNone(rsn_atoms[0].recn)
+        assert_hourly_quantities_equal(
+            self, self.rsn_device.instances_fabrication_footprint_per_usage_pattern[self.rsn_only_up],
+            rsn_atoms[0].value)
+        self.assertEqual(
+            [], [a for a in atoms_of(self.rsn_device, LifeCyclePhases.USAGE) if a.up == self.rsn_only_up])
+        self.assertIsInstance(
+            self.rsn_device.energy_footprint_per_usage_pattern[self.rsn_only_up], EmptyExplainableObject)
+
+    def test_deployed_pattern_without_carriers_raises(self):
+        """Test that a pattern where the device books fabrication through an empty RecurrentEdgeDeviceNeed
+        (no component needs, no server needs to carry it) fails loudly at attribution time."""
+        cpu = EdgeCPUComponent(
+            "carrierless cpu", carbon_footprint_fabrication_per_unit=SourceValue(20 * u.kg),
+            power_per_unit=SourceValue(15 * u.W), lifespan=SourceValue(6 * u.year),
+            idle_power_per_unit=SourceValue(3 * u.W), compute_per_unit=SourceValue(4 * u.cpu_core),
+            base_compute_consumption=SourceValue(0.4 * u.cpu_core))
+        device = EdgeDevice(
+            "carrierless device", structure_carbon_footprint_fabrication=SourceValue(60 * u.kg),
+            components=[cpu], lifespan=SourceValue(6 * u.year))
+        cpu_need = RecurrentEdgeComponentNeed(
+            "carrierless cpu need", edge_component=cpu,
+            recurrent_need=SourceRecurrentValues(Quantity(np.array([1] * 168, dtype=np.float32), u.cpu_core)))
+        used_bundle = RecurrentEdgeDeviceNeed(
+            "carrierless used bundle", edge_device=device, recurrent_edge_component_needs=[cpu_need])
+        used_function = EdgeFunction(
+            "carrierless used function", recurrent_edge_device_needs=[used_bundle], recurrent_server_needs=[])
+        used_journey = EdgeUsageJourney(
+            "carrierless used journey", edge_functions=[used_function], usage_span=SourceValue(168 * u.hour))
+        empty_bundle = RecurrentEdgeDeviceNeed(
+            "carrierless bundle", edge_device=device, recurrent_edge_component_needs=[])
+        function = EdgeFunction(
+            "carrierless function", recurrent_edge_device_needs=[empty_bundle], recurrent_server_needs=[])
+        journey = EdgeUsageJourney(
+            "carrierless journey", edge_functions=[function], usage_span=SourceValue(168 * u.hour))
+        network = Network("carrierless network", SourceValue(0.05 * u.kWh / u.GB))
+        used_pattern = EdgeUsagePattern(
+            "carrierless used pattern", used_journey, network,
+            Country("carrierless country 1", "CC1", SourceValue(50 * u.g / u.kWh),
+                    ExplainableTimezone(pytz.utc, "UTC tz 4")),
+            create_source_hourly_values_from_list([1, 1], datetime(2025, 1, 6)))
+        carrierless_pattern = EdgeUsagePattern(
+            "carrierless pattern", journey, network,
+            Country("carrierless country 2", "CC2", SourceValue(50 * u.g / u.kWh),
+                    ExplainableTimezone(pytz.utc, "UTC tz 5")),
+            create_source_hourly_values_from_list([1, 1], datetime(2025, 1, 6)))
+        System("carrierless system", [], edge_usage_patterns=[used_pattern, carrierless_pattern])
+
+        self.assertIn(
+            carrierless_pattern, device.structure_fabrication_footprint_per_usage_pattern)
+        with self.assertRaises(ValueError) as context:
+            list(atoms_of(device, LifeCyclePhases.MANUFACTURING))
+        self.assertIn("no component needs and no", str(context.exception))
 
 
 if __name__ == "__main__":

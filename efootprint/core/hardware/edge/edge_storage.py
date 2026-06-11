@@ -130,6 +130,13 @@ class EdgeStorage(EdgeComponent):
         self.storage_capacity = (self.storage_capacity_per_unit * self.nb_of_units).set_label(
             f"Storage capacity")
 
+    @property
+    def carbon_footprint_fabrication_from_inputs(self):
+        """Embodied carbon from input attributes only — mirrors update_carbon_footprint_fabrication
+        (per-capacity footprint × per-unit capacity × number of units). See EdgeComponent for why."""
+        return (self.carbon_footprint_fabrication_per_storage_capacity * self.storage_capacity_per_unit
+                * self.nb_of_units).set_label(f"{self.name} carbon footprint fabrication from inputs")
+
     def update_carbon_footprint_fabrication(self):
         """Embodied carbon of the storage component, equal to per-capacity fabrication footprint times the total capacity."""
         self.carbon_footprint_fabrication = (
