@@ -94,12 +94,12 @@ class TestBigSystemFromAndToJsonPerformance(TestCase):
 
         avg_loading_editing_writing_time = update_on_system(
             nb_system_loadings, system_dict, "UsagePattern","hourly_usage_journey_starts",
-            form_inputs_hourly_starts(nb_years=5))
+            form_inputs_hourly_starts(nb_years=5, initial_volume=2000))
         self.assertLess(avg_loading_editing_writing_time, 500)
 
         avg_loading_editing_writing_time = update_on_system(
             nb_system_loadings, system_dict, "EdgeUsagePattern", "hourly_edge_usage_journey_starts",
-            form_inputs_hourly_starts(nb_years=5))
+            form_inputs_hourly_starts(nb_years=5, initial_volume=2000))
         self.assertLess(avg_loading_editing_writing_time, 500)
 
         avg_loading_editing_writing_time = update_on_system(

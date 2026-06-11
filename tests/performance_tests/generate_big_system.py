@@ -267,14 +267,16 @@ if __name__ == "__main__":
 
     start = perf_counter()
     for i in range(edition_iterations):
-        system.usage_patterns[0].hourly_usage_journey_starts = form_inputs_hourly_starts(nb_years)
+        system.usage_patterns[0].hourly_usage_journey_starts = form_inputs_hourly_starts(
+            nb_years, initial_volume=2000 if i % 2 == 0 else 3000)
     end = perf_counter()
     compute_time_per_edition = round(1000 * (end - start) / edition_iterations, 1)
     logger.info(f"edition took {compute_time_per_edition} ms on average per hourly usage journey starts edition")
 
     start = perf_counter()
     for i in range(edition_iterations):
-        system.edge_usage_patterns[0].hourly_edge_usage_journey_starts = form_inputs_hourly_starts(nb_years)
+        system.edge_usage_patterns[0].hourly_edge_usage_journey_starts = form_inputs_hourly_starts(
+            nb_years, initial_volume=2000 if i % 2 == 0 else 3000)
     end = perf_counter()
     compute_time_per_edition = round(1000 * (end - start) / edition_iterations, 1)
     logger.info(f"edition took {compute_time_per_edition} ms on average per edge hourly usage journey starts edition")

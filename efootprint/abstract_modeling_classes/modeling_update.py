@@ -149,11 +149,16 @@ class ModelingUpdate:
                     f"of type {type(new_value)}")
 
             if old_value == new_value:
-                logger.warning(
-                    f"{old_value.id} is updated to itself. "
-                    f"It happens when using my_mod_obj.list_attribute += other list syntax. "
-                    f"Otherwise This is surprising, you might want to double check your action. "
-                    f"The link update logic will be skipped.")
+                if old_value is new_value:
+                    logger.warning(
+                        f"{old_value.id} is updated to itself. "
+                        f"It happens when using my_mod_obj.list_attribute += other list syntax. "
+                        f"Otherwise this is surprising, you might want to double check your action. "
+                        f"The update will be skipped.")
+                else:
+                    logger.warning(
+                        f"{old_value.id} is updated to a value equal to its current one. "
+                        f"The update will be skipped.")
                 indexes_to_skip.append(index)
             index += 1
 
