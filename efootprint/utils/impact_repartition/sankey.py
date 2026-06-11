@@ -1,18 +1,29 @@
+"""Column-walk Sankey renderer over the attribution fold.
+
+The data layer is one ``attribution.node_totals_and_links`` call per life-cycle phase — conservation
+(Σ incoming == node total == Σ outgoing at every node, column sums == phase total minus exclusions) is
+structural in the fold. Everything in this class is presentation: the System root and life-cycle-phase
+columns, the object-category and breakdown-by-source decorations, the ExternalAPIServer → ExternalAPI
+display normalization, small-node aggregation, colors, hovers, and spacer nodes as pure geometry.
+
+Skip a column = leave its classes out of the fold's visible levels (adjacent columns link directly).
+Exclude a source = filter its atoms out of the fold (no rescale, totals shrink by exactly its footprint).
+"""
 import colorsys
 import hashlib
 import math
-from collections.abc import Iterator, Sequence
-from dataclasses import dataclass
+from collections.abc import Sequence
 from typing import Any, TypeAlias
 
 from pint import Quantity
 
-from efootprint.all_classes_in_order import ALL_EFOOTPRINT_CLASSES_DICT
+import efootprint.all_classes_in_order as class_registry
 from efootprint.abstract_modeling_classes.empty_explainable_object import EmptyExplainableObject
 from efootprint.abstract_modeling_classes.explainable_hourly_quantities import ExplainableHourlyQuantities
 from efootprint.abstract_modeling_classes.explainable_object_base_class import ExplainableObject
 from efootprint.abstract_modeling_classes.modeling_object import ModelingObject
 from efootprint.constants.units import u
+from efootprint.core.attribution import node_totals_and_links
 from efootprint.core.lifecycle_phases import LifeCyclePhases
 from efootprint.utils.display import best_display_unit, format_display_number, format_quantity_for_display, human_readable_unit
 from efootprint.utils.impact_repartition._graph import SankeyGraph
@@ -21,12 +32,6 @@ from efootprint.utils.tools import time_it
 ConfiguredClass: TypeAlias = type[ModelingObject] | str
 NodeKey: TypeAlias = tuple[str, str | None] | tuple[str, str | int | None, int] | tuple[str, int, int, int]
 ColumnInformation: TypeAlias = dict[str, Any]
-
-
-@dataclass(frozen=True)
-class _ResolvedFootprintSource:
-    source: ModelingObject
-    value: Quantity
 
 
 class ImpactRepartitionSankey:
@@ -73,7 +78,6 @@ class ImpactRepartitionSankey:
         self._category_node_indices: set[int] = set()
         self._leaf_node_indices: set[int] = set()
         self._breakdown_node_indices: set[int] = set()
-        self._resolved_attribution_cache: dict[tuple[int, LifeCyclePhases], dict] = {}
 
     @property
     def node_labels(self) -> list[str]:
@@ -134,27 +138,8 @@ class ImpactRepartitionSankey:
     @staticmethod
     def _resolved_class_objects(configured_classes: Sequence[ConfiguredClass]) -> tuple[type, ...]:
         def _resolve(cc):
-            return ALL_EFOOTPRINT_CLASSES_DICT.get(cc) if isinstance(cc, str) else cc
+            return class_registry.ALL_EFOOTPRINT_CLASSES_DICT.get(cc) if isinstance(cc, str) else cc
         return tuple(cls for cls in map(_resolve, configured_classes) if isinstance(cls, type))
-
-    def _resolved_attribution_for(self, obj: ModelingObject, phase: LifeCyclePhases) -> dict:
-        cache_key = (id(obj), phase)
-        cached = self._resolved_attribution_cache.get(cache_key)
-        if cached is not None:
-            return cached
-        if not self.skipped_impact_repartition_classes and not self.excluded_object_types:
-            resolved = obj.attributed_footprint_per_source[phase]
-        else:
-            method_name = (
-                "attributed_fabrication_footprint_per_source_resolved"
-                if phase == LifeCyclePhases.MANUFACTURING
-                else "attributed_energy_footprint_per_source_resolved")
-            resolved = getattr(obj, method_name)(
-                skipped_object_types=self._resolved_class_objects(self.skipped_impact_repartition_classes),
-                excluded_object_types=self._resolved_class_objects(self.excluded_object_types),
-            )
-        self._resolved_attribution_cache[cache_key] = resolved
-        return resolved
 
     @staticmethod
     def _get_canonical_class_name(obj: ModelingObject) -> str:
@@ -162,10 +147,9 @@ class ImpactRepartitionSankey:
 
     @classmethod
     def _sort_class_names(cls, class_names: set[str]) -> list[str]:
-        from efootprint.all_classes_in_order import CANONICAL_COMPUTATION_ORDER
-
         canonical_order = {
-            canonical_class.__name__: index for index, canonical_class in enumerate(CANONICAL_COMPUTATION_ORDER)
+            canonical_class.__name__: index
+            for index, canonical_class in enumerate(class_registry.CANONICAL_COMPUTATION_ORDER)
         }
         return sorted(
             class_names,
@@ -177,6 +161,29 @@ class ImpactRepartitionSankey:
 
     def _is_excluded(self, obj: ModelingObject) -> bool:
         return self._matches_configured_class(obj, self.excluded_object_types)
+
+    @staticmethod
+    def _source_level_classes() -> tuple[type, ...]:
+        return tuple(class_registry.SANKEY_COLUMNS[-1])
+
+    def _fold_visible_levels(self) -> tuple[type, ...]:
+        """The fold's visible levels: every container-column class not skipped, plus — always — the
+        source-level classes (the fold needs source granularity for phase totals, categories and leaves
+        even when their display columns are hidden; hiding them is presentation)."""
+        skipped = self._resolved_class_objects(self.skipped_impact_repartition_classes)
+        container_classes = tuple(
+            cls for group in class_registry.SANKEY_COLUMNS[1:-1] for cls in group
+            if not (skipped and issubclass(cls, skipped)))
+        return container_classes + self._source_level_classes()
+
+    def _fold_excluded_sources(self) -> tuple[type, ...]:
+        """Excluded source classes for the fold's atom filter. ExternalAPI classes are display-side objects —
+        their atoms are emitted by the paired server class, so the exclusion maps to it."""
+        from efootprint.builders.external_apis.external_api_base_class import ExternalAPI
+
+        return tuple(
+            cls.server_class if issubclass(cls, ExternalAPI) else cls
+            for cls in self._resolved_class_objects(self.excluded_object_types))
 
     def _reset_build_state(self) -> None:
         self._graph.reset()
@@ -191,7 +198,6 @@ class ImpactRepartitionSankey:
         self._category_node_indices = set()
         self._leaf_node_indices = set()
         self._breakdown_node_indices = set()
-        self._resolved_attribution_cache = {}
 
     def _add_node(
             self, label: str, key: NodeKey, color_key: str | None = None, obj: ModelingObject | None = None) -> int:
@@ -222,25 +228,12 @@ class ImpactRepartitionSankey:
             return None
         return phase.value
 
-    def _iter_resolved_sources(self, obj: ModelingObject, phase: LifeCyclePhases) -> Iterator[_ResolvedFootprintSource]:
-        for original_source, value in self._resolved_attribution_for(obj, phase).items():
-            source = self._normalize_sankey_source(original_source)
-            if original_source is not source and self._is_excluded(original_source):
-                continue
-            if self._is_excluded(source):
-                continue
-            yield _ResolvedFootprintSource(source=source, value=self._get_total_value(value))
-
-    def _get_phase_total_value(self, root: ModelingObject, phase: LifeCyclePhases) -> Quantity:
-        return sum(
-            (resolved.value for resolved in self._iter_resolved_sources(root, phase)), start=0 * u.kg)
-
     @staticmethod
     def _is_positive(quantity: Quantity) -> bool:
         magnitude = quantity.magnitude
         if isinstance(magnitude, float) and math.isnan(magnitude):
             raise ValueError(
-                f"NaN encountered in Sankey value ({quantity}). NaN values in attributed-footprint inputs indicate an "
+                f"NaN encountered in Sankey value ({quantity}). NaN values in attribution-fold inputs indicate an "
                 f"upstream attribution bug (e.g. 0/0 in hourly-series division). Fix the source rather than silently "
                 f"filtering the flow.")
         return magnitude > 0
@@ -255,40 +248,9 @@ class ImpactRepartitionSankey:
         else:
             self.node_total_values[node_idx] += value
 
-    def _traverse(
-            self, obj: ModelingObject, phase: LifeCyclePhases, phase_context: str | None, parent_idx: int | None,
-            obj_flow_value: Quantity, visited: set[str]) -> None:
-        if obj.id in visited:
-            return
-        next_visited = visited | {obj.id}
-        resolved_sources: list[tuple[ModelingObject, Quantity]] = []
-        obj_phase_total_value = 0 * u.kg
-        for resolved_source in self._iter_resolved_sources(obj, phase):
-            if not self._is_positive(resolved_source.value):
-                continue
-            resolved_sources.append((resolved_source.source, resolved_source.value))
-            obj_phase_total_value += resolved_source.value
-
-        if not self._is_positive(obj_phase_total_value):
-            return
-
-        flow_scale = obj_flow_value / obj_phase_total_value
-        for source, source_phase_value in resolved_sources:
-            value = source_phase_value * flow_scale
-            if not self._is_positive(value):
-                continue
-            if source.is_impact_source:
-                self._handle_impact_source(source, value, phase, phase_context, parent_idx)
-                continue
-            source_idx = self._add_node(source.name, (source.id, phase_context), color_key=source.id, obj=source)
-            self._add_flow_to_node(parent_idx, source_idx, value)
-            self._traverse(source, phase, phase_context, source_idx, value, next_visited)
-
     @staticmethod
     def _find_object_category_name(source: ModelingObject) -> str | None:
-        from efootprint.all_classes_in_order import OBJECT_CATEGORIES
-
-        for category_name, category_classes in OBJECT_CATEGORIES.items():
+        for category_name, category_classes in class_registry.OBJECT_CATEGORIES.items():
             if any(isinstance(source, cls) for cls in category_classes):
                 return category_name
         return None
@@ -306,9 +268,12 @@ class ImpactRepartitionSankey:
             return {}
         return breakdown_by_source.get(phase, {})
 
-    def _expand_impact_source_breakdown(
-            self, source: ModelingObject, source_idx: int, phase: LifeCyclePhases, phase_context: str | None,
-            value: Quantity) -> None:
+    def _render_breakdown(
+            self, source: ModelingObject, parent_idx: int | None, phase: LifeCyclePhases, phase_context: str | None,
+            flow_value: Quantity) -> None:
+        """Decorate a flow into ``source`` with its breakdown-by-source children (e.g. EdgeDevice →
+        EdgeComponent, the orthogonal hardware axis), scaled by the flow's share of the source's eager
+        phase footprint."""
         source_phase_footprint = self._get_total_value(self._get_source_phase_footprint(source, phase))
         if not self._is_positive(source_phase_footprint):
             return
@@ -316,7 +281,7 @@ class ImpactRepartitionSankey:
         for breakdown_source, breakdown_value in self._get_footprint_breakdown_by_source(source, phase).items():
             if breakdown_source is source or self._is_excluded(breakdown_source) or self._should_skip_object(breakdown_source):
                 continue
-            breakdown_source_value = self._get_total_value(breakdown_value) * value / source_phase_footprint
+            breakdown_source_value = self._get_total_value(breakdown_value) * flow_value / source_phase_footprint
             if not self._is_positive(breakdown_source_value):
                 continue
             breakdown_idx = self._add_node(
@@ -326,14 +291,23 @@ class ImpactRepartitionSankey:
                 obj=breakdown_source,
             )
             self._breakdown_node_indices.add(breakdown_idx)
-            self._add_flow_to_node(source_idx, breakdown_idx, breakdown_source_value)
+            self._add_flow_to_node(parent_idx, breakdown_idx, breakdown_source_value)
 
-    def _handle_impact_source(
+    def _render_source_flow(
             self, source: ModelingObject, value: Quantity, phase: LifeCyclePhases, phase_context: str | None,
             parent_idx: int | None) -> None:
+        """One flow arriving at an impact source: a skipped source is replaced by its breakdown children
+        (dropped if it has none); otherwise the flow passes through the source's category node (when the
+        category split is on), reaches the source leaf, and gets its breakdown decoration."""
+        display_source = self._normalize_sankey_source(source)
+        if self._should_skip_object(source) or self._should_skip_object(display_source):
+            if not self.skip_object_footprint_split:
+                self._render_breakdown(source, parent_idx, phase, phase_context, value)
+            return
+
         leaf_parent_idx = parent_idx
         if not self.skip_object_category_footprint_split:
-            category_name = self._find_object_category_name(source)
+            category_name = self._find_object_category_name(display_source)
             if category_name:
                 category_label = f"{category_name} {phase_context.lower()}" if phase_context is not None else category_name
                 cat_idx = self._add_node(category_label, (category_name, phase_context), color_key=f"__cat_{category_name}__")
@@ -344,12 +318,41 @@ class ImpactRepartitionSankey:
         if self.skip_object_footprint_split:
             return
 
-        # Skipped impact sources are replaced by their breakdown children inside `resolve_attributed_footprint_per_source`,
-        # so a skipped source never reaches this method. The decoration breakdown below stays in the renderer.
-        source_idx = self._add_node(source.name, (source.id, phase_context), color_key=source.id, obj=source)
+        source_idx = self._add_node(
+            display_source.name, (display_source.id, phase_context), color_key=display_source.id, obj=display_source)
         self._leaf_node_indices.add(source_idx)
         self._add_flow_to_node(leaf_parent_idx, source_idx, value)
-        self._expand_impact_source_breakdown(source, source_idx, phase, phase_context, value)
+        self._render_breakdown(source, source_idx, phase, phase_context, value)
+
+    def _render_phase(
+            self, phase: LifeCyclePhases, parent_idx: int | None, fold_node_totals: dict, fold_links: dict) -> None:
+        """Turn one phase's fold output into display nodes and links. Fold links run source-ward → System-ward;
+        display links run the other way (root → … → source). Chain heads (the coarsest visible nodes) receive
+        their full total from the phase/root parent."""
+        phase_context = self._get_phase_context(phase)
+        source_classes = self._source_level_classes()
+        container_indices = {}
+        for node, total in fold_node_totals.items():
+            if not isinstance(node, source_classes) and self._is_positive(total):
+                container_indices[node] = self._add_node(node.name, (node.id, phase_context), color_key=node.id, obj=node)
+
+        nodes_with_outgoing_links = {finer for finer, _ in fold_links}
+        for node, total in fold_node_totals.items():
+            if node in nodes_with_outgoing_links or not self._is_positive(total):
+                continue
+            if isinstance(node, source_classes):
+                self._render_source_flow(node, total, phase, phase_context, parent_idx)
+            else:
+                self._add_flow_to_node(parent_idx, container_indices[node], total)
+
+        for (finer, coarser), value in fold_links.items():
+            if not self._is_positive(value):
+                continue
+            coarser_idx = container_indices[coarser]
+            if isinstance(finer, source_classes):
+                self._render_source_flow(finer, value, phase, phase_context, coarser_idx)
+            else:
+                self._add_link(coarser_idx, container_indices[finer], value)
 
     @time_it
     def build(self) -> None:
@@ -357,15 +360,26 @@ class ImpactRepartitionSankey:
             return
         self._reset_build_state()
 
-        root = self.system
         phases = self._get_phases()
-        phase_totals = {phase: self._get_phase_total_value(root, phase) for phase in phases}
+        visible_levels = self._fold_visible_levels()
+        excluded_sources = self._fold_excluded_sources()
+        source_classes = self._source_level_classes()
+        phase_data = {}
+        phase_totals = {}
+        for phase in phases:
+            fold_node_totals, fold_links = node_totals_and_links(
+                self.system, phase, visible_levels, exclude=excluded_sources)
+            node_totals = {node: self._get_total_value(value) for node, value in fold_node_totals.items()}
+            links = {pair: self._get_total_value(value) for pair, value in fold_links.items()}
+            phase_data[phase] = (node_totals, links)
+            phase_totals[phase] = sum(
+                (total for node, total in node_totals.items() if isinstance(node, source_classes)), start=0 * u.kg)
         self._total_system_value = sum(phase_totals.values(), start=0 * u.kg)
 
         current_column_index = 1
         root_idx = None
-        if not self._should_skip_object(root):
-            root_idx = self._add_node(root.name, ("root", "total"), color_key="__system__", obj=root)
+        if not self._should_skip_object(self.system):
+            root_idx = self._add_node(self.system.name, ("root", "total"), color_key="__system__", obj=self.system)
             self.node_total_values[root_idx] = self.total_system_value
             self._node_columns[root_idx] = current_column_index
             self._manual_column_information.append({
@@ -396,9 +410,7 @@ class ImpactRepartitionSankey:
         self._impact_repartition_start_column = current_column_index
 
         for phase in phases:
-            self._traverse(
-                root, phase, self._get_phase_context(phase), phase_parents[phase], phase_totals[phase],
-                visited=set())
+            self._render_phase(phase, phase_parents[phase], *phase_data[phase])
 
         self._assign_columns()
         self._assign_category_leaf_and_breakdown_columns()
@@ -407,20 +419,18 @@ class ImpactRepartitionSankey:
         self._built = True
 
     def _is_intermediate_node(self, node_idx: int) -> bool:
-        """Intermediate traversal nodes: not root/phase (already in _node_columns) nor category/leaf/breakdown."""
+        """Intermediate container nodes: not root/phase (already in _node_columns) nor category/leaf/breakdown."""
         return (
             node_idx not in self._node_columns and node_idx not in self._category_node_indices
             and node_idx not in self._leaf_node_indices and node_idx not in self._breakdown_node_indices
         )
 
     def _assign_columns(self) -> None:
-        from efootprint.all_classes_in_order import SANKEY_COLUMNS
-
         node_to_group = {}
         for node_idx, obj in self.node_objects.items():
             if not self._is_intermediate_node(node_idx):
                 continue
-            for group_idx, group in enumerate(SANKEY_COLUMNS):
+            for group_idx, group in enumerate(class_registry.SANKEY_COLUMNS):
                 if any(isinstance(obj, cls) for cls in group):
                     node_to_group[node_idx] = group_idx
                     break
@@ -791,40 +801,3 @@ class ImpactRepartitionSankey:
             from IPython.display import HTML
             return HTML(filename=filename)
         return fig
-
-
-if __name__ == '__main__':
-    test = "json"
-    json_files = ["basic-model.json", "basic-2.json", "chatbot-efootprint-model.json",
-                  "scenarioC_smart_building_system.json", "basic-edge.json", "curling.json", "smart building test.json",
-                  "scenarioC_smart_building_system_from_process_counts.json",
-                  "2026-03-23 09_10 UTC 10 protection relays virtualized in M shoebox with US.e-f.json"]
-    skipped_impact_repartition_classes__full = [
-        "System", "Country", "EdgeComponent", "JobBase", "RecurrentEdgeDeviceNeed", "RecurrentServerNeed",
-        "RecurrentEdgeComponentNeed", "RecurrentEdgeWorkloadNeed"]
-    skipped_impact_repartition_classes = [
-        "System", "JobBase", "RecurrentEdgeDeviceNeed", "RecurrentServerNeed", "RecurrentEdgeComponentNeed"]
-    if test == "service":
-        from tests.integration_tests.integration_services_base_class import IntegrationTestServicesBaseClass
-        system, start_date = IntegrationTestServicesBaseClass.generate_system_with_services()
-    elif test == "edge":
-        from tests.integration_tests.integration_simple_edge_system_base_class import IntegrationTestSimpleEdgeSystemBaseClass
-        system, start_date = IntegrationTestSimpleEdgeSystemBaseClass.generate_simple_edge_system()
-        print(system.edge_usage_patterns[0].attributed_fabrication_footprint.sum())
-        print(system.edge_usage_patterns[0].attributed_energy_footprint.sum())
-    elif test == "json":
-        from efootprint.api_utils.json_to_system import json_to_system
-        import json
-        with open(json_files[0], "r") as f:
-            json_data = json.load(f)
-        class_obj_dict, flat_obj_dict, _ = json_to_system(json_data)
-        system = next(iter(class_obj_dict["System"].values()))
-    sankey = ImpactRepartitionSankey(
-        system, aggregation_threshold_percent=1,
-        skipped_impact_repartition_classes=None,
-        skip_phase_footprint_split=False, skip_object_category_footprint_split=False,
-        skip_object_footprint_split=False, excluded_object_types=None, lifecycle_phase_filter=None,
-        display_column_information=True
-    )
-    fig = sankey.figure()
-    fig.show()

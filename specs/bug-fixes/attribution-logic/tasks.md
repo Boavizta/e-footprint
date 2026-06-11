@@ -325,6 +325,31 @@ Audit the touched edge classes' `calculated_attributes` for attribution-only ent
 
 ## Task 6 — Sankey renderer cut-over
 
+**Status:** Done
+
+**Implementation notes:**
+- The fold's visible levels always include the source-level classes (`SANKEY_COLUMNS[-1]`) even when their
+  display column is hidden — phase totals, category aggregation and the breakdown decoration need source
+  granularity; hiding leaves is presentation. Container levels are the `SANKEY_COLUMNS[1:-1]` classes minus
+  the skipped ones.
+- Skipped impact-source classes now conserve totals: the leaf (and its category node) is hidden and the flow
+  stops at the finest visible container, with breakdown children still expanded per parent flow (matching the
+  legacy probe: hardware-skipped renders kept totals and dropped category nodes). Excluded `ExternalAPI`
+  classes map to their `server_class` for the fold's atom filter; `EdgeStorage`-style exclusions keep acting
+  on breakdown children only, as before.
+- `all_classes_in_order.py` needed no change — `SANKEY_COLUMNS` entries are already the class tuples the
+  fold's isinstance filtering consumes.
+- Per-column conservation through the renderer holds for every column between root and the leaf column when
+  spacer pass-throughs are counted (a Device atom has no Job node; its flow crosses the Job column in a
+  spacer) — pinned that way in the regression test; fold-level "every level column sums to the phase total"
+  only holds for levels every chain crosses (UJ / UP / Country).
+- Per-node diffs vs legacy, all spec-documented: complex fixture's dual-side jobs move ~36 t CO2eq of server
+  impact from the edge chain (RSN/EF/EUJ/EUP) to the web steps/patterns (analysis.md Server edge partition);
+  edge component-need nodes re-split by the equal-share idle floor and held-volume storage demand
+  (edge-analysis fixes 2–3 — storage needs now carry weight, sum per device conserved); ~0.01% server-side
+  shifts from binding-resource / per-tier / flat always-on weights. simple / services / edge_group fixtures
+  are numerically identical node by node.
+
 **Goal:** Rewrite `ImpactRepartitionSankey` as the column-walk of `sankey_sketch.py`: data layer
 = one `attribution.node_totals_and_links(...)` call per life-cycle phase; everything else is
 presentation (System root + phase columns, object-category and breakdown-by-source decorations,

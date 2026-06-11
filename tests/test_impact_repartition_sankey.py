@@ -1,134 +1,285 @@
 import math
-import re
+from functools import lru_cache
 from unittest import TestCase
-from unittest.mock import MagicMock, patch
+from unittest.mock import patch
 
-from efootprint.abstract_modeling_classes.empty_explainable_object import EmptyExplainableObject
-from efootprint.all_classes_in_order import SANKEY_COLUMNS
-from efootprint.builders.external_apis.external_api_base_class import ExternalAPI, ExternalAPIServer
 from efootprint.constants.units import u
-from efootprint.core.hardware.device import Device
-from efootprint.core.hardware.server_base import ServerBase
+from efootprint.core.attribution import attribution_sources
 from efootprint.core.lifecycle_phases import LifeCyclePhases
+from efootprint.core.usage.usage_journey import UsageJourney
 from efootprint.utils.impact_repartition import ImpactRepartitionSankey
-from tests.utils import set_modeling_obj_containers
 
 
-def _DummyQuantity(magnitude):
-    """Test-fixture factory: return a real Pint ``Quantity`` in kg so the renderer's arithmetic and unit-aware
-    branches exercise the same code paths as production. Replaces a previous test-only class that duplicated
-    Quantity arithmetic via ``__add__``/``__mul__``/``__truediv__``."""
-    return magnitude * u.kg
+class _EmptySystem:
+    """Minimal stand-in for a System with no attribution sources, for presentation-only tests."""
 
-
-class _DummyObject:
-    def __init__(self, name, object_id, is_impact_source=False):
+    def __init__(self, name="Test system"):
         self.name = name
-        self.id = object_id
-        self.class_as_simple_str = self.__class__.__name__.lstrip("_")
-        self._is_impact_source = is_impact_source
-        self._attributed_footprint_per_source = {LifeCyclePhases.MANUFACTURING: {}, LifeCyclePhases.USAGE: {}}
-
-    @property
-    def is_impact_source(self):
-        return self._is_impact_source
-
-    @property
-    def attributed_footprint_per_source(self):
-        return self._attributed_footprint_per_source
-
-    def attributed_fabrication_footprint_per_source_resolved(
-            self, skipped_object_types=(), excluded_object_types=()):
-        from efootprint.abstract_modeling_classes.modeling_object import resolve_attributed_footprint_per_source
-        if not skipped_object_types and not excluded_object_types:
-            return self._attributed_footprint_per_source[LifeCyclePhases.MANUFACTURING]
-        return resolve_attributed_footprint_per_source(
-            self, LifeCyclePhases.MANUFACTURING, skipped_object_types, excluded_object_types)
-
-    def attributed_energy_footprint_per_source_resolved(
-            self, skipped_object_types=(), excluded_object_types=()):
-        from efootprint.abstract_modeling_classes.modeling_object import resolve_attributed_footprint_per_source
-        if not skipped_object_types and not excluded_object_types:
-            return self._attributed_footprint_per_source[LifeCyclePhases.USAGE]
-        return resolve_attributed_footprint_per_source(
-            self, LifeCyclePhases.USAGE, skipped_object_types, excluded_object_types)
-
-    @property
-    def canonical_class(self):
-        if hasattr(self, "_canonical_class_override"):
-            return self._canonical_class_override
-        from efootprint.all_classes_in_order import CANONICAL_COMPUTATION_ORDER
-
-        for canonical_class in CANONICAL_COMPUTATION_ORDER:
-            if isinstance(self, canonical_class):
-                return canonical_class
-        return type(self)
-
-    def __hash__(self):
-        return hash(self.id)
+        self.id = "test_system"
+        self.all_linked_objects = []
+        self.render_cache = {}
 
 
-class _SkippedObject(_DummyObject):
-    pass
+_FIXTURE_NAMES = ("simple", "simple_edge", "complex", "services", "edge_group")
 
 
-class _DummySystemObject(_DummyObject):
-    pass
+@lru_cache(maxsize=None)
+def fixture_system(name):
+    if name == "simple":
+        from tests.integration_tests.integration_simple_system_base_class import IntegrationTestSimpleSystemBaseClass
+        return IntegrationTestSimpleSystemBaseClass.generate_simple_system()[0]
+    if name == "simple_edge":
+        from tests.integration_tests.integration_simple_edge_system_base_class import (
+            IntegrationTestSimpleEdgeSystemBaseClass)
+        return IntegrationTestSimpleEdgeSystemBaseClass.generate_simple_edge_system()[0]
+    if name == "complex":
+        from tests.integration_tests.integration_complex_system_base_class import (
+            IntegrationTestComplexSystemBaseClass)
+        return IntegrationTestComplexSystemBaseClass.generate_complex_system()[0]
+    if name == "services":
+        from tests.integration_tests.integration_services_base_class import IntegrationTestServicesBaseClass
+        return IntegrationTestServicesBaseClass.generate_system_with_services()[0]
+    if name == "edge_group":
+        from tests.integration_tests.integration_edge_device_group_base_class import (
+            IntegrationEdgeDeviceGroupBaseClass)
+        return IntegrationEdgeDeviceGroupBaseClass.generate_edge_device_group_system()[0]
+    raise ValueError(name)
 
 
-class _TypeAObject(_DummyObject):
-    pass
+def eager_system_total(system, phases=tuple(LifeCyclePhases)):
+    from efootprint.abstract_modeling_classes.empty_explainable_object import EmptyExplainableObject
+    from tests.core.attribution.conservation import eager_phase_footprint
+
+    total = EmptyExplainableObject()
+    for source in attribution_sources(system):
+        for phase in phases:
+            total = total + eager_phase_footprint(source, phase)
+    return 0 * u.kg if isinstance(total, EmptyExplainableObject) else total.sum().value
 
 
-class _TypeBObject(_DummyObject):
-    pass
+def build_sankey(system, **kwargs):
+    kwargs.setdefault("aggregation_threshold_percent", 0)
+    sankey = ImpactRepartitionSankey(system, **kwargs)
+    sankey.build()
+    return sankey
 
 
-class CanonicalParentObject(_DummyObject):
-    pass
+def incoming_and_outgoing_by_node(sankey):
+    incoming, outgoing = {}, {}
+    for source, target, value in zip(sankey.link_sources, sankey.link_targets, sankey.link_values):
+        incoming[target] = incoming.get(target, 0 * u.kg) + value
+        outgoing[source] = outgoing.get(source, 0 * u.kg) + value
+    return incoming, outgoing
 
 
-class CanonicalChildAObject(CanonicalParentObject):
-    pass
+def node_totals_by_key(sankey):
+    return {key: sankey.node_total_values[idx] for key, idx in sankey.node_indices.items()
+            if idx not in sankey._spacer_nodes}
 
 
-class CanonicalChildBObject(CanonicalParentObject):
-    pass
+class TestImpactRepartitionSankeyConservation(TestCase):
+    """Conservation regressions on every fixture model: the renderer is a pure presentation of the
+    attribution fold, so per-node link balance and per-column totals are structural and must never drift."""
+
+    def assert_kg_equal(self, expected, actual, msg=None):
+        expected_kg = expected.to(u.kg).magnitude
+        actual_kg = actual.to(u.kg).magnitude
+        scale = max(abs(expected_kg), 1.0)
+        self.assertAlmostEqual(0, (expected_kg - actual_kg) / scale, places=4, msg=msg)
+
+    def test_per_node_link_balance_on_every_fixture(self):
+        """Test that on every fixture model, Σ incoming == node total at every linked node and
+        Σ outgoing == node total at every pass-through (non-leaf, non-breakdown) node."""
+        for name in _FIXTURE_NAMES:
+            with self.subTest(fixture=name):
+                sankey = build_sankey(fixture_system(name))
+                incoming, outgoing = incoming_and_outgoing_by_node(sankey)
+                terminal_nodes = sankey._leaf_node_indices | sankey._breakdown_node_indices
+                for idx in range(len(sankey.node_labels)):
+                    if idx in incoming:
+                        self.assert_kg_equal(
+                            sankey.node_total_values[idx], incoming[idx],
+                            msg=f"Σ incoming != total at {sankey.full_node_labels[idx]} ({name})")
+                    if idx in outgoing and idx not in terminal_nodes:
+                        self.assert_kg_equal(
+                            sankey.node_total_values[idx], outgoing[idx],
+                            msg=f"Σ outgoing != total at {sankey.full_node_labels[idx]} ({name})")
+
+    def test_column_sums_equal_system_total_on_every_fixture(self):
+        """Test that on every fixture model the root total matches the eager system total and every
+        container column, the category column and the leaf nodes each sum back to it."""
+        for name in _FIXTURE_NAMES:
+            with self.subTest(fixture=name):
+                system = fixture_system(name)
+                sankey = build_sankey(system)
+                self.assert_kg_equal(eager_system_total(system), sankey.total_system_value)
+
+                root_idx = sankey.node_indices[("root", "total")]
+                self.assert_kg_equal(sankey.total_system_value, sankey.node_total_values[root_idx])
+
+                # Every column strictly between the root and the leaves carries the full total: each flow
+                # crosses it either in a real node or in a pure-geometry spacer (a Device atom has no Job
+                # node, so its flow crosses the Job column in a spacer — values untouched).
+                leaf_columns = {sankey._node_columns[idx] for idx in sankey._leaf_node_indices}
+                last_full_column = min(leaf_columns) - 1 if leaf_columns else max(sankey._node_columns.values())
+                column_totals = {}
+                for idx, column in sankey._node_columns.items():
+                    if idx in sankey._breakdown_node_indices:
+                        continue
+                    column_totals.setdefault(column, 0 * u.kg)
+                    column_totals[column] += sankey.node_total_values[idx]
+                for column in range(sankey._node_columns[root_idx] + 1, last_full_column + 1):
+                    self.assert_kg_equal(
+                        sankey.total_system_value, column_totals[column],
+                        msg=f"Column {column} doesn't conserve the system total ({name})")
+
+                leaf_total = sum(
+                    (sankey.node_total_values[idx] for idx in sankey._leaf_node_indices), start=0 * u.kg)
+                self.assert_kg_equal(sankey.total_system_value, leaf_total,
+                                     msg=f"Leaf nodes don't conserve the system total ({name})")
+
+    def test_lifecycle_phase_filter_restricts_to_phase_total(self):
+        """Test that filtering on the manufacturing phase yields exactly the eager fabrication total."""
+        system = fixture_system("simple")
+        sankey = build_sankey(system, lifecycle_phase_filter=LifeCyclePhases.MANUFACTURING)
+        self.assert_kg_equal(
+            eager_system_total(system, phases=(LifeCyclePhases.MANUFACTURING,)), sankey.total_system_value)
+
+    def test_skip_column_preserves_surviving_node_totals_and_links_across(self):
+        """Test that skipping the UsageJourney column removes its nodes, keeps every surviving node total
+        identical to the full build, and links steps directly under usage patterns."""
+        system = fixture_system("simple")
+        baseline = build_sankey(system)
+        skipped = build_sankey(system, skipped_impact_repartition_classes=[UsageJourney])
+
+        baseline_totals = node_totals_by_key(baseline)
+        skipped_totals = node_totals_by_key(skipped)
+        journey = system.usage_patterns[0].usage_journey
+        self.assertIn((journey.id, "Usage"), baseline_totals)
+        self.assertNotIn((journey.id, "Usage"), skipped_totals)
+        for key, value in skipped_totals.items():
+            self.assert_kg_equal(baseline_totals[key], value, msg=f"Node {key} changed when skipping UsageJourney")
+
+        usage_pattern = system.usage_patterns[0]
+        step = journey.uj_steps[0]
+        for phase_context in ("Manufacturing", "Usage"):
+            up_idx = skipped.node_indices[(usage_pattern.id, phase_context)]
+            step_idx = skipped.node_indices[(step.id, phase_context)]
+            direct_links = [
+                value for source, target, value in zip(
+                    skipped.link_sources, skipped.link_targets, skipped.link_values)
+                if source == up_idx and target == step_idx]
+            self.assertTrue(direct_links, f"No direct UP → step link in {phase_context} when UJ is skipped")
+
+    def test_exclude_source_filters_without_rescaling(self):
+        """Test that excluding the Device class drops exactly its footprint from the total and leaves every
+        other leaf's total untouched (filter, no rescale)."""
+        system = fixture_system("simple")
+        device = system.usage_patterns[0].devices[0]
+        baseline = build_sankey(system)
+        excluded = build_sankey(system, excluded_object_types=["Device"])
+
+        device_total = (device.instances_fabrication_footprint.sum() + device.energy_footprint.sum()).value
+        self.assert_kg_equal(baseline.total_system_value - device_total, excluded.total_system_value)
+
+        baseline_totals = node_totals_by_key(baseline)
+        excluded_totals = node_totals_by_key(excluded)
+        self.assertIn((device.id, "Usage"), baseline_totals)
+        self.assertNotIn((device.id, "Usage"), excluded_totals)
+        for idx in excluded._leaf_node_indices:
+            key = next(k for k, v in excluded.node_indices.items() if v == idx)
+            self.assert_kg_equal(
+                baseline_totals[key], excluded_totals[key],
+                msg=f"Leaf {key} was rescaled by the exclusion")
+
+    def test_external_api_server_sources_are_normalized_to_external_api(self):
+        """Test that ExternalAPIServer atoms display as their ExternalAPI with its category node."""
+        system = fixture_system("services")
+        sankey = build_sankey(system)
+        api_server = next(
+            obj for obj in attribution_sources(system)
+            if obj.class_as_simple_str == "EcoLogitsGenAIExternalAPIServer")
+        self.assertIn((api_server.external_api.id, "Usage"), sankey.node_indices)
+        self.assertNotIn((api_server.id, "Usage"), sankey.node_indices)
+        self.assertIn(("ExternalAPIs", "Usage"), sankey.node_indices)
+
+    def test_edge_device_breakdown_decoration_sums_to_device_totals(self):
+        """Test that EdgeDevice leaf nodes carry their EdgeComponent breakdown children and the children sum
+        to the device's leaf total per phase (full-coverage fixture)."""
+        system = fixture_system("simple_edge")
+        sankey = build_sankey(system)
+        self.assertTrue(sankey._breakdown_node_indices)
+        incoming, _ = incoming_and_outgoing_by_node(sankey)
+        edge_device = next(
+            obj for obj in attribution_sources(system) if obj.class_as_simple_str == "EdgeComputer")
+        for phase in LifeCyclePhases:
+            device_idx = sankey.node_indices[(edge_device.id, phase.value)]
+            breakdown_total = sum(
+                (value for source, target, value in zip(
+                    sankey.link_sources, sankey.link_targets, sankey.link_values)
+                 if source == device_idx and target in sankey._breakdown_node_indices), start=0 * u.kg)
+            self.assertGreater(breakdown_total.magnitude, 0)
+            self.assertAlmostEqual(
+                1, (breakdown_total / sankey.node_total_values[device_idx]).to(u.dimensionless).magnitude,
+                places=4)
+
+    def test_skipped_source_classes_keep_totals_and_drop_leaves(self):
+        """Test that skipping every hardware class hides the leaf and category columns but conserves the
+        system total and the container node totals (skip = hide, never rescale)."""
+        system = fixture_system("simple")
+        hardware = ["Device", "EdgeDevice", "Network", "ExternalAPI", "ServerBase", "ExternalAPIServer", "Storage"]
+        baseline = build_sankey(system)
+        skipped = build_sankey(
+            system, skipped_impact_repartition_classes=hardware, skip_object_footprint_split=True)
+
+        self.assert_kg_equal(baseline.total_system_value, skipped.total_system_value)
+        self.assertEqual(set(), skipped._leaf_node_indices)
+        baseline_totals = node_totals_by_key(baseline)
+        for key, value in node_totals_by_key(skipped).items():
+            self.assert_kg_equal(baseline_totals[key], value, msg=f"Node {key} changed when skipping hardware")
+
+    def test_interface_smoke_with_exact_sankey_views_kwargs(self):
+        """Test the renderer instantiates and builds with the exact kwargs e-footprint-interface's
+        sankey_views.py passes (default chips: columns 2, 5, 6 skipped as class-name strings), and exposes
+        every attribute the view reads."""
+        system = fixture_system("simple_edge")
+        skipped_classes = [
+            "UsagePattern", "EdgeUsagePattern", "RecurrentEdgeDeviceNeed", "RecurrentServerNeed",
+            "JobBase", "RecurrentEdgeComponentNeed"]
+        sankey = ImpactRepartitionSankey(
+            system,
+            aggregation_threshold_percent=1.0,
+            node_label_max_length=15,
+            skipped_impact_repartition_classes=skipped_classes,
+            skip_phase_footprint_split=False,
+            skip_object_category_footprint_split=False,
+            skip_object_footprint_split=False,
+            excluded_object_types=None,
+            lifecycle_phase_filter=None,
+            display_column_information=False,
+        )
+        sankey.build()
+
+        node_colors = sankey._compute_node_colors()
+        self.assertEqual(len(node_colors), len(sankey.node_labels))
+        self.assertEqual(len(sankey.node_labels), len(sankey.full_node_labels))
+        self.assertEqual(len(sankey.link_sources), len(sankey.link_values))
+        for collection in (sankey._node_columns, sankey._spacer_nodes, sankey._category_node_indices,
+                           sankey._leaf_node_indices, sankey._breakdown_node_indices,
+                           sankey.aggregated_node_members):
+            self.assertIsNotNone(collection)
+        self.assertIsInstance(sankey.format_value_in_root_unit(sankey.total_system_value), str)
+        self.assertIsInstance(sankey.get_percentage_of_total(sankey.total_system_value), float)
+        self.assertIsInstance(sankey.get_column_information(), list)
+        self.assertIsInstance(sankey.get_column_header_x_shift_px(), int)
+        self.assertIsNotNone(sankey.get_root_display_unit())
+        self.assert_kg_equal(eager_system_total(system), sankey.total_system_value)
 
 
-class _DummyExternalAPIServer(ExternalAPIServer):
-    def job_request_footprint(self, job, phase):
-        return EmptyExplainableObject()
+class TestImpactRepartitionSankeyPresentation(TestCase):
+    """Presentation mechanics (aggregation, labels, columns, spacers, figure assembly) on manually-built
+    graphs — independent of the attribution data layer."""
 
-    def update_instances_fabrication_footprint(self) -> None:
-        return None
-
-    def update_instances_energy(self) -> None:
-        return None
-
-    def update_energy_footprint(self) -> None:
-        return None
-
-    def update_dict_element_in_fabrication_impact_repartition_weights(self, modeling_obj):
-        return None
-
-    def update_fabrication_impact_repartition_weights(self):
-        return None
-
-    def update_dict_element_in_usage_impact_repartition_weights(self, modeling_obj):
-        return None
-
-    def update_usage_impact_repartition_weights(self):
-        return None
-
-
-class _DummyExternalAPI(ExternalAPI):
-    default_values = {}
-    server_class = _DummyExternalAPIServer
-
-
-@patch('efootprint.all_classes_in_order.SANKEY_COLUMNS', SANKEY_COLUMNS + [[_DummyObject]])
-class TestImpactRepartitionSankey(TestCase):
     @staticmethod
     def _kg(value):
         return value * u.kg
@@ -138,64 +289,13 @@ class TestImpactRepartitionSankey(TestCase):
         return value * u.tonne
 
     @staticmethod
-    def _make_object_id(name):
-        normalized_name = name.replace(" ", "_")
-        return re.sub(r"(?<!^)(?=[A-Z])", "_", normalized_name).lower()
-
-    def _make_object(self, name, is_impact_source=False, class_name=None, obj_cls=_DummyObject):
-        obj = obj_cls(name, self._make_object_id(name), is_impact_source=is_impact_source)
-        if class_name is not None:
-            obj.class_as_simple_str = class_name
+    def _make_object(name):
+        cls = type(name.replace(" ", ""), (), {})
+        obj = cls()
+        obj.name = name
+        obj.id = name.lower().replace(" ", "_")
+        obj.canonical_class = cls
         return obj
-
-    def _make_leaf(self, name, manufacturing_kg=0, usage_kg=0, class_name=None, obj_cls=_DummyObject):
-        leaf = self._make_object(name, is_impact_source=True, class_name=class_name, obj_cls=obj_cls)
-        leaf.instances_fabrication_footprint = _DummyQuantity(manufacturing_kg)
-        leaf.energy_footprint = _DummyQuantity(usage_kg)
-        leaf._attributed_footprint_per_source = {
-            LifeCyclePhases.MANUFACTURING: {leaf: _DummyQuantity(manufacturing_kg)} if manufacturing_kg else {},
-            LifeCyclePhases.USAGE: {leaf: _DummyQuantity(usage_kg)} if usage_kg else {},
-        }
-        leaf.footprint_breakdown_by_source = {
-            LifeCyclePhases.MANUFACTURING: {},
-            LifeCyclePhases.USAGE: {},
-        }
-        return leaf
-
-    def _make_breakdown_leaf(
-            self, name, manufacturing_kg=0, usage_kg=0, manufacturing_breakdown=None, usage_breakdown=None,
-            class_name=None, obj_cls=_DummyObject):
-        leaf = self._make_leaf(
-            name, manufacturing_kg=manufacturing_kg, usage_kg=usage_kg, class_name=class_name, obj_cls=obj_cls)
-        leaf.footprint_breakdown_by_source = {
-            LifeCyclePhases.MANUFACTURING: {
-                source: _DummyQuantity(value) for source, value in (manufacturing_breakdown or {}).items()
-            },
-            LifeCyclePhases.USAGE: {
-                source: _DummyQuantity(value) for source, value in (usage_breakdown or {}).items()
-            },
-        }
-        return leaf
-
-    def _make_intermediate(self, name, manufacturing_sources=None, usage_sources=None, class_name=None, obj_cls=_DummyObject):
-        intermediate = self._make_object(name, class_name=class_name, obj_cls=obj_cls)
-        intermediate._attributed_footprint_per_source = {
-            LifeCyclePhases.MANUFACTURING: {
-                source: _DummyQuantity(value) for source, value in (manufacturing_sources or {}).items()
-            },
-            LifeCyclePhases.USAGE: {
-                source: _DummyQuantity(value) for source, value in (usage_sources or {}).items()
-            },
-        }
-        return intermediate
-
-    def _make_simple_system_with_attributed_footprint(self, fab_sources=None, energy_sources=None, system_cls=_DummyObject):
-        system = system_cls("Test system", "test_system")
-        system._attributed_footprint_per_source = {
-            LifeCyclePhases.MANUFACTURING: {s: _DummyQuantity(v) for s, v in (fab_sources or {}).items()},
-            LifeCyclePhases.USAGE: {s: _DummyQuantity(v) for s, v in (energy_sources or {}).items()},
-        }
-        return system
 
     def test_all_canonical_classes_are_in_sankey_columns_or_breakdown_only(self):
         from efootprint.all_classes_in_order import (
@@ -214,9 +314,8 @@ class TestImpactRepartitionSankey(TestCase):
                          f"The following canonical classes are missing from sankey columns: {missing_classes}")
 
     def _build_sankey(self, aggregation_threshold_percent):
-        system = MagicMock()
-        system.name = "Test system"
-        sankey = ImpactRepartitionSankey(system, aggregation_threshold_percent=aggregation_threshold_percent)
+        sankey = ImpactRepartitionSankey(
+            _EmptySystem(), aggregation_threshold_percent=aggregation_threshold_percent)
 
         total_idx = sankey._add_node("Test system", ("system", "total"), color_key="__system__")
         parent_idx = sankey._add_node("Parent", ("parent", "energy"), color_key="parent", obj=self._make_object("Parent"))
@@ -272,9 +371,7 @@ class TestImpactRepartitionSankey(TestCase):
 
     def test_aggregate_small_nodes_by_column_merges_across_parents(self):
         """Test small nodes in the same column are aggregated together regardless of parent."""
-        system = MagicMock()
-        system.name = "Test system"
-        sankey = ImpactRepartitionSankey(system, aggregation_threshold_percent=15)
+        sankey = ImpactRepartitionSankey(_EmptySystem(), aggregation_threshold_percent=15)
 
         total_idx = sankey._add_node("Test system", ("system", "total"), color_key="__system__")
         parent_a_idx = sankey._add_node("Parent A", ("parent_a", "energy"), obj=self._make_object("Parent A"))
@@ -309,9 +406,7 @@ class TestImpactRepartitionSankey(TestCase):
 
     def test_aggregate_small_nodes_by_column_recomputes_children_after_parent_aggregation(self):
         """Test child columns are re-aggregated after their parents collapse into an aggregated node."""
-        system = MagicMock()
-        system.name = "Test system"
-        sankey = ImpactRepartitionSankey(system, aggregation_threshold_percent=15)
+        sankey = ImpactRepartitionSankey(_EmptySystem(), aggregation_threshold_percent=15)
 
         total_idx = sankey._add_node("Test system", ("system", "total"), color_key="__system__")
         parent_a_idx = sankey._add_node("Parent A", ("parent_a", "energy"), obj=self._make_object("Parent A"))
@@ -339,11 +434,8 @@ class TestImpactRepartitionSankey(TestCase):
 
     def test_aggregate_small_nodes_preserves_root_node_totals_when_aggregated(self):
         """Test that root nodes (no incoming links, total set directly) have their totals preserved in aggregates."""
-        system = MagicMock()
-        system.name = "Test system"
-        sankey = ImpactRepartitionSankey(system, aggregation_threshold_percent=15)
+        sankey = ImpactRepartitionSankey(_EmptySystem(), aggregation_threshold_percent=15)
 
-        # Two root nodes with directly-set totals (no incoming links, simulating skipped system root)
         root_a_idx = sankey._add_node("Root A", ("root_a", "energy"), obj=self._make_object("Root A"))
         root_b_idx = sankey._add_node("Root B", ("root_b", "energy"), obj=self._make_object("Root B"))
         child_idx = sankey._add_node("Child", ("child", "energy"), obj=self._make_object("Child"))
@@ -360,324 +452,9 @@ class TestImpactRepartitionSankey(TestCase):
         aggregate_idx = next(idx for idx in sankey.aggregated_node_members)
         self.assertEqual(self._kg(150), sankey.node_total_values[aggregate_idx])
 
-    def test_build_traverses_attributed_footprint_per_source(self):
-        """Test basic traversal from root through intermediate to leaf objects."""
-        leaf = self._make_leaf("Leaf", manufacturing_kg=100)
-        intermediate = self._make_intermediate("Intermediate", manufacturing_sources={leaf: 100})
-        system = self._make_simple_system_with_attributed_footprint(fab_sources={intermediate: 100})
-
-        sankey = ImpactRepartitionSankey(system, aggregation_threshold_percent=0)
-        sankey.build()
-
-        self.assertIn(("root", "total"), sankey.node_indices)
-        self.assertIn(("intermediate", "Manufacturing"), sankey.node_indices)
-
-    def test_build_scales_shared_downstream_repartition_by_parent_share(self):
-        """Test shared downstream objects keep conservation when reached from multiple parents."""
-        leaf = self._make_leaf("Leaf", manufacturing_kg=100)
-        shared = self._make_intermediate("Shared", manufacturing_sources={leaf: 100})
-        parent_a = self._make_intermediate("Parent A", manufacturing_sources={shared: 60})
-        parent_b = self._make_intermediate("Parent B", manufacturing_sources={shared: 40})
-        system = self._make_simple_system_with_attributed_footprint(fab_sources={parent_a: 60, parent_b: 40})
-
-        sankey = ImpactRepartitionSankey(
-            system, aggregation_threshold_percent=0, skip_object_category_footprint_split=True)
-        sankey.build()
-
-        shared_idx = sankey.node_indices[(shared.id, "Manufacturing")]
-        leaf_idx = sankey.node_indices[(leaf.id, "Manufacturing")]
-        links = [
-            (source, target, value.to(u.tonne).magnitude)
-            for source, target, value in zip(sankey.link_sources, sankey.link_targets, sankey.link_values)
-        ]
-
-        self.assertEqual(self._kg(100), sankey.node_total_values[shared_idx])
-        self.assertEqual(self._kg(100), sankey.node_total_values[leaf_idx])
-        # Test that the shared node passes 100 / 1000 = 0.1 to the leaf node, meaning there has been no impact
-        # deduplication even though this node has 2 parents.
-        self.assertEqual([(shared_idx, leaf_idx, 0.1)], [link for link in links if link[0] == shared_idx])
-
-    def test_is_positive_raises_on_nan_to_surface_upstream_attribution_bugs(self):
-        """Test _is_positive raises on NaN so attribution bugs don't get silently filtered."""
-        sankey = ImpactRepartitionSankey(MagicMock(), aggregation_threshold_percent=0)
-        with self.assertRaises(ValueError) as ctx:
-            sankey._is_positive(self._kg(float("nan")))
-        self.assertIn("NaN", str(ctx.exception))
-        # Positive and non-positive scalars still work normally.
-        self.assertTrue(sankey._is_positive(self._kg(1.0)))
-        self.assertFalse(sankey._is_positive(self._kg(0.0)))
-        self.assertFalse(math.isnan(self._kg(1.0).magnitude))
-
-    def test_build_skipping_shared_intermediate_preserves_per_parent_flow_to_leaves(self):
-        """Test skipped intermediate routes each parent's flow into the same leaves with per-parent scaling."""
-        leaf_a = self._make_leaf("LeafA", manufacturing_kg=60)
-        leaf_b = self._make_leaf("LeafB", manufacturing_kg=40)
-        shared = self._make_intermediate(
-            "Shared", manufacturing_sources={leaf_a: 60, leaf_b: 40}, obj_cls=_SkippedObject)
-        parent_a = self._make_intermediate("ParentA", manufacturing_sources={shared: 70})
-        parent_b = self._make_intermediate("ParentB", manufacturing_sources={shared: 30})
-        system = self._make_simple_system_with_attributed_footprint(fab_sources={parent_a: 70, parent_b: 30})
-
-        sankey = ImpactRepartitionSankey(
-            system, aggregation_threshold_percent=0, skipped_impact_repartition_classes=[_SkippedObject],
-            skip_object_category_footprint_split=True)
-        sankey.build()
-
-        parent_a_idx = sankey.node_indices[(parent_a.id, "Manufacturing")]
-        parent_b_idx = sankey.node_indices[(parent_b.id, "Manufacturing")]
-        leaf_a_idx = sankey.node_indices[(leaf_a.id, "Manufacturing")]
-        leaf_b_idx = sankey.node_indices[(leaf_b.id, "Manufacturing")]
-        link_values_by_edge = {
-            (source, target): value.to(u.kg).magnitude
-            for source, target, value in zip(sankey.link_sources, sankey.link_targets, sankey.link_values)
-        }
-        # parent_a (flow=70) splits 60/100 to leaf_a, 40/100 to leaf_b → 42 and 28
-        self.assertAlmostEqual(42, link_values_by_edge[(parent_a_idx, leaf_a_idx)])
-        self.assertAlmostEqual(28, link_values_by_edge[(parent_a_idx, leaf_b_idx)])
-        # parent_b (flow=30) splits 60/100 to leaf_a, 40/100 to leaf_b → 18 and 12
-        self.assertAlmostEqual(18, link_values_by_edge[(parent_b_idx, leaf_a_idx)])
-        self.assertAlmostEqual(12, link_values_by_edge[(parent_b_idx, leaf_b_idx)])
-        self.assertNotIn((shared.id, "Manufacturing"), sankey.node_indices)
-
-    def test_build_skips_configured_impact_repartition_classes(self):
-        """Test that objects matching skipped classes are passed through."""
-        leaf = self._make_leaf("Leaf", manufacturing_kg=100)
-        skipped = self._make_intermediate("Skipped", manufacturing_sources={leaf: 100}, obj_cls=_SkippedObject)
-        intermediate = self._make_intermediate("Intermediate", manufacturing_sources={skipped: 100})
-        system = self._make_simple_system_with_attributed_footprint(fab_sources={intermediate: 100})
-
-        sankey = ImpactRepartitionSankey(
-            system, aggregation_threshold_percent=0, skipped_impact_repartition_classes=[_SkippedObject])
-        sankey.build()
-
-        self.assertNotIn(("skipped", "Manufacturing"), sankey.node_indices)
-        self.assertIn(("intermediate", "Manufacturing"), sankey.node_indices)
-
-    def test_node_colors_stay_stable_when_skipping_a_class(self):
-        """Test shared nodes keep the same color when another class is skipped from the Sankey."""
-        skipped_leaf = self._make_leaf("Skipped leaf", manufacturing_kg=40, obj_cls=_SkippedObject)
-        kept_leaf = self._make_leaf("Kept leaf", manufacturing_kg=60)
-        system = self._make_simple_system_with_attributed_footprint(fab_sources={skipped_leaf: 40, kept_leaf: 60})
-
-        baseline = ImpactRepartitionSankey(
-            system,
-            aggregation_threshold_percent=0,
-            lifecycle_phase_filter=LifeCyclePhases.MANUFACTURING,
-            skip_object_category_footprint_split=True,
-        )
-        baseline.build()
-        baseline_colors = baseline._compute_node_colors()
-        baseline_kept_leaf_color = baseline_colors[baseline.node_indices[(kept_leaf.id, "Manufacturing")]]
-
-        filtered = ImpactRepartitionSankey(
-            system,
-            aggregation_threshold_percent=0,
-            lifecycle_phase_filter=LifeCyclePhases.MANUFACTURING,
-            skip_object_category_footprint_split=True,
-            skipped_impact_repartition_classes=[_SkippedObject],
-        )
-        filtered.build()
-        filtered_colors = filtered._compute_node_colors()
-        filtered_kept_leaf_color = filtered_colors[filtered.node_indices[(kept_leaf.id, "Manufacturing")]]
-
-        self.assertNotIn((skipped_leaf.id, "Manufacturing"), filtered.node_indices)
-        self.assertEqual(baseline_kept_leaf_color, filtered_kept_leaf_color)
-
-    def test_system_in_skipped_classes_removes_system_node(self):
-        """Test that putting root's class in skipped_impact_repartition_classes removes the root node."""
-        leaf = self._make_leaf("Leaf", manufacturing_kg=100)
-        intermediate = self._make_intermediate("Intermediate", manufacturing_sources={leaf: 100}, class_name="Intermediate")
-        system = self._make_simple_system_with_attributed_footprint(
-            fab_sources={intermediate: 100}, system_cls=_DummySystemObject)
-
-        sankey = ImpactRepartitionSankey(
-            system, aggregation_threshold_percent=0, skipped_impact_repartition_classes=[_DummySystemObject])
-        sankey.build()
-
-        self.assertNotIn(("root", "total"), sankey.node_indices)
-        self.assertIn(("intermediate", "Manufacturing"), sankey.node_indices)
-
-    def test_skip_phase_footprint_split_removes_phase_nodes(self):
-        """Test that skip_phase_footprint_split=True omits phase nodes."""
-        leaf = self._make_leaf("Leaf", manufacturing_kg=100)
-        system = self._make_simple_system_with_attributed_footprint(fab_sources={leaf: 100})
-
-        sankey = ImpactRepartitionSankey(
-            system, aggregation_threshold_percent=0, skip_phase_footprint_split=True,
-            skip_object_category_footprint_split=True, skip_object_footprint_split=True)
-        sankey.build()
-
-        self.assertNotIn(("phase", "Manufacturing"), sankey.node_indices)
-        self.assertNotIn(("phase", "Usage"), sankey.node_indices)
-        self.assertIn(("root", "total"), sankey.node_indices)
-
-    def test_skip_phase_footprint_split_sums_phase_flows_into_same_nodes(self):
-        """Test disabling phase split merges manufacturing and usage flows into the same Sankey nodes."""
-        leaf = self._make_leaf("Leaf", manufacturing_kg=60, usage_kg=40)
-        system = self._make_simple_system_with_attributed_footprint(fab_sources={leaf: 60}, energy_sources={leaf: 40})
-
-        sankey = ImpactRepartitionSankey(
-            system, aggregation_threshold_percent=0, skip_phase_footprint_split=True,
-            skip_object_category_footprint_split=True)
-        sankey.build()
-
-        self.assertIn(("leaf", None), sankey.node_indices)
-        self.assertNotIn(("leaf", "Manufacturing"), sankey.node_indices)
-        self.assertNotIn(("leaf", "Usage"), sankey.node_indices)
-        leaf_idx = sankey.node_indices[("leaf", None)]
-        root_idx = sankey.node_indices[("root", "total")]
-        self.assertEqual(self._kg(100), sankey.node_total_values[leaf_idx])
-        self.assertEqual(
-            [(root_idx, leaf_idx, 0.1)],
-            [(source, target, value.to(u.tonne).magnitude) for source, target, value in zip(
-                sankey.link_sources, sankey.link_targets, sankey.link_values)],
-        )
-
-    def test_skip_phase_footprint_split_sums_first_column_nodes_when_root_is_skipped(self):
-        """Test merged phase totals accumulate on the first visible column when the root node is skipped."""
-        leaf = self._make_leaf("Leaf", manufacturing_kg=60, usage_kg=40)
-        system = self._make_simple_system_with_attributed_footprint(
-            fab_sources={leaf: 60}, energy_sources={leaf: 40}, system_cls=_DummySystemObject)
-
-        sankey = ImpactRepartitionSankey(
-            system, aggregation_threshold_percent=0, skip_phase_footprint_split=True,
-            skip_object_category_footprint_split=True, skipped_impact_repartition_classes=[_DummySystemObject])
-        sankey.build()
-
-        leaf_idx = sankey.node_indices[("leaf", None)]
-        self.assertEqual(self._kg(100), sankey.node_total_values[leaf_idx])
-        self.assertEqual([], sankey.link_sources)
-        self.assertEqual([], sankey.link_targets)
-        self.assertEqual([], sankey.link_values)
-
-    def test_phase_split_creates_phase_nodes_for_both_phases(self):
-        """Test that with both phases, phase split creates Manufacturing and Usage nodes."""
-        fab_leaf = self._make_leaf("FabLeaf", manufacturing_kg=60)
-        energy_leaf = self._make_leaf("EnergyLeaf", usage_kg=40)
-        system = self._make_simple_system_with_attributed_footprint(
-            fab_sources={fab_leaf: 60}, energy_sources={energy_leaf: 40})
-
-        sankey = ImpactRepartitionSankey(
-            system, aggregation_threshold_percent=0, skip_object_category_footprint_split=True,
-            skip_object_footprint_split=True)
-        sankey.build()
-
-        self.assertIn(("phase", "Manufacturing"), sankey.node_indices)
-        self.assertIn(("phase", "Usage"), sankey.node_indices)
-
-    def test_skip_object_category_footprint_split_removes_category_nodes(self):
-        """Test that skip_object_category_footprint_split=True omits category grouping."""
-        leaf = self._make_leaf("Leaf", manufacturing_kg=100)
-        system = self._make_simple_system_with_attributed_footprint(fab_sources={leaf: 100})
-
-        sankey = ImpactRepartitionSankey(
-            system, aggregation_threshold_percent=0, skip_object_category_footprint_split=True)
-        sankey.build()
-
-        # No category nodes should exist
-        self.assertEqual(0, len(sankey._category_node_indices))
-
-    def test_node_labels_are_truncated_but_hover_keeps_full_name(self):
-        """Test label truncation preserves full name in hover."""
-        system = MagicMock()
-        system.name = "Test system"
-        sankey = ImpactRepartitionSankey(system, aggregation_threshold_percent=0, node_label_max_length=13)
-
-        node_idx = sankey._add_node("12345678901234", ("long_name", "energy"))
-        sankey._total_system_value = self._kg(1)
-        sankey.node_total_values[node_idx] = self._kg(1)
-
-        self.assertEqual("1234567890123...", sankey.node_labels[node_idx])
-        self.assertEqual("12345678901234", sankey.full_node_labels[node_idx])
-        self.assertTrue(sankey._build_hover_labels()[node_idx].startswith("12345678901234<br>"))
-
-    def test_node_label_max_length_is_configurable(self):
-        """Test custom label max length."""
-        system = MagicMock()
-        system.name = "Test system"
-        sankey = ImpactRepartitionSankey(system, aggregation_threshold_percent=0, node_label_max_length=5)
-
-        node_idx = sankey._add_node("123456", ("custom_length", "energy"))
-
-        self.assertEqual("12345...", sankey.node_labels[node_idx])
-        self.assertEqual("123456", sankey.full_node_labels[node_idx])
-
-    def test_get_column_metadata_returns_unique_class_names_and_positions(self):
-        """Test column metadata from explicitly assigned columns."""
-        system = MagicMock()
-        system.name = "Test system"
-        sankey = ImpactRepartitionSankey(system, aggregation_threshold_percent=0)
-        sankey._built = True
-
-        total_idx = sankey._add_node("Test system", ("system", "total"), color_key="__system__")
-        server = _DummyObject("Server", "server")
-        server._canonical_class_override = ServerBase
-        device = _DummyObject("Device", "device")
-        device._canonical_class_override = Device
-        router = _DummyObject("Router", "router")
-        router._canonical_class_override = type("Router", (), {})
-        server_idx = sankey._add_node("Server", ("server", "energy"), obj=server)
-        device_idx = sankey._add_node("Device", ("device", "energy"), obj=device)
-        router_idx = sankey._add_node("Router", ("router", "energy"), obj=router)
-        sankey._total_system_value = self._kg(1000)
-        sankey.node_total_values[total_idx] = self._kg(1000)
-        sankey._node_columns = {total_idx: 1, server_idx: 2, device_idx: 2, router_idx: 3}
-        sankey._add_link(total_idx, server_idx, self._tonne(0.4))
-        sankey._add_link(total_idx, device_idx, self._tonne(0.3))
-        sankey._add_link(server_idx, router_idx, self._tonne(0.2))
-
-        metadata = sankey.get_column_metadata()
-        self.assertEqual([2, 3], [m["column_index"] for m in metadata])
-        self.assertEqual([["Device", "ServerBase"], ["Router"]], [m["class_names"] for m in metadata])
-        self.assertAlmostEqual(sankey._column_x_left(2), metadata[0]["x_left"])
-        self.assertAlmostEqual(sankey._column_x_left(3), metadata[1]["x_left"])
-
-    @patch("efootprint.all_classes_in_order.CANONICAL_COMPUTATION_ORDER", [CanonicalParentObject])
-    def test_get_column_metadata_aggregates_objects_by_canonical_class(self):
-        """Test column metadata collapses concrete objects into their canonical class names."""
-        system = MagicMock()
-        system.name = "Test system"
-        sankey = ImpactRepartitionSankey(system, aggregation_threshold_percent=0)
-        sankey._built = True
-
-        total_idx = sankey._add_node("Test system", ("system", "total"), color_key="__system__")
-        child_a_idx = sankey._add_node(
-            "Child A", ("child_a", "energy"), obj=CanonicalChildAObject("Child A", "child_a"))
-        child_b_idx = sankey._add_node(
-            "Child B", ("child_b", "energy"), obj=CanonicalChildBObject("Child B", "child_b"))
-        fallback = _DummyObject("Fallback", "fallback")
-        fallback._canonical_class_override = type("DummyObject", (), {})
-        fallback_idx = sankey._add_node("Fallback", ("fallback", "energy"), obj=fallback)
-        sankey._total_system_value = self._kg(1000)
-        sankey.node_total_values[total_idx] = self._kg(1000)
-        sankey._node_columns = {total_idx: 1, child_a_idx: 2, child_b_idx: 2, fallback_idx: 3}
-
-        metadata = sankey.get_column_metadata()
-
-        self.assertEqual([2, 3], [m["column_index"] for m in metadata])
-        self.assertEqual([["CanonicalParentObject"], ["DummyObject"]], [m["class_names"] for m in metadata])
-
-    def test_get_column_metadata_includes_aggregated_member_classes(self):
-        """Test column metadata includes classes from aggregated nodes."""
-        sankey = self._build_sankey(aggregation_threshold_percent=15)
-        sankey._built = True
-        for node in sankey.node_objects.values():
-            node._canonical_class_override = type(node.name.replace(" ", ""), (), {})
-        sankey._aggregate_small_nodes_by_column()
-
-        metadata = sankey.get_column_metadata()
-        self.assertEqual([2, 3], [m["column_index"] for m in metadata])
-        self.assertEqual(
-            [["Parent", "SmallA", "SmallB"], ["ChildBig", "ChildSmallA", "ChildSmallB"]],
-            [m["class_names"] for m in metadata])
-        self.assertAlmostEqual(sankey._column_x_left(2), metadata[0]["x_left"])
-        self.assertAlmostEqual(sankey._column_x_left(3), metadata[1]["x_left"])
-
     def test_aggregate_small_nodes_preserves_category_leaf_and_breakdown_markers_for_remaining_nodes(self):
         """Test aggregation keeps node-type markers for nodes that are not aggregated away."""
-        system = MagicMock()
-        system.name = "Test system"
-        sankey = ImpactRepartitionSankey(system, aggregation_threshold_percent=10)
+        sankey = ImpactRepartitionSankey(_EmptySystem(), aggregation_threshold_percent=10)
 
         root_idx = sankey._add_node("Root", ("root", "total"))
         category_big_idx = sankey._add_node("Devices usage", ("Devices", "usage"))
@@ -733,11 +510,71 @@ class TestImpactRepartitionSankey(TestCase):
         self.assertIn(leaf_idx, sankey._leaf_node_indices)
         self.assertIn(breakdown_idx, sankey._breakdown_node_indices)
 
+    def test_is_positive_raises_on_nan_to_surface_upstream_attribution_bugs(self):
+        """Test _is_positive raises on NaN so attribution bugs don't get silently filtered."""
+        sankey = ImpactRepartitionSankey(_EmptySystem(), aggregation_threshold_percent=0)
+        with self.assertRaises(ValueError) as ctx:
+            sankey._is_positive(self._kg(float("nan")))
+        self.assertIn("NaN", str(ctx.exception))
+        # Positive and non-positive scalars still work normally.
+        self.assertTrue(sankey._is_positive(self._kg(1.0)))
+        self.assertFalse(sankey._is_positive(self._kg(0.0)))
+        self.assertFalse(math.isnan(self._kg(1.0).magnitude))
+
+    def test_node_labels_are_truncated_but_hover_keeps_full_name(self):
+        """Test label truncation preserves full name in hover."""
+        sankey = ImpactRepartitionSankey(_EmptySystem(), aggregation_threshold_percent=0, node_label_max_length=13)
+
+        node_idx = sankey._add_node("12345678901234", ("long_name", "energy"))
+        sankey._total_system_value = self._kg(1)
+        sankey.node_total_values[node_idx] = self._kg(1)
+
+        self.assertEqual("1234567890123...", sankey.node_labels[node_idx])
+        self.assertEqual("12345678901234", sankey.full_node_labels[node_idx])
+        self.assertTrue(sankey._build_hover_labels()[node_idx].startswith("12345678901234<br>"))
+
+    def test_node_label_max_length_is_configurable(self):
+        """Test custom label max length."""
+        sankey = ImpactRepartitionSankey(_EmptySystem(), aggregation_threshold_percent=0, node_label_max_length=5)
+
+        node_idx = sankey._add_node("123456", ("custom_length", "energy"))
+
+        self.assertEqual("12345...", sankey.node_labels[node_idx])
+        self.assertEqual("123456", sankey.full_node_labels[node_idx])
+
+    def test_get_column_metadata_returns_unique_class_names_and_positions(self):
+        """Test column metadata from explicitly assigned columns on a built fixture."""
+        sankey = build_sankey(fixture_system("simple"))
+        metadata = sankey.get_column_metadata()
+
+        column_indices = [m["column_index"] for m in metadata]
+        self.assertEqual(sorted(set(column_indices)), column_indices)
+        leaf_column_classes = next(
+            m["class_names"] for m in metadata
+            if m["column_index"] == max(column_indices))
+        self.assertIn("Device", leaf_column_classes)
+        for m in metadata:
+            self.assertAlmostEqual(sankey._column_x_left(m["column_index"]), m["x_left"])
+
+    def test_get_column_metadata_includes_aggregated_member_classes(self):
+        """Test column metadata includes classes from aggregated nodes."""
+        sankey = self._build_sankey(aggregation_threshold_percent=15)
+        sankey._built = True
+        for node in sankey.node_objects.values():
+            node.canonical_class = type(node.name.replace(" ", ""), (), {})
+        sankey._aggregate_small_nodes_by_column()
+
+        metadata = sankey.get_column_metadata()
+        self.assertEqual([2, 3], [m["column_index"] for m in metadata])
+        self.assertEqual(
+            [["Parent", "SmallA", "SmallB"], ["ChildBig", "ChildSmallA", "ChildSmallB"]],
+            [m["class_names"] for m in metadata])
+        self.assertAlmostEqual(sankey._column_x_left(2), metadata[0]["x_left"])
+        self.assertAlmostEqual(sankey._column_x_left(3), metadata[1]["x_left"])
+
     def test_build_link_labels_keeps_visible_endpoints_across_spacer_nodes(self):
         """Test spacer-segmented links keep the original visible source and target in hover labels."""
-        system = MagicMock()
-        system.name = "Test system"
-        sankey = ImpactRepartitionSankey(system, aggregation_threshold_percent=0)
+        sankey = ImpactRepartitionSankey(_EmptySystem(), aggregation_threshold_percent=0)
 
         source_idx = sankey._add_node("Source", ("source", "energy"))
         target_idx = sankey._add_node("Target", ("target", "energy"))
@@ -756,9 +593,7 @@ class TestImpactRepartitionSankey(TestCase):
 
     def test_format_value_in_root_unit_rounds_before_rendering(self):
         """Test Sankey string formatting keeps display rounding and trims trailing zeros."""
-        system = MagicMock()
-        system.name = "Test system"
-        sankey = ImpactRepartitionSankey(system, aggregation_threshold_percent=0)
+        sankey = ImpactRepartitionSankey(_EmptySystem(), aggregation_threshold_percent=0)
         sankey._total_system_value = self._kg(123456)
 
         self.assertEqual("123 t", sankey.format_value_in_root_unit(self._kg(123456)))
@@ -766,13 +601,7 @@ class TestImpactRepartitionSankey(TestCase):
 
     def test_get_column_information_distinguishes_manual_and_impact_columns(self):
         """Test column information reports both manual split and impact repartition columns."""
-        leaf = self._make_leaf("Leaf", manufacturing_kg=100, class_name="Leaf")
-        intermediate = self._make_intermediate(
-            "Intermediate", manufacturing_sources={leaf: 100}, class_name="Intermediate")
-        system = self._make_simple_system_with_attributed_footprint(fab_sources={intermediate: 100})
-
-        sankey = ImpactRepartitionSankey(
-            system, aggregation_threshold_percent=0, skip_object_category_footprint_split=True)
+        sankey = build_sankey(fixture_system("simple"), skip_object_category_footprint_split=True)
         col_info = sankey.get_column_information()
 
         manual_cols = [c for c in col_info if c["column_type"] == "manual_split"]
@@ -783,11 +612,7 @@ class TestImpactRepartitionSankey(TestCase):
 
     def test_get_column_information_includes_total_impact_for_visible_system_root(self):
         """Test visible root column is exposed as a manual Total impact column."""
-        leaf = self._make_leaf("Leaf", manufacturing_kg=100)
-        system = self._make_simple_system_with_attributed_footprint(fab_sources={leaf: 100})
-
-        sankey = ImpactRepartitionSankey(
-            system, aggregation_threshold_percent=0, skip_object_category_footprint_split=True)
+        sankey = build_sankey(fixture_system("simple"))
 
         self.assertIn(
             {"column_index": 1, "column_type": "manual_split", "description": "Total impact", "x_left": 0.006},
@@ -796,27 +621,38 @@ class TestImpactRepartitionSankey(TestCase):
 
     def test_get_column_information_omits_total_impact_when_system_root_is_skipped(self):
         """Test Total impact column is not exposed when the root system node is skipped."""
-        leaf = self._make_leaf("Leaf", manufacturing_kg=100)
-        system = self._make_simple_system_with_attributed_footprint(
-            fab_sources={leaf: 100}, system_cls=_DummySystemObject)
+        sankey = build_sankey(fixture_system("simple"), skipped_impact_repartition_classes=["System"])
 
-        sankey = ImpactRepartitionSankey(
-            system,
-            aggregation_threshold_percent=0,
-            skip_object_category_footprint_split=True,
-            skipped_impact_repartition_classes=[_DummySystemObject],
-        )
-
+        self.assertNotIn(("root", "total"), sankey.node_indices)
         self.assertNotIn(
             "Total impact",
             [c["description"] for c in sankey.get_column_information() if c["column_type"] == "manual_split"],
         )
 
+    def test_skip_phase_footprint_split_merges_phases_into_single_nodes(self):
+        """Test disabling the phase split merges manufacturing and usage flows into the same Sankey nodes."""
+        system = fixture_system("simple")
+        sankey = build_sankey(system, skip_phase_footprint_split=True)
+        device = system.usage_patterns[0].devices[0]
+
+        self.assertNotIn(("phase", "Manufacturing"), sankey.node_indices)
+        self.assertNotIn(("phase", "Usage"), sankey.node_indices)
+        self.assertIn((device.id, None), sankey.node_indices)
+        self.assertNotIn((device.id, "Usage"), sankey.node_indices)
+        device_total = (device.instances_fabrication_footprint.sum() + device.energy_footprint.sum()).value
+        device_idx = sankey.node_indices[(device.id, None)]
+        self.assertAlmostEqual(
+            device_total.to(u.kg).magnitude, sankey.node_total_values[device_idx].to(u.kg).magnitude, places=2)
+
+    def test_skip_object_category_footprint_split_removes_category_nodes(self):
+        """Test that skip_object_category_footprint_split=True omits category grouping."""
+        sankey = build_sankey(fixture_system("simple"), skip_object_category_footprint_split=True)
+        self.assertEqual(0, len(sankey._category_node_indices))
+        self.assertTrue(sankey._leaf_node_indices)
+
     def test_displayed_column_information_orders_columns_by_index(self):
         """Test displayed column information is ordered by column index."""
-        system = MagicMock()
-        system.name = "Test system"
-        sankey = ImpactRepartitionSankey(system, aggregation_threshold_percent=0)
+        sankey = ImpactRepartitionSankey(_EmptySystem(), aggregation_threshold_percent=0)
         sankey._built = True
         sankey._impact_repartition_start_column = 2
         sankey._manual_column_information = [{
@@ -837,29 +673,15 @@ class TestImpactRepartitionSankey(TestCase):
 
     def test_figure_can_hide_column_information(self):
         """Test figure without column information annotations."""
-        system = MagicMock()
-        system.name = "Test system"
-        system.attributed_footprint_per_source = {
-            LifeCyclePhases.MANUFACTURING: {}, LifeCyclePhases.USAGE: {}}
-        system.id = "test_system"
-        system.class_as_simple_str = "System"
-
         fig = ImpactRepartitionSankey(
-            system, aggregation_threshold_percent=0, display_column_information=False).figure()
+            _EmptySystem(), aggregation_threshold_percent=0, display_column_information=False).figure()
 
         self.assertEqual((), fig.layout.annotations)
 
     def test_figure_returns_resized_plotly_figure_when_notebook_false(self):
         """Test figure returns a Plotly figure with the requested size when notebook is disabled."""
-        system = MagicMock()
-        system.name = "Test system"
-        system.attributed_footprint_per_source = {
-            LifeCyclePhases.MANUFACTURING: {}, LifeCyclePhases.USAGE: {}}
-        system.id = "test_system"
-        system.class_as_simple_str = "System"
-
         fig = ImpactRepartitionSankey(
-            system, aggregation_threshold_percent=0, display_column_information=False).figure(
+            _EmptySystem(), aggregation_threshold_percent=0, display_column_information=False).figure(
                 width=1234, height=567, notebook=False)
 
         self.assertEqual(1234, fig.layout.width)
@@ -868,15 +690,8 @@ class TestImpactRepartitionSankey(TestCase):
     @patch("plotly.offline.plot")
     def test_figure_exports_html_when_filename_is_provided_calls_plotly(self, plot_mock):
         """Test figure writes the HTML file when filename is provided."""
-        system = MagicMock()
-        system.name = "Test system"
-        system.attributed_footprint_per_source = {
-            LifeCyclePhases.MANUFACTURING: {}, LifeCyclePhases.USAGE: {}}
-        system.id = "test_system"
-        system.class_as_simple_str = "System"
-
         fig = ImpactRepartitionSankey(
-            system, aggregation_threshold_percent=0, display_column_information=False).figure(
+            _EmptySystem(), aggregation_threshold_percent=0, display_column_information=False).figure(
                 filename="impact.html", notebook=False)
 
         self.assertEqual((), fig.layout.annotations)
@@ -886,18 +701,12 @@ class TestImpactRepartitionSankey(TestCase):
 
     def test_figure_exports_default_html_when_notebook_true_and_no_filename(self):
         """Test figure exports the default HTML file when notebook is enabled without filename."""
-        system = MagicMock()
-        system.name = "Test system"
-        system.attributed_footprint_per_source = {
-            LifeCyclePhases.MANUFACTURING: {}, LifeCyclePhases.USAGE: {}}
-        system.id = "test_system"
-        system.class_as_simple_str = "System"
-
         with patch("plotly.offline.plot") as plot_mock, patch("IPython.display.HTML") as html_mock:
             html_mock.return_value = "html object"
 
             result = ImpactRepartitionSankey(
-                system, aggregation_threshold_percent=0, display_column_information=False).figure(notebook=True)
+                _EmptySystem(), aggregation_threshold_percent=0, display_column_information=False).figure(
+                    notebook=True)
 
         self.assertEqual("html object", result)
         plot_mock.assert_called_once()
@@ -907,18 +716,11 @@ class TestImpactRepartitionSankey(TestCase):
 
     def test_figure_returns_file_backed_html_when_notebook_true_and_filename_is_provided(self):
         """Test figure returns file-backed HTML when notebook is enabled with a filename."""
-        system = MagicMock()
-        system.name = "Test system"
-        system.attributed_footprint_per_source = {
-            LifeCyclePhases.MANUFACTURING: {}, LifeCyclePhases.USAGE: {}}
-        system.id = "test_system"
-        system.class_as_simple_str = "System"
-
         with patch("plotly.offline.plot") as plot_mock, patch("IPython.display.HTML") as html_mock:
             html_mock.return_value = "html object"
 
             result = ImpactRepartitionSankey(
-                system, aggregation_threshold_percent=0, display_column_information=False).figure(
+                _EmptySystem(), aggregation_threshold_percent=0, display_column_information=False).figure(
                     filename="impact.html", notebook=True)
 
         self.assertEqual("html object", result)
@@ -928,9 +730,7 @@ class TestImpactRepartitionSankey(TestCase):
 
     def test_figure_displays_column_information_as_top_annotations(self):
         """Test figure places left-aligned column information above the matching node columns."""
-        system = MagicMock()
-        system.name = "Test system"
-        sankey = ImpactRepartitionSankey(system, aggregation_threshold_percent=0)
+        sankey = ImpactRepartitionSankey(_EmptySystem(), aggregation_threshold_percent=0)
         sankey._built = True
         sankey._manual_column_information = [{
             "column_index": 2,
@@ -958,144 +758,7 @@ class TestImpactRepartitionSankey(TestCase):
         self.assertTrue(all(annotation.font.size == 13 for annotation in fig.layout.annotations))
         self.assertTrue(all(annotation.y > 1 for annotation in fig.layout.annotations))
 
-    def test_lifecycle_phase_filter_shows_only_filtered_phase(self):
-        """Test that lifecycle_phase_filter limits to one phase."""
-        fab_leaf = self._make_leaf("FabLeaf", manufacturing_kg=60)
-        energy_leaf = self._make_leaf("EnergyLeaf", usage_kg=40)
-        system = self._make_simple_system_with_attributed_footprint(
-            fab_sources={fab_leaf: 60}, energy_sources={energy_leaf: 40})
 
-        sankey = ImpactRepartitionSankey(
-            system, aggregation_threshold_percent=0,
-            lifecycle_phase_filter=LifeCyclePhases.MANUFACTURING,
-            skip_object_category_footprint_split=True)
-        sankey.build()
-
-        # Only manufacturing phase should appear, total should be 60
-        self.assertEqual(self._kg(60), sankey.total_system_value)
-
-    def test_excluded_object_types_removes_objects_and_reduces_total(self):
-        """Test that excluded_object_types excludes objects and reduces total footprint."""
-        leaf_a = self._make_leaf("LeafA", manufacturing_kg=60, obj_cls=_TypeAObject)
-        leaf_b = self._make_leaf("LeafB", manufacturing_kg=40, obj_cls=_TypeBObject)
-        intermediate = self._make_intermediate("Intermediate", manufacturing_sources={leaf_a: 60, leaf_b: 40})
-        system = self._make_simple_system_with_attributed_footprint(fab_sources={intermediate: 100})
-
-        sankey = ImpactRepartitionSankey(
-            system, aggregation_threshold_percent=0, excluded_object_types=[_TypeBObject],
-            skip_object_category_footprint_split=True)
-        sankey.build()
-
-        # Total should exclude TypeB's 40kg
-        self.assertEqual(self._kg(60), sankey.total_system_value)
-        intermediate_idx = sankey.node_indices[("intermediate", "Manufacturing")]
-        phase_idx = sankey.node_indices[("phase", "Manufacturing")]
-        root_idx = sankey.node_indices[("root", "total")]
-        self.assertEqual(self._kg(60), sankey.node_total_values[phase_idx])
-        self.assertEqual(self._kg(60), sankey.node_total_values[intermediate_idx])
-        link_values_by_edge = {
-            (source, target): value.to(u.tonne).magnitude
-            for source, target, value in zip(sankey.link_sources, sankey.link_targets, sankey.link_values)
-        }
-        self.assertEqual(0.06, link_values_by_edge[(root_idx, phase_idx)])
-        self.assertEqual(0.06, link_values_by_edge[(phase_idx, intermediate_idx)])
-        self.assertEqual(0.06, link_values_by_edge[(intermediate_idx, sankey.node_indices[("leaf_a", "Manufacturing")])])
-
-    def test_external_api_server_sources_are_normalized_to_external_api(self):
-        """Test ExternalAPIServer impact sources are displayed as ExternalAPI category and leaf."""
-        external_api = _DummyExternalAPI("External API")
-        set_modeling_obj_containers(external_api.server, [external_api])
-        intermediate = self._make_intermediate("Intermediate", manufacturing_sources={external_api.server: 100})
-        system = self._make_simple_system_with_attributed_footprint(fab_sources={intermediate: 100})
-
-        sankey = ImpactRepartitionSankey(system, aggregation_threshold_percent=0)
-        sankey.build()
-
-        self.assertIn(("ExternalAPIs", "Manufacturing"), sankey.node_indices)
-        self.assertIn((external_api.id, "Manufacturing"), sankey.node_indices)
-        self.assertNotIn((external_api.server.id, "Manufacturing"), sankey.node_indices)
-
-    def test_impact_source_breakdown_scales_child_flows_from_leaf_share(self):
-        """Test impact-source breakdown is expanded generically and scaled to the attributed leaf flow."""
-        child_a = self._make_leaf("Child A", manufacturing_kg=25)
-        child_b = self._make_leaf("Child B", manufacturing_kg=75)
-        breakdown_leaf = self._make_breakdown_leaf(
-            "Breakdown source",
-            manufacturing_kg=100,
-            manufacturing_breakdown={child_a: 25, child_b: 75},
-        )
-        intermediate = self._make_intermediate("Intermediate", manufacturing_sources={breakdown_leaf: 40})
-        system = self._make_simple_system_with_attributed_footprint(fab_sources={intermediate: 40})
-
-        sankey = ImpactRepartitionSankey(
-            system, aggregation_threshold_percent=0, skip_object_category_footprint_split=True)
-        sankey.build()
-
-        breakdown_leaf_idx = sankey.node_indices[(breakdown_leaf.id, "Manufacturing")]
-        child_a_idx = sankey.node_indices[(child_a.id, "Manufacturing")]
-        child_b_idx = sankey.node_indices[(child_b.id, "Manufacturing")]
-        link_values_by_edge = {
-            (source, target): value.to(u.tonne).magnitude
-            for source, target, value in zip(sankey.link_sources, sankey.link_targets, sankey.link_values)
-        }
-        self.assertEqual(0.01, link_values_by_edge[(breakdown_leaf_idx, child_a_idx)])
-        self.assertEqual(0.03, link_values_by_edge[(breakdown_leaf_idx, child_b_idx)])
-        self.assertEqual(sankey._node_columns[breakdown_leaf_idx] + 1, sankey._node_columns[child_a_idx])
-        self.assertEqual(sankey._node_columns[child_a_idx], sankey._node_columns[child_b_idx])
-
-    def test_skipped_impact_repartition_classes_skip_breakdown_children(self):
-        """Test skipped classes remove matching breakdown children while keeping the parent impact source."""
-        child_a = self._make_leaf("Child A", manufacturing_kg=25)
-        child_b = self._make_leaf("Child B", manufacturing_kg=75, obj_cls=_SkippedObject)
-        breakdown_leaf = self._make_breakdown_leaf(
-            "Breakdown source",
-            manufacturing_kg=100,
-            manufacturing_breakdown={child_a: 25, child_b: 75},
-        )
-        intermediate = self._make_intermediate("Intermediate", manufacturing_sources={breakdown_leaf: 100})
-        system = self._make_simple_system_with_attributed_footprint(fab_sources={intermediate: 100})
-
-        sankey = ImpactRepartitionSankey(
-            system,
-            aggregation_threshold_percent=0,
-            skip_object_category_footprint_split=True,
-            skipped_impact_repartition_classes=[_SkippedObject],
-        )
-        sankey.build()
-
-        self.assertIn((breakdown_leaf.id, "Manufacturing"), sankey.node_indices)
-        self.assertIn((child_a.id, "Manufacturing"), sankey.node_indices)
-        self.assertNotIn((child_b.id, "Manufacturing"), sankey.node_indices)
-
-    def test_skipped_impact_repartition_classes_keep_breakdown_children_of_skipped_parent(self):
-        """Test skipped impact-source nodes still expand their visible breakdown children."""
-        child_a = self._make_leaf("Child A", manufacturing_kg=25)
-        child_b = self._make_leaf("Child B", manufacturing_kg=75)
-        skipped_breakdown_leaf = self._make_breakdown_leaf(
-            "Skipped breakdown source",
-            manufacturing_kg=100,
-            manufacturing_breakdown={child_a: 25, child_b: 75},
-            obj_cls=_SkippedObject,
-        )
-        intermediate = self._make_intermediate("Intermediate", manufacturing_sources={skipped_breakdown_leaf: 100})
-        system = self._make_simple_system_with_attributed_footprint(fab_sources={intermediate: 100})
-
-        sankey = ImpactRepartitionSankey(
-            system,
-            aggregation_threshold_percent=0,
-            skip_object_category_footprint_split=True,
-            skipped_impact_repartition_classes=[_SkippedObject],
-        )
-        sankey.build()
-
-        child_a_idx = sankey.node_indices[(child_a.id, "Manufacturing")]
-        child_b_idx = sankey.node_indices[(child_b.id, "Manufacturing")]
-        incoming_value_by_target = {}
-        for target, value in zip(sankey.link_targets, sankey.link_values):
-            incoming_value_by_target[target] = incoming_value_by_target.get(target, 0 * u.kg) + value.to(u.kg)
-
-        self.assertNotIn((skipped_breakdown_leaf.id, "Manufacturing"), sankey.node_indices)
-        self.assertEqual(self._kg(25), sankey.node_total_values[child_a_idx])
-        self.assertEqual(self._kg(75), sankey.node_total_values[child_b_idx])
-        self.assertEqual(self._kg(25), incoming_value_by_target[child_a_idx])
-        self.assertEqual(self._kg(75), incoming_value_by_target[child_b_idx])
+if __name__ == "__main__":
+    import unittest
+    unittest.main()
