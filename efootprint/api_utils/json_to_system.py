@@ -15,6 +15,18 @@ from efootprint.logger import logger
 from efootprint.utils.tools import get_init_signature_params
 
 
+def explainable_object_dict_class_from_init_annotation(modeling_obj_class, attr_name):
+    """Dict attributes are rebuilt at load with the class their __init__ annotation declares (e.g.
+    WeightedExplainableObjectDict), so invariants enforced by dict subclasses survive deserialization.
+    Calculated dict attributes have no init annotation and stay plain ExplainableObjectDicts."""
+    init_sig_param = get_init_signature_params(modeling_obj_class).get(attr_name)
+    if init_sig_param is not None:
+        annotation_origin = get_origin(init_sig_param.annotation)
+        if isinstance(annotation_origin, type) and issubclass(annotation_origin, ExplainableObjectDict):
+            return annotation_origin
+    return ExplainableObjectDict
+
+
 def validate_system_dict_structure(system_dict, valid_class_keys):
     for class_key, class_dict in system_dict.items():
         if class_key not in valid_class_keys:
@@ -194,7 +206,8 @@ def json_to_system(
         new_dict_items = {}
         for key, value in attr_value.items():
             new_dict_items[flat_obj_dict[key]] = explainable_object_from_json(value, sources_dict)
-        explainable_object_dict = ExplainableObjectDict(new_dict_items)
+        explainable_object_dict = explainable_object_dict_class_from_init_annotation(
+            type(modeling_obj), attr_key)(new_dict_items)
 
         current_dict = getattr(modeling_obj, attr_key, None)
         if current_dict is not None and isinstance(current_dict, ExplainableObjectDict):

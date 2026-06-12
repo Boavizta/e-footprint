@@ -10,13 +10,25 @@ from efootprint.abstract_modeling_classes.object_linked_to_modeling_obj import O
 from efootprint.abstract_modeling_classes.empty_explainable_object import EmptyExplainableObject
 
 
-def to_weighted_explainable_object_dict(input_value, weight_label: str = None) -> "ExplainableObjectDict":
-    """Normalize constructor sugar into an ExplainableObjectDict of dimensionless, non-negative weights.
+def validate_weight(key, weight):
+    key_name = getattr(key, "name", key)
+    if not isinstance(weight, ExplainableQuantity):
+        raise ValueError(
+            f"Weight for {key_name} must be an ExplainableQuantity, received {type(weight)}")
+    if not weight.value.check("[]"):
+        raise ValueError(f"Weight for {key_name} should be dimensionless but has units {weight.value.units}")
+    if weight.value.magnitude < 0:
+        raise ValueError(f"Weight for {key_name} should be non-negative but is {weight.value.magnitude}")
+
+
+def to_weighted_explainable_object_dict(input_value, weight_label: str = None) -> "WeightedExplainableObjectDict":
+    """Normalize constructor sugar into a WeightedExplainableObjectDict of dimensionless, non-negative weights.
 
     Accepts None (empty dict), a list of keys (each entry weighs 1, duplicates accumulating), or a dict whose
     values are either ExplainableQuantities (passed through) or plain numbers (wrapped as
     SourceValue(n * u.dimensionless), so they carry Sources.HYPOTHESIS provenance like any hand-declared input).
-    Wrapping happens only at this constructor boundary: ExplainableObjectDict.__setitem__ stays strict.
+    Number wrapping happens only at this constructor boundary; the weight invariant itself is enforced by
+    WeightedExplainableObjectDict.__setitem__ on every set, construction included.
     """
     from efootprint.abstract_modeling_classes.source_objects import SourceValue
     from efootprint.constants.units import u
@@ -31,25 +43,13 @@ def to_weighted_explainable_object_dict(input_value, weight_label: str = None) -
         raise ValueError(
             f"Weighted dict inputs must be None, a list of keys or a dict, received {type(input_value)}")
 
-    output_dict = ExplainableObjectDict()
+    output_dict = WeightedExplainableObjectDict()
     for key, value in items:
-        if isinstance(value, ExplainableQuantity):
-            weight = value
-        elif isinstance(value, (int, float)) and not isinstance(value, bool):
-            weight = SourceValue(value * u.dimensionless)
+        if isinstance(value, (int, float)) and not isinstance(value, bool):
+            value = SourceValue(value * u.dimensionless)
             if weight_label is not None:
-                weight.set_label(weight_label)
-        else:
-            raise ValueError(
-                f"Weight for {getattr(key, 'name', key)} must be an ExplainableQuantity or a plain number, "
-                f"received {type(value)}")
-        if not weight.value.check("[]"):
-            raise ValueError(
-                f"Weight for {getattr(key, 'name', key)} should be dimensionless but has units {weight.value.units}")
-        if weight.value.magnitude < 0:
-            raise ValueError(
-                f"Weight for {getattr(key, 'name', key)} should be non-negative but is {weight.value.magnitude}")
-        output_dict[key] = weight
+                value.set_label(weight_label)
+        output_dict[key] = value
 
     return output_dict
 
@@ -123,7 +123,7 @@ class ExplainableObjectDict(ObjectLinkedToModelingObjBase, dict):
                 ModelingUpdate([[self[key], value]])
             else:
                 # Structural change: new key — full dict replacement so compute chain can diff keys
-                new_dict = ExplainableObjectDict()
+                new_dict = type(self)()
                 for k, v in self.items():
                     dict.__setitem__(new_dict, k, v)
                 dict.__setitem__(new_dict, key, value)
@@ -144,7 +144,7 @@ class ExplainableObjectDict(ObjectLinkedToModelingObjBase, dict):
     def __delitem__(self, key):
         if self.trigger_modeling_updates:
             from efootprint.abstract_modeling_classes.modeling_update import ModelingUpdate
-            new_dict = ExplainableObjectDict()
+            new_dict = type(self)()
             for k, v in self.items():
                 if k != key:
                     dict.__setitem__(new_dict, k, v)
@@ -267,3 +267,12 @@ class ExplainableObjectDict(ObjectLinkedToModelingObjBase, dict):
         return_str = return_str + "}"
 
         return return_str
+
+
+class WeightedExplainableObjectDict(ExplainableObjectDict):
+    """ExplainableObjectDict of dimensionless, non-negative weights. validate_weight runs on every __setitem__,
+    so the invariant holds at construction and across later mutations alike."""
+
+    def __setitem__(self, key, value):
+        validate_weight(key, value)
+        super().__setitem__(key, value)

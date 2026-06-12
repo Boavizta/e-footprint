@@ -143,6 +143,7 @@ summed over its systems (Empty when system-less). It is the only `attributed_*` 
 - **Input dicts.** `trigger_modeling_updates=True` (set automatically by `after_init()` for dicts that are `__init__` params). Mutations (`__setitem__`, `__delitem__`) trigger `ModelingUpdate` to recompute dependents.
 - **Re-entry guard.** When `ModelingUpdate.apply_changes()` replaces a value inside a trigger-enabled dict, triggers are temporarily disabled to prevent infinite loops.
 - **Deserialization order (critical).** Input dicts must be initialized empty before `after_init()` runs. Then a deferred loop populates them via `replace_in_mod_obj_container_without_recomputation`. Then triggers are enabled on the populated dicts. This prevents crashes from computing on incomplete state.
+- **Weighted relationship dicts.** Relationship dicts whose values are weights (e.g. `EdgeDeviceGroup.sub_group_counts`) are built with `to_weighted_explainable_object_dict` (constructor sugar: list of keys with duplicates accumulating, or plain-number values wrapped as dimensionless `SourceValue`s), which returns a `WeightedExplainableObjectDict` enforcing dimensionless, non-negative weights on every `__setitem__`. JSON load rebuilds dict attributes with the class declared by their `__init__` annotation, so the subclass (and its invariant) survives round-trips; `ModelingUpdate` and structural dict replacements preserve the dict type too.
 
 ## Units and calculations
 

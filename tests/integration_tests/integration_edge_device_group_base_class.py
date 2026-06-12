@@ -5,7 +5,8 @@ import numpy as np
 from pint import Quantity
 
 from efootprint.abstract_modeling_classes.empty_explainable_object import EmptyExplainableObject
-from efootprint.abstract_modeling_classes.explainable_object_dict import ExplainableObjectDict
+from efootprint.abstract_modeling_classes.explainable_object_dict import (
+    ExplainableObjectDict, WeightedExplainableObjectDict)
 from efootprint.abstract_modeling_classes.modeling_update import ModelingUpdate
 from efootprint.abstract_modeling_classes.source_objects import SourceValue, SourceRecurrentValues
 from efootprint.api_utils.json_to_system import json_to_system
@@ -226,6 +227,9 @@ class IntegrationEdgeDeviceGroupBaseClass(IntegrationTestBaseClass):
 
         self.assertIn(reloaded_building, reloaded_floor.modeling_obj_containers)
         self.assertIn(reloaded_floor, reloaded_device.modeling_obj_containers)
+
+        self.assertIsInstance(reloaded_building.sub_group_counts, WeightedExplainableObjectDict)
+        self.assertIsInstance(reloaded_floor.edge_device_counts, WeightedExplainableObjectDict)
 
         self.assertEqual(1, len(reloaded_building.sub_group_counts))
         self.assertIn(reloaded_floor, reloaded_building.sub_group_counts)

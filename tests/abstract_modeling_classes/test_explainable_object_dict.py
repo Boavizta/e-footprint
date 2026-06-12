@@ -4,7 +4,7 @@ from unittest.mock import MagicMock
 from efootprint.abstract_modeling_classes.contextual_modeling_object_attribute import ContextualModelingObjectDictKey
 from efootprint.abstract_modeling_classes.explainable_object_base_class import ExplainableObject
 from efootprint.abstract_modeling_classes.explainable_object_dict import (
-    ExplainableObjectDict, to_weighted_explainable_object_dict)
+    ExplainableObjectDict, WeightedExplainableObjectDict, to_weighted_explainable_object_dict)
 from efootprint.abstract_modeling_classes.explainable_quantity import ExplainableQuantity
 from efootprint.abstract_modeling_classes.source_objects import SourceValue
 from efootprint.abstract_modeling_classes.empty_explainable_object import EmptyExplainableObject
@@ -351,9 +351,9 @@ class TestToWeightedExplainableObjectDict(unittest.TestCase):
         self.key_a = create_mod_obj_mock(ModelingObject, name="key_a", id="key_a")
         self.key_b = create_mod_obj_mock(ModelingObject, name="key_b", id="key_b")
 
-    def test_none_returns_empty_explainable_object_dict(self):
+    def test_none_returns_empty_weighted_explainable_object_dict(self):
         result = to_weighted_explainable_object_dict(None)
-        self.assertIsInstance(result, ExplainableObjectDict)
+        self.assertIsInstance(result, WeightedExplainableObjectDict)
         self.assertEqual({}, result)
 
     def test_list_entries_get_weight_one_and_duplicates_accumulate(self):
@@ -429,6 +429,34 @@ class TestToWeightedExplainableObjectDict(unittest.TestCase):
         self.assertEqual(owner, contextual_dict_keys[0].modeling_obj_container)
         self.assertEqual("input_dict", contextual_dict_keys[0].attr_name_in_mod_obj_container)
         self.assertEqual(2, owner.input_dict[key].value.magnitude)
+
+
+class TestWeightedExplainableObjectDict(unittest.TestCase):
+    """The weight invariant (ExplainableQuantity, dimensionless, non-negative) must hold on every __setitem__,
+    not only at the normalizer's constructor boundary."""
+
+    def setUp(self):
+        self.key = create_mod_obj_mock(ModelingObject, name="weighted_dict_key", id="weighted_dict_key")
+        self.weighted_dict = to_weighted_explainable_object_dict({self.key: 1})
+
+    def test_setitem_rejects_negative_weight(self):
+        with self.assertRaises(ValueError) as ctx:
+            self.weighted_dict[self.key] = SourceValue(-2 * u.dimensionless)
+        self.assertIn("non-negative", str(ctx.exception))
+
+    def test_setitem_rejects_non_dimensionless_weight(self):
+        with self.assertRaises(ValueError) as ctx:
+            self.weighted_dict[self.key] = SourceValue(3 * u.kg)
+        self.assertIn("dimensionless", str(ctx.exception))
+
+    def test_setitem_rejects_non_quantity_value(self):
+        with self.assertRaises(ValueError) as ctx:
+            self.weighted_dict[self.key] = EmptyExplainableObject()
+        self.assertIn("ExplainableQuantity", str(ctx.exception))
+
+    def test_valid_setitem_still_works(self):
+        self.weighted_dict[self.key] = SourceValue(5 * u.dimensionless, label="updated weight")
+        self.assertEqual(5, self.weighted_dict[self.key].value.magnitude)
 
 
 if __name__ == "__main__":

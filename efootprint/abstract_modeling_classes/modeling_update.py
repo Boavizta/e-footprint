@@ -134,7 +134,8 @@ class ModelingUpdate:
             if isinstance(new_value, dict):
                 from efootprint.abstract_modeling_classes.explainable_object_dict import ExplainableObjectDict as EOD
                 if not isinstance(new_value, EOD):
-                    self.changes_list[index][1] = EOD(new_value)
+                    dict_class = type(old_value) if isinstance(old_value, EOD) else EOD
+                    self.changes_list[index][1] = dict_class(new_value)
             if isinstance(new_value, ModelingObject):
                 self.changes_list[index][1] = ContextualModelingObjectAttribute(new_value)
                 if old_value.attr_name_in_mod_obj_container in mod_obj_container.attribute_update_entanglements:

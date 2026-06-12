@@ -2,7 +2,7 @@ from typing import List, TYPE_CHECKING
 
 from efootprint.abstract_modeling_classes.empty_explainable_object import EmptyExplainableObject
 from efootprint.abstract_modeling_classes.explainable_object_dict import (
-    ExplainableObjectDict, to_weighted_explainable_object_dict)
+    ExplainableObjectDict, WeightedExplainableObjectDict, to_weighted_explainable_object_dict, validate_weight)
 from efootprint.abstract_modeling_classes.explainable_quantity import ExplainableQuantity
 from efootprint.abstract_modeling_classes.modeling_object import ModelingObject
 from efootprint.abstract_modeling_classes.modeling_update import ModelingUpdate
@@ -28,8 +28,8 @@ class EdgeDeviceGroup(ModelingObject):
     default_values = {}
 
     def __init__(self, name: str,
-                 sub_group_counts: ExplainableObjectDict["EdgeDeviceGroup"] = None,
-                 edge_device_counts: ExplainableObjectDict["EdgeDevice"] = None):
+                 sub_group_counts: WeightedExplainableObjectDict["EdgeDeviceGroup"] = None,
+                 edge_device_counts: WeightedExplainableObjectDict["EdgeDevice"] = None):
         super().__init__(name)
         self.sub_group_counts = to_weighted_explainable_object_dict(sub_group_counts, weight_label="Count in group")
         self.edge_device_counts = to_weighted_explainable_object_dict(
@@ -105,14 +105,7 @@ class EdgeDeviceGroup(ModelingObject):
     def update_counts_validation(self):
         """Validates that every count in this group is dimensionless and non-negative."""
         for key, count in list(self.sub_group_counts.items()) + list(self.edge_device_counts.items()):
-            if not count.value.check("[]"):
-                raise ValueError(
-                    f"Count for {key.name} in {self.name} should be dimensionless "
-                    f"but has units {count.value.units}")
-            if count.value.magnitude < 0:
-                raise ValueError(
-                    f"Count for {key.name} in {self.name} should be positive "
-                    f"but is {count.value.magnitude}")
+            validate_weight(key, count)
         self.counts_validation = EmptyExplainableObject()
 
     def update_effective_nb_of_units_within_root(self):
