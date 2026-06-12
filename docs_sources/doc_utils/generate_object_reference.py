@@ -23,7 +23,7 @@ from docs_sources.doc_utils.docs_case import (
 from efootprint.logger import logger
 from efootprint.utils.placeholder_resolver import resolve_placeholders
 from efootprint.utils.tools import get_init_signature_params
-from format_tutorial_md import doc_utils_path, generated_mkdocs_sourcefiles_path
+from docs_sources.doc_utils.format_tutorial_md import doc_utils_path, generated_mkdocs_sourcefiles_path
 
 
 def _reject_ui(target: str) -> str:

@@ -35,8 +35,10 @@ python -m pytest --cov=tests
 ## Update [tutorial notebook](tutorial.ipynb) if needed and update doc
 
 ```shell
-python docs_sources/doc_utils/main.py
+python -m docs_sources.doc_utils.main
 ```
+
+(Module mode puts the repo root on `sys.path`, so the local `efootprint` is imported even if the venv's editable install points elsewhere.)
 
 ## Check locally that new doc version is correct (changelog has been updated, tutorial and builders notebooks have been updated, etc.)
 

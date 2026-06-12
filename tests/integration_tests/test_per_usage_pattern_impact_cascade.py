@@ -304,13 +304,14 @@ class TestPerUsagePatternImpactCascade(TestCase):
         # Conservation: the system total reconciles with the sum of the patterns' attributed footprints.
         self.assertAlmostEqual(
             system.total_footprint.sum().to(u.kg).magnitude,
+            # All fabrication footprints are set at 0
             (attributed_footprint(low_pattern, LifeCyclePhases.USAGE).sum()
              + attributed_footprint(high_pattern, LifeCyclePhases.USAGE).sum()).to(u.kg).magnitude, places=3)
 
     def test_job_longer_than_journey_renders_diagram_and_spans_run_window(self):
         # A short (1 min) journey triggers a 150 min job whose run window spills two hours past the only
         # journey start. The attribution must carry the job's whole run window up to the pattern, and the
-        # impact-repartition Sankey (what opening Results does) must build over it without raising.
+        # impact-repartition Sankey (what opening Results in the interface does) must build over it without raising.
         storage = self._neutral_storage("web storage")
         server = self._server("web server", storage)
         job = Job.from_defaults(
