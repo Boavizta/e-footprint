@@ -1,5 +1,5 @@
 {
-    "efootprint_version": "21.1.6",
+    "efootprint_version": "22.0.0",
     "Sources": {
         "Base-ADEME_V19": {
             "id": "Base-ADEME_V19",
@@ -71,11 +71,87 @@
         "Shopping-journey": {
             "name": "Shopping journey",
             "id": "Shopping-journey",
-            "uj_steps": [
-                "Browse-the-catalog",
-                "Add-an-item-to-the-cart",
-                "Check-out"
-            ]
+            "uj_steps": {
+                "Browse-the-catalog": {
+                    "value": 1.0,
+                    "unit": "dimensionless",
+                    "label": "Times per journey",
+                    "source": "hypothesis"
+                },
+                "Add-an-item-to-the-cart": {
+                    "value": 1.0,
+                    "unit": "dimensionless",
+                    "label": "Times per journey",
+                    "source": "hypothesis"
+                },
+                "Check-out": {
+                    "value": 1.0,
+                    "unit": "dimensionless",
+                    "label": "Times per journey",
+                    "source": "hypothesis"
+                }
+            }
+        }
+    },
+    "Device": {
+        "Default-laptop": {
+            "name": "Default laptop",
+            "id": "Default-laptop",
+            "carbon_footprint_fabrication": {
+                "value": 156.0,
+                "unit": "kilogram",
+                "label": "Carbon footprint fabrication",
+                "source": "Base-ADEME_V19"
+            },
+            "power": {
+                "value": 50.0,
+                "unit": "watt",
+                "label": "Power",
+                "source": "hypothesis"
+            },
+            "lifespan": {
+                "value": 6.0,
+                "unit": "year",
+                "label": "Lifespan",
+                "source": "hypothesis"
+            },
+            "fraction_of_usage_time": {
+                "value": 7.0,
+                "unit": "hour / day",
+                "label": "Fraction of usage time",
+                "source": "DATA2eAI---STATE-OF-MOBILE"
+            }
+        }
+    },
+    "Network": {
+        "Default-network": {
+            "name": "Default network",
+            "id": "Default-network",
+            "bandwidth_energy_intensity": {
+                "value": 0.1,
+                "unit": "kilowatt_hour / gigabyte",
+                "label": "bandwith energy intensity",
+                "source": "hypothesis"
+            }
+        }
+    },
+    "Country": {
+        "France": {
+            "name": "France",
+            "id": "France",
+            "short_name": "FRA",
+            "average_carbon_intensity": {
+                "value": 44.0,
+                "unit": "gram / kilowatt_hour",
+                "label": "Average carbon intensity",
+                "source": "Our-world-in-data-28202429",
+                "confidence": "high"
+            },
+            "timezone": {
+                "zone": "Europe/Paris",
+                "label": "Timezone",
+                "source": "user_data"
+            }
         }
     },
     "UsageJourneyStep": {
@@ -88,10 +164,20 @@
                 "label": "Time spent by user",
                 "source": "hypothesis"
             },
-            "jobs": [
-                "Serve-catalog-page",
-                "Read-product-catalog"
-            ]
+            "jobs": {
+                "Serve-catalog-page": {
+                    "value": 1.0,
+                    "unit": "dimensionless",
+                    "label": "Times per step",
+                    "source": "hypothesis"
+                },
+                "Read-product-catalog": {
+                    "value": 1.0,
+                    "unit": "dimensionless",
+                    "label": "Times per step",
+                    "source": "hypothesis"
+                }
+            }
         },
         "Add-an-item-to-the-cart": {
             "name": "Add an item to the cart",
@@ -102,10 +188,20 @@
                 "label": "Time spent by user",
                 "source": "hypothesis"
             },
-            "jobs": [
-                "Update-cart",
-                "Write-cart-row"
-            ]
+            "jobs": {
+                "Update-cart": {
+                    "value": 1.0,
+                    "unit": "dimensionless",
+                    "label": "Times per step",
+                    "source": "hypothesis"
+                },
+                "Write-cart-row": {
+                    "value": 1.0,
+                    "unit": "dimensionless",
+                    "label": "Times per step",
+                    "source": "hypothesis"
+                }
+            }
         },
         "Check-out": {
             "name": "Check out",
@@ -116,10 +212,20 @@
                 "label": "Time spent by user",
                 "source": "hypothesis"
             },
-            "jobs": [
-                "Submit-order",
-                "Write-order-row"
-            ]
+            "jobs": {
+                "Submit-order": {
+                    "value": 1.0,
+                    "unit": "dimensionless",
+                    "label": "Times per step",
+                    "source": "hypothesis"
+                },
+                "Write-order-row": {
+                    "value": 1.0,
+                    "unit": "dimensionless",
+                    "label": "Times per step",
+                    "source": "hypothesis"
+                }
+            }
         }
     },
     "Job": {
@@ -593,67 +699,6 @@
             "fixed_nb_of_instances": {
                 "value": null,
                 "label": "User defined number of instances"
-            }
-        }
-    },
-    "Device": {
-        "Default-laptop": {
-            "name": "Default laptop",
-            "id": "Default-laptop",
-            "carbon_footprint_fabrication": {
-                "value": 156.0,
-                "unit": "kilogram",
-                "label": "Carbon footprint fabrication",
-                "source": "Base-ADEME_V19"
-            },
-            "power": {
-                "value": 50.0,
-                "unit": "watt",
-                "label": "Power",
-                "source": "hypothesis"
-            },
-            "lifespan": {
-                "value": 6.0,
-                "unit": "year",
-                "label": "Lifespan",
-                "source": "hypothesis"
-            },
-            "fraction_of_usage_time": {
-                "value": 7.0,
-                "unit": "hour / day",
-                "label": "Fraction of usage time",
-                "source": "DATA2eAI---STATE-OF-MOBILE"
-            }
-        }
-    },
-    "Network": {
-        "Default-network": {
-            "name": "Default network",
-            "id": "Default-network",
-            "bandwidth_energy_intensity": {
-                "value": 0.1,
-                "unit": "kilowatt_hour / gigabyte",
-                "label": "bandwith energy intensity",
-                "source": "hypothesis"
-            }
-        }
-    },
-    "Country": {
-        "France": {
-            "name": "France",
-            "id": "France",
-            "short_name": "FRA",
-            "average_carbon_intensity": {
-                "value": 44.0,
-                "unit": "gram / kilowatt_hour",
-                "label": "Average carbon intensity",
-                "source": "Our-world-in-data-28202429",
-                "confidence": "high"
-            },
-            "timezone": {
-                "zone": "Europe/Paris",
-                "label": "Timezone",
-                "source": "user_data"
             }
         }
     }

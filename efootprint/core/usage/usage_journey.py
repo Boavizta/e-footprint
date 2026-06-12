@@ -1,7 +1,8 @@
 from typing import List, TYPE_CHECKING
 
 from efootprint.abstract_modeling_classes.empty_explainable_object import EmptyExplainableObject
-from efootprint.abstract_modeling_classes.explainable_object_dict import ExplainableObjectDict
+from efootprint.abstract_modeling_classes.explainable_object_dict import (
+    ExplainableObjectDict, WeightedExplainableObjectDict, to_weighted_explainable_object_dict)
 from efootprint.abstract_modeling_classes.modeling_object import ModelingObject
 from efootprint.constants.units import u
 from efootprint.core.hardware.server import Server
@@ -20,20 +21,20 @@ class UsageJourney(ModelingObject):
 
     param_descriptions = {
         "uj_steps": (
-            "Ordered list of {class:UsageJourneyStep}s that make up the journey. The journey duration is the "
-            "sum of step durations."),
+            "Ordered mapping from {class:UsageJourneyStep} to how many times the step occurs in one journey. "
+            "The journey duration is the sum of step durations weighted by their number of occurrences."),
     }
 
-    def __init__(self, name: str, uj_steps: List[UsageJourneyStep]):
+    def __init__(self, name: str, uj_steps: WeightedExplainableObjectDict[UsageJourneyStep]):
         super().__init__(name)
-        self.uj_steps = uj_steps
+        self.uj_steps = to_weighted_explainable_object_dict(uj_steps, weight_label="Times per journey")
 
         self.duration = EmptyExplainableObject()
         self.nb_usage_journeys_in_parallel_per_usage_pattern = ExplainableObjectDict()
 
     @property
     def modeling_objects_whose_attributes_depend_directly_on_me(self) -> List["Device"] | List[UsageJourneyStep]:
-        return self.devices + self.uj_steps
+        return self.devices + list(self.uj_steps)
 
     @property
     def servers(self) -> List[Server]:
@@ -58,17 +59,18 @@ class UsageJourney(ModelingObject):
 
     @property
     def jobs(self) -> List[Job]:
-        # Distinct jobs across steps: a job listed several times in a step still
-        # appears once here. Per-step multiplicity is preserved at uj_step.jobs,
-        # which is where occurrence counting happens. Mirrors edge_usage_journey.
-        return list(dict.fromkeys(sum([uj_step.jobs for uj_step in self.uj_steps], start=[])))
+        # Distinct jobs across steps: a job shared between steps appears once here. Per-step
+        # multiplicity is preserved as the weight in uj_step.jobs, which is where occurrence
+        # counting happens. Mirrors edge_usage_journey.
+        return list(dict.fromkeys(sum([list(uj_step.jobs) for uj_step in self.uj_steps], start=[])))
 
     calculated_attributes = ["duration", "nb_usage_journeys_in_parallel_per_usage_pattern"]
 
     def update_duration(self):
-        """Total wall-clock time of one journey, equal to the sum of {param:UsageJourneyStep.user_time_spent} across all steps."""
+        """Total wall-clock time of one journey, equal to the sum of {param:UsageJourneyStep.user_time_spent} across all steps, each weighted by how many times the step occurs in the journey."""
         user_time_spent_sum = sum(
-            [uj_step.user_time_spent for uj_step in self.uj_steps], start=EmptyExplainableObject())
+            [times_per_journey * uj_step.user_time_spent for uj_step, times_per_journey in self.uj_steps.items()],
+            start=EmptyExplainableObject())
 
         self.duration = user_time_spent_sum.set_label(f"Duration")
 

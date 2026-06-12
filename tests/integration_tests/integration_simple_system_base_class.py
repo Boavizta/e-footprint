@@ -1,8 +1,8 @@
-from copy import copy
 import os
 from datetime import datetime, timedelta, timezone
 
 from efootprint.abstract_modeling_classes.empty_explainable_object import EmptyExplainableObject
+from efootprint.abstract_modeling_classes.explainable_object_dict import to_weighted_explainable_object_dict
 from efootprint.abstract_modeling_classes.modeling_update import ModelingUpdate
 from efootprint.constants.sources import Sources
 from efootprint.abstract_modeling_classes.source_objects import SourceValue
@@ -234,7 +234,7 @@ class IntegrationTestSimpleSystemBaseClass(IntegrationTestBaseClass):
     def run_test_uj_step_update(self):
         scenario = ObjectLinkScenario(
             name="uj_step_update",
-            updates_builder=[[self.uj.uj_steps, [self.uj_step_1]]],
+            updates_builder=[[self.uj.uj_steps, to_weighted_explainable_object_dict([self.uj_step_1])]],
         )
         self._run_object_link_scenario(scenario)
 
@@ -270,7 +270,8 @@ class IntegrationTestSimpleSystemBaseClass(IntegrationTestBaseClass):
         new_job = Job.from_defaults("new job", server=self.server)
         scenario = ObjectLinkScenario(
             name="update_jobs",
-            updates_builder=[[self.uj_step_1.jobs, self.uj_step_1.jobs + [new_job]]],
+            updates_builder=[[self.uj_step_1.jobs,
+                              to_weighted_explainable_object_dict({**self.uj_step_1.jobs, new_job: 1})]],
             # storage doesn’t change since it has fixed number of instances.
             expected_changed=[self.server, self.network],
             expected_unchanged=[self.usage_pattern.devices[0]],
@@ -284,7 +285,7 @@ class IntegrationTestSimpleSystemBaseClass(IntegrationTestBaseClass):
         )
         scenario = ObjectLinkScenario(
             name="update_uj_steps",
-            updates_builder=[[self.uj.uj_steps, [new_step]]],
+            updates_builder=[[self.uj.uj_steps, to_weighted_explainable_object_dict([new_step])]],
             expected_changed=[self.server, self.network],
         )
         self._run_object_link_scenario(scenario)
@@ -327,10 +328,10 @@ class IntegrationTestSimpleSystemBaseClass(IntegrationTestBaseClass):
         step_without_job = UsageJourneyStep.from_defaults("User checks her phone", jobs=[])
         with self.cleanup_stack(
                 verify_unchanged_before_cleanup=[self.server, self.storage]) as cleanup:
-            initial_steps = copy(self.uj.uj_steps)
             cleanup.callback(step_without_job.self_delete)
-            cleanup.callback(setattr, self.uj, "uj_steps", initial_steps)
-            self.uj.uj_steps.append(step_without_job)
+            # Resolve self.uj.uj_steps at cleanup time: adding the key replaces the dict object.
+            cleanup.callback(lambda: self.uj.uj_steps.__delitem__(step_without_job))
+            self.uj.uj_steps[step_without_job] = SourceValue(1 * u.dimensionless)
 
             self.footprint_has_changed([self.usage_pattern.devices[0]])
             self.assertNotEqual(self.system.total_footprint, self.initial_footprint)
@@ -399,13 +400,13 @@ class IntegrationTestSimpleSystemBaseClass(IntegrationTestBaseClass):
         def restore_job_2():
             current_jobs = [job for job in self.uj_step_2.jobs if job.name == "job 2"]
             restored_job = current_jobs[0] if current_jobs else Job.from_defaults("job 2", server=self.server)
-            self.uj_step_2.jobs = [restored_job]
+            self.uj_step_2.jobs = to_weighted_explainable_object_dict([restored_job], weight_label="Times per step")
             type(self).job_2 = restored_job
 
         with self.cleanup_stack(verify_total_footprint_changed_before_cleanup=True) as cleanup:
             cleanup.callback(restore_job_2)
             logger.info("Removing upload job from upload step")
-            self.uj_step_2.jobs = []
+            self.uj_step_2.jobs = to_weighted_explainable_object_dict({})
             logger.info("Deleting upload job")
             self.job_2.self_delete()
 
@@ -424,7 +425,7 @@ class IntegrationTestSimpleSystemBaseClass(IntegrationTestBaseClass):
         self.assertEqual(len(simulation.values_to_recompute), len(simulation.recomputed_values))
         # Depending job occurrences should have been recomputed since a changing user_time_spent might shift jobs
         # distribution across time
-        for elt in self.uj_step_2.jobs[0].hourly_occurrences_per_usage_pattern.values():
+        for elt in list(self.uj_step_2.jobs)[0].hourly_occurrences_per_usage_pattern.values():
             self.assertIn(elt.id, [elt.id for elt in simulation.values_to_recompute])
 
     def run_test_simulation_multiple_input_changes(self):
@@ -438,7 +439,7 @@ class IntegrationTestSimpleSystemBaseClass(IntegrationTestBaseClass):
         self.assertEqual(simulation.old_sourcevalues, [self.uj_step_1.user_time_spent, self.server.compute])
         self.assertEqual(len(simulation.values_to_recompute), len(simulation.recomputed_values))
         recomputed_elements_ids = [elt.id for elt in simulation.values_to_recompute]
-        for elt in self.uj_step_2.jobs[0].hourly_occurrences_per_usage_pattern.values():
+        for elt in list(self.uj_step_2.jobs)[0].hourly_occurrences_per_usage_pattern.values():
             self.assertIn(elt.id, recomputed_elements_ids)
         self.assertIn(self.server.energy_footprint.id, recomputed_elements_ids)
 
@@ -446,33 +447,34 @@ class IntegrationTestSimpleSystemBaseClass(IntegrationTestBaseClass):
         new_server = Server.from_defaults("new server", storage=Storage.from_defaults("default storage"))
         new_job = Job.from_defaults("new job", server=new_server)
 
-        initial_uj_step_2_jobs = copy(self.uj_step_2.jobs)
-        simulation = ModelingUpdate([[self.uj_step_2.jobs, self.uj_step_2.jobs + [new_job]]],
+        initial_uj_step_2_jobs = list(self.uj_step_2.jobs)
+        simulation = ModelingUpdate([[self.uj_step_2.jobs, to_weighted_explainable_object_dict({**self.uj_step_2.jobs, new_job: 1})]],
                                     self.start_date.replace(tzinfo=timezone.utc) + timedelta(hours=1))
 
         self.assertEqual(self.system.total_footprint, self.initial_footprint)
         self.assertEqual(self.system.simulation, simulation)
         self.assertEqual(len(simulation.values_to_recompute), len(simulation.recomputed_values))
         recomputed_elements_ids = [elt.id for elt in simulation.values_to_recompute]
-        self.assertIn(self.uj_step_2.jobs[0].hourly_occurrences_per_usage_pattern.id, recomputed_elements_ids)
-        self.assertEqual(initial_uj_step_2_jobs, self.uj_step_2.jobs)
+        self.assertIn(list(self.uj_step_2.jobs)[0].hourly_occurrences_per_usage_pattern.id, recomputed_elements_ids)
+        self.assertEqual(initial_uj_step_2_jobs, list(self.uj_step_2.jobs))
         simulation.set_updated_values()
-        self.assertEqual(initial_uj_step_2_jobs + [new_job], self.uj_step_2.jobs)
+        self.assertEqual(initial_uj_step_2_jobs + [new_job], list(self.uj_step_2.jobs))
         simulation.reset_values()
 
     def run_test_simulation_add_existing_object(self):
-        simulation = ModelingUpdate([[self.uj_step_2.jobs, self.uj_step_2.jobs + [self.job_2]]],
-                                    self.start_date.replace(tzinfo=timezone.utc) + timedelta(hours=1))
+        # Doubling the weight of an already-linked job is the dict analogue of the old duplicate-entry idiom.
+        simulation = ModelingUpdate(
+            [[self.uj_step_2.jobs[self.job_2], SourceValue(2 * u.dimensionless)]],
+            self.start_date.replace(tzinfo=timezone.utc) + timedelta(hours=1))
 
-        initial_uj_step_2_jobs = copy(self.uj_step_2.jobs)
         self.assertEqual(self.system.total_footprint, self.initial_footprint)
         self.assertEqual(self.system.simulation, simulation)
         self.assertEqual(len(simulation.values_to_recompute), len(simulation.recomputed_values))
         recomputed_elements_ids = [elt.id for elt in simulation.values_to_recompute]
         self.assertIn(self.job_2.server.hour_by_hour_compute_need.id, recomputed_elements_ids)
-        self.assertEqual(initial_uj_step_2_jobs, self.uj_step_2.jobs)
+        self.assertEqual(1, self.uj_step_2.jobs[self.job_2].magnitude)
         simulation.set_updated_values()
-        self.assertEqual(initial_uj_step_2_jobs + [self.job_2], self.uj_step_2.jobs)
+        self.assertEqual(2, self.uj_step_2.jobs[self.job_2].magnitude)
         simulation.reset_values()
 
     def run_test_simulation_add_multiple_objects(self):
@@ -481,9 +483,9 @@ class IntegrationTestSimpleSystemBaseClass(IntegrationTestBaseClass):
 
         new_job2 = Job.from_defaults("new job 2", server=new_server)
 
-        initial_uj_step_2_jobs = copy(self.uj_step_2.jobs)
+        initial_uj_step_2_jobs = list(self.uj_step_2.jobs)
         simulation = ModelingUpdate([
-                [self.uj_step_2.jobs, self.uj_step_2.jobs + [new_job, new_job2, self.job_1]]],
+                [self.uj_step_2.jobs, to_weighted_explainable_object_dict({**self.uj_step_2.jobs, new_job: 1, new_job2: 1, self.job_1: 1})]],
             self.start_date.replace(tzinfo=timezone.utc) + timedelta(hours=1))
 
         self.assertEqual(self.system.total_footprint, self.initial_footprint)
@@ -492,9 +494,9 @@ class IntegrationTestSimpleSystemBaseClass(IntegrationTestBaseClass):
         recomputed_elements_ids = [elt.id for elt in simulation.values_to_recompute]
         for job in [new_job, new_job2, self.job_1]:
             self.assertIn(job.server.hour_by_hour_compute_need.id, recomputed_elements_ids)
-        self.assertEqual(initial_uj_step_2_jobs, self.uj_step_2.jobs)
+        self.assertEqual(initial_uj_step_2_jobs, list(self.uj_step_2.jobs))
         simulation.set_updated_values()
-        self.assertEqual(initial_uj_step_2_jobs + [new_job, new_job2, self.job_1], self.uj_step_2.jobs)
+        self.assertEqual(initial_uj_step_2_jobs + [new_job, new_job2, self.job_1], list(self.uj_step_2.jobs))
         simulation.reset_values()
 
     def run_test_simulation_add_objects_and_make_input_changes(self):
@@ -504,7 +506,7 @@ class IntegrationTestSimpleSystemBaseClass(IntegrationTestBaseClass):
         new_job2 = Job.from_defaults("new job 2", server=new_server)
 
         simulation = ModelingUpdate([
-                [self.uj_step_2.jobs, self.uj_step_2.jobs + [new_job, new_job2, self.job_1]],
+                [self.uj_step_2.jobs, to_weighted_explainable_object_dict({**self.uj_step_2.jobs, new_job: 1, new_job2: 1, self.job_1: 1})],
                 [self.uj_step_1.user_time_spent, SourceValue(25 * u.min)],
                 [self.server.compute, SourceValue(42 * u.cpu_core, Sources.USER_DATA)]],
                 self.start_date.replace(tzinfo=timezone.utc) + timedelta(hours=1))
@@ -514,7 +516,7 @@ class IntegrationTestSimpleSystemBaseClass(IntegrationTestBaseClass):
         recomputed_elements_ids = [elt.id for elt in simulation.values_to_recompute]
         for job in [new_job, new_job2, self.job_1]:
             self.assertIn(job.server.hour_by_hour_compute_need.id, recomputed_elements_ids)
-        self.assertIn(self.uj_step_2.jobs[0].hourly_occurrences_per_usage_pattern.id, recomputed_elements_ids)
+        self.assertIn(list(self.uj_step_2.jobs)[0].hourly_occurrences_per_usage_pattern.id, recomputed_elements_ids)
 
     def run_test_dict_container_integrity(self):
         """Test bidirectional consistency of explainable_object_dicts_containers tracking."""

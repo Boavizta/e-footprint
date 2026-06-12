@@ -113,7 +113,7 @@ class Device(HardwareBase):
 
     @property
     def usage_journey_steps(self) -> List["UsageJourneyStep"]:
-        return list(dict.fromkeys(sum([usage_pattern.usage_journey.uj_steps for usage_pattern in self.usage_patterns], [])))
+        return list(dict.fromkeys(sum([list(usage_pattern.usage_journey.uj_steps) for usage_pattern in self.usage_patterns], [])))
 
     calculated_attributes: List[str] = [
         "energy_footprint_per_usage_pattern",
@@ -170,8 +170,8 @@ class Device(HardwareBase):
 
     def attribution_atoms(self, phase: LifeCyclePhases):
         """One atom per (step, up) cell of the device's patterns — no shares: each cell is computed ground-up
-        from the step's occupancy primitive (hourly_avg_occurrences_per_usage_pattern, which sums over the
-        step's positions in the journey, so iterating distinct steps covers repeated ones exactly once).
+        from the step's occupancy primitive (hourly_avg_occurrences_per_usage_pattern, which already folds in
+        the step's times-per-journey weight).
 
         USAGE        atom = (power × 1h) × occupancy(step, up) × up.country.average_carbon_intensity
         FABRICATION  atom = device_fabrication_footprint_over_one_hour × occupancy(step, up)
@@ -184,7 +184,7 @@ class Device(HardwareBase):
             self.power * ExplainableQuantity(1 * u.hour, "one full hour")).to(u.kWh)
         fabrication_over_one_occupied_hour = self.device_fabrication_footprint_over_one_hour
         for usage_pattern in self.usage_patterns:
-            for uj_step in dict.fromkeys(usage_pattern.usage_journey.uj_steps):
+            for uj_step in usage_pattern.usage_journey.uj_steps:
                 occupancy = uj_step.hourly_avg_occurrences_per_usage_pattern[usage_pattern]
                 if phase == LifeCyclePhases.USAGE:
                     value = (energy_over_one_occupied_hour * occupancy

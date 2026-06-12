@@ -3,7 +3,8 @@ from typing import List, TYPE_CHECKING
 import numpy as np
 
 from efootprint.abstract_modeling_classes.empty_explainable_object import EmptyExplainableObject
-from efootprint.abstract_modeling_classes.explainable_object_dict import ExplainableObjectDict
+from efootprint.abstract_modeling_classes.explainable_object_dict import (
+    ExplainableObjectDict, WeightedExplainableObjectDict, to_weighted_explainable_object_dict)
 from efootprint.abstract_modeling_classes.explainable_quantity import ExplainableQuantity
 from efootprint.abstract_modeling_classes.modeling_object import ModelingObject
 from efootprint.core.hardware.edge.edge_device import EdgeDevice
@@ -41,8 +42,8 @@ class RecurrentServerNeed(ModelingObject):
             "Hourly volume of triggered jobs over a typical week, per single edge device. Multiplied by the "
             "deployed device count to obtain the total job volume."),
         "jobs": (
-            "Server-side {class:Job}s triggered by each occurrence of this need. The same job can appear "
-            "multiple times to represent multiple invocations per occurrence."),
+            "Mapping from server-side {class:Job} to how many times it is invoked by each occurrence of "
+            "this need."),
     }
 
     default_values = {
@@ -52,18 +53,18 @@ class RecurrentServerNeed(ModelingObject):
 
     def __init__(self, name: str, edge_device: EdgeDevice,
                  recurrent_volume_per_edge_device: ExplainableRecurrentQuantities,
-                 jobs: List[JobBase]):
+                 jobs: WeightedExplainableObjectDict[JobBase]):
         super().__init__(name)
         self.edge_device = edge_device
         self.recurrent_volume_per_edge_device = recurrent_volume_per_edge_device
-        self.jobs = jobs
-        
+        self.jobs = to_weighted_explainable_object_dict(jobs, weight_label="Times per occurrence")
+
         self.recurrent_need_validation = EmptyExplainableObject()
         self.unitary_hourly_volume_per_usage_pattern = ExplainableObjectDict()
 
     @property
     def modeling_objects_whose_attributes_depend_directly_on_me(self) -> List[JobBase]:
-        return self.jobs
+        return list(self.jobs)
 
     @property
     def edge_functions(self) -> List["EdgeFunction"]:

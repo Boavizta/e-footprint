@@ -152,14 +152,12 @@ class JobBase(ModelingObject):
         if isinstance(usage_pattern, UsagePattern):
             job_occurrences = EmptyExplainableObject()
             delay_between_uj_start_and_job_evt = EmptyExplainableObject()
-            for uj_step in usage_pattern.usage_journey.uj_steps:
-                nb_of_occurrences_of_self_within_step = uj_step.jobs.count(self)
-                if nb_of_occurrences_of_self_within_step:
+            for uj_step, step_times_per_journey in usage_pattern.usage_journey.uj_steps.items():
+                if self in uj_step.jobs:
                     job_occurrences += usage_pattern.utc_hourly_usage_journey_starts.return_shifted_hourly_quantities(
-                        delay_between_uj_start_and_job_evt) * ExplainableQuantity(
-                        nb_of_occurrences_of_self_within_step * u.dimensionless, label="Executions per step")
+                        delay_between_uj_start_and_job_evt) * (step_times_per_journey * uj_step.jobs[self])
 
-                delay_between_uj_start_and_job_evt += uj_step.user_time_spent
+                delay_between_uj_start_and_job_evt += step_times_per_journey * uj_step.user_time_spent
         else:  # usage_pattern is an EdgeUsagePattern
             job_occurrences = EmptyExplainableObject()
             # Only the server needs in THIS pattern's own edge journey contribute to its occurrences: a job
@@ -167,16 +165,13 @@ class JobBase(ModelingObject):
             # per-pattern volume for the patterns of its own journey (mirrors the web branch's scoping to
             # usage_pattern.usage_journey.uj_steps).
             for recurrent_server_need in usage_pattern.edge_usage_journey.recurrent_server_needs:
-                nb_of_occurrences_of_self_within_server_need = recurrent_server_need.jobs.count(self)
-                if nb_of_occurrences_of_self_within_server_need == 0:
+                if self not in recurrent_server_need.jobs:
                     continue
                 job_occurrences += (
                         recurrent_server_need.unitary_hourly_volume_per_usage_pattern[usage_pattern]
                         * usage_pattern.edge_usage_journey.
                         nb_edge_usage_journeys_in_parallel_per_edge_usage_pattern[usage_pattern]
-                        * ExplainableQuantity(
-                            nb_of_occurrences_of_self_within_server_need * u.dimensionless,
-                            label=f"Occurrences within {recurrent_server_need.name}"))
+                        * recurrent_server_need.jobs[self])
 
         self.hourly_occurrences_per_usage_pattern[usage_pattern] = job_occurrences.to(u.occurrence).set_label(
             f"Hourly occurrences in {usage_pattern.name}")
@@ -268,20 +263,18 @@ class JobBase(ModelingObject):
     def get_hourly_avg_occurrences_per_usage_pattern_per_step(
             self, usage_pattern: "UsagePattern", uj_step: "UsageJourneyStep"):
         """Request_duration-averaged, count-weighted hourly occurrences of this job in (usage_pattern, uj_step):
-        one contribution per position of the step in the pattern's journey, each shifted by its cumulative delay
-        and weighted by the job's executions within the step. Summing over a journey's steps recovers
+        the journey starts shifted by the step's cumulative delay, weighted by the step's times per journey and
+        the job's invocations per step. Summing over a journey's steps recovers
         hourly_avg_occurrences_per_usage_pattern[usage_pattern]."""
-        nb_of_occurrences_of_self_within_step = uj_step.jobs.count(self)
         step_occurrences = EmptyExplainableObject()
         delay_between_uj_start_and_step_start = EmptyExplainableObject()
-        for journey_step in usage_pattern.usage_journey.uj_steps:
-            if journey_step == uj_step and nb_of_occurrences_of_self_within_step:
+        for journey_step, step_times_per_journey in usage_pattern.usage_journey.uj_steps.items():
+            if journey_step == uj_step and self in uj_step.jobs:
                 step_occurrences += (
                     usage_pattern.utc_hourly_usage_journey_starts.return_shifted_hourly_quantities(
                         delay_between_uj_start_and_step_start)
-                    * ExplainableQuantity(
-                        nb_of_occurrences_of_self_within_step * u.dimensionless, label="Executions per step"))
-            delay_between_uj_start_and_step_start += journey_step.user_time_spent
+                    * (step_times_per_journey * uj_step.jobs[self]))
+            delay_between_uj_start_and_step_start += step_times_per_journey * journey_step.user_time_spent
 
         return compute_nb_avg_hourly_occurrences(step_occurrences, self.request_duration).to(u.concurrent).set_label(
             f"Average hourly occurrences of {self.name} in {uj_step.name} for {usage_pattern.name}")
@@ -297,9 +290,7 @@ class JobBase(ModelingObject):
             recurrent_server_need.unitary_hourly_volume_per_usage_pattern[edge_usage_pattern]
             * edge_usage_pattern.edge_usage_journey.nb_edge_usage_journeys_in_parallel_per_edge_usage_pattern[
                 edge_usage_pattern]
-            * ExplainableQuantity(
-                recurrent_server_need.jobs.count(self) * u.dimensionless,
-                label=f"Occurrences within {recurrent_server_need.name}"))
+            * recurrent_server_need.jobs[self])
 
         return compute_nb_avg_hourly_occurrences(raw_occurrences, self.request_duration).to(u.concurrent).set_label(
             f"Average hourly occurrences of {self.name} in {recurrent_server_need.name} "

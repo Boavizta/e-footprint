@@ -161,7 +161,7 @@ class TestImpactRepartitionSankeyConservation(TestCase):
             self.assert_kg_equal(baseline_totals[key], value, msg=f"Node {key} changed when skipping UsageJourney")
 
         usage_pattern = system.usage_patterns[0]
-        step = journey.uj_steps[0]
+        step = list(journey.uj_steps)[0]
         for phase_context in ("Manufacturing", "Usage"):
             up_idx = skipped.node_indices[(usage_pattern.id, phase_context)]
             step_idx = skipped.node_indices[(step.id, phase_context)]

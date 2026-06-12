@@ -62,7 +62,7 @@ class EdgeUsageJourney(ModelingObject):
 
     @property
     def jobs(self) -> List["JobBase"]:
-        return list(dict.fromkeys(sum([rsn.jobs for rsn in self.recurrent_server_needs], start=[])))
+        return list(dict.fromkeys(sum([list(rsn.jobs) for rsn in self.recurrent_server_needs], start=[])))
 
     @property
     def edge_devices(self) -> List["EdgeDevice"]:

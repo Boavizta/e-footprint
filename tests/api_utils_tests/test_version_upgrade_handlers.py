@@ -10,7 +10,7 @@ from efootprint.api_utils.json_to_system import json_to_system
 from efootprint.api_utils.version_upgrade_handlers import upgrade_version_9_to_10, upgrade_version_10_to_11, \
     upgrade_version_11_to_12, upgrade_version_12_to_13, upgrade_version_13_to_14, upgrade_version_14_to_15, \
     upgrade_version_15_to_16, upgrade_version_16_to_17, upgrade_version_18_to_19, upgrade_version_19_to_20, \
-    upgrade_version_20_to_21
+    upgrade_version_20_to_21, upgrade_version_21_to_22
 from efootprint.abstract_modeling_classes.source_objects import SourceValue
 from efootprint.constants.units import u
 
@@ -1041,3 +1041,41 @@ class TestVersionUpgradeHandlers(TestCase):
                    return_value=_uuid.UUID("abc12300-0000-0000-0000-000000000000")):
             output_dict = upgrade_version_20_to_21(copy.deepcopy(input_dict))
         self.assertEqual(expected_output, output_dict)
+
+    def test_upgrade_21_to_22(self):
+        weight_json = {"value": 1.0, "unit": "dimensionless", "source": "hypothesis"}
+        input_dict = {
+            "efootprint_version": "21.1.6",
+            "UsageJourney": {
+                "uj_1": {"name": "uj 1", "id": "uj_1", "uj_steps": ["step_1", "step_2"]},
+            },
+            "UsageJourneyStep": {
+                # Duplicate entries are the old multiple-invocation idiom and accumulate into the count.
+                "step_1": {"name": "step 1", "id": "step_1", "jobs": ["job_1", "job_1", "job_2"]},
+                "step_2": {"name": "step 2", "id": "step_2", "jobs": []},
+            },
+            "RecurrentServerNeed": {
+                "rsn_1": {"name": "rsn 1", "id": "rsn_1", "jobs": ["job_1", "job_1"]},
+            },
+        }
+        output_dict = upgrade_version_21_to_22(copy.deepcopy(input_dict))
+
+        self.assertEqual(
+            {"step_1": {**weight_json, "label": "Times per journey"},
+             "step_2": {**weight_json, "label": "Times per journey"}},
+            output_dict["UsageJourney"]["uj_1"]["uj_steps"])
+        self.assertEqual(
+            {"job_1": {**weight_json, "value": 2.0, "label": "Times per step"},
+             "job_2": {**weight_json, "label": "Times per step"}},
+            output_dict["UsageJourneyStep"]["step_1"]["jobs"])
+        self.assertEqual({}, output_dict["UsageJourneyStep"]["step_2"]["jobs"])
+        self.assertEqual(
+            {"job_1": {**weight_json, "value": 2.0, "label": "Times per occurrence"}},
+            output_dict["RecurrentServerNeed"]["rsn_1"]["jobs"])
+
+    def test_upgrade_21_to_22_leaves_dict_shaped_attributes_untouched(self):
+        already_dict = {"step_1": {"value": 3.0, "unit": "dimensionless", "label": "Times per journey",
+                                   "source": "hypothesis"}}
+        input_dict = {"UsageJourney": {"uj_1": {"name": "uj 1", "id": "uj_1", "uj_steps": copy.deepcopy(already_dict)}}}
+        output_dict = upgrade_version_21_to_22(copy.deepcopy(input_dict))
+        self.assertEqual(already_dict, output_dict["UsageJourney"]["uj_1"]["uj_steps"])

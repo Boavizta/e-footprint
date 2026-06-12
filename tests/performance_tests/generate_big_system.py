@@ -258,9 +258,10 @@ if __name__ == "__main__":
 
     edition_iterations = 10
     start = perf_counter()
+    edited_job = list(list(system.usage_patterns[0].usage_journey.uj_steps)[0].jobs)[1]
     for i in range(edition_iterations):
-        system.usage_patterns[0].usage_journey.uj_steps[0].jobs[1].data_transferred = SourceValue(100 * u.MB)
-        system.usage_patterns[0].usage_journey.uj_steps[0].jobs[1].data_transferred = SourceValue(30 * u.MB)
+        edited_job.data_transferred = SourceValue(100 * u.MB)
+        edited_job.data_transferred = SourceValue(30 * u.MB)
     end = perf_counter()
     compute_time_per_edition = round(1000 * (end - start) / (edition_iterations * 2), 1)
     logger.info(f"edition took {compute_time_per_edition} ms on average per data transferred edition")

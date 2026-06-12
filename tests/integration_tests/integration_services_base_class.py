@@ -21,6 +21,7 @@ from efootprint.constants.countries import Countries
 from efootprint.constants.units import u
 from efootprint.builders.time_builders import create_source_hourly_values_from_list
 from efootprint.logger import logger
+from efootprint.abstract_modeling_classes.explainable_object_dict import to_weighted_explainable_object_dict
 from tests.integration_tests.integration_test_base_class import IntegrationTestBaseClass, ObjectLinkScenario
 
 
@@ -150,16 +151,20 @@ class IntegrationTestServicesBaseClass(IntegrationTestBaseClass):
     def run_test_remove_delete_recreate_video_streaming_job(self):
         original_jobs = list(self.streaming_step.jobs)
         video_streaming_job_index = original_jobs.index(self.video_streaming_job)
-        updated_jobs = [elt for elt in original_jobs if elt != self.video_streaming_job]
+        updated_jobs = to_weighted_explainable_object_dict(
+            [elt for elt in original_jobs if elt != self.video_streaming_job])
+
+        def jobs_with_streaming_job_restored(streaming_job):
+            restored_jobs = [job for job in self.streaming_step.jobs if job is not streaming_job]
+            restored_jobs.insert(video_streaming_job_index, streaming_job)
+            return to_weighted_explainable_object_dict(restored_jobs, weight_label="Times per step")
 
         def restore_video_streaming_job():
             current_jobs = [job for job in self.streaming_step.jobs if job.name == "Streaming job"]
             restored_job = current_jobs[0] if current_jobs else VideoStreamingJob.from_defaults(
                 "Streaming job", service=self.video_streaming_service, resolution=SourceObject("720p (1280 x 720)"),
                 video_duration=SourceValue(20 * u.min))
-            other_jobs = [job for job in self.streaming_step.jobs if job is not restored_job]
-            other_jobs.insert(video_streaming_job_index, restored_job)
-            self.streaming_step.jobs = other_jobs
+            self.streaming_step.jobs = jobs_with_streaming_job_restored(restored_job)
             type(self).video_streaming_job = restored_job
 
         with self.cleanup_stack() as cleanup:
@@ -177,9 +182,7 @@ class IntegrationTestServicesBaseClass(IntegrationTestBaseClass):
             recreated_video_streaming_job = VideoStreamingJob.from_defaults(
                 "Streaming job", service=self.video_streaming_service, resolution=SourceObject("720p (1280 x 720)"),
                 video_duration=SourceValue(20 * u.min))
-            restored_jobs = list(self.streaming_step.jobs)
-            restored_jobs.insert(video_streaming_job_index, recreated_video_streaming_job)
-            self.streaming_step.jobs = restored_jobs
+            self.streaming_step.jobs = jobs_with_streaming_job_restored(recreated_video_streaming_job)
             type(self).video_streaming_job = recreated_video_streaming_job
 
             self.assertIn(recreated_video_streaming_job, self.streaming_step.jobs)

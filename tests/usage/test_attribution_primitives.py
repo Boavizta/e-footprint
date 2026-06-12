@@ -207,5 +207,41 @@ class TestAttributionPrimitives(TestCase):
             self.assertEqual(1, cell.slot_multiplicity)
 
 
+class TestFractionalWeightOccupancyTiling(TestCase):
+    """Occupancy-window tiling invariant with fractional step weights: weighted step windows telescope, so they
+    still sum to the journey's parallel count, and the journey duration is the weighted sum of step times."""
+
+    @classmethod
+    def setUpClass(cls):
+        storage = Storage.from_defaults("fractional weights storage")
+        server = Server.from_defaults(
+            "fractional weights server", server_type=ServerTypes.autoscaling(), storage=storage)
+        job = Job.from_defaults("fractional weights job", server=server)
+        cls.step_a = UsageJourneyStep("fractional step a", SourceValue(30 * u.min), {job: 1})
+        cls.step_b = UsageJourneyStep("fractional step b", SourceValue(1 * u.hour), {job: 2})
+        cls.journey = UsageJourney("fractional weights journey", {cls.step_a: 0.5, cls.step_b: 2.5})
+
+        device = Device.from_defaults("fractional weights laptop")
+        network = Network("fractional weights network", SourceValue(0.05 * u.kWh / u.GB))
+        country = Country(
+            "fractional weights country", "FWC", SourceValue(100 * u.g / u.kWh),
+            ExplainableTimezone(pytz.utc, "UTC timezone"))
+        cls.up = UsagePattern(
+            "fractional weights usage pattern", cls.journey, [device], network, country,
+            create_source_hourly_values_from_list([10, 0, 5, 0, 8], datetime(2026, 1, 1)))
+        cls.system = System("fractional weights system", [cls.up], edge_usage_patterns=[])
+
+    def test_duration_is_weighted_sum_of_step_times(self):
+        self.assertEqual(SourceValue(0.5 * 30 * u.min + 2.5 * 60 * u.min), self.journey.duration)
+
+    def test_step_occupancy_tiles_nb_usage_journeys_in_parallel_with_fractional_weights(self):
+        occupancy_sum = (self.step_a.hourly_avg_occurrences_per_usage_pattern[self.up]
+                         + self.step_b.hourly_avg_occurrences_per_usage_pattern[self.up])
+        expected = self.journey.nb_usage_journeys_in_parallel_per_usage_pattern[self.up]
+        max_abs_diff = (expected - occupancy_sum).abs().max()
+        scale = max(expected.abs().max().magnitude, 1e-9)
+        self.assertAlmostEqual(0, max_abs_diff.magnitude / scale, places=4)
+
+
 if __name__ == "__main__":
     unittest.main()

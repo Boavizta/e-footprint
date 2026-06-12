@@ -2,6 +2,8 @@ from functools import cached_property
 from typing import List, TYPE_CHECKING
 
 from efootprint.abstract_modeling_classes.empty_explainable_object import EmptyExplainableObject
+from efootprint.abstract_modeling_classes.explainable_object_dict import (
+    WeightedExplainableObjectDict, to_weighted_explainable_object_dict)
 from efootprint.abstract_modeling_classes.explainable_quantity import ExplainableQuantity
 from efootprint.abstract_modeling_classes.modeling_object import ModelingObject
 from efootprint.abstract_modeling_classes.source_objects import SourceValue
@@ -22,21 +24,21 @@ class UsageJourneyStep(ModelingObject):
         "user_time_spent": (
             "Wall-clock time the user spends on this step (during which her device is powered on)."),
         "jobs": (
-            "{class:Job}s triggered on the server side during this step. Multiple jobs can fire per step; the "
-            "same {class:Job} can appear in several steps."),
+            "Mapping from {class:Job} to how many times it is triggered on the server side during one occurrence "
+            "of this step. The same {class:Job} can appear in several steps, with its own count in each."),
     }
 
     default_values =  {"user_time_spent": SourceValue(1 * u.min)}
 
-    def __init__(self, name: str, user_time_spent: ExplainableQuantity, jobs: List[JobBase]):
+    def __init__(self, name: str, user_time_spent: ExplainableQuantity, jobs: WeightedExplainableObjectDict[JobBase]):
         super().__init__(name)
         self.user_time_spent = user_time_spent
         self.user_time_spent.set_label(f"Time spent by user")
-        self.jobs = jobs
+        self.jobs = to_weighted_explainable_object_dict(jobs, weight_label="Times per step")
 
     @property
     def modeling_objects_whose_attributes_depend_directly_on_me(self) -> List["UsageJourney"] | List[JobBase]:
-        return self.jobs
+        return list(self.jobs)
 
     @property
     def usage_journeys(self) -> List["UsageJourney"]:
@@ -52,10 +54,10 @@ class UsageJourneyStep(ModelingObject):
 
     @cached_property
     def hourly_avg_occurrences_per_usage_pattern(self):
-        """The step's concurrent occupancy per usage pattern — for each position of the step within the pattern's
-        journey, the journeys concurrently inside the step's [delay, delay + user_time_spent] window, computed as
-        the difference of journey-parallel counts at the window's end vs start offsets (exact for fractional
-        offsets). Consecutive windows telescope, so summing over a journey's steps tiles
+        """The step's concurrent occupancy per usage pattern — the journeys concurrently inside the step's
+        [delay, delay + times_per_journey × user_time_spent] window, computed as the difference of
+        journey-parallel counts at the window's end vs start offsets (exact for fractional offsets).
+        Consecutive windows telescope, so summing over a journey's steps tiles
         nb_usage_journeys_in_parallel_per_usage_pattern. Attribution-only primitive (the Device occupancy weight),
         lazy by design."""
         occurrences_per_usage_pattern = {}
@@ -63,8 +65,9 @@ class UsageJourneyStep(ModelingObject):
             journey_starts = up.utc_hourly_usage_journey_starts
             occupancy = EmptyExplainableObject()
             delay_between_uj_start_and_step_start = EmptyExplainableObject()
-            for journey_step in up.usage_journey.uj_steps:
-                delay_at_step_end = delay_between_uj_start_and_step_start + journey_step.user_time_spent
+            for journey_step, times_per_journey in up.usage_journey.uj_steps.items():
+                delay_at_step_end = (delay_between_uj_start_and_step_start
+                                     + times_per_journey * journey_step.user_time_spent)
                 if journey_step == self:
                     occupancy += (
                         compute_nb_avg_hourly_occurrences(journey_starts, delay_at_step_end)

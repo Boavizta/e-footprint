@@ -1,5 +1,5 @@
 {
-    "efootprint_version": "21.1.6",
+    "efootprint_version": "22.0.0",
     "Sources": {
         "Base-ADEME_V19": {
             "id": "Base-ADEME_V19",
@@ -82,12 +82,433 @@
         "Usage-journey": {
             "name": "Usage journey",
             "id": "Usage-journey",
-            "uj_steps": [
-                "UJ-step-1",
-                "UJ-step-2",
-                "UJ-step-3",
-                "UJ-step-4"
+            "uj_steps": {
+                "UJ-step-1": {
+                    "value": 1.0,
+                    "unit": "dimensionless",
+                    "label": "Times per journey",
+                    "source": "hypothesis"
+                },
+                "UJ-step-2": {
+                    "value": 1.0,
+                    "unit": "dimensionless",
+                    "label": "Times per journey",
+                    "source": "hypothesis"
+                },
+                "UJ-step-3": {
+                    "value": 1.0,
+                    "unit": "dimensionless",
+                    "label": "Times per journey",
+                    "source": "hypothesis"
+                },
+                "UJ-step-4": {
+                    "value": 1.0,
+                    "unit": "dimensionless",
+                    "label": "Times per journey",
+                    "source": "hypothesis"
+                }
+            }
+        }
+    },
+    "Device": {
+        "Laptop-1": {
+            "name": "Laptop 1",
+            "id": "Laptop-1",
+            "carbon_footprint_fabrication": {
+                "value": 156.0,
+                "unit": "kilogram",
+                "label": "Carbon footprint fabrication",
+                "source": "Base-ADEME_V19"
+            },
+            "power": {
+                "value": 50.0,
+                "unit": "watt",
+                "label": "Power",
+                "source": "hypothesis"
+            },
+            "lifespan": {
+                "value": 6.0,
+                "unit": "year",
+                "label": "Lifespan",
+                "source": "hypothesis"
+            },
+            "fraction_of_usage_time": {
+                "value": 7.0,
+                "unit": "hour / day",
+                "label": "Fraction of usage time",
+                "source": "DATA2eAI---STATE-OF-MOBILE"
+            }
+        },
+        "Laptop-2": {
+            "name": "Laptop 2",
+            "id": "Laptop-2",
+            "carbon_footprint_fabrication": {
+                "value": 156.0,
+                "unit": "kilogram",
+                "label": "Carbon footprint fabrication",
+                "source": "Base-ADEME_V19"
+            },
+            "power": {
+                "value": 50.0,
+                "unit": "watt",
+                "label": "Power",
+                "source": "hypothesis"
+            },
+            "lifespan": {
+                "value": 6.0,
+                "unit": "year",
+                "label": "Lifespan",
+                "source": "hypothesis"
+            },
+            "fraction_of_usage_time": {
+                "value": 7.0,
+                "unit": "hour / day",
+                "label": "Fraction of usage time",
+                "source": "DATA2eAI---STATE-OF-MOBILE"
+            }
+        }
+    },
+    "Network": {
+        "network-1": {
+            "name": "network 1",
+            "id": "network-1",
+            "bandwidth_energy_intensity": {
+                "value": 0.1,
+                "unit": "kilowatt_hour / gigabyte",
+                "label": "bandwith energy intensity",
+                "source": "hypothesis"
+            }
+        },
+        "network-2": {
+            "name": "network 2",
+            "id": "network-2",
+            "bandwidth_energy_intensity": {
+                "value": 0.1,
+                "unit": "kilowatt_hour / gigabyte",
+                "label": "bandwith energy intensity",
+                "source": "hypothesis"
+            }
+        }
+    },
+    "Country": {
+        "France": {
+            "name": "France",
+            "id": "France",
+            "short_name": "FRA",
+            "average_carbon_intensity": {
+                "value": 44.0,
+                "unit": "gram / kilowatt_hour",
+                "label": "Average carbon intensity",
+                "source": "Our-world-in-data-28202429",
+                "confidence": "high"
+            },
+            "timezone": {
+                "zone": "Europe/Paris",
+                "label": "Timezone",
+                "source": "user_data"
+            }
+        }
+    },
+    "EdgeUsagePattern": {
+        "Edge-usage-pattern": {
+            "name": "Edge usage pattern",
+            "id": "Edge-usage-pattern",
+            "hourly_edge_usage_journey_starts": {
+                "compressed_values": "KLUv/SAknQAAOAAAyEJIQ5YEADs3gHzBwA+OCA==",
+                "unit": "occurrence",
+                "start_date": "2025-01-01 00:00:00",
+                "timezone": null,
+                "label": "Hourly nb of edge usage journey starts",
+                "source": "hypothesis"
+            },
+            "edge_usage_journey": "Edge-usage-journey",
+            "network": "network-1",
+            "country": "France"
+        }
+    },
+    "EdgeUsageJourney": {
+        "Edge-usage-journey": {
+            "name": "Edge usage journey",
+            "id": "Edge-usage-journey",
+            "edge_functions": [
+                "Edge-function"
+            ],
+            "usage_span": {
+                "value": 6.0,
+                "unit": "year",
+                "label": "Usage span",
+                "source": "hypothesis"
+            }
+        }
+    },
+    "EdgeFunction": {
+        "Edge-function": {
+            "name": "Edge function",
+            "id": "Edge-function",
+            "recurrent_edge_device_needs": [
+                "Edge-process"
+            ],
+            "recurrent_server_needs": [
+                "Recurrent-server-need-1",
+                "Recurrent-server-need-2"
             ]
+        }
+    },
+    "RecurrentEdgeProcess": {
+        "Edge-process": {
+            "name": "Edge process",
+            "id": "Edge-process",
+            "edge_device": "Edge-device",
+            "recurrent_edge_component_needs": [
+                "Edge-process-RAM-need",
+                "Edge-process-CPU-need",
+                "Edge-process-storage-need"
+            ],
+            "recurrent_compute_needed": {
+                "recurring_values": "[1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0]",
+                "unit": "cpu_core",
+                "label": "Recurrent compute needed",
+                "source": "hypothesis"
+            },
+            "recurrent_ram_needed": {
+                "recurring_values": "[1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0]",
+                "unit": "gigabyte_ram",
+                "label": "Recurrent RAM needed",
+                "source": "hypothesis"
+            },
+            "recurrent_storage_needed": {
+                "recurring_values": "[0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0]",
+                "unit": "gigabyte_stored",
+                "label": "Recurrent storage needed",
+                "source": "hypothesis"
+            }
+        }
+    },
+    "EdgeComputer": {
+        "Edge-device": {
+            "name": "Edge device",
+            "id": "Edge-device",
+            "lifespan": {
+                "value": 6.0,
+                "unit": "year",
+                "label": "Lifespan",
+                "source": "hypothesis"
+            },
+            "components": [
+                "Edge-device-CPU",
+                "Edge-device-RAM",
+                "Edge-SSD-storage"
+            ],
+            "storage": "Edge-SSD-storage",
+            "carbon_footprint_fabrication": {
+                "value": 60.0,
+                "unit": "kilogram",
+                "label": "Carbon footprint fabrication",
+                "source": "hypothesis"
+            },
+            "power": {
+                "value": 30.0,
+                "unit": "watt",
+                "label": "Power",
+                "source": "hypothesis"
+            },
+            "idle_power": {
+                "value": 5.0,
+                "unit": "watt",
+                "label": "Idle power",
+                "source": "hypothesis"
+            },
+            "ram": {
+                "value": 8.0,
+                "unit": "gigabyte_ram",
+                "label": "RAM",
+                "source": "hypothesis"
+            },
+            "compute": {
+                "value": 4.0,
+                "unit": "cpu_core",
+                "label": "Compute",
+                "source": "hypothesis"
+            },
+            "base_ram_consumption": {
+                "value": 1.0,
+                "unit": "gigabyte_ram",
+                "label": "Base RAM consumption",
+                "source": "hypothesis"
+            },
+            "base_compute_consumption": {
+                "value": 0.0,
+                "unit": "cpu_core",
+                "label": "Base compute consumption",
+                "source": "hypothesis"
+            }
+        }
+    },
+    "EdgeComputerCPUComponent": {
+        "Edge-device-CPU": {
+            "name": "Edge device CPU",
+            "id": "Edge-device-CPU",
+            "carbon_footprint_fabrication_per_unit": {
+                "value": 0.0,
+                "unit": "kilogram",
+                "label": "Carbon footprint fabrication per unit",
+                "source": "hypothesis"
+            },
+            "nb_of_units": {
+                "value": 1.0,
+                "unit": "dimensionless",
+                "label": "Number of units",
+                "source": "hypothesis"
+            }
+        }
+    },
+    "EdgeComputerRAMComponent": {
+        "Edge-device-RAM": {
+            "name": "Edge device RAM",
+            "id": "Edge-device-RAM",
+            "carbon_footprint_fabrication_per_unit": {
+                "value": 0.0,
+                "unit": "kilogram",
+                "label": "Carbon footprint fabrication per unit",
+                "source": "hypothesis"
+            },
+            "power_per_unit": {
+                "value": 0.0,
+                "unit": "watt",
+                "label": "Power per unit",
+                "source": "hypothesis"
+            },
+            "idle_power_per_unit": {
+                "value": 0.0,
+                "unit": "watt",
+                "label": "Idle power per unit",
+                "source": "hypothesis"
+            },
+            "nb_of_units": {
+                "value": 1.0,
+                "unit": "dimensionless",
+                "label": "Number of units",
+                "source": "hypothesis"
+            }
+        }
+    },
+    "EdgeStorage": {
+        "Edge-SSD-storage": {
+            "name": "Edge SSD storage",
+            "id": "Edge-SSD-storage",
+            "carbon_footprint_fabrication_per_unit": {
+                "value": 0.0,
+                "unit": "kilogram",
+                "label": "Carbon footprint fabrication per unit",
+                "source": "hypothesis"
+            },
+            "power_per_unit": {
+                "value": 0.0,
+                "unit": "watt",
+                "label": "Power per unit",
+                "source": "hypothesis"
+            },
+            "lifespan": {
+                "value": 6.0,
+                "unit": "year",
+                "label": "Lifespan",
+                "source": "hypothesis"
+            },
+            "idle_power_per_unit": {
+                "value": 0.0,
+                "unit": "watt",
+                "label": "Idle power per unit",
+                "source": "hypothesis"
+            },
+            "nb_of_units": {
+                "value": 1.0,
+                "unit": "dimensionless",
+                "label": "Number of units",
+                "source": "hypothesis"
+            },
+            "carbon_footprint_fabrication_per_storage_capacity": {
+                "value": 160.0,
+                "unit": "kilogram / terabyte_stored",
+                "label": "Fabrication carbon footprint per unit per storage capacity",
+                "source": "hypothesis"
+            },
+            "storage_capacity_per_unit": {
+                "value": 1.0,
+                "unit": "terabyte_stored",
+                "label": "Storage capacity per unit",
+                "source": "hypothesis"
+            },
+            "base_storage_need": {
+                "value": 30.0,
+                "unit": "gigabyte_stored",
+                "label": "Initial storage need",
+                "source": "hypothesis"
+            }
+        }
+    },
+    "RecurrentEdgeProcessRAMNeed": {
+        "Edge-process-RAM-need": {
+            "name": "Edge process RAM need",
+            "id": "Edge-process-RAM-need",
+            "edge_component": "Edge-device-RAM"
+        }
+    },
+    "RecurrentEdgeProcessCPUNeed": {
+        "Edge-process-CPU-need": {
+            "name": "Edge process CPU need",
+            "id": "Edge-process-CPU-need",
+            "edge_component": "Edge-device-CPU"
+        }
+    },
+    "RecurrentEdgeProcessStorageNeed": {
+        "Edge-process-storage-need": {
+            "name": "Edge process storage need",
+            "id": "Edge-process-storage-need",
+            "edge_component": "Edge-SSD-storage"
+        }
+    },
+    "RecurrentServerNeed": {
+        "Recurrent-server-need-1": {
+            "name": "Recurrent server need 1",
+            "id": "Recurrent-server-need-1",
+            "edge_device": "Edge-device",
+            "recurrent_volume_per_edge_device": {
+                "recurring_values": "[1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0]",
+                "unit": "occurrence",
+                "label": "Default recurrent volume per edge device"
+            },
+            "jobs": {
+                "server-1-job-1": {
+                    "value": 1.0,
+                    "unit": "dimensionless",
+                    "label": "Times per occurrence",
+                    "source": "hypothesis"
+                },
+                "server-3-job-2": {
+                    "value": 1.0,
+                    "unit": "dimensionless",
+                    "label": "Times per occurrence",
+                    "source": "hypothesis"
+                }
+            }
+        },
+        "Recurrent-server-need-2": {
+            "name": "Recurrent server need 2",
+            "id": "Recurrent-server-need-2",
+            "edge_device": "Edge-device",
+            "recurrent_volume_per_edge_device": {
+                "recurring_values": "[1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0]",
+                "unit": "occurrence",
+                "label": "Default recurrent volume per edge device"
+            },
+            "jobs": {
+                "server-2-job": {
+                    "value": 1.0,
+                    "unit": "dimensionless",
+                    "label": "Times per occurrence",
+                    "source": "hypothesis"
+                }
+            }
         }
     },
     "UsageJourneyStep": {
@@ -100,9 +521,14 @@
                 "label": "Time spent by user",
                 "source": "hypothesis"
             },
-            "jobs": [
-                "server-1-job-1"
-            ]
+            "jobs": {
+                "server-1-job-1": {
+                    "value": 1.0,
+                    "unit": "dimensionless",
+                    "label": "Times per step",
+                    "source": "hypothesis"
+                }
+            }
         },
         "UJ-step-2": {
             "name": "UJ step 2",
@@ -113,9 +539,14 @@
                 "label": "Time spent by user",
                 "source": "hypothesis"
             },
-            "jobs": [
-                "server-1-job-2"
-            ]
+            "jobs": {
+                "server-1-job-2": {
+                    "value": 1.0,
+                    "unit": "dimensionless",
+                    "label": "Times per step",
+                    "source": "hypothesis"
+                }
+            }
         },
         "UJ-step-3": {
             "name": "UJ step 3",
@@ -126,9 +557,14 @@
                 "label": "Time spent by user",
                 "source": "hypothesis"
             },
-            "jobs": [
-                "server-1-job-3"
-            ]
+            "jobs": {
+                "server-1-job-3": {
+                    "value": 1.0,
+                    "unit": "dimensionless",
+                    "label": "Times per step",
+                    "source": "hypothesis"
+                }
+            }
         },
         "UJ-step-4": {
             "name": "UJ step 4",
@@ -139,10 +575,20 @@
                 "label": "Time spent by user",
                 "source": "hypothesis"
             },
-            "jobs": [
-                "server-2-job",
-                "server-3-job"
-            ]
+            "jobs": {
+                "server-2-job": {
+                    "value": 1.0,
+                    "unit": "dimensionless",
+                    "label": "Times per step",
+                    "source": "hypothesis"
+                },
+                "server-3-job": {
+                    "value": 1.0,
+                    "unit": "dimensionless",
+                    "label": "Times per step",
+                    "source": "hypothesis"
+                }
+            }
         }
     },
     "Job": {
@@ -785,392 +1231,6 @@
                 "value": null,
                 "label": "User defined number of instances"
             }
-        }
-    },
-    "Device": {
-        "Laptop-1": {
-            "name": "Laptop 1",
-            "id": "Laptop-1",
-            "carbon_footprint_fabrication": {
-                "value": 156.0,
-                "unit": "kilogram",
-                "label": "Carbon footprint fabrication",
-                "source": "Base-ADEME_V19"
-            },
-            "power": {
-                "value": 50.0,
-                "unit": "watt",
-                "label": "Power",
-                "source": "hypothesis"
-            },
-            "lifespan": {
-                "value": 6.0,
-                "unit": "year",
-                "label": "Lifespan",
-                "source": "hypothesis"
-            },
-            "fraction_of_usage_time": {
-                "value": 7.0,
-                "unit": "hour / day",
-                "label": "Fraction of usage time",
-                "source": "DATA2eAI---STATE-OF-MOBILE"
-            }
-        },
-        "Laptop-2": {
-            "name": "Laptop 2",
-            "id": "Laptop-2",
-            "carbon_footprint_fabrication": {
-                "value": 156.0,
-                "unit": "kilogram",
-                "label": "Carbon footprint fabrication",
-                "source": "Base-ADEME_V19"
-            },
-            "power": {
-                "value": 50.0,
-                "unit": "watt",
-                "label": "Power",
-                "source": "hypothesis"
-            },
-            "lifespan": {
-                "value": 6.0,
-                "unit": "year",
-                "label": "Lifespan",
-                "source": "hypothesis"
-            },
-            "fraction_of_usage_time": {
-                "value": 7.0,
-                "unit": "hour / day",
-                "label": "Fraction of usage time",
-                "source": "DATA2eAI---STATE-OF-MOBILE"
-            }
-        }
-    },
-    "Network": {
-        "network-1": {
-            "name": "network 1",
-            "id": "network-1",
-            "bandwidth_energy_intensity": {
-                "value": 0.1,
-                "unit": "kilowatt_hour / gigabyte",
-                "label": "bandwith energy intensity",
-                "source": "hypothesis"
-            }
-        },
-        "network-2": {
-            "name": "network 2",
-            "id": "network-2",
-            "bandwidth_energy_intensity": {
-                "value": 0.1,
-                "unit": "kilowatt_hour / gigabyte",
-                "label": "bandwith energy intensity",
-                "source": "hypothesis"
-            }
-        }
-    },
-    "Country": {
-        "France": {
-            "name": "France",
-            "id": "France",
-            "short_name": "FRA",
-            "average_carbon_intensity": {
-                "value": 44.0,
-                "unit": "gram / kilowatt_hour",
-                "label": "Average carbon intensity",
-                "source": "Our-world-in-data-28202429",
-                "confidence": "high"
-            },
-            "timezone": {
-                "zone": "Europe/Paris",
-                "label": "Timezone",
-                "source": "user_data"
-            }
-        }
-    },
-    "EdgeUsagePattern": {
-        "Edge-usage-pattern": {
-            "name": "Edge usage pattern",
-            "id": "Edge-usage-pattern",
-            "hourly_edge_usage_journey_starts": {
-                "compressed_values": "KLUv/SAknQAAOAAAyEJIQ5YEADs3gHzBwA+OCA==",
-                "unit": "occurrence",
-                "start_date": "2025-01-01 00:00:00",
-                "timezone": null,
-                "label": "Hourly nb of edge usage journey starts",
-                "source": "hypothesis"
-            },
-            "edge_usage_journey": "Edge-usage-journey",
-            "network": "network-1",
-            "country": "France"
-        }
-    },
-    "EdgeUsageJourney": {
-        "Edge-usage-journey": {
-            "name": "Edge usage journey",
-            "id": "Edge-usage-journey",
-            "edge_functions": [
-                "Edge-function"
-            ],
-            "usage_span": {
-                "value": 6.0,
-                "unit": "year",
-                "label": "Usage span",
-                "source": "hypothesis"
-            }
-        }
-    },
-    "EdgeFunction": {
-        "Edge-function": {
-            "name": "Edge function",
-            "id": "Edge-function",
-            "recurrent_edge_device_needs": [
-                "Edge-process"
-            ],
-            "recurrent_server_needs": [
-                "Recurrent-server-need-1",
-                "Recurrent-server-need-2"
-            ]
-        }
-    },
-    "RecurrentEdgeProcess": {
-        "Edge-process": {
-            "name": "Edge process",
-            "id": "Edge-process",
-            "edge_device": "Edge-device",
-            "recurrent_edge_component_needs": [
-                "Edge-process-RAM-need",
-                "Edge-process-CPU-need",
-                "Edge-process-storage-need"
-            ],
-            "recurrent_compute_needed": {
-                "recurring_values": "[1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0]",
-                "unit": "cpu_core",
-                "label": "Recurrent compute needed",
-                "source": "hypothesis"
-            },
-            "recurrent_ram_needed": {
-                "recurring_values": "[1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0]",
-                "unit": "gigabyte_ram",
-                "label": "Recurrent RAM needed",
-                "source": "hypothesis"
-            },
-            "recurrent_storage_needed": {
-                "recurring_values": "[0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0]",
-                "unit": "gigabyte_stored",
-                "label": "Recurrent storage needed",
-                "source": "hypothesis"
-            }
-        }
-    },
-    "EdgeComputer": {
-        "Edge-device": {
-            "name": "Edge device",
-            "id": "Edge-device",
-            "lifespan": {
-                "value": 6.0,
-                "unit": "year",
-                "label": "Lifespan",
-                "source": "hypothesis"
-            },
-            "components": [
-                "Edge-device-CPU",
-                "Edge-device-RAM",
-                "Edge-SSD-storage"
-            ],
-            "storage": "Edge-SSD-storage",
-            "carbon_footprint_fabrication": {
-                "value": 60.0,
-                "unit": "kilogram",
-                "label": "Carbon footprint fabrication",
-                "source": "hypothesis"
-            },
-            "power": {
-                "value": 30.0,
-                "unit": "watt",
-                "label": "Power",
-                "source": "hypothesis"
-            },
-            "idle_power": {
-                "value": 5.0,
-                "unit": "watt",
-                "label": "Idle power",
-                "source": "hypothesis"
-            },
-            "ram": {
-                "value": 8.0,
-                "unit": "gigabyte_ram",
-                "label": "RAM",
-                "source": "hypothesis"
-            },
-            "compute": {
-                "value": 4.0,
-                "unit": "cpu_core",
-                "label": "Compute",
-                "source": "hypothesis"
-            },
-            "base_ram_consumption": {
-                "value": 1.0,
-                "unit": "gigabyte_ram",
-                "label": "Base RAM consumption",
-                "source": "hypothesis"
-            },
-            "base_compute_consumption": {
-                "value": 0.0,
-                "unit": "cpu_core",
-                "label": "Base compute consumption",
-                "source": "hypothesis"
-            }
-        }
-    },
-    "EdgeComputerCPUComponent": {
-        "Edge-device-CPU": {
-            "name": "Edge device CPU",
-            "id": "Edge-device-CPU",
-            "carbon_footprint_fabrication_per_unit": {
-                "value": 0.0,
-                "unit": "kilogram",
-                "label": "Carbon footprint fabrication per unit",
-                "source": "hypothesis"
-            },
-            "nb_of_units": {
-                "value": 1.0,
-                "unit": "dimensionless",
-                "label": "Number of units",
-                "source": "hypothesis"
-            }
-        }
-    },
-    "EdgeComputerRAMComponent": {
-        "Edge-device-RAM": {
-            "name": "Edge device RAM",
-            "id": "Edge-device-RAM",
-            "carbon_footprint_fabrication_per_unit": {
-                "value": 0.0,
-                "unit": "kilogram",
-                "label": "Carbon footprint fabrication per unit",
-                "source": "hypothesis"
-            },
-            "power_per_unit": {
-                "value": 0.0,
-                "unit": "watt",
-                "label": "Power per unit",
-                "source": "hypothesis"
-            },
-            "idle_power_per_unit": {
-                "value": 0.0,
-                "unit": "watt",
-                "label": "Idle power per unit",
-                "source": "hypothesis"
-            },
-            "nb_of_units": {
-                "value": 1.0,
-                "unit": "dimensionless",
-                "label": "Number of units",
-                "source": "hypothesis"
-            }
-        }
-    },
-    "EdgeStorage": {
-        "Edge-SSD-storage": {
-            "name": "Edge SSD storage",
-            "id": "Edge-SSD-storage",
-            "carbon_footprint_fabrication_per_unit": {
-                "value": 0.0,
-                "unit": "kilogram",
-                "label": "Carbon footprint fabrication per unit",
-                "source": "hypothesis"
-            },
-            "power_per_unit": {
-                "value": 0.0,
-                "unit": "watt",
-                "label": "Power per unit",
-                "source": "hypothesis"
-            },
-            "lifespan": {
-                "value": 6.0,
-                "unit": "year",
-                "label": "Lifespan",
-                "source": "hypothesis"
-            },
-            "idle_power_per_unit": {
-                "value": 0.0,
-                "unit": "watt",
-                "label": "Idle power per unit",
-                "source": "hypothesis"
-            },
-            "nb_of_units": {
-                "value": 1.0,
-                "unit": "dimensionless",
-                "label": "Number of units",
-                "source": "hypothesis"
-            },
-            "carbon_footprint_fabrication_per_storage_capacity": {
-                "value": 160.0,
-                "unit": "kilogram / terabyte_stored",
-                "label": "Fabrication carbon footprint per unit per storage capacity",
-                "source": "hypothesis"
-            },
-            "storage_capacity_per_unit": {
-                "value": 1.0,
-                "unit": "terabyte_stored",
-                "label": "Storage capacity per unit",
-                "source": "hypothesis"
-            },
-            "base_storage_need": {
-                "value": 30.0,
-                "unit": "gigabyte_stored",
-                "label": "Initial storage need",
-                "source": "hypothesis"
-            }
-        }
-    },
-    "RecurrentEdgeProcessRAMNeed": {
-        "Edge-process-RAM-need": {
-            "name": "Edge process RAM need",
-            "id": "Edge-process-RAM-need",
-            "edge_component": "Edge-device-RAM"
-        }
-    },
-    "RecurrentEdgeProcessCPUNeed": {
-        "Edge-process-CPU-need": {
-            "name": "Edge process CPU need",
-            "id": "Edge-process-CPU-need",
-            "edge_component": "Edge-device-CPU"
-        }
-    },
-    "RecurrentEdgeProcessStorageNeed": {
-        "Edge-process-storage-need": {
-            "name": "Edge process storage need",
-            "id": "Edge-process-storage-need",
-            "edge_component": "Edge-SSD-storage"
-        }
-    },
-    "RecurrentServerNeed": {
-        "Recurrent-server-need-1": {
-            "name": "Recurrent server need 1",
-            "id": "Recurrent-server-need-1",
-            "edge_device": "Edge-device",
-            "recurrent_volume_per_edge_device": {
-                "recurring_values": "[1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0]",
-                "unit": "occurrence",
-                "label": "Default recurrent volume per edge device"
-            },
-            "jobs": [
-                "server-1-job-1",
-                "server-3-job-2"
-            ]
-        },
-        "Recurrent-server-need-2": {
-            "name": "Recurrent server need 2",
-            "id": "Recurrent-server-need-2",
-            "edge_device": "Edge-device",
-            "recurrent_volume_per_edge_device": {
-                "recurring_values": "[1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0]",
-                "unit": "occurrence",
-                "label": "Default recurrent volume per edge device"
-            },
-            "jobs": [
-                "server-2-job"
-            ]
         }
     }
 }

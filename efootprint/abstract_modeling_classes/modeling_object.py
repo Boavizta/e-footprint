@@ -679,7 +679,9 @@ class ModelingObject(metaclass=ABCAfterInitMeta):
 
         for contextual_attr in self.mod_obj_attributes:
             contextual_attr.set_modeling_obj_container(None, None)
-        for attr_value in get_instance_attributes(self, ObjectLinkedToModelingObj).values():
+        # ObjectLinkedToModelingObjBase also covers ExplainableObjectDicts, whose unlinking removes the
+        # backward links their keys hold to self (e.g. a deleted UsageJourneyStep's jobs).
+        for attr_value in get_instance_attributes(self, ObjectLinkedToModelingObjBase).values():
                 attr_value.set_modeling_obj_container(None, None)
 
         if self.trigger_modeling_updates:

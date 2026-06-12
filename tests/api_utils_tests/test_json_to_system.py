@@ -42,6 +42,19 @@ class TestJsonToSystem(IntegrationTestBaseClass):
 
         class_obj_dict, flat_obj_dict, _ = json_to_system(full_dict)
 
+    def test_pre_feature_json_with_list_relationships_loads_as_weight_one_dicts(self):
+        from efootprint.abstract_modeling_classes.explainable_object_dict import WeightedExplainableObjectDict
+
+        class_obj_dict, flat_obj_dict, _ = json_to_system(deepcopy(self.base_system_dict))
+
+        usage_journey = list(class_obj_dict["UsageJourney"].values())[0]
+        self.assertIsInstance(usage_journey.uj_steps, WeightedExplainableObjectDict)
+        self.assertEqual(
+            [1] * len(usage_journey.uj_steps), [weight.magnitude for weight in usage_journey.uj_steps.values()])
+        for uj_step in usage_journey.uj_steps:
+            self.assertIsInstance(uj_step.jobs, WeightedExplainableObjectDict)
+            self.assertEqual([1] * len(uj_step.jobs), [weight.magnitude for weight in uj_step.jobs.values()])
+
     def test_update_value_after_system_creation(self):
         class_obj_dict, flat_obj_dict, _ = json_to_system(self.base_system_dict)
 

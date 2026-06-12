@@ -118,7 +118,7 @@ class System(ModelingObject):
             self, usage_patterns: List[UsagePattern]) -> List[ModelingObject]:
         output_list =  self.storages + usage_patterns
         usage_journeys = self.usage_journeys
-        uj_steps = list(dict.fromkeys(sum([uj.uj_steps for uj in usage_journeys], start=[])))
+        uj_steps = list(dict.fromkeys(sum([list(uj.uj_steps) for uj in usage_journeys], start=[])))
         devices = list(dict.fromkeys(sum([up.devices for up in usage_patterns], start=[])))
         all_modeling_objects = output_list + usage_journeys + uj_steps + devices
 

@@ -111,6 +111,35 @@ class TestUsageJourney(TestCase):
 
         self.assertEqual(SourceValue(8 * u.min), uj.duration)
 
+    def test_update_duration_weights_steps_by_times_per_journey(self):
+        uj_step1 = create_mod_obj_mock(UsageJourneyStep, name="Step 1", id="uj_step1")
+        uj_step1.user_time_spent = SourceValue(5 * u.min)
+        uj_step1.user_time_spent.set_modeling_obj_container(uj_step1, "user_time_spent")
+        uj_step2 = create_mod_obj_mock(UsageJourneyStep, name="Step 2", id="uj_step2")
+        uj_step2.user_time_spent = SourceValue(3 * u.min)
+        uj_step2.user_time_spent.set_modeling_obj_container(uj_step2, "user_time_spent")
+        uj = UsageJourney("test user journey", uj_steps={uj_step1: 2, uj_step2: 0.5})
+        uj.update_duration()
+
+        self.assertEqual(SourceValue(11.5 * u.min), uj.duration)
+
+    def test_update_duration_zero_weight_step_contributes_nothing(self):
+        uj_step1 = create_mod_obj_mock(UsageJourneyStep, name="Step 1", id="uj_step1")
+        uj_step1.user_time_spent = SourceValue(5 * u.min)
+        uj_step1.user_time_spent.set_modeling_obj_container(uj_step1, "user_time_spent")
+        uj_step2 = create_mod_obj_mock(UsageJourneyStep, name="Step 2", id="uj_step2")
+        uj_step2.user_time_spent = SourceValue(3 * u.min)
+        uj_step2.user_time_spent.set_modeling_obj_container(uj_step2, "user_time_spent")
+        uj = UsageJourney("test user journey", uj_steps={uj_step1: 0, uj_step2: 1})
+        uj.update_duration()
+
+        self.assertEqual(SourceValue(3 * u.min), uj.duration)
+
+    def test_uj_steps_rejects_negative_weight(self):
+        uj_step1 = create_mod_obj_mock(UsageJourneyStep, name="Step 1", id="uj_step1")
+        with self.assertRaises(ValueError):
+            UsageJourney("test user journey", uj_steps={uj_step1: -1})
+
 
 if __name__ == "__main__":
     unittest.main()

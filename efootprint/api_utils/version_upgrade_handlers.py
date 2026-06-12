@@ -701,6 +701,34 @@ def upgrade_version_20_to_21(system_dict, efootprint_classes_dict=None):
     return system_dict
 
 
+def upgrade_version_21_to_22(system_dict, efootprint_classes_dict=None):
+    """UsageJourney.uj_steps, UsageJourneyStep.jobs and RecurrentServerNeed.jobs become weighted dicts:
+    the old id-lists upgrade to {id: count} dicts, duplicate entries (the old multiple-invocation idiom)
+    accumulating into their count."""
+    from collections import Counter
+
+    weighted_dict_attrs = {
+        "UsageJourney": ("uj_steps", "Times per journey"),
+        "UsageJourneyStep": ("jobs", "Times per step"),
+        "RecurrentServerNeed": ("jobs", "Times per occurrence"),
+    }
+
+    log_upgrade = False
+    for class_name, (attr_name, weight_label) in weighted_dict_attrs.items():
+        for obj_dict in system_dict.get(class_name, {}).values():
+            if isinstance(obj_dict.get(attr_name), list):
+                obj_dict[attr_name] = {
+                    obj_id: SourceValue(count * u.dimensionless).set_label(weight_label).to_json()
+                    for obj_id, count in Counter(obj_dict[attr_name]).items()}
+                log_upgrade = True
+
+    if log_upgrade:
+        logger.info(
+            "Upgraded system dict from version 21 to 22: converted uj_steps and jobs id-lists to weighted "
+            "count dicts (duplicate entries accumulating into their count).")
+    return system_dict
+
+
 VERSION_UPGRADE_HANDLERS = {
     9: upgrade_version_9_to_10,
     10: upgrade_version_10_to_11,
@@ -714,4 +742,5 @@ VERSION_UPGRADE_HANDLERS = {
     18: upgrade_version_18_to_19,
     19: upgrade_version_19_to_20,
     20: upgrade_version_20_to_21,
+    21: upgrade_version_21_to_22,
 }

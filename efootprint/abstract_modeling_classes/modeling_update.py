@@ -219,10 +219,19 @@ class ModelingUpdate:
         self.hourly_quantities_to_filter = self.compute_hourly_quantities_to_filter()
         if self.mod_objs_computation_chain:
             # The simulation will change the calculation graph, so we need to replace all ancestors not in
-            # computation chain by their copies to keep the original calculation graph unchanged
+            # computation chain by their copies to keep the original calculation graph unchanged.
+            # Values carried by a directly-changed dict (e.g. weights of an updated weighted dict) are excluded:
+            # the dict swap itself manages their linking, so copying them too would conflict at set/reset time.
+            from efootprint.abstract_modeling_classes.explainable_object_dict import ExplainableObjectDict
+            changed_dict_value_ids = set()
+            for old_value, new_value in self.changes_list:
+                if isinstance(old_value, ExplainableObjectDict):
+                    changed_dict_value_ids.update(
+                        id(value) for value in list(old_value.values()) + list(new_value.values()))
             self.ancestors_to_replace_by_copies = [
                 ancestor for ancestor in self.ancestors_not_in_computation_chain
-                if ancestor.id not in [value.id for value in self.hourly_quantities_to_filter]]
+                if ancestor.id not in [value.id for value in self.hourly_quantities_to_filter]
+                and id(ancestor) not in changed_dict_value_ids]
             self.replaced_ancestors_copies = self.replace_ancestors_not_in_computation_chain_by_copies()
         self.filter_hourly_quantities_to_filter()
 

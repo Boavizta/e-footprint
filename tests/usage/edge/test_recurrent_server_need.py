@@ -25,9 +25,7 @@ class TestRecurrentServerNeed(TestCase):
         self.mock_edge_device.name = "Mock Edge Device"
         self.mock_edge_device.id = "mock_device"
 
-        self.mock_job = MagicMock(spec=JobBase)
-        self.mock_job.name = "Mock Job"
-        self.mock_job.id = "mock_job"
+        self.mock_job = create_mod_obj_mock(JobBase, name="Mock Job", id="mock_job")
 
         self.recurrent_volume = ExplainableRecurrentQuantities(
             np.array([2.0] * 168, dtype=np.float32) * u.occurrence, "test recurrent volume")

@@ -6,6 +6,13 @@ and this project adheres to [Semantic Versioning](http://semver.org/)
 
 ## [Unreleased]
 
+### Changed
+- **Step and job multipliers**: `UsageJourney.uj_steps`, `UsageJourneyStep.jobs` and `RecurrentServerNeed.jobs` become weighted `ExplainableObjectDict`s (same attribute names). The weight is how many times the related object occurs per parent occurrence ("Times per journey" / "Times per step" / "Times per occurrence"): journey duration is the weighted sum of step times, step occupancy windows span weight × `user_time_spent`, and job occurrences compose step weight × job multiplier (web side) and need occurrence × job multiplier (edge side). Constructors keep accepting list sugar (each entry weighs 1, duplicates accumulating) and plain-number dict values (`{job: 3}`), which replaces the duplicate-entry idiom. Pre-feature JSONs upgrade automatically (`upgrade_version_21_to_22`: id-lists → weight dicts, duplicates accumulating into their count); JSON format major version bumps to 22. With all weights at 1, computed results are identical to pre-change behaviour.
+- `ModelingObject.self_delete` now also unlinks `ExplainableObjectDict` attributes, so a deleted object releases the backward links its dict keys held (e.g. a deleted step's jobs).
+
+### Fixed
+- Simulations (`ModelingUpdate` with a `simulation_date`) no longer corrupt the linking of values carried by a directly-changed dict: such values are excluded from the ancestors-replaced-by-copies mechanism, since the dict swap itself manages them.
+
 ### Added
 - `to_weighted_explainable_object_dict` normalizer in `explainable_object_dict.py`: turns constructor sugar (a list of keys with duplicates accumulating, or a dict with plain-number values) into a `WeightedExplainableObjectDict` of dimensionless, non-negative `SourceValue` weights — a small `ExplainableObjectDict` subclass that enforces the weight invariant on every `__setitem__`, so mutations are validated like construction. The subclass survives JSON round-trips (dict attributes are rebuilt with the class declared by their `__init__` annotation) and `ModelingUpdate` replacements. `EdgeDeviceGroup` adopts it, so `EdgeDeviceGroup(name, sub_group_counts=[g1], edge_device_counts={d1: 3})` now works; its `update_counts_validation` delegates to the shared `validate_weight`. `ExplainableObjectDict.__setitem__` stays strict; no serialized output changes.
 

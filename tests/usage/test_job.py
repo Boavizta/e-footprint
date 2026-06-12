@@ -88,8 +88,8 @@ class TestJob(TestCase):
     def test_compute_hourly_job_occurrences_simple_case(self):
         uj1 = MagicMock()
         uj_step11 = MagicMock()
-        uj1.uj_steps = [uj_step11]
-        uj_step11.jobs = [self.job]
+        uj1.uj_steps = {uj_step11: SourceValue(1 * u.dimensionless)}
+        uj_step11.jobs = {self.job: SourceValue(1 * u.dimensionless)}
         uj_step11.user_time_spent = SourceValue(90 * u.min)
         usage_pattern = create_mod_obj_mock(UsagePattern, name="usage pattern", usage_journey=uj1)
         hourly_uj_starts = create_source_hourly_values_from_list([1, 2, 5, 7])
@@ -105,8 +105,8 @@ class TestJob(TestCase):
     def test_compute_hourly_job_occurrences_job_referenced_multiple_times_in_step(self):
         uj1 = MagicMock()
         uj_step11 = MagicMock()
-        uj1.uj_steps = [uj_step11]
-        uj_step11.jobs = [self.job, self.job, self.job]
+        uj1.uj_steps = {uj_step11: SourceValue(1 * u.dimensionless)}
+        uj_step11.jobs = {self.job: SourceValue(3 * u.dimensionless)}
         uj_step11.user_time_spent = SourceValue(90 * u.min)
         usage_pattern = create_mod_obj_mock(UsagePattern, name="usage pattern", usage_journey=uj1)
         hourly_uj_starts = create_source_hourly_values_from_list([1, 2, 5, 7])
@@ -120,15 +120,90 @@ class TestJob(TestCase):
                          job_occurrences.value_as_float_list)
         self.job.hourly_occurrences_per_usage_pattern = ExplainableObjectDict()
 
+    def test_compute_hourly_job_occurrences_composes_step_weight_and_job_multiplier(self):
+        uj1 = MagicMock()
+        uj_step11 = MagicMock()
+        uj1.uj_steps = {uj_step11: SourceValue(2 * u.dimensionless)}
+        uj_step11.jobs = {self.job: SourceValue(3 * u.dimensionless)}
+        uj_step11.user_time_spent = SourceValue(10 * u.min)
+        usage_pattern = create_mod_obj_mock(UsagePattern, name="usage pattern", usage_journey=uj1)
+        hourly_uj_starts = create_source_hourly_values_from_list([1, 2, 5, 7])
+        usage_pattern.utc_hourly_usage_journey_starts = hourly_uj_starts
+        self.job.hourly_occurrences_per_usage_pattern = ExplainableObjectDict()
+
+        self.job.update_dict_element_in_hourly_occurrences_per_usage_pattern(usage_pattern)
+        job_occurrences = self.job.hourly_occurrences_per_usage_pattern[usage_pattern]
+        self.assertEqual([6 * value for value in hourly_uj_starts.value_as_float_list],
+                         job_occurrences.value_as_float_list)
+        self.job.hourly_occurrences_per_usage_pattern = ExplainableObjectDict()
+
+    def test_compute_hourly_job_occurrences_same_job_with_different_multipliers_in_two_steps(self):
+        uj1 = MagicMock()
+        uj_step11 = MagicMock()
+        uj_step12 = MagicMock()
+        uj1.uj_steps = {uj_step11: SourceValue(1 * u.dimensionless), uj_step12: SourceValue(1 * u.dimensionless)}
+        uj_step11.jobs = {self.job: SourceValue(1 * u.dimensionless)}
+        uj_step11.user_time_spent = SourceValue(1 * u.min)
+        uj_step12.jobs = {self.job: SourceValue(2 * u.dimensionless)}
+        uj_step12.user_time_spent = SourceValue(1 * u.min)
+        usage_pattern = create_mod_obj_mock(UsagePattern, name="usage pattern", usage_journey=uj1)
+        hourly_uj_starts = create_source_hourly_values_from_list([1, 2, 5, 7])
+        usage_pattern.utc_hourly_usage_journey_starts = hourly_uj_starts
+        self.job.hourly_occurrences_per_usage_pattern = ExplainableObjectDict()
+
+        self.job.update_dict_element_in_hourly_occurrences_per_usage_pattern(usage_pattern)
+        job_occurrences = self.job.hourly_occurrences_per_usage_pattern[usage_pattern]
+        self.assertEqual([3 * value for value in hourly_uj_starts.value_as_float_list],
+                         job_occurrences.value_as_float_list)
+        self.job.hourly_occurrences_per_usage_pattern = ExplainableObjectDict()
+
+    def test_compute_hourly_job_occurrences_zero_weight_step_yields_no_occurrence(self):
+        uj1 = MagicMock()
+        uj_step11 = MagicMock()
+        uj1.uj_steps = {uj_step11: SourceValue(0 * u.dimensionless)}
+        uj_step11.jobs = {self.job: SourceValue(3 * u.dimensionless)}
+        uj_step11.user_time_spent = SourceValue(10 * u.min)
+        usage_pattern = create_mod_obj_mock(UsagePattern, name="usage pattern", usage_journey=uj1)
+        hourly_uj_starts = create_source_hourly_values_from_list([1, 2, 5, 7])
+        usage_pattern.utc_hourly_usage_journey_starts = hourly_uj_starts
+        self.job.hourly_occurrences_per_usage_pattern = ExplainableObjectDict()
+
+        self.job.update_dict_element_in_hourly_occurrences_per_usage_pattern(usage_pattern)
+        job_occurrences = self.job.hourly_occurrences_per_usage_pattern[usage_pattern]
+        self.assertEqual([0, 0, 0, 0], job_occurrences.value_as_float_list)
+        self.job.hourly_occurrences_per_usage_pattern = ExplainableObjectDict()
+
+    def test_compute_hourly_job_occurrences_step_weight_shifts_following_steps_delay(self):
+        uj1 = MagicMock()
+        uj_step11 = MagicMock()
+        uj_step12 = MagicMock()
+        job2 = MagicMock()
+        # First step lasts 40 min but occurs 2 times per journey, so the second step starts after 80 min.
+        uj1.uj_steps = {uj_step11: SourceValue(2 * u.dimensionless), uj_step12: SourceValue(1 * u.dimensionless)}
+        uj_step11.jobs = {job2: SourceValue(1 * u.dimensionless)}
+        uj_step11.user_time_spent = SourceValue(40 * u.min)
+        uj_step12.jobs = {self.job: SourceValue(1 * u.dimensionless)}
+        uj_step12.user_time_spent = SourceValue(4 * u.min)
+        usage_pattern = create_mod_obj_mock(UsagePattern, name="usage pattern", usage_journey=uj1)
+        hourly_uj_starts = create_source_hourly_values_from_list([1, 2, 5, 7])
+        usage_pattern.utc_hourly_usage_journey_starts = hourly_uj_starts
+        self.job.hourly_occurrences_per_usage_pattern = ExplainableObjectDict()
+
+        self.job.update_dict_element_in_hourly_occurrences_per_usage_pattern(usage_pattern)
+        job_occurrences = self.job.hourly_occurrences_per_usage_pattern[usage_pattern]
+        self.assertEqual(hourly_uj_starts.start_date + timedelta(hours=1), job_occurrences.start_date)
+        self.assertEqual(hourly_uj_starts.value_as_float_list, job_occurrences.value_as_float_list)
+        self.job.hourly_occurrences_per_usage_pattern = ExplainableObjectDict()
+
     def test_compute_hourly_job_occurrences_uj_lasting_less_than_an_hour_before(self):
         uj1 = MagicMock()
         uj_step11 = MagicMock()
         uj_step12 = MagicMock()
         job2 = MagicMock()
-        uj1.uj_steps = [uj_step11, uj_step12]
-        uj_step11.jobs = [job2]
+        uj1.uj_steps = {uj_step11: SourceValue(1 * u.dimensionless), uj_step12: SourceValue(1 * u.dimensionless)}
+        uj_step11.jobs = {job2: SourceValue(1 * u.dimensionless)}
         uj_step11.user_time_spent = SourceValue(40 * u.min)
-        uj_step12.jobs = [self.job]
+        uj_step12.jobs = {self.job: SourceValue(1 * u.dimensionless)}
         uj_step12.user_time_spent = SourceValue(4 * u.min)
         usage_pattern = create_mod_obj_mock(UsagePattern, name="usage pattern", usage_journey=uj1)
         hourly_uj_starts = create_source_hourly_values_from_list([1, 2, 5, 7])
@@ -146,10 +221,10 @@ class TestJob(TestCase):
         uj_step11 = MagicMock()
         uj_step12 = MagicMock()
         job2 = MagicMock()
-        uj1.uj_steps = [uj_step11, uj_step12]
-        uj_step11.jobs = [job2]
+        uj1.uj_steps = {uj_step11: SourceValue(1 * u.dimensionless), uj_step12: SourceValue(1 * u.dimensionless)}
+        uj_step11.jobs = {job2: SourceValue(1 * u.dimensionless)}
         uj_step11.user_time_spent = SourceValue(61 * u.min)
-        uj_step12.jobs = [self.job]
+        uj_step12.jobs = {self.job: SourceValue(1 * u.dimensionless)}
         uj_step12.user_time_spent = SourceValue(4 * u.min)
         usage_pattern = create_mod_obj_mock(UsagePattern, name="usage pattern", usage_journey=uj1)
         hourly_uj_starts = create_source_hourly_values_from_list([1, 2, 5, 7])
@@ -169,12 +244,13 @@ class TestJob(TestCase):
         uj_step12 = MagicMock()
         uj_step13 = MagicMock()
         job2 = MagicMock()
-        uj1.uj_steps = [uj_step11, uj_step12, uj_step13]
-        uj_step11.jobs = [job2]
+        uj1.uj_steps = {uj_step11: SourceValue(1 * u.dimensionless), uj_step12: SourceValue(1 * u.dimensionless),
+                        uj_step13: SourceValue(1 * u.dimensionless)}
+        uj_step11.jobs = {job2: SourceValue(1 * u.dimensionless)}
         uj_step11.user_time_spent = SourceValue(59 * u.min)
-        uj_step12.jobs = [job2]
+        uj_step12.jobs = {job2: SourceValue(1 * u.dimensionless)}
         uj_step12.user_time_spent = SourceValue(4 * u.min)
-        uj_step13.jobs = [self.job, self.job]
+        uj_step13.jobs = {self.job: SourceValue(2 * u.dimensionless)}
         uj_step13.user_time_spent = SourceValue(1 * u.min)
         usage_pattern = create_mod_obj_mock(UsagePattern, name="usage pattern", usage_journey=uj1)
         hourly_uj_starts = create_source_hourly_values_from_list([1, 2, 5, 7])
@@ -299,7 +375,7 @@ class TestJob(TestCase):
         # Setup recurrent server need with unitary hourly volume
         unitary_volume = create_source_hourly_values_from_list([1, 1, 1, 1])
         mock_server_need = create_mod_obj_mock(RecurrentServerNeed, name="Mock recurrent server need")
-        mock_server_need.jobs = [self.job, self.job] # Same job appears twice so volume is doubled
+        mock_server_need.jobs = {self.job: SourceValue(2 * u.dimensionless)}  # Job invoked twice so volume is doubled
         mock_server_need.unitary_hourly_volume_per_usage_pattern = {edge_usage_pattern: unitary_volume}
         # Only the pattern's own edge journey's server needs contribute to its occurrences.
         mock_edge_usage_journey.recurrent_server_needs = [mock_server_need]
