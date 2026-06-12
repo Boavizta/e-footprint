@@ -31,7 +31,7 @@
         </center>
         <style type="text/css">
 
-             #mynetwork_7e8955 {
+             #mynetwork_9b0ed2 {
                  width: 760px;
                  height: 300px;
                  background-color: #ffffff;
@@ -53,7 +53,7 @@
         <div class="card" style="width: 100%">
             
             
-            <div id="mynetwork_7e8955" class="card-body"></div>
+            <div id="mynetwork_9b0ed2" class="card-body"></div>
         </div>
 
         
@@ -83,12 +83,12 @@
 
               // This method is responsible for drawing the graph, returns the drawn network
               function drawGraph() {
-                  var container = document.getElementById('mynetwork_7e8955');
+                  var container = document.getElementById('mynetwork_9b0ed2');
 
                   
 
                   // parsing and collecting nodes and edges from the python
-                  nodes = new vis.DataSet([{"color": null, "id": "Hourly average occurrences across usage patterns", "label": "Hourly average\noccurrences across\nusage patterns", "shape": "dot", "size": 15, "title": "Hourly average occurrences across usage patterns\n=\nAverage hourly occurrences in usage pattern\n=\n26298 values from 2025-01-01 00:00:00+00:00 to 2028-01-01 18:00:00+00:00 in :\nfirst 10 vals [0.067, 0.067, 0.0447, 0.067, 0.0149, 0.0372, 0.067, 0.0149,\n0.0447, 0.0596],\nlast 10 vals [0.0596, 0.067, 0.0298, 0.0223, 0.0298, 0.0596, 0.067, 0.0521,\n0.0298, 0.0223]\n=\n26298 values from 2025-01-01 00:00:00+00:00 to 2028-01-01 18:00:00+00:00 in :\nfirst 10 vals [0.067, 0.067, 0.0447, 0.067, 0.0149, 0.0372, 0.067, 0.0149,\n0.0447, 0.0596],\nlast 10 vals [0.0596, 0.067, 0.0298, 0.0223, 0.0298, 0.0596, 0.067, 0.0521,\n0.0298, 0.0223]", "x": 0.0, "y": 1200}, {"color": null, "id": "Average hourly occurrences in usage pattern", "label": "Average hourly\noccurrences in usage\npattern", "shape": "dot", "size": 15, "title": "Average hourly occurrences in usage pattern\n=\nHourly occurrences in usage pattern hourly occurrences average Ecologits\ngeneration_latency for claude-opus-4-5\n=\n26298 values from 2025-01-01 00:00:00+00:00 to 2028-01-01 18:00:00+00:00 in :\nfirst 10 vals [9, 9, 6, 9, 2, 5, 9, 2, 6, 8],\nlast 10 vals [8, 9, 4, 3, 4, 8, 9, 7, 4, 3] hourly occurrences average 26.8 s\n=\n26298 values from 2025-01-01 00:00:00+00:00 to 2028-01-01 18:00:00+00:00 in :\nfirst 10 vals [0.067, 0.067, 0.0447, 0.067, 0.0149, 0.0372, 0.067, 0.0149,\n0.0447, 0.0596],\nlast 10 vals [0.0596, 0.067, 0.0298, 0.0223, 0.0298, 0.0596, 0.067, 0.0521,\n0.0298, 0.0223]", "x": 0.0, "y": 1050}]);
+                  nodes = new vis.DataSet([{"color": null, "id": "Hourly average occurrences across usage patterns", "label": "Hourly average\noccurrences across\nusage patterns", "shape": "dot", "size": 15, "title": "Hourly average occurrences across usage patterns\n=\nAverage hourly occurrences in usage pattern\n=\n26298 values from 2025-01-01 00:00:00+00:00 to 2028-01-01 18:00:00+00:00 in :\nfirst 10 vals [0.0298, 0.0149, 0.067, 0.0447, 0.0596, 0.067, 0.0298, 0.00745,\n0.0447, 0.0447],\nlast 10 vals [0.0223, 0.0223, 0.0521, 0.0223, 0.0149, 0.0298, 0.0149, 0.067,\n0.067, 0.067]\n=\n26298 values from 2025-01-01 00:00:00+00:00 to 2028-01-01 18:00:00+00:00 in :\nfirst 10 vals [0.0298, 0.0149, 0.067, 0.0447, 0.0596, 0.067, 0.0298, 0.00745,\n0.0447, 0.0447],\nlast 10 vals [0.0223, 0.0223, 0.0521, 0.0223, 0.0149, 0.0298, 0.0149, 0.067,\n0.067, 0.067]", "x": 0.0, "y": 1200}, {"color": null, "id": "Average hourly occurrences in usage pattern", "label": "Average hourly\noccurrences in usage\npattern", "shape": "dot", "size": 15, "title": "Average hourly occurrences in usage pattern\n=\nHourly occurrences in usage pattern hourly occurrences average Ecologits\ngeneration_latency for claude-opus-4-5\n=\n26298 values from 2025-01-01 00:00:00+00:00 to 2028-01-01 18:00:00+00:00 in :\nfirst 10 vals [4, 2, 9, 6, 8, 9, 4, 1, 6, 6],\nlast 10 vals [3, 3, 7, 3, 2, 4, 2, 9, 9, 9] hourly occurrences average 26.8 s\n=\n26298 values from 2025-01-01 00:00:00+00:00 to 2028-01-01 18:00:00+00:00 in :\nfirst 10 vals [0.0298, 0.0149, 0.067, 0.0447, 0.0596, 0.067, 0.0298, 0.00745,\n0.0447, 0.0447],\nlast 10 vals [0.0223, 0.0223, 0.0521, 0.0223, 0.0149, 0.0298, 0.0149, 0.067,\n0.067, 0.067]", "x": 0.0, "y": 1050}]);
                   edges = new vis.DataSet([{"arrows": "to", "from": "Average hourly occurrences in usage pattern", "to": "Hourly average occurrences across usage patterns"}]);
 
                   nodeColors = {};

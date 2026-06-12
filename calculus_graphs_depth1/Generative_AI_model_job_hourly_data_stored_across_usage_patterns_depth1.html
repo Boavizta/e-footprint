@@ -31,7 +31,7 @@
         </center>
         <style type="text/css">
 
-             #mynetwork_24960e {
+             #mynetwork_e92d32 {
                  width: 760px;
                  height: 300px;
                  background-color: #ffffff;
@@ -53,7 +53,7 @@
         <div class="card" style="width: 100%">
             
             
-            <div id="mynetwork_24960e" class="card-body"></div>
+            <div id="mynetwork_e92d32" class="card-body"></div>
         </div>
 
         
@@ -83,12 +83,12 @@
 
               // This method is responsible for drawing the graph, returns the drawn network
               function drawGraph() {
-                  var container = document.getElementById('mynetwork_24960e');
+                  var container = document.getElementById('mynetwork_e92d32');
 
                   
 
                   // parsing and collecting nodes and edges from the python
-                  nodes = new vis.DataSet([{"color": null, "id": "Hourly data stored across usage patterns", "label": "Hourly data stored\nacross usage\npatterns", "shape": "dot", "size": 15, "title": "Hourly data stored across usage patterns\n=\nHourly data stored in usage pattern\n=\n26298 values from 2025-01-01 00:00:00+00:00 to 2028-01-01 18:00:00+00:00 in B\nstored:\nfirst 10 vals [0, 0, 0, 0, 0, 0, 0, 0, 0, 0],\nlast 10 vals [0, 0, 0, 0, 0, 0, 0, 0, 0, 0]\n=\n26298 values from 2025-01-01 00:00:00+00:00 to 2028-01-01 18:00:00+00:00 in B\nstored:\nfirst 10 vals [0, 0, 0, 0, 0, 0, 0, 0, 0, 0],\nlast 10 vals [0, 0, 0, 0, 0, 0, 0, 0, 0, 0]", "x": 0.0, "y": 1350}, {"color": null, "id": "Hourly data stored in usage pattern", "label": "Hourly data stored\nin usage pattern", "shape": "dot", "size": 15, "title": "Hourly data stored in usage pattern\n=\nAverage hourly occurrences in usage pattern * (Data stored by request * one hour\n/ Ecologits generation_latency for claude-opus-4-5)\n=\n26298 values from 2025-01-01 00:00:00+00:00 to 2028-01-01 18:00:00+00:00 in :\nfirst 10 vals [0.067, 0.067, 0.0447, 0.067, 0.0149, 0.0372, 0.067, 0.0149,\n0.0447, 0.0596],\nlast 10 vals [0.0596, 0.067, 0.0298, 0.0223, 0.0298, 0.0596, 0.067, 0.0521,\n0.0298, 0.0223] * (0 B stored * 1 h / 26.8 s)\n=\n26298 values from 2025-01-01 00:00:00+00:00 to 2028-01-01 18:00:00+00:00 in B\nstored:\nfirst 10 vals [0, 0, 0, 0, 0, 0, 0, 0, 0, 0],\nlast 10 vals [0, 0, 0, 0, 0, 0, 0, 0, 0, 0]", "x": 0.0, "y": 1200}]);
+                  nodes = new vis.DataSet([{"color": null, "id": "Hourly data stored across usage patterns", "label": "Hourly data stored\nacross usage\npatterns", "shape": "dot", "size": 15, "title": "Hourly data stored across usage patterns\n=\nHourly data stored in usage pattern\n=\n26298 values from 2025-01-01 00:00:00+00:00 to 2028-01-01 18:00:00+00:00 in B\nstored:\nfirst 10 vals [0, 0, 0, 0, 0, 0, 0, 0, 0, 0],\nlast 10 vals [0, 0, 0, 0, 0, 0, 0, 0, 0, 0]\n=\n26298 values from 2025-01-01 00:00:00+00:00 to 2028-01-01 18:00:00+00:00 in B\nstored:\nfirst 10 vals [0, 0, 0, 0, 0, 0, 0, 0, 0, 0],\nlast 10 vals [0, 0, 0, 0, 0, 0, 0, 0, 0, 0]", "x": 0.0, "y": 1350}, {"color": null, "id": "Hourly data stored in usage pattern", "label": "Hourly data stored\nin usage pattern", "shape": "dot", "size": 15, "title": "Hourly data stored in usage pattern\n=\nAverage hourly occurrences in usage pattern * (Data stored by request * one hour\n/ Ecologits generation_latency for claude-opus-4-5)\n=\n26298 values from 2025-01-01 00:00:00+00:00 to 2028-01-01 18:00:00+00:00 in :\nfirst 10 vals [0.0298, 0.0149, 0.067, 0.0447, 0.0596, 0.067, 0.0298, 0.00745,\n0.0447, 0.0447],\nlast 10 vals [0.0223, 0.0223, 0.0521, 0.0223, 0.0149, 0.0298, 0.0149, 0.067,\n0.067, 0.067] * (0 B stored * 1 h / 26.8 s)\n=\n26298 values from 2025-01-01 00:00:00+00:00 to 2028-01-01 18:00:00+00:00 in B\nstored:\nfirst 10 vals [0, 0, 0, 0, 0, 0, 0, 0, 0, 0],\nlast 10 vals [0, 0, 0, 0, 0, 0, 0, 0, 0, 0]", "x": 0.0, "y": 1200}]);
                   edges = new vis.DataSet([{"arrows": "to", "from": "Hourly data stored in usage pattern", "to": "Hourly data stored across usage patterns"}]);
 
                   nodeColors = {};

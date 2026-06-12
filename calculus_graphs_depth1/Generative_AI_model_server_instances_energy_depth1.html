@@ -31,7 +31,7 @@
         </center>
         <style type="text/css">
 
-             #mynetwork_dcc2f8 {
+             #mynetwork_d5db3b {
                  width: 760px;
                  height: 300px;
                  background-color: #ffffff;
@@ -53,7 +53,7 @@
         <div class="card" style="width: 100%">
             
             
-            <div id="mynetwork_dcc2f8" class="card-body"></div>
+            <div id="mynetwork_d5db3b" class="card-body"></div>
         </div>
 
         
@@ -83,12 +83,12 @@
 
               // This method is responsible for drawing the graph, returns the drawn network
               function drawGraph() {
-                  var container = document.getElementById('mynetwork_dcc2f8');
+                  var container = document.getElementById('mynetwork_d5db3b');
 
                   
 
                   // parsing and collecting nodes and edges from the python
-                  nodes = new vis.DataSet([{"color": null, "id": "Instances energy for claude-opus-4-5", "label": "Instances energy for\nclaude-opus-4-5", "shape": "dot", "size": 15, "title": "Instances energy for claude-opus-4-5\n=\nHourly average occurrences across usage patterns * (Ecologits request_energy for\nclaude-opus-4-5 * one hour / Ecologits generation_latency for claude-opus-4-5)\n=\n26298 values from 2025-01-01 00:00:00+00:00 to 2028-01-01 18:00:00+00:00 in :\nfirst 10 vals [0.067, 0.067, 0.0447, 0.067, 0.0149, 0.0372, 0.067, 0.0149,\n0.0447, 0.0596],\nlast 10 vals [0.0596, 0.067, 0.0298, 0.0223, 0.0298, 0.0596, 0.067, 0.0521,\n0.0298, 0.0223] * (4.78 Wh * 1 h / 26.8 s)\n=\n26298 values from 2025-01-01 00:00:00+00:00 to 2028-01-01 18:00:00+00:00 in Wh:\nfirst 10 vals [43, 43, 28.7, 43, 9.56, 23.9, 43, 9.56, 28.7, 38.2],\nlast 10 vals [38.2, 43, 19.1, 14.3, 19.1, 38.2, 43, 33.5, 19.1, 14.3]", "x": 0.0, "y": 1350}, {"color": null, "id": "Hourly average occurrences across usage patterns", "label": "Hourly average\noccurrences across\nusage patterns", "shape": "dot", "size": 15, "title": "Hourly average occurrences across usage patterns\n=\nAverage hourly occurrences in usage pattern\n=\n26298 values from 2025-01-01 00:00:00+00:00 to 2028-01-01 18:00:00+00:00 in :\nfirst 10 vals [0.067, 0.067, 0.0447, 0.067, 0.0149, 0.0372, 0.067, 0.0149,\n0.0447, 0.0596],\nlast 10 vals [0.0596, 0.067, 0.0298, 0.0223, 0.0298, 0.0596, 0.067, 0.0521,\n0.0298, 0.0223]\n=\n26298 values from 2025-01-01 00:00:00+00:00 to 2028-01-01 18:00:00+00:00 in :\nfirst 10 vals [0.067, 0.067, 0.0447, 0.067, 0.0149, 0.0372, 0.067, 0.0149,\n0.0447, 0.0596],\nlast 10 vals [0.0596, 0.067, 0.0298, 0.0223, 0.0298, 0.0596, 0.067, 0.0521,\n0.0298, 0.0223]", "x": -300.0, "y": 1200}, {"color": null, "id": "Ecologits request_energy for claude-opus-4-5", "label": "Ecologits\nrequest_energy for\nclaude-opus-4-5", "shape": "dot", "size": 15, "title": "Ecologits request_energy for claude-opus-4-5\n=\nextraction (Ecologits impacts)\n=\nextraction ({\u0027model_active_parameter_count\u0027: 133.5, \u0027model_total_paramet...)\n=\n4.78 Wh", "x": 300.0, "y": 1200}, {"color": null, "id": "Ecologits generation_latency for claude-opus-4-5", "label": "Ecologits\ngeneration_latency\nfor claude-opus-4-5", "shape": "dot", "size": 15, "title": "Ecologits generation_latency for claude-opus-4-5\n=\nduplicate (Ecologits generation_latency for claude-opus-4-5)\n=\nduplicate (26.8 s)\n=\n26.8 s", "x": -375.0, "y": 750}]);
+                  nodes = new vis.DataSet([{"color": null, "id": "Instances energy for claude-opus-4-5", "label": "Instances energy for\nclaude-opus-4-5", "shape": "dot", "size": 15, "title": "Instances energy for claude-opus-4-5\n=\nHourly average occurrences across usage patterns * (Ecologits request_energy for\nclaude-opus-4-5 * one hour / Ecologits generation_latency for claude-opus-4-5)\n=\n26298 values from 2025-01-01 00:00:00+00:00 to 2028-01-01 18:00:00+00:00 in :\nfirst 10 vals [0.0298, 0.0149, 0.067, 0.0447, 0.0596, 0.067, 0.0298, 0.00745,\n0.0447, 0.0447],\nlast 10 vals [0.0223, 0.0223, 0.0521, 0.0223, 0.0149, 0.0298, 0.0149, 0.067,\n0.067, 0.067] * (4.78 Wh * 1 h / 26.8 s)\n=\n26298 values from 2025-01-01 00:00:00+00:00 to 2028-01-01 18:00:00+00:00 in Wh:\nfirst 10 vals [19.1, 9.56, 43, 28.7, 38.2, 43, 19.1, 4.78, 28.7, 28.7],\nlast 10 vals [14.3, 14.3, 33.5, 14.3, 9.56, 19.1, 9.56, 43, 43, 43]", "x": 0.0, "y": 1350}, {"color": null, "id": "Hourly average occurrences across usage patterns", "label": "Hourly average\noccurrences across\nusage patterns", "shape": "dot", "size": 15, "title": "Hourly average occurrences across usage patterns\n=\nAverage hourly occurrences in usage pattern\n=\n26298 values from 2025-01-01 00:00:00+00:00 to 2028-01-01 18:00:00+00:00 in :\nfirst 10 vals [0.0298, 0.0149, 0.067, 0.0447, 0.0596, 0.067, 0.0298, 0.00745,\n0.0447, 0.0447],\nlast 10 vals [0.0223, 0.0223, 0.0521, 0.0223, 0.0149, 0.0298, 0.0149, 0.067,\n0.067, 0.067]\n=\n26298 values from 2025-01-01 00:00:00+00:00 to 2028-01-01 18:00:00+00:00 in :\nfirst 10 vals [0.0298, 0.0149, 0.067, 0.0447, 0.0596, 0.067, 0.0298, 0.00745,\n0.0447, 0.0447],\nlast 10 vals [0.0223, 0.0223, 0.0521, 0.0223, 0.0149, 0.0298, 0.0149, 0.067,\n0.067, 0.067]", "x": -300.0, "y": 1200}, {"color": null, "id": "Ecologits request_energy for claude-opus-4-5", "label": "Ecologits\nrequest_energy for\nclaude-opus-4-5", "shape": "dot", "size": 15, "title": "Ecologits request_energy for claude-opus-4-5\n=\nextraction (Ecologits impacts)\n=\nextraction ({\u0027model_active_parameter_count\u0027: 133.5, \u0027model_total_paramet...)\n=\n4.78 Wh", "x": 300.0, "y": 1200}, {"color": null, "id": "Ecologits generation_latency for claude-opus-4-5", "label": "Ecologits\ngeneration_latency\nfor claude-opus-4-5", "shape": "dot", "size": 15, "title": "Ecologits generation_latency for claude-opus-4-5\n=\nduplicate (Ecologits generation_latency for claude-opus-4-5)\n=\nduplicate (26.8 s)\n=\n26.8 s", "x": -375.0, "y": 750}]);
                   edges = new vis.DataSet([{"arrows": "to", "from": "Hourly average occurrences across usage patterns", "to": "Instances energy for claude-opus-4-5"}, {"arrows": "to", "from": "Ecologits request_energy for claude-opus-4-5", "to": "Instances energy for claude-opus-4-5"}, {"arrows": "to", "from": "Ecologits generation_latency for claude-opus-4-5", "to": "Instances energy for claude-opus-4-5"}]);
 
                   nodeColors = {};

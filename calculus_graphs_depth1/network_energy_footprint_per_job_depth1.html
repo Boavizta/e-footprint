@@ -31,7 +31,7 @@
         </center>
         <style type="text/css">
 
-             #mynetwork_da9b0d {
+             #mynetwork_14556c {
                  width: 760px;
                  height: 300px;
                  background-color: #ffffff;
@@ -53,7 +53,7 @@
         <div class="card" style="width: 100%">
             
             
-            <div id="mynetwork_da9b0d" class="card-body"></div>
+            <div id="mynetwork_14556c" class="card-body"></div>
         </div>
 
         
@@ -83,12 +83,12 @@
 
               // This method is responsible for drawing the graph, returns the drawn network
               function drawGraph() {
-                  var container = document.getElementById('mynetwork_da9b0d');
+                  var container = document.getElementById('mynetwork_14556c');
 
                   
 
                   // parsing and collecting nodes and edges from the python
-                  nodes = new vis.DataSet([{"color": null, "id": "Generative AI model job network energy footprint", "label": "Generative AI model\njob network energy\nfootprint", "shape": "dot", "size": 15, "title": "Generative AI model job network energy footprint\n=\nHourly data transferred in usage pattern * bandwith energy intensity * Average\ncarbon intensity\n=\n26298 values from 2025-01-01 00:00:00+00:00 to 2028-01-01 18:00:00+00:00 in kB:\nfirst 10 vals [45, 45, 30, 45, 10, 25, 45, 10, 30, 40],\nlast 10 vals [40, 45, 20, 15, 20, 40, 45, 35, 20, 15] * 0.05 kWh/GB * 85 g/kWh\n=\n26298 values from 2025-01-01 00:00:00+00:00 to 2028-01-01 18:00:00+00:00 in mg:\nfirst 10 vals [0.191, 0.191, 0.127, 0.191, 0.0425, 0.106, 0.191, 0.0425, 0.127,\n0.17],\nlast 10 vals [0.17, 0.191, 0.085, 0.0637, 0.085, 0.17, 0.191, 0.149, 0.085,\n0.0637]", "x": 0.0, "y": 1350}, {"color": null, "id": "Hourly data transferred in usage pattern", "label": "Hourly data\ntransferred in usage\npattern", "shape": "dot", "size": 15, "title": "Hourly data transferred in usage pattern\n=\nAverage hourly occurrences in usage pattern * (Data transferred for\nclaude-opus-4-5 * one hour / Ecologits generation_latency for claude-opus-4-5)\n=\n26298 values from 2025-01-01 00:00:00+00:00 to 2028-01-01 18:00:00+00:00 in :\nfirst 10 vals [0.067, 0.067, 0.0447, 0.067, 0.0149, 0.0372, 0.067, 0.0149,\n0.0447, 0.0596],\nlast 10 vals [0.0596, 0.067, 0.0298, 0.0223, 0.0298, 0.0596, 0.067, 0.0521,\n0.0298, 0.0223] * (5 kB * 1 h / 26.8 s)\n=\n26298 values from 2025-01-01 00:00:00+00:00 to 2028-01-01 18:00:00+00:00 in kB:\nfirst 10 vals [45, 45, 30, 45, 10, 25, 45, 10, 30, 40],\nlast 10 vals [40, 45, 20, 15, 20, 40, 45, 35, 20, 15]", "x": -450.0, "y": 1200}, {"color": null, "id": "bandwith energy intensity", "label": "bandwith energy\nintensity", "shape": "dot", "size": 15, "title": "bandwith energy intensity = 0.05 kWh/GB", "x": 0.0, "y": 1200}, {"color": null, "id": "Average carbon intensity", "label": "Average carbon\nintensity", "shape": "dot", "size": 15, "title": "Average carbon intensity = 85 g/kWh", "x": 450.0, "y": 1200}]);
+                  nodes = new vis.DataSet([{"color": null, "id": "Generative AI model job network energy footprint", "label": "Generative AI model\njob network energy\nfootprint", "shape": "dot", "size": 15, "title": "Generative AI model job network energy footprint\n=\nHourly data transferred in usage pattern * bandwith energy intensity * Average\ncarbon intensity\n=\n26298 values from 2025-01-01 00:00:00+00:00 to 2028-01-01 18:00:00+00:00 in kB:\nfirst 10 vals [20, 10, 45, 30, 40, 45, 20, 5, 30, 30],\nlast 10 vals [15, 15, 35, 15, 10, 20, 10, 45, 45, 45] * 0.05 kWh/GB * 85 g/kWh\n=\n26298 values from 2025-01-01 00:00:00+00:00 to 2028-01-01 18:00:00+00:00 in mg:\nfirst 10 vals [0.085, 0.0425, 0.191, 0.127, 0.17, 0.191, 0.085, 0.0213, 0.127,\n0.127],\nlast 10 vals [0.0637, 0.0637, 0.149, 0.0637, 0.0425, 0.085, 0.0425, 0.191,\n0.191, 0.191]", "x": 0.0, "y": 1350}, {"color": null, "id": "Hourly data transferred in usage pattern", "label": "Hourly data\ntransferred in usage\npattern", "shape": "dot", "size": 15, "title": "Hourly data transferred in usage pattern\n=\nAverage hourly occurrences in usage pattern * (Data transferred for\nclaude-opus-4-5 * one hour / Ecologits generation_latency for claude-opus-4-5)\n=\n26298 values from 2025-01-01 00:00:00+00:00 to 2028-01-01 18:00:00+00:00 in :\nfirst 10 vals [0.0298, 0.0149, 0.067, 0.0447, 0.0596, 0.067, 0.0298, 0.00745,\n0.0447, 0.0447],\nlast 10 vals [0.0223, 0.0223, 0.0521, 0.0223, 0.0149, 0.0298, 0.0149, 0.067,\n0.067, 0.067] * (5 kB * 1 h / 26.8 s)\n=\n26298 values from 2025-01-01 00:00:00+00:00 to 2028-01-01 18:00:00+00:00 in kB:\nfirst 10 vals [20, 10, 45, 30, 40, 45, 20, 5, 30, 30],\nlast 10 vals [15, 15, 35, 15, 10, 20, 10, 45, 45, 45]", "x": -450.0, "y": 1200}, {"color": null, "id": "bandwith energy intensity", "label": "bandwith energy\nintensity", "shape": "dot", "size": 15, "title": "bandwith energy intensity = 0.05 kWh/GB", "x": 0.0, "y": 1200}, {"color": null, "id": "Average carbon intensity", "label": "Average carbon\nintensity", "shape": "dot", "size": 15, "title": "Average carbon intensity = 85 g/kWh", "x": 450.0, "y": 1200}]);
                   edges = new vis.DataSet([{"arrows": "to", "from": "Hourly data transferred in usage pattern", "to": "Generative AI model job network energy footprint"}, {"arrows": "to", "from": "bandwith energy intensity", "to": "Generative AI model job network energy footprint"}, {"arrows": "to", "from": "Average carbon intensity", "to": "Generative AI model job network energy footprint"}]);
 
                   nodeColors = {};
