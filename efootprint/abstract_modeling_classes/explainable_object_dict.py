@@ -7,6 +7,53 @@ from efootprint.abstract_modeling_classes.object_linked_to_modeling_obj import O
 from efootprint.abstract_modeling_classes.empty_explainable_object import EmptyExplainableObject
 
 
+def to_weighted_explainable_object_dict(input_value, weight_label: str = None) -> "ExplainableObjectDict":
+    """Normalize constructor sugar into an ExplainableObjectDict of dimensionless, non-negative weights.
+
+    Accepts None (empty dict), a list of keys (each entry weighs 1, duplicates accumulating), or a dict whose
+    values are either ExplainableObjects (passed through) or plain numbers (wrapped as
+    SourceValue(n * u.dimensionless), so they carry Sources.HYPOTHESIS provenance like any hand-declared input).
+    Wrapping happens only at this constructor boundary: ExplainableObjectDict.__setitem__ stays strict.
+    """
+    from efootprint.abstract_modeling_classes.source_objects import SourceValue
+    from efootprint.constants.units import u
+
+    if input_value is None:
+        items = []
+    elif isinstance(input_value, list):
+        accumulated_weights = {}
+        for entry in input_value:
+            accumulated_weights[entry] = accumulated_weights.get(entry, 0) + 1
+        items = accumulated_weights.items()
+    elif isinstance(input_value, dict):
+        items = input_value.items()
+    else:
+        raise ValueError(
+            f"Weighted dict inputs must be None, a list of keys or a dict, received {type(input_value)}")
+
+    output_dict = ExplainableObjectDict()
+    for key, value in items:
+        if isinstance(value, ExplainableObject):
+            weight = value
+        elif isinstance(value, (int, float)) and not isinstance(value, bool):
+            weight = SourceValue(value * u.dimensionless)
+            if weight_label is not None:
+                weight.set_label(weight_label)
+        else:
+            raise ValueError(
+                f"Weight for {getattr(key, 'name', key)} must be an ExplainableObject or a plain number, "
+                f"received {type(value)}")
+        if not weight.value.check("[]"):
+            raise ValueError(
+                f"Weight for {getattr(key, 'name', key)} should be dimensionless but has units {weight.value.units}")
+        if weight.value.magnitude < 0:
+            raise ValueError(
+                f"Weight for {getattr(key, 'name', key)} should be non-negative but is {weight.value.magnitude}")
+        output_dict[key] = weight
+
+    return output_dict
+
+
 class ExplainableObjectDict(ObjectLinkedToModelingObjBase, dict):
     """Dict that can be linked to a ModelingObject. Uses ObjectLinkedToModelingObjBase (not slotted)."""
 

@@ -3,11 +3,13 @@ from unittest.mock import MagicMock
 
 from efootprint.abstract_modeling_classes.contextual_modeling_object_attribute import ContextualModelingObjectDictKey
 from efootprint.abstract_modeling_classes.explainable_object_base_class import ExplainableObject
-from efootprint.abstract_modeling_classes.explainable_object_dict import ExplainableObjectDict
+from efootprint.abstract_modeling_classes.explainable_object_dict import (
+    ExplainableObjectDict, to_weighted_explainable_object_dict)
 from efootprint.abstract_modeling_classes.explainable_quantity import ExplainableQuantity
 from efootprint.abstract_modeling_classes.source_objects import SourceValue
 from efootprint.abstract_modeling_classes.empty_explainable_object import EmptyExplainableObject
 from efootprint.abstract_modeling_classes.modeling_object import ModelingObject
+from efootprint.constants.sources import Sources
 from efootprint.constants.units import u
 from tests.utils import create_mod_obj_mock
 
@@ -341,6 +343,87 @@ class TestExplainableObjectDictStructuralContext(unittest.TestCase):
         self.assertEqual(3, owner.input_dict[existing_child].value.magnitude)
         self.assertEqual(owner, owner.input_dict[existing_child].modeling_obj_container)
         self.assertEqual("input_dict", owner.input_dict[existing_child].attr_name_in_mod_obj_container)
+
+
+class TestToWeightedExplainableObjectDict(unittest.TestCase):
+
+    def setUp(self):
+        self.key_a = create_mod_obj_mock(ModelingObject, name="key_a", id="key_a")
+        self.key_b = create_mod_obj_mock(ModelingObject, name="key_b", id="key_b")
+
+    def test_none_returns_empty_explainable_object_dict(self):
+        result = to_weighted_explainable_object_dict(None)
+        self.assertIsInstance(result, ExplainableObjectDict)
+        self.assertEqual({}, result)
+
+    def test_list_entries_get_weight_one_and_duplicates_accumulate(self):
+        result = to_weighted_explainable_object_dict([self.key_a, self.key_b, self.key_b])
+        self.assertEqual([self.key_a, self.key_b], list(result.keys()))
+        self.assertEqual(1, result[self.key_a].value.magnitude)
+        self.assertEqual(2, result[self.key_b].value.magnitude)
+        self.assertTrue(result[self.key_b].value.check("[]"))
+
+    def test_plain_number_values_are_wrapped_as_dimensionless_hypothesis_source_values(self):
+        result = to_weighted_explainable_object_dict({self.key_a: 3, self.key_b: 0.5})
+        self.assertIsInstance(result[self.key_a], SourceValue)
+        self.assertEqual(3, result[self.key_a].value.magnitude)
+        self.assertEqual(0.5, result[self.key_b].value.magnitude)
+        self.assertTrue(result[self.key_a].value.check("[]"))
+        self.assertEqual(Sources.HYPOTHESIS, result[self.key_a].source)
+
+    def test_explainable_object_values_are_passed_through_unchanged(self):
+        weight = SourceValue(4 * u.dimensionless, label="hand-declared weight")
+        result = to_weighted_explainable_object_dict({self.key_a: weight})
+        self.assertIs(weight, result[self.key_a])
+        self.assertEqual("hand-declared weight", result[self.key_a].label)
+
+    def test_weight_label_is_applied_to_wrapped_values_only(self):
+        passthrough_weight = SourceValue(4 * u.dimensionless, label="my own label")
+        result = to_weighted_explainable_object_dict(
+            {self.key_a: 2, self.key_b: passthrough_weight}, weight_label="Times per step")
+        self.assertEqual("Times per step", result[self.key_a].label)
+        self.assertEqual("my own label", result[self.key_b].label)
+
+    def test_zero_weight_is_accepted(self):
+        result = to_weighted_explainable_object_dict({self.key_a: 0})
+        self.assertEqual(0, result[self.key_a].value.magnitude)
+
+    def test_negative_plain_number_raises(self):
+        with self.assertRaises(ValueError) as ctx:
+            to_weighted_explainable_object_dict({self.key_a: -1})
+        self.assertIn("non-negative", str(ctx.exception))
+
+    def test_negative_explainable_object_raises(self):
+        with self.assertRaises(ValueError):
+            to_weighted_explainable_object_dict({self.key_a: SourceValue(-2 * u.dimensionless)})
+
+    def test_non_dimensionless_explainable_object_raises(self):
+        with self.assertRaises(ValueError) as ctx:
+            to_weighted_explainable_object_dict({self.key_a: SourceValue(3 * u.kg)})
+        self.assertIn("dimensionless", str(ctx.exception))
+
+    def test_invalid_value_type_raises(self):
+        with self.assertRaises(ValueError):
+            to_weighted_explainable_object_dict({self.key_a: "3"})
+
+    def test_invalid_input_type_raises(self):
+        with self.assertRaises(ValueError):
+            to_weighted_explainable_object_dict(self.key_a)
+
+    def test_normalized_dict_keys_register_as_structural_relationship(self):
+        """A normalizer-built dict passed at construction registers its keys exactly like a hand-built dict:
+        the keys know their containing dict and gain a contextual dict-key container pointing at the owner."""
+        key = ModelingObjectForContainerTest("weighted_key")
+        owner = ModelingObjectWithInputDictForContainerTest(
+            "owner_of_weighted_dict", input_dict=to_weighted_explainable_object_dict([key, key]))
+
+        self.assertEqual([owner.input_dict], key.explainable_object_dicts_containers)
+        contextual_dict_keys = [container for container in key.contextual_modeling_obj_containers
+                                if isinstance(container, ContextualModelingObjectDictKey)]
+        self.assertEqual(1, len(contextual_dict_keys))
+        self.assertEqual(owner, contextual_dict_keys[0].modeling_obj_container)
+        self.assertEqual("input_dict", contextual_dict_keys[0].attr_name_in_mod_obj_container)
+        self.assertEqual(2, owner.input_dict[key].value.magnitude)
 
 
 if __name__ == "__main__":

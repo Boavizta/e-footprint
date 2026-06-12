@@ -267,6 +267,38 @@ class TestEdgeDeviceGroupUpdateEffectiveNbOfUnits(TestCase):
         self.assertTrue(root.effective_nb_of_units_within_root.value.check("[]"))
 
 
+class TestEdgeDeviceGroupConstructorSugar(TestCase):
+
+    def test_init_with_list_and_plain_number_sugar(self):
+        sub_group = make_group("Sub group for sugar")
+        mock_device = create_mod_obj_mock(EdgeDevice, "Device for sugar")
+        group = EdgeDeviceGroup(
+            "Group with sugar", sub_group_counts=[sub_group], edge_device_counts={mock_device: 3})
+
+        self.assertIsInstance(group.sub_group_counts, ExplainableObjectDict)
+        self.assertAlmostEqual(1.0, group.sub_group_counts[sub_group].value.magnitude)
+        self.assertAlmostEqual(3.0, group.edge_device_counts[mock_device].value.magnitude)
+        group.update_counts_validation()
+
+    def test_list_sugar_accumulates_duplicates(self):
+        mock_device = create_mod_obj_mock(EdgeDevice, "Duplicated device")
+        group = EdgeDeviceGroup("Group with duplicate sugar", edge_device_counts=[mock_device, mock_device])
+
+        self.assertAlmostEqual(2.0, group.edge_device_counts[mock_device].value.magnitude)
+
+    def test_plain_number_sugar_participates_in_recomputation(self):
+        """A device registered through constructor sugar is recomputed by later triggered dict mutations,
+        exactly like a device registered through a post-construction setitem."""
+        sugar_device = EdgeDevice.from_defaults("Device registered through sugar", components=[])
+        other_device = EdgeDevice.from_defaults("Device added after construction", components=[])
+        group = EdgeDeviceGroup("Group with sugar recomputation", edge_device_counts={sugar_device: 3})
+
+        group.edge_device_counts[other_device] = SourceValue(2 * u.dimensionless)
+
+        self.assertAlmostEqual(3.0, sugar_device.total_nb_of_units.value.magnitude)
+        self.assertAlmostEqual(2.0, other_device.total_nb_of_units.value.magnitude)
+
+
 class TestEdgeDeviceGroupTriggeredCountUpdates(TestCase):
 
     def test_existing_edge_device_count_update_recomputes_child_device_total(self):

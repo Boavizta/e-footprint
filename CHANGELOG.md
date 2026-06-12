@@ -4,6 +4,11 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](http://keepachangelog.com/)
 and this project adheres to [Semantic Versioning](http://semver.org/)
 
+## [Unreleased]
+
+### Added
+- `to_weighted_explainable_object_dict` normalizer in `explainable_object_dict.py`: turns constructor sugar (a list of keys with duplicates accumulating, or a dict with plain-number values) into an `ExplainableObjectDict` of dimensionless, non-negative `SourceValue` weights. `EdgeDeviceGroup` adopts it, so `EdgeDeviceGroup(name, sub_group_counts=[g1], edge_device_counts={d1: 3})` now works. `ExplainableObjectDict.__setitem__` stays strict; no serialized output changes.
+
 ## [V21.1.6]
 
 Attribution-logic revamp: footprint attribution is rebuilt on an atom model. Every impact source decomposes its footprint into atoms — elementary `(consumer, usage pattern)` value slices that sum exactly to the source's footprint — and a single fold over those atoms (`efootprint/core/attribution/`) replaces the legacy chain of per-object repartition weights.

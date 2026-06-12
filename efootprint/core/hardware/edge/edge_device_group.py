@@ -1,7 +1,8 @@
 from typing import List, TYPE_CHECKING
 
 from efootprint.abstract_modeling_classes.empty_explainable_object import EmptyExplainableObject
-from efootprint.abstract_modeling_classes.explainable_object_dict import ExplainableObjectDict
+from efootprint.abstract_modeling_classes.explainable_object_dict import (
+    ExplainableObjectDict, to_weighted_explainable_object_dict)
 from efootprint.abstract_modeling_classes.explainable_quantity import ExplainableQuantity
 from efootprint.abstract_modeling_classes.modeling_object import ModelingObject
 from efootprint.abstract_modeling_classes.modeling_update import ModelingUpdate
@@ -30,12 +31,9 @@ class EdgeDeviceGroup(ModelingObject):
                  sub_group_counts: ExplainableObjectDict["EdgeDeviceGroup"] = None,
                  edge_device_counts: ExplainableObjectDict["EdgeDevice"] = None):
         super().__init__(name)
-        if sub_group_counts is None:
-            sub_group_counts = ExplainableObjectDict()
-        if edge_device_counts is None:
-            edge_device_counts = ExplainableObjectDict()
-        self.sub_group_counts = ExplainableObjectDict(sub_group_counts)
-        self.edge_device_counts = ExplainableObjectDict(edge_device_counts)
+        self.sub_group_counts = to_weighted_explainable_object_dict(sub_group_counts, weight_label="Count in group")
+        self.edge_device_counts = to_weighted_explainable_object_dict(
+            edge_device_counts, weight_label="Count in group")
         self.counts_validation = EmptyExplainableObject()
         self.no_cycle_validation = EmptyExplainableObject()
         self.effective_nb_of_units_within_root = EmptyExplainableObject()
