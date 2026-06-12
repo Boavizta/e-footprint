@@ -704,7 +704,14 @@ def upgrade_version_20_to_21(system_dict, efootprint_classes_dict=None):
 def upgrade_version_21_to_22(system_dict, efootprint_classes_dict=None):
     """UsageJourney.uj_steps, UsageJourneyStep.jobs and RecurrentServerNeed.jobs become weighted dicts:
     the old id-lists upgrade to {id: count} dicts, duplicate entries (the old multiple-invocation idiom)
-    accumulating into their count."""
+    accumulating into their count.
+
+    Known approximation: collapsing duplicate uj_steps entries is lossy on timing. A step repeated in the
+    old list contributed one occupancy window and one job-firing delay per position; the weighted dict keeps
+    the step at its first position only, so its jobs all fire at that position's delay and non-adjacent
+    repeats lose their later positions. Journey duration and occupancy tiling are preserved; only the hourly
+    distribution of downstream loads can shift. Duplicate jobs entries upgrade losslessly (jobs always fired
+    at their step's start)."""
     from collections import Counter
 
     weighted_dict_attrs = {
@@ -717,9 +724,19 @@ def upgrade_version_21_to_22(system_dict, efootprint_classes_dict=None):
     for class_name, (attr_name, weight_label) in weighted_dict_attrs.items():
         for obj_dict in system_dict.get(class_name, {}).values():
             if isinstance(obj_dict.get(attr_name), list):
+                counts = Counter(obj_dict[attr_name])
+                if class_name == "UsageJourney":
+                    duplicate_step_ids = [step_id for step_id, count in counts.items() if count > 1]
+                    if duplicate_step_ids:
+                        logger.warning(
+                            f"Upgrading usage journey {obj_dict['id']}: steps {duplicate_step_ids} appeared "
+                            f"multiple times in uj_steps and are collapsed into a single weighted entry at their "
+                            f"first position. Their jobs now all fire at that position's delay, so the hourly "
+                            f"distribution of downstream loads may shift versus the pre-upgrade model "
+                            f"(totals and journey duration are unchanged).")
                 obj_dict[attr_name] = {
                     obj_id: SourceValue(count * u.dimensionless).set_label(weight_label).to_json()
-                    for obj_id, count in Counter(obj_dict[attr_name]).items()}
+                    for obj_id, count in counts.items()}
                 log_upgrade = True
 
     if log_upgrade:

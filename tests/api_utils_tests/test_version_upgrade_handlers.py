@@ -1073,6 +1073,18 @@ class TestVersionUpgradeHandlers(TestCase):
             {"job_1": {**weight_json, "value": 2.0, "label": "Times per occurrence"}},
             output_dict["RecurrentServerNeed"]["rsn_1"]["jobs"])
 
+    def test_upgrade_21_to_22_warns_when_collapsing_duplicate_uj_steps(self):
+        input_dict = {
+            "UsageJourney": {
+                "uj_1": {"name": "uj 1", "id": "uj_1", "uj_steps": ["step_1", "step_1", "step_2"]}},
+        }
+        with self.assertLogs("footprint-model", level="WARNING") as logs:
+            output_dict = upgrade_version_21_to_22(copy.deepcopy(input_dict))
+
+        self.assertTrue(any("uj_1" in message and "step_1" in message for message in logs.output))
+        self.assertEqual(2.0, output_dict["UsageJourney"]["uj_1"]["uj_steps"]["step_1"]["value"])
+        self.assertEqual(1.0, output_dict["UsageJourney"]["uj_1"]["uj_steps"]["step_2"]["value"])
+
     def test_upgrade_21_to_22_leaves_dict_shaped_attributes_untouched(self):
         already_dict = {"step_1": {"value": 3.0, "unit": "dimensionless", "label": "Times per journey",
                                    "source": "hypothesis"}}
