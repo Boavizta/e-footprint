@@ -30,11 +30,13 @@ class UsageJourneyStep(ModelingObject):
 
     default_values =  {"user_time_spent": SourceValue(1 * u.min)}
 
+    weight_labels = {"jobs": "Times per step"}
+
     def __init__(self, name: str, user_time_spent: ExplainableQuantity, jobs: WeightedExplainableObjectDict[JobBase]):
         super().__init__(name)
         self.user_time_spent = user_time_spent
         self.user_time_spent.set_label(f"Time spent by user")
-        self.jobs = to_weighted_explainable_object_dict(jobs, weight_label="Times per step")
+        self.jobs = to_weighted_explainable_object_dict(jobs, weight_label=self.weight_labels["jobs"])
 
     @property
     def modeling_objects_whose_attributes_depend_directly_on_me(self) -> List["UsageJourney"] | List[JobBase]:

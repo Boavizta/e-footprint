@@ -209,6 +209,10 @@ class ModelingObject(metaclass=ABCAfterInitMeta):
 
     default_values = {}
 
+    # Static labels for weighted dict relationship attributes, keyed by attr name. Single source of truth
+    # for the wording consumers (e.g. the web interface) must use when building weight entries themselves.
+    weight_labels = {}
+
     list_values =  {}
 
     conditional_list_values =  {}

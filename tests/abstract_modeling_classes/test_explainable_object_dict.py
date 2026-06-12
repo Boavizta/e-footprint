@@ -459,5 +459,34 @@ class TestWeightedExplainableObjectDict(unittest.TestCase):
         self.assertEqual(5, self.weighted_dict[self.key].value.magnitude)
 
 
+class TestWeightLabelsClassMetadata(unittest.TestCase):
+    def test_every_weighted_dict_init_param_has_a_weight_label(self):
+        """weight_labels is the single source of truth external consumers rely on for weight wording,
+        so every WeightedExplainableObjectDict init annotation must have an entry, and vice versa."""
+        from typing import get_origin
+
+        from efootprint.all_classes_in_order import ALL_EFOOTPRINT_CLASSES_DICT
+        from efootprint.utils.tools import get_init_signature_params
+
+        for efootprint_class in ALL_EFOOTPRINT_CLASSES_DICT.values():
+            weighted_dict_attrs = [
+                attr_name for attr_name, param in get_init_signature_params(efootprint_class).items()
+                if isinstance(get_origin(param.annotation), type)
+                and issubclass(get_origin(param.annotation), WeightedExplainableObjectDict)
+            ]
+            self.assertEqual(
+                sorted(weighted_dict_attrs), sorted(efootprint_class.weight_labels),
+                f"{efootprint_class.__name__}.weight_labels must cover exactly its weighted dict init params.")
+
+    def test_constructor_weight_labels_match_class_metadata(self):
+        from efootprint.core.usage.usage_journey import UsageJourney
+        from efootprint.core.usage.usage_journey_step import UsageJourneyStep
+
+        step = UsageJourneyStep.from_defaults("step", jobs={})
+        journey = UsageJourney("journey", uj_steps={step: 2})
+        self.assertEqual(
+            UsageJourney.weight_labels["uj_steps"], journey.uj_steps[step].label)
+
+
 if __name__ == "__main__":
     unittest.main()

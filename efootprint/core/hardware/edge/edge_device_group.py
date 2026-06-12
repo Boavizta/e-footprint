@@ -27,13 +27,16 @@ class EdgeDeviceGroup(ModelingObject):
 
     default_values = {}
 
+    weight_labels = {"sub_group_counts": "Count in group", "edge_device_counts": "Count in group"}
+
     def __init__(self, name: str,
                  sub_group_counts: WeightedExplainableObjectDict["EdgeDeviceGroup"] = None,
                  edge_device_counts: WeightedExplainableObjectDict["EdgeDevice"] = None):
         super().__init__(name)
-        self.sub_group_counts = to_weighted_explainable_object_dict(sub_group_counts, weight_label="Count in group")
+        self.sub_group_counts = to_weighted_explainable_object_dict(
+            sub_group_counts, weight_label=self.weight_labels["sub_group_counts"])
         self.edge_device_counts = to_weighted_explainable_object_dict(
-            edge_device_counts, weight_label="Count in group")
+            edge_device_counts, weight_label=self.weight_labels["edge_device_counts"])
         self.counts_validation = EmptyExplainableObject()
         self.no_cycle_validation = EmptyExplainableObject()
         self.effective_nb_of_units_within_root = EmptyExplainableObject()

@@ -25,9 +25,11 @@ class UsageJourney(ModelingObject):
             "The journey duration is the sum of step durations weighted by their number of occurrences."),
     }
 
+    weight_labels = {"uj_steps": "Times per journey"}
+
     def __init__(self, name: str, uj_steps: WeightedExplainableObjectDict[UsageJourneyStep]):
         super().__init__(name)
-        self.uj_steps = to_weighted_explainable_object_dict(uj_steps, weight_label="Times per journey")
+        self.uj_steps = to_weighted_explainable_object_dict(uj_steps, weight_label=self.weight_labels["uj_steps"])
 
         self.duration = EmptyExplainableObject()
         self.nb_usage_journeys_in_parallel_per_usage_pattern = ExplainableObjectDict()

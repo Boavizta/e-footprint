@@ -51,13 +51,15 @@ class RecurrentServerNeed(ModelingObject):
             np.array([1.0] * 168, dtype=np.float32) * u.occurrence, label="Default recurrent volume per edge device")
     }
 
+    weight_labels = {"jobs": "Times per occurrence"}
+
     def __init__(self, name: str, edge_device: EdgeDevice,
                  recurrent_volume_per_edge_device: ExplainableRecurrentQuantities,
                  jobs: WeightedExplainableObjectDict[JobBase]):
         super().__init__(name)
         self.edge_device = edge_device
         self.recurrent_volume_per_edge_device = recurrent_volume_per_edge_device
-        self.jobs = to_weighted_explainable_object_dict(jobs, weight_label="Times per occurrence")
+        self.jobs = to_weighted_explainable_object_dict(jobs, weight_label=self.weight_labels["jobs"])
 
         self.recurrent_need_validation = EmptyExplainableObject()
         self.unitary_hourly_volume_per_usage_pattern = ExplainableObjectDict()
