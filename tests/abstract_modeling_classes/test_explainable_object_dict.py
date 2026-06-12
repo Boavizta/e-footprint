@@ -406,6 +406,11 @@ class TestToWeightedExplainableObjectDict(unittest.TestCase):
         with self.assertRaises(ValueError):
             to_weighted_explainable_object_dict({self.key_a: "3"})
 
+    def test_non_quantity_explainable_object_value_raises(self):
+        with self.assertRaises(ValueError) as ctx:
+            to_weighted_explainable_object_dict({self.key_a: EmptyExplainableObject()})
+        self.assertIn("ExplainableQuantity", str(ctx.exception))
+
     def test_invalid_input_type_raises(self):
         with self.assertRaises(ValueError):
             to_weighted_explainable_object_dict(self.key_a)

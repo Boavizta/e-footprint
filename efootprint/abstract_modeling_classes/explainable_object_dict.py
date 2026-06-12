@@ -1,5 +1,8 @@
+from collections import Counter
+
 from efootprint.abstract_modeling_classes.explainable_object_base_class import (
     ExplainableObject, retrieve_update_function_from_mod_obj_and_attr_name)
+from efootprint.abstract_modeling_classes.explainable_quantity import ExplainableQuantity
 from efootprint.abstract_modeling_classes.contextual_modeling_object_attribute import ContextualModelingObjectDictKey
 from efootprint.abstract_modeling_classes.modeling_object import ModelingObject
 from efootprint.abstract_modeling_classes.object_linked_to_modeling_obj import ObjectLinkedToModelingObjBase
@@ -11,7 +14,7 @@ def to_weighted_explainable_object_dict(input_value, weight_label: str = None) -
     """Normalize constructor sugar into an ExplainableObjectDict of dimensionless, non-negative weights.
 
     Accepts None (empty dict), a list of keys (each entry weighs 1, duplicates accumulating), or a dict whose
-    values are either ExplainableObjects (passed through) or plain numbers (wrapped as
+    values are either ExplainableQuantities (passed through) or plain numbers (wrapped as
     SourceValue(n * u.dimensionless), so they carry Sources.HYPOTHESIS provenance like any hand-declared input).
     Wrapping happens only at this constructor boundary: ExplainableObjectDict.__setitem__ stays strict.
     """
@@ -21,10 +24,7 @@ def to_weighted_explainable_object_dict(input_value, weight_label: str = None) -
     if input_value is None:
         items = []
     elif isinstance(input_value, list):
-        accumulated_weights = {}
-        for entry in input_value:
-            accumulated_weights[entry] = accumulated_weights.get(entry, 0) + 1
-        items = accumulated_weights.items()
+        items = Counter(input_value).items()
     elif isinstance(input_value, dict):
         items = input_value.items()
     else:
@@ -33,7 +33,7 @@ def to_weighted_explainable_object_dict(input_value, weight_label: str = None) -
 
     output_dict = ExplainableObjectDict()
     for key, value in items:
-        if isinstance(value, ExplainableObject):
+        if isinstance(value, ExplainableQuantity):
             weight = value
         elif isinstance(value, (int, float)) and not isinstance(value, bool):
             weight = SourceValue(value * u.dimensionless)
@@ -41,7 +41,7 @@ def to_weighted_explainable_object_dict(input_value, weight_label: str = None) -
                 weight.set_label(weight_label)
         else:
             raise ValueError(
-                f"Weight for {getattr(key, 'name', key)} must be an ExplainableObject or a plain number, "
+                f"Weight for {getattr(key, 'name', key)} must be an ExplainableQuantity or a plain number, "
                 f"received {type(value)}")
         if not weight.value.check("[]"):
             raise ValueError(
