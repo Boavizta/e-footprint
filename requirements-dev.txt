@@ -92,7 +92,7 @@ pycparser==3.0 ; python_version >= "3.12" and python_version < "4.0" and impleme
 pygments==2.20.0 ; python_version >= "3.12" and python_version < "4.0"
 pymdown-extensions==10.21.3 ; python_version >= "3.12" and python_version < "4.0"
 pytest-cov==7.1.0 ; python_version >= "3.12" and python_version < "4.0"
-pytest==9.0.3 ; python_version >= "3.12" and python_version < "4.0"
+pytest==9.1.0 ; python_version >= "3.12" and python_version < "4.0"
 python-dateutil==2.9.0.post0 ; python_version >= "3.12" and python_version < "4.0"
 python-json-logger==4.1.0 ; python_version >= "3.12" and python_version < "4.0"
 pywinpty==3.0.5 ; python_version >= "3.12" and python_version < "4.0" and os_name == "nt"

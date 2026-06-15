@@ -4,7 +4,7 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](http://keepachangelog.com/)
 and this project adheres to [Semantic Versioning](http://semver.org/)
 
-## [Unreleased]
+## [V22.0.0]
 
 ### Changed
 - **Step and job multipliers**: `UsageJourney.uj_steps`, `UsageJourneyStep.jobs` and `RecurrentServerNeed.jobs` become weighted `ExplainableObjectDict`s (same attribute names). The weight is how many times the related object occurs per parent occurrence ("Times per journey" / "Times per step" / "Times per occurrence"): journey duration is the weighted sum of step times, step occupancy windows span weight × `user_time_spent`, and job occurrences compose step weight × job multiplier (web side) and need occurrence × job multiplier (edge side). Constructors keep accepting list sugar (each entry weighs 1, duplicates accumulating) and plain-number dict values (`{job: 3}`), which replaces the duplicate-entry idiom. Pre-feature JSONs upgrade automatically (`upgrade_version_21_to_22`: id-lists → weight dicts, duplicates accumulating into their count); JSON format major version bumps to 22. With all weights at 1, computed results are identical to pre-change behaviour. Known timing deviation: a pre-feature model that listed the same *step* several times in `uj_steps` upgrades to a single weighted entry at the step's first position, so its jobs all fire at that position's delay — journey duration and occupancy totals are unchanged but the hourly distribution of downstream loads can shift; the upgrade logs a warning when this collapse happens.

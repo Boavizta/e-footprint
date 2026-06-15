@@ -42,7 +42,7 @@ class TestJsonToSystem(IntegrationTestBaseClass):
 
         class_obj_dict, flat_obj_dict, _ = json_to_system(full_dict)
 
-    def test_pre_feature_json_with_list_relationships_loads_as_weight_one_dicts(self):
+    def test_serialized_system_with_uj_steps_as_list_relationships_loads_as_weight_one_dicts(self):
         from efootprint.abstract_modeling_classes.explainable_object_dict import WeightedExplainableObjectDict
 
         class_obj_dict, flat_obj_dict, _ = json_to_system(deepcopy(self.base_system_dict))
