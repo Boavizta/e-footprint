@@ -89,6 +89,20 @@ class TestWeightedRelationships(TestCase):
         self.assertIn("Times per journey", journey.duration.explain())
         self.assertIn("Times per step", job.hourly_occurrences_per_usage_pattern[usage_pattern].explain())
 
+    def test_reordering_uj_steps_is_applied_not_skipped(self):
+        """Regression: reordering uj_steps (same steps and weights, only the order changes) must be
+        applied. Dict equality ignores key order, so ModelingUpdate used to skip the swap as a no-op
+        and the new order was silently dropped."""
+        system, journey, step_1, step_2, job = build_system(
+            lambda s1, s2: {s1: 1, s2: 1}, lambda j: {j: 1}, "reorder")
+        self.assertEqual([step_1, step_2], list(journey.uj_steps.keys()))
+
+        reordered = to_weighted_explainable_object_dict({step_2: 1, step_1: 1})
+        ModelingUpdate([[journey.uj_steps, reordered]])
+
+        self.assertEqual([step_2, step_1], list(journey.uj_steps.keys()))
+        self.assertEqual([1, 1], [weight.magnitude for weight in journey.uj_steps.values()])
+
     def test_simulation_dict_change_preserves_weight_linking_through_set_and_reset(self):
         """Regression test for the simulation ancestors-replaced-by-copies exclusion: weights carried by a
         directly-changed dict must not be replaced by copies — the dict swap manages their linking — so

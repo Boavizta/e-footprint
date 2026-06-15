@@ -4,6 +4,11 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](http://keepachangelog.com/)
 and this project adheres to [Semantic Versioning](http://semver.org/)
 
+## [V22.0.1]
+
+### Fixed
+- Reordering the keys of an `ExplainableObjectDict` (e.g. `UsageJourney.uj_steps`) is no longer silently dropped. `ModelingUpdate` skips updates whose new value equals the old one, but `dict` equality ignores key order, so a pure reorder (same keys, same weights) looked like a no-op and the new order was never applied. The skip check now also compares key order for dict values.
+
 ## [V22.0.0]
 
 ### Changed

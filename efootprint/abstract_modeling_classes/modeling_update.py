@@ -149,7 +149,12 @@ class ModelingUpdate:
                     f" got {old_value} of type {type(old_value)} trying to be set to an object "
                     f"of type {type(new_value)}")
 
-            if old_value == new_value:
+            values_are_equal = old_value == new_value
+            if values_are_equal and isinstance(old_value, dict) and isinstance(new_value, dict):
+                # dict equality ignores key order, but order is meaningful for ExplainableObjectDicts
+                # (e.g. usage journey step order), so a pure reorder is a real change, not a no-op.
+                values_are_equal = list(old_value.keys()) == list(new_value.keys())
+            if values_are_equal:
                 if old_value is new_value:
                     logger.warning(
                         f"{old_value.id} is updated to itself. "
