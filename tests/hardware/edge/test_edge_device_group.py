@@ -27,7 +27,6 @@ class TestEdgeDeviceGroupInit(TestCase):
         self.assertEqual("My Group", group.name)
         self.assertIsInstance(group.sub_group_counts, ExplainableObjectDict)
         self.assertIsInstance(group.edge_device_counts, ExplainableObjectDict)
-        self.assertIsInstance(group.counts_validation, EmptyExplainableObject)
         self.assertIsInstance(group.effective_nb_of_units_within_root, EmptyExplainableObject)
 
     def test_init_with_provided_empty_dicts(self):
@@ -129,6 +128,8 @@ class TestEdgeDeviceGroupFindRootGroups(TestCase):
 
 
 class TestEdgeDeviceGroupCountsValidation(TestCase):
+    """The dimensionless / non-negative count invariant is enforced by WeightedExplainableObjectDict.__setitem__,
+    which every mutation path (construction, set, ModelingUpdate value replacement, JSON load) routes through."""
 
     def setUp(self):
         self.group = make_group("Group")
@@ -136,42 +137,29 @@ class TestEdgeDeviceGroupCountsValidation(TestCase):
     def test_valid_dimensionless_count(self):
         mock_device = create_mod_obj_mock(EdgeDevice, "Dev")
         self.group.edge_device_counts[mock_device] = SourceValue(5 * u.dimensionless)
-        self.group.update_counts_validation()
-        self.assertIsInstance(self.group.counts_validation, EmptyExplainableObject)
 
     def test_zero_count_is_valid(self):
         mock_device = create_mod_obj_mock(EdgeDevice, "Dev")
         self.group.edge_device_counts[mock_device] = SourceValue(0 * u.dimensionless)
-        self.group.update_counts_validation()
 
-    # Invalid weights can no longer enter through __setitem__ (WeightedExplainableObjectDict validates on set),
-    # so the eager validator's failure paths are staged with raw dict.__setitem__, mimicking the
-    # ModelingUpdate value-replacement path that bypasses __setitem__.
     def test_non_dimensionless_count_raises(self):
         mock_device = create_mod_obj_mock(EdgeDevice, "Dev")
-        dict.__setitem__(self.group.edge_device_counts, mock_device, SourceValue(5 * u.kg))
         with self.assertRaises(ValueError):
-            self.group.update_counts_validation()
+            self.group.edge_device_counts[mock_device] = SourceValue(5 * u.kg)
 
     def test_negative_count_raises(self):
         mock_device = create_mod_obj_mock(EdgeDevice, "Dev")
-        dict.__setitem__(self.group.edge_device_counts, mock_device, SourceValue(-1 * u.dimensionless))
         with self.assertRaises(ValueError):
-            self.group.update_counts_validation()
+            self.group.edge_device_counts[mock_device] = SourceValue(-1 * u.dimensionless)
 
     def test_sub_group_non_dimensionless_raises(self):
         child = make_group("Child")
-        dict.__setitem__(self.group.sub_group_counts, child, SourceValue(3 * u.kg))
         with self.assertRaises(ValueError):
-            self.group.update_counts_validation()
+            self.group.sub_group_counts[child] = SourceValue(3 * u.kg)
 
     def test_sub_group_valid_count(self):
         child = make_group("Child")
         self.group.sub_group_counts[child] = SourceValue(3 * u.dimensionless)
-        self.group.update_counts_validation()
-
-    def test_empty_counts_passes_validation(self):
-        self.group.update_counts_validation()
 
 
 class TestEdgeDeviceGroupNoCycleValidation(TestCase):
@@ -282,7 +270,6 @@ class TestEdgeDeviceGroupConstructorSugar(TestCase):
         self.assertIsInstance(group.sub_group_counts, ExplainableObjectDict)
         self.assertAlmostEqual(1.0, group.sub_group_counts[sub_group].value.magnitude)
         self.assertAlmostEqual(3.0, group.edge_device_counts[mock_device].value.magnitude)
-        group.update_counts_validation()
 
     def test_count_dicts_are_weighted_dicts_enforcing_invariants_on_mutation(self):
         mock_device = create_mod_obj_mock(EdgeDevice, "Device with invalid count update")

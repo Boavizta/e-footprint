@@ -2,7 +2,7 @@ from typing import List, TYPE_CHECKING
 
 from efootprint.abstract_modeling_classes.empty_explainable_object import EmptyExplainableObject
 from efootprint.abstract_modeling_classes.explainable_object_dict import (
-    ExplainableObjectDict, WeightedExplainableObjectDict, to_weighted_explainable_object_dict, validate_weight)
+    ExplainableObjectDict, WeightedExplainableObjectDict, to_weighted_explainable_object_dict)
 from efootprint.abstract_modeling_classes.explainable_quantity import ExplainableQuantity
 from efootprint.abstract_modeling_classes.modeling_object import ModelingObject
 from efootprint.abstract_modeling_classes.modeling_update import ModelingUpdate
@@ -37,7 +37,6 @@ class EdgeDeviceGroup(ModelingObject):
             sub_group_counts, weight_label=self.weight_labels["sub_group_counts"])
         self.edge_device_counts = to_weighted_explainable_object_dict(
             edge_device_counts, weight_label=self.weight_labels["edge_device_counts"])
-        self.counts_validation = EmptyExplainableObject()
         self.no_cycle_validation = EmptyExplainableObject()
         self.effective_nb_of_units_within_root = EmptyExplainableObject()
 
@@ -52,7 +51,7 @@ class EdgeDeviceGroup(ModelingObject):
         # Cycles are structurally impossible (a group cannot be its own ancestor).
         return list(self.sub_group_counts.keys()) + list(self.edge_device_counts.keys())
 
-    calculated_attributes = ["counts_validation", "no_cycle_validation", "effective_nb_of_units_within_root"]
+    calculated_attributes = ["no_cycle_validation", "effective_nb_of_units_within_root"]
 
     def _find_parent_groups(self) -> List["EdgeDeviceGroup"]:
         from efootprint.abstract_modeling_classes.contextual_modeling_object_attribute import (
@@ -104,12 +103,6 @@ class EdgeDeviceGroup(ModelingObject):
             if sub_group in sub_group._find_all_ancestor_groups():
                 raise ValueError(f"Cycle detected: {sub_group.name} is its own ancestor via {self.name}.")
         self.no_cycle_validation = EmptyExplainableObject()
-
-    def update_counts_validation(self):
-        """Validates that every count in this group is dimensionless and non-negative."""
-        for key, count in list(self.sub_group_counts.items()) + list(self.edge_device_counts.items()):
-            validate_weight(key, count)
-        self.counts_validation = EmptyExplainableObject()
 
     def update_effective_nb_of_units_within_root(self):
         """How many copies of this group exist when the hierarchy is unrolled from the root group: 1 for a root group, otherwise the sum across each parent of (parent's effective count) times (count of this group within that parent)."""
