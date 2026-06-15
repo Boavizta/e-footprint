@@ -3263,8 +3263,7 @@
 <p>Wall-clock time the user spends on this step (during which her device is powered on).</p>
 <p>Unit: minute.</p>
 <h3 id="jobs">jobs</h3>
-<p><a href="../Job/">Job</a>s triggered on the server side during this step. Multiple jobs can fire per step; the same <a href="../Job/">Job</a> can appear in several steps.</p>
-<p>A list of <a href="../EcoLogitsGenAIExternalAPIJob/">EcoLogitsGenAIExternalAPIJobs</a>.</p>
+<p>Mapping from <a href="../Job/">Job</a> to how many times it is triggered on the server side during one occurrence of this step. The same <a href="../Job/">Job</a> can appear in several steps, with its own count in each.</p>
 <h2 id="backwards-links">Backwards links</h2>
 <ul>
 <li><a href="../UsageJourney/">UsageJourney</a></li>

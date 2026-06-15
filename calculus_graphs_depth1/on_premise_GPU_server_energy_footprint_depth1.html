@@ -31,7 +31,7 @@
         </center>
         <style type="text/css">
 
-             #mynetwork_e98208 {
+             #mynetwork_7384eb {
                  width: 760px;
                  height: 300px;
                  background-color: #ffffff;
@@ -53,7 +53,7 @@
         <div class="card" style="width: 100%">
             
             
-            <div id="mynetwork_e98208" class="card-body"></div>
+            <div id="mynetwork_7384eb" class="card-body"></div>
         </div>
 
         
@@ -83,12 +83,12 @@
 
               // This method is responsible for drawing the graph, returns the drawn network
               function drawGraph() {
-                  var container = document.getElementById('mynetwork_e98208');
+                  var container = document.getElementById('mynetwork_7384eb');
 
                   
 
                   // parsing and collecting nodes and edges from the python
-                  nodes = new vis.DataSet([{"color": null, "id": "Hourly energy footprint", "label": "Hourly energy\nfootprint", "shape": "dot", "size": 15, "title": "Hourly energy footprint\n=\nHourly idle energy footprint + Hourly load energy footprint\n=\n26298 values from 2025-01-01 00:00:00+00:00 to 2028-01-01 18:00:00+00:00 in g:\nfirst 10 vals [24, 24, 24, 24, 24, 24, 24, 24, 24, 24],\nlast 10 vals [24, 24, 24, 24, 24, 24, 24, 24, 24, 24] + 26298 values from\n2025-01-01 00:00:00+00:00 to 2028-01-01 18:00:00+00:00 in mg:\nfirst 10 vals [51.9, 25.9, 117, 77.8, 104, 117, 51.9, 13, 77.8, 77.8],\nlast 10 vals [38.9, 38.9, 90.7, 38.9, 25.9, 51.9, 25.9, 117, 117, 117]\n=\n26298 values from 2025-01-01 00:00:00+00:00 to 2028-01-01 18:00:00+00:00 in g:\nfirst 10 vals [24.1, 24, 24.1, 24.1, 24.1, 24.1, 24.1, 24, 24.1, 24.1],\nlast 10 vals [24, 24, 24.1, 24, 24, 24.1, 24, 24.1, 24.1, 24.1]", "x": 0.0, "y": 1500}, {"color": null, "id": "Hourly idle energy footprint", "label": "Hourly idle energy\nfootprint", "shape": "dot", "size": 15, "title": "Hourly idle energy footprint\n=\nHourly number of instances * Idle power * PUE * one hour * Average carbon\nintensity of electricity\n=\n26298 values from 2025-01-01 00:00:00+00:00 to 2028-01-01 18:00:00+00:00 in :\nfirst 10 vals [1, 1, 1, 1, 1, 1, 1, 1, 1, 1],\nlast 10 vals [1, 1, 1, 1, 1, 1, 1, 1, 1, 1] * 200 W * 1.2 * 1 h * 100 g/kWh\n=\n26298 values from 2025-01-01 00:00:00+00:00 to 2028-01-01 18:00:00+00:00 in g:\nfirst 10 vals [24, 24, 24, 24, 24, 24, 24, 24, 24, 24],\nlast 10 vals [24, 24, 24, 24, 24, 24, 24, 24, 24, 24]", "x": -450.0, "y": 1350}, {"color": null, "id": "Hourly load energy footprint", "label": "Hourly load energy\nfootprint", "shape": "dot", "size": 15, "title": "Hourly load energy footprint\n=\nHourly raw number of instances * (Power - Idle power) * PUE * one hour * Average\ncarbon intensity of electricity\n=\n26298 values from 2025-01-01 00:00:00+00:00 to 2028-01-01 18:00:00+00:00 in :\nfirst 10 vals [0.000309, 0.000154, 0.000694, 0.000463, 0.000617, 0.000694,\n0.000309, 0.0000772, 0.000463, 0.000463],\nlast 10 vals [0.000231, 0.000231, 0.00054, 0.000231, 0.000154, 0.000309,\n0.000154, 0.000694, 0.000694, 0.000694] * (1.6 kW - 200 W) * 1.2 * 1 h * 100\ng/kWh\n=\n26298 values from 2025-01-01 00:00:00+00:00 to 2028-01-01 18:00:00+00:00 in mg:\nfirst 10 vals [51.9, 25.9, 117, 77.8, 104, 117, 51.9, 13, 77.8, 77.8],\nlast 10 vals [38.9, 38.9, 90.7, 38.9, 25.9, 51.9, 25.9, 117, 117, 117]", "x": 450.0, "y": 1350}]);
+                  nodes = new vis.DataSet([{"color": null, "id": "Hourly energy footprint", "label": "Hourly energy\nfootprint", "shape": "dot", "size": 15, "title": "Hourly energy footprint\n=\nHourly idle energy footprint + Hourly load energy footprint\n=\n26298 values from 2025-01-01 00:00:00+00:00 to 2028-01-01 18:00:00+00:00 in g:\nfirst 10 vals [24, 24, 24, 24, 24, 24, 24, 24, 24, 24],\nlast 10 vals [24, 24, 24, 24, 24, 24, 24, 24, 24, 24] + 26298 values from\n2025-01-01 00:00:00+00:00 to 2028-01-01 18:00:00+00:00 in mg:\nfirst 10 vals [64.8, 77.8, 51.9, 38.9, 13, 38.9, 51.9, 64.8, 64.8, 90.7],\nlast 10 vals [51.9, 25.9, 117, 51.9, 51.9, 117, 13, 13, 51.9, 104]\n=\n26298 values from 2025-01-01 00:00:00+00:00 to 2028-01-01 18:00:00+00:00 in g:\nfirst 10 vals [24.1, 24.1, 24.1, 24, 24, 24, 24.1, 24.1, 24.1, 24.1],\nlast 10 vals [24.1, 24, 24.1, 24.1, 24.1, 24.1, 24, 24, 24.1, 24.1]", "x": 0.0, "y": 1500}, {"color": null, "id": "Hourly idle energy footprint", "label": "Hourly idle energy\nfootprint", "shape": "dot", "size": 15, "title": "Hourly idle energy footprint\n=\nHourly number of instances * Idle power * PUE * one hour * Average carbon\nintensity of electricity\n=\n26298 values from 2025-01-01 00:00:00+00:00 to 2028-01-01 18:00:00+00:00 in :\nfirst 10 vals [1, 1, 1, 1, 1, 1, 1, 1, 1, 1],\nlast 10 vals [1, 1, 1, 1, 1, 1, 1, 1, 1, 1] * 200 W * 1.2 * 1 h * 100 g/kWh\n=\n26298 values from 2025-01-01 00:00:00+00:00 to 2028-01-01 18:00:00+00:00 in g:\nfirst 10 vals [24, 24, 24, 24, 24, 24, 24, 24, 24, 24],\nlast 10 vals [24, 24, 24, 24, 24, 24, 24, 24, 24, 24]", "x": -450.0, "y": 1350}, {"color": null, "id": "Hourly load energy footprint", "label": "Hourly load energy\nfootprint", "shape": "dot", "size": 15, "title": "Hourly load energy footprint\n=\nHourly raw number of instances * (Power - Idle power) * PUE * one hour * Average\ncarbon intensity of electricity\n=\n26298 values from 2025-01-01 00:00:00+00:00 to 2028-01-01 18:00:00+00:00 in :\nfirst 10 vals [0.000386, 0.000463, 0.000309, 0.000231, 0.0000772, 0.000231,\n0.000309, 0.000386, 0.000386, 0.00054],\nlast 10 vals [0.000309, 0.000154, 0.000694, 0.000309, 0.000309, 0.000694,\n0.0000772, 0.0000772, 0.000309, 0.000617] * (1.6 kW - 200 W) * 1.2 * 1 h * 100\ng/kWh\n=\n26298 values from 2025-01-01 00:00:00+00:00 to 2028-01-01 18:00:00+00:00 in mg:\nfirst 10 vals [64.8, 77.8, 51.9, 38.9, 13, 38.9, 51.9, 64.8, 64.8, 90.7],\nlast 10 vals [51.9, 25.9, 117, 51.9, 51.9, 117, 13, 13, 51.9, 104]", "x": 450.0, "y": 1350}]);
                   edges = new vis.DataSet([{"arrows": "to", "from": "Hourly idle energy footprint", "to": "Hourly energy footprint"}, {"arrows": "to", "from": "Hourly load energy footprint", "to": "Hourly energy footprint"}]);
 
                   nodeColors = {};
