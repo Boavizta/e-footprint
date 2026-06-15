@@ -1,0 +1,225 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Pull-based computation — Spec</title>
+<style>
+  body { font-family: system-ui, -apple-system, sans-serif; line-height: 1.6;
+         max-width: 52rem; margin: 2rem auto; padding: 0 1.2rem; color: #1a1a1a; }
+  h1 { border-bottom: 2px solid #e0e0e0; padding-bottom: .3rem; }
+  h2 { margin-top: 2rem; }
+  .status { color: #666; font-size: .9rem; }
+  table { border-collapse: collapse; width: 100%; margin: 1rem 0; }
+  th, td { border: 1px solid #ccc; padding: .4rem .6rem; text-align: left; vertical-align: top; }
+  th { background: #f5f5f5; }
+  code { background: #f4f4f4; padding: .1rem .35rem; border-radius: 3px; font-size: .9em; }
+  details { margin: .6rem 0; border: 1px solid #e0e0e0; border-radius: 6px; padding: .4rem .8rem; }
+  summary { cursor: pointer; font-weight: 600; }
+  .mockup { border: 1px dashed #999; border-radius: 8px; padding: 1rem; margin: 1rem 0; }
+  blockquote { border-left: 3px solid #ccc; margin: 1rem 0; padding: .2rem 1rem; color: #555; }
+</style>
+</head>
+<body>
+
+<h1>Pull-based computation</h1>
+<p class="status">Status: Spec — under review · 2026-06-12</p>
+
+<section>
+  <h2>1. Problem and audience</h2>
+  <ul>
+    <li><strong>Computation is eager.</strong> Every input or relationship change immediately
+        recomputes all downstream values, and loading a saved model requires either recomputing
+        everything or having stored every computed value. Programmatic users making several changes
+        pay a full recomputation per change; future calibration loops (fitting model inputs to
+        monitoring data) would be throttled by recomputing the whole model per iteration when only
+        one target value is needed.</li>
+    <li><strong>Serialized models carry every intermediate value.</strong> Measured on the large
+        performance fixture: 28.2 MB, of which only ~1% are inputs. The interface stores this per
+        session (twice, in two variants) and re-reads it on every request — session-store RAM and
+        JSON round-trip latency are the binding cost, paid even when nothing is computed.</li>
+    <li><strong>Impact-attribution caching is all-or-nothing.</strong> Attribution results are
+        cached lazily but every model update wipes every cache in the system, regardless of what
+        changed.</li>
+    <li><strong>Two caching paradigms coexist</strong> (eager computed attributes vs lazily cached
+        attribution), doubling the concepts every contributor and agent must hold.</li>
+  </ul>
+  <p><strong>Audience:</strong> interface end-users (request latency, infrastructure cost),
+  library users running scripted studies or optimization loops, and the maintainer (one paradigm to
+  evolve instead of two). <strong>Why now:</strong> this unlocks the near-final performance vision —
+  calibration against monitoring data is on the roadmap and needs tight incremental loops, and
+  session-store costs scale with interface adoption.</p>
+</section>
+
+<section>
+  <h2>2. Success criteria</h2>
+  <p>Each criterion is testable; performance criteria run against the regenerated large fixture.</p>
+  <ul>
+    <li><strong>Behavior parity:</strong> all existing expected-value integration tests pass
+        unchanged (within float tolerance).</li>
+    <li><strong>Randomized parity:</strong> a property test applies arbitrary mutation sequences
+        (input edits, relinks, list changes, object add/delete) and compares incremental results to
+        a from-scratch rebuild — including sequences starting from a freshly loaded minimal-format
+        file.</li>
+    <li><strong>Serialized weight:</strong> a saved system weighs ≤ 30% of today's
+        full-snapshot format (≈ 7.8 vs 28.2 MB estimated on the large fixture), stored once
+        instead of twice.</li>
+    <li><strong>Instant load:</strong> loading a saved model performs no computation; view-request
+        model loading is ≥ 3× faster than today.</li>
+    <li><strong>Edit latency:</strong> an interface edit request (load, update, save) stays within
+        ± 20% of today's latency.</li>
+    <li><strong>Live-model loop:</strong> 1,000 iterations of “nudge one input, read one target
+        value” on an in-memory model run ≥ 10× faster than 1,000 updates today.</li>
+    <li><strong>Engine overhead:</strong> graph bookkeeping &lt; 5% of recompute wall time; peak
+        memory ≤ today's eager build.</li>
+    <li><strong>Lazy auditability:</strong> after loading a saved model, any intermediate value's
+        number and formula can be displayed on demand without recomputing the whole model.</li>
+    <li><strong>Sankey responsiveness:</strong> every Sankey combination (column visibility,
+        life-cycle phase, exclusions) renders from stored data with no model recomputation.</li>
+    <li><strong>Update-time safety preserved:</strong> invalid edits (e.g. exceeding fixed server
+        capacity) are still rejected at update time and the model rolls back.</li>
+  </ul>
+</section>
+
+<section>
+  <h2>3. Scope</h2>
+  <blockquote>Capability-level only. File paths, class/method/parameter names, refactor
+  instructions, internal hypotheses, and "mirror pattern X" code-level decisions belong in
+  <code>plan.html</code>, not here. If you can't say it without naming a file, class, or method,
+  it's plan content.</blockquote>
+  <details open><summary>In scope</summary>
+    <ul>
+      <li>Pull-based computation: values are computed when read, cached, and invalidated precisely
+          through the dependency graph — including relationship changes (relinking objects,
+          adding/removing objects or list members).</li>
+      <li>One caching paradigm for everything, impact attribution included: invalidation follows
+          the graph at every level; no wholesale cache wipes.</li>
+      <li>Transactional updates preserved: computation errors surface at update time with rollback;
+          the set of eagerly refreshed outputs is configurable (system footprints by default,
+          nothing for tight loops).</li>
+      <li>Minimal persistence contract: inputs, each impact source's two footprint timeseries
+          (usage and fabrication), the system total, a condensed impact-repartition summary (flows
+          summed over time, filled on first Sankey use), and the values-free calculation graph.</li>
+      <li>Interface adaptation: load/save under the new contract, results pages, Sankey served from
+          the stored summary, audit drill-down computing lazily.</li>
+      <li>Removal of the unused simulation machinery, with rebuild recipes documented for when
+          what-if / calibration features land.</li>
+      <li>Staged delivery: library-only releases first, one coordinated cross-repo step last, each
+          stage gated by passing tests and parity.</li>
+    </ul>
+  </details>
+  <details><summary>Out of scope (this iteration)</summary>
+    <ul>
+      <li>Rebuilding simulation features (what-if API, forked-model sandbox, dated scenarios) —
+          recipes recorded in the plan.</li>
+      <li>Copy-on-write scenario overlays inside the engine.</li>
+      <li>Keeping live models in worker memory across interface requests (future optimization,
+          noted as a knob).</li>
+      <li>The calibration feature itself.</li>
+      <li>Reading computed values from old-format files: inputs are honored, stale computed values
+          are ignored and recomputed.</li>
+    </ul>
+  </details>
+</section>
+
+<section>
+  <h2>4. UX / interface</h2>
+  <p>End-users see no functional change — identical numbers, same screens. What changes is the
+  session shape: loads stop computing, Sankey re-combinations read stored sums, and audit
+  drill-down may compute on first open (a brief loading state is acceptable). The session
+  lifecycle:</p>
+  <div class="mockup">
+  <svg viewBox="0 0 760 290" xmlns="http://www.w3.org/2000/svg" font-family="system-ui, sans-serif" font-size="10.5">
+    <defs>
+      <marker id="arr" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse">
+        <path d="M0,0 L10,5 L0,10 z" fill="#555"/>
+      </marker>
+    </defs>
+    <text x="20" y="30" font-weight="600" font-size="12">COLD LOAD — zero computation</text>
+    <rect x="20" y="42" width="150" height="40" rx="6" fill="#e3f2fd" stroke="#1565c0"/>
+    <text x="95" y="66" text-anchor="middle">parse saved model</text>
+    <line x1="170" y1="62" x2="192" y2="62" stroke="#555" marker-end="url(#arr)"/>
+    <rect x="194" y="42" width="150" height="40" rx="6" fill="#e3f2fd" stroke="#1565c0"/>
+    <text x="269" y="60" text-anchor="middle">objects + input values</text>
+    <text x="269" y="74" text-anchor="middle">(nothing computed)</text>
+    <line x1="344" y1="62" x2="366" y2="62" stroke="#555" marker-end="url(#arr)"/>
+    <rect x="368" y="42" width="180" height="40" rx="6" fill="#e3f2fd" stroke="#1565c0"/>
+    <text x="458" y="60" text-anchor="middle">attach stored results</text>
+    <text x="458" y="74" text-anchor="middle">+ calculation-graph shape</text>
+    <line x1="548" y1="62" x2="570" y2="62" stroke="#555" marker-end="url(#arr)"/>
+    <rect x="572" y="42" width="168" height="40" rx="6" fill="#e8f5e9" stroke="#2e7d32"/>
+    <text x="656" y="66" text-anchor="middle" font-weight="600">ready</text>
+
+    <text x="20" y="122" font-weight="600" font-size="12">VIEW</text>
+    <rect x="20" y="134" width="220" height="40" rx="6" fill="#e8f5e9" stroke="#2e7d32"/>
+    <text x="130" y="152" text-anchor="middle">charts ← stored system total</text>
+    <text x="130" y="166" text-anchor="middle">(no computation)</text>
+    <rect x="260" y="134" width="220" height="40" rx="6" fill="#e8f5e9" stroke="#2e7d32"/>
+    <text x="370" y="152" text-anchor="middle">Sankey ← stored repartition sums</text>
+    <text x="370" y="166" text-anchor="middle">(any column/phase/exclusion combo)</text>
+    <rect x="500" y="134" width="240" height="40" rx="6" fill="#fff" stroke="#555"/>
+    <text x="620" y="152" text-anchor="middle">audit drill-down → values computed</text>
+    <text x="620" y="166" text-anchor="middle">on demand (brief loading state OK)</text>
+
+    <text x="20" y="214" font-weight="600" font-size="12">EDIT</text>
+    <rect x="20" y="226" width="220" height="40" rx="6" fill="#ffebee" stroke="#c62828"/>
+    <text x="130" y="244" text-anchor="middle">apply change — invalid edits</text>
+    <text x="130" y="258" text-anchor="middle">rejected here, model rolls back</text>
+    <line x1="240" y1="246" x2="262" y2="246" stroke="#555" marker-end="url(#arr)"/>
+    <rect x="264" y="226" width="220" height="40" rx="6" fill="#fff" stroke="#555"/>
+    <text x="374" y="244" text-anchor="middle">system footprints refreshed</text>
+    <text x="374" y="258" text-anchor="middle">(only what the change affects)</text>
+    <line x1="484" y1="246" x2="506" y2="246" stroke="#555" marker-end="url(#arr)"/>
+    <rect x="508" y="226" width="232" height="40" rx="6" fill="#fff" stroke="#555"/>
+    <text x="624" y="244" text-anchor="middle">save — one copy, ~30% of</text>
+    <text x="624" y="258" text-anchor="middle">today's weight</text>
+  </svg>
+  </div>
+</section>
+
+<section>
+  <h2>5. Constraints</h2>
+  <ul>
+    <li><strong>Parity is non-negotiable:</strong> identical results (float tolerance) for every
+        existing model.</li>
+    <li><strong>Update-time error surfacing</strong> is part of the interface contract and must be
+        preserved.</li>
+    <li><strong>Binding performance constraints</strong> are session-store RAM and JSON round-trip
+        latency (paid on every request); CPU recompute is paid only on edits. Design trade-offs
+        favor smaller persisted state over avoided recomputation.</li>
+    <li><strong>No new runtime dependencies</strong> — the engine uses the standard library only.</li>
+    <li><strong>One model, one execution context</strong> (no concurrent mutation of a system), as
+        today.</li>
+    <li><strong>Constitution:</strong> layer separation (§1.1) is respected — and a documented
+        back-edge is removed outright. One constitutional wording amendment is required around
+        doc-as-code naming (§1.4) plus a quality-gate wording review (§2.5); both handled as
+        separate deliberate commits (see <code>plan.html</code> §6). JSON schema version bumps with
+        a migration handler (§2.4).</li>
+    <li><strong>Cross-repo sequencing:</strong> the first three delivery stages are library-only
+        releases invisible to the interface; only the final stage is coordinated across repos.</li>
+  </ul>
+</section>
+
+<section>
+  <h2>6. Open questions</h2>
+  <ul>
+    <li>Exact size of the condensed impact-repartition summary on the regenerated large fixture
+        (target ≤ 0.3 MB; the estimate is analytical pending fixture regeneration).</li>
+    <li>Confirmation of the edit-latency criterion (± 20%) once the regenerated fixture allows
+        measuring the per-edit recompute cone under the minimal persistence contract.</li>
+  </ul>
+</section>
+
+<section>
+  <h2>7. Resuming from cold context</h2>
+  <ol>
+    <li>Read this file end to end.</li>
+    <li>Read <code>plan.html</code> for the architecture, decision rationales, delivery stages and
+        test gates (it inherits the full design discussion's decision log).</li>
+    <li>Re-read <code>specs/architecture.md</code> and <code>specs/conventions.md</code> for
+        code-style and architectural constraints.</li>
+  </ol>
+</section>
+
+</body>
+</html>

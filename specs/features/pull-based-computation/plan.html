@@ -1,0 +1,359 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Pull-based computation — Implementation plan</title>
+<style>
+  body { font-family: system-ui, -apple-system, sans-serif; line-height: 1.6;
+         max-width: 52rem; margin: 2rem auto; padding: 0 1.2rem; color: #1a1a1a; }
+  h1 { border-bottom: 2px solid #e0e0e0; padding-bottom: .3rem; }
+  h2 { margin-top: 2rem; }
+  .status { color: #666; font-size: .9rem; }
+  table { border-collapse: collapse; width: 100%; margin: 1rem 0; }
+  th, td { border: 1px solid #ccc; padding: .4rem .6rem; text-align: left; vertical-align: top; }
+  th { background: #f5f5f5; }
+  code { background: #f4f4f4; padding: .1rem .35rem; border-radius: 3px; font-size: .9em; }
+  pre { background: #f4f4f4; padding: .8rem; border-radius: 6px; overflow-x: auto; font-size: .85em; }
+  pre code { background: none; padding: 0; }
+  details { margin: .6rem 0; border: 1px solid #e0e0e0; border-radius: 6px; padding: .4rem .8rem; }
+  summary { cursor: pointer; font-weight: 600; }
+</style>
+</head>
+<body>
+
+<h1>Pull-based computation — Implementation plan</h1>
+<p class="status">Status: Plan — DRAFT from design-rich kickoff, to refine during
+<code>spec-plan</code> · 2026-06-12 · Spec: <a href="spec.html">spec.html</a> · Decision rationales
+inherited from the kickoff discussion (7-point decision log).</p>
+
+<section>
+  <h2>1. Approach</h2>
+
+  <p>Replace the eager push engine (<code>calculated_attributes</code> lists, <code>update_*</code>
+  functions, <code>mod_objs_computation_chain</code> / <code>attr_updates_chain</code> ordering,
+  wipe-all attribution flush) with a single reactive pull engine: <strong>node = slot</strong>
+  <code>(object, attribute[, dict key])</code>, computed on read, cached, and invalidated by
+  deletion along recorded edges. Two edge kinds feed one invalidation graph: <em>calculus edges</em>
+  (recorded by ExplainableObject arithmetic exactly as today — unchanged, still the explainability
+  backbone) and <em>structural edges</em> ("who read this membership"), recorded by relationship
+  read-hooks against a contextvar compute stack. Membership <em>writes</em> bump reverse-collection
+  slots at the container bookkeeping's field transition — the one dependency defined by writing
+  rather than discovered by reading.</p>
+
+  <svg viewBox="0 0 760 340" xmlns="http://www.w3.org/2000/svg" font-family="system-ui, sans-serif" font-size="12">
+    <defs>
+      <marker id="arr2" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse">
+        <path d="M0,0 L10,5 L0,10 z" fill="#555"/>
+      </marker>
+    </defs>
+    <rect x="190" y="36" width="380" height="210" rx="10" fill="#fafafa" stroke="#888"/>
+    <text x="380" y="58" text-anchor="middle" font-weight="600" font-size="12.5">One dependency graph — node = (object, attribute[, key]) slot</text>
+    <circle cx="240" cy="100" r="9" fill="#e3f2fd" stroke="#1565c0"/>
+    <circle cx="240" cy="140" r="9" fill="#e3f2fd" stroke="#1565c0"/>
+    <circle cx="240" cy="180" r="9" fill="#e3f2fd" stroke="#1565c0"/>
+    <circle cx="380" cy="100" r="9" fill="#fff" stroke="#888" stroke-dasharray="3,3"/>
+    <circle cx="380" cy="140" r="9" fill="#fff" stroke="#888" stroke-dasharray="3,3"/>
+    <circle cx="380" cy="180" r="9" fill="#fff" stroke="#888" stroke-dasharray="3,3"/>
+    <circle cx="520" cy="95" r="9" fill="#e8f5e9" stroke="#2e7d32"/>
+    <circle cx="520" cy="135" r="9" fill="#e8f5e9" stroke="#2e7d32"/>
+    <circle cx="520" cy="175" r="9" fill="#e8f5e9" stroke="#2e7d32"/>
+    <line x1="249" y1="100" x2="371" y2="100" stroke="#aaa" marker-end="url(#arr2)"/>
+    <line x1="249" y1="140" x2="371" y2="104" stroke="#aaa" marker-end="url(#arr2)"/>
+    <line x1="249" y1="140" x2="371" y2="140" stroke="#aaa" marker-end="url(#arr2)"/>
+    <line x1="249" y1="180" x2="371" y2="180" stroke="#aaa" marker-end="url(#arr2)"/>
+    <line x1="389" y1="100" x2="511" y2="96" stroke="#aaa" marker-end="url(#arr2)"/>
+    <line x1="389" y1="140" x2="511" y2="135" stroke="#aaa" marker-end="url(#arr2)"/>
+    <line x1="389" y1="180" x2="511" y2="139" stroke="#aaa" marker-end="url(#arr2)"/>
+    <line x1="389" y1="180" x2="511" y2="175" stroke="#aaa" marker-end="url(#arr2)"/>
+    <text x="240" y="218" text-anchor="middle" font-size="11">inputs · relationship slots</text>
+    <text x="380" y="218" text-anchor="middle" font-size="11">intermediates (on demand)</text>
+    <text x="520" y="218" text-anchor="middle" font-size="11">footprints · repartition matrix</text>
+    <rect x="14" y="96" width="150" height="96" rx="6" fill="#fff" stroke="#1565c0"/>
+    <text x="89" y="118" text-anchor="middle" font-weight="600" fill="#1565c0">WRITE</text>
+    <text x="89" y="138" text-anchor="middle" font-size="11">set input / relink →</text>
+    <text x="89" y="154" text-anchor="middle" font-size="11">invalidate descendants</text>
+    <text x="89" y="170" text-anchor="middle" font-size="11">(delete caches, no compute)</text>
+    <line x1="164" y1="144" x2="186" y2="144" stroke="#555" marker-end="url(#arr2)"/>
+    <rect x="596" y="96" width="150" height="96" rx="6" fill="#fff" stroke="#2e7d32"/>
+    <text x="671" y="118" text-anchor="middle" font-weight="600" fill="#2e7d32">READ</text>
+    <text x="671" y="138" text-anchor="middle" font-size="11">pull any slot →</text>
+    <text x="671" y="154" text-anchor="middle" font-size="11">recompute missing ancestors</text>
+    <text x="671" y="170" text-anchor="middle" font-size="11">only (order = recursion)</text>
+    <line x1="572" y1="144" x2="594" y2="144" stroke="#555" marker-end="url(#arr2)"/>
+    <line x1="380" y1="246" x2="380" y2="268" stroke="#555" marker-end="url(#arr2)"/>
+    <rect x="110" y="270" width="540" height="52" rx="6" fill="#e8f5e9" stroke="#2e7d32"/>
+    <text x="380" y="291" text-anchor="middle">SERIALIZE: inputs · per-source footprint pairs · repartition matrix</text>
+    <text x="380" y="309" text-anchor="middle">· values-free topology &nbsp;(≈ −72% on the big fixture)</text>
+  </svg>
+
+  <h3>Key abstractions</h3>
+  <table>
+    <thead><tr><th>Abstraction</th><th>Role</th></tr></thead>
+    <tbody>
+      <tr><td><code>@computed_attribute(serialize=False)</code></td>
+          <td>Descriptor replacing the <code>update_&lt;attr&gt;</code> convention and the
+              <code>calculated_attributes</code> lists. Getter body = today's update body with the
+              final assignment becoming a <code>return</code>. <code>__get__</code>: cached value if
+              present, else push slot on the compute stack, run getter, post-process (label, graph
+              linking, container registration — the bookkeeping <code>__setattr__</code> does
+              today), cache, pop. <code>__set_name__</code> auto-registers the slot (single source
+              of truth for "what is computed" and "what serializes").</td></tr>
+      <tr><td><code>@computed_dict(keys="…")</code></td>
+          <td>Dict slots: a <em>key-set node</em> (getter reads the declared collection; iteration
+              registers a structural edge; indexing one key does not) + per-key sub-slots
+              <code>(object, attr, key)</code> whose getters are today's
+              <code>update_dict_element_in_*</code> bodies. Whole-dict orchestrators and init-time
+              <code>ExplainableObjectDict()</code> assignments are deleted. Per-key granularity from
+              the start (engine policy behind the API).</td></tr>
+      <tr><td><code>ReverseCollection(MemberType)</code> / <code>ReverseLink(…)</code></td>
+          <td>Declarative reverse lookups replacing the <code>isinstance</code>-filter properties
+              (e.g. <code>ServerBase.jobs</code>, <code>server_base.py:220–224</code>). Provides the
+              getter, the structural read-hook, registry membership via <code>__set_name__</code>,
+              and the typed bump rule. <code>member_type</code> accepts a string, resolved lazily
+              (replaces circularity-driven local imports). Transitive collections
+              (<code>job.usage_patterns</code>, <code>job.py:115–143</code>) are ordinary computed
+              slots over single-hop reads — no special handling.</td></tr>
+      <tr><td>Reactive core (new module in <code>abstract_modeling_classes/</code>)</td>
+          <td>Slot states (cached / void + one-bit "wave passed" pruning marker), the contextvar
+              compute stack (exception-safe push/pop; doubles as cycle guard), the edge registry
+              (calculus + structural, slot-addressed), and the deletion wave. Invalidation
+              <em>deletes</em> cached values — stale values are never retained; topology edges and
+              the marker are what survive valuelessness.</td></tr>
+      <tr><td>Write path</td>
+          <td><code>__setattr__</code> (inputs) and the container bookkeeping
+              (<code>set_modeling_obj_container</code> field transition,
+              <code>contextual_modeling_object_attribute.py:16</code> registration) gain one
+              invalidation call each: forward slot + matching typed reverse slots, then the wave.
+              List mutations via <code>ListLinkedToModelingObj</code> identically.</td></tr>
+      <tr><td><code>ModelingUpdate</code></td>
+          <td>Apply changes → invalidate → eagerly pull a configurable output set (default: system
+              total footprints) → on error, restore inputs (rollback is just re-invalidation; no
+              snapshots). Errors keep surfacing at update time. Tight loops pass an empty eager
+              set.</td></tr>
+      <tr><td>Serialization contract</td>
+          <td>Per-slot <code>serialize=True</code> flags (impact sources' <code>energy_footprint</code>
+              + <code>instances_fabrication_footprint</code>, <code>System.total_footprint</code>);
+              <code>System.impact_repartition_matrix</code> — a <em>lazy</em> serialize-flagged slot
+              whose rows are attribution atoms with values reduced to period sums
+              <code>(source, stream, cell ids…, up, phase) → kg</code>; values-free topology
+              (ancestors + structural reads per slot, with labels; children derived by inversion at
+              load; formula tuples only for serialized slots). Save whenever flagged slots change
+              (edits and lazy fills). A value present in the file is attached as cached; anything
+              absent is valueless and computes on pull — staleness-resilient by construction.
+              <code>render_cache</code>/<code>flushed_memo</code> retire (folds over the matrix's
+              10³–10⁴ scalars need no memoization).</td></tr>
+    </tbody>
+  </table>
+
+  <h3>Deletions ledger</h3>
+  <p><code>modeling_objects_whose_attributes_depend_directly_on_me</code> (every class) ·
+  <code>mod_objs_computation_chain</code> · <code>attr_updates_chain</code> · the old/new swap
+  simulation (<code>modeling_object.py:568–632</code>) · the eager recompute loop ·
+  <code>calculated_attributes</code> lists · <code>update_*</code> / <code>update_dict_element_in_*</code>
+  as a convention (bodies survive as getters) · init-time dict assignments · simulation machinery
+  (ancestor forking, hourly truncation, twins, <code>reset_values</code>,
+  <code>modeling_update.py:210–402</code>) · <code>flush_cached_properties_system_wide</code> and
+  <code>render_cache</code> · <code>save_calculated_attributes</code> binary and
+  <code>is_loaded_from_system_with_calculated_attributes</code> detection · the two-copy session
+  storage · the documented §1.1 back-edge (dies with the chain optimizer).</p>
+
+  <h3>Delivery stages (each ships green)</h3>
+  <table>
+    <thead><tr><th>Stage</th><th>Content</th><th>Gate</th><th>Scope</th></tr></thead>
+    <tbody>
+      <tr><td>1 · Scope reduction</td>
+          <td>Delete simulation machinery; regenerate both drifted fixtures
+              (<code>big_system_with_calc_attr.json</code> crashes today's loader); land the parity
+              harness and baseline benchmarks against the current engine.</td>
+          <td>suite green; baselines recorded</td><td>library-only</td></tr>
+      <tr><td>2 · Single-source bodies</td>
+          <td>Mechanical conversion: ~250 <code>update_*</code> functions → getters behind an eager
+              shim preserving today's semantics exactly; <code>ReverseCollection</code> declarations
+              as today-equivalent filters. Constitutional §1.4 amendment ships alongside (own
+              commit).</td>
+          <td>suite green; behavior-identical</td><td>library-only</td></tr>
+      <tr><td>3 · Engine swap</td>
+          <td>Reactive core in; ModelingUpdate = apply + invalidate + pull with a transitional
+              <strong>pull-ALL eager set</strong> (every slot cached after every update → today's
+              serialization and interface behavior remain observationally identical); delete
+              MOWADDOM, chains, swap-sim.</td>
+          <td>parity property test</td><td>library-only</td></tr>
+      <tr><td>4 · Lazy + contract</td>
+          <td>Eager set narrows to system footprints; per-slot serialize flags, topology section,
+              repartition-matrix slot; retire <code>render_cache</code>; schema version bump +
+              migration handler; interface load/save, Sankey from the matrix, lazy drill-down.</td>
+          <td>perf gates (spec §2)</td><td>cross-repo</td></tr>
+    </tbody>
+  </table>
+
+  <details><summary>Simulation rebuild recipes (recorded for future features)</summary>
+    <ul>
+      <li><strong>Interface what-if:</strong> read cached baseline outputs, apply changes via
+          ModelingUpdate, pull, diff, discard without saving — the per-request rebuild is the
+          sandbox. Zero machinery.</li>
+      <li><strong>Calibration:</strong> <code>System.fork()</code> — in-memory inputs-only copy —
+          iterate inside the fork with incremental pulls, write fitted inputs back.</li>
+      <li><strong>Dated what-if:</strong> piecewise inputs (baseline before the date, changed
+          after) + ordinary edit semantics; comparisons window to [date:]. Compare across worlds by
+          reading both systems' slots at the same (object id, attr) — no twin links.</li>
+    </ul>
+  </details>
+</section>
+
+<section>
+  <h2>2. Affected modules</h2>
+  <table>
+    <thead><tr><th>Module / file</th><th>Change type</th><th>Note</th></tr></thead>
+    <tbody>
+      <tr><td><code>abstract_modeling_classes/&lt;reactive core&gt;.py</code></td><td>new</td>
+          <td>Descriptors, compute stack, slot states, edge registry, deletion wave (~hundreds of lines, centrally testable). Module name TBD (§7).</td></tr>
+      <tr><td><code>abstract_modeling_classes/modeling_object.py</code></td><td>major rework</td>
+          <td><code>__setattr__</code> split (user writes vs computed storage moves into the descriptor); delete chain machinery, <code>compute_calculated_attributes</code>, flush helpers; back-edge removed.</td></tr>
+      <tr><td><code>abstract_modeling_classes/modeling_update.py</code></td><td>rewrite (shrinks)</td>
+          <td>Apply + invalidate + eager pull + input-restore rollback; simulation paths deleted.</td></tr>
+      <tr><td><code>abstract_modeling_classes/explainable_object_base_class.py</code></td><td>modified</td>
+          <td>Calculus recording unchanged; ancestry exposed slot-addressed to the edge registry; <code>attr_updates_chain</code> deleted; twin slots deleted.</td></tr>
+      <tr><td><code>contextual_modeling_object_attribute.py</code> / <code>list_linked_to_modeling_obj.py</code> / <code>object_linked_to_modeling_obj.py</code></td><td>modified</td>
+          <td>Read hooks (structural edges) + bookkeeping bumps at container-field transitions.</td></tr>
+      <tr><td><code>abstract_modeling_classes/explainable_object_dict.py</code></td><td>rework</td>
+          <td>Becomes the dict facade over key-set node + sub-slots; key-addressed ancestry kept.</td></tr>
+      <tr><td><code>efootprint/core/**</code> (~30 classes)</td><td>mechanical</td>
+          <td><code>update_*</code> → getters; <code>ReverseCollection</code>/<code>ReverseLink</code> declarations; <code>calculated_attributes</code> lists and MOWADDOM properties removed.</td></tr>
+      <tr><td><code>core/attribution/__init__.py</code></td><td>rework (shrinks)</td>
+          <td><code>flushed_memo</code>/<code>render_cache</code> retire; atom generation feeds the matrix slot; folds run on summed scalars.</td></tr>
+      <tr><td><code>core/system.py</code></td><td>modified</td>
+          <td><code>impact_repartition_matrix</code> slot; previous-footprint machinery simplified or moved interface-side (§7).</td></tr>
+      <tr><td><code>core/hardware/server_base.py</code> (+ storage, edge devices)</td><td>modified</td>
+          <td>Attribution <code>@cached_property</code> layer becomes ordinary computed slots.</td></tr>
+      <tr><td><code>api_utils/system_to_json.py</code> / <code>json_to_system.py</code></td><td>rework</td>
+          <td>Flag-driven serialization; topology section; no detection flag, no <code>after_init</code> chains; schema version bump.</td></tr>
+      <tr><td><code>api_utils/version_upgrade_handlers.py</code></td><td>modified</td>
+          <td>Upgrade handler: read inputs, drop stale computed values (constitution §2.4).</td></tr>
+      <tr><td><code>all_classes_in_order.py</code></td><td>modified</td>
+          <td><code>CANONICAL_COMPUTATION_ORDER</code> likely retires; verify residual instantiation-order use (§7).</td></tr>
+      <tr><td><code>tests/**</code></td><td>new + regenerated</td>
+          <td>Parity property test (+ recompute-counter and deserialized-file variants); regenerated fixtures; benchmark suite; simulation tests deleted.</td></tr>
+      <tr><td><em>interface:</em> <code>model_web.py</code>, session repository, <code>sankey_views.py</code>, emissions service, calc-graph views</td><td>stage 4</td>
+          <td>Load/save under the contract (one copy, save on flagged-slot change incl. lazy fills); Sankey folds the stored matrix; drill-down pulls lazily. Listed in this feature's <code>tasks.md</code>, landing in e-footprint-interface.</td></tr>
+    </tbody>
+  </table>
+</section>
+
+<section>
+  <h2>3. Cross-cutting concerns</h2>
+  <ul>
+    <li><strong>Tests:</strong> the parity property test is the central gate — random mutation
+        sequences (input edits, relinks, list changes, add/delete) vs a from-scratch rebuild, with a
+        recompute-counter variant asserting granularity (one-UP edits touch only expected slots) and
+        a variant starting from a freshly deserialized minimal file (cached footprints below
+        valueless intermediates). Benchmarks: full build, single edit + pull, load-to-ready, live
+        1,000-iteration loop, peak RSS, descriptor read micro-bench. Existing expected-value
+        integration tests pass unchanged.</li>
+    <li><strong>Migrations:</strong> JSON schema version bump + handler (inputs honored, stale
+        computed values dropped); both performance fixtures regenerated in stage 1 (currently
+        drifted: stale property keys, missing newer attributes); interface session stores migrate
+        trivially (old sessions reload as inputs-only and recompute on pull).</li>
+    <li><strong>Docs:</strong> <code>architecture.md</code> dependency-graph and
+        calculated-attribute sections rewritten at archive time (reactive core pattern, slot model,
+        serialization contract); <code>conventions.md</code> drops the <code>update_*</code> naming
+        rules; mkdocs doc-as-code generation re-pointed from <code>update_&lt;attr&gt;</code>
+        docstrings to getter docstrings (with the §1.4 amendment); workspace AGENTS.md note about
+        library-driven cross-repo features already added.</li>
+  </ul>
+</section>
+
+<section>
+  <h2>4. Risks</h2>
+  <ul>
+    <li><strong>Untracked reads</strong> (getter branching on non-Explainable, non-relationship
+        state) — same blind spot as today's fine-grained path, expected clean; mitigated by a
+        stage-2 audit of getter bodies plus the parity test catching violations behaviorally.</li>
+    <li><strong>Per-pull overhead</strong> — paid per dependency edge per recompute, not per array
+        element; budget &lt; 5% of recompute wall time, enforced by micro-benchmark.</li>
+    <li><strong>Recursion depth</strong> — pull order is the call stack; depth = longest chain
+        (tens–low hundreds of nodes); asserted on the big fixture; iterative work-stack fallback
+        documented if ever needed.</li>
+    <li><strong>Partial-reload invalidation</strong> — cached footprints below valueless
+        intermediates is the novel state; waves traverse serialized topology (which must include
+        structural edges); dedicated parity variant.</li>
+    <li><strong>Per-edit recompute cost</strong> under the minimal contract (every interface edit
+        request is cold; the cone recomputes from inputs but is contained at object boundaries by
+        neighbours' cached footprints) — benchmark on the regenerated fixture; knobs: per-slot
+        serialize flag, future worker-memory models.</li>
+    <li><strong>Stage-2 codemod errors</strong> across ~250 functions — mechanical transform +
+        behavior-identical gate before any semantic change lands.</li>
+    <li><strong>Thread/async safety</strong> — compute stack is a <code>contextvars.ContextVar</code>
+        with context-manager push/pop; one System per execution context documented, as today.</li>
+  </ul>
+</section>
+
+<section>
+  <h2>5. Alternatives considered</h2>
+  <ul>
+    <li><strong>Keep <code>modeling_objects_whose_attributes_depend_directly_on_me</code> for
+        structural changes only</strong> — rejected: retains the hand-maintained per-class
+        boilerplate and over-invalidates; relationship slots cover membership with one-slot
+        precision using existing wrapper interception points.</li>
+    <li><strong>Full read tracking (signals purism)</strong> — rejected: the calculus graph already
+        records exact value-level dependencies for free; instrumenting all reads discards a working
+        mechanism.</li>
+    <li><strong>Stale values + dirty flags instead of deletion</strong> — rejected: retained values
+        only enable equality cutoffs (irrelevant under eager wave-marking) at megabytes of RAM per
+        slot; deletion matches today's flush semantics and frees memory.</li>
+    <li><strong>Coarse single-node dicts</strong> — rejected: diverges from the entry-level
+        ancestry explainability requires (two graph views) and regresses live-model loops ~×N(keys);
+        granularity is engine policy behind the same API, so this remains revisable.</li>
+    <li><strong>Serialize hub intermediates from day one</strong> — deferred knob; Redis RAM and
+        JSON round-trips are the binding constraints, recompute is per-edit and contained.</li>
+    <li><strong>Copy-on-write scenario overlays</strong> — deferred: would make every slot read
+        scenario-aware; fork-the-inputs covers anticipated needs.</li>
+    <li><strong>Big-bang migration</strong> — rejected: parity failures would be unattributable
+        across mechanical and semantic changes; the pull-ALL transitional eager set makes the engine
+        swap observationally invisible instead.</li>
+  </ul>
+</section>
+
+<section>
+  <h2>6. Constitutional notes</h2>
+  <ul>
+    <li><strong>§1.1 (layer separation)</strong> — respected; the one documented back-edge (the
+        function-local <code>System</code> import in the computation-chain optimizer) is deleted
+        with the optimizer. <code>architecture.md</code>'s note follows at archive time.</li>
+    <li><strong>§1.4 (doc-as-code SSOT)</strong> — names <code>update_&lt;attr&gt;</code> method
+        docstrings as authoritative. Bodies and docstrings survive as getters, but the rule's
+        wording and the mkdocs/interface readers must follow. <strong>Amendment required</strong> —
+        own commit via <code>update-constitution</code>, scheduled with stage 2.</li>
+    <li><strong>§2.3 (JSON round-trip)</strong> — preserved under the new contract: inputs and
+        flagged slots round-trip; absent values recompute on pull (load is staleness-resilient by
+        construction, unlike today's detection flag).</li>
+    <li><strong>§2.4 (schema migration)</strong> — version bump + handler in
+        <code>version_upgrade_handlers.py</code> at stage 4.</li>
+    <li><strong>§2.5 (class registration gate)</strong> — references
+        <code>CANONICAL_COMPUTATION_ORDER</code>, which pull semantics likely retires; verify the
+        instantiation-order residual use and amend the gate wording in the same constitutional
+        commit as §1.4 if confirmed.</li>
+  </ul>
+</section>
+
+<section>
+  <h2>7. Open questions (resolve before tasks)</h2>
+  <ul>
+    <li>Repartition-matrix encoding: dict rows vs columnar int-indexed arrays — measure both on the
+        regenerated fixture (target ≤ 0.3 MB serialized).</li>
+    <li>Eager-output-set API shape: <code>ModelingUpdate(…, eager_outputs=…)</code> per call vs a
+        system-level setting; and whether the interface needs anything beyond the default.</li>
+    <li>Reactive core module name/location within <code>abstract_modeling_classes/</code>.</li>
+    <li><code>@computed_dict</code> key declaration form (collection attribute name as string vs
+        callable) for non-trivial key sets.</li>
+    <li>Fate of <code>System.previous_*</code> footprint capture (interface edit-diff toast):
+        simplify in-library or move to interface-side capture before applying changes.</li>
+    <li>Stage-2 codemod tooling: libcst-based transform vs scripted regex + review, and how
+        docstrings migrate for the doc-as-code reader.</li>
+    <li><code>CANONICAL_COMPUTATION_ORDER</code>: fully retired or kept for instantiation order in
+        <code>json_to_system</code>?</li>
+  </ul>
+</section>
+
+</body>
+</html>
