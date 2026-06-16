@@ -32,7 +32,7 @@ Two limits:
 - **Variability defeats them.** Best practices shine when systems have low variability; digital services are highly variable, so best-practice lists risk pointing you at low-leverage actions on your specific service. *(cite `why_efootprint.md#best-practices-the-catalogue-of-possible-moves`)*
 - **They don't tell you what to prioritize.** A long list of "things you should do" carries no information about which actions matter for your service — so it can't tell you where to start.
 
-→ Differentiator: **"Beyond reporting, prioritize action."**
+→ Differentiator: **"Beyond the best-practice checklist — prioritize what matters here."**
 
 ### §3 — Measurement: the snapshot, not the projection
 
@@ -42,7 +42,7 @@ Two limits:
 - **You can't measure what isn't there yet.** A feature you haven't built; a scale you haven't reached; a region you haven't deployed to. Decisions need projection — measurement of the present alone can't compare candidate futures.
 - **Some footprint isn't visible from the outside.** Manufacturing impact of user devices; fleet-wide footprint of edge devices; embedded carbon in infrastructure. Browser- or runtime-side measurement can't see these.
 
-→ Differentiator: **"Simulate before you act."**
+→ Differentiator: **"Beyond the measurement snapshot — simulate before you act."**
 
 ### §4 — Modeling: the projection that lets you decide
 
@@ -55,7 +55,7 @@ From this description, three things become available:
 
 The structural property that enables this: usage is described in terms a PM/designer can recognize, alongside more technical usage journeys that complete the system story. *(cite `why_efootprint.md` § "user journeys must be part of the model inputs"; `UsageJourney` and `UsagePattern` references)*
 
-→ Differentiator: **"Usage and functionality at the center."**
+→ Differentiator: **"Actionable modeling must put usage and functionality at the center."**
 
 ### §5 — The three legs together
 

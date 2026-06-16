@@ -20,16 +20,16 @@ The full argument — why an explicit model is necessary, and what a model must 
 
 ## The three differentiating messages
 
-The reusable distillation of the thesis — use these three, in these words, across all channels.
+The reusable distillation of the thesis: use these three, in these words, across all channels.
 
-1. **Beyond reporting, prioritize action.**
-   e-footprint's distinctive value is telling you *where to invest effort*. It can produce a carbon report, but its point is the next step — which action to take first: a 90% gain on a minor contributor avoids far less CO₂ than a modest gain on the dominant one, and modeling makes that arbitrage visible *before* you spend the effort.
+1. **Beyond the best-practice checklist — prioritize what matters here.**
+   A checklist ("what could I do?") is a catalogue of candidate moves, but what dominates one service's footprint is negligible in another's. e-footprint shows which moves actually move the needle on *your* service, and in what order. That guards against the scope-neglect trap, where a 90% cut on a minor contributor saves less than a modest cut on the dominant one.
 
-2. **Simulate before you act.**
-   The environmental ROI of a product decision can be modeled before implementation, just like its business ROI. *"What if we add an AI step to this journey? Drop region X? Serve 10× the volume?"* — answered in advance. Few other tools offer this today.
+2. **Beyond the measurement snapshot — simulate before you act.**
+   Measurement is a snapshot of the running system; it can't see a feature you haven't built or a scale you haven't reached. e-footprint models the environmental ROI of a change *before* you make it, just like its business ROI. *"What if we add an AI step, drop region X, serve 10× the volume?"*
 
-3. **Usage and functionality at the center.**
-   e-footprint starts from *how the service is actually used* — as **usage journeys with steps** (web) or **functionalities** (edge), in real volumes and geographies — not from raw request counts or top-down inventories. The same primitive covers human-facing flows (browse → cart → checkout) and automated ones (an ML training run, a scheduled sync). That structure is what makes what-if simulation possible and guards against the scope-neglect trap.
+3. **Actionable modeling must put usage and functionality at the center.**
+   e-footprint describes a service the way its team already sees it: the **usage journeys** people follow and the **functionalities** it performs, in real volumes and geographies. That keeps the model readable by the whole team, not just engineers. It also makes the what-ifs above possible, because many of the changes a team wants to weigh (adding a feature, simplifying a journey, dropping a step) alter a functionality, so functionality has to be represented in the model in the first place.
 
 ## Who it is for
 
