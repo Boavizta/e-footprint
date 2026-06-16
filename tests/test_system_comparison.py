@@ -111,11 +111,15 @@ class TestSystemComparison(TestCase):
         self.assertAlmostEqual(float(time_series.cumulative_b[-1]), self.comparison.total_b, places=1)
 
     def test_time_series_aligns_differing_calendars(self):
-        """Test systems with different start dates are aligned onto a shared, longer calendar axis."""
+        """Test systems with different start dates are aligned onto a shared, longer calendar axis without
+        losing or misplacing any value (cumulative end still equals each system's own period total)."""
         other = build_system("model C", "server C", start="2025-02-01")
-        time_series = self.system_a.compare_to(other).time_series
+        comparison = self.system_a.compare_to(other)
+        time_series = comparison.time_series
         self.assertEqual(len(time_series.values_a), len(time_series.values_b))
         self.assertGreater(len(time_series.values_a), len(self.system_a.total_footprint.value))
+        self.assertAlmostEqual(float(time_series.cumulative_a[-1]), comparison.total_a, places=1)
+        self.assertAlmostEqual(float(time_series.cumulative_b[-1]), comparison.total_b, places=1)
 
     def test_input_diff_emits_only_changed_attributes_for_paired_objects(self):
         """Test the diff lists the changed input attribute (value + source) and nothing identical."""
@@ -139,12 +143,21 @@ class TestSystemComparison(TestCase):
         self.assertEqual([], diff.only_in_b)
 
     def test_input_diff_falls_back_to_name_and_type_then_only_in_a_b(self):
-        """Test independently built systems pair shared (name, type) objects and report the rest as A/B-only."""
-        independent = build_system("model A", "shared server")  # same names, fresh ids
+        """Test independently built systems (fresh ids) pair shared (name, type) objects — so an edited input
+        surfaces as a changed row through the fallback path — and report nothing as A/B-only."""
+        independent = build_system("model A", "shared server")  # same names, fresh ids → forces (name, type) match
+        edited_server = next(o for o in independent.all_linked_objects if isinstance(o, Server))
+        edited_server.power = SourceValue(500 * u.W)
+
         diff = self.system_a.compare_to(independent).input_diff
 
         self.assertEqual([], diff.only_in_a)
         self.assertEqual([], diff.only_in_b)
+        changed = [row for row in diff.changed if row.attribute == "power"]
+        self.assertEqual(1, len(changed))
+        self.assertEqual("Server", changed[0].object_class)
+        self.assertEqual("300.0 watt", changed[0].value_a)
+        self.assertEqual("500.0 watt", changed[0].value_b)
 
     def test_input_diff_reports_unmatched_objects(self):
         """Test objects present in only one system are reported as A-only / B-only."""
@@ -158,11 +171,13 @@ class TestSystemComparison(TestCase):
 
     def test_plot_helpers_smoke_render(self):
         """Test the notebook plot helpers render without error."""
+        from matplotlib import pyplot as plt
         for plot in (self.comparison.plot_emissions_over_time, self.comparison.plot_cumulative_emissions,
                      self.comparison.plot_decomposition):
             figure, axes = plot()
             self.assertIsNotNone(figure)
             self.assertIsNotNone(axes)
+            plt.close(figure)
 
 
 if __name__ == "__main__":
