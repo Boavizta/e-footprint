@@ -33,35 +33,28 @@ The reusable distillation of the thesis: use these three, in these words, across
 
 ## Who it is for
 
-Product teams and operational sustainability leads whose decisions shape a digital service's or device fleet's impact — engineers, designers, PMs, architects on the web side; hardware, embedded, and IoT teams on the industrial/edge side; and the green-IT / ecodesign practitioners who work alongside them. e-footprint is deliberately a *whole-team* tool: approachable for non-code roles, with depth available on demand — *no one left behind*.
+Product teams and operational sustainability leads whose decisions shape a digital service's or device fleet's impact: engineers, designers, PMs, architects on the web side; hardware, embedded, and IoT teams on the industrial/edge side; and the green-IT / ecodesign practitioners who work alongside them. e-footprint is deliberately a *whole-team* tool: approachable for non-code roles, with depth available on demand — *no one left behind*.
 
-## What e-footprint is — and is not
+## Important clarifications
 
-| e-footprint **is** | e-footprint is **not** |
-|---|---|
-| A modeling tool that produces **estimates and orders of magnitude** | A certification, a label, or a measurement instrument |
-| A **decision-support** tool for prioritizing ecodesign effort | A compliance / CSRD reporting tool |
-| **Auditable**: every figure carries its formula, dependency graph, and data sources | A black box or a sealed score |
-| A **modeling layer** on the open green-IT stack (it composes BoaviztAPI, EcoLogits) | A from-scratch carbon database |
-| A **complement to** measurement and best practices | A replacement for them, or a rival to be ranked against other tools |
-| **Open source, hosted by Boavizta** | A proprietary or vendor product |
+A few points are easy to get wrong, and most communication risk lives here:
 
-Two guardrails worth stating plainly, because most communication risk comes from blurring them:
-
-- **Estimate, not measurement.** e-footprint *models* impact — it does not measure it. Never describe its outputs as exact, measured, certified, or guaranteed; "estimates", "models", "orders of magnitude" are the honest words. (This is not a knock on measurement — measurement is the model's calibration partner; it simply answers a different question.)
-- **Decision tool, not a report.** Its purpose is reducing impact through better decisions, not ticking compliance boxes. Reporting is explicitly not the priority.
+- **It produces estimates, not measurements; but measured data is welcome as input.** e-footprint *models* impact, so its outputs are estimates and orders of magnitude. The honest verbs are "models" and "estimates", never "measures" or "certifies". This doesn't put it at odds with measurement: it can take in live, measured data to calibrate the model (today through custom scripts, not yet as a packaged feature), much as many tools described as "measurement" themselves estimate impact from live data rather than metering emissions directly. What e-footprint adds on top is the structural model that turns those inputs into scenario comparison.
+- **It's auditable, not a black box.** Every figure carries its formula, dependency graph, and data sources, so any number can be traced and challenged.
+- **It's a modeling layer on the open green-IT stack, not a from-scratch carbon database.** It composes existing open components (BoaviztAPI for hardware impact factors, EcoLogits for generative-AI impact) rather than reinventing them.
+- **It's built for decisions, not (yet) for reporting.** Its purpose is prioritizing action: which move matters most and what it would achieve, not ticking compliance boxes. It can already produce a footprint report, and converging further toward reporting later is a welcome direction. Reporting just isn't the focus today.
 
 ## How to credit and position it
 
-In every channel, e-footprint is an **open-source tool hosted within the Boavizta ecosystem**, built on other open components (BoaviztAPI for hardware impact factors, EcoLogits for generative-AI impact). Publicis Sapient initiated the project and actively contributes to it; it is **never presented as a Publicis product**. Adjacent tools are framed cooperatively, by role — measurement *calibrates* the model, inventory *initializes* it, analytics *estimates* usage volumes, observability *maps* usage to backend work — never ranked. (Per-actor attribution rules: `strategy.md` §4. Adjacent-tool rules: `strategy.md` §5.)
+In every channel, e-footprint is an **open-source tool hosted within the Boavizta ecosystem**, built on other open components (BoaviztAPI for hardware impact factors, EcoLogits for generative-AI impact). Publicis Sapient initiated the project and actively contributes to it; it is **never presented as a Publicis product**. Adjacent tools are framed cooperatively and never ranked, by role: measurement *calibrates* the model, inventory *initializes* it, analytics *estimates* usage volumes, observability *maps* usage to backend work. (Per-actor attribution rules: `strategy.md` §4. Adjacent-tool rules: `strategy.md` §5.)
 
 ## Ready-to-use phrasings
 
-Copy-paste these. They are pre-approved against the guardrails above.
+Copy-paste these. They are pre-approved against the clarifications above.
 
 - **Tagline:** *Model your digital service's footprint. Decide where to act.*
-- **Elevator (1 sentence):** *e-footprint is an open-source tool, hosted by Boavizta, that models the environmental impact of a digital service — web or edge — so teams can compare scenarios and prioritize ecodesign effort before they build.*
-- **Elevator (short paragraph):** *Ecodesigning is less about "what could I do?" than "what should I do first, and what impact would that have?". Best practices and measurement only get you part of the answer: they tell you what's possible and what's happening today, but not which action matters most on your specific service, nor what a change would do before you make it. e-footprint models the whole system from how the service is actually used — in real volumes and geographies, web or edge — estimates its footprint, and lets you simulate a decision in advance. So you spend ecodesign effort where it actually moves the needle.*
+- **Elevator (1 sentence):** *e-footprint is an open-source tool, hosted by Boavizta, that models the environmental impact of a digital service, web or edge, so teams can compare scenarios and prioritize ecodesign effort before they build.*
+- **Elevator (short paragraph):** *Ecodesigning is less about "what could I do?" than "what should I do first, and what impact would that have?". Best practices and measurement only get you part of the answer: they tell you what's possible and what's happening today, but not which action matters most on your specific service, nor what a change would do before you make it. e-footprint models the whole system from how the service is actually used (in real volumes and geographies, web or edge), estimates its footprint, and lets you simulate a decision in advance. So you spend ecodesign effort where it actually moves the needle.*
 - **Three-message hook:** *Best practices tell you what's possible. Measurement tells you what is. Only simulation tells you what to prioritize.*
 
 ---
