@@ -10,7 +10,7 @@
 
 ## The thesis (load-bearing across every channel)
 
-> **Ecodesigning a digital service isn't "what should I do?" — it's "what should I do first?"**
+> **Ecodesigning a digital service isn't "what could I do?" but "what should I do first, and what impact would that have?"**
 
 Three complementary strategies answer parts of that question — **best practices** (*what's possible*), **measurement** (*what is*), and **modeling** (*what to prioritize*) — and they feed each other rather than compete. e-footprint occupies the third: it models the whole service from how it's used and lets you **simulate** a change before you make it. That's the leg that turns the other two into decisions.
 
@@ -61,7 +61,7 @@ Copy-paste these. They are pre-approved against the guardrails above.
 
 - **Tagline:** *Model your digital service's footprint. Decide where to act.*
 - **Elevator (1 sentence):** *e-footprint is an open-source tool, hosted by Boavizta, that models the environmental impact of a digital service — web or edge — so teams can compare scenarios and prioritize ecodesign effort before they build.*
-- **Elevator (short paragraph):** *Ecodesign is less about "what should I do?" than "what should I do first?". Best practices and measurement only get you part of the answer: they tell you what's possible and what's happening today, but not which action matters most on your specific service, nor what a change would do before you make it. e-footprint models the whole system from how the service is actually used — in real volumes and geographies, web or edge — estimates its footprint, and lets you simulate a decision in advance. So you spend ecodesign effort where it actually moves the needle.*
+- **Elevator (short paragraph):** *Ecodesigning is less about "what could I do?" than "what should I do first, and what impact would that have?". Best practices and measurement only get you part of the answer: they tell you what's possible and what's happening today, but not which action matters most on your specific service, nor what a change would do before you make it. e-footprint models the whole system from how the service is actually used — in real volumes and geographies, web or edge — estimates its footprint, and lets you simulate a decision in advance. So you spend ecodesign effort where it actually moves the needle.*
 - **Three-message hook:** *Best practices tell you what's possible. Measurement tells you what is. Only simulation tells you what to prioritize.*
 
 ---

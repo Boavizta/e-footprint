@@ -49,7 +49,7 @@ Five concentric circles, ordered by long-term priority.
 
 ## 3. Core narrative
 
-The thesis stays load-bearing across every channel: **ecodesign is not "what should I do?" but "what should I do first?" — and only explicit modeling answers the priority question, as the decisive leg alongside best practices and measurement.** The full argument — why an explicit model is necessary and what it must contain — is the canonical [*Why e-footprint?*](../docs_sources/mkdocs_sourcefiles/why_efootprint.md) explanation page; this section captures only the messaging derived from it.
+The thesis stays load-bearing across every channel: **ecodesigning is not "what could I do?" but "what should I do first, and what impact would that have?" — and only explicit modeling answers the priority question, as the decisive leg alongside best practices and measurement.** The full argument — why an explicit model is necessary and what it must contain — is the canonical [*Why e-footprint?*](../docs_sources/mkdocs_sourcefiles/why_efootprint.md) explanation page; this section captures only the messaging derived from it.
 
 Three differentiating messages reused across all channels:
 

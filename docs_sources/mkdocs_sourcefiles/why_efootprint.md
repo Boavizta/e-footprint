@@ -1,6 +1,6 @@
 # Why e-footprint ?
 
-**We define ecodesign as the process of building or maintaining a digital service while minimizing its environmental impact.** Doing it well is less a question of *what could I do?* than of *what should I do first?*: out of all the actions a team could take to reduce a service's footprint, only some move the needle — and on every service it is a *different* some. Answering *which, and in what order* is the problem e-footprint exists to solve.
+**We define ecodesign as the process of building or maintaining a digital service while minimizing its environmental impact.** Doing it well is less a question of *what could I do?* than of *what should I do first, and what impact would that have?*: out of all the actions a team could take to reduce a service's footprint, only some move the needle — and on every service it is a *different* some. Answering *which, in what order, and with what impact* is the problem e-footprint exists to solve.
 
 This page lays out the three strategies teams use to answer that question, why modeling is the one e-footprint focuses on, why an explicit model is necessary at all, how precise it needs to be, and what a model of a digital service must therefore contain.
 

@@ -78,7 +78,7 @@ Three concrete answers a simulation can give:
 
 ### §7 — Conclusion
 
-Ecodesign isn't *"what should I do?"* — it's *"what should I do first?"*
+Ecodesigning isn't *"what could I do?"* but *"what should I do first, and what impact would that have?"*
 
 Only simulation answers the priority question. Best practices and measurement remain useful in their place. The trinity matters more than the rivalry.
 
