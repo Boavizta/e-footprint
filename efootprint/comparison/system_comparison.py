@@ -34,7 +34,7 @@ class Delta:
 
 @dataclass(frozen=True)
 class DecompositionRow:
-    """One (category, phase) cell of the breakdown, with each system's kg total and their delta."""
+    """One (category, phase) cell of the breakdown, holding its delta (each system's kg total is on the ``Delta``)."""
     category: str
     phase: str
     delta: Delta
@@ -98,7 +98,12 @@ def _attribute_value_str(explainable_object: ExplainableObject) -> Optional[str]
     value = getattr(explainable_object, "value", None)
     if value is None:
         return None
-    return str(value)
+    # Scalars read straight off the value (e.g. "300.0 watt"). Array-valued inputs (hourly / recurrent
+    # quantities) render via their wrapper's compact __str__ ("<N> values in <unit>: [first 10 / last 10]")
+    # rather than dumping the full numpy array.
+    if isinstance(explainable_object, ExplainableQuantity):
+        return str(value)
+    return str(explainable_object)
 
 
 class SystemComparison:
@@ -150,7 +155,7 @@ class SystemComparison:
         footprint_a = self.system_a.total_footprint
         footprint_b = self.system_b.total_footprint
         values_a, values_b, start_date = align_temporally_quantity_arrays(
-            footprint_a.to(u.kg).value, footprint_a.start_date, footprint_b.to(u.kg).value, footprint_b.start_date)
+            footprint_a.value, footprint_a.start_date, footprint_b.value, footprint_b.start_date)
 
         return TimeSeries(start_date=start_date, values_a=values_a, values_b=values_b)
 
