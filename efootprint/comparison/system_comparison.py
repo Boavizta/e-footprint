@@ -4,6 +4,7 @@ from typing import Dict, List, Optional
 
 import numpy as np
 
+from efootprint.abstract_modeling_classes.empty_explainable_object import EmptyExplainableObject
 from efootprint.abstract_modeling_classes.explainable_hourly_quantities import align_temporally_quantity_arrays
 from efootprint.abstract_modeling_classes.explainable_object_base_class import ExplainableObject
 from efootprint.abstract_modeling_classes.explainable_quantity import ExplainableQuantity
@@ -72,10 +73,20 @@ class InputDiff:
 
 @dataclass(frozen=True)
 class TimeSeries:
-    """Two systems' hourly footprint aligned on one calendar axis, plus their cumulative sums (kg)."""
+    """Two systems' hourly footprint aligned on one calendar axis, plus their cumulative sums (kg).
+
+    Carries both the combined totals (``values_a``/``values_b``) and the per-phase split
+    (``usage_*``/``fabrication_*``) on the *same* axis, so ``usage + fabrication == values`` hour-by-hour
+    for each system. The per-phase split lets a consumer bucket usage and fabrication exactly per period
+    (e.g. per year) rather than approximating with a single full-period ratio.
+    """
     start_date: datetime
     values_a: np.ndarray
     values_b: np.ndarray
+    usage_a: np.ndarray
+    usage_b: np.ndarray
+    fabrication_a: np.ndarray
+    fabrication_b: np.ndarray
 
     @property
     def hours(self) -> List[datetime]:
@@ -157,7 +168,36 @@ class SystemComparison:
         values_a, values_b, start_date = align_temporally_quantity_arrays(
             footprint_a.value, footprint_a.start_date, footprint_b.value, footprint_b.start_date)
 
-        return TimeSeries(start_date=start_date, values_a=values_a, values_b=values_b)
+        # The per-phase series ride on the same axis as the totals (same common start, same length), so
+        # usage + fabrication reconstructs the total hour-by-hour for each system.
+        usage_a = self._aligned_phase_series(self.system_a, "energy", start_date, len(values_a))
+        usage_b = self._aligned_phase_series(self.system_b, "energy", start_date, len(values_b))
+        fabrication_a = self._aligned_phase_series(self.system_a, "fabrication", start_date, len(values_a))
+        fabrication_b = self._aligned_phase_series(self.system_b, "fabrication", start_date, len(values_b))
+
+        return TimeSeries(
+            start_date=start_date, values_a=values_a, values_b=values_b,
+            usage_a=usage_a, usage_b=usage_b, fabrication_a=fabrication_a, fabrication_b=fabrication_b)
+
+    @staticmethod
+    def _aligned_phase_series(system, phase: str, axis_start: datetime, axis_length: int) -> np.ndarray:
+        """One system's combined hourly footprint for ``phase`` (kg), placed onto the shared axis.
+
+        Sums the per-category hourly footprints for the phase exactly as ``System.update_total_footprint``
+        builds the total, then positions the system's own window inside the shared ``[axis_start, +length]``
+        axis (zero outside it) — so usage + fabrication equals the aligned total per hour.
+        """
+        per_category = (system.total_energy_footprints if phase == "energy"
+                        else system.total_fabrication_footprints)
+        phase_total = sum(per_category.values(), start=EmptyExplainableObject())
+
+        aligned = np.zeros(axis_length, dtype=np.float32)
+        if isinstance(phase_total, EmptyExplainableObject):
+            return aligned
+        magnitude = phase_total.to(u.kg).value.magnitude.astype(np.float32)
+        offset = int((phase_total.start_date - axis_start).total_seconds() // 3600)
+        aligned[offset:offset + len(magnitude)] = magnitude
+        return aligned
 
     @property
     def input_diff(self) -> InputDiff:
