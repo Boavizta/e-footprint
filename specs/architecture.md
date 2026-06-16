@@ -20,7 +20,7 @@ This separation is constitutional (`specs/constitution.md` §1.1). `core/` is bu
 
 `efootprint/builders/` provides convenience subclasses of core objects with sensible defaults and external-data integrations (EcoLogits, Boavizta).
 
-`efootprint/modeling_templates/` ships reference systems backing the mkdocs how-to pages: JSON files under `how_to/`, regenerable Python authoring scripts under `how_to/_authoring/`, and a typed registry (`HowToTemplate`, `HOW_TO_TEMPLATES`). Public helpers `list_how_to_templates`, `get_template`, `load_template_system` live on the package; imports are upward-only (`api_utils` for load/save). Template authoring uses `efootprint.builders.timeseries` builders for input hourly/recurrent timeseries so those inputs stay editable in the interface after JSON load.
+`efootprint/modeling_templates/` ships reference systems backing the mkdocs how-to pages: JSON files under `how_to/`, regenerable Python authoring scripts under `how_to/_authoring/`, and a typed registry (`HowToTemplate`, `HOW_TO_TEMPLATES`). A separate `HowToGuide`/`HOW_TO_GUIDES` registry maps each how-to *page* (`doc_path`) to the `template_id` it walks through — decoupled from the loadable template, so several guides can share one scenario (the database and server-to-server guides both point at `ecommerce`), and `HowToTemplate` itself carries no `doc_path`. Public helpers `list_how_to_templates`, `list_how_to_guides`, `get_template`, `load_template_system` live on the package; imports are upward-only (`api_utils` for load/save). Template authoring uses `efootprint.builders.timeseries` builders for input hourly/recurrent timeseries so those inputs stay editable in the interface after JSON load.
 
 ## Core (`efootprint/core/`)
 

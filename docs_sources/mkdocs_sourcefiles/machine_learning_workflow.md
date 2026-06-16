@@ -94,4 +94,4 @@ numbers — ideally measured (via CodeCarbon, EcoLogits, or your own
 profiling) rather than guessed.
 
 > Load this scenario in the e-footprint interface:
-> [Machine learning workflow]({{ config.extra.interface_base_url }}/machine_learning_workflow)
+> [Machine learning workflow]({{ config.extra.interface_base_url }}/template/machine_learning_workflow/)

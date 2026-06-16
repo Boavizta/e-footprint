@@ -89,4 +89,4 @@ model can be read from three angles: the product journey, the database
 server, and the server-to-server calls between them.
 
 > Load this scenario in the e-footprint interface:
-> [E-commerce web/database scenario]({{ config.extra.interface_base_url }}/ecommerce)
+> [E-commerce web/database scenario]({{ config.extra.interface_base_url }}/template/ecommerce/)

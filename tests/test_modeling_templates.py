@@ -22,7 +22,8 @@ from efootprint.builders.timeseries import (
     ExplainableRecurrentQuantitiesFromConstant,
 )
 from efootprint.modeling_templates import load_introductory_template_system, load_template_system
-from efootprint.modeling_templates.how_to.registry import HOW_TO_TEMPLATES, HowToTemplate
+from efootprint.modeling_templates.how_to.registry import (
+    HOW_TO_GUIDES, HOW_TO_TEMPLATES, HowToGuide, HowToTemplate)
 from efootprint.modeling_templates.introductory.registry import (
     INTRODUCTORY_TEMPLATES,
     IntroductoryTemplate,
@@ -31,8 +32,13 @@ from efootprint.modeling_templates.introductory.registry import (
 MKDOCS_SOURCEFILES = (
     Path(__file__).resolve().parent.parent / "docs_sources" / "mkdocs_sourcefiles")
 
+# Every loadable scenario a guide may point at: how-to templates plus introductory ones.
+LOADABLE_TEMPLATE_IDS = {t.id for t in HOW_TO_TEMPLATES} | {t.id for t in INTRODUCTORY_TEMPLATES}
+
 _template_params = pytest.mark.parametrize(
     "tpl", HOW_TO_TEMPLATES, ids=lambda t: t.id)
+_guide_params = pytest.mark.parametrize(
+    "guide", HOW_TO_GUIDES, ids=lambda g: g.id)
 _introductory_template_params = pytest.mark.parametrize(
     "tpl", INTRODUCTORY_TEMPLATES, ids=lambda t: t.id)
 
@@ -124,10 +130,10 @@ def test_authoring_script_round_trips_to_committed_json(tpl: HowToTemplate):
         f"and commit the regenerated JSON.")
 
 
-def test_metadata_schema():
+def test_template_metadata_schema():
     ids_seen: set[str] = set()
     for tpl in HOW_TO_TEMPLATES:
-        for field in ("id", "name", "description", "doc_path"):
+        for field in ("id", "name", "description"):
             value = getattr(tpl, field)
             assert isinstance(value, str) and value.strip(), (
                 f"{tpl.id}.{field} must be a non-empty string")
@@ -136,27 +142,39 @@ def test_metadata_schema():
         ids_seen.add(tpl.id)
 
 
-@_template_params
-def test_template_doc_path_exists(tpl: HowToTemplate):
-    target = MKDOCS_SOURCEFILES / tpl.doc_path
+def test_guide_metadata_schema():
+    ids_seen: set[str] = set()
+    for guide in HOW_TO_GUIDES:
+        for field in ("id", "name", "doc_path", "template_id"):
+            value = getattr(guide, field)
+            assert isinstance(value, str) and value.strip(), (
+                f"{guide.id}.{field} must be a non-empty string")
+        assert guide.id not in ids_seen, f"Duplicate guide id {guide.id}"
+        ids_seen.add(guide.id)
+
+
+@_guide_params
+def test_guide_template_id_resolves_to_a_loadable_template(guide: HowToGuide):
+    assert guide.template_id in LOADABLE_TEMPLATE_IDS, (
+        f"Guide {guide.id} points at template {guide.template_id!r}, which is neither a how-to "
+        f"nor an introductory template; the interface would 404 its 'Load this scenario' link.")
+
+
+@_guide_params
+def test_guide_doc_path_exists(guide: HowToGuide):
+    target = MKDOCS_SOURCEFILES / guide.doc_path
     assert target.is_file(), (
-        f"Template {tpl.id} doc_path {target} does not exist; "
+        f"Guide {guide.id} doc_path {target} does not exist; "
         f"the prose track must land the matching How-to page.")
 
 
-@_template_params
-def test_how_to_page_references_template(tpl: HowToTemplate):
-    """The How-to page must point at its template via the interactive deep link."""
-    text = (MKDOCS_SOURCEFILES / tpl.doc_path).read_text()
-    assert "interface_base_url" in text and f"/{tpl.id}" in text, (
-        f"How-to page {tpl.doc_path} does not link to template {tpl.id} via "
-        f"the interface_base_url deep link.")
-
-
-def test_web_database_guides_link_to_ecommerce_interface_template():
-    for doc_path in ("database_modeling.md", "server_to_server_interaction.md"):
-        text = (MKDOCS_SOURCEFILES / doc_path).read_text()
-        assert "interface_base_url" in text and "/ecommerce" in text
+@_guide_params
+def test_how_to_page_references_its_template(guide: HowToGuide):
+    """The How-to page must deep-link to the picker template it walks through."""
+    text = (MKDOCS_SOURCEFILES / guide.doc_path).read_text()
+    assert "interface_base_url" in text and f"/template/{guide.template_id}/" in text, (
+        f"How-to page {guide.doc_path} does not link to template {guide.template_id} via "
+        f"the interface_base_url /template/<id>/ deep link.")
 
 
 @_introductory_template_params

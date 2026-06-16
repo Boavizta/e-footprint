@@ -77,4 +77,4 @@ by the database guide and the interface's introductory e-commerce card;
 this page simply reads it from the server-to-server angle.
 
 > Load this scenario in the e-footprint interface:
-> [E-commerce web/database scenario]({{ config.extra.interface_base_url }}/ecommerce)
+> [E-commerce web/database scenario]({{ config.extra.interface_base_url }}/template/ecommerce/)
