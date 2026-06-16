@@ -4,6 +4,12 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](http://keepachangelog.com/)
 and this project adheres to [Semantic Versioning](http://semver.org/)
 
+## [V22.1.0]
+
+### Added
+- **`efootprint.comparison` capability.** `system_a.compare_to(system_b)` returns a `SystemComparison` computing the headline footprint totals and their delta (absolute + relative), the per-(category, phase) decomposition (read from each system's `total_energy_/fabrication_footprint_sum_over_period` dicts — category SSOT is `OBJECT_CATEGORIES`, so the bars sum to the headline delta by construction), the two systems' footprint time-series aligned on a shared calendar axis with cumulative sums, and the input diff (objects paired by id first, then by (name, type), emitting changed-attribute rows and "only in A / only in B"). Ships simple matplotlib notebook plots (`plot_emissions_over_time`, `plot_cumulative_emissions`, `plot_decomposition`). No new modeling logic, no attribution claims — every number is read from already-computed totals.
+- **Duplication helpers** (`efootprint.comparison.duplication`): `duplicate_system(system)` round-trips a system through JSON to mint a fresh System id while preserving every object id (so the comparison diff can pair by identity); `assign_fresh_system_id(system)` re-ids only the System object.
+
 ## [V22.0.1]
 
 ### Fixed

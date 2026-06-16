@@ -338,6 +338,11 @@ class System(ModelingObject):
 
         self.total_footprint = round(total_footprint, 4)
 
+    def compare_to(self, other: "System"):
+        """Return a {class:SystemComparison} of this system against ``other`` — the notebook entry point for the comparison capability (totals + deltas, per-(category, phase) decomposition, aligned/cumulative time-series, input diff)."""
+        from efootprint.comparison.system_comparison import SystemComparison
+        return SystemComparison(self, other)
+
     def plot_footprints_by_category_and_object(self, filename=None, height=400, width=800, notebook=True):
         import plotly.express as px
         import plotly

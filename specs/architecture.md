@@ -145,6 +145,18 @@ summed over its systems (Empty when system-less). It is the only `attributed_*` 
 - **Deserialization order (critical).** Input dicts must be initialized empty before `after_init()` runs. Then a deferred loop populates them via `replace_in_mod_obj_container_without_recomputation`. Then triggers are enabled on the populated dicts. This prevents crashes from computing on incomplete state.
 - **Weighted relationship dicts.** Relationship dicts whose values are weights (`UsageJourney.uj_steps`, `UsageJourneyStep.jobs`, `RecurrentServerNeed.jobs`, `EdgeDeviceGroup.sub_group_counts` / `edge_device_counts`) are built with `to_weighted_explainable_object_dict` (constructor sugar: list of keys with duplicates accumulating, or plain-number values wrapped as dimensionless `SourceValue`s), which returns a `WeightedExplainableObjectDict` enforcing dimensionless, non-negative weights on every `__setitem__`. JSON load rebuilds dict attributes with the class declared by their `__init__` annotation, so the subclass (and its invariant) survives round-trips; `ModelingUpdate` and structural dict replacements preserve the dict type too. Calculations read the weights via `.items()` (e.g. journey duration = Σ times-per-journey × step time); iterating the dict yields the related objects in insertion order, so step ordering survives.
 
+## Comparison (`efootprint/comparison/`)
+
+`SystemComparison` (entry point `System.compare_to(other)`) is the domain-truth comparison of two systems, usable directly from a notebook or coding agent. It is pure read-time computation — no new modeling logic, no attribution claims — every number is read from each system's already-computed totals:
+
+- **Totals + delta** from `total_footprint.sum()`; the `Delta` value object exposes the absolute change and the relative fraction over the baseline (`None` when the baseline is zero).
+- **Per-(category, phase) decomposition** from each system's `total_energy_/fabrication_footprint_sum_over_period` dicts (category SSOT = `OBJECT_CATEGORIES`, phases = energy/fabrication). Because those dicts already sum to the total, the decomposition rows sum to the headline delta by construction.
+- **Aligned + cumulative time-series** from each system's `total_footprint`, sharing one calendar axis via `align_temporally_quantity_arrays` (non-overlapping hours zero-padded).
+- **Input diff**: walks `all_linked_objects`, pairs objects by id first then by (name, type), and emits changed input-attribute rows (value + unit + source + confidence, inputs identified as the non-`calculated_attributes` `ExplainableObject`s) plus "only in A / only in B". Object identity uses `efootprint_class` / `class_as_simple_str` to see through the `ContextualModelingObjectAttribute` proxy.
+- **Notebook plots** (`plot_emissions_over_time`, `plot_cumulative_emissions`, `plot_decomposition`) reuse the existing matplotlib dependency and the `EmissionPlotter`/`plot_emission_diffs` precedent.
+
+`efootprint/comparison/duplication.py` provides `duplicate_system(system)` (serialize→deserialize round-trip that mints a fresh System id while preserving every object id — so the diff can pair by identity) and `assign_fresh_system_id(system)` (re-id only the System object). The new id is always distinct from the old one, even under the name-as-id test convention.
+
 ## Units and calculations
 
 All quantities use Pint for unit handling. Custom units are defined in `efootprint/constants/custom_units.txt`. Calculations are explainable with full dependency graphs.
