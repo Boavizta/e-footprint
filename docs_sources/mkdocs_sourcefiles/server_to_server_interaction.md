@@ -1,5 +1,8 @@
 # How to model server-to-server interaction
 
+> Load this scenario in the e-footprint interface:
+> [E-commerce web/database scenario]({{ config.extra.interface_base_url }}/template/ecommerce/)
+
 ## How e-footprint models inter-server calls
 
 There is no first-class primitive in e-footprint for "service A calls
@@ -75,6 +78,3 @@ refine the parts that turn out to dominate.
 The interactive scenario is the same e-commerce web/database system used
 by the database guide and the interface's introductory e-commerce card;
 this page simply reads it from the server-to-server angle.
-
-> Load this scenario in the e-footprint interface:
-> [E-commerce web/database scenario]({{ config.extra.interface_base_url }}/template/ecommerce/)

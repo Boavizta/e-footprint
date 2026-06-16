@@ -7,6 +7,9 @@ A database-flavoured {class:Service}, plugged in through the server's
 installed-services mechanism, would bundle a sensible engine baseline
 and canonical query templates — that would be a welcome contribution.
 
+> Load this scenario in the e-footprint interface:
+> [E-commerce web/database scenario]({{ config.extra.interface_base_url }}/template/ecommerce/)
+
 ## How a database maps onto the primitives
 
 - **Engine baseline.** Use {param:Server.base_ram_consumption} and
@@ -87,6 +90,3 @@ a usage journey alongside an upstream web server.
 The interactive scenario uses an e-commerce journey so the same loaded
 model can be read from three angles: the product journey, the database
 server, and the server-to-server calls between them.
-
-> Load this scenario in the e-footprint interface:
-> [E-commerce web/database scenario]({{ config.extra.interface_base_url }}/template/ecommerce/)

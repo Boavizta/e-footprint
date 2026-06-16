@@ -1,5 +1,8 @@
 # How to model a machine-learning workflow
 
+> Load this scenario in the e-footprint interface:
+> [Machine learning workflow]({{ config.extra.interface_base_url }}/template/machine_learning_workflow/)
+
 ## The two phases
 
 An ML system in production has two phases that consume resources very
@@ -92,6 +95,3 @@ The underlying {class:Job}, {class:GPUJob}, or
 {class:EcoLogitsGenAIExternalAPIJob} carries the per-call resource
 numbers — ideally measured (via CodeCarbon, EcoLogits, or your own
 profiling) rather than guessed.
-
-> Load this scenario in the e-footprint interface:
-> [Machine learning workflow]({{ config.extra.interface_base_url }}/template/machine_learning_workflow/)
