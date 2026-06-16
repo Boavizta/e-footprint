@@ -23,30 +23,36 @@ class TestGetUnitFamily(unittest.TestCase):
         self.assertIsNone(_get_unit_family(1 * u.cpu_core))
 
     def test_matches_non_dimensionless_compatible_families_by_compatibility(self):
-        """Test energy, mass, and power families are matched via is_compatible_with."""
+        """Test energy, mass, power, and time families are matched via is_compatible_with."""
         self.assertEqual(UNIT_FAMILIES[0], _get_unit_family(1 * u.kg))
         self.assertEqual(UNIT_FAMILIES[1], _get_unit_family(1 * u.kWh))
         self.assertEqual(UNIT_FAMILIES[2], _get_unit_family(1 * u.W))
+        self.assertEqual(UNIT_FAMILIES[3], _get_unit_family(1 * u.hour))
 
-    def test_compatible_but_non_identical_units_match_energy_mass_power_families(self):
-        """Test base SI units compatible with energy/mass/power families are correctly matched."""
+    def test_compatible_but_non_identical_units_match_energy_mass_power_time_families(self):
+        """Test base SI units compatible with energy/mass/power/time families are correctly matched."""
         self.assertEqual(UNIT_FAMILIES[0], _get_unit_family(1 * u.parse_expression("gram")))
         self.assertEqual(UNIT_FAMILIES[1], _get_unit_family(1 * u.parse_expression("joule")))
         self.assertEqual(UNIT_FAMILIES[2], _get_unit_family(1 * u.parse_expression("joule/second")))
+        self.assertEqual(UNIT_FAMILIES[3], _get_unit_family(1 * u.parse_expression("second")))
+
+    def test_time_ratios_are_not_matched_to_the_time_family(self):
+        """Test dimensionless time ratios (e.g. fraction_of_usage_time) are not treated as durations."""
+        self.assertIsNone(_get_unit_family(7 * u.hour / u.day))
 
     def test_matches_dimensionless_compatible_families_by_exact_unit(self):
         """Test occurrence, concurrent, byte, byte_ram, byte_stored families require exact unit match."""
-        self.assertEqual(UNIT_FAMILIES[3], _get_unit_family(1 * u.occurrence))
-        self.assertEqual(UNIT_FAMILIES[4], _get_unit_family(1 * u.concurrent))
-        self.assertEqual(UNIT_FAMILIES[5], _get_unit_family(1 * u.byte))
-        self.assertEqual(UNIT_FAMILIES[6], _get_unit_family(1 * u.byte_ram))
-        self.assertEqual(UNIT_FAMILIES[7], _get_unit_family(1 * u.byte_stored))
+        self.assertEqual(UNIT_FAMILIES[4], _get_unit_family(1 * u.occurrence))
+        self.assertEqual(UNIT_FAMILIES[5], _get_unit_family(1 * u.concurrent))
+        self.assertEqual(UNIT_FAMILIES[6], _get_unit_family(1 * u.byte))
+        self.assertEqual(UNIT_FAMILIES[7], _get_unit_family(1 * u.byte_ram))
+        self.assertEqual(UNIT_FAMILIES[8], _get_unit_family(1 * u.byte_stored))
 
     def test_dimensionless_compatible_units_do_not_cross_match(self):
         """Test that occurrence quantities do not match byte or concurrent families."""
         result = _get_unit_family(1 * u.occurrence)
-        self.assertNotEqual(UNIT_FAMILIES[4], result)
         self.assertNotEqual(UNIT_FAMILIES[5], result)
+        self.assertNotEqual(UNIT_FAMILIES[6], result)
 
 
 class TestDisplayUtils(unittest.TestCase):
@@ -69,6 +75,22 @@ class TestDisplayUtils(unittest.TestCase):
         self.assertEqual(u.tonne, best_display_unit(np.array([100, 200, 50000], dtype=np.float32) * u.kg))
         self.assertEqual(u.kg, best_display_unit(np.array([1, 2, 3], dtype=np.float32) * u.kg))
         self.assertEqual(u.mg, best_display_unit(np.zeros(10, dtype=np.float32) * u.kg))
+
+    def test_best_display_unit_for_durations(self):
+        """Test best display unit picks the most readable time unit across the duration range."""
+        self.assertEqual(u.year, best_display_unit(43830 * u.hour))
+        self.assertEqual(u.day, best_display_unit(36 * u.hour))
+        self.assertEqual(u.hour, best_display_unit(90 * u.minute))
+        self.assertEqual(u.s, best_display_unit(45 * u.s))
+        self.assertEqual(u.ms, best_display_unit(0.5 * u.s))
+        self.assertEqual(u.ms, best_display_unit(0 * u.hour))
+
+    def test_format_quantity_for_display_for_durations(self):
+        """Test display formatting converts weird-looking durations into readable time units."""
+        self.assertEqual(5.0 * u.year, format_quantity_for_display(43830 * u.hour))
+        self.assertEqual(1.5 * u.day, format_quantity_for_display(36 * u.hour))
+        self.assertEqual(1.5 * u.hour, format_quantity_for_display(90 * u.minute))
+        self.assertEqual(500.0 * u.ms, format_quantity_for_display(0.5 * u.s))
 
     def test_format_quantity_for_display_for_scalars(self):
         """Test display formatting converts and rounds scalar quantities."""
@@ -126,6 +148,15 @@ class TestDisplayUtils(unittest.TestCase):
         self.assertEqual("kg", human_readable_unit(u.kg))
         self.assertEqual("kWh", human_readable_unit(u.kWh))
         self.assertEqual("B", human_readable_unit(u.byte))
+
+    def test_human_readable_unit_renders_time_units_compactly(self):
+        """Test the curated time family renders with terse, standard abbreviations."""
+        self.assertEqual("ms", human_readable_unit(u.ms))
+        self.assertEqual("s", human_readable_unit(u.s))
+        self.assertEqual("min", human_readable_unit(u.minute))
+        self.assertEqual("h", human_readable_unit(u.hour))
+        self.assertEqual("d", human_readable_unit(u.day))
+        self.assertEqual("yr", human_readable_unit(u.year))
 
     def test_format_display_number_preserves_numpy_scalar_formatting(self):
         """Test NumPy scalars do not expand into float precision artifacts when rendered."""
