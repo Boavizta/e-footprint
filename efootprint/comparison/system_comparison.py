@@ -1,5 +1,5 @@
 from dataclasses import dataclass
-from datetime import datetime, timedelta
+from datetime import datetime
 from typing import Dict, List, Optional
 
 import numpy as np
@@ -11,6 +11,7 @@ from efootprint.abstract_modeling_classes.explainable_quantity import Explainabl
 from efootprint.abstract_modeling_classes.modeling_object import ModelingObject
 from efootprint.all_classes_in_order import OBJECT_CATEGORIES
 from efootprint.constants.units import u
+from efootprint.utils.plot_baseline_and_simulation_data import get_time_axis
 
 PHASES = ("energy", "fabrication")
 
@@ -89,8 +90,8 @@ class TimeSeries:
     fabrication_b: np.ndarray
 
     @property
-    def hours(self) -> List[datetime]:
-        return [self.start_date + timedelta(hours=i) for i in range(len(self.values_a))]
+    def hours(self) -> np.ndarray:
+        return get_time_axis(self.start_date, len(self.values_a))
 
     @property
     def cumulative_a(self) -> np.ndarray:
