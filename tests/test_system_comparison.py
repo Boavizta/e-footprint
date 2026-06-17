@@ -193,6 +193,45 @@ class TestSystemComparison(TestCase):
         self.assertEqual("300.0 watt", changed[0].value_a)
         self.assertEqual("500.0 watt", changed[0].value_b)
 
+    def test_input_diff_surfaces_a_changed_usage_journey_step_weight(self):
+        """Test a difference consisting ONLY of a changed dict-relationship count (a uj_steps weight) is
+        detected — these counts are ExplainableObjectDict values the scalar diff walk skips."""
+        from efootprint.core.usage.usage_journey import UsageJourney
+
+        uj_b = next(o for o in self.system_b.all_linked_objects if isinstance(o, UsageJourney))
+        step = next(iter(uj_b.uj_steps))
+        uj_b.uj_steps[step] = SourceValue(3 * u.dimensionless)
+
+        diff = self.system_a.compare_to(self.system_b).input_diff
+
+        self.assertEqual([], diff.only_in_a)
+        self.assertEqual([], diff.only_in_b)
+        changed = [row for row in diff.changed if row.attribute.startswith("Times per journey")]
+        self.assertEqual(1, len(changed))
+        self.assertEqual("UsageJourney", changed[0].object_class)
+        self.assertIn(step.name, changed[0].attribute)
+        self.assertEqual("1", changed[0].value_a)
+        self.assertEqual("3", changed[0].value_b)
+
+    def test_input_diff_surfaces_dict_membership_added_in_one_model(self):
+        """Test a key present in only one model's dict surfaces as a count-from-absent row (value_a None,
+        value_b the new count) — the membership add/remove case of the dict diff."""
+        from efootprint.core.hardware.server import Server
+        from efootprint.core.usage.job import Job
+        from efootprint.core.usage.usage_journey_step import UsageJourneyStep
+
+        step_b = next(o for o in self.system_b.all_linked_objects if isinstance(o, UsageJourneyStep))
+        server_b = next(o for o in self.system_b.all_linked_objects if isinstance(o, Server))
+        step_b.jobs[Job.from_defaults("extra job", server=server_b)] = SourceValue(2 * u.dimensionless)
+
+        diff = self.system_a.compare_to(self.system_b).input_diff
+
+        added = [row for row in diff.changed if row.attribute == "Times per step (extra job)"]
+        self.assertEqual(1, len(added))
+        self.assertEqual("UsageJourneyStep", added[0].object_class)
+        self.assertIsNone(added[0].value_a)
+        self.assertEqual("2", added[0].value_b)
+
     def test_input_diff_reports_unmatched_objects(self):
         """Test objects present in only one system are reported as A-only / B-only."""
         independent = build_system("model D", "server D")

@@ -7,6 +7,7 @@ import numpy as np
 from efootprint.abstract_modeling_classes.empty_explainable_object import EmptyExplainableObject
 from efootprint.abstract_modeling_classes.explainable_hourly_quantities import align_temporally_quantity_arrays
 from efootprint.abstract_modeling_classes.explainable_object_base_class import ExplainableObject
+from efootprint.abstract_modeling_classes.explainable_object_dict import ExplainableObjectDict
 from efootprint.abstract_modeling_classes.explainable_quantity import ExplainableQuantity
 from efootprint.abstract_modeling_classes.modeling_object import ModelingObject
 from efootprint.all_classes_in_order import OBJECT_CATEGORIES
@@ -116,6 +117,13 @@ def _attribute_value_str(explainable_object: ExplainableObject) -> Optional[str]
     if isinstance(explainable_object, ExplainableQuantity):
         return str(value)
     return str(explainable_object)
+
+
+def _count_value_str(explainable_quantity: ExplainableQuantity) -> str:
+    """A weighted-dict count as a bare magnitude ("3", "2.5"), dropping the dimensionless unit and a
+    trailing ".0" — these counts are how many times a key occurs, not a physical quantity."""
+    magnitude = float(explainable_quantity.value.magnitude)
+    return str(int(magnitude)) if magnitude.is_integer() else str(magnitude)
 
 
 class SystemComparison:
@@ -235,6 +243,15 @@ class SystemComparison:
         return {key: value for key, value in obj.__dict__.items()
                 if key not in skip and isinstance(value, ExplainableObject)}
 
+    @staticmethod
+    def _dict_input_attributes(obj: ModelingObject) -> Dict[str, ExplainableObjectDict]:
+        """The object's dict-relationship inputs (e.g. ``UsageJourney.uj_steps``): per-key dimensionless
+        counts (weights) that the scalar ``_input_attributes`` walk skips, since an ``ExplainableObjectDict``
+        is not an ``ExplainableObject``."""
+        skip = set(obj.calculated_attributes) | set(obj.attributes_that_shouldnt_trigger_update_logic)
+        return {key: value for key, value in obj.__dict__.items()
+                if key not in skip and isinstance(value, ExplainableObjectDict)}
+
     def _diff_inputs(self, obj_a: ModelingObject, obj_b: ModelingObject) -> List[AttributeDiff]:
         inputs_a = self._input_attributes(obj_a)
         inputs_b = self._input_attributes(obj_b)
@@ -253,7 +270,55 @@ class SystemComparison:
                 confidence_a=getattr(value_a, "confidence", None),
                 confidence_b=getattr(value_b, "confidence", None)))
 
+        dicts_a = self._dict_input_attributes(obj_a)
+        dicts_b = self._dict_input_attributes(obj_b)
+        for attribute in dicts_a.keys() & dicts_b.keys():
+            diffs.extend(self._diff_dict_input(obj_a, obj_b, attribute, dicts_a[attribute], dicts_b[attribute]))
+
         return diffs
+
+    def _diff_dict_input(self, obj_a, obj_b, attribute, dict_a, dict_b) -> List[AttributeDiff]:
+        """Diff one dict-relationship input key by key: a changed count (the key in both, weight differs),
+        an added key (only in B → absent/count row), or a removed key (only in A → count/absent row).
+
+        Keys are ``ModelingObject``s matched id-first then (name, type) — the same identity philosophy as
+        the object-level pairing — so renaming a key in B still pairs it. The attribute label is the dict's
+        ``weight_labels`` metadata plus the key's name, so each row reads as e.g. "Times per journey (step
+        name)" with the counts as the two values."""
+        weight_label = obj_a.weight_labels.get(attribute, attribute)
+        keys_b_by_id = {key.id: key for key in dict_b if isinstance(key, ModelingObject)}
+        keys_b_by_name_type = {(key.name, key.efootprint_class): key for key in dict_b
+                               if isinstance(key, ModelingObject)}
+
+        diffs = []
+        matched_b_ids = set()
+        for key_a in dict_a:
+            key_b = (keys_b_by_id.get(getattr(key_a, "id", None))
+                     or keys_b_by_name_type.get((getattr(key_a, "name", None), getattr(key_a, "efootprint_class", None))))
+            count_a = _count_value_str(dict_a[key_a])
+            if key_b is None:  # removed: key present only in A
+                diffs.append(self._dict_attribute_diff(obj_a, obj_b, weight_label, key_a, count_a, None))
+                continue
+            matched_b_ids.add(id(key_b))
+            count_b = _count_value_str(dict_b[key_b])
+            if count_a != count_b:
+                diffs.append(self._dict_attribute_diff(obj_a, obj_b, weight_label, key_a, count_a, count_b))
+
+        for key_b in dict_b:  # added: keys present only in B
+            if id(key_b) not in matched_b_ids:
+                diffs.append(self._dict_attribute_diff(
+                    obj_a, obj_b, weight_label, key_b, None, _count_value_str(dict_b[key_b])))
+
+        return diffs
+
+    @staticmethod
+    def _dict_attribute_diff(obj_a, obj_b, weight_label, key, count_a, count_b) -> AttributeDiff:
+        key_name = getattr(key, "name", str(key))
+        return AttributeDiff(
+            object_class=obj_a.class_as_simple_str, object_name_a=obj_a.name, object_name_b=obj_b.name,
+            attribute=f"{weight_label} ({key_name})",
+            value_a=count_a, value_b=count_b,
+            source_a=None, source_b=None, confidence_a=None, confidence_b=None)
 
     def plot_emissions_over_time(self, filepath=None, figsize=(10, 5), plt_show=False):
         return _plot_paired_series(
