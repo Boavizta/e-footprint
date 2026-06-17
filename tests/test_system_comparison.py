@@ -137,7 +137,7 @@ class TestSystemComparison(TestCase):
     def test_time_series_per_phase_split_is_per_period_not_a_global_ratio(self):
         """Test the per-phase series carry a genuinely per-period mix: a system whose usage is front-loaded
         in year 1 and sparse in year 2 has a different usage/fabrication ratio each year, which a single
-        full-period ratio would not reproduce. This is what makes the per-year split exact (review #2)."""
+        full-period ratio would not reproduce. This is what makes the per-year split exact."""
         # ~14 months: heavy usage early (year 1), a sparse tail in year 2 → non-uniform yearly mix.
         starts = [5] * 4000 + [0] * 5000 + [0.1] * 1000
         system = build_system("front loaded", "fl server", hourly_starts=starts, start="2025-01-01")

@@ -168,13 +168,17 @@ class SystemComparison:
         footprint_b = self.system_b.total_footprint
         values_a, values_b, start_date = align_temporally_quantity_arrays(
             footprint_a.value, footprint_a.start_date, footprint_b.value, footprint_b.start_date)
+        assert len(values_a) == len(values_b)
+        total_timeseries_length = len(values_a)
 
         # The per-phase series ride on the same axis as the totals (same common start, same length), so
         # usage + fabrication reconstructs the total hour-by-hour for each system.
-        usage_a = self._aligned_phase_series(self.system_a, "energy", start_date, len(values_a))
-        usage_b = self._aligned_phase_series(self.system_b, "energy", start_date, len(values_b))
-        fabrication_a = self._aligned_phase_series(self.system_a, "fabrication", start_date, len(values_a))
-        fabrication_b = self._aligned_phase_series(self.system_b, "fabrication", start_date, len(values_b))
+        usage_a = self._aligned_phase_series(self.system_a, "energy", start_date, total_timeseries_length)
+        usage_b = self._aligned_phase_series(self.system_b, "energy", start_date, total_timeseries_length)
+        fabrication_a = self._aligned_phase_series(
+            self.system_a, "fabrication", start_date, total_timeseries_length)
+        fabrication_b = self._aligned_phase_series(
+            self.system_b, "fabrication", start_date, total_timeseries_length)
 
         return TimeSeries(
             start_date=start_date, values_a=values_a, values_b=values_b,
