@@ -13,6 +13,7 @@ from efootprint.abstract_modeling_classes.modeling_object import ModelingObject
 from efootprint.all_classes_in_order import OBJECT_CATEGORIES
 from efootprint.constants.units import u
 from efootprint.utils.plot_baseline_and_simulation_data import get_time_axis
+from efootprint.utils.tools import get_init_signature_params
 
 PHASES = ("energy", "fabrication")
 
@@ -124,6 +125,19 @@ def _count_value_str(explainable_quantity: ExplainableQuantity) -> str:
     trailing ".0" — these counts are how many times a key occurs, not a physical quantity."""
     magnitude = float(explainable_quantity.value.magnitude)
     return str(int(magnitude)) if magnitude.is_integer() else str(magnitude)
+
+
+def _constructor_input_values(obj: ModelingObject) -> Dict[str, object]:
+    """The object's declared constructor inputs, keyed by attribute name — the SSOT for "what the user
+    provided", mirroring ``copy_with`` and ``is_structural_input_dict_attribute``. Calculated and infra
+    attributes (``id``, cached properties, …) are excluded by construction: they are not ``__init__``
+    parameters, so no skip-list of computed attributes is needed.
+
+    Reads the signature off ``efootprint_class`` rather than ``type(obj)`` because linked objects arrive
+    wrapped in ``ContextualModelingObjectAttribute`` proxies; ``efootprint_class`` (and attribute access)
+    transparently resolve to the wrapped modeling object, exactly as the object-level pairing relies on."""
+    return {name: getattr(obj, name) for name in get_init_signature_params(obj.efootprint_class)
+            if name not in ("self", "name") and hasattr(obj, name)}
 
 
 class SystemComparison:
@@ -239,18 +253,25 @@ class SystemComparison:
 
     @staticmethod
     def _input_attributes(obj: ModelingObject) -> Dict[str, ExplainableObject]:
-        skip = set(obj.calculated_attributes) | set(obj.attributes_that_shouldnt_trigger_update_logic)
-        return {key: value for key, value in obj.__dict__.items()
-                if key not in skip and isinstance(value, ExplainableObject)}
+        """The object's scalar/array ``ExplainableObject`` inputs, keyed by attribute name."""
+        return {name: value for name, value in _constructor_input_values(obj).items()
+                if isinstance(value, ExplainableObject)}
 
     @staticmethod
     def _dict_input_attributes(obj: ModelingObject) -> Dict[str, ExplainableObjectDict]:
         """The object's dict-relationship inputs (e.g. ``UsageJourney.uj_steps``): per-key dimensionless
         counts (weights) that the scalar ``_input_attributes`` walk skips, since an ``ExplainableObjectDict``
         is not an ``ExplainableObject``."""
-        skip = set(obj.calculated_attributes) | set(obj.attributes_that_shouldnt_trigger_update_logic)
-        return {key: value for key, value in obj.__dict__.items()
-                if key not in skip and isinstance(value, ExplainableObjectDict)}
+        return {name: value for name, value in _constructor_input_values(obj).items()
+                if isinstance(value, ExplainableObjectDict)}
+
+    @staticmethod
+    def _list_input_attributes(obj: ModelingObject) -> Dict[str, list]:
+        """The object's list-relationship inputs (e.g. ``System.usage_patterns``, ``UsagePattern.devices``):
+        ordered links to other ``ModelingObject``s, diffed by membership. Non-``ModelingObject`` lists (none
+        exist today) are excluded — they have no identity to pair on."""
+        return {name: value for name, value in _constructor_input_values(obj).items()
+                if isinstance(value, list) and all(isinstance(elt, ModelingObject) for elt in value)}
 
     def _diff_inputs(self, obj_a: ModelingObject, obj_b: ModelingObject) -> List[AttributeDiff]:
         inputs_a = self._input_attributes(obj_a)
@@ -274,6 +295,11 @@ class SystemComparison:
         dicts_b = self._dict_input_attributes(obj_b)
         for attribute in dicts_a.keys() & dicts_b.keys():
             diffs.extend(self._diff_dict_input(obj_a, obj_b, attribute, dicts_a[attribute], dicts_b[attribute]))
+
+        lists_a = self._list_input_attributes(obj_a)
+        lists_b = self._list_input_attributes(obj_b)
+        for attribute in lists_a.keys() & lists_b.keys():
+            diffs.extend(self._diff_list_input(obj_a, obj_b, attribute, lists_a[attribute], lists_b[attribute]))
 
         return diffs
 
@@ -318,6 +344,38 @@ class SystemComparison:
             object_class=obj_a.class_as_simple_str, object_name_a=obj_a.name, object_name_b=obj_b.name,
             attribute=f"{weight_label} ({key_name})",
             value_a=count_a, value_b=count_b,
+            source_a=None, source_b=None, confidence_a=None, confidence_b=None)
+
+    def _diff_list_input(self, obj_a, obj_b, attribute, list_a, list_b) -> List[AttributeDiff]:
+        """Diff one list-relationship input by membership: a link present in only one model surfaces as a
+        present/absent row ("present" on the side that has it, ``None`` on the other). Links present in both
+        are unchanged here — each is paired and diffed in its own right at the object level. Elements are
+        ``ModelingObject``s paired id-first then (name, type), the same identity philosophy as the dict and
+        object-level pairing, so renaming a link in B still pairs it."""
+        elements_b_by_id = {elt.id: elt for elt in list_b}
+        elements_b_by_name_type = {(elt.name, elt.efootprint_class): elt for elt in list_b}
+
+        diffs = []
+        matched_b_ids = set()
+        for elt_a in list_a:
+            elt_b = elements_b_by_id.get(elt_a.id) or elements_b_by_name_type.get((elt_a.name, elt_a.efootprint_class))
+            if elt_b is None:  # removed: present only in A
+                diffs.append(self._list_attribute_diff(obj_a, obj_b, attribute, elt_a, present_a=True))
+            else:
+                matched_b_ids.add(id(elt_b))
+
+        for elt_b in list_b:  # added: present only in B
+            if id(elt_b) not in matched_b_ids:
+                diffs.append(self._list_attribute_diff(obj_a, obj_b, attribute, elt_b, present_a=False))
+
+        return diffs
+
+    @staticmethod
+    def _list_attribute_diff(obj_a, obj_b, attribute, element, present_a) -> AttributeDiff:
+        return AttributeDiff(
+            object_class=obj_a.class_as_simple_str, object_name_a=obj_a.name, object_name_b=obj_b.name,
+            attribute=f"{attribute} ({element.name})",
+            value_a="present" if present_a else None, value_b=None if present_a else "present",
             source_a=None, source_b=None, confidence_a=None, confidence_b=None)
 
     def plot_emissions_over_time(self, filepath=None, figsize=(10, 5), plt_show=False):

@@ -232,6 +232,21 @@ class TestSystemComparison(TestCase):
         self.assertIsNone(added[0].value_a)
         self.assertEqual("2", added[0].value_b)
 
+    def test_input_diff_surfaces_a_list_relationship_membership_change(self):
+        """Test a link present in only one model's list input (UsagePattern.devices) surfaces as a
+        present/absent row — the membership case for list-relationship inputs, which the scalar and dict
+        walks both skip."""
+        up_b = next(o for o in self.system_b.all_linked_objects if isinstance(o, UsagePattern))
+        up_b.devices = list(up_b.devices) + [Device.smartphone("extra device")]
+
+        diff = self.system_a.compare_to(self.system_b).input_diff
+
+        added = [row for row in diff.changed if row.attribute == "devices (extra device)"]
+        self.assertEqual(1, len(added))
+        self.assertEqual("UsagePattern", added[0].object_class)
+        self.assertIsNone(added[0].value_a)
+        self.assertEqual("present", added[0].value_b)
+
     def test_input_diff_reports_unmatched_objects(self):
         """Test objects present in only one system are reported as A-only / B-only."""
         independent = build_system("model D", "server D")
