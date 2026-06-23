@@ -213,9 +213,9 @@ class TestSystemComparison(TestCase):
         self.assertEqual("1", changed[0].value_a)
         self.assertEqual("3", changed[0].value_b)
 
-    def test_input_diff_surfaces_dict_membership_added_in_one_model(self):
-        """Test a key present in only one model's dict surfaces as a count-from-absent row (value_a None,
-        value_b the new count) — the membership add/remove case of the dict diff."""
+    def test_input_diff_does_not_duplicate_a_dict_member_living_in_only_one_model(self):
+        """Test a brand-new dict key (a job present only in B) is reported once — as an only-in object —
+        not also as a membership add row on its parent, which would merely duplicate the only-in row."""
         from efootprint.core.hardware.server import Server
         from efootprint.core.usage.job import Job
         from efootprint.core.usage.usage_journey_step import UsageJourneyStep
@@ -226,26 +226,53 @@ class TestSystemComparison(TestCase):
 
         diff = self.system_a.compare_to(self.system_b).input_diff
 
-        added = [row for row in diff.changed if row.attribute == "Times per step (extra job)"]
-        self.assertEqual(1, len(added))
-        self.assertEqual("UsageJourneyStep", added[0].object_class)
-        self.assertIsNone(added[0].value_a)
-        self.assertEqual("2", added[0].value_b)
+        self.assertIn("extra job", {obj.object_name for obj in diff.only_in_b})
+        # The brand-new job is reported once (above); it must NOT also produce a membership row, so the
+        # only changed attribute stays the server power edited in setUp — pinning the whole set rather than
+        # a single label keeps the assertion from passing vacuously if a spurious row reappeared.
+        self.assertEqual({"power"}, {row.attribute for row in diff.changed})
 
-    def test_input_diff_surfaces_a_list_relationship_membership_change(self):
-        """Test a link present in only one model's list input (UsagePattern.devices) surfaces as a
-        present/absent row — the membership case for list-relationship inputs, which the scalar and dict
-        walks both skip."""
+    def test_input_diff_does_not_duplicate_a_list_member_living_in_only_one_model(self):
+        """Test a brand-new list link (a device present only in B) is reported once — as an only-in
+        object — not also as a present/absent membership row on its parent, which would duplicate it."""
         up_b = next(o for o in self.system_b.all_linked_objects if isinstance(o, UsagePattern))
         up_b.devices = list(up_b.devices) + [Device.smartphone("extra device")]
 
         diff = self.system_a.compare_to(self.system_b).input_diff
 
-        added = [row for row in diff.changed if row.attribute == "devices (extra device)"]
-        self.assertEqual(1, len(added))
-        self.assertEqual("UsagePattern", added[0].object_class)
-        self.assertIsNone(added[0].value_a)
-        self.assertEqual("present", added[0].value_b)
+        self.assertIn("extra device", {obj.object_name for obj in diff.only_in_b})
+        # Reported once (above); no membership row too, so the only changed attribute stays the server
+        # power edited in setUp (pinning the whole set, not one label, so the check can't pass vacuously).
+        self.assertEqual({"power"}, {row.attribute for row in diff.changed})
+
+    def test_input_diff_keeps_a_membership_change_for_a_member_present_in_both_models(self):
+        """Test a genuine re-link survives: a device present in BOTH models but linked to the paired usage
+        pattern in A only surfaces as a present/absent row. There is no only-in row to duplicate (the device
+        exists on both sides), so the only-in-one-model suppression must not fire here."""
+        from efootprint.core.usage.usage_journey import UsageJourney
+
+        up_a = next(o for o in self.system_a.all_linked_objects if isinstance(o, UsagePattern))
+        up_a.devices = list(up_a.devices) + [Device.laptop("shared spare device")]
+        # The same device (same name+type → pairs by identity) exists in B too, but hangs off a *second*
+        # usage pattern rather than the paired one — so it is present in B (no only-in row) yet absent from
+        # the paired pattern's device list, i.e. a genuine re-link.
+        uj_b = next(o for o in self.system_b.all_linked_objects if isinstance(o, UsageJourney))
+        network_b = next(o for o in self.system_b.all_linked_objects if isinstance(o, Network))
+        second_up_b = UsagePattern(
+            "model B second pattern", uj_b, [Device.laptop("shared spare device")], network_b,
+            Countries.FRANCE(),
+            create_source_hourly_values_from_list([1, 2, 4, 5, 8, 12, 2, 2, 3], datetime(2025, 1, 1)))
+        self.system_b.usage_patterns = list(self.system_b.usage_patterns) + [second_up_b]
+
+        diff = self.system_a.compare_to(self.system_b).input_diff
+
+        self.assertNotIn("shared spare device", {obj.object_name for obj in diff.only_in_a})
+        self.assertNotIn("shared spare device", {obj.object_name for obj in diff.only_in_b})
+        relink = [row for row in diff.changed if row.attribute == "devices (shared spare device)"]
+        self.assertEqual(1, len(relink))
+        self.assertEqual("UsagePattern", relink[0].object_class)
+        self.assertEqual("present", relink[0].value_a)
+        self.assertIsNone(relink[0].value_b)
 
     def test_input_diff_reports_unmatched_objects(self):
         """Test objects present in only one system are reported as A-only / B-only."""

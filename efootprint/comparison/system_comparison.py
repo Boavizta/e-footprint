@@ -140,6 +140,14 @@ def _constructor_input_values(obj: ModelingObject) -> Dict[str, object]:
             if name not in ("self", "name") and hasattr(obj, name)}
 
 
+def _only_in_one_model(member, in_both_models) -> bool:
+    """Whether a relationship member (list element or dict key) is itself absent from one model, so that
+    its add/remove membership row would merely echo the member's own only-in object row and is dropped.
+    Non-``ModelingObject`` members have no cross-model identity to pair on, so they are never treated as
+    only-in-one-model (their membership rows are always kept)."""
+    return isinstance(member, ModelingObject) and not in_both_models(member)
+
+
 class SystemComparison:
     """Domain-truth comparison of two e-footprint {class:System}s.
 
@@ -231,8 +239,20 @@ class SystemComparison:
         objects_a = self.system_a.all_linked_objects
         objects_b = self.system_b.all_linked_objects
 
+        by_id_a = {obj.id: obj for obj in objects_a}
+        by_name_type_a = {(obj.name, obj.efootprint_class): obj for obj in objects_a}
         by_id_b = {obj.id: obj for obj in objects_b}
         by_name_type_b = {(obj.name, obj.efootprint_class): obj for obj in objects_b}
+
+        def in_both_models(obj: ModelingObject) -> bool:
+            """True when ``obj`` is paired across both models (id-first, then (name, type) — the same
+            identity philosophy as the object-level pairing). A relationship membership add/remove is only
+            worth a row when its member is in both models, i.e. a genuine re-link; a member living in only
+            one model already surfaces as an only-in row, so a membership row for it would just duplicate
+            that (see ``_only_in_one_model``)."""
+            in_a = obj.id in by_id_a or (obj.name, obj.efootprint_class) in by_name_type_a
+            in_b = obj.id in by_id_b or (obj.name, obj.efootprint_class) in by_name_type_b
+            return in_a and in_b
 
         matched_b_ids = set()
         changed = []
@@ -244,7 +264,7 @@ class SystemComparison:
                 only_in_a.append(UnmatchedObject(obj_a.class_as_simple_str, obj_a.name, obj_a.id))
                 continue
             matched_b_ids.add(obj_b.id)
-            changed.extend(self._diff_inputs(obj_a, obj_b))
+            changed.extend(self._diff_inputs(obj_a, obj_b, in_both_models))
 
         only_in_b = [UnmatchedObject(obj_b.class_as_simple_str, obj_b.name, obj_b.id)
                      for obj_b in objects_b if obj_b.id not in matched_b_ids]
@@ -273,7 +293,7 @@ class SystemComparison:
         return {name: value for name, value in _constructor_input_values(obj).items()
                 if isinstance(value, list) and all(isinstance(elt, ModelingObject) for elt in value)}
 
-    def _diff_inputs(self, obj_a: ModelingObject, obj_b: ModelingObject) -> List[AttributeDiff]:
+    def _diff_inputs(self, obj_a: ModelingObject, obj_b: ModelingObject, in_both_models) -> List[AttributeDiff]:
         inputs_a = self._input_attributes(obj_a)
         inputs_b = self._input_attributes(obj_b)
 
@@ -294,23 +314,26 @@ class SystemComparison:
         dicts_a = self._dict_input_attributes(obj_a)
         dicts_b = self._dict_input_attributes(obj_b)
         for attribute in dicts_a.keys() & dicts_b.keys():
-            diffs.extend(self._diff_dict_input(obj_a, obj_b, attribute, dicts_a[attribute], dicts_b[attribute]))
+            diffs.extend(self._diff_dict_input(
+                obj_a, obj_b, attribute, dicts_a[attribute], dicts_b[attribute], in_both_models))
 
         lists_a = self._list_input_attributes(obj_a)
         lists_b = self._list_input_attributes(obj_b)
         for attribute in lists_a.keys() & lists_b.keys():
-            diffs.extend(self._diff_list_input(obj_a, obj_b, attribute, lists_a[attribute], lists_b[attribute]))
+            diffs.extend(self._diff_list_input(
+                obj_a, obj_b, attribute, lists_a[attribute], lists_b[attribute], in_both_models))
 
         return diffs
 
-    def _diff_dict_input(self, obj_a, obj_b, attribute, dict_a, dict_b) -> List[AttributeDiff]:
+    def _diff_dict_input(self, obj_a, obj_b, attribute, dict_a, dict_b, in_both_models) -> List[AttributeDiff]:
         """Diff one dict-relationship input key by key: a changed count (the key in both, weight differs),
         an added key (only in B → absent/count row), or a removed key (only in A → count/absent row).
 
         Keys are ``ModelingObject``s matched id-first then (name, type) — the same identity philosophy as
         the object-level pairing — so renaming a key in B still pairs it. The attribute label is the dict's
         ``weight_labels`` metadata plus the key's name, so each row reads as e.g. "Times per journey (step
-        name)" with the counts as the two values."""
+        name)" with the counts as the two values. An add/remove row whose key lives in only one model is
+        suppressed (``_only_in_one_model``) — the key's only-in object row already reports it."""
         weight_label = obj_a.weight_labels.get(attribute, attribute)
         keys_b_by_id = {key.id: key for key in dict_b if isinstance(key, ModelingObject)}
         keys_b_by_name_type = {(key.name, key.efootprint_class): key for key in dict_b
@@ -322,16 +345,17 @@ class SystemComparison:
             key_b = (keys_b_by_id.get(getattr(key_a, "id", None))
                      or keys_b_by_name_type.get((getattr(key_a, "name", None), getattr(key_a, "efootprint_class", None))))
             count_a = _count_value_str(dict_a[key_a])
-            if key_b is None:  # removed: key present only in A
-                diffs.append(self._dict_attribute_diff(obj_a, obj_b, weight_label, key_a, count_a, None))
+            if key_b is None:  # removed: key present only in A's dict
+                if not _only_in_one_model(key_a, in_both_models):
+                    diffs.append(self._dict_attribute_diff(obj_a, obj_b, weight_label, key_a, count_a, None))
                 continue
             matched_b_ids.add(id(key_b))
             count_b = _count_value_str(dict_b[key_b])
             if count_a != count_b:
                 diffs.append(self._dict_attribute_diff(obj_a, obj_b, weight_label, key_a, count_a, count_b))
 
-        for key_b in dict_b:  # added: keys present only in B
-            if id(key_b) not in matched_b_ids:
+        for key_b in dict_b:  # added: keys present only in B's dict
+            if id(key_b) not in matched_b_ids and not _only_in_one_model(key_b, in_both_models):
                 diffs.append(self._dict_attribute_diff(
                     obj_a, obj_b, weight_label, key_b, None, _count_value_str(dict_b[key_b])))
 
@@ -346,12 +370,14 @@ class SystemComparison:
             value_a=count_a, value_b=count_b,
             source_a=None, source_b=None, confidence_a=None, confidence_b=None)
 
-    def _diff_list_input(self, obj_a, obj_b, attribute, list_a, list_b) -> List[AttributeDiff]:
-        """Diff one list-relationship input by membership: a link present in only one model surfaces as a
-        present/absent row ("present" on the side that has it, ``None`` on the other). Links present in both
-        are unchanged here — each is paired and diffed in its own right at the object level. Elements are
-        ``ModelingObject``s paired id-first then (name, type), the same identity philosophy as the dict and
-        object-level pairing, so renaming a link in B still pairs it."""
+    def _diff_list_input(self, obj_a, obj_b, attribute, list_a, list_b, in_both_models) -> List[AttributeDiff]:
+        """Diff one list-relationship input by membership: a link present in only one model's list surfaces
+        as a present/absent row ("present" on the side that has it, ``None`` on the other). Links present in
+        both are unchanged here — each is paired and diffed in its own right at the object level. Elements
+        are ``ModelingObject``s paired id-first then (name, type), the same identity philosophy as the dict
+        and object-level pairing, so renaming a link in B still pairs it. A present/absent row is emitted
+        only when the element lives in both models (a genuine re-link); an element in only one model is left
+        to its only-in object row, so its membership row would just duplicate it (``_only_in_one_model``)."""
         elements_b_by_id = {elt.id: elt for elt in list_b}
         elements_b_by_name_type = {(elt.name, elt.efootprint_class): elt for elt in list_b}
 
@@ -359,13 +385,14 @@ class SystemComparison:
         matched_b_ids = set()
         for elt_a in list_a:
             elt_b = elements_b_by_id.get(elt_a.id) or elements_b_by_name_type.get((elt_a.name, elt_a.efootprint_class))
-            if elt_b is None:  # removed: present only in A
-                diffs.append(self._list_attribute_diff(obj_a, obj_b, attribute, elt_a, present_a=True))
+            if elt_b is None:  # removed: present in A's list only
+                if not _only_in_one_model(elt_a, in_both_models):
+                    diffs.append(self._list_attribute_diff(obj_a, obj_b, attribute, elt_a, present_a=True))
             else:
                 matched_b_ids.add(id(elt_b))
 
-        for elt_b in list_b:  # added: present only in B
-            if id(elt_b) not in matched_b_ids:
+        for elt_b in list_b:  # added: present in B's list only
+            if id(elt_b) not in matched_b_ids and not _only_in_one_model(elt_b, in_both_models):
                 diffs.append(self._list_attribute_diff(obj_a, obj_b, attribute, elt_b, present_a=False))
 
         return diffs
