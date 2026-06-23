@@ -34,3 +34,4 @@ You are about to implement one task from an approved tasks list.
 - One task at a time. Do not chain into the next task without user confirmation.
 - If a task reveals a missing dependency or an incorrect plan assumption, **stop and surface it** rather than expanding scope.
 - If you discover an unrelated bug, follow constitution §3.1: fix on the spot or surface it. Do not paper over.
+- **Never reference spec documents in code comments or any production/test file.** Do not mention task numbers (e.g. "Task 3"), spec section markers (e.g. "§4.2"), plan paragraphs, or feature names from the spec workflow (e.g. "model-comparison Task 4"). Spec documents are deleted after the archiving step; any such reference becomes a dangling pointer and leaks implementation-process noise into the codebase. Describe the *why* of the code in plain terms instead.
