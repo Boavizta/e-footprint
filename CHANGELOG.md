@@ -4,6 +4,11 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](http://keepachangelog.com/)
 and this project adheres to [Semantic Versioning](http://semver.org/)
 
+## [V22.2.1] - 2026-06-23
+
+### Fixed
+- model-comparison: don't duplicate only-in-one-model objects as parent membership rows. A relationship member (list element or dict key) present in only one model was reported twice in the input diff: once as an "only in A / only in B" object and again as a present/absent membership row on its matched parent. Emit the membership row only when the member is paired across both models (a genuine re-link); a member living in only one model is left to its only-in row.
+
 ## [V22.2.0] — 2026-06-17
 
 ### Added
