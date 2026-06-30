@@ -40,22 +40,29 @@ with `.sum()` to get a single number.
 
 ## Per provider (supply-side)
 
-There is no provider attribute on {class:Server} or {class:Storage}, so
-you decide the grouping and sum in plain Python. Each infrastructure
-object's total attributed footprint, across every job and tenant that
-uses it, is given by `attributed_footprint`:
+Cloud servers modeled as {class:BoaviztaCloudServer} carry a `provider`
+attribute whose value is the provider key (e.g. `aws`, `gcp`,
+`scaleway`), so you can bucket them straight off the model — no
+hand-maintained mapping. Each server's attached {class:Storage} rides
+along with it. Each infrastructure object's total attributed footprint,
+across every job and tenant that uses it, is given by
+`attributed_footprint`:
 
 ```python
+from collections import defaultdict
+
 from efootprint.abstract_modeling_classes.empty_explainable_object import EmptyExplainableObject
+from efootprint.builders.hardware.boavizta_cloud_server import BoaviztaCloudServer
 from efootprint.constants.units import u
 from efootprint.core.attribution import attributed_footprint
 from efootprint.core.lifecycle_phases import LifeCyclePhases
 
-# the *_server / *_storage objects below are infrastructure from your built system
-infra_by_provider = {
-    "AWS": [aws_server, aws_storage],
-    "GCP": [gcp_server, gcp_storage],
-}
+# `system` is your already-built System
+infra_by_provider = defaultdict(list)
+for server in system.servers:
+    if isinstance(server, BoaviztaCloudServer):
+        # the server carries its provider; its attached storage rides along
+        infra_by_provider[server.provider.value] += [server, server.storage]
 
 for provider, infra in infra_by_provider.items():
     total = sum(
@@ -72,9 +79,13 @@ to break a provider down per phase too.
 
 ### Boundary
 
-Only infrastructure carries a provider. Network and end-user **device**
-impacts are *not* attributed to a provider — a request crosses networks
-and runs on devices that no single provider owns, and modeling that
-allocation would be substantial work for little benefit. Per-provider
-totals therefore cover the server and storage tiers only; the per-tenant
-view above remains the way to see the full, all-tier footprint.
+The `provider` attribute lives on {class:BoaviztaCloudServer}, the
+cloud-instance server type. A plain on-premise {class:Server} (and its
+{class:Storage}) has no provider — it is hardware you operate yourself —
+so the loop above skips it; group those under your own label if you want
+them in the breakdown. Network and end-user **device** impacts carry no
+provider either: a request crosses networks and runs on devices that no
+single provider owns, and modeling that allocation would be substantial
+work for little benefit. Per-provider totals therefore cover the cloud
+server and storage tiers only; the per-tenant view above remains the way
+to see the full, all-tier footprint.
