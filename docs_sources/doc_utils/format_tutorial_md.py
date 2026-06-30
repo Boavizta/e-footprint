@@ -38,6 +38,10 @@ def format_tutorial_and_save_to_mkdocs_sourcefiles(tutorial_doc_path):
 
     tutorial_reformated = tutorial_reformated.replace("notebook=False", "notebook=True")
 
+    # Suppress the (Figure, Axes) tuple text reprs printed by plot cells, keeping only the inline images.
+    tutorial_reformated = re.sub(
+        r"^ {4}\(<Figure size[^\n]*\n(?: {4,}\S[^\n]*\n)*", "", tutorial_reformated, flags=re.MULTILINE)
+
     images_path = tutorial_doc_path.replace(".ipynb", "_files")
     tutorial_image_dirname = "tutorial_images"
     tutorial_images_dir = os.path.join(generated_mkdocs_sourcefiles_path, tutorial_image_dirname)
@@ -74,9 +78,14 @@ def efootprint_tutorial_to_md():
     with open(docs_tutorial_path, "w") as file:
         json.dump(notebook_json, file)
 
+    # Force the inline matplotlib backend for the execution kernel. Otherwise an ambient MPLBACKEND
+    # (e.g. "Agg", set by the test suite or an IDE) is inherited by the nbconvert subprocess, matplotlib
+    # figures are not rendered inline, and the tutorial ends up without its plot images.
+    nbconvert_env = {**os.environ, "MPLBACKEND": "module://matplotlib_inline.backend_inline"}
     try:
         subprocess.run(
-            [sys.executable, "-m", "nbconvert", "--to", "markdown", "--execute", docs_tutorial_path], check=True)
+            [sys.executable, "-m", "nbconvert", "--to", "markdown", "--execute", docs_tutorial_path],
+            check=True, env=nbconvert_env)
     except subprocess.CalledProcessError:
         raise ProcessLookupError(
             "Couldn’t run the tutorial notebook, possibly because the kernel name saved in the ipynb file doesn’t match"
