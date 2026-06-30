@@ -81,7 +81,7 @@ Briefly tell the user what this task produced — a **terse, non-blocking** note
 
 ## When the loop ends
 
-When every task is done, give the user a short summary: tasks completed, total commits, what was auto-approved versus escalated, anything deferred/rejected during reviews (so nothing is silently dropped), and the suggested next step (stage 5 archive per `specs/workflow.md`, or opening PRs).
+When every task is done, give the user a short summary: tasks completed, total commits, what was auto-approved versus escalated, anything deferred/rejected during reviews (so nothing is silently dropped), and the suggested next step. **Do not archive the feature yourself** — stage 5 archiving (per `specs/workflow.md` §5) involves a promotion check that reads the reference specs, which belongs in a fresh context, not yours, and is normally deferred until the work has merged. Instead, suggest the user run the `feature-archive` skill when they are ready, alongside opening PRs.
 
 ## Context discipline (why this stays lean)
 

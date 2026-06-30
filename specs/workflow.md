@@ -95,6 +95,8 @@ When all tasks have shipped:
 
 For cross-repo features, this happens in the driving repo (same rule as the feature folder).
 
+Skill: `feature-archive` drives this stage. Invoke it explicitly when the feature has shipped and you are ready — it is not auto-chained from `feature-implement`.
+
 ## Skills location
 
 Skills live at `.agents/skills/` in each repo. `.claude/skills` is a compatibility symlink. Canonical versions are in e-footprint; mirrors in e-footprint-interface.
