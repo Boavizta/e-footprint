@@ -29,7 +29,7 @@ HOW_TO_TEMPLATES: tuple[HowToTemplate, ...] = (
     HowToTemplate(
         id="machine_learning_workflow",
         name="Machine learning workflow",
-        description="Training on a GPUServer plus recurrent inference jobs.",
+        description="Training on a {class:GPUServer} plus recurrent inference jobs.",
         json_path=HERE / "machine_learning_workflow.json",
     ),
 )
