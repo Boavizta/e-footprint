@@ -99,7 +99,7 @@ def build_system() -> System:
     journey = UsageJourney("Shopping journey", uj_steps=[browse_step, cart_step, checkout_step])
 
     usage_pattern = UsagePattern(
-        "Daily shoppers", journey, [Device.laptop()], Network.from_defaults("Default network"),
+        "Daily shoppers", journey, [Device.laptop()], Network.wifi_network(),
         Countries.FRANCE(),
         ExplainableHourlyQuantitiesFromFormInputs({
             "start_date": "2025-01-01",

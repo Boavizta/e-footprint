@@ -52,12 +52,13 @@ def build_system() -> System:
     inference_step = UsageJourneyStep.from_defaults("Inference call", jobs=[inference_job])
     inference_journey = UsageJourney("Inference journey", uj_steps=[inference_step])
 
-    network = Network.from_defaults("Default network")
+    network = Network.wifi_network()
     laptop = Device.laptop()
+    france = Countries.FRANCE()
     start_date = "2025-01-01"
 
     training_pattern = UsagePattern(
-        "Weekly retraining pattern", training_journey, [], network, Countries.FRANCE(),
+        "Weekly retraining pattern", training_journey, [], network, france,
         ExplainableHourlyQuantitiesFromFormInputs({
             "start_date": start_date,
             "modeling_duration_value": 3,
@@ -68,7 +69,7 @@ def build_system() -> System:
             "net_growth_rate_timespan": "year",
         }, source=Sources.USER_DATA))
     inference_pattern = UsagePattern(
-        "Production inference pattern", inference_journey, [laptop], network, Countries.FRANCE(),
+        "Production inference pattern", inference_journey, [laptop], network, france,
         ExplainableHourlyQuantitiesFromFormInputs({
             "start_date": start_date,
             "modeling_duration_value": 3,

@@ -21,6 +21,11 @@
             "name": "Our world in data (2024)",
             "link": "https://ourworldindata.org/grapher/carbon-intensity-electricity"
         },
+        "Traficom-study": {
+            "id": "Traficom-study",
+            "name": "Traficom study",
+            "link": "https://www.traficom.fi/en/news/first-study-energy-consumption-communications-networks"
+        },
         "hypothesis": {
             "id": "hypothesis",
             "name": "e-footprint hypothesis",
@@ -62,7 +67,7 @@
             },
             "usage_journey": "Monthly-retraining-journey",
             "devices": [],
-            "network": "Default-network",
+            "network": "Default-wifi-network",
             "country": "France"
         },
         "Production-inference-pattern": {
@@ -85,7 +90,7 @@
             "devices": [
                 "Default-laptop"
             ],
-            "network": "Default-network",
+            "network": "Default-wifi-network",
             "country": "France"
         }
     },
@@ -116,14 +121,14 @@
         }
     },
     "Network": {
-        "Default-network": {
-            "name": "Default network",
-            "id": "Default-network",
+        "Default-wifi-network": {
+            "name": "Default wifi network",
+            "id": "Default-wifi-network",
             "bandwidth_energy_intensity": {
-                "value": 0.1,
+                "value": 0.05,
                 "unit": "kilowatt_hour / gigabyte",
                 "label": "bandwith energy intensity",
-                "source": "hypothesis"
+                "source": "Traficom-study"
             }
         }
     },
