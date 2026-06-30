@@ -31,7 +31,7 @@
         </center>
         <style type="text/css">
 
-             #mynetwork_da0014 {
+             #mynetwork_1c947e {
                  width: 800px;
                  height: 500px;
                  background-color: #ffffff;
@@ -53,7 +53,7 @@
         <div class="card" style="width: 100%">
             
             
-            <div id="mynetwork_da0014" class="card-body"></div>
+            <div id="mynetwork_1c947e" class="card-body"></div>
         </div>
 
         
@@ -83,12 +83,12 @@
 
               // This method is responsible for drawing the graph, returns the drawn network
               function drawGraph() {
-                  var container = document.getElementById('mynetwork_da0014');
+                  var container = document.getElementById('mynetwork_1c947e');
 
                   
 
                   // parsing and collecting nodes and edges from the python
-                  nodes = new vis.DataSet([{"color": "dodgerblue", "id": "9634d573-f72", "label": "Mean video\nconsumption user\njourney", "shape": "dot", "title": "UsageJourney 9634d573-f72\n \nname: Mean video consumption user journey\nuj_steps: {\nUsageJourneyStep 20 min streaming (e07d5e6b-0c6): 1 ,\nUsageJourneyStep 1 min video capture then upload (d99bfd34-580): 1 ,\nUsageJourneyStep Chat with LLM to select video (3bfdc2b3-314): 1 ,\n}\n \ncalculated_attributes:\nduration: 22.2 min\nnb_usage_journeys_in_parallel_per_usage_pattern: {\nUsagePattern Daily video streaming consumption (df51111f-cdd): 26298 values from\n2025-01-01 00:00:00+00:00 to 2028-01-01 18:00:00+00:00 in k:\nfirst 10 vals [0.804, 0.57, 0.423, 0.373, 0.425, 0.576, 0.816, 1.13, 1.5, 1.89],\nlast 10 vals [30.1, 37.9, 45.8, 53.1, 59.4, 64.2, 67.2, 68.3, 67.2, 1.11],\n}"}]);
+                  nodes = new vis.DataSet([{"color": "dodgerblue", "id": "f155d02e-0ca", "label": "Mean video\nconsumption user\njourney", "shape": "dot", "title": "UsageJourney f155d02e-0ca\n \nname: Mean video consumption user journey\nuj_steps: {\nUsageJourneyStep 20 min streaming (86a7865f-873): 1 ,\nUsageJourneyStep 1 min video capture then upload (c6bc845b-375): 1 ,\nUsageJourneyStep Chat with LLM to select video (0774dcd5-f33): 1 ,\n}\n \ncalculated_attributes:\nduration: 22.2 min\nnb_usage_journeys_in_parallel_per_usage_pattern: {\nUsagePattern Daily video streaming consumption (18337ab9-4d3): 26298 values from\n2025-01-01 00:00:00+00:00 to 2028-01-01 18:00:00+00:00 in k:\nfirst 10 vals [0.804, 0.57, 0.423, 0.373, 0.425, 0.576, 0.816, 1.13, 1.5, 1.89],\nlast 10 vals [30.1, 37.9, 45.8, 53.1, 59.4, 64.2, 67.2, 68.3, 67.2, 1.11],\n}"}]);
                   edges = new vis.DataSet([]);
 
                   nodeColors = {};
