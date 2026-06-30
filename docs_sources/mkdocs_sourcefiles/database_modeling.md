@@ -39,6 +39,9 @@ storage = Storage(
 
 db_server = Server(
     "PostgreSQL server",
+    # serverless models a managed / serverless database: pay-per-use,
+    # fractional instances that track demand rather than a fixed fleet.
+    server_type=ServerTypes.serverless(),
     base_ram_consumption=SourceValue(2 * u.GB_ram),
     base_compute_consumption=SourceValue(0.1 * u.cpu_core),
     storage=storage,

@@ -4,6 +4,11 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](http://keepachangelog.com/)
 and this project adheres to [Semantic Versioning](http://semver.org/)
 
+## [Unreleased]
+
+### Added
+- Documentation: new "How to model serverless workloads" and "How to attribute a footprint" how-to guides. The serverless guide models a function/per-invocation workload as a `server_type=serverless` server plus a plain `Job` with explicit CPU. The attribution guide shows reading a footprint per tenant (one `UsagePattern` per tenant, all tiers attributed automatically via `footprint_per_node`) and per provider (group `Server` + `Storage` and sum `attributed_footprint`, infrastructure tiers only). The database how-to now shows the managed/serverless database option.
+
 ## [V22.2.1] - 2026-06-23
 
 ### Fixed

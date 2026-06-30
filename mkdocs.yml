@@ -37,7 +37,9 @@ nav:
 - How-to guides:
     - How to model a machine learning workflow: machine_learning_workflow.md
     - How to model a database: database_modeling.md
+    - How to model serverless workloads: serverless_modeling.md
     - How to model server to server interaction: server_to_server_interaction.md
+    - How to attribute a footprint: attributing_footprint.md
 - e-footprint objects reference:
   - How to read the object reference: object_reference.md
   - Hardware:
