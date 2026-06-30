@@ -21,11 +21,12 @@ devices, network, server, and storage — so there is nothing to assemble
 by hand: you just read it.
 
 ```python
+from efootprint.constants.units import u
 from efootprint.core.attribution import footprint_per_node
 from efootprint.core.lifecycle_phases import LifeCyclePhases
 from efootprint.core.usage.usage_pattern import UsagePattern
 
-# system already built with one UsagePattern per tenant
+# `system` is your already-built System, with one UsagePattern per tenant
 for phase in (LifeCyclePhases.MANUFACTURING, LifeCyclePhases.USAGE):
     per_tenant = footprint_per_node(system, UsagePattern, phase)
     for tenant, footprint in per_tenant.items():
@@ -46,9 +47,11 @@ uses it, is given by `attributed_footprint`:
 
 ```python
 from efootprint.abstract_modeling_classes.empty_explainable_object import EmptyExplainableObject
+from efootprint.constants.units import u
 from efootprint.core.attribution import attributed_footprint
 from efootprint.core.lifecycle_phases import LifeCyclePhases
 
+# the *_server / *_storage objects below are infrastructure from your built system
 infra_by_provider = {
     "AWS": [aws_server, aws_storage],
     "GCP": [gcp_server, gcp_storage],
@@ -61,6 +64,11 @@ for provider, infra in infra_by_provider.items():
         start=EmptyExplainableObject())
     print(provider, total.sum().to(u.kg))
 ```
+
+Each provider total here combines both life-cycle phases (manufacturing
+and usage) into one figure — unlike the per-tenant read above, which
+keeps the phases separate. Drop the `for phase in LifeCyclePhases` loop
+to break a provider down per phase too.
 
 ### Boundary
 
