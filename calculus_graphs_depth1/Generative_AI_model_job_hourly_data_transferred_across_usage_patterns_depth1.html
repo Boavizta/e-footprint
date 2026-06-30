@@ -31,7 +31,7 @@
         </center>
         <style type="text/css">
 
-             #mynetwork_0bb186 {
+             #mynetwork_79af5b {
                  width: 760px;
                  height: 300px;
                  background-color: #ffffff;
@@ -53,7 +53,7 @@
         <div class="card" style="width: 100%">
             
             
-            <div id="mynetwork_0bb186" class="card-body"></div>
+            <div id="mynetwork_79af5b" class="card-body"></div>
         </div>
 
         
@@ -83,12 +83,12 @@
 
               // This method is responsible for drawing the graph, returns the drawn network
               function drawGraph() {
-                  var container = document.getElementById('mynetwork_0bb186');
+                  var container = document.getElementById('mynetwork_79af5b');
 
                   
 
                   // parsing and collecting nodes and edges from the python
-                  nodes = new vis.DataSet([{"color": null, "id": "Hourly data transferred across usage patterns", "label": "Hourly data\ntransferred across\nusage patterns", "shape": "dot", "size": 15, "title": "Hourly data transferred across usage patterns\n=\nHourly data transferred in usage pattern\n=\n26298 values from 2025-01-01 00:00:00+00:00 to 2028-01-01 18:00:00+00:00 in kB:\nfirst 10 vals [25, 30, 20, 15, 5, 15, 20, 25, 25, 35],\nlast 10 vals [20, 10, 45, 20, 20, 45, 5, 5, 20, 40]\n=\n26298 values from 2025-01-01 00:00:00+00:00 to 2028-01-01 18:00:00+00:00 in kB:\nfirst 10 vals [25, 30, 20, 15, 5, 15, 20, 25, 25, 35],\nlast 10 vals [20, 10, 45, 20, 20, 45, 5, 5, 20, 40]", "x": 0.0, "y": 1350}, {"color": null, "id": "Hourly data transferred in usage pattern", "label": "Hourly data\ntransferred in usage\npattern", "shape": "dot", "size": 15, "title": "Hourly data transferred in usage pattern\n=\nAverage hourly occurrences in usage pattern * (Data transferred for\nclaude-opus-4-5 * one hour / Ecologits generation_latency for claude-opus-4-5)\n=\n26298 values from 2025-01-01 00:00:00+00:00 to 2028-01-01 18:00:00+00:00 in :\nfirst 10 vals [0.0372, 0.0447, 0.0298, 0.0223, 0.00745, 0.0223, 0.0298, 0.0372,\n0.0372, 0.0521],\nlast 10 vals [0.0298, 0.0149, 0.067, 0.0298, 0.0298, 0.067, 0.00745, 0.00745,\n0.0298, 0.0596] * (5 kB * 1 h / 26.8 s)\n=\n26298 values from 2025-01-01 00:00:00+00:00 to 2028-01-01 18:00:00+00:00 in kB:\nfirst 10 vals [25, 30, 20, 15, 5, 15, 20, 25, 25, 35],\nlast 10 vals [20, 10, 45, 20, 20, 45, 5, 5, 20, 40]", "x": 0.0, "y": 1200}]);
+                  nodes = new vis.DataSet([{"color": null, "id": "Hourly data transferred across usage patterns", "label": "Hourly data\ntransferred across\nusage patterns", "shape": "dot", "size": 15, "title": "Hourly data transferred across usage patterns\n=\nHourly data transferred in usage pattern\n=\n26298 values from 2025-01-01 00:00:00+00:00 to 2028-01-01 18:00:00+00:00 in kB:\nfirst 10 vals [45, 25, 40, 15, 45, 40, 20, 25, 10, 35],\nlast 10 vals [10, 15, 5, 15, 40, 5, 25, 40, 5, 20]\n=\n26298 values from 2025-01-01 00:00:00+00:00 to 2028-01-01 18:00:00+00:00 in kB:\nfirst 10 vals [45, 25, 40, 15, 45, 40, 20, 25, 10, 35],\nlast 10 vals [10, 15, 5, 15, 40, 5, 25, 40, 5, 20]", "x": 0.0, "y": 1350}, {"color": null, "id": "Hourly data transferred in usage pattern", "label": "Hourly data\ntransferred in usage\npattern", "shape": "dot", "size": 15, "title": "Hourly data transferred in usage pattern\n=\nAverage hourly occurrences in usage pattern * (Data transferred for\nclaude-opus-4-5 * one hour / Ecologits generation_latency for claude-opus-4-5)\n=\n26298 values from 2025-01-01 00:00:00+00:00 to 2028-01-01 18:00:00+00:00 in :\nfirst 10 vals [0.067, 0.0372, 0.0596, 0.0223, 0.067, 0.0596, 0.0298, 0.0372,\n0.0149, 0.0521],\nlast 10 vals [0.0149, 0.0223, 0.00745, 0.0223, 0.0596, 0.00745, 0.0372, 0.0596,\n0.00745, 0.0298] * (5 kB * 1 h / 26.8 s)\n=\n26298 values from 2025-01-01 00:00:00+00:00 to 2028-01-01 18:00:00+00:00 in kB:\nfirst 10 vals [45, 25, 40, 15, 45, 40, 20, 25, 10, 35],\nlast 10 vals [10, 15, 5, 15, 40, 5, 25, 40, 5, 20]", "x": 0.0, "y": 1200}]);
                   edges = new vis.DataSet([{"arrows": "to", "from": "Hourly data transferred in usage pattern", "to": "Hourly data transferred across usage patterns"}]);
 
                   nodeColors = {};

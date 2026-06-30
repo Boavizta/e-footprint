@@ -31,7 +31,7 @@
         </center>
         <style type="text/css">
 
-             #mynetwork_240dc4 {
+             #mynetwork_b22337 {
                  width: 760px;
                  height: 300px;
                  background-color: #ffffff;
@@ -53,7 +53,7 @@
         <div class="card" style="width: 100%">
             
             
-            <div id="mynetwork_240dc4" class="card-body"></div>
+            <div id="mynetwork_b22337" class="card-body"></div>
         </div>
 
         
@@ -83,12 +83,12 @@
 
               // This method is responsible for drawing the graph, returns the drawn network
               function drawGraph() {
-                  var container = document.getElementById('mynetwork_240dc4');
+                  var container = document.getElementById('mynetwork_b22337');
 
                   
 
                   // parsing and collecting nodes and edges from the python
-                  nodes = new vis.DataSet([{"color": null, "id": "Average hourly occurrences in usage pattern", "label": "Average hourly\noccurrences in usage\npattern", "shape": "dot", "size": 15, "title": "Average hourly occurrences in usage pattern\n=\nHourly occurrences in usage pattern hourly occurrences average Ecologits\ngeneration_latency for claude-opus-4-5\n=\n26298 values from 2025-01-01 00:00:00+00:00 to 2028-01-01 18:00:00+00:00 in :\nfirst 10 vals [5, 6, 4, 3, 1, 3, 4, 5, 5, 7],\nlast 10 vals [4, 2, 9, 4, 4, 9, 1, 1, 4, 8] hourly occurrences average 26.8 s\n=\n26298 values from 2025-01-01 00:00:00+00:00 to 2028-01-01 18:00:00+00:00 in :\nfirst 10 vals [0.0372, 0.0447, 0.0298, 0.0223, 0.00745, 0.0223, 0.0298, 0.0372,\n0.0372, 0.0521],\nlast 10 vals [0.0298, 0.0149, 0.067, 0.0298, 0.0298, 0.067, 0.00745, 0.00745,\n0.0298, 0.0596]", "x": 0.0, "y": 1050}, {"color": null, "id": "Hourly occurrences in usage pattern", "label": "Hourly occurrences\nin usage pattern", "shape": "dot", "size": 15, "title": "Hourly occurrences in usage pattern\n=\n(Hourly nb of usage journey starts (UTC) shifted by no value) * Times per\njourney * Times per step\n=\n(26298 values from 2025-01-01 00:00:00+00:00 to 2028-01-01 18:00:00+00:00 in :\nfirst 10 vals [5, 6, 4, 3, 1, 3, 4, 5, 5, 7],\nlast 10 vals [4, 2, 9, 4, 4, 9, 1, 1, 4, 8] shifted by no value) * 1 * 1\n=\n26298 values from 2025-01-01 00:00:00+00:00 to 2028-01-01 18:00:00+00:00 in :\nfirst 10 vals [5, 6, 4, 3, 1, 3, 4, 5, 5, 7],\nlast 10 vals [4, 2, 9, 4, 4, 9, 1, 1, 4, 8]", "x": 0.0, "y": 900}, {"color": null, "id": "Ecologits generation_latency for claude-opus-4-5", "label": "Ecologits\ngeneration_latency\nfor claude-opus-4-5", "shape": "dot", "size": 15, "title": "Ecologits generation_latency for claude-opus-4-5\n=\nduplicate (Ecologits generation_latency for claude-opus-4-5)\n=\nduplicate (26.8 s)\n=\n26.8 s", "x": 337.5, "y": 750}]);
+                  nodes = new vis.DataSet([{"color": null, "id": "Average hourly occurrences in usage pattern", "label": "Average hourly\noccurrences in usage\npattern", "shape": "dot", "size": 15, "title": "Average hourly occurrences in usage pattern\n=\nHourly occurrences in usage pattern hourly occurrences average Ecologits\ngeneration_latency for claude-opus-4-5\n=\n26298 values from 2025-01-01 00:00:00+00:00 to 2028-01-01 18:00:00+00:00 in :\nfirst 10 vals [9, 5, 8, 3, 9, 8, 4, 5, 2, 7],\nlast 10 vals [2, 3, 1, 3, 8, 1, 5, 8, 1, 4] hourly occurrences average 26.8 s\n=\n26298 values from 2025-01-01 00:00:00+00:00 to 2028-01-01 18:00:00+00:00 in :\nfirst 10 vals [0.067, 0.0372, 0.0596, 0.0223, 0.067, 0.0596, 0.0298, 0.0372,\n0.0149, 0.0521],\nlast 10 vals [0.0149, 0.0223, 0.00745, 0.0223, 0.0596, 0.00745, 0.0372, 0.0596,\n0.00745, 0.0298]", "x": 0.0, "y": 1050}, {"color": null, "id": "Hourly occurrences in usage pattern", "label": "Hourly occurrences\nin usage pattern", "shape": "dot", "size": 15, "title": "Hourly occurrences in usage pattern\n=\n(Hourly nb of usage journey starts (UTC) shifted by no value) * Times per\njourney * Times per step\n=\n(26298 values from 2025-01-01 00:00:00+00:00 to 2028-01-01 18:00:00+00:00 in :\nfirst 10 vals [9, 5, 8, 3, 9, 8, 4, 5, 2, 7],\nlast 10 vals [2, 3, 1, 3, 8, 1, 5, 8, 1, 4] shifted by no value) * 1 * 1\n=\n26298 values from 2025-01-01 00:00:00+00:00 to 2028-01-01 18:00:00+00:00 in :\nfirst 10 vals [9, 5, 8, 3, 9, 8, 4, 5, 2, 7],\nlast 10 vals [2, 3, 1, 3, 8, 1, 5, 8, 1, 4]", "x": 0.0, "y": 900}, {"color": null, "id": "Ecologits generation_latency for claude-opus-4-5", "label": "Ecologits\ngeneration_latency\nfor claude-opus-4-5", "shape": "dot", "size": 15, "title": "Ecologits generation_latency for claude-opus-4-5\n=\nduplicate (Ecologits generation_latency for claude-opus-4-5)\n=\nduplicate (26.8 s)\n=\n26.8 s", "x": 337.5, "y": 750}]);
                   edges = new vis.DataSet([{"arrows": "to", "from": "Hourly occurrences in usage pattern", "to": "Average hourly occurrences in usage pattern"}, {"arrows": "to", "from": "Ecologits generation_latency for claude-opus-4-5", "to": "Average hourly occurrences in usage pattern"}]);
 
                   nodeColors = {};

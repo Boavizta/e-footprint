@@ -31,7 +31,7 @@
         </center>
         <style type="text/css">
 
-             #mynetwork_571b4e {
+             #mynetwork_cac33e {
                  width: 760px;
                  height: 300px;
                  background-color: #ffffff;
@@ -53,7 +53,7 @@
         <div class="card" style="width: 100%">
             
             
-            <div id="mynetwork_571b4e" class="card-body"></div>
+            <div id="mynetwork_cac33e" class="card-body"></div>
         </div>
 
         
@@ -83,12 +83,12 @@
 
               // This method is responsible for drawing the graph, returns the drawn network
               function drawGraph() {
-                  var container = document.getElementById('mynetwork_571b4e');
+                  var container = document.getElementById('mynetwork_cac33e');
 
                   
 
                   // parsing and collecting nodes and edges from the python
-                  nodes = new vis.DataSet([{"color": null, "id": "Total energy consumed across usage patterns", "label": "Total energy\nconsumed across\nusage patterns", "shape": "dot", "size": 15, "title": "Total energy consumed across usage patterns\n=\nHourly energy consumed by instances for Default edge usage pattern\n=\n105192 values from 2025-01-01 00:00:00+00:00 to 2037-01-01 00:00:00+00:00 in\nMWh:\nfirst 10 vals [0, 0, 0, 0, 0, 0, 0, 0.0175, 0.035, 0.0525],\nlast 10 vals [0.0874, 0.0874, 0.0874, 0.0875, 0.0875, 0.0699, 0.0524, 0.0349,\n0.0174, 0]\n=\n105192 values from 2025-01-01 00:00:00+00:00 to 2037-01-01 00:00:00+00:00 in\nMWh:\nfirst 10 vals [0, 0, 0, 0, 0, 0, 0, 0.0175, 0.035, 0.0525],\nlast 10 vals [0.0874, 0.0874, 0.0874, 0.0875, 0.0875, 0.0699, 0.0524, 0.0349,\n0.0174, 0]", "x": 0.0, "y": 1350}, {"color": null, "id": "Hourly energy consumed by instances for Default edge usage pattern", "label": "Hourly energy\nconsumed by\ninstances for\nDefault edge usage\npattern", "shape": "dot", "size": 15, "title": "Hourly energy consumed by instances for Default edge usage pattern\n=\nHourly energy consumed by per edge device for Default edge usage pattern * no\ngroup (default count\n=\n1)\n=\n105192 values from 2025-01-01 00:00:00+00:00 to 2037-01-01 00:00:00+00:00 in\nMWh:\nfirst 10 vals [0, 0, 0, 0, 0, 0, 0, 0.0175, 0.035, 0.0525],\nlast 10 vals [0.0874, 0.0874, 0.0874, 0.0875, 0.0875, 0.0699, 0.0524, 0.0349,\n0.0174, 0] * 1\n=\n105192 values from 2025-01-01 00:00:00+00:00 to 2037-01-01 00:00:00+00:00 in\nMWh:\nfirst 10 vals [0, 0, 0, 0, 0, 0, 0, 0.0175, 0.035, 0.0525],\nlast 10 vals [0.0874, 0.0874, 0.0874, 0.0875, 0.0875, 0.0699, 0.0524, 0.0349,\n0.0174, 0]", "x": 0.0, "y": 1200}]);
+                  nodes = new vis.DataSet([{"color": null, "id": "Total energy consumed across usage patterns", "label": "Total energy\nconsumed across\nusage patterns", "shape": "dot", "size": 15, "title": "Total energy consumed across usage patterns\n=\nHourly energy consumed by instances for Default edge usage pattern\n=\n105192 values from 2025-01-01 00:00:00+00:00 to 2037-01-01 00:00:00+00:00 in\nMWh:\nfirst 10 vals [0.0000186, 0.0000106, 0, 0, 0.00000796, 0, 0.00000398, 0.0175,\n0.035, 0.0525],\nlast 10 vals [0.0875, 0.0875, 0.0875, 0.0875, 0.0875, 0.07, 0.0525, 0.035,\n0.0175, 0.0000106]\n=\n105192 values from 2025-01-01 00:00:00+00:00 to 2037-01-01 00:00:00+00:00 in\nMWh:\nfirst 10 vals [0.0000186, 0.0000106, 0, 0, 0.00000796, 0, 0.00000398, 0.0175,\n0.035, 0.0525],\nlast 10 vals [0.0875, 0.0875, 0.0875, 0.0875, 0.0875, 0.07, 0.0525, 0.035,\n0.0175, 0.0000106]", "x": 0.0, "y": 1350}, {"color": null, "id": "Hourly energy consumed by instances for Default edge usage pattern", "label": "Hourly energy\nconsumed by\ninstances for\nDefault edge usage\npattern", "shape": "dot", "size": 15, "title": "Hourly energy consumed by instances for Default edge usage pattern\n=\nHourly energy consumed by per edge device for Default edge usage pattern * no\ngroup (default count\n=\n1)\n=\n105192 values from 2025-01-01 00:00:00+00:00 to 2037-01-01 00:00:00+00:00 in\nMWh:\nfirst 10 vals [0.0000186, 0.0000106, 0, 0, 0.00000796, 0, 0.00000398, 0.0175,\n0.035, 0.0525],\nlast 10 vals [0.0875, 0.0875, 0.0875, 0.0875, 0.0875, 0.07, 0.0525, 0.035,\n0.0175, 0.0000106] * 1\n=\n105192 values from 2025-01-01 00:00:00+00:00 to 2037-01-01 00:00:00+00:00 in\nMWh:\nfirst 10 vals [0.0000186, 0.0000106, 0, 0, 0.00000796, 0, 0.00000398, 0.0175,\n0.035, 0.0525],\nlast 10 vals [0.0875, 0.0875, 0.0875, 0.0875, 0.0875, 0.07, 0.0525, 0.035,\n0.0175, 0.0000106]", "x": 0.0, "y": 1200}]);
                   edges = new vis.DataSet([{"arrows": "to", "from": "Hourly energy consumed by instances for Default edge usage pattern", "to": "Total energy consumed across usage patterns"}]);
 
                   nodeColors = {};

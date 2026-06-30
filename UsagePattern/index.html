@@ -9,7 +9,7 @@
       
       
       
-        <link rel="prev" href="../EcoLogitsGenAIExternalAPIJob/">
+        <link rel="prev" href="../EcoLogitsVideoGenExternalAPIJob/">
       
       
         <link rel="next" href="../UsageJourney/">
@@ -1921,6 +1921,145 @@
 
               
             
+              
+                
+  
+  
+  
+  
+    
+    
+    
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_5_4_2" >
+        
+          
+          <label class="md-nav__link" for="__nav_5_4_2" id="__nav_5_4_2_label" tabindex="0">
+            
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    EcoLogits generative AI video
+  
+
+    
+  </span>
+  
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="3" aria-labelledby="__nav_5_4_2_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_5_4_2">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    EcoLogits generative AI video
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../EcoLogitsVideoGenExternalAPI/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    EcoLogits generative AI video APIs
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../EcoLogitsVideoGenExternalAPIServer/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    EcoLogits generative AI video API server
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../EcoLogitsVideoGenExternalAPIJob/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    EcoLogits generative AI video API job
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+              
+            
           </ul>
         </nav>
       
@@ -3406,8 +3545,8 @@
 <h3 id="utc_hourly_usage_journey_starts">utc_hourly_usage_journey_starts</h3>
 <p>Hourly journey starts converted from the country's local timezone to UTC, so that downstream calculations can be combined across patterns in different timezones.  </p>
 <p>Example value: 26298 values from 2025-01-01 00:00:00+00:00 to 2028-01-01 18:00:00+00:00 in :<br />
-    first 10 vals [5, 6, 4, 3, 1, 3, 4, 5, 5, 7],<br />
-    last 10 vals [4, 2, 9, 4, 4, 9, 1, 1, 4, 8]  </p>
+    first 10 vals [9, 5, 8, 3, 9, 8, 4, 5, 2, 7],<br />
+    last 10 vals [2, 3, 1, 3, 8, 1, 5, 8, 1, 4]  </p>
 <p>Depends directly on:  </p>
 <ul>
 <li><a href="./#hourly_usage_journey_starts">Hourly nb of usage journey starts</a></li>
@@ -3447,7 +3586,7 @@
         </center>
         <style type="text/css">
 
-             #mynetwork_6cf1d7 {
+             #mynetwork_74c294 {
                  width: 760px;
                  height: 300px;
                  background-color: #ffffff;
@@ -3469,7 +3608,7 @@
         <div class="card" style="width: 100%">
 
 
-            <div id="mynetwork_6cf1d7" class="card-body"></div>
+            <div id="mynetwork_74c294" class="card-body"></div>
         </div>
 
 
@@ -3499,12 +3638,12 @@
 
               // This method is responsible for drawing the graph, returns the drawn network
               function drawGraph() {
-                  var container = document.getElementById('mynetwork_6cf1d7');
+                  var container = document.getElementById('mynetwork_74c294');
 
 
 
                   // parsing and collecting nodes and edges from the python
-                  nodes = new vis.DataSet([{"color": null, "id": "Hourly nb of usage journey starts (UTC)", "label": "Hourly nb of usage\njourney starts (UTC)", "shape": "dot", "size": 15, "title": "Hourly nb of usage journey starts (UTC)\n=\nHourly nb of usage journey starts converted to UTC from Timezone\n=\n26298 values from 2025-01-01 00:00:00 to 2028-01-01 18:00:00 in :\nfirst 10 vals [8, 5, 6, 4, 3, 1, 3, 4, 5, 5],\nlast 10 vals [1, 4, 2, 9, 4, 4, 9, 1, 1, 4] converted to UTC from Europe/Paris\n=\n26298 values from 2025-01-01 00:00:00+00:00 to 2028-01-01 18:00:00+00:00 in :\nfirst 10 vals [5, 6, 4, 3, 1, 3, 4, 5, 5, 7],\nlast 10 vals [4, 2, 9, 4, 4, 9, 1, 1, 4, 8]", "x": 0.0, "y": 300}, {"color": null, "id": "Hourly nb of usage journey starts", "label": "Hourly nb of usage\njourney starts", "shape": "dot", "size": 15, "title": "Hourly nb of usage journey starts = 26298 values from 2025-01-01 00:00:00 to\n2028-01-01 18:00:00 in :\nfirst 10 vals [8, 5, 6, 4, 3, 1, 3, 4, 5, 5],\nlast 10 vals [1, 4, 2, 9, 4, 4, 9, 1, 1, 4]", "x": -75.0, "y": 150}, {"color": "gold", "id": "Timezone", "label": "Timezone", "shape": "dot", "size": 15, "title": "Timezone = Europe/Paris", "x": 75.0, "y": 150}]);
+                  nodes = new vis.DataSet([{"color": null, "id": "Hourly nb of usage journey starts (UTC)", "label": "Hourly nb of usage\njourney starts (UTC)", "shape": "dot", "size": 15, "title": "Hourly nb of usage journey starts (UTC)\n=\nHourly nb of usage journey starts converted to UTC from Timezone\n=\n26298 values from 2025-01-01 00:00:00 to 2028-01-01 18:00:00 in :\nfirst 10 vals [4, 9, 5, 8, 3, 9, 8, 4, 5, 2],\nlast 10 vals [4, 2, 3, 1, 3, 8, 1, 5, 8, 1] converted to UTC from Europe/Paris\n=\n26298 values from 2025-01-01 00:00:00+00:00 to 2028-01-01 18:00:00+00:00 in :\nfirst 10 vals [9, 5, 8, 3, 9, 8, 4, 5, 2, 7],\nlast 10 vals [2, 3, 1, 3, 8, 1, 5, 8, 1, 4]", "x": 0.0, "y": 300}, {"color": null, "id": "Hourly nb of usage journey starts", "label": "Hourly nb of usage\njourney starts", "shape": "dot", "size": 15, "title": "Hourly nb of usage journey starts = 26298 values from 2025-01-01 00:00:00 to\n2028-01-01 18:00:00 in :\nfirst 10 vals [4, 9, 5, 8, 3, 9, 8, 4, 5, 2],\nlast 10 vals [4, 2, 3, 1, 3, 8, 1, 5, 8, 1]", "x": -75.0, "y": 150}, {"color": "gold", "id": "Timezone", "label": "Timezone", "shape": "dot", "size": 15, "title": "Timezone = Europe/Paris", "x": 75.0, "y": 150}]);
                   edges = new vis.DataSet([{"arrows": "to", "from": "Hourly nb of usage journey starts", "to": "Hourly nb of usage journey starts (UTC)"}, {"arrows": "to", "from": "Timezone", "to": "Hourly nb of usage journey starts (UTC)"}]);
 
                   nodeColors = {};

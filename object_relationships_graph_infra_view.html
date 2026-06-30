@@ -31,7 +31,7 @@
         </center>
         <style type="text/css">
 
-             #mynetwork_3dd2aa {
+             #mynetwork_a9117a {
                  width: 800px;
                  height: 500px;
                  background-color: #ffffff;
@@ -53,7 +53,7 @@
         <div class="card" style="width: 100%">
             
             
-            <div id="mynetwork_3dd2aa" class="card-body"></div>
+            <div id="mynetwork_a9117a" class="card-body"></div>
         </div>
 
         
@@ -83,12 +83,12 @@
 
               // This method is responsible for drawing the graph, returns the drawn network
               function drawGraph() {
-                  var container = document.getElementById('mynetwork_3dd2aa');
+                  var container = document.getElementById('mynetwork_a9117a');
 
                   
 
                   // parsing and collecting nodes and edges from the python
-                  nodes = new vis.DataSet([{"color": "dodgerblue", "id": "e81bd4ff-550", "label": "Mean video\nconsumption user\njourney", "shape": "dot", "title": "UsageJourney e81bd4ff-550\n \nname: Mean video consumption user journey\nuj_steps: {\nUsageJourneyStep 20 min streaming (5fc3ab19-707): 1 ,\nUsageJourneyStep 1 min video capture then upload (df284dbf-3fb): 1 ,\n}\n \ncalculated_attributes:\nduration: 21.2 min\nnb_usage_journeys_in_parallel_per_usage_pattern: {\nUsagePattern Daily video streaming consumption (2bd561d8-c02): 26298 values from\n2025-01-01 00:00:00+00:00 to 2028-01-01 18:00:00+00:00 in k:\nfirst 10 vals [0.768, 0.545, 0.404, 0.356, 0.406, 0.55, 0.779, 1.08, 1.43,\n1.81],\nlast 10 vals [28.7, 36.2, 43.7, 50.7, 56.7, 61.3, 64.2, 65.2, 64.2, 1.06],\n}"}]);
+                  nodes = new vis.DataSet([{"color": "dodgerblue", "id": "9634d573-f72", "label": "Mean video\nconsumption user\njourney", "shape": "dot", "title": "UsageJourney 9634d573-f72\n \nname: Mean video consumption user journey\nuj_steps: {\nUsageJourneyStep 20 min streaming (e07d5e6b-0c6): 1 ,\nUsageJourneyStep 1 min video capture then upload (d99bfd34-580): 1 ,\n}\n \ncalculated_attributes:\nduration: 21.2 min\nnb_usage_journeys_in_parallel_per_usage_pattern: {\nUsagePattern Daily video streaming consumption (df51111f-cdd): 26298 values from\n2025-01-01 00:00:00+00:00 to 2028-01-01 18:00:00+00:00 in k:\nfirst 10 vals [0.768, 0.545, 0.404, 0.356, 0.406, 0.55, 0.779, 1.08, 1.43,\n1.81],\nlast 10 vals [28.7, 36.2, 43.7, 50.7, 56.7, 61.3, 64.2, 65.2, 64.2, 1.06],\n}"}]);
                   edges = new vis.DataSet([]);
 
                   nodeColors = {};

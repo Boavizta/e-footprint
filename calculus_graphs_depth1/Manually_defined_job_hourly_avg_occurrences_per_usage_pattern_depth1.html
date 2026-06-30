@@ -31,7 +31,7 @@
         </center>
         <style type="text/css">
 
-             #mynetwork_8d25ac {
+             #mynetwork_ef1484 {
                  width: 760px;
                  height: 300px;
                  background-color: #ffffff;
@@ -53,7 +53,7 @@
         <div class="card" style="width: 100%">
             
             
-            <div id="mynetwork_8d25ac" class="card-body"></div>
+            <div id="mynetwork_ef1484" class="card-body"></div>
         </div>
 
         
@@ -83,12 +83,12 @@
 
               // This method is responsible for drawing the graph, returns the drawn network
               function drawGraph() {
-                  var container = document.getElementById('mynetwork_8d25ac');
+                  var container = document.getElementById('mynetwork_ef1484');
 
                   
 
                   // parsing and collecting nodes and edges from the python
-                  nodes = new vis.DataSet([{"color": null, "id": "Average hourly occurrences in usage pattern", "label": "Average hourly\noccurrences in usage\npattern", "shape": "dot", "size": 15, "title": "Average hourly occurrences in usage pattern\n=\nHourly occurrences in usage pattern hourly occurrences average Request duration\n=\n26298 values from 2025-01-01 00:00:00+00:00 to 2028-01-01 18:00:00+00:00 in :\nfirst 10 vals [10, 12, 8, 6, 2, 6, 8, 10, 10, 14],\nlast 10 vals [8, 4, 18, 8, 8, 18, 2, 2, 8, 16] hourly occurrences average 1 s\n=\n26298 values from 2025-01-01 00:00:00+00:00 to 2028-01-01 18:00:00+00:00 in :\nfirst 10 vals [0.00278, 0.00333, 0.00222, 0.00167, 0.000556, 0.00167, 0.00222,\n0.00278, 0.00278, 0.00389],\nlast 10 vals [0.00222, 0.00111, 0.005, 0.00222, 0.00222, 0.005, 0.000556,\n0.000556, 0.00222, 0.00444]", "x": 0.0, "y": 600}, {"color": null, "id": "Hourly occurrences in usage pattern", "label": "Hourly occurrences\nin usage pattern", "shape": "dot", "size": 15, "title": "Hourly occurrences in usage pattern\n=\n(Hourly nb of usage journey starts (UTC) shifted by no value) * Times per\njourney * Times per step\n=\n(26298 values from 2025-01-01 00:00:00+00:00 to 2028-01-01 18:00:00+00:00 in :\nfirst 10 vals [5, 6, 4, 3, 1, 3, 4, 5, 5, 7],\nlast 10 vals [4, 2, 9, 4, 4, 9, 1, 1, 4, 8] shifted by no value) * 1 * 2\n=\n26298 values from 2025-01-01 00:00:00+00:00 to 2028-01-01 18:00:00+00:00 in :\nfirst 10 vals [10, 12, 8, 6, 2, 6, 8, 10, 10, 14],\nlast 10 vals [8, 4, 18, 8, 8, 18, 2, 2, 8, 16]", "x": -112.5, "y": 450}, {"color": "darkred", "id": "Request duration", "label": "Request duration", "shape": "dot", "size": 15, "title": "Request duration = 1 s", "x": 112.5, "y": 450}]);
+                  nodes = new vis.DataSet([{"color": null, "id": "Average hourly occurrences in usage pattern", "label": "Average hourly\noccurrences in usage\npattern", "shape": "dot", "size": 15, "title": "Average hourly occurrences in usage pattern\n=\nHourly occurrences in usage pattern hourly occurrences average Request duration\n=\n26298 values from 2025-01-01 00:00:00+00:00 to 2028-01-01 18:00:00+00:00 in :\nfirst 10 vals [18, 10, 16, 6, 18, 16, 8, 10, 4, 14],\nlast 10 vals [4, 6, 2, 6, 16, 2, 10, 16, 2, 8] hourly occurrences average 1 s\n=\n26298 values from 2025-01-01 00:00:00+00:00 to 2028-01-01 18:00:00+00:00 in :\nfirst 10 vals [0.005, 0.00278, 0.00444, 0.00167, 0.005, 0.00444, 0.00222,\n0.00278, 0.00111, 0.00389],\nlast 10 vals [0.00111, 0.00167, 0.000556, 0.00167, 0.00444, 0.000556, 0.00278,\n0.00444, 0.000556, 0.00222]", "x": 0.0, "y": 600}, {"color": null, "id": "Hourly occurrences in usage pattern", "label": "Hourly occurrences\nin usage pattern", "shape": "dot", "size": 15, "title": "Hourly occurrences in usage pattern\n=\n(Hourly nb of usage journey starts (UTC) shifted by no value) * Times per\njourney * Times per step\n=\n(26298 values from 2025-01-01 00:00:00+00:00 to 2028-01-01 18:00:00+00:00 in :\nfirst 10 vals [9, 5, 8, 3, 9, 8, 4, 5, 2, 7],\nlast 10 vals [2, 3, 1, 3, 8, 1, 5, 8, 1, 4] shifted by no value) * 1 * 2\n=\n26298 values from 2025-01-01 00:00:00+00:00 to 2028-01-01 18:00:00+00:00 in :\nfirst 10 vals [18, 10, 16, 6, 18, 16, 8, 10, 4, 14],\nlast 10 vals [4, 6, 2, 6, 16, 2, 10, 16, 2, 8]", "x": -112.5, "y": 450}, {"color": "darkred", "id": "Request duration", "label": "Request duration", "shape": "dot", "size": 15, "title": "Request duration = 1 s", "x": 112.5, "y": 450}]);
                   edges = new vis.DataSet([{"arrows": "to", "from": "Hourly occurrences in usage pattern", "to": "Average hourly occurrences in usage pattern"}, {"arrows": "to", "from": "Request duration", "to": "Average hourly occurrences in usage pattern"}]);
 
                   nodeColors = {};

@@ -31,7 +31,7 @@
         </center>
         <style type="text/css">
 
-             #mynetwork_d85b19 {
+             #mynetwork_cf6c03 {
                  width: 800px;
                  height: 500px;
                  background-color: #ffffff;
@@ -53,7 +53,7 @@
         <div class="card" style="width: 100%">
             
             
-            <div id="mynetwork_d85b19" class="card-body"></div>
+            <div id="mynetwork_cf6c03" class="card-body"></div>
         </div>
 
         
@@ -83,13 +83,13 @@
 
               // This method is responsible for drawing the graph, returns the drawn network
               function drawGraph() {
-                  var container = document.getElementById('mynetwork_d85b19');
+                  var container = document.getElementById('mynetwork_cf6c03');
 
                   
 
                   // parsing and collecting nodes and edges from the python
-                  nodes = new vis.DataSet([{"color": "blue", "id": "2bd561d8-c02", "label": "Daily video\nstreaming\nconsumption", "shape": "dot", "title": "UsagePattern 2bd561d8-c02\n \nname: Daily video streaming consumption\nhourly_usage_journey_starts: 26298 values from 2025-01-01 00:00:00 to 2028-01-01\n18:00:00 in k:\nfirst 10 vals [3, 2.18, 1.54, 1.14, 1.01, 1.15, 1.56, 2.21, 3.06, 4.05],\nlast 10 vals [61.6, 81.4, 103, 124, 144, 161, 174, 182, 185, 182]\nusage_journey: e81bd4ff-550\ndevices: [80e4db64-a3e]\nnetwork: 30443298-184\ncountry: b0b4a9e3-a3a\n \ncalculated_attributes:\nutc_hourly_usage_journey_starts: 26298 values from 2025-01-01 00:00:00+00:00 to\n2028-01-01 18:00:00+00:00 in k:\nfirst 10 vals [2.18, 1.54, 1.14, 1.01, 1.15, 1.56, 2.21, 3.06, 4.05, 5.12],\nlast 10 vals [81.4, 103, 124, 144, 161, 174, 182, 185, 182, 3]"}, {"color": "dodgerblue", "id": "e81bd4ff-550", "label": "Mean video\nconsumption user\njourney", "shape": "dot", "title": "UsageJourney e81bd4ff-550\n \nname: Mean video consumption user journey\nuj_steps: {\nUsageJourneyStep 20 min streaming (5fc3ab19-707): 1 ,\nUsageJourneyStep 1 min video capture then upload (df284dbf-3fb): 1 ,\n}\n \ncalculated_attributes:\nduration: 21.2 min\nnb_usage_journeys_in_parallel_per_usage_pattern: {\nUsagePattern Daily video streaming consumption (2bd561d8-c02): 26298 values from\n2025-01-01 00:00:00+00:00 to 2028-01-01 18:00:00+00:00 in k:\nfirst 10 vals [0.768, 0.545, 0.404, 0.356, 0.406, 0.55, 0.779, 1.08, 1.43,\n1.81],\nlast 10 vals [28.7, 36.2, 43.7, 50.7, 56.7, 61.3, 64.2, 65.2, 64.2, 1.06],\n}"}]);
-                  edges = new vis.DataSet([{"from": "2bd561d8-c02", "to": "e81bd4ff-550"}]);
+                  nodes = new vis.DataSet([{"color": "blue", "id": "df51111f-cdd", "label": "Daily video\nstreaming\nconsumption", "shape": "dot", "title": "UsagePattern df51111f-cdd\n \nname: Daily video streaming consumption\nhourly_usage_journey_starts: 26298 values from 2025-01-01 00:00:00 to 2028-01-01\n18:00:00 in k:\nfirst 10 vals [3, 2.18, 1.54, 1.14, 1.01, 1.15, 1.56, 2.21, 3.06, 4.05],\nlast 10 vals [61.6, 81.4, 103, 124, 144, 161, 174, 182, 185, 182]\nusage_journey: 9634d573-f72\ndevices: [a0e7d7f7-4c4]\nnetwork: cd2a9b38-3b4\ncountry: 85c0c7b5-20a\n \ncalculated_attributes:\nutc_hourly_usage_journey_starts: 26298 values from 2025-01-01 00:00:00+00:00 to\n2028-01-01 18:00:00+00:00 in k:\nfirst 10 vals [2.18, 1.54, 1.14, 1.01, 1.15, 1.56, 2.21, 3.06, 4.05, 5.12],\nlast 10 vals [81.4, 103, 124, 144, 161, 174, 182, 185, 182, 3]"}, {"color": "dodgerblue", "id": "9634d573-f72", "label": "Mean video\nconsumption user\njourney", "shape": "dot", "title": "UsageJourney 9634d573-f72\n \nname: Mean video consumption user journey\nuj_steps: {\nUsageJourneyStep 20 min streaming (e07d5e6b-0c6): 1 ,\nUsageJourneyStep 1 min video capture then upload (d99bfd34-580): 1 ,\n}\n \ncalculated_attributes:\nduration: 21.2 min\nnb_usage_journeys_in_parallel_per_usage_pattern: {\nUsagePattern Daily video streaming consumption (df51111f-cdd): 26298 values from\n2025-01-01 00:00:00+00:00 to 2028-01-01 18:00:00+00:00 in k:\nfirst 10 vals [0.768, 0.545, 0.404, 0.356, 0.406, 0.55, 0.779, 1.08, 1.43,\n1.81],\nlast 10 vals [28.7, 36.2, 43.7, 50.7, 56.7, 61.3, 64.2, 65.2, 64.2, 1.06],\n}"}]);
+                  edges = new vis.DataSet([{"from": "df51111f-cdd", "to": "9634d573-f72"}]);
 
                   nodeColors = {};
                   allNodes = nodes.get({ returnType: "Object" });

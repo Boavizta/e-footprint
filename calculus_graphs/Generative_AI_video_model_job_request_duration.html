@@ -1,0 +1,155 @@
+<html>
+    <head>
+        <meta charset="utf-8">
+        
+            <script src="lib/bindings/utils.js"></script>
+            <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/vis-network/9.1.2/dist/dist/vis-network.min.css" integrity="sha512-WgxfT5LWjfszlPHXRmBWHkV2eceiWTOBvrKCNbdgDYTHrT2AeLCGbF4sZlZw3UMN3WtL0tGUoIAKsu8mllg/XA==" crossorigin="anonymous" referrerpolicy="no-referrer" />
+            <script src="https://cdnjs.cloudflare.com/ajax/libs/vis-network/9.1.2/dist/vis-network.min.js" integrity="sha512-LnvoEWDFrqGHlHmDD2101OrLcbsfkrzoSpvtSQtxK3RMnRV0eOkhhBN2dXHKRrUU8p2DGRTk35n4O8nWSVe1mQ==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
+            
+        
+<center>
+<h1></h1>
+</center>
+
+<!-- <link rel="stylesheet" href="../node_modules/vis/dist/vis.min.css" type="text/css" />
+<script type="text/javascript" src="../node_modules/vis/dist/vis.js"> </script>-->
+        <link
+          href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.0-beta3/dist/css/bootstrap.min.css"
+          rel="stylesheet"
+          integrity="sha384-eOJMYsd53ii+scO/bJGFsiCZc+5NDVN2yr8+0RDqr0Ql0h+rP48ckxlpbzKgwra6"
+          crossorigin="anonymous"
+        />
+        <script
+          src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.0-beta3/dist/js/bootstrap.bundle.min.js"
+          integrity="sha384-JEW9xMcG8R+pH31jmWH6WWP0WintQrMb4s7ZOdauHnUtxwoG2vI5DkLtS3qm9Ekf"
+          crossorigin="anonymous"
+        ></script>
+
+
+        <center>
+          <h1></h1>
+        </center>
+        <style type="text/css">
+
+             #mynetwork_400510 {
+                 width: 1800px;
+                 height: 900px;
+                 background-color: #ffffff;
+                 border: 1px solid lightgray;
+                 position: relative;
+                 float: left;
+             }
+
+             
+
+             
+
+             
+        </style>
+    </head>
+
+
+    <body>
+        <div class="card" style="width: 100%">
+            
+            
+            <div id="mynetwork_400510" class="card-body"></div>
+        </div>
+
+        
+        
+
+        <script type="text/javascript">
+
+              // initialize global variables.
+              var edges;
+              var nodes;
+              var allNodes;
+              var allEdges;
+              var nodeColors;
+              var originalNodes;
+              var network;
+              var container;
+              var options, data;
+              var filter = {
+                  item : '',
+                  property : '',
+                  value : []
+              };
+
+              
+
+              
+
+              // This method is responsible for drawing the graph, returns the drawn network
+              function drawGraph() {
+                  var container = document.getElementById('mynetwork_400510');
+
+                  
+
+                  // parsing and collecting nodes and edges from the python
+                  nodes = new vis.DataSet([{"color": null, "id": "Ecologits generation_latency for sora-2-pro", "label": "Ecologits\ngeneration_latency\nfor sora-2-pro", "shape": "dot", "size": 15, "title": "Ecologits generation_latency for sora-2-pro\n=\nduplicate (Ecologits generation_latency for sora-2-pro)\n=\nduplicate (3.79 min)\n=\n3.79 min", "x": 0.0, "y": 750}, {"color": null, "id": "Ecologits video impacts", "label": "Ecologits video\nimpacts", "shape": "dot", "size": 15, "title": "Ecologits video impacts\n=\nResolution compute impacts with EcoLogits compute_video_impacts_dag function\nVideo duration logically dependent on Generates audio logically dependent on\nDatacenter PUE for openai logically dependent on Average carbon intensity of\nelectricity mix for openai logically dependent on Provider logically dependent\non Model used\n=\n720p (1280 x 720) compute impacts with EcoLogits compute_video_impacts_dag\nfunction 8 s logically dependent on True logically dependent on 1.2 logically\ndependent on 0.384 kg/kWh logically dependent on openai logically dependent on\nsora-2-pro\n=\n{\u0027video_width\u0027: 1280.0, \u0027video_height\u0027: 720.0, \u0027video_frames...", "x": 0.0, "y": 600}, {"color": "darkred", "id": "Resolution", "label": "Resolution", "shape": "dot", "size": 15, "title": "Resolution = 720p (1280 x 720)", "x": -450.0, "y": 450}, {"color": "darkred", "id": "Video duration", "label": "Video duration", "shape": "dot", "size": 15, "title": "Video duration = 8 s", "x": -300.0, "y": 450}, {"color": "darkred", "id": "Generates audio", "label": "Generates audio", "shape": "dot", "size": 15, "title": "Generates audio = True", "x": -150.0, "y": 450}, {"color": null, "id": "Datacenter PUE for openai", "label": "Datacenter PUE for\nopenai", "shape": "dot", "size": 15, "title": "Datacenter PUE for openai\n=\nquery EcoLogits video provider config (Provider)\n=\nquery EcoLogits video provider config (openai)\n=\n1.2", "x": 0.0, "y": 450}, {"color": "darkred", "id": "Provider", "label": "Provider", "shape": "dot", "size": 15, "title": "Provider = openai", "x": 0.0, "y": 150}, {"color": null, "id": "Average carbon intensity of electricity mix for openai", "label": "Average carbon\nintensity of\nelectricity mix for\nopenai", "shape": "dot", "size": 15, "title": "Average carbon intensity of electricity mix for openai\n=\nquery EcoLogits electricity mix repository with datacenter location (Datacenter\nlocation for openai)\n=\nquery EcoLogits electricity mix repository with datacenter location (USA)\n=\n0.384 kg/kWh", "x": 150.0, "y": 450}, {"color": null, "id": "Datacenter location for openai", "label": "Datacenter location\nfor openai", "shape": "dot", "size": 15, "title": "Datacenter location for openai\n=\nquery EcoLogits video provider config (Provider)\n=\nquery EcoLogits video provider config (openai)\n=\nUSA", "x": 0.0, "y": 300}, {"color": "darkred", "id": "Model used", "label": "Model used", "shape": "dot", "size": 15, "title": "Model used = sora-2-pro", "x": 450.0, "y": 450}]);
+                  edges = new vis.DataSet([{"arrows": "to", "from": "Ecologits generation_latency for sora-2-pro", "to": "Ecologits generation_latency for sora-2-pro"}, {"arrows": "to", "from": "Ecologits video impacts", "to": "Ecologits generation_latency for sora-2-pro"}, {"arrows": "to", "from": "Resolution", "to": "Ecologits video impacts"}, {"arrows": "to", "from": "Video duration", "to": "Ecologits video impacts"}, {"arrows": "to", "from": "Generates audio", "to": "Ecologits video impacts"}, {"arrows": "to", "from": "Datacenter PUE for openai", "to": "Ecologits video impacts"}, {"arrows": "to", "from": "Provider", "to": "Datacenter PUE for openai"}, {"arrows": "to", "from": "Average carbon intensity of electricity mix for openai", "to": "Ecologits video impacts"}, {"arrows": "to", "from": "Datacenter location for openai", "to": "Average carbon intensity of electricity mix for openai"}, {"arrows": "to", "from": "Provider", "to": "Datacenter location for openai"}, {"arrows": "to", "from": "Provider", "to": "Ecologits video impacts"}, {"arrows": "to", "from": "Model used", "to": "Ecologits video impacts"}]);
+
+                  nodeColors = {};
+                  allNodes = nodes.get({ returnType: "Object" });
+                  for (nodeId in allNodes) {
+                    nodeColors[nodeId] = allNodes[nodeId].color;
+                  }
+                  allEdges = edges.get({ returnType: "Object" });
+                  // adding nodes and edges to the graph
+                  data = {nodes: nodes, edges: edges};
+
+                  var options = {
+    "configure": {
+        "enabled": false
+    },
+    "edges": {
+        "color": {
+            "inherit": true
+        },
+        "smooth": {
+            "enabled": true,
+            "type": "dynamic"
+        }
+    },
+    "interaction": {
+        "dragNodes": true,
+        "hideEdgesOnDrag": false,
+        "hideNodesOnDrag": false
+    },
+    "physics": {
+        "enabled": false,
+        "stabilization": {
+            "enabled": true,
+            "fit": true,
+            "iterations": 1000,
+            "onlyDynamicEdges": false,
+            "updateInterval": 50
+        }
+    }
+};
+
+                  
+
+
+                  
+
+                  network = new vis.Network(container, data, options);
+
+                  
+
+                  
+
+                  
+
+
+                  
+
+                  return network;
+
+              }
+              drawGraph();
+        </script>
+    </body>
+</html>

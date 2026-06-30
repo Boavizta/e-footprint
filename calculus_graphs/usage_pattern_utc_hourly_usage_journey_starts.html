@@ -31,7 +31,7 @@
         </center>
         <style type="text/css">
 
-             #mynetwork_8c256f {
+             #mynetwork_171945 {
                  width: 1800px;
                  height: 900px;
                  background-color: #ffffff;
@@ -53,7 +53,7 @@
         <div class="card" style="width: 100%">
             
             
-            <div id="mynetwork_8c256f" class="card-body"></div>
+            <div id="mynetwork_171945" class="card-body"></div>
         </div>
 
         
@@ -83,12 +83,12 @@
 
               // This method is responsible for drawing the graph, returns the drawn network
               function drawGraph() {
-                  var container = document.getElementById('mynetwork_8c256f');
+                  var container = document.getElementById('mynetwork_171945');
 
                   
 
                   // parsing and collecting nodes and edges from the python
-                  nodes = new vis.DataSet([{"color": null, "id": "Hourly nb of usage journey starts (UTC)", "label": "Hourly nb of usage\njourney starts (UTC)", "shape": "dot", "size": 15, "title": "Hourly nb of usage journey starts (UTC)\n=\nHourly nb of usage journey starts converted to UTC from Timezone\n=\n26298 values from 2025-01-01 00:00:00 to 2028-01-01 18:00:00 in :\nfirst 10 vals [8, 5, 6, 4, 3, 1, 3, 4, 5, 5],\nlast 10 vals [1, 4, 2, 9, 4, 4, 9, 1, 1, 4] converted to UTC from Europe/Paris\n=\n26298 values from 2025-01-01 00:00:00+00:00 to 2028-01-01 18:00:00+00:00 in :\nfirst 10 vals [5, 6, 4, 3, 1, 3, 4, 5, 5, 7],\nlast 10 vals [4, 2, 9, 4, 4, 9, 1, 1, 4, 8]", "x": 0.0, "y": 300}, {"color": null, "id": "Hourly nb of usage journey starts", "label": "Hourly nb of usage\njourney starts", "shape": "dot", "size": 15, "title": "Hourly nb of usage journey starts = 26298 values from 2025-01-01 00:00:00 to\n2028-01-01 18:00:00 in :\nfirst 10 vals [8, 5, 6, 4, 3, 1, 3, 4, 5, 5],\nlast 10 vals [1, 4, 2, 9, 4, 4, 9, 1, 1, 4]", "x": -75.0, "y": 150}, {"color": "gold", "id": "Timezone", "label": "Timezone", "shape": "dot", "size": 15, "title": "Timezone = Europe/Paris", "x": 75.0, "y": 150}]);
+                  nodes = new vis.DataSet([{"color": null, "id": "Hourly nb of usage journey starts (UTC)", "label": "Hourly nb of usage\njourney starts (UTC)", "shape": "dot", "size": 15, "title": "Hourly nb of usage journey starts (UTC)\n=\nHourly nb of usage journey starts converted to UTC from Timezone\n=\n26298 values from 2025-01-01 00:00:00 to 2028-01-01 18:00:00 in :\nfirst 10 vals [4, 9, 5, 8, 3, 9, 8, 4, 5, 2],\nlast 10 vals [4, 2, 3, 1, 3, 8, 1, 5, 8, 1] converted to UTC from Europe/Paris\n=\n26298 values from 2025-01-01 00:00:00+00:00 to 2028-01-01 18:00:00+00:00 in :\nfirst 10 vals [9, 5, 8, 3, 9, 8, 4, 5, 2, 7],\nlast 10 vals [2, 3, 1, 3, 8, 1, 5, 8, 1, 4]", "x": 0.0, "y": 300}, {"color": null, "id": "Hourly nb of usage journey starts", "label": "Hourly nb of usage\njourney starts", "shape": "dot", "size": 15, "title": "Hourly nb of usage journey starts = 26298 values from 2025-01-01 00:00:00 to\n2028-01-01 18:00:00 in :\nfirst 10 vals [4, 9, 5, 8, 3, 9, 8, 4, 5, 2],\nlast 10 vals [4, 2, 3, 1, 3, 8, 1, 5, 8, 1]", "x": -75.0, "y": 150}, {"color": "gold", "id": "Timezone", "label": "Timezone", "shape": "dot", "size": 15, "title": "Timezone = Europe/Paris", "x": 75.0, "y": 150}]);
                   edges = new vis.DataSet([{"arrows": "to", "from": "Hourly nb of usage journey starts", "to": "Hourly nb of usage journey starts (UTC)"}, {"arrows": "to", "from": "Timezone", "to": "Hourly nb of usage journey starts (UTC)"}]);
 
                   nodeColors = {};

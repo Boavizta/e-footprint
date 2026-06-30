@@ -31,7 +31,7 @@
         </center>
         <style type="text/css">
 
-             #mynetwork_27a3d1 {
+             #mynetwork_e2d09b {
                  width: 760px;
                  height: 300px;
                  background-color: #ffffff;
@@ -53,7 +53,7 @@
         <div class="card" style="width: 100%">
             
             
-            <div id="mynetwork_27a3d1" class="card-body"></div>
+            <div id="mynetwork_e2d09b" class="card-body"></div>
         </div>
 
         
@@ -83,12 +83,12 @@
 
               // This method is responsible for drawing the graph, returns the drawn network
               function drawGraph() {
-                  var container = document.getElementById('mynetwork_27a3d1');
+                  var container = document.getElementById('mynetwork_e2d09b');
 
                   
 
                   // parsing and collecting nodes and edges from the python
-                  nodes = new vis.DataSet([{"color": null, "id": "Hourly idle energy footprint", "label": "Hourly idle energy\nfootprint", "shape": "dot", "size": 15, "title": "Hourly idle energy footprint\n=\nHourly number of instances * Idle power * PUE * one hour * Average carbon\nintensity of electricity\n=\n105192 values from 2025-01-01 00:00:00+00:00 to 2037-01-01 00:00:00+00:00 in :\nfirst 10 vals [1, 1, 1, 1, 1, 1, 1, 1, 1, 1],\nlast 10 vals [1, 1, 1, 1, 1, 1, 1, 1, 1, 0] * 50 W * 1.2 * 1 h * 100 g/kWh\n=\n105192 values from 2025-01-01 00:00:00+00:00 to 2037-01-01 00:00:00+00:00 in g:\nfirst 10 vals [6, 6, 6, 6, 6, 6, 6, 6, 6, 6],\nlast 10 vals [6, 6, 6, 6, 6, 6, 6, 6, 6, 0]", "x": 0.0, "y": 1650}, {"color": null, "id": "Hourly number of instances", "label": "Hourly number of\ninstances", "shape": "dot", "size": 15, "title": "Hourly number of instances\n=\nceil (Hourly raw number of instances) logically dependent on Server type\n=\nceil (105192 values from 2025-01-01 00:00:00+00:00 to 2037-01-01 00:00:00+00:00\nin :\nfirst 10 vals [0.000739, 0.000887, 0.000591, 0.000444, 0.000148, 0.000444,\n0.000591, 0.00169, 0.00311, 0.00464],\nlast 10 vals [0.00708, 0.00708, 0.00708, 0.00708, 0.00708, 0.00566, 0.00425,\n0.00283, 0.00141, 0]) logically dependent on autoscaling\n=\n105192 values from 2025-01-01 00:00:00+00:00 to 2037-01-01 00:00:00+00:00 in :\nfirst 10 vals [1, 1, 1, 1, 1, 1, 1, 1, 1, 1],\nlast 10 vals [1, 1, 1, 1, 1, 1, 1, 1, 1, 0]", "x": -562.5, "y": 1500}, {"color": null, "id": "Idle power", "label": "Idle power", "shape": "dot", "size": 15, "title": "Idle power = 50 W", "x": -187.5, "y": 1500}, {"color": null, "id": "PUE", "label": "PUE", "shape": "dot", "size": 15, "title": "PUE = 1.2", "x": 187.5, "y": 1500}, {"color": null, "id": "Average carbon intensity of electricity", "label": "Average carbon\nintensity of\nelectricity", "shape": "dot", "size": 15, "title": "Average carbon intensity of electricity = 100 g/kWh", "x": 562.5, "y": 1500}]);
+                  nodes = new vis.DataSet([{"color": null, "id": "Hourly idle energy footprint", "label": "Hourly idle energy\nfootprint", "shape": "dot", "size": 15, "title": "Hourly idle energy footprint\n=\nHourly number of instances * Idle power * PUE * one hour * Average carbon\nintensity of electricity\n=\n105192 values from 2025-01-01 00:00:00+00:00 to 2037-01-01 00:00:00+00:00 in :\nfirst 10 vals [1, 1, 1, 1, 1, 1, 1, 1, 1, 1],\nlast 10 vals [1, 1, 1, 1, 1, 1, 1, 1, 1, 1] * 50 W * 1.2 * 1 h * 100 g/kWh\n=\n105192 values from 2025-01-01 00:00:00+00:00 to 2037-01-01 00:00:00+00:00 in g:\nfirst 10 vals [6, 6, 6, 6, 6, 6, 6, 6, 6, 6],\nlast 10 vals [6, 6, 6, 6, 6, 6, 6, 6, 6, 6]", "x": 0.0, "y": 1650}, {"color": null, "id": "Hourly number of instances", "label": "Hourly number of\ninstances", "shape": "dot", "size": 15, "title": "Hourly number of instances\n=\nceil (Hourly raw number of instances) logically dependent on Server type\n=\nceil (105192 values from 2025-01-01 00:00:00+00:00 to 2037-01-01 00:00:00+00:00\nin :\nfirst 10 vals [0.00133, 0.000739, 0.00118, 0.000444, 0.00133, 0.00118, 0.000592,\n0.0017, 0.00295, 0.00464],\nlast 10 vals [0.00709, 0.00709, 0.00708, 0.00709, 0.00708, 0.00567, 0.00425,\n0.00284, 0.00142, 0.00000086]) logically dependent on autoscaling\n=\n105192 values from 2025-01-01 00:00:00+00:00 to 2037-01-01 00:00:00+00:00 in :\nfirst 10 vals [1, 1, 1, 1, 1, 1, 1, 1, 1, 1],\nlast 10 vals [1, 1, 1, 1, 1, 1, 1, 1, 1, 1]", "x": -562.5, "y": 1500}, {"color": null, "id": "Idle power", "label": "Idle power", "shape": "dot", "size": 15, "title": "Idle power = 50 W", "x": -187.5, "y": 1500}, {"color": null, "id": "PUE", "label": "PUE", "shape": "dot", "size": 15, "title": "PUE = 1.2", "x": 187.5, "y": 1500}, {"color": null, "id": "Average carbon intensity of electricity", "label": "Average carbon\nintensity of\nelectricity", "shape": "dot", "size": 15, "title": "Average carbon intensity of electricity = 100 g/kWh", "x": 562.5, "y": 1500}]);
                   edges = new vis.DataSet([{"arrows": "to", "from": "Hourly number of instances", "to": "Hourly idle energy footprint"}, {"arrows": "to", "from": "Idle power", "to": "Hourly idle energy footprint"}, {"arrows": "to", "from": "PUE", "to": "Hourly idle energy footprint"}, {"arrows": "to", "from": "Average carbon intensity of electricity", "to": "Hourly idle energy footprint"}]);
 
                   nodeColors = {};
