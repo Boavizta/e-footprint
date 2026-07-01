@@ -84,6 +84,8 @@ means "tested." Subsumes the roadmap's planned single-version CI item.
 **Depends on:** none (the image installs from PyPI; for pre-release testing it can install the current
 published version).
 
+**Status:** Done.
+
 ---
 
 ## Task 4 — Interface CI pin bump — repo: `e-footprint-interface`

@@ -1,0 +1,95 @@
+name: Docker publish
+
+# Builds the boavizta/efootprint image (which installs efootprint from PyPI,
+# not from this checkout — see Dockerfile), smoke-tests it by running a
+# trivial model inside a container, and on success pushes it to Docker Hub.
+#
+# Trigger: publishing a GitHub release. Tag the release to match the version
+# just published to PyPI (see RELEASE_PROCESS.md) so the image tag lines up.
+#
+# Prerequisite: this workflow needs DOCKERHUB_USERNAME and DOCKERHUB_TOKEN
+# configured as repository secrets (Settings > Secrets and variables >
+# Actions). DOCKERHUB_TOKEN should be a Docker Hub access token with write
+# access to the boavizta/efootprint repository. Until these secrets are
+# provisioned, the build/smoke-test steps still run, but the push step fails.
+
+on:
+  release:
+    types: [published]
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: false
+
+jobs:
+  build-smoke-test-and-publish:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Build image
+        run: docker build -t efootprint-smoke-test .
+
+      - name: Write a trivial smoke-test model script
+        run: |
+          mkdir -p /tmp/efootprint-smoke
+          cat > /tmp/efootprint-smoke/smoke_model.py <<'EOF'
+          from efootprint.abstract_modeling_classes.source_objects import SourceValue, Sources
+          from efootprint.builders.time_builders import create_hourly_usage_from_frequency
+          from efootprint.constants.countries import Countries
+          from efootprint.constants.units import u
+          from efootprint.core.hardware.device import Device
+          from efootprint.core.hardware.network import Network
+          from efootprint.core.hardware.server import Server
+          from efootprint.core.hardware.storage import Storage
+          from efootprint.core.system import System
+          from efootprint.core.usage.job import Job
+          from efootprint.core.usage.usage_journey import UsageJourney
+          from efootprint.core.usage.usage_journey_step import UsageJourneyStep
+          from efootprint.core.usage.usage_pattern import UsagePattern
+
+          storage = Storage.ssd()
+          server = Server.from_defaults("Server", storage=storage)
+
+          job = Job(
+              "Home page request", server=server,
+              data_transferred=SourceValue(2 * u.MB, Sources.HYPOTHESIS),
+              data_stored=SourceValue(50 * u.kB_stored, Sources.HYPOTHESIS),
+              request_duration=SourceValue(1 * u.s, Sources.HYPOTHESIS),
+              compute_needed=SourceValue(0.5 * u.cpu_core, Sources.HYPOTHESIS),
+              ram_needed=SourceValue(100 * u.MB_ram, Sources.HYPOTHESIS))
+
+          step = UsageJourneyStep(
+              "Browse home page", user_time_spent=SourceValue(2 * u.min, Sources.HYPOTHESIS), jobs=[job])
+
+          journey = UsageJourney("Daily visit", uj_steps=[step])
+
+          usage_pattern = UsagePattern(
+              "Daily visits",
+              usage_journey=journey,
+              devices=[Device.laptop()],
+              network=Network.wifi_network(),
+              country=Countries.FRANCE(),
+              hourly_usage_journey_starts=create_hourly_usage_from_frequency(
+                  timespan=1 * u.week, input_volume=100, frequency="daily"))
+
+          system = System("System", usage_patterns=[usage_pattern], edge_usage_patterns=[])
+
+          print(f"Total footprint: {system.total_footprint}")
+          EOF
+
+      - name: Smoke test — run the trivial model inside the built image
+        run: docker run --rm -v /tmp/efootprint-smoke:/work efootprint-smoke-test python /work/smoke_model.py
+
+      - name: Log in to Docker Hub
+        uses: docker/login-action@v3
+        with:
+          username: ${{ secrets.DOCKERHUB_USERNAME }}
+          password: ${{ secrets.DOCKERHUB_TOKEN }}
+
+      - name: Tag and push
+        run: |
+          docker tag efootprint-smoke-test boavizta/efootprint:${{ github.event.release.tag_name }}
+          docker tag efootprint-smoke-test boavizta/efootprint:latest
+          docker push boavizta/efootprint:${{ github.event.release.tag_name }}
+          docker push boavizta/efootprint:latest

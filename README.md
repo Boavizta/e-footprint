@@ -56,6 +56,20 @@ poetry run ipython kernel install --user --name=efootprint-kernel
 poetry run jupyter notebook tutorial.ipynb
 ```
 
+## Run with Docker
+
+No local Python setup needed: write your model script, then run it inside the published
+`boavizta/efootprint` image, which installs `efootprint` from PyPI.
+
+```sh
+docker run --rm -v "$PWD":/work boavizta/efootprint python /work/build_model.py
+```
+
+The current directory is mounted at `/work` inside the container, so `build_model.py` (and any file
+paths it references, e.g. an output HTML graph) resolves relative to your working directory. The image
+is built and pushed to Docker Hub on each release — see [Dockerfile](Dockerfile) and
+[RELEASE_PROCESS.md](RELEASE_PROCESS.md).
+
 ## Dev setup
 
 Check out [INSTALL.md](./INSTALL.md).
