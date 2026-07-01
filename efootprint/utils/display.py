@@ -102,3 +102,22 @@ def format_display_number(value: float) -> str:
 def display_quantity_as_str(quantity: Quantity, sig_figs: int = 3) -> str:
     formatted_quantity = format_quantity_for_display(quantity, sig_figs)
     return f"{format_display_number(formatted_quantity.magnitude)} {human_readable_unit(formatted_quantity.units)}"
+
+
+def summarize_timeseries_for_display(quantity: Quantity, sig_figs: int = 3) -> str:
+    """Compact one-line summary of a timeseries Quantity: the first, last, mean, min, max and
+    standard-deviation values, each rendered with its own best display unit (magnitudes can vary widely
+    across time) and rounded to ``sig_figs`` significant figures. Exact zeros are shown unitless.
+    """
+    magnitude = quantity.magnitude
+    stats = {
+        "first": magnitude[0],
+        "last": magnitude[-1],
+        "mean": np.mean(magnitude),
+        "min": np.min(magnitude),
+        "max": np.max(magnitude),
+        "std": np.std(magnitude),
+    }
+    return ", ".join(
+        f"{name}=" + ("0" if value == 0 else display_quantity_as_str(value * quantity.units, sig_figs))
+        for name, value in stats.items())

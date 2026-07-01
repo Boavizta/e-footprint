@@ -10,7 +10,7 @@ from efootprint.abstract_modeling_classes.explainable_object_base_class import (
 from efootprint.constants.units import u, get_unit
 from efootprint.logger import logger
 from efootprint.abstract_modeling_classes.aggregation_utils import validate_timeseries_unit
-from efootprint.utils.display import best_display_unit, format_display_number, format_quantity_for_display, human_readable_unit
+from efootprint.utils.display import best_display_unit, format_quantity_for_display, summarize_timeseries_for_display
 
 if TYPE_CHECKING:
     from efootprint.abstract_modeling_classes.explainable_quantity import ExplainableQuantity
@@ -198,16 +198,4 @@ class ExplainableRecurrentQuantities(ExplainableObject):
         return str(self)
 
     def __str__(self):
-        display_quantity = format_quantity_for_display(self.value)
-        compact_unit = human_readable_unit(display_quantity.units)
-        nb_of_values = len(self.value)
-        if nb_of_values < 30:
-            formatted_values = [format_display_number(value) for value in display_quantity.magnitude]
-            str_rounded_values = "[" + ", ".join(formatted_values) + "]"
-        else:
-            first_vals = [format_display_number(value) for value in display_quantity.magnitude[:10]]
-            last_vals = [format_display_number(value) for value in display_quantity.magnitude[-10:]]
-            str_rounded_values = "first 10 vals [" + ", ".join(first_vals) \
-                                 + "],\n    last 10 vals [" + ", ".join(last_vals) + "]"
-
-        return f"{nb_of_values} values in {compact_unit}:\n    {str_rounded_values}"
+        return f"{len(self.value)} values: {summarize_timeseries_for_display(self.value)}"

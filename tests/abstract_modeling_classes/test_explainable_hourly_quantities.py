@@ -346,8 +346,9 @@ class TestExplainableHourlyQuantities(unittest.TestCase):
 
         str_repr = str(hourly_usage)
 
-        self.assertIn("2 values from 2025-01-01 00:00:00 to 2025-01-01 02:00:00 in kW", str_repr)
-        self.assertIn("[1, 2]", str_repr)
+        self.assertIn(
+            "2 values from 2025-01-01 00:00:00 to 2025-01-01 02:00:00: "
+            "first=1 kW, last=2 kW, mean=1.5 kW, min=1 kW, max=2 kW, std=500 W", str_repr)
 
     def test_to_json_with_compressed_data_from_json(self):
         self.maxDiff = None

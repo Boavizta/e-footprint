@@ -159,22 +159,19 @@ class TestExplainableRecurrentQuantities(unittest.TestCase):
         short_values = [1000, 2000]
         recurring_quantity = ExplainableRecurrentQuantities(
             Quantity(np.array(short_values, dtype=np.float32), u.W), "Test")
-        
+
         str_repr = str(recurring_quantity)
-        
-        self.assertIn("2 values in kW", str_repr)
-        self.assertIn("[1, 2]", str_repr)
+
+        self.assertIn("2 values: first=1 kW, last=2 kW, mean=1.5 kW, min=1 kW, max=2 kW, std=500 W", str_repr)
 
     def test_str_long_array(self):
         long_values = list(range(50))
         recurring_quantity = ExplainableRecurrentQuantities(
             Quantity(np.array(long_values, dtype=np.float32), u.W), "Test")
-        
+
         str_repr = str(recurring_quantity)
-        
-        self.assertIn("50 values in W", str_repr)
-        self.assertIn("first 10 vals", str_repr)
-        self.assertIn("last 10 vals", str_repr)
+
+        self.assertIn("50 values: first=0, last=49 W, mean=24.5 W, min=0, max=49 W, std=14.4 W", str_repr)
 
     def test_repr_equals_str(self):
         self.assertEqual(repr(self.recurring_quantity1), str(self.recurring_quantity1))
