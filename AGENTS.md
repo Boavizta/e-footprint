@@ -51,3 +51,7 @@ When you implement a non-trivial pattern (new relationship type, new calculated-
 ## Git commit style
 
 Prefix your commit messages with the relevant tag among [FIX], [REFACTO], [ADD], [REMOVE], [OPTIM], [UPDATE]. The user might specify another tag. Always use brackets and uppercase. Example: `[FIX] Handle missing data in timeseries rendering`.
+
+## Known parked test
+
+`tests/builders/hardware/test_boavizta_utils.py::TestBoaviztaUtils::test_web_api_and_package_dependency_calls_return_same_results` is skipped for `boaviztapi<=2.3.0`: that version handles test data differently in a testing context, causing a spurious mismatch. The fix is approved upstream; once `boaviztapi>2.3.0` is released and the dependency bumped, re-wire the test by removing the `skipUnless` guard.
