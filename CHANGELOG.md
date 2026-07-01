@@ -12,6 +12,9 @@ and this project adheres to [Semantic Versioning](http://semver.org/)
 - `.github/workflows/ci.yml`: run the test suite on every push/PR across a Python 3.12 + 3.13 matrix, with the Poetry venv cached, so "supported" means "tested." Supersedes the roadmap's single-version CI plan.
 - `Dockerfile`: a minimal `python:3.12-slim` image that installs `efootprint` from PyPI, for running a model with no local Python setup. Documented in the README's new "Run with Docker" section (build locally; not published to a registry yet — see `CLAUDE.md` for the revisit note).
 
+### Fixed
+- `BoaviztaCloudServer` no longer makes live HTTP calls at import time. Its `provider` and `instance_type` enums were previously populated by N+1 calls to the Boavizta API when the class was defined, so any real use of the library (any module importing `all_classes_in_order`) hit the network at import — slow, flaky, and impossible offline. They're now loaded from a bundled snapshot (`efootprint/builders/hardware/boavizta_cloud_instances_snapshot.json`), refreshed via `scripts/refresh_boavizta_cloud_snapshot.py` (see `RELEASE_PROCESS.md`). The per-instance impact call remains a lazy, on-demand live call.
+
 ## [V22.2.1] - 2026-06-23
 
 ### Fixed

@@ -3,6 +3,19 @@
 ## Update e-footprint version in [pyproject.toml](pyproject.toml) and [version.py](efootprint/version.py)
 You might need to update the version in the reference integration test json files as well.
 
+## Refresh the bundled Boavizta cloud-instance snapshot
+
+`BoaviztaCloudServer`'s `provider` / `instance_type` enums are loaded from an on-disk snapshot
+(`efootprint/builders/hardware/boavizta_cloud_instances_snapshot.json`), not the live API, so that
+importing the library never makes a network call. Refresh it so newly-added providers/instance
+types validate:
+
+```shell
+python scripts/refresh_boavizta_cloud_snapshot.py
+```
+
+Commit the resulting JSON diff.
+
 ## Update poetry dependencies
 
 ```shell

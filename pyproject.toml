@@ -32,6 +32,7 @@ dependencies = [
 [tool.poetry]
 include = ["efootprint/constants/custom_units.txt",
     "efootprint/builders/services/ecobenchmark_analysis/ecobenchmark_data_for_job_defaults.csv",
+    "efootprint/builders/hardware/boavizta_cloud_instances_snapshot.json",
     "efootprint/modeling_templates/how_to/*.json",
     "efootprint/modeling_templates/introductory/*.json"]
 

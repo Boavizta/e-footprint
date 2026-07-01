@@ -1,4 +1,6 @@
+import json
 from copy import deepcopy
+from pathlib import Path
 from time import perf_counter
 
 from efootprint.abstract_modeling_classes.explainable_dict import ExplainableDict
@@ -16,19 +18,23 @@ from efootprint.core.hardware.server_base import ServerTypes
 from efootprint.core.hardware.storage import Storage
 from efootprint.logger import logger
 
-boavizta_cloud_providers_request_result = call_boaviztapi(
-        "https://api.boavizta.org/v1/cloud/instance/all_providers")
-all_boavizta_cloud_providers = []
-for cloud_provider in boavizta_cloud_providers_request_result:
-    all_boavizta_cloud_providers.append(SourceObject(cloud_provider))
-instance_types_conditional_list_values_dict = {"depends_on": "provider", "conditional_list_values": {}}
-for cloud_provider in boavizta_cloud_providers_request_result:
-    provider_instance_types = call_boaviztapi(
-            f"https://api.boavizta.org/v1/cloud/instance/all_instances",
-            params={"provider": cloud_provider}
-    )
-    instance_types_conditional_list_values_dict["conditional_list_values"][SourceObject(cloud_provider)] = [
-        SourceObject(instance_type) for instance_type in provider_instance_types]
+# Provider / instance-type enums are loaded from a bundled snapshot instead of the live Boavizta
+# API so that importing this module never makes a network call. Refresh the snapshot with
+# scripts/refresh_boavizta_cloud_snapshot.py (documented in RELEASE_PROCESS.md); a provider or
+# instance type Boavizta adds after the last refresh won't validate until then.
+BOAVIZTA_CLOUD_SNAPSHOT_PATH = Path(__file__).parent / "boavizta_cloud_instances_snapshot.json"
+
+with open(BOAVIZTA_CLOUD_SNAPSHOT_PATH) as boavizta_cloud_snapshot_file:
+    boavizta_cloud_snapshot = json.load(boavizta_cloud_snapshot_file)
+
+all_boavizta_cloud_providers = [SourceObject(provider) for provider in boavizta_cloud_snapshot["providers"]]
+instance_types_conditional_list_values_dict = {
+    "depends_on": "provider",
+    "conditional_list_values": {
+        SourceObject(provider): [SourceObject(instance_type) for instance_type in instance_types]
+        for provider, instance_types in boavizta_cloud_snapshot["instances_by_provider"].items()
+    }
+}
 
 
 class BoaviztaCloudServer(Server):
