@@ -10,19 +10,14 @@ For **modeling-method questions** — where modeling something *well* needs scie
 
 The interface holds the primary spec at `../../e-footprint-interface/specs/features/tutorial-and-documentation/`. Library-side deliverables drive several library workstreams below.
 
-Status: Step 1 (disabled-instead-of-error UX) shipped on the interface side. Library CI workflow is the next library-side deliverable.
-
-### Library CI workflow (planned, near-term)
-
-- `.github/workflows/ci.yml` running pytest on every push (Python 3.12).
-- Add `mkdocs build --strict` once SSOT content is written.
-- Source: tutorial-and-documentation Step 1 + Step 4.
+Status: Step 1 (disabled-instead-of-error UX) shipped on the interface side. Library CI (`.github/workflows/ci.yml`, matrix on Python 3.12 + 3.13) shipped via the packaging-and-dx feature. SSOT metadata is the next library-side deliverable.
 
 ### SSOT metadata in classes (planned, near-term)
 
 - `param_descriptions` dict, class docstrings, `update_<attr>` docstrings on every concrete class.
 - `tests/test_descriptions.py` enforcing completeness.
 - `generate_object_reference.py` upgraded to consume the new metadata.
+- Once this content is written, wire `mkdocs build --strict` into `.github/workflows/ci.yml`.
 - Source: tutorial-and-documentation Step 2.
 - Enforced by constitution §1.4 (doc-as-code SSOT).
 

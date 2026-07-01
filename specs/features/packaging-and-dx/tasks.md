@@ -57,6 +57,8 @@ means "tested." Subsumes the roadmap's planned single-version CI item.
 
 **Depends on:** none (uses the version set Task 1 documents; can land in parallel).
 
+**Status:** Done.
+
 ---
 
 ## Task 3 — Docker image + release publish — repo: `e-footprint`
