@@ -93,9 +93,15 @@ jobs:
           username: ${{ secrets.DOCKERHUB_USERNAME }}
           password: ${{ secrets.DOCKERHUB_TOKEN }}
 
-      - name: Tag and push
+      - name: Tag and push the versioned image
         run: |
           docker tag efootprint-smoke-test boavizta/efootprint:${{ github.event.release.tag_name }}
-          docker tag efootprint-smoke-test boavizta/efootprint:latest
           docker push boavizta/efootprint:${{ github.event.release.tag_name }}
+
+      # Only a full release should move `latest`; a pre-release publishes its
+      # version tag but must not overwrite `latest` with non-GA bits.
+      - name: Tag and push latest
+        if: ${{ !github.event.release.prerelease }}
+        run: |
+          docker tag efootprint-smoke-test boavizta/efootprint:latest
           docker push boavizta/efootprint:latest
