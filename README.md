@@ -8,6 +8,12 @@ Other environmental impacts (water, rare earth metals, etc.) will be added soon 
 
 # Getting started
 
+## Python support policy
+
+e-footprint requires **Python >= 3.12**, with no hard upper cap: it follows a rolling window where
+"supported" means the latest Python minor versions for which every compiled dependency ships wheels.
+Today that's **3.12 and 3.13**; the next minor is added once its wheels land.
+
 ## Installation
 
 Check out [INSTALL.md](INSTALL.md).

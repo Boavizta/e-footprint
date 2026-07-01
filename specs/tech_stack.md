@@ -2,8 +2,9 @@
 
 ## Language and runtime
 
-- **Python ≥ 3.12** (declared in `pyproject.toml` as `^3.12`).
-- **Poetry** for dependency management and builds. The Poetry environment is the canonical Python interpreter for development; do not prefix commands with `PYTHONPATH=...`.
+- **Python ≥ 3.12** (declared in `pyproject.toml`'s `[project]` table as `requires-python = ">=3.12,<4.0"`).
+- **Poetry** (≥2.0, for the PEP 621 `[project]` layout) for dependency management and builds. The Poetry environment is the canonical Python interpreter for development; do not prefix commands with `PYTHONPATH=...`.
+- **Support policy: rolling window, no upper cap.** The floor is `>=3.12`; "supported" means the latest Python minors that every compiled dependency ships wheels for — today that's 3.12 and 3.13, reflected in `pyproject.toml`'s curated `classifiers`. The next minor is added (and its classifier appended) once its wheels land for all compiled deps; there is no hard ceiling.
 
 ## Core libraries
 

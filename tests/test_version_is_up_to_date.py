@@ -12,7 +12,7 @@ def get_version_from_pyproject():
     if pyproject_path.exists():
         with pyproject_path.open("rb") as f:
             pyproject = tomllib.load(f)
-            return pyproject["tool"]["poetry"]["version"]
+            return pyproject["project"]["version"]
     raise FileNotFoundError("pyproject.toml not found")
 
 

@@ -34,6 +34,8 @@ state the rolling-window policy in the README and tech stack.
 
 **Depends on:** none.
 
+**Status:** Done.
+
 ---
 
 ## Task 2 — Library CI matrix — repo: `e-footprint`

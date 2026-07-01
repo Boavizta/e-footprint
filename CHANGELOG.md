@@ -8,6 +8,7 @@ and this project adheres to [Semantic Versioning](http://semver.org/)
 
 ### Added
 - Documentation: new "How to model serverless workloads" and "How to attribute a footprint" how-to guides. The serverless guide models a function/per-invocation workload as a `server_type=serverless` server plus a plain `Job` with explicit CPU. The attribution guide shows reading a footprint per tenant (one `UsagePattern` per tenant, all tiers attributed automatically via `footprint_per_node`) and per provider (group `BoaviztaCloudServer`s by their `provider` attribute and sum `attributed_footprint`, cloud infrastructure tiers only). The database how-to now shows the managed/serverless database option.
+- Declared the Python support policy (rolling window, floor `>=3.12`, no upper cap, currently 3.12 + 3.13) in the README and `specs/tech_stack.md`, and migrated `pyproject.toml` to the PEP 621 `[project]` layout so `requires-python` and curated `classifiers` reflect exactly the tested version set instead of poetry-core's auto-generated (and untested) ones.
 
 ## [V22.2.1] - 2026-06-23
 
