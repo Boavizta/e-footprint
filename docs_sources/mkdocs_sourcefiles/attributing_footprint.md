@@ -22,21 +22,19 @@ by hand: you just read it.
 
 ```python
 from efootprint.constants.units import u
-from efootprint.core.attribution import footprint_per_node
+from efootprint.core.attribution import attributed_footprint
 from efootprint.core.lifecycle_phases import LifeCyclePhases
-from efootprint.core.usage.usage_pattern import UsagePattern
 
 # `system` is your already-built System, with one UsagePattern per tenant
 for phase in (LifeCyclePhases.MANUFACTURING, LifeCyclePhases.USAGE):
-    per_tenant = footprint_per_node(system, UsagePattern, phase)
-    for tenant, footprint in per_tenant.items():
-        print(phase.value, tenant.name, footprint.sum().to(u.kg))
+    for tenant in system.usage_patterns:
+        print(phase.value, tenant.name, attributed_footprint(tenant, phase).sum().to(u.kg))
 ```
 
-`footprint_per_node(system, UsagePattern, phase)` returns one hourly
-footprint per usage pattern, with every tier's contribution already
-attributed to the tenant that drove it. Sum it over the modeling period
-with `.sum()` to get a single number.
+`attributed_footprint(tenant, phase)` returns that tenant's hourly
+footprint, with every tier's contribution — end-user devices, network,
+server, and storage — already attributed to the usage pattern that drove
+it. Sum it over the modeling period with `.sum()` to get a single number.
 
 ## Per provider (supply-side)
 
@@ -86,6 +84,6 @@ so the loop above skips it; group those under your own label if you want
 them in the breakdown. Network and end-user **device** impacts carry no
 provider either: a request crosses networks and runs on devices that no
 single provider owns, and modeling that allocation would be substantial
-work for little benefit. Per-provider totals therefore cover the cloud
+work not prioritized for now. Per-provider totals therefore cover the cloud
 server and storage tiers only; the per-tenant view above remains the way
 to see the full, all-tier footprint.
