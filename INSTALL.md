@@ -70,7 +70,7 @@ Here is an example using conda as an env manager (but you could use other env ma
 virtualenvwrapper):
 
 ```
-conda create -n e-footprint python=3.11.2
+conda create -n e-footprint python=3.12
 conda activate e-footprint
 pip install -r requirements.txt
 pip install -r requirements-dev.txt
