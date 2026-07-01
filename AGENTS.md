@@ -55,3 +55,7 @@ Prefix your commit messages with the relevant tag among [FIX], [REFACTO], [ADD],
 ## Known parked test
 
 `tests/builders/hardware/test_boavizta_utils.py::TestBoaviztaUtils::test_web_api_and_package_dependency_calls_return_same_results` is skipped for `boaviztapi<=2.3.0`: that version handles test data differently in a testing context, causing a spurious mismatch. The fix is approved upstream; once `boaviztapi>2.3.0` is released and the dependency bumped, re-wire the test by removing the `skipUnless` guard.
+
+## Parked: Docker Hub publish
+
+Publishing the Docker image to Docker Hub was judged premature (2026-07-01) and parked. The `Dockerfile` itself landed (local `docker build`/`docker run` works, no registry needed) but `.github/workflows/docker-publish.yml` and the Docker Hub prose in `README.md`/`RELEASE_PROCESS.md` were removed. **Revisit in October 2026** — re-read `specs/features/packaging-and-dx/spec.html` (Task 3) before re-adding the publish workflow.

@@ -84,7 +84,9 @@ means "tested." Subsumes the roadmap's planned single-version CI item.
 **Depends on:** none (the image installs from PyPI; for pre-release testing it can install the current
 published version).
 
-**Status:** Done.
+**Status:** Partially done — the `Dockerfile` (local build/run) landed; the Docker Hub publish half
+(`.github/workflows/docker-publish.yml`, and the corresponding README/RELEASE_PROCESS.md prose) was
+parked as premature and removed. See `CLAUDE.md`'s revisit note (target: October 2026).
 
 ---
 

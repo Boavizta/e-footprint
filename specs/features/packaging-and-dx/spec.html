@@ -85,7 +85,9 @@ change (<code>zstandard</code> kept per benchmark); making heavy deps optional �
   <li><strong>Docker:</strong> minimal runner — <code>python:3.12-slim</code>, efootprint installed from
   PyPI, entrypoint <code>python</code> to run a mounted model script.</li>
   <li><strong>Registry &amp; trigger:</strong> Docker Hub <code>boavizta/efootprint</code>, built and
-  pushed on each release tag.</li>
+  pushed on each release tag. <strong>Amended (2026-07-01): parked as premature</strong> — the
+  <code>Dockerfile</code> shipped (local <code>docker build</code>/<code>docker run</code>), but the
+  publish workflow and Docker Hub distribution did not. Revisit in October 2026; see <code>AGENTS.md</code>.</li>
   <li><strong>Interface CI:</strong> fold in — bump the interface CI from 3.10.12 to a 3.12 + 3.13
   matrix (cross-repo task).</li>
   <li><strong>Classifiers &amp; layout:</strong> migrate to the PEP 621 <code>[project]</code> layout and

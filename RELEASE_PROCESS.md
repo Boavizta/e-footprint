@@ -62,14 +62,3 @@ poetry publish --build
 mkdocs gh-deploy
 ```
 
-## Publish the Docker image
-
-Create a GitHub release tagged to match the version just published to PyPI (e.g. `v22.3.0`). Publishing
-the release triggers the [`docker-publish.yml`](.github/workflows/docker-publish.yml) workflow, which
-builds the [Dockerfile](Dockerfile) (installing the just-published `efootprint` from PyPI), smoke-tests
-it by running a trivial model in the built image, and pushes it to Docker Hub as `boavizta/efootprint`
-tagged with the release tag and `latest`.
-
-This step requires the `DOCKERHUB_USERNAME` and `DOCKERHUB_TOKEN` repository secrets to be configured
-(Settings > Secrets and variables > Actions) — provision these once, in the Boavizta org's Docker Hub
-account, before the first release that should publish an image.
