@@ -27,8 +27,14 @@ jobs:
     steps:
       - uses: actions/checkout@v4
 
+      - name: Derive efootprint version from release tag
+        id: version
+        run: |
+          tag='${{ github.event.release.tag_name }}'
+          echo "value=${tag#v}" >> "$GITHUB_OUTPUT"
+
       - name: Build image
-        run: docker build -t efootprint-smoke-test .
+        run: docker build --build-arg EFOOTPRINT_VERSION=${{ steps.version.outputs.value }} -t efootprint-smoke-test .
 
       - name: Write a trivial smoke-test model script
         run: |
