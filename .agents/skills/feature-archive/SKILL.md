@@ -1,6 +1,6 @@
 ---
 name: feature-archive
-description: Stage 5 of the spec-driven workflow — archive a shipped feature. Run this only once every task in the feature's tasks.md has shipped AND you are satisfied the work is done (typically after merge). It promotes any durable insight into the live reference specs, then deletes the spec folder. It never writes an archive summary file. Invoke explicitly; it is not auto-chained from feature-implement.
+description: Stage 5 of the spec-driven workflow — archive a shipped feature. Run this only once every task in the feature's tasks.md has shipped AND you are satisfied the work is done (typically after review, and when PR is ready to open). It promotes any durable insight into the live reference specs, then deletes the spec folder. It never writes an archive summary file. Invoke explicitly; it is not auto-chained from feature-implement.
 ---
 
 # feature-archive
@@ -30,4 +30,4 @@ For cross-repo features, archive in the **driving repo** (same rule as the featu
 
 - **Never** write `archives/features/*.md` or any per-feature summary file.
 - Do not delete the spec folder until step 1's promotion check is done — otherwise durable insight is lost to a buried git history.
-- If the promotion check reveals the reference docs are now wrong or stale, fix them; keeping the reference specs accurate is the whole point of this stage.
+- If the promotion check reveals the reference docs are now wrong or stale, fix them; keeping the reference files accurate is the whole point of this stage.
