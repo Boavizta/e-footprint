@@ -2,6 +2,8 @@
 
 This file tracks active workstreams and the near/mid/far horizon. Detailed plans live under `specs/features/<feature-name>/` (when the feature exists in this repo) or under cross-repo specs in `e-footprint-interface/specs/features/` (when the workstream is interface-led).
 
+For **modeling-method questions** — where modeling something *well* needs scientific grounding we don't yet have, so we ship an honest fallback and avoid false precision — see [`modeling_logic_roadmap.md`](modeling_logic_roadmap.md). (First entry: database query resource & energy cost.)
+
 ## Active streams
 
 ### Tutorial-and-documentation overhaul (cross-repo, in flight)
@@ -36,6 +38,15 @@ Status: Step 1 (disabled-instead-of-error UX) shipped on the interface side. Lib
 ### Boavizta API expansion
 
 Currently used for server fabrication (`BoaviztaCloudServer`). Planned expansion to **water (WUE)** and **rare-earth metals**. Will require new modeling primitives to carry multi-impact footprints alongside CO₂-eq.
+
+### Lean base install — optional heavy dependencies (memory optimization)
+
+Driven by the interface's binding Redis-RAM constraint. Move dependencies the interface doesn't need at runtime into optional extras so `pip install efootprint` is lighter and lower-RAM:
+
+- **Visualization** (`matplotlib`, `plotly`, `pyvis`) — the interface renders its own JS charts; these are only needed for notebook/library `.plot()` / Sankey / pyvis use. Gate their imports and ship an `efootprint[viz]` extra. Tension to weigh: the library-first / notebook-usable principle (notebook users would then need `efootprint[viz]`).
+- **pandas** — audit how deeply it is used in the core path first; making it optional touches **constitution §4** (Pint/NumPy/Pandas protected) and needs a constitutional note. NumPy stays required (timeseries are `float32` arrays).
+
+Prerequisites: measure the actual RAM win before committing; introduce the optional-extras mechanism in `pyproject.toml`. **Not** the compression codec — a benchmark (2026-06-30) showed `zstandard` is fast and RAM-cheap (≈0 MB to import), so it stays required. Origin: EcoScan feedback packaging discussion + interface memory work.
 
 ## Far horizon (no commitment)
 

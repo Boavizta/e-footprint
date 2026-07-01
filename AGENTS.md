@@ -17,6 +17,7 @@ This file orients agents and contributors. It is intentionally short. Substance 
 | Tech stack and version bounds | `specs/tech_stack.md` |
 | Adjacent/complementary tools and ecosystem positioning | `specs/adjacent_tools.md` |
 | What's planned and in flight | `specs/roadmap.md` |
+| Modeling-method questions needing scientific grounding (ship honest fallback, avoid false precision) | `specs/modeling_logic_roadmap.md` |
 | The spec-driven workflow (specify → plan → tasks → implement) | `specs/workflow.md` |
 | Active feature work | `specs/features/<feature-name>/` |
 | Past investigations and dated decisions | `archives/` |
