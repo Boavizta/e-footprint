@@ -37,6 +37,11 @@
 - Published to PyPI as **`efootprint`**.
 - Documentation site: https://boavizta.github.io/e-footprint/ (deployed via `mkdocs gh-deploy`).
 - License: AGPL-3.0.
+- `.github/workflows/ci.yml` runs the full test suite on every push to `main` and every PR, across the
+  supported Python matrix (3.12 + 3.13).
+- A `Dockerfile` gives a toolchain-independent way to run a model (`docker build` + `docker run`, see
+  README's "Run with Docker"). Not published to a registry — publishing it was judged premature and
+  parked (see `AGENTS.md`).
 
 ## Versioning policy
 
