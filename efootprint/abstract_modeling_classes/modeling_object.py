@@ -14,9 +14,8 @@ from efootprint.abstract_modeling_classes.empty_explainable_object import EmptyE
 from efootprint.abstract_modeling_classes.utils import css_escape
 from efootprint.logger import logger
 from efootprint.abstract_modeling_classes.explainable_object_base_class import (
-    retrieve_update_function_from_mod_obj_and_attr_name, ExplainableObject)
-from efootprint.abstract_modeling_classes.object_linked_to_modeling_obj import (
-    ObjectLinkedToModelingObj, ObjectLinkedToModelingObjBase)
+    retrieve_update_function_from_mod_obj_and_attr_name)
+from efootprint.abstract_modeling_classes.object_linked_to_modeling_obj import ObjectLinkedToModelingObjBase
 from efootprint.utils.graph_tools import WIDTH, HEIGHT, add_unique_id_to_mynetwork
 from efootprint.utils.object_relationships_graphs import build_object_relationships_graph, \
     USAGE_PATTERN_VIEW_CLASSES_TO_IGNORE

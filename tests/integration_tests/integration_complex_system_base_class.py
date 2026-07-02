@@ -1,4 +1,3 @@
-import os.path
 from copy import copy
 
 from efootprint.abstract_modeling_classes.explainable_object_dict import to_weighted_explainable_object_dict

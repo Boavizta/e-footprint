@@ -25,7 +25,7 @@ from efootprint.abstract_modeling_classes.explainable_hourly_quantities import E
 from efootprint.abstract_modeling_classes.explainable_quantity import ExplainableQuantity
 from efootprint.abstract_modeling_classes.empty_explainable_object import EmptyExplainableObject
 from efootprint.logger import logger
-from efootprint.utils.display import best_display_unit, human_readable_unit, display_quantity_as_str
+from efootprint.utils.display import human_readable_unit, display_quantity_as_str
 
 
 class System(ModelingObject):
