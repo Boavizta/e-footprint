@@ -11,10 +11,8 @@ from unittest import TestCase, skipUnless
 
 from efootprint.abstract_modeling_classes.source_objects import SourceValue
 from efootprint.api_utils.json_to_system import json_to_system
-from tests.performance_tests.generate_big_system import root_dir
+from tests.performance_tests.generate_big_system import INPUTS_ONLY_FIXTURE, WITH_CALC_ATTR_FIXTURE
 
-INPUTS_ONLY_FIXTURE = os.path.join(root_dir, "big_system.json")
-WITH_CALC_ATTR_FIXTURE = os.path.join(root_dir, "big_system_with_calc_attr.json")
 fixtures_exist = os.path.exists(INPUTS_ONLY_FIXTURE) and os.path.exists(WITH_CALC_ATTR_FIXTURE)
 
 

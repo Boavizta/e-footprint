@@ -1,7 +1,8 @@
 """Baseline benchmarks of the computation engine on the big-system fixture.
 
 Run as a script to measure the reference numbers and write them to baseline_results.json
-(committed): full eager build, peak RSS after build, single in-memory edits, load-to-ready from the
+(committed): full eager build (cold first-in-process build + warm rebuild average), peak RSS after
+build, single in-memory edits, load-to-ready from the
 calculated-attributes fixture, deserialize-edit-reserialize round-trip, the nudge-one-input /
 read-one-target loop, and serialized fixture weights. Engine changes are evaluated by re-running
 this script and diffing against the committed reference file.
@@ -12,6 +13,7 @@ Usage:
     PYTHONPATH=./ python tests/performance_tests/benchmark_baselines.py [--nudge-iterations N]
 """
 import argparse
+import gc
 import json
 import os
 import platform
@@ -27,12 +29,11 @@ from efootprint.api_utils.json_to_system import json_to_system
 from efootprint.constants.units import u
 from efootprint.logger import logger
 from tests.performance_tests.generate_big_system import (
-    BIG_SYSTEM_STANDARD_PARAMS, form_inputs_hourly_starts, generate_big_system, root_dir)
+    BIG_SYSTEM_STANDARD_PARAMS, INPUTS_ONLY_FIXTURE, WITH_CALC_ATTR_FIXTURE, form_inputs_hourly_starts,
+    generate_big_system, root_dir)
 from tests.performance_tests.test_big_system_from_and_to_json_performance import update_on_system
 
 BASELINE_RESULTS_FILEPATH = os.path.join(root_dir, "baseline_results.json")
-INPUTS_ONLY_FIXTURE = os.path.join(root_dir, "big_system.json")
-WITH_CALC_ATTR_FIXTURE = os.path.join(root_dir, "big_system_with_calc_attr.json")
 
 
 def peak_rss_mb():
@@ -44,10 +45,10 @@ def pick_edited_job(system):
     return list(list(system.usage_patterns[0].usage_journey.uj_steps)[0].jobs)[1]
 
 
-def benchmark_full_build():
+def timed_full_build():
     start = perf_counter()
     system = generate_big_system(**BIG_SYSTEM_STANDARD_PARAMS)
-    return system, round(perf_counter() - start, 3)
+    return system, perf_counter() - start
 
 
 def benchmark_scalar_edit_ms(system, nb_iterations=10):
@@ -102,10 +103,21 @@ def benchmark_load_to_ready(nb_iterations=5):
             "total_avg_ms": round(json_parse_avg_ms + json_to_system_avg_ms, 1)}
 
 
-def run_benchmarks(nudge_iterations):
+def run_benchmarks(nudge_iterations, nb_warm_builds=2):
     results = {}
-    system, results["full_build_seconds"] = benchmark_full_build()
-    results["peak_rss_after_build_mb"] = peak_rss_mb()
+    system, cold_build_seconds = timed_full_build()
+    # Snapshot peak RSS right after the first build so warm rebuilds can't inflate the metric.
+    peak_rss_after_build_mb = peak_rss_mb()
+    warm_build_durations = []
+    for _ in range(nb_warm_builds):
+        del system
+        gc.collect()
+        system, duration = timed_full_build()
+        warm_build_durations.append(duration)
+    results["full_build"] = {
+        "cold_seconds": round(cold_build_seconds, 3),
+        "warm_avg_seconds": round(mean(warm_build_durations), 3)}
+    results["peak_rss_after_build_mb"] = peak_rss_after_build_mb
     results["scalar_edit_avg_ms"] = benchmark_scalar_edit_ms(system)
     results["timeseries_edit_avg_ms"] = benchmark_timeseries_edit_ms(system)
     results["nudge_and_read_loop"] = benchmark_nudge_and_read_loop(system, nudge_iterations)

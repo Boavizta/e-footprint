@@ -39,6 +39,8 @@ from efootprint.logger import logger
 logger.info(f"Finished importing modules in {round((perf_counter() - start), 3)} seconds")
 
 root_dir = os.path.dirname(os.path.abspath(__file__))
+INPUTS_ONLY_FIXTURE = os.path.join(root_dir, "big_system.json")
+WITH_CALC_ATTR_FIXTURE = os.path.join(root_dir, "big_system_with_calc_attr.json")
 
 # Reference configuration for the committed big-system fixtures and the baseline benchmarks.
 BIG_SYSTEM_STANDARD_PARAMS = {
@@ -258,8 +260,6 @@ if __name__ == "__main__":
     Source._use_name_as_id = True
 
     system = generate_big_system(**BIG_SYSTEM_STANDARD_PARAMS)
-    system_to_json(system, save_calculated_attributes=False, output_filepath=os.path.join(root_dir, "big_system.json"))
-    system_to_json(
-        system, save_calculated_attributes=True,
-        output_filepath=os.path.join(root_dir, "big_system_with_calc_attr.json"))
+    system_to_json(system, save_calculated_attributes=False, output_filepath=INPUTS_ONLY_FIXTURE)
+    system_to_json(system, save_calculated_attributes=True, output_filepath=WITH_CALC_ATTR_FIXTURE)
     logger.info("Regenerated big_system.json and big_system_with_calc_attr.json")

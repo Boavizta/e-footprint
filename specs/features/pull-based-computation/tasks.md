@@ -87,8 +87,12 @@ updates" (the drifted calc-attr fixture loaded but crashed on first update — s
 `tests/performance_tests/baseline_results.json`; regenerated calc-attr fixture weighs 202 MB (not
 the spec's 28.2 MB analytical estimate) and full eager build is only 0.4 s — CPU recompute is indeed
 non-binding, JSON weight is. Engine-overhead (< 5%) baseline is the one spec §2 number not
-measurable pre-refactor. Parity harness: 3 seeds × 15 mutations, rebuild comparison after every
-mutation, per-op coverage asserted so silently-rejected mutation kinds fail the test.
+measurable pre-refactor. Parity harness: 3 seeds × 18 mutations across 8 op kinds (incl.
+usage-pattern add/delete), rebuild comparison after every mutation, per-op coverage asserted so
+silently-rejected mutation kinds fail the test. Post-review hardening: only whitelisted engine
+rejections count as rollbacks (anything else fails the test), the comparison iterates the
+computed-slot registry (survives Task 6's `calculated_attributes` deletion), and the full-build
+baseline records cold + warm samples.
 
 ---
 
