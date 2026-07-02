@@ -31,7 +31,7 @@
         </center>
         <style type="text/css">
 
-             #mynetwork_ab46e3 {
+             #mynetwork_e501df {
                  width: 760px;
                  height: 300px;
                  background-color: #ffffff;
@@ -53,7 +53,7 @@
         <div class="card" style="width: 100%">
             
             
-            <div id="mynetwork_ab46e3" class="card-body"></div>
+            <div id="mynetwork_e501df" class="card-body"></div>
         </div>
 
         
@@ -83,12 +83,12 @@
 
               // This method is responsible for drawing the graph, returns the drawn network
               function drawGraph() {
-                  var container = document.getElementById('mynetwork_ab46e3');
+                  var container = document.getElementById('mynetwork_e501df');
 
                   
 
                   // parsing and collecting nodes and edges from the python
-                  nodes = new vis.DataSet([{"color": null, "id": "Unitary power for Default edge usage pattern", "label": "Unitary power for\nDefault edge usage\npattern", "shape": "dot", "size": 15, "title": "Unitary power for Default edge usage pattern\n=\n((Hourly RAM need for Default edge usage pattern + Base RAM consumption) / RAM)\n* (Power - Idle power) + Idle power\n=\n((105192 values from 2025-01-01 00:00:00+00:00 to 2037-01-01 00:00:00+00:00 in\nGB ram:\nfirst 10 vals [2, 2, 2, 2, 2, 2, 2, 2, 2, 2],\nlast 10 vals [2, 2, 2, 2, 2, 2, 2, 2, 2, 2] + 1 GB ram) / 16 GB ram) * (0 mW - 0\nmW) + 0 mW\n=\n105192 values from 2025-01-01 00:00:00+00:00 to 2037-01-01 00:00:00+00:00 in mW:\nfirst 10 vals [0, 0, 0, 0, 0, 0, 0, 0, 0, 0],\nlast 10 vals [0, 0, 0, 0, 0, 0, 0, 0, 0, 0]", "x": 0.0, "y": 900}, {"color": null, "id": "Hourly RAM need for Default edge usage pattern", "label": "Hourly RAM need for\nDefault edge usage\npattern", "shape": "dot", "size": 15, "title": "Hourly RAM need for Default edge usage pattern\n=\nUnitary hourly need for Default edge usage pattern logically dependent on\nAvailable RAM per instance\n=\n105192 values from 2025-01-01 00:00:00+00:00 to 2037-01-01 00:00:00+00:00 in GB\nram:\nfirst 10 vals [2, 2, 2, 2, 2, 2, 2, 2, 2, 2],\nlast 10 vals [2, 2, 2, 2, 2, 2, 2, 2, 2, 2] logically dependent on 15 GB ram\n=\n105192 values from 2025-01-01 00:00:00+00:00 to 2037-01-01 00:00:00+00:00 in GB\nram:\nfirst 10 vals [2, 2, 2, 2, 2, 2, 2, 2, 2, 2],\nlast 10 vals [2, 2, 2, 2, 2, 2, 2, 2, 2, 2]", "x": -350.0, "y": 750}, {"color": null, "id": "Base RAM consumption", "label": "Base RAM consumption", "shape": "dot", "size": 15, "title": "Base RAM consumption\n=\nduplicate (Base RAM consumption)\n=\nduplicate (1 GB ram)\n=\n1 GB ram", "x": 437.50000000000006, "y": 300}, {"color": null, "id": "RAM", "label": "RAM", "shape": "dot", "size": 15, "title": "RAM\n=\nRAM per unit * Number of units\n=\n16 GB ram * 1\n=\n16 GB ram", "x": 350.0, "y": 150}, {"color": null, "id": "Power", "label": "Power", "shape": "dot", "size": 15, "title": "Power\n=\nPower per unit * Number of units\n=\n0 mW * 1\n=\n0 mW", "x": 0.0, "y": 750}, {"color": null, "id": "Idle power", "label": "Idle power", "shape": "dot", "size": 15, "title": "Idle power\n=\nIdle power per unit * Number of units\n=\n0 mW * 1\n=\n0 mW", "x": 350.0, "y": 750}]);
+                  nodes = new vis.DataSet([{"color": null, "id": "Unitary power for Default edge usage pattern", "label": "Unitary power for\nDefault edge usage\npattern", "shape": "dot", "size": 15, "title": "Unitary power for Default edge usage pattern\n=\n((Hourly RAM need for Default edge usage pattern + Base RAM consumption) / RAM)\n* (Power - Idle power) + Idle power\n=\n((105192 values from 2025-01-01 00:00:00+00:00 to 2037-01-01 00:00:00+00:00:\nfirst=2 GB ram, last=2 GB ram, mean=2 GB ram, min=2 GB ram, max=2 GB ram, std=0\n+ 1 GB ram) / 16 GB ram) * (0 mW - 0 mW) + 0 mW\n=\n105192 values from 2025-01-01 00:00:00+00:00 to 2037-01-01 00:00:00+00:00:\nfirst=0, last=0, mean=0, min=0, max=0, std=0", "x": 0.0, "y": 900}, {"color": null, "id": "Hourly RAM need for Default edge usage pattern", "label": "Hourly RAM need for\nDefault edge usage\npattern", "shape": "dot", "size": 15, "title": "Hourly RAM need for Default edge usage pattern\n=\nUnitary hourly need for Default edge usage pattern logically dependent on\nAvailable RAM per instance\n=\n105192 values from 2025-01-01 00:00:00+00:00 to 2037-01-01 00:00:00+00:00:\nfirst=2 GB ram, last=2 GB ram, mean=2 GB ram, min=2 GB ram, max=2 GB ram, std=0\nlogically dependent on 15 GB ram\n=\n105192 values from 2025-01-01 00:00:00+00:00 to 2037-01-01 00:00:00+00:00:\nfirst=2 GB ram, last=2 GB ram, mean=2 GB ram, min=2 GB ram, max=2 GB ram, std=0", "x": -350.0, "y": 750}, {"color": null, "id": "Base RAM consumption", "label": "Base RAM consumption", "shape": "dot", "size": 15, "title": "Base RAM consumption\n=\nduplicate (Base RAM consumption)\n=\nduplicate (1 GB ram)\n=\n1 GB ram", "x": 437.50000000000006, "y": 300}, {"color": null, "id": "RAM", "label": "RAM", "shape": "dot", "size": 15, "title": "RAM\n=\nRAM per unit * Number of units\n=\n16 GB ram * 1\n=\n16 GB ram", "x": 350.0, "y": 150}, {"color": null, "id": "Power", "label": "Power", "shape": "dot", "size": 15, "title": "Power\n=\nPower per unit * Number of units\n=\n0 mW * 1\n=\n0 mW", "x": 0.0, "y": 750}, {"color": null, "id": "Idle power", "label": "Idle power", "shape": "dot", "size": 15, "title": "Idle power\n=\nIdle power per unit * Number of units\n=\n0 mW * 1\n=\n0 mW", "x": 350.0, "y": 750}]);
                   edges = new vis.DataSet([{"arrows": "to", "from": "Hourly RAM need for Default edge usage pattern", "to": "Unitary power for Default edge usage pattern"}, {"arrows": "to", "from": "Base RAM consumption", "to": "Unitary power for Default edge usage pattern"}, {"arrows": "to", "from": "RAM", "to": "Unitary power for Default edge usage pattern"}, {"arrows": "to", "from": "Power", "to": "Unitary power for Default edge usage pattern"}, {"arrows": "to", "from": "Idle power", "to": "Unitary power for Default edge usage pattern"}]);
 
                   nodeColors = {};

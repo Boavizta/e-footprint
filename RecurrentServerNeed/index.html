@@ -575,6 +575,34 @@
   
   
     <li class="md-nav__item">
+      <a href="../serverless_modeling/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    How to model serverless workloads
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
       <a href="../server_to_server_interaction/" class="md-nav__link">
         
   
@@ -583,6 +611,34 @@
     
   
     How to model server to server interaction
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../attributing_footprint/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    How to attribute a footprint
   
 
     
@@ -3507,9 +3563,7 @@
 <p>An instance of <a href="../EdgeComputer/">EdgeComputer</a>.</p>
 <h3 id="recurrent_volume_per_edge_device">recurrent_volume_per_edge_device</h3>
 <p>Hourly volume of triggered jobs over a typical week, per single edge device. Multiplied by the deployed device count to obtain the total job volume.</p>
-<p>Unnamed source, in typical week of hourly timeseries data, starting on Monday at midnight. For example, 168 values in :
-    first 10 vals [1, 1, 1, 1, 1, 1, 1, 1, 1, 1],
-    last 10 vals [1, 1, 1, 1, 1, 1, 1, 1, 1, 1]</p>
+<p>Unnamed source, in typical week of hourly timeseries data, starting on Monday at midnight. For example, 168 values: first=1 , last=1 , mean=1 , min=1 , max=1 , std=0</p>
 <h3 id="jobs">jobs</h3>
 <p>Mapping from server-side <a href="../Job/">Job</a> to how many times it is invoked by each occurrence of this need.</p>
 <h2 id="backwards-links">Backwards links</h2>
@@ -3519,9 +3573,7 @@
 <h2 id="calculated-attributes">Calculated attributes</h2>
 <h3 id="recurrent_need_validation">recurrent_need_validation</h3>
 <p>Validates that the recurrent volume is expressed in occurrences and is non-negative; raises a typed error otherwise.  </p>
-<p>Example value: 168 values in :<br />
-    first 10 vals [1, 1, 1, 1, 1, 1, 1, 1, 1, 1],<br />
-    last 10 vals [1, 1, 1, 1, 1, 1, 1, 1, 1, 1]  </p>
+<p>Example value: 168 values: first=1 , last=1 , mean=1 , min=1 , max=1 , std=0  </p>
 <p>Depends directly on:  </p>
 <ul>
 <li><a href="./#recurrent_volume_per_edge_device">unnamed source</a>  </li>
@@ -3560,7 +3612,7 @@
         </center>
         <style type="text/css">
 
-             #mynetwork_eb74f8 {
+             #mynetwork_b05466 {
                  width: 760px;
                  height: 300px;
                  background-color: #ffffff;
@@ -3582,7 +3634,7 @@
         <div class="card" style="width: 100%">
 
 
-            <div id="mynetwork_eb74f8" class="card-body"></div>
+            <div id="mynetwork_b05466" class="card-body"></div>
         </div>
 
 
@@ -3612,12 +3664,12 @@
 
               // This method is responsible for drawing the graph, returns the drawn network
               function drawGraph() {
-                  var container = document.getElementById('mynetwork_eb74f8');
+                  var container = document.getElementById('mynetwork_b05466');
 
 
 
                   // parsing and collecting nodes and edges from the python
-                  nodes = new vis.DataSet([{"color": null, "id": "Validated recurrent need", "label": "Validated recurrent\nneed", "shape": "dot", "size": 15, "title": "Validated recurrent need\n=\nduplicate (unnamed source)\n=\nduplicate (168 values in :\nfirst 10 vals [1, 1, 1, 1, 1, 1, 1, 1, 1, 1],\nlast 10 vals [1, 1, 1, 1, 1, 1, 1, 1, 1, 1])\n=\n168 values in :\nfirst 10 vals [1, 1, 1, 1, 1, 1, 1, 1, 1, 1],\nlast 10 vals [1, 1, 1, 1, 1, 1, 1, 1, 1, 1]", "x": 0.0, "y": 300}, {"color": null, "id": "unnamed source", "label": "unnamed source", "shape": "dot", "size": 15, "title": "unnamed source = 168 values in :\nfirst 10 vals [1, 1, 1, 1, 1, 1, 1, 1, 1, 1],\nlast 10 vals [1, 1, 1, 1, 1, 1, 1, 1, 1, 1]", "x": 0.0, "y": 150}]);
+                  nodes = new vis.DataSet([{"color": null, "id": "Validated recurrent need", "label": "Validated recurrent\nneed", "shape": "dot", "size": 15, "title": "Validated recurrent need\n=\nduplicate (unnamed source)\n=\nduplicate (168 values: first=1 , last=1 , mean=1 , min=1 , max=1 , std=0)\n=\n168 values: first=1 , last=1 , mean=1 , min=1 , max=1 , std=0", "x": 0.0, "y": 300}, {"color": null, "id": "unnamed source", "label": "unnamed source", "shape": "dot", "size": 15, "title": "unnamed source = 168 values: first=1 , last=1 , mean=1 , min=1 , max=1 , std=0", "x": 0.0, "y": 150}]);
                   edges = new vis.DataSet([{"arrows": "to", "from": "unnamed source", "to": "Validated recurrent need"}]);
 
                   nodeColors = {};
@@ -3687,9 +3739,7 @@
 <h3 id="unitary_hourly_volume_per_usage_pattern">unitary_hourly_volume_per_usage_pattern</h3>
 <p>Hourly job-trigger volume for one edge device in each usage pattern, derived by replaying the typical-week pattern in the country's timezone and scaling by how many times the need appears in the journey.  </p>
 <p>Example value: {<br />
-EdgeUsagePattern Default edge usage pattern (1a8380b7-86b): 105192 values from 2025-01-01 00:00:00+00:00 to 2037-01-01 00:00:00+00:00 in :<br />
-    first 10 vals [1, 1, 1, 1, 1, 1, 1, 1, 1, 1],<br />
-    last 10 vals [1, 1, 1, 1, 1, 1, 1, 1, 1, 1], <br />
+EdgeUsagePattern Default edge usage pattern (b29a7b03-dba): 105192 values from 2025-01-01 00:00:00+00:00 to 2037-01-01 00:00:00+00:00: first=1 , last=1 , mean=1 , min=1 , max=1 , std=0, <br />
 }  </p>
 <p>Depends directly on:  </p>
 <ul>
@@ -3731,7 +3781,7 @@ EdgeUsagePattern Default edge usage pattern (1a8380b7-86b): 105192 values from 2
         </center>
         <style type="text/css">
 
-             #mynetwork_fd3861 {
+             #mynetwork_4cc848 {
                  width: 760px;
                  height: 300px;
                  background-color: #ffffff;
@@ -3753,7 +3803,7 @@ EdgeUsagePattern Default edge usage pattern (1a8380b7-86b): 105192 values from 2
         <div class="card" style="width: 100%">
 
 
-            <div id="mynetwork_fd3861" class="card-body"></div>
+            <div id="mynetwork_4cc848" class="card-body"></div>
         </div>
 
 
@@ -3783,12 +3833,12 @@ EdgeUsagePattern Default edge usage pattern (1a8380b7-86b): 105192 values from 2
 
               // This method is responsible for drawing the graph, returns the drawn network
               function drawGraph() {
-                  var container = document.getElementById('mynetwork_fd3861');
+                  var container = document.getElementById('mynetwork_4cc848');
 
 
 
                   // parsing and collecting nodes and edges from the python
-                  nodes = new vis.DataSet([{"color": null, "id": "Unitary hourly need for Default edge usage pattern", "label": "Unitary hourly need\nfor Default edge\nusage pattern", "shape": "dot", "size": 15, "title": "Unitary hourly need for Default edge usage pattern\n=\n(unnamed source expanded over timespan Hourly nb of edge usage journeys in\nparallel converted to UTC from Timezone) * Occurrences within Default edge usage\npattern\n=\n(168 values in :\nfirst 10 vals [1, 1, 1, 1, 1, 1, 1, 1, 1, 1],\nlast 10 vals [1, 1, 1, 1, 1, 1, 1, 1, 1, 1] expanded over timespan 105192 values\nfrom 2025-01-01 00:00:00+00:00 to 2037-01-01 00:00:00+00:00 in M:\nfirst 10 vals [0.00000106, 0.000000607, 0, 0, 0.000000455, 0, 0.000000228,\n0.001, 0.002, 0.003],\nlast 10 vals [0.005, 0.005, 0.005, 0.005, 0.005, 0.004, 0.003, 0.002, 0.001,\n0.000000607] converted to UTC from Europe/Paris) * 1\n=\n105192 values from 2025-01-01 00:00:00+00:00 to 2037-01-01 00:00:00+00:00 in :\nfirst 10 vals [1, 1, 1, 1, 1, 1, 1, 1, 1, 1],\nlast 10 vals [1, 1, 1, 1, 1, 1, 1, 1, 1, 1]", "x": 0.0, "y": 600}, {"color": null, "id": "unnamed source", "label": "unnamed source", "shape": "dot", "size": 15, "title": "unnamed source = 168 values in :\nfirst 10 vals [1, 1, 1, 1, 1, 1, 1, 1, 1, 1],\nlast 10 vals [1, 1, 1, 1, 1, 1, 1, 1, 1, 1]", "x": -150.0, "y": 450}, {"color": null, "id": "Hourly nb of edge usage journeys in parallel", "label": "Hourly nb of edge\nusage journeys in\nparallel", "shape": "dot", "size": 15, "title": "Hourly nb of edge usage journeys in parallel\n=\nHourly nb of edge usage journey starts (UTC) hourly occurrences average Usage\nspan\n=\n52597 values from 2025-01-01 00:00:00+00:00 to 2031-01-01 13:00:00+00:00 in :\nfirst 10 vals [0, 0, 0, 0, 0, 0, 0, 1000, 1000, 1000],\nlast 10 vals [0, 0, 0, 0, 1000, 1000, 1000, 1000, 1000, 0] hourly occurrences\naverage 6 yr\n=\n105192 values from 2025-01-01 00:00:00+00:00 to 2037-01-01 00:00:00+00:00 in M:\nfirst 10 vals [0.00000106, 0.000000607, 0, 0, 0.000000455, 0, 0.000000228,\n0.001, 0.002, 0.003],\nlast 10 vals [0.005, 0.005, 0.005, 0.005, 0.005, 0.004, 0.003, 0.002, 0.001,\n0.000000607]", "x": 0.0, "y": 450}, {"color": "gold", "id": "Timezone", "label": "Timezone", "shape": "dot", "size": 15, "title": "Timezone = Europe/Paris", "x": 112.5, "y": 150}]);
+                  nodes = new vis.DataSet([{"color": null, "id": "Unitary hourly need for Default edge usage pattern", "label": "Unitary hourly need\nfor Default edge\nusage pattern", "shape": "dot", "size": 15, "title": "Unitary hourly need for Default edge usage pattern\n=\n(unnamed source expanded over timespan Hourly nb of edge usage journeys in\nparallel converted to UTC from Timezone) * Occurrences within Default edge usage\npattern\n=\n(168 values: first=1 , last=1 , mean=1 , min=1 , max=1 , std=0 expanded over\ntimespan 105192 values from 2025-01-01 00:00:00+00:00 to 2037-01-01\n00:00:00+00:00: first=1.06 , last=0.607 , mean=10.3 M, min=0, max=20.7 M,\nstd=5.96 M converted to UTC from Europe/Paris) * 1\n=\n105192 values from 2025-01-01 00:00:00+00:00 to 2037-01-01 00:00:00+00:00:\nfirst=1 , last=1 , mean=1 , min=1 , max=1 , std=0", "x": 0.0, "y": 600}, {"color": null, "id": "unnamed source", "label": "unnamed source", "shape": "dot", "size": 15, "title": "unnamed source = 168 values: first=1 , last=1 , mean=1 , min=1 , max=1 , std=0", "x": -150.0, "y": 450}, {"color": null, "id": "Hourly nb of edge usage journeys in parallel", "label": "Hourly nb of edge\nusage journeys in\nparallel", "shape": "dot", "size": 15, "title": "Hourly nb of edge usage journeys in parallel\n=\nHourly nb of edge usage journey starts (UTC) hourly occurrences average Usage\nspan\n=\n52597 values from 2025-01-01 00:00:00+00:00 to 2031-01-01 13:00:00+00:00:\nfirst=0, last=0, mean=393 , min=0, max=1 k, std=488 hourly occurrences average 6\nyr\n=\n105192 values from 2025-01-01 00:00:00+00:00 to 2037-01-01 00:00:00+00:00:\nfirst=1.06 , last=0.607 , mean=10.3 M, min=0, max=20.7 M, std=5.96 M", "x": 0.0, "y": 450}, {"color": "gold", "id": "Timezone", "label": "Timezone", "shape": "dot", "size": 15, "title": "Timezone = Europe/Paris", "x": 112.5, "y": 150}]);
                   edges = new vis.DataSet([{"arrows": "to", "from": "unnamed source", "to": "Unitary hourly need for Default edge usage pattern"}, {"arrows": "to", "from": "Hourly nb of edge usage journeys in parallel", "to": "Unitary hourly need for Default edge usage pattern"}, {"arrows": "to", "from": "Timezone", "to": "Unitary hourly need for Default edge usage pattern"}]);
 
                   nodeColors = {};

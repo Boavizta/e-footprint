@@ -31,7 +31,7 @@
         </center>
         <style type="text/css">
 
-             #mynetwork_d691f3 {
+             #mynetwork_d4b488 {
                  width: 1800px;
                  height: 900px;
                  background-color: #ffffff;
@@ -53,7 +53,7 @@
         <div class="card" style="width: 100%">
             
             
-            <div id="mynetwork_d691f3" class="card-body"></div>
+            <div id="mynetwork_d4b488" class="card-body"></div>
         </div>
 
         
@@ -83,12 +83,12 @@
 
               // This method is responsible for drawing the graph, returns the drawn network
               function drawGraph() {
-                  var container = document.getElementById('mynetwork_d691f3');
+                  var container = document.getElementById('mynetwork_d4b488');
 
                   
 
                   // parsing and collecting nodes and edges from the python
-                  nodes = new vis.DataSet([{"color": null, "id": "Recurrent need", "label": "Recurrent need", "shape": "dot", "size": 15, "title": "Recurrent need\n=\nduplicate (Recurrent workload)\n=\nduplicate (168 values in :\nfirst 10 vals [0.5, 0.5, 0.5, 0.5, 0.5, 0.5, 0.5, 0.5, 0.5, 0.5],\nlast 10 vals [0.5, 0.5, 0.5, 0.5, 0.5, 0.5, 0.5, 0.5, 0.5, 0.5])\n=\n168 values in :\nfirst 10 vals [0.5, 0.5, 0.5, 0.5, 0.5, 0.5, 0.5, 0.5, 0.5, 0.5],\nlast 10 vals [0.5, 0.5, 0.5, 0.5, 0.5, 0.5, 0.5, 0.5, 0.5, 0.5]", "x": 0.0, "y": 300}, {"color": null, "id": "Recurrent workload", "label": "Recurrent workload", "shape": "dot", "size": 15, "title": "Recurrent workload = 168 values in :\nfirst 10 vals [0.5, 0.5, 0.5, 0.5, 0.5, 0.5, 0.5, 0.5, 0.5, 0.5],\nlast 10 vals [0.5, 0.5, 0.5, 0.5, 0.5, 0.5, 0.5, 0.5, 0.5, 0.5]", "x": 0.0, "y": 150}]);
+                  nodes = new vis.DataSet([{"color": null, "id": "Recurrent need", "label": "Recurrent need", "shape": "dot", "size": 15, "title": "Recurrent need\n=\nduplicate (Recurrent workload)\n=\nduplicate (168 values: first=0.5 , last=0.5 , mean=0.5 , min=0.5 , max=0.5 ,\nstd=0)\n=\n168 values: first=0.5 , last=0.5 , mean=0.5 , min=0.5 , max=0.5 , std=0", "x": 0.0, "y": 300}, {"color": null, "id": "Recurrent workload", "label": "Recurrent workload", "shape": "dot", "size": 15, "title": "Recurrent workload = 168 values: first=0.5 , last=0.5 , mean=0.5 , min=0.5 ,\nmax=0.5 , std=0", "x": 0.0, "y": 150}]);
                   edges = new vis.DataSet([{"arrows": "to", "from": "Recurrent workload", "to": "Recurrent need"}]);
 
                   nodeColors = {};

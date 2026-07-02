@@ -31,7 +31,7 @@
         </center>
         <style type="text/css">
 
-             #mynetwork_2bcee0 {
+             #mynetwork_55398f {
                  width: 760px;
                  height: 300px;
                  background-color: #ffffff;
@@ -53,7 +53,7 @@
         <div class="card" style="width: 100%">
             
             
-            <div id="mynetwork_2bcee0" class="card-body"></div>
+            <div id="mynetwork_55398f" class="card-body"></div>
         </div>
 
         
@@ -83,12 +83,12 @@
 
               // This method is responsible for drawing the graph, returns the drawn network
               function drawGraph() {
-                  var container = document.getElementById('mynetwork_2bcee0');
+                  var container = document.getElementById('mynetwork_55398f');
 
                   
 
                   // parsing and collecting nodes and edges from the python
-                  nodes = new vis.DataSet([{"color": null, "id": "Validated recurrent need", "label": "Validated recurrent\nneed", "shape": "dot", "size": 15, "title": "Validated recurrent need\n=\nduplicate (Recurrent need)\n=\nduplicate (168 values in :\nfirst 10 vals [0.5, 0.5, 0.5, 0.5, 0.5, 0.5, 0.5, 0.5, 0.5, 0.5],\nlast 10 vals [0.5, 0.5, 0.5, 0.5, 0.5, 0.5, 0.5, 0.5, 0.5, 0.5])\n=\n168 values in :\nfirst 10 vals [0.5, 0.5, 0.5, 0.5, 0.5, 0.5, 0.5, 0.5, 0.5, 0.5],\nlast 10 vals [0.5, 0.5, 0.5, 0.5, 0.5, 0.5, 0.5, 0.5, 0.5, 0.5]", "x": 0.0, "y": 450}, {"color": null, "id": "Recurrent need", "label": "Recurrent need", "shape": "dot", "size": 15, "title": "Recurrent need\n=\nduplicate (Recurrent workload)\n=\nduplicate (168 values in :\nfirst 10 vals [0.5, 0.5, 0.5, 0.5, 0.5, 0.5, 0.5, 0.5, 0.5, 0.5],\nlast 10 vals [0.5, 0.5, 0.5, 0.5, 0.5, 0.5, 0.5, 0.5, 0.5, 0.5])\n=\n168 values in :\nfirst 10 vals [0.5, 0.5, 0.5, 0.5, 0.5, 0.5, 0.5, 0.5, 0.5, 0.5],\nlast 10 vals [0.5, 0.5, 0.5, 0.5, 0.5, 0.5, 0.5, 0.5, 0.5, 0.5]", "x": 0.0, "y": 300}]);
+                  nodes = new vis.DataSet([{"color": null, "id": "Validated recurrent need", "label": "Validated recurrent\nneed", "shape": "dot", "size": 15, "title": "Validated recurrent need\n=\nduplicate (Recurrent need)\n=\nduplicate (168 values: first=0.5 , last=0.5 , mean=0.5 , min=0.5 , max=0.5 ,\nstd=0)\n=\n168 values: first=0.5 , last=0.5 , mean=0.5 , min=0.5 , max=0.5 , std=0", "x": 0.0, "y": 450}, {"color": null, "id": "Recurrent need", "label": "Recurrent need", "shape": "dot", "size": 15, "title": "Recurrent need\n=\nduplicate (Recurrent workload)\n=\nduplicate (168 values: first=0.5 , last=0.5 , mean=0.5 , min=0.5 , max=0.5 ,\nstd=0)\n=\n168 values: first=0.5 , last=0.5 , mean=0.5 , min=0.5 , max=0.5 , std=0", "x": 0.0, "y": 300}]);
                   edges = new vis.DataSet([{"arrows": "to", "from": "Recurrent need", "to": "Validated recurrent need"}]);
 
                   nodeColors = {};

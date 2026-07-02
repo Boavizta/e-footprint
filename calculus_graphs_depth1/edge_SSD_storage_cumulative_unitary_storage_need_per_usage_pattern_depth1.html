@@ -31,7 +31,7 @@
         </center>
         <style type="text/css">
 
-             #mynetwork_b9de6a {
+             #mynetwork_e2bb33 {
                  width: 760px;
                  height: 300px;
                  background-color: #ffffff;
@@ -53,7 +53,7 @@
         <div class="card" style="width: 100%">
             
             
-            <div id="mynetwork_b9de6a" class="card-body"></div>
+            <div id="mynetwork_e2bb33" class="card-body"></div>
         </div>
 
         
@@ -83,12 +83,12 @@
 
               // This method is responsible for drawing the graph, returns the drawn network
               function drawGraph() {
-                  var container = document.getElementById('mynetwork_b9de6a');
+                  var container = document.getElementById('mynetwork_e2bb33');
 
                   
 
                   // parsing and collecting nodes and edges from the python
-                  nodes = new vis.DataSet([{"color": null, "id": "Cumulative storage need for Default edge usage pattern", "label": "Cumulative storage\nneed for Default\nedge usage pattern", "shape": "dot", "size": 15, "title": "Cumulative storage need for Default edge usage pattern\n=\nCumulative unitary storage need for Default edge usage pattern + Initial storage\nneed logically dependent on Storage capacity\n=\n105192 values from 2025-01-01 00:00:00+00:00 to 2037-01-01 00:00:00+00:00 in GB\nstored:\nfirst 10 vals [0, 0, 0, 0, 0, 0, 0, 0, 0, 0],\nlast 10 vals [21, 21, 21, 21, 21, 21, 21, 21, 21, 21] + 10 GB stored logically\ndependent on 256 GB stored\n=\n105192 values from 2025-01-01 00:00:00+00:00 to 2037-01-01 00:00:00+00:00 in GB\nstored:\nfirst 10 vals [10, 10, 10, 10, 10, 10, 10, 10, 10, 10],\nlast 10 vals [31, 31, 31, 31, 31, 31, 31, 31, 31, 31]", "x": 0.0, "y": 900}, {"color": null, "id": "Cumulative unitary storage need for Default edge usage pattern", "label": "Cumulative unitary\nstorage need for\nDefault edge usage\npattern", "shape": "dot", "size": 15, "title": "Cumulative unitary storage need for Default edge usage pattern\n=\ncumulative sum (Unitary hourly need for Default edge usage pattern)\n=\ncumulative sum (105192 values from 2025-01-01 00:00:00+00:00 to 2037-01-01\n00:00:00+00:00 in kB stored:\nfirst 10 vals [0, 0, 0, 0, 0, 0, 0, 0, 0, 0],\nlast 10 vals [200, 200, 200, 200, 200, 200, 200, 200, 200, 200])\n=\n105192 values from 2025-01-01 00:00:00+00:00 to 2037-01-01 00:00:00+00:00 in GB\nstored:\nfirst 10 vals [0, 0, 0, 0, 0, 0, 0, 0, 0, 0],\nlast 10 vals [21, 21, 21, 21, 21, 21, 21, 21, 21, 21]", "x": -150.0, "y": 750}, {"color": null, "id": "Initial storage need", "label": "Initial storage need", "shape": "dot", "size": 15, "title": "Initial storage need = 10 GB stored", "x": 0.0, "y": 750}, {"color": null, "id": "Storage capacity", "label": "Storage capacity", "shape": "dot", "size": 15, "title": "Storage capacity\n=\nStorage capacity per unit * Number of units\n=\n256 GB stored * 1\n=\n256 GB stored", "x": 150.0, "y": 750}]);
+                  nodes = new vis.DataSet([{"color": null, "id": "Cumulative storage need for Default edge usage pattern", "label": "Cumulative storage\nneed for Default\nedge usage pattern", "shape": "dot", "size": 15, "title": "Cumulative storage need for Default edge usage pattern\n=\nCumulative unitary storage need for Default edge usage pattern + Initial storage\nneed logically dependent on Storage capacity\n=\n105192 values from 2025-01-01 00:00:00+00:00 to 2037-01-01 00:00:00+00:00:\nfirst=0, last=21 GB stored, mean=10.5 GB stored, min=0, max=21 GB stored,\nstd=6.07 GB stored + 10 GB stored logically dependent on 256 GB stored\n=\n105192 values from 2025-01-01 00:00:00+00:00 to 2037-01-01 00:00:00+00:00:\nfirst=10 GB stored, last=31 GB stored, mean=20.5 GB stored, min=10 GB stored,\nmax=31 GB stored, std=6.07 GB stored", "x": 0.0, "y": 900}, {"color": null, "id": "Cumulative unitary storage need for Default edge usage pattern", "label": "Cumulative unitary\nstorage need for\nDefault edge usage\npattern", "shape": "dot", "size": 15, "title": "Cumulative unitary storage need for Default edge usage pattern\n=\ncumulative sum (Unitary hourly need for Default edge usage pattern)\n=\ncumulative sum (105192 values from 2025-01-01 00:00:00+00:00 to 2037-01-01\n00:00:00+00:00: first=0, last=200 kB stored, mean=200 kB stored, min=0, max=200\nkB stored, std=6.75 kB stored)\n=\n105192 values from 2025-01-01 00:00:00+00:00 to 2037-01-01 00:00:00+00:00:\nfirst=0, last=21 GB stored, mean=10.5 GB stored, min=0, max=21 GB stored,\nstd=6.07 GB stored", "x": -150.0, "y": 750}, {"color": null, "id": "Initial storage need", "label": "Initial storage need", "shape": "dot", "size": 15, "title": "Initial storage need = 10 GB stored", "x": 0.0, "y": 750}, {"color": null, "id": "Storage capacity", "label": "Storage capacity", "shape": "dot", "size": 15, "title": "Storage capacity\n=\nStorage capacity per unit * Number of units\n=\n256 GB stored * 1\n=\n256 GB stored", "x": 150.0, "y": 750}]);
                   edges = new vis.DataSet([{"arrows": "to", "from": "Cumulative unitary storage need for Default edge usage pattern", "to": "Cumulative storage need for Default edge usage pattern"}, {"arrows": "to", "from": "Initial storage need", "to": "Cumulative storage need for Default edge usage pattern"}, {"arrows": "to", "from": "Storage capacity", "to": "Cumulative storage need for Default edge usage pattern"}]);
 
                   nodeColors = {};

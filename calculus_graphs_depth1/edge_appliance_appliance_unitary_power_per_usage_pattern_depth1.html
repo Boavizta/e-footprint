@@ -31,7 +31,7 @@
         </center>
         <style type="text/css">
 
-             #mynetwork_0d2543 {
+             #mynetwork_afa6a8 {
                  width: 760px;
                  height: 300px;
                  background-color: #ffffff;
@@ -53,7 +53,7 @@
         <div class="card" style="width: 100%">
             
             
-            <div id="mynetwork_0d2543" class="card-body"></div>
+            <div id="mynetwork_afa6a8" class="card-body"></div>
         </div>
 
         
@@ -83,12 +83,12 @@
 
               // This method is responsible for drawing the graph, returns the drawn network
               function drawGraph() {
-                  var container = document.getElementById('mynetwork_0d2543');
+                  var container = document.getElementById('mynetwork_afa6a8');
 
                   
 
                   // parsing and collecting nodes and edges from the python
-                  nodes = new vis.DataSet([{"color": null, "id": "Unitary power for Default edge usage pattern", "label": "Unitary power for\nDefault edge usage\npattern", "shape": "dot", "size": 15, "title": "Unitary power for Default edge usage pattern\n=\nHourly workload for Default edge usage pattern * (Power - Idle power) + Idle\npower\n=\n105192 values from 2025-01-01 00:00:00+00:00 to 2037-01-01 00:00:00+00:00 in :\nfirst 10 vals [0.5, 0.5, 0.5, 0.5, 0.5, 0.5, 0.5, 0.5, 0.5, 0.5],\nlast 10 vals [0.5, 0.5, 0.5, 0.5, 0.5, 0.5, 0.5, 0.5, 0.5, 0.5] * (30 W - 5 W) +\n5 W\n=\n105192 values from 2025-01-01 00:00:00+00:00 to 2037-01-01 00:00:00+00:00 in W:\nfirst 10 vals [17.5, 17.5, 17.5, 17.5, 17.5, 17.5, 17.5, 17.5, 17.5, 17.5],\nlast 10 vals [17.5, 17.5, 17.5, 17.5, 17.5, 17.5, 17.5, 17.5, 17.5, 17.5]", "x": 0.0, "y": 900}, {"color": null, "id": "Hourly workload for Default edge usage pattern", "label": "Hourly workload for\nDefault edge usage\npattern", "shape": "dot", "size": 15, "title": "Hourly workload for Default edge usage pattern\n=\nUnitary hourly need for Default edge usage pattern\n=\n105192 values from 2025-01-01 00:00:00+00:00 to 2037-01-01 00:00:00+00:00 in :\nfirst 10 vals [0.5, 0.5, 0.5, 0.5, 0.5, 0.5, 0.5, 0.5, 0.5, 0.5],\nlast 10 vals [0.5, 0.5, 0.5, 0.5, 0.5, 0.5, 0.5, 0.5, 0.5, 0.5]\n=\n105192 values from 2025-01-01 00:00:00+00:00 to 2037-01-01 00:00:00+00:00 in :\nfirst 10 vals [0.5, 0.5, 0.5, 0.5, 0.5, 0.5, 0.5, 0.5, 0.5, 0.5],\nlast 10 vals [0.5, 0.5, 0.5, 0.5, 0.5, 0.5, 0.5, 0.5, 0.5, 0.5]", "x": 0.0, "y": 750}, {"color": null, "id": "Power", "label": "Power", "shape": "dot", "size": 15, "title": "Power\n=\nPower per unit * Number of units\n=\n30 W * 1\n=\n30 W", "x": 150.0, "y": 450}, {"color": null, "id": "Idle power", "label": "Idle power", "shape": "dot", "size": 15, "title": "Idle power\n=\nIdle power per unit * Number of units\n=\n5 W * 1\n=\n5 W", "x": 300.0, "y": 450}]);
+                  nodes = new vis.DataSet([{"color": null, "id": "Unitary power for Default edge usage pattern", "label": "Unitary power for\nDefault edge usage\npattern", "shape": "dot", "size": 15, "title": "Unitary power for Default edge usage pattern\n=\nHourly workload for Default edge usage pattern * (Power - Idle power) + Idle\npower\n=\n105192 values from 2025-01-01 00:00:00+00:00 to 2037-01-01 00:00:00+00:00:\nfirst=0.5 , last=0.5 , mean=0.5 , min=0.5 , max=0.5 , std=0 * (30 W - 5 W) + 5 W\n=\n105192 values from 2025-01-01 00:00:00+00:00 to 2037-01-01 00:00:00+00:00:\nfirst=17.5 W, last=17.5 W, mean=17.5 W, min=17.5 W, max=17.5 W, std=0", "x": 0.0, "y": 900}, {"color": null, "id": "Hourly workload for Default edge usage pattern", "label": "Hourly workload for\nDefault edge usage\npattern", "shape": "dot", "size": 15, "title": "Hourly workload for Default edge usage pattern\n=\nUnitary hourly need for Default edge usage pattern\n=\n105192 values from 2025-01-01 00:00:00+00:00 to 2037-01-01 00:00:00+00:00:\nfirst=0.5 , last=0.5 , mean=0.5 , min=0.5 , max=0.5 , std=0\n=\n105192 values from 2025-01-01 00:00:00+00:00 to 2037-01-01 00:00:00+00:00:\nfirst=0.5 , last=0.5 , mean=0.5 , min=0.5 , max=0.5 , std=0", "x": 0.0, "y": 750}, {"color": null, "id": "Power", "label": "Power", "shape": "dot", "size": 15, "title": "Power\n=\nPower per unit * Number of units\n=\n30 W * 1\n=\n30 W", "x": 150.0, "y": 450}, {"color": null, "id": "Idle power", "label": "Idle power", "shape": "dot", "size": 15, "title": "Idle power\n=\nIdle power per unit * Number of units\n=\n5 W * 1\n=\n5 W", "x": 300.0, "y": 450}]);
                   edges = new vis.DataSet([{"arrows": "to", "from": "Hourly workload for Default edge usage pattern", "to": "Unitary power for Default edge usage pattern"}, {"arrows": "to", "from": "Power", "to": "Unitary power for Default edge usage pattern"}, {"arrows": "to", "from": "Idle power", "to": "Unitary power for Default edge usage pattern"}]);
 
                   nodeColors = {};

@@ -31,7 +31,7 @@
         </center>
         <style type="text/css">
 
-             #mynetwork_d632e9 {
+             #mynetwork_1048ac {
                  width: 1800px;
                  height: 900px;
                  background-color: #ffffff;
@@ -53,7 +53,7 @@
         <div class="card" style="width: 100%">
             
             
-            <div id="mynetwork_d632e9" class="card-body"></div>
+            <div id="mynetwork_1048ac" class="card-body"></div>
         </div>
 
         
@@ -83,12 +83,12 @@
 
               // This method is responsible for drawing the graph, returns the drawn network
               function drawGraph() {
-                  var container = document.getElementById('mynetwork_d632e9');
+                  var container = document.getElementById('mynetwork_1048ac');
 
                   
 
                   // parsing and collecting nodes and edges from the python
-                  nodes = new vis.DataSet([{"color": null, "id": "Validated recurrent need", "label": "Validated recurrent\nneed", "shape": "dot", "size": 15, "title": "Validated recurrent need\n=\nduplicate (Recurrent need)\n=\nduplicate (168 values in GB ram:\nfirst 10 vals [2, 2, 2, 2, 2, 2, 2, 2, 2, 2],\nlast 10 vals [2, 2, 2, 2, 2, 2, 2, 2, 2, 2])\n=\n168 values in GB ram:\nfirst 10 vals [2, 2, 2, 2, 2, 2, 2, 2, 2, 2],\nlast 10 vals [2, 2, 2, 2, 2, 2, 2, 2, 2, 2]", "x": 0.0, "y": 450}, {"color": null, "id": "Recurrent need", "label": "Recurrent need", "shape": "dot", "size": 15, "title": "Recurrent need\n=\nduplicate (Recurrent RAM needed)\n=\nduplicate (168 values in GB ram:\nfirst 10 vals [2, 2, 2, 2, 2, 2, 2, 2, 2, 2],\nlast 10 vals [2, 2, 2, 2, 2, 2, 2, 2, 2, 2])\n=\n168 values in GB ram:\nfirst 10 vals [2, 2, 2, 2, 2, 2, 2, 2, 2, 2],\nlast 10 vals [2, 2, 2, 2, 2, 2, 2, 2, 2, 2]", "x": 0.0, "y": 300}, {"color": null, "id": "Recurrent RAM needed", "label": "Recurrent RAM needed", "shape": "dot", "size": 15, "title": "Recurrent RAM needed = 168 values in GB ram:\nfirst 10 vals [2, 2, 2, 2, 2, 2, 2, 2, 2, 2],\nlast 10 vals [2, 2, 2, 2, 2, 2, 2, 2, 2, 2]", "x": 0.0, "y": 150}]);
+                  nodes = new vis.DataSet([{"color": null, "id": "Validated recurrent need", "label": "Validated recurrent\nneed", "shape": "dot", "size": 15, "title": "Validated recurrent need\n=\nduplicate (Recurrent need)\n=\nduplicate (168 values: first=2 GB ram, last=2 GB ram, mean=2 GB ram, min=2 GB\nram, max=2 GB ram, std=0)\n=\n168 values: first=2 GB ram, last=2 GB ram, mean=2 GB ram, min=2 GB ram, max=2 GB\nram, std=0", "x": 0.0, "y": 450}, {"color": null, "id": "Recurrent need", "label": "Recurrent need", "shape": "dot", "size": 15, "title": "Recurrent need\n=\nduplicate (Recurrent RAM needed)\n=\nduplicate (168 values: first=2 GB ram, last=2 GB ram, mean=2 GB ram, min=2 GB\nram, max=2 GB ram, std=0)\n=\n168 values: first=2 GB ram, last=2 GB ram, mean=2 GB ram, min=2 GB ram, max=2 GB\nram, std=0", "x": 0.0, "y": 300}, {"color": null, "id": "Recurrent RAM needed", "label": "Recurrent RAM needed", "shape": "dot", "size": 15, "title": "Recurrent RAM needed = 168 values: first=2 GB ram, last=2 GB ram, mean=2 GB ram,\nmin=2 GB ram, max=2 GB ram, std=0", "x": 0.0, "y": 150}]);
                   edges = new vis.DataSet([{"arrows": "to", "from": "Recurrent need", "to": "Validated recurrent need"}, {"arrows": "to", "from": "Recurrent RAM needed", "to": "Recurrent need"}]);
 
                   nodeColors = {};

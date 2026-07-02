@@ -575,6 +575,34 @@
   
   
     <li class="md-nav__item">
+      <a href="../serverless_modeling/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    How to model serverless workloads
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
       <a href="../server_to_server_interaction/" class="md-nav__link">
         
   
@@ -583,6 +611,34 @@
     
   
     How to model server to server interaction
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../attributing_footprint/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    How to attribute a footprint
   
 
     
@@ -3864,7 +3920,7 @@
         </center>
         <style type="text/css">
 
-             #mynetwork_5daae7 {
+             #mynetwork_5bbca0 {
                  width: 760px;
                  height: 300px;
                  background-color: #ffffff;
@@ -3886,7 +3942,7 @@
         <div class="card" style="width: 100%">
 
 
-            <div id="mynetwork_5daae7" class="card-body"></div>
+            <div id="mynetwork_5bbca0" class="card-body"></div>
         </div>
 
 
@@ -3916,7 +3972,7 @@
 
               // This method is responsible for drawing the graph, returns the drawn network
               function drawGraph() {
-                  var container = document.getElementById('mynetwork_5daae7');
+                  var container = document.getElementById('mynetwork_5bbca0');
 
 
 
@@ -3991,12 +4047,8 @@
 <h3 id="full_cumulative_storage_need_per_job">full_cumulative_storage_need_per_job</h3>
 <p>Per-job cumulative volume of stored data over time, applying the replication factor and dropping data older than <a href="./#data_storage_duration">Storage.data_storage_duration</a>.  </p>
 <p>Example value: {<br />
-Job Manually defined job (ee35fb66-3b2): 105192 values from 2025-01-01 00:00:00+00:00 to 2037-01-01 00:00:00+00:00 in TB stored:<br />
-    first 10 vals [0.00000572, 0.0000089, 0.0000137, 0.0000155, 0.000021, 0.0000258, 0.0000283, 0.000331, 0.000933, 0.00184],<br />
-    last 10 vals [18100, 18100, 18100, 18100, 18100, 18100, 18100, 18100, 18100, 18100], <br />
-VideoStreamingJob Video streaming job (c340d3ff-0b6): 26298 values from 2025-01-01 00:00:00+00:00 to 2028-01-01 18:00:00+00:00 in B stored:<br />
-    first 10 vals [0, 0, 0, 0, 0, 0, 0, 0, 0, 0],<br />
-    last 10 vals [0, 0, 0, 0, 0, 0, 0, 0, 0, 0], <br />
+Job Manually defined job (a18ee205-e24): 105192 values from 2025-01-01 00:00:00+00:00 to 2037-01-01 00:00:00+00:00: first=5.72 MB stored, last=18100 TB stored, mean=53300 TB stored, min=5.72 MB stored, max=99600 TB stored, std=31400 TB stored, <br />
+VideoStreamingJob Video streaming job (8e2f10b8-db0): 26298 values from 2025-01-01 00:00:00+00:00 to 2028-01-01 18:00:00+00:00: first=0, last=0, mean=0, min=0, max=0, std=0, <br />
 }  </p>
 <p>Depends directly on:  </p>
 <ul>
@@ -4038,7 +4090,7 @@ VideoStreamingJob Video streaming job (c340d3ff-0b6): 26298 values from 2025-01-
         </center>
         <style type="text/css">
 
-             #mynetwork_2b94e6 {
+             #mynetwork_df6a18 {
                  width: 760px;
                  height: 300px;
                  background-color: #ffffff;
@@ -4060,7 +4112,7 @@ VideoStreamingJob Video streaming job (c340d3ff-0b6): 26298 values from 2025-01-
         <div class="card" style="width: 100%">
 
 
-            <div id="mynetwork_2b94e6" class="card-body"></div>
+            <div id="mynetwork_df6a18" class="card-body"></div>
         </div>
 
 
@@ -4090,12 +4142,12 @@ VideoStreamingJob Video streaming job (c340d3ff-0b6): 26298 values from 2025-01-
 
               // This method is responsible for drawing the graph, returns the drawn network
               function drawGraph() {
-                  var container = document.getElementById('mynetwork_2b94e6');
+                  var container = document.getElementById('mynetwork_df6a18');
 
 
 
                   // parsing and collecting nodes and edges from the python
-                  nodes = new vis.DataSet([{"color": null, "id": "Cumulative storage need for Manually defined job", "label": "Cumulative storage\nneed for Manually\ndefined job", "shape": "dot", "size": 15, "title": "Cumulative storage need for Manually defined job\n=\nHourly data stored across usage patterns * Data replication factor cumulative\nsum with automatic dumps Data storage duration\n=\n105192 values from 2025-01-01 00:00:00+00:00 to 2037-01-01 00:00:00+00:00 in TB\nstored:\nfirst 10 vals [0.00000191, 0.00000106, 0.0000016, 0.0000006, 0.00000185,\n0.0000016, 0.000000823, 0.000101, 0.0002, 0.000301],\nlast 10 vals [0.0005, 0.0005, 0.0005, 0.0005, 0.0005, 0.0004, 0.0003, 0.0002,\n0.0001, 0.0000000607] * 3 cumulative sum with automatic dumps 2 yr\n=\n105192 values from 2025-01-01 00:00:00+00:00 to 2037-01-01 00:00:00+00:00 in TB\nstored:\nfirst 10 vals [0.00000572, 0.0000089, 0.0000137, 0.0000155, 0.000021, 0.0000258,\n0.0000283, 0.000331, 0.000933, 0.00184],\nlast 10 vals [18100, 18100, 18100, 18100, 18100, 18100, 18100, 18100, 18100,\n18100]", "x": 0.0, "y": 1350}, {"color": null, "id": "Hourly data stored across usage patterns", "label": "Hourly data stored\nacross usage\npatterns", "shape": "dot", "size": 15, "title": "Hourly data stored across usage patterns\n=\nHourly data stored in usage pattern + Hourly data stored in Default edge usage\npattern\n=\n26298 values from 2025-01-01 00:00:00+00:00 to 2028-01-01 18:00:00+00:00 in MB\nstored:\nfirst 10 vals [1.8, 1, 1.6, 0.6, 1.8, 1.6, 0.8, 1, 0.4, 1.4],\nlast 10 vals [0.4, 0.6, 0.2, 0.6, 1.6, 0.2, 1, 1.6, 0.2, 0.8] + 105192 values\nfrom 2025-01-01 00:00:00+00:00 to 2037-01-01 00:00:00+00:00 in TB stored:\nfirst 10 vals [0.000000106, 0.0000000607, 0, 0, 0.0000000455, 0, 0.0000000228,\n0.0001, 0.0002, 0.0003],\nlast 10 vals [0.0005, 0.0005, 0.0005, 0.0005, 0.0005, 0.0004, 0.0003, 0.0002,\n0.0001, 0.0000000607]\n=\n105192 values from 2025-01-01 00:00:00+00:00 to 2037-01-01 00:00:00+00:00 in TB\nstored:\nfirst 10 vals [0.00000191, 0.00000106, 0.0000016, 0.0000006, 0.00000185,\n0.0000016, 0.000000823, 0.000101, 0.0002, 0.000301],\nlast 10 vals [0.0005, 0.0005, 0.0005, 0.0005, 0.0005, 0.0004, 0.0003, 0.0002,\n0.0001, 0.0000000607]", "x": -300.0, "y": 1200}, {"color": null, "id": "Data replication factor", "label": "Data replication\nfactor", "shape": "dot", "size": 15, "title": "Data replication factor = 3", "x": 0.0, "y": 1200}, {"color": null, "id": "Data storage duration", "label": "Data storage\nduration", "shape": "dot", "size": 15, "title": "Data storage duration = 2 yr", "x": 300.0, "y": 1200}]);
+                  nodes = new vis.DataSet([{"color": null, "id": "Cumulative storage need for Manually defined job", "label": "Cumulative storage\nneed for Manually\ndefined job", "shape": "dot", "size": 15, "title": "Cumulative storage need for Manually defined job\n=\nHourly data stored across usage patterns * Data replication factor cumulative\nsum with automatic dumps Data storage duration\n=\n105192 values from 2025-01-01 00:00:00+00:00 to 2037-01-01 00:00:00+00:00:\nfirst=1.91 MB stored, last=60.7 kB stored, mean=1.03 TB stored, min=60.7 kB\nstored, max=2.07 TB stored, std=596 GB stored * 3 cumulative sum with automatic\ndumps 2 yr\n=\n105192 values from 2025-01-01 00:00:00+00:00 to 2037-01-01 00:00:00+00:00:\nfirst=5.72 MB stored, last=18100 TB stored, mean=53300 TB stored, min=5.72 MB\nstored, max=99600 TB stored, std=31400 TB stored", "x": 0.0, "y": 1350}, {"color": null, "id": "Hourly data stored across usage patterns", "label": "Hourly data stored\nacross usage\npatterns", "shape": "dot", "size": 15, "title": "Hourly data stored across usage patterns\n=\nHourly data stored in usage pattern + Hourly data stored in Default edge usage\npattern\n=\n26298 values from 2025-01-01 00:00:00+00:00 to 2028-01-01 18:00:00+00:00:\nfirst=1.8 MB stored, last=1.2 MB stored, mean=992 kB stored, min=200 kB stored,\nmax=1.8 MB stored, std=515 kB stored + 105192 values from 2025-01-01\n00:00:00+00:00 to 2037-01-01 00:00:00+00:00: first=106 kB stored, last=60.7 kB\nstored, mean=1.03 TB stored, min=0, max=2.07 TB stored, std=596 GB stored\n=\n105192 values from 2025-01-01 00:00:00+00:00 to 2037-01-01 00:00:00+00:00:\nfirst=1.91 MB stored, last=60.7 kB stored, mean=1.03 TB stored, min=60.7 kB\nstored, max=2.07 TB stored, std=596 GB stored", "x": -300.0, "y": 1200}, {"color": null, "id": "Data replication factor", "label": "Data replication\nfactor", "shape": "dot", "size": 15, "title": "Data replication factor = 3", "x": 0.0, "y": 1200}, {"color": null, "id": "Data storage duration", "label": "Data storage\nduration", "shape": "dot", "size": 15, "title": "Data storage duration = 2 yr", "x": 300.0, "y": 1200}]);
                   edges = new vis.DataSet([{"arrows": "to", "from": "Hourly data stored across usage patterns", "to": "Cumulative storage need for Manually defined job"}, {"arrows": "to", "from": "Data replication factor", "to": "Cumulative storage need for Manually defined job"}, {"arrows": "to", "from": "Data storage duration", "to": "Cumulative storage need for Manually defined job"}]);
 
                   nodeColors = {};
@@ -4164,9 +4216,7 @@ VideoStreamingJob Video streaming job (c340d3ff-0b6): 26298 values from 2025-01-
 <p>You can also visit the <a href='../calculus_graphs/storage_full_cumulative_storage_need_per_job.html' target='_blank'>link to Cumulative storage need for Manually defined job’s full calculation graph</a>.</p>
 <h3 id="full_cumulative_storage_need">full_cumulative_storage_need</h3>
 <p>Total cumulative storage volume held by this storage at each hour, summing per-job cumulative needs and adding the base storage need.  </p>
-<p>Example value: 105192 values from 2025-01-01 00:00:00+00:00 to 2037-01-01 00:00:00+00:00 in TB stored:<br />
-    first 10 vals [0.00000572, 0.0000089, 0.0000137, 0.0000155, 0.000021, 0.0000258, 0.0000283, 0.000331, 0.000933, 0.00184],<br />
-    last 10 vals [18100, 18100, 18100, 18100, 18100, 18100, 18100, 18100, 18100, 18100]  </p>
+<p>Example value: 105192 values from 2025-01-01 00:00:00+00:00 to 2037-01-01 00:00:00+00:00: first=5.72 MB stored, last=18100 TB stored, mean=53300 TB stored, min=5.72 MB stored, max=99600 TB stored, std=31400 TB stored  </p>
 <p>Depends directly on:  </p>
 <ul>
 <li><a href="./#full_cumulative_storage_need_per_job">Cumulative storage need for Manually defined job</a></li>
@@ -4207,7 +4257,7 @@ VideoStreamingJob Video streaming job (c340d3ff-0b6): 26298 values from 2025-01-
         </center>
         <style type="text/css">
 
-             #mynetwork_32e3f2 {
+             #mynetwork_9da28e {
                  width: 760px;
                  height: 300px;
                  background-color: #ffffff;
@@ -4229,7 +4279,7 @@ VideoStreamingJob Video streaming job (c340d3ff-0b6): 26298 values from 2025-01-
         <div class="card" style="width: 100%">
 
 
-            <div id="mynetwork_32e3f2" class="card-body"></div>
+            <div id="mynetwork_9da28e" class="card-body"></div>
         </div>
 
 
@@ -4259,12 +4309,12 @@ VideoStreamingJob Video streaming job (c340d3ff-0b6): 26298 values from 2025-01-
 
               // This method is responsible for drawing the graph, returns the drawn network
               function drawGraph() {
-                  var container = document.getElementById('mynetwork_32e3f2');
+                  var container = document.getElementById('mynetwork_9da28e');
 
 
 
                   // parsing and collecting nodes and edges from the python
-                  nodes = new vis.DataSet([{"color": null, "id": "Full cumulative storage need", "label": "Full cumulative\nstorage need", "shape": "dot", "size": 15, "title": "Full cumulative storage need\n=\nCumulative storage need for Manually defined job + Cumulative storage need for\nVideo streaming job + Initial storage need\n=\n105192 values from 2025-01-01 00:00:00+00:00 to 2037-01-01 00:00:00+00:00 in TB\nstored:\nfirst 10 vals [0.00000572, 0.0000089, 0.0000137, 0.0000155, 0.000021, 0.0000258,\n0.0000283, 0.000331, 0.000933, 0.00184],\nlast 10 vals [18100, 18100, 18100, 18100, 18100, 18100, 18100, 18100, 18100,\n18100] + 26298 values from 2025-01-01 00:00:00+00:00 to 2028-01-01\n18:00:00+00:00 in B stored:\nfirst 10 vals [0, 0, 0, 0, 0, 0, 0, 0, 0, 0],\nlast 10 vals [0, 0, 0, 0, 0, 0, 0, 0, 0, 0] + 0 B stored\n=\n105192 values from 2025-01-01 00:00:00+00:00 to 2037-01-01 00:00:00+00:00 in TB\nstored:\nfirst 10 vals [0.00000572, 0.0000089, 0.0000137, 0.0000155, 0.000021, 0.0000258,\n0.0000283, 0.000331, 0.000933, 0.00184],\nlast 10 vals [18100, 18100, 18100, 18100, 18100, 18100, 18100, 18100, 18100,\n18100]", "x": 0.0, "y": 1500}, {"color": null, "id": "Cumulative storage need for Manually defined job", "label": "Cumulative storage\nneed for Manually\ndefined job", "shape": "dot", "size": 15, "title": "Cumulative storage need for Manually defined job\n=\nHourly data stored across usage patterns * Data replication factor cumulative\nsum with automatic dumps Data storage duration\n=\n105192 values from 2025-01-01 00:00:00+00:00 to 2037-01-01 00:00:00+00:00 in TB\nstored:\nfirst 10 vals [0.00000191, 0.00000106, 0.0000016, 0.0000006, 0.00000185,\n0.0000016, 0.000000823, 0.000101, 0.0002, 0.000301],\nlast 10 vals [0.0005, 0.0005, 0.0005, 0.0005, 0.0005, 0.0004, 0.0003, 0.0002,\n0.0001, 0.0000000607] * 3 cumulative sum with automatic dumps 2 yr\n=\n105192 values from 2025-01-01 00:00:00+00:00 to 2037-01-01 00:00:00+00:00 in TB\nstored:\nfirst 10 vals [0.00000572, 0.0000089, 0.0000137, 0.0000155, 0.000021, 0.0000258,\n0.0000283, 0.000331, 0.000933, 0.00184],\nlast 10 vals [18100, 18100, 18100, 18100, 18100, 18100, 18100, 18100, 18100,\n18100]", "x": -350.0, "y": 1350}, {"color": null, "id": "Cumulative storage need for Video streaming job", "label": "Cumulative storage\nneed for Video\nstreaming job", "shape": "dot", "size": 15, "title": "Cumulative storage need for Video streaming job\n=\nHourly data stored across usage patterns * Data replication factor cumulative\nsum with automatic dumps Data storage duration\n=\n26298 values from 2025-01-01 00:00:00+00:00 to 2028-01-01 18:00:00+00:00 in B\nstored:\nfirst 10 vals [0, 0, 0, 0, 0, 0, 0, 0, 0, 0],\nlast 10 vals [0, 0, 0, 0, 0, 0, 0, 0, 0, 0] * 3 cumulative sum with automatic\ndumps 2 yr\n=\n26298 values from 2025-01-01 00:00:00+00:00 to 2028-01-01 18:00:00+00:00 in B\nstored:\nfirst 10 vals [0, 0, 0, 0, 0, 0, 0, 0, 0, 0],\nlast 10 vals [0, 0, 0, 0, 0, 0, 0, 0, 0, 0]", "x": 0.0, "y": 1350}, {"color": null, "id": "Initial storage need", "label": "Initial storage need", "shape": "dot", "size": 15, "title": "Initial storage need = 0 B stored", "x": 350.0, "y": 1350}]);
+                  nodes = new vis.DataSet([{"color": null, "id": "Full cumulative storage need", "label": "Full cumulative\nstorage need", "shape": "dot", "size": 15, "title": "Full cumulative storage need\n=\nCumulative storage need for Manually defined job + Cumulative storage need for\nVideo streaming job + Initial storage need\n=\n105192 values from 2025-01-01 00:00:00+00:00 to 2037-01-01 00:00:00+00:00:\nfirst=5.72 MB stored, last=18100 TB stored, mean=53300 TB stored, min=5.72 MB\nstored, max=99600 TB stored, std=31400 TB stored + 26298 values from 2025-01-01\n00:00:00+00:00 to 2028-01-01 18:00:00+00:00: first=0, last=0, mean=0, min=0,\nmax=0, std=0 + 0 B stored\n=\n105192 values from 2025-01-01 00:00:00+00:00 to 2037-01-01 00:00:00+00:00:\nfirst=5.72 MB stored, last=18100 TB stored, mean=53300 TB stored, min=5.72 MB\nstored, max=99600 TB stored, std=31400 TB stored", "x": 0.0, "y": 1500}, {"color": null, "id": "Cumulative storage need for Manually defined job", "label": "Cumulative storage\nneed for Manually\ndefined job", "shape": "dot", "size": 15, "title": "Cumulative storage need for Manually defined job\n=\nHourly data stored across usage patterns * Data replication factor cumulative\nsum with automatic dumps Data storage duration\n=\n105192 values from 2025-01-01 00:00:00+00:00 to 2037-01-01 00:00:00+00:00:\nfirst=1.91 MB stored, last=60.7 kB stored, mean=1.03 TB stored, min=60.7 kB\nstored, max=2.07 TB stored, std=596 GB stored * 3 cumulative sum with automatic\ndumps 2 yr\n=\n105192 values from 2025-01-01 00:00:00+00:00 to 2037-01-01 00:00:00+00:00:\nfirst=5.72 MB stored, last=18100 TB stored, mean=53300 TB stored, min=5.72 MB\nstored, max=99600 TB stored, std=31400 TB stored", "x": -350.0, "y": 1350}, {"color": null, "id": "Cumulative storage need for Video streaming job", "label": "Cumulative storage\nneed for Video\nstreaming job", "shape": "dot", "size": 15, "title": "Cumulative storage need for Video streaming job\n=\nHourly data stored across usage patterns * Data replication factor cumulative\nsum with automatic dumps Data storage duration\n=\n26298 values from 2025-01-01 00:00:00+00:00 to 2028-01-01 18:00:00+00:00:\nfirst=0, last=0, mean=0, min=0, max=0, std=0 * 3 cumulative sum with automatic\ndumps 2 yr\n=\n26298 values from 2025-01-01 00:00:00+00:00 to 2028-01-01 18:00:00+00:00:\nfirst=0, last=0, mean=0, min=0, max=0, std=0", "x": 0.0, "y": 1350}, {"color": null, "id": "Initial storage need", "label": "Initial storage need", "shape": "dot", "size": 15, "title": "Initial storage need = 0 B stored", "x": 350.0, "y": 1350}]);
                   edges = new vis.DataSet([{"arrows": "to", "from": "Cumulative storage need for Manually defined job", "to": "Full cumulative storage need"}, {"arrows": "to", "from": "Cumulative storage need for Video streaming job", "to": "Full cumulative storage need"}, {"arrows": "to", "from": "Initial storage need", "to": "Full cumulative storage need"}]);
 
                   nodeColors = {};
@@ -4333,9 +4383,7 @@ VideoStreamingJob Video streaming job (c340d3ff-0b6): 26298 values from 2025-01-
 <p>You can also visit the <a href='../calculus_graphs/storage_full_cumulative_storage_need.html' target='_blank'>link to Full cumulative storage need’s full calculation graph</a>.</p>
 <h3 id="raw_nb_of_instances">raw_nb_of_instances</h3>
 <p>Hourly storage instances strictly required to hold the cumulative storage need, before rounding.  </p>
-<p>Example value: 105192 values from 2025-01-01 00:00:00+00:00 to 2037-01-01 00:00:00+00:00 in k:<br />
-    first 10 vals [0.00000000572, 0.0000000089, 0.0000000137, 0.0000000155, 0.000000021, 0.0000000258, 0.0000000283, 0.000000331, 0.000000933, 0.00000184],<br />
-    last 10 vals [18.1, 18.1, 18.1, 18.1, 18.1, 18.1, 18.1, 18.1, 18.1, 18.1]  </p>
+<p>Example value: 105192 values from 2025-01-01 00:00:00+00:00 to 2037-01-01 00:00:00+00:00: first=0.00000572 , last=18.1 k, mean=53.3 k, min=0.00000572 , max=99.6 k, std=31.4 k  </p>
 <p>Depends directly on:  </p>
 <ul>
 <li><a href="./#full_cumulative_storage_need">Full cumulative storage need</a></li>
@@ -4375,7 +4423,7 @@ VideoStreamingJob Video streaming job (c340d3ff-0b6): 26298 values from 2025-01-
         </center>
         <style type="text/css">
 
-             #mynetwork_5ec604 {
+             #mynetwork_a55933 {
                  width: 760px;
                  height: 300px;
                  background-color: #ffffff;
@@ -4397,7 +4445,7 @@ VideoStreamingJob Video streaming job (c340d3ff-0b6): 26298 values from 2025-01-
         <div class="card" style="width: 100%">
 
 
-            <div id="mynetwork_5ec604" class="card-body"></div>
+            <div id="mynetwork_a55933" class="card-body"></div>
         </div>
 
 
@@ -4427,12 +4475,12 @@ VideoStreamingJob Video streaming job (c340d3ff-0b6): 26298 values from 2025-01-
 
               // This method is responsible for drawing the graph, returns the drawn network
               function drawGraph() {
-                  var container = document.getElementById('mynetwork_5ec604');
+                  var container = document.getElementById('mynetwork_a55933');
 
 
 
                   // parsing and collecting nodes and edges from the python
-                  nodes = new vis.DataSet([{"color": null, "id": "Hourly raw number of instances", "label": "Hourly raw number of\ninstances", "shape": "dot", "size": 15, "title": "Hourly raw number of instances\n=\nFull cumulative storage need / Storage capacity\n=\n105192 values from 2025-01-01 00:00:00+00:00 to 2037-01-01 00:00:00+00:00 in TB\nstored:\nfirst 10 vals [0.00000572, 0.0000089, 0.0000137, 0.0000155, 0.000021, 0.0000258,\n0.0000283, 0.000331, 0.000933, 0.00184],\nlast 10 vals [18100, 18100, 18100, 18100, 18100, 18100, 18100, 18100, 18100,\n18100] / 1 TB stored\n=\n105192 values from 2025-01-01 00:00:00+00:00 to 2037-01-01 00:00:00+00:00 in k:\nfirst 10 vals [0.00000000572, 0.0000000089, 0.0000000137, 0.0000000155,\n0.000000021, 0.0000000258, 0.0000000283, 0.000000331, 0.000000933, 0.00000184],\nlast 10 vals [18.1, 18.1, 18.1, 18.1, 18.1, 18.1, 18.1, 18.1, 18.1, 18.1]", "x": 0.0, "y": 1650}, {"color": null, "id": "Full cumulative storage need", "label": "Full cumulative\nstorage need", "shape": "dot", "size": 15, "title": "Full cumulative storage need\n=\nCumulative storage need for Manually defined job + Cumulative storage need for\nVideo streaming job + Initial storage need\n=\n105192 values from 2025-01-01 00:00:00+00:00 to 2037-01-01 00:00:00+00:00 in TB\nstored:\nfirst 10 vals [0.00000572, 0.0000089, 0.0000137, 0.0000155, 0.000021, 0.0000258,\n0.0000283, 0.000331, 0.000933, 0.00184],\nlast 10 vals [18100, 18100, 18100, 18100, 18100, 18100, 18100, 18100, 18100,\n18100] + 26298 values from 2025-01-01 00:00:00+00:00 to 2028-01-01\n18:00:00+00:00 in B stored:\nfirst 10 vals [0, 0, 0, 0, 0, 0, 0, 0, 0, 0],\nlast 10 vals [0, 0, 0, 0, 0, 0, 0, 0, 0, 0] + 0 B stored\n=\n105192 values from 2025-01-01 00:00:00+00:00 to 2037-01-01 00:00:00+00:00 in TB\nstored:\nfirst 10 vals [0.00000572, 0.0000089, 0.0000137, 0.0000155, 0.000021, 0.0000258,\n0.0000283, 0.000331, 0.000933, 0.00184],\nlast 10 vals [18100, 18100, 18100, 18100, 18100, 18100, 18100, 18100, 18100,\n18100]", "x": -262.5, "y": 1500}, {"color": null, "id": "Storage capacity", "label": "Storage capacity", "shape": "dot", "size": 15, "title": "Storage capacity = 1 TB stored", "x": 262.5, "y": 1500}]);
+                  nodes = new vis.DataSet([{"color": null, "id": "Hourly raw number of instances", "label": "Hourly raw number of\ninstances", "shape": "dot", "size": 15, "title": "Hourly raw number of instances\n=\nFull cumulative storage need / Storage capacity\n=\n105192 values from 2025-01-01 00:00:00+00:00 to 2037-01-01 00:00:00+00:00:\nfirst=5.72 MB stored, last=18100 TB stored, mean=53300 TB stored, min=5.72 MB\nstored, max=99600 TB stored, std=31400 TB stored / 1 TB stored\n=\n105192 values from 2025-01-01 00:00:00+00:00 to 2037-01-01 00:00:00+00:00:\nfirst=0.00000572 , last=18.1 k, mean=53.3 k, min=0.00000572 , max=99.6 k,\nstd=31.4 k", "x": 0.0, "y": 1650}, {"color": null, "id": "Full cumulative storage need", "label": "Full cumulative\nstorage need", "shape": "dot", "size": 15, "title": "Full cumulative storage need\n=\nCumulative storage need for Manually defined job + Cumulative storage need for\nVideo streaming job + Initial storage need\n=\n105192 values from 2025-01-01 00:00:00+00:00 to 2037-01-01 00:00:00+00:00:\nfirst=5.72 MB stored, last=18100 TB stored, mean=53300 TB stored, min=5.72 MB\nstored, max=99600 TB stored, std=31400 TB stored + 26298 values from 2025-01-01\n00:00:00+00:00 to 2028-01-01 18:00:00+00:00: first=0, last=0, mean=0, min=0,\nmax=0, std=0 + 0 B stored\n=\n105192 values from 2025-01-01 00:00:00+00:00 to 2037-01-01 00:00:00+00:00:\nfirst=5.72 MB stored, last=18100 TB stored, mean=53300 TB stored, min=5.72 MB\nstored, max=99600 TB stored, std=31400 TB stored", "x": -262.5, "y": 1500}, {"color": null, "id": "Storage capacity", "label": "Storage capacity", "shape": "dot", "size": 15, "title": "Storage capacity = 1 TB stored", "x": 262.5, "y": 1500}]);
                   edges = new vis.DataSet([{"arrows": "to", "from": "Full cumulative storage need", "to": "Hourly raw number of instances"}, {"arrows": "to", "from": "Storage capacity", "to": "Hourly raw number of instances"}]);
 
                   nodeColors = {};
@@ -4501,9 +4549,7 @@ VideoStreamingJob Video streaming job (c340d3ff-0b6): 26298 values from 2025-01-
 <p>You can also visit the <a href='../calculus_graphs/storage_raw_nb_of_instances.html' target='_blank'>link to Hourly raw number of instances’s full calculation graph</a>.</p>
 <h3 id="nb_of_instances">nb_of_instances</h3>
 <p>Hourly storage instances actually attributed: fractional for serverless backends (only used capacity is billed), held to the user-fixed count if set, otherwise ceiled to whole instances.  </p>
-<p>Example value: 105192 values from 2025-01-01 00:00:00+00:00 to 2037-01-01 00:00:00+00:00 in k:<br />
-    first 10 vals [0.001, 0.001, 0.001, 0.001, 0.001, 0.001, 0.001, 0.001, 0.001, 0.001],<br />
-    last 10 vals [18.1, 18.1, 18.1, 18.1, 18.1, 18.1, 18.1, 18.1, 18.1, 18.1]  </p>
+<p>Example value: 105192 values from 2025-01-01 00:00:00+00:00 to 2037-01-01 00:00:00+00:00: first=1 , last=18.1 k, mean=53.3 k, min=1 , max=99.6 k, std=31.4 k  </p>
 <p>Depends directly on:  </p>
 <ul>
 <li><a href="./#raw_nb_of_instances">Hourly raw number of instances</a></li>
@@ -4544,7 +4590,7 @@ VideoStreamingJob Video streaming job (c340d3ff-0b6): 26298 values from 2025-01-
         </center>
         <style type="text/css">
 
-             #mynetwork_fe3219 {
+             #mynetwork_04712c {
                  width: 760px;
                  height: 300px;
                  background-color: #ffffff;
@@ -4566,7 +4612,7 @@ VideoStreamingJob Video streaming job (c340d3ff-0b6): 26298 values from 2025-01-
         <div class="card" style="width: 100%">
 
 
-            <div id="mynetwork_fe3219" class="card-body"></div>
+            <div id="mynetwork_04712c" class="card-body"></div>
         </div>
 
 
@@ -4596,12 +4642,12 @@ VideoStreamingJob Video streaming job (c340d3ff-0b6): 26298 values from 2025-01-
 
               // This method is responsible for drawing the graph, returns the drawn network
               function drawGraph() {
-                  var container = document.getElementById('mynetwork_fe3219');
+                  var container = document.getElementById('mynetwork_04712c');
 
 
 
                   // parsing and collecting nodes and edges from the python
-                  nodes = new vis.DataSet([{"color": null, "id": "Hourly number of instances", "label": "Hourly number of\ninstances", "shape": "dot", "size": 15, "title": "Hourly number of instances\n=\nceil (Hourly raw number of instances) logically dependent on User defined number\nof instances logically dependent on Server type\n=\nceil (105192 values from 2025-01-01 00:00:00+00:00 to 2037-01-01 00:00:00+00:00\nin k:\nfirst 10 vals [0.00000000572, 0.0000000089, 0.0000000137, 0.0000000155,\n0.000000021, 0.0000000258, 0.0000000283, 0.000000331, 0.000000933, 0.00000184],\nlast 10 vals [18.1, 18.1, 18.1, 18.1, 18.1, 18.1, 18.1, 18.1, 18.1, 18.1])\nlogically dependent on no value logically dependent on autoscaling\n=\n105192 values from 2025-01-01 00:00:00+00:00 to 2037-01-01 00:00:00+00:00 in k:\nfirst 10 vals [0.001, 0.001, 0.001, 0.001, 0.001, 0.001, 0.001, 0.001, 0.001,\n0.001],\nlast 10 vals [18.1, 18.1, 18.1, 18.1, 18.1, 18.1, 18.1, 18.1, 18.1, 18.1]", "x": 0.0, "y": 1800}, {"color": null, "id": "Hourly raw number of instances", "label": "Hourly raw number of\ninstances", "shape": "dot", "size": 15, "title": "Hourly raw number of instances\n=\nFull cumulative storage need / Storage capacity\n=\n105192 values from 2025-01-01 00:00:00+00:00 to 2037-01-01 00:00:00+00:00 in TB\nstored:\nfirst 10 vals [0.00000572, 0.0000089, 0.0000137, 0.0000155, 0.000021, 0.0000258,\n0.0000283, 0.000331, 0.000933, 0.00184],\nlast 10 vals [18100, 18100, 18100, 18100, 18100, 18100, 18100, 18100, 18100,\n18100] / 1 TB stored\n=\n105192 values from 2025-01-01 00:00:00+00:00 to 2037-01-01 00:00:00+00:00 in k:\nfirst 10 vals [0.00000000572, 0.0000000089, 0.0000000137, 0.0000000155,\n0.000000021, 0.0000000258, 0.0000000283, 0.000000331, 0.000000933, 0.00000184],\nlast 10 vals [18.1, 18.1, 18.1, 18.1, 18.1, 18.1, 18.1, 18.1, 18.1, 18.1]", "x": -350.0, "y": 1650}, {"color": null, "id": "User defined number of instances", "label": "User defined number\nof instances", "shape": "dot", "size": 15, "title": "User defined number of instances = no value", "x": 0.0, "y": 1650}, {"color": "darkred", "id": "Server type", "label": "Server type", "shape": "dot", "size": 15, "title": "Server type = autoscaling", "x": 350.0, "y": 1650}]);
+                  nodes = new vis.DataSet([{"color": null, "id": "Hourly number of instances", "label": "Hourly number of\ninstances", "shape": "dot", "size": 15, "title": "Hourly number of instances\n=\nceil (Hourly raw number of instances) logically dependent on User defined number\nof instances logically dependent on Server type\n=\nceil (105192 values from 2025-01-01 00:00:00+00:00 to 2037-01-01 00:00:00+00:00:\nfirst=0.00000572 , last=18.1 k, mean=53.3 k, min=0.00000572 , max=99.6 k,\nstd=31.4 k) logically dependent on no value logically dependent on autoscaling\n=\n105192 values from 2025-01-01 00:00:00+00:00 to 2037-01-01 00:00:00+00:00:\nfirst=1 , last=18.1 k, mean=53.3 k, min=1 , max=99.6 k, std=31.4 k", "x": 0.0, "y": 1800}, {"color": null, "id": "Hourly raw number of instances", "label": "Hourly raw number of\ninstances", "shape": "dot", "size": 15, "title": "Hourly raw number of instances\n=\nFull cumulative storage need / Storage capacity\n=\n105192 values from 2025-01-01 00:00:00+00:00 to 2037-01-01 00:00:00+00:00:\nfirst=5.72 MB stored, last=18100 TB stored, mean=53300 TB stored, min=5.72 MB\nstored, max=99600 TB stored, std=31400 TB stored / 1 TB stored\n=\n105192 values from 2025-01-01 00:00:00+00:00 to 2037-01-01 00:00:00+00:00:\nfirst=0.00000572 , last=18.1 k, mean=53.3 k, min=0.00000572 , max=99.6 k,\nstd=31.4 k", "x": -350.0, "y": 1650}, {"color": null, "id": "User defined number of instances", "label": "User defined number\nof instances", "shape": "dot", "size": 15, "title": "User defined number of instances = no value", "x": 0.0, "y": 1650}, {"color": "darkred", "id": "Server type", "label": "Server type", "shape": "dot", "size": 15, "title": "Server type = autoscaling", "x": 350.0, "y": 1650}]);
                   edges = new vis.DataSet([{"arrows": "to", "from": "Hourly raw number of instances", "to": "Hourly number of instances"}, {"arrows": "to", "from": "User defined number of instances", "to": "Hourly number of instances"}, {"arrows": "to", "from": "Server type", "to": "Hourly number of instances"}]);
 
                   nodeColors = {};
@@ -4670,9 +4716,7 @@ VideoStreamingJob Video streaming job (c340d3ff-0b6): 26298 values from 2025-01-
 <p>You can also visit the <a href='../calculus_graphs/storage_nb_of_instances.html' target='_blank'>link to Hourly number of instances’s full calculation graph</a>.</p>
 <h3 id="instances_fabrication_footprint">instances_fabrication_footprint</h3>
 <p>Hourly fabrication-phase emissions of all instances, equal to the embodied carbon of one instance amortised over its lifespan and multiplied by the number of instances active in each hour.  </p>
-<p>Example value: 105192 values from 2025-01-01 00:00:00+00:00 to 2037-01-01 00:00:00+00:00 in kg:<br />
-    first 10 vals [0.00304, 0.00304, 0.00304, 0.00304, 0.00304, 0.00304, 0.00304, 0.00304, 0.00304, 0.00304],<br />
-    last 10 vals [55.1, 55.1, 55.1, 55.1, 55.1, 55.1, 55.1, 55.1, 55.1, 55.1]  </p>
+<p>Example value: 105192 values from 2025-01-01 00:00:00+00:00 to 2037-01-01 00:00:00+00:00: first=3.04 g, last=55.1 kg, mean=162 kg, min=3.04 g, max=303 kg, std=95.4 kg  </p>
 <p>Depends directly on:  </p>
 <ul>
 <li><a href="./#nb_of_instances">Hourly number of instances</a></li>
@@ -4713,7 +4757,7 @@ VideoStreamingJob Video streaming job (c340d3ff-0b6): 26298 values from 2025-01-
         </center>
         <style type="text/css">
 
-             #mynetwork_770d88 {
+             #mynetwork_12aec1 {
                  width: 760px;
                  height: 300px;
                  background-color: #ffffff;
@@ -4735,7 +4779,7 @@ VideoStreamingJob Video streaming job (c340d3ff-0b6): 26298 values from 2025-01-
         <div class="card" style="width: 100%">
 
 
-            <div id="mynetwork_770d88" class="card-body"></div>
+            <div id="mynetwork_12aec1" class="card-body"></div>
         </div>
 
 
@@ -4765,12 +4809,12 @@ VideoStreamingJob Video streaming job (c340d3ff-0b6): 26298 values from 2025-01-
 
               // This method is responsible for drawing the graph, returns the drawn network
               function drawGraph() {
-                  var container = document.getElementById('mynetwork_770d88');
+                  var container = document.getElementById('mynetwork_12aec1');
 
 
 
                   // parsing and collecting nodes and edges from the python
-                  nodes = new vis.DataSet([{"color": null, "id": "Hourly instances fabrication footprint", "label": "Hourly instances\nfabrication\nfootprint", "shape": "dot", "size": 15, "title": "Hourly instances fabrication footprint\n=\nHourly number of instances * Carbon footprint * one hour / Lifespan\n=\n105192 values from 2025-01-01 00:00:00+00:00 to 2037-01-01 00:00:00+00:00 in k:\nfirst 10 vals [0.001, 0.001, 0.001, 0.001, 0.001, 0.001, 0.001, 0.001, 0.001,\n0.001],\nlast 10 vals [18.1, 18.1, 18.1, 18.1, 18.1, 18.1, 18.1, 18.1, 18.1, 18.1] * 160\nkg * 1 h / 6 yr\n=\n105192 values from 2025-01-01 00:00:00+00:00 to 2037-01-01 00:00:00+00:00 in kg:\nfirst 10 vals [0.00304, 0.00304, 0.00304, 0.00304, 0.00304, 0.00304, 0.00304,\n0.00304, 0.00304, 0.00304],\nlast 10 vals [55.1, 55.1, 55.1, 55.1, 55.1, 55.1, 55.1, 55.1, 55.1, 55.1]", "x": 0.0, "y": 1950}, {"color": null, "id": "Hourly number of instances", "label": "Hourly number of\ninstances", "shape": "dot", "size": 15, "title": "Hourly number of instances\n=\nceil (Hourly raw number of instances) logically dependent on User defined number\nof instances logically dependent on Server type\n=\nceil (105192 values from 2025-01-01 00:00:00+00:00 to 2037-01-01 00:00:00+00:00\nin k:\nfirst 10 vals [0.00000000572, 0.0000000089, 0.0000000137, 0.0000000155,\n0.000000021, 0.0000000258, 0.0000000283, 0.000000331, 0.000000933, 0.00000184],\nlast 10 vals [18.1, 18.1, 18.1, 18.1, 18.1, 18.1, 18.1, 18.1, 18.1, 18.1])\nlogically dependent on no value logically dependent on autoscaling\n=\n105192 values from 2025-01-01 00:00:00+00:00 to 2037-01-01 00:00:00+00:00 in k:\nfirst 10 vals [0.001, 0.001, 0.001, 0.001, 0.001, 0.001, 0.001, 0.001, 0.001,\n0.001],\nlast 10 vals [18.1, 18.1, 18.1, 18.1, 18.1, 18.1, 18.1, 18.1, 18.1, 18.1]", "x": -350.0, "y": 1800}, {"color": null, "id": "Carbon footprint", "label": "Carbon footprint", "shape": "dot", "size": 15, "title": "Carbon footprint\n=\nFabrication carbon footprint per storage capacity * Storage capacity\n=\n160 kg/TB stored * 1 TB stored\n=\n160 kg", "x": 0.0, "y": 1800}, {"color": null, "id": "Lifespan", "label": "Lifespan", "shape": "dot", "size": 15, "title": "Lifespan = 6 yr", "x": 350.0, "y": 1800}]);
+                  nodes = new vis.DataSet([{"color": null, "id": "Hourly instances fabrication footprint", "label": "Hourly instances\nfabrication\nfootprint", "shape": "dot", "size": 15, "title": "Hourly instances fabrication footprint\n=\nHourly number of instances * Carbon footprint * one hour / Lifespan\n=\n105192 values from 2025-01-01 00:00:00+00:00 to 2037-01-01 00:00:00+00:00:\nfirst=1 , last=18.1 k, mean=53.3 k, min=1 , max=99.6 k, std=31.4 k * 160 kg * 1\nh / 6 yr\n=\n105192 values from 2025-01-01 00:00:00+00:00 to 2037-01-01 00:00:00+00:00:\nfirst=3.04 g, last=55.1 kg, mean=162 kg, min=3.04 g, max=303 kg, std=95.4 kg", "x": 0.0, "y": 1950}, {"color": null, "id": "Hourly number of instances", "label": "Hourly number of\ninstances", "shape": "dot", "size": 15, "title": "Hourly number of instances\n=\nceil (Hourly raw number of instances) logically dependent on User defined number\nof instances logically dependent on Server type\n=\nceil (105192 values from 2025-01-01 00:00:00+00:00 to 2037-01-01 00:00:00+00:00:\nfirst=0.00000572 , last=18.1 k, mean=53.3 k, min=0.00000572 , max=99.6 k,\nstd=31.4 k) logically dependent on no value logically dependent on autoscaling\n=\n105192 values from 2025-01-01 00:00:00+00:00 to 2037-01-01 00:00:00+00:00:\nfirst=1 , last=18.1 k, mean=53.3 k, min=1 , max=99.6 k, std=31.4 k", "x": -350.0, "y": 1800}, {"color": null, "id": "Carbon footprint", "label": "Carbon footprint", "shape": "dot", "size": 15, "title": "Carbon footprint\n=\nFabrication carbon footprint per storage capacity * Storage capacity\n=\n160 kg/TB stored * 1 TB stored\n=\n160 kg", "x": 0.0, "y": 1800}, {"color": null, "id": "Lifespan", "label": "Lifespan", "shape": "dot", "size": 15, "title": "Lifespan = 6 yr", "x": 350.0, "y": 1800}]);
                   edges = new vis.DataSet([{"arrows": "to", "from": "Hourly number of instances", "to": "Hourly instances fabrication footprint"}, {"arrows": "to", "from": "Carbon footprint", "to": "Hourly instances fabrication footprint"}, {"arrows": "to", "from": "Lifespan", "to": "Hourly instances fabrication footprint"}]);
 
                   nodeColors = {};
@@ -4878,7 +4922,7 @@ VideoStreamingJob Video streaming job (c340d3ff-0b6): 26298 values from 2025-01-
         </center>
         <style type="text/css">
 
-             #mynetwork_6c269e {
+             #mynetwork_aacb02 {
                  width: 760px;
                  height: 300px;
                  background-color: #ffffff;
@@ -4900,7 +4944,7 @@ VideoStreamingJob Video streaming job (c340d3ff-0b6): 26298 values from 2025-01-
         <div class="card" style="width: 100%">
 
 
-            <div id="mynetwork_6c269e" class="card-body"></div>
+            <div id="mynetwork_aacb02" class="card-body"></div>
         </div>
 
 
@@ -4930,7 +4974,7 @@ VideoStreamingJob Video streaming job (c340d3ff-0b6): 26298 values from 2025-01-
 
               // This method is responsible for drawing the graph, returns the drawn network
               function drawGraph() {
-                  var container = document.getElementById('mynetwork_6c269e');
+                  var container = document.getElementById('mynetwork_aacb02');
 
 
 
@@ -5044,7 +5088,7 @@ VideoStreamingJob Video streaming job (c340d3ff-0b6): 26298 values from 2025-01-
         </center>
         <style type="text/css">
 
-             #mynetwork_3748c3 {
+             #mynetwork_f0e41b {
                  width: 760px;
                  height: 300px;
                  background-color: #ffffff;
@@ -5066,7 +5110,7 @@ VideoStreamingJob Video streaming job (c340d3ff-0b6): 26298 values from 2025-01-
         <div class="card" style="width: 100%">
 
 
-            <div id="mynetwork_3748c3" class="card-body"></div>
+            <div id="mynetwork_f0e41b" class="card-body"></div>
         </div>
 
 
@@ -5096,7 +5140,7 @@ VideoStreamingJob Video streaming job (c340d3ff-0b6): 26298 values from 2025-01-
 
               // This method is responsible for drawing the graph, returns the drawn network
               function drawGraph() {
-                  var container = document.getElementById('mynetwork_3748c3');
+                  var container = document.getElementById('mynetwork_f0e41b');
 
 
 

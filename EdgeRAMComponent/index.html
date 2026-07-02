@@ -575,6 +575,34 @@
   
   
     <li class="md-nav__item">
+      <a href="../serverless_modeling/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    How to model serverless workloads
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
       <a href="../server_to_server_interaction/" class="md-nav__link">
         
   
@@ -583,6 +611,34 @@
     
   
     How to model server to server interaction
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../attributing_footprint/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    How to attribute a footprint
   
 
     
@@ -3834,10 +3890,10 @@
 <h2 id="backwards-links">Backwards links</h2>
 <ul>
 <li>
-<p><a href="../RecurrentEdgeComponentNeed/">RecurrentEdgeComponentNeed</a></p>
+<p><a href="../EdgeDevice/">EdgeDevice</a></p>
 </li>
 <li>
-<p><a href="../EdgeDevice/">EdgeDevice</a></p>
+<p><a href="../RecurrentEdgeComponentNeed/">RecurrentEdgeComponentNeed</a></p>
 </li>
 </ul>
 <h2 id="calculated-attributes">Calculated attributes</h2>
@@ -3883,7 +3939,7 @@
         </center>
         <style type="text/css">
 
-             #mynetwork_60a71a {
+             #mynetwork_ac73e5 {
                  width: 760px;
                  height: 300px;
                  background-color: #ffffff;
@@ -3905,7 +3961,7 @@
         <div class="card" style="width: 100%">
 
 
-            <div id="mynetwork_60a71a" class="card-body"></div>
+            <div id="mynetwork_ac73e5" class="card-body"></div>
         </div>
 
 
@@ -3935,7 +3991,7 @@
 
               // This method is responsible for drawing the graph, returns the drawn network
               function drawGraph() {
-                  var container = document.getElementById('mynetwork_60a71a');
+                  var container = document.getElementById('mynetwork_ac73e5');
 
 
 
@@ -4049,7 +4105,7 @@
         </center>
         <style type="text/css">
 
-             #mynetwork_e4e076 {
+             #mynetwork_a8a5a7 {
                  width: 760px;
                  height: 300px;
                  background-color: #ffffff;
@@ -4071,7 +4127,7 @@
         <div class="card" style="width: 100%">
 
 
-            <div id="mynetwork_e4e076" class="card-body"></div>
+            <div id="mynetwork_a8a5a7" class="card-body"></div>
         </div>
 
 
@@ -4101,7 +4157,7 @@
 
               // This method is responsible for drawing the graph, returns the drawn network
               function drawGraph() {
-                  var container = document.getElementById('mynetwork_e4e076');
+                  var container = document.getElementById('mynetwork_a8a5a7');
 
 
 
@@ -4176,9 +4232,7 @@
 <h3 id="unitary_hourly_ram_need_per_usage_pattern">unitary_hourly_ram_need_per_usage_pattern</h3>
 <p>Hourly RAM demand on one component, broken down by usage pattern. Raises error if peak demand exceeds the component's available memory.  </p>
 <p>Example value: {<br />
-EdgeUsagePattern Default edge usage pattern (1a8380b7-86b): 105192 values from 2025-01-01 00:00:00+00:00 to 2037-01-01 00:00:00+00:00 in GB ram:<br />
-    first 10 vals [1, 1, 1, 1, 1, 1, 1, 1, 1, 1],<br />
-    last 10 vals [1, 1, 1, 1, 1, 1, 1, 1, 1, 1], <br />
+EdgeUsagePattern Default edge usage pattern (b29a7b03-dba): 105192 values from 2025-01-01 00:00:00+00:00 to 2037-01-01 00:00:00+00:00: first=1 GB ram, last=1 GB ram, mean=1 GB ram, min=1 GB ram, max=1 GB ram, std=0, <br />
 }  </p>
 <p>Depends directly on:  </p>
 <ul>
@@ -4219,7 +4273,7 @@ EdgeUsagePattern Default edge usage pattern (1a8380b7-86b): 105192 values from 2
         </center>
         <style type="text/css">
 
-             #mynetwork_916ef2 {
+             #mynetwork_7ffcec {
                  width: 760px;
                  height: 300px;
                  background-color: #ffffff;
@@ -4241,7 +4295,7 @@ EdgeUsagePattern Default edge usage pattern (1a8380b7-86b): 105192 values from 2
         <div class="card" style="width: 100%">
 
 
-            <div id="mynetwork_916ef2" class="card-body"></div>
+            <div id="mynetwork_7ffcec" class="card-body"></div>
         </div>
 
 
@@ -4271,12 +4325,12 @@ EdgeUsagePattern Default edge usage pattern (1a8380b7-86b): 105192 values from 2
 
               // This method is responsible for drawing the graph, returns the drawn network
               function drawGraph() {
-                  var container = document.getElementById('mynetwork_916ef2');
+                  var container = document.getElementById('mynetwork_7ffcec');
 
 
 
                   // parsing and collecting nodes and edges from the python
-                  nodes = new vis.DataSet([{"color": null, "id": "Hourly RAM need for Default edge usage pattern", "label": "Hourly RAM need for\nDefault edge usage\npattern", "shape": "dot", "size": 15, "title": "Hourly RAM need for Default edge usage pattern\n=\nUnitary hourly need for Default edge usage pattern logically dependent on\nAvailable RAM per instance\n=\n105192 values from 2025-01-01 00:00:00+00:00 to 2037-01-01 00:00:00+00:00 in GB\nram:\nfirst 10 vals [1, 1, 1, 1, 1, 1, 1, 1, 1, 1],\nlast 10 vals [1, 1, 1, 1, 1, 1, 1, 1, 1, 1] logically dependent on 7 GB ram\n=\n105192 values from 2025-01-01 00:00:00+00:00 to 2037-01-01 00:00:00+00:00 in GB\nram:\nfirst 10 vals [1, 1, 1, 1, 1, 1, 1, 1, 1, 1],\nlast 10 vals [1, 1, 1, 1, 1, 1, 1, 1, 1, 1]", "x": 0.0, "y": 750}, {"color": null, "id": "Unitary hourly need for Default edge usage pattern", "label": "Unitary hourly need\nfor Default edge\nusage pattern", "shape": "dot", "size": 15, "title": "Unitary hourly need for Default edge usage pattern\n=\n(Recurrent need expanded over timespan Hourly nb of edge usage journeys in\nparallel converted to UTC from Timezone) * Occurrences within Default edge usage\npattern\n=\n(168 values in GB ram:\nfirst 10 vals [1, 1, 1, 1, 1, 1, 1, 1, 1, 1],\nlast 10 vals [1, 1, 1, 1, 1, 1, 1, 1, 1, 1] expanded over timespan 105192 values\nfrom 2025-01-01 00:00:00+00:00 to 2037-01-01 00:00:00+00:00 in M:\nfirst 10 vals [0.00000106, 0.000000607, 0, 0, 0.000000455, 0, 0.000000228,\n0.001, 0.002, 0.003],\nlast 10 vals [0.005, 0.005, 0.005, 0.005, 0.005, 0.004, 0.003, 0.002, 0.001,\n0.000000607] converted to UTC from Europe/Paris) * 1\n=\n105192 values from 2025-01-01 00:00:00+00:00 to 2037-01-01 00:00:00+00:00 in GB\nram:\nfirst 10 vals [1, 1, 1, 1, 1, 1, 1, 1, 1, 1],\nlast 10 vals [1, 1, 1, 1, 1, 1, 1, 1, 1, 1]", "x": -187.5, "y": 600}, {"color": null, "id": "Available RAM per instance", "label": "Available RAM per\ninstance", "shape": "dot", "size": 15, "title": "Available RAM per instance\n=\nRAM - Base RAM consumption\n=\n8 GB ram - 1 GB ram\n=\n7 GB ram", "x": 187.5, "y": 600}]);
+                  nodes = new vis.DataSet([{"color": null, "id": "Hourly RAM need for Default edge usage pattern", "label": "Hourly RAM need for\nDefault edge usage\npattern", "shape": "dot", "size": 15, "title": "Hourly RAM need for Default edge usage pattern\n=\nUnitary hourly need for Default edge usage pattern logically dependent on\nAvailable RAM per instance\n=\n105192 values from 2025-01-01 00:00:00+00:00 to 2037-01-01 00:00:00+00:00:\nfirst=1 GB ram, last=1 GB ram, mean=1 GB ram, min=1 GB ram, max=1 GB ram, std=0\nlogically dependent on 7 GB ram\n=\n105192 values from 2025-01-01 00:00:00+00:00 to 2037-01-01 00:00:00+00:00:\nfirst=1 GB ram, last=1 GB ram, mean=1 GB ram, min=1 GB ram, max=1 GB ram, std=0", "x": 0.0, "y": 750}, {"color": null, "id": "Unitary hourly need for Default edge usage pattern", "label": "Unitary hourly need\nfor Default edge\nusage pattern", "shape": "dot", "size": 15, "title": "Unitary hourly need for Default edge usage pattern\n=\n(Recurrent need expanded over timespan Hourly nb of edge usage journeys in\nparallel converted to UTC from Timezone) * Occurrences within Default edge usage\npattern\n=\n(168 values: first=1 GB ram, last=1 GB ram, mean=1 GB ram, min=1 GB ram, max=1\nGB ram, std=0 expanded over timespan 105192 values from 2025-01-01\n00:00:00+00:00 to 2037-01-01 00:00:00+00:00: first=1.06 , last=0.607 , mean=10.3\nM, min=0, max=20.7 M, std=5.96 M converted to UTC from Europe/Paris) * 1\n=\n105192 values from 2025-01-01 00:00:00+00:00 to 2037-01-01 00:00:00+00:00:\nfirst=1 GB ram, last=1 GB ram, mean=1 GB ram, min=1 GB ram, max=1 GB ram, std=0", "x": -187.5, "y": 600}, {"color": null, "id": "Available RAM per instance", "label": "Available RAM per\ninstance", "shape": "dot", "size": 15, "title": "Available RAM per instance\n=\nRAM - Base RAM consumption\n=\n8 GB ram - 1 GB ram\n=\n7 GB ram", "x": 187.5, "y": 600}]);
                   edges = new vis.DataSet([{"arrows": "to", "from": "Unitary hourly need for Default edge usage pattern", "to": "Hourly RAM need for Default edge usage pattern"}, {"arrows": "to", "from": "Available RAM per instance", "to": "Hourly RAM need for Default edge usage pattern"}]);
 
                   nodeColors = {};
@@ -4385,7 +4439,7 @@ EdgeUsagePattern Default edge usage pattern (1a8380b7-86b): 105192 values from 2
         </center>
         <style type="text/css">
 
-             #mynetwork_57e1c1 {
+             #mynetwork_dfaa09 {
                  width: 760px;
                  height: 300px;
                  background-color: #ffffff;
@@ -4407,7 +4461,7 @@ EdgeUsagePattern Default edge usage pattern (1a8380b7-86b): 105192 values from 2
         <div class="card" style="width: 100%">
 
 
-            <div id="mynetwork_57e1c1" class="card-body"></div>
+            <div id="mynetwork_dfaa09" class="card-body"></div>
         </div>
 
 
@@ -4437,7 +4491,7 @@ EdgeUsagePattern Default edge usage pattern (1a8380b7-86b): 105192 values from 2
 
               // This method is responsible for drawing the graph, returns the drawn network
               function drawGraph() {
-                  var container = document.getElementById('mynetwork_57e1c1');
+                  var container = document.getElementById('mynetwork_dfaa09');
 
 
 
@@ -4551,7 +4605,7 @@ EdgeUsagePattern Default edge usage pattern (1a8380b7-86b): 105192 values from 2
         </center>
         <style type="text/css">
 
-             #mynetwork_2e776c {
+             #mynetwork_4d5199 {
                  width: 760px;
                  height: 300px;
                  background-color: #ffffff;
@@ -4573,7 +4627,7 @@ EdgeUsagePattern Default edge usage pattern (1a8380b7-86b): 105192 values from 2
         <div class="card" style="width: 100%">
 
 
-            <div id="mynetwork_2e776c" class="card-body"></div>
+            <div id="mynetwork_4d5199" class="card-body"></div>
         </div>
 
 
@@ -4603,7 +4657,7 @@ EdgeUsagePattern Default edge usage pattern (1a8380b7-86b): 105192 values from 2
 
               // This method is responsible for drawing the graph, returns the drawn network
               function drawGraph() {
-                  var container = document.getElementById('mynetwork_2e776c');
+                  var container = document.getElementById('mynetwork_4d5199');
 
 
 
@@ -4717,7 +4771,7 @@ EdgeUsagePattern Default edge usage pattern (1a8380b7-86b): 105192 values from 2
         </center>
         <style type="text/css">
 
-             #mynetwork_0e7542 {
+             #mynetwork_f0ee96 {
                  width: 760px;
                  height: 300px;
                  background-color: #ffffff;
@@ -4739,7 +4793,7 @@ EdgeUsagePattern Default edge usage pattern (1a8380b7-86b): 105192 values from 2
         <div class="card" style="width: 100%">
 
 
-            <div id="mynetwork_0e7542" class="card-body"></div>
+            <div id="mynetwork_f0ee96" class="card-body"></div>
         </div>
 
 
@@ -4769,7 +4823,7 @@ EdgeUsagePattern Default edge usage pattern (1a8380b7-86b): 105192 values from 2
 
               // This method is responsible for drawing the graph, returns the drawn network
               function drawGraph() {
-                  var container = document.getElementById('mynetwork_0e7542');
+                  var container = document.getElementById('mynetwork_f0ee96');
 
 
 
@@ -4844,9 +4898,7 @@ EdgeUsagePattern Default edge usage pattern (1a8380b7-86b): 105192 values from 2
 <h3 id="unitary_power_per_usage_pattern">unitary_power_per_usage_pattern</h3>
 <p>Hourly power profile of the component for one device, derived from the RAM workload (current need plus base consumption divided by total RAM) by linearly interpolating between idle and full power.  </p>
 <p>Example value: {<br />
-EdgeUsagePattern Default edge usage pattern (1a8380b7-86b): 105192 values from 2025-01-01 00:00:00+00:00 to 2037-01-01 00:00:00+00:00 in W:<br />
-    first 10 vals [4, 4, 4, 4, 4, 4, 4, 4, 4, 4],<br />
-    last 10 vals [4, 4, 4, 4, 4, 4, 4, 4, 4, 4], <br />
+EdgeUsagePattern Default edge usage pattern (b29a7b03-dba): 105192 values from 2025-01-01 00:00:00+00:00 to 2037-01-01 00:00:00+00:00: first=4 W, last=4 W, mean=4 W, min=4 W, max=4 W, std=0, <br />
 }  </p>
 <p>Depends directly on:  </p>
 <ul>
@@ -4890,7 +4942,7 @@ EdgeUsagePattern Default edge usage pattern (1a8380b7-86b): 105192 values from 2
         </center>
         <style type="text/css">
 
-             #mynetwork_d0a850 {
+             #mynetwork_f97ce2 {
                  width: 760px;
                  height: 300px;
                  background-color: #ffffff;
@@ -4912,7 +4964,7 @@ EdgeUsagePattern Default edge usage pattern (1a8380b7-86b): 105192 values from 2
         <div class="card" style="width: 100%">
 
 
-            <div id="mynetwork_d0a850" class="card-body"></div>
+            <div id="mynetwork_f97ce2" class="card-body"></div>
         </div>
 
 
@@ -4942,12 +4994,12 @@ EdgeUsagePattern Default edge usage pattern (1a8380b7-86b): 105192 values from 2
 
               // This method is responsible for drawing the graph, returns the drawn network
               function drawGraph() {
-                  var container = document.getElementById('mynetwork_d0a850');
+                  var container = document.getElementById('mynetwork_f97ce2');
 
 
 
                   // parsing and collecting nodes and edges from the python
-                  nodes = new vis.DataSet([{"color": null, "id": "Unitary power for Default edge usage pattern", "label": "Unitary power for\nDefault edge usage\npattern", "shape": "dot", "size": 15, "title": "Unitary power for Default edge usage pattern\n=\n((Hourly RAM need for Default edge usage pattern + Base RAM consumption) / RAM)\n* (Power - Idle power) + Idle power\n=\n((105192 values from 2025-01-01 00:00:00+00:00 to 2037-01-01 00:00:00+00:00 in\nGB ram:\nfirst 10 vals [1, 1, 1, 1, 1, 1, 1, 1, 1, 1],\nlast 10 vals [1, 1, 1, 1, 1, 1, 1, 1, 1, 1] + 1 GB ram) / 8 GB ram) * (10 W - 2\nW) + 2 W\n=\n105192 values from 2025-01-01 00:00:00+00:00 to 2037-01-01 00:00:00+00:00 in W:\nfirst 10 vals [4, 4, 4, 4, 4, 4, 4, 4, 4, 4],\nlast 10 vals [4, 4, 4, 4, 4, 4, 4, 4, 4, 4]", "x": 0.0, "y": 900}, {"color": null, "id": "Hourly RAM need for Default edge usage pattern", "label": "Hourly RAM need for\nDefault edge usage\npattern", "shape": "dot", "size": 15, "title": "Hourly RAM need for Default edge usage pattern\n=\nUnitary hourly need for Default edge usage pattern logically dependent on\nAvailable RAM per instance\n=\n105192 values from 2025-01-01 00:00:00+00:00 to 2037-01-01 00:00:00+00:00 in GB\nram:\nfirst 10 vals [1, 1, 1, 1, 1, 1, 1, 1, 1, 1],\nlast 10 vals [1, 1, 1, 1, 1, 1, 1, 1, 1, 1] logically dependent on 7 GB ram\n=\n105192 values from 2025-01-01 00:00:00+00:00 to 2037-01-01 00:00:00+00:00 in GB\nram:\nfirst 10 vals [1, 1, 1, 1, 1, 1, 1, 1, 1, 1],\nlast 10 vals [1, 1, 1, 1, 1, 1, 1, 1, 1, 1]", "x": -360.0, "y": 750}, {"color": null, "id": "Base RAM consumption", "label": "Base RAM consumption", "shape": "dot", "size": 15, "title": "Base RAM consumption = 1 GB ram", "x": 360.0, "y": 450}, {"color": null, "id": "RAM", "label": "RAM", "shape": "dot", "size": 15, "title": "RAM\n=\nRAM per unit * Number of units\n=\n8 GB ram * 1\n=\n8 GB ram", "x": 180.0, "y": 450}, {"color": null, "id": "Power", "label": "Power", "shape": "dot", "size": 15, "title": "Power\n=\nPower per unit * Number of units\n=\n10 W * 1\n=\n10 W", "x": 180.0, "y": 750}, {"color": null, "id": "Idle power", "label": "Idle power", "shape": "dot", "size": 15, "title": "Idle power\n=\nIdle power per unit * Number of units\n=\n2 W * 1\n=\n2 W", "x": 360.0, "y": 750}]);
+                  nodes = new vis.DataSet([{"color": null, "id": "Unitary power for Default edge usage pattern", "label": "Unitary power for\nDefault edge usage\npattern", "shape": "dot", "size": 15, "title": "Unitary power for Default edge usage pattern\n=\n((Hourly RAM need for Default edge usage pattern + Base RAM consumption) / RAM)\n* (Power - Idle power) + Idle power\n=\n((105192 values from 2025-01-01 00:00:00+00:00 to 2037-01-01 00:00:00+00:00:\nfirst=1 GB ram, last=1 GB ram, mean=1 GB ram, min=1 GB ram, max=1 GB ram, std=0\n+ 1 GB ram) / 8 GB ram) * (10 W - 2 W) + 2 W\n=\n105192 values from 2025-01-01 00:00:00+00:00 to 2037-01-01 00:00:00+00:00:\nfirst=4 W, last=4 W, mean=4 W, min=4 W, max=4 W, std=0", "x": 0.0, "y": 900}, {"color": null, "id": "Hourly RAM need for Default edge usage pattern", "label": "Hourly RAM need for\nDefault edge usage\npattern", "shape": "dot", "size": 15, "title": "Hourly RAM need for Default edge usage pattern\n=\nUnitary hourly need for Default edge usage pattern logically dependent on\nAvailable RAM per instance\n=\n105192 values from 2025-01-01 00:00:00+00:00 to 2037-01-01 00:00:00+00:00:\nfirst=1 GB ram, last=1 GB ram, mean=1 GB ram, min=1 GB ram, max=1 GB ram, std=0\nlogically dependent on 7 GB ram\n=\n105192 values from 2025-01-01 00:00:00+00:00 to 2037-01-01 00:00:00+00:00:\nfirst=1 GB ram, last=1 GB ram, mean=1 GB ram, min=1 GB ram, max=1 GB ram, std=0", "x": -360.0, "y": 750}, {"color": null, "id": "Base RAM consumption", "label": "Base RAM consumption", "shape": "dot", "size": 15, "title": "Base RAM consumption = 1 GB ram", "x": 360.0, "y": 450}, {"color": null, "id": "RAM", "label": "RAM", "shape": "dot", "size": 15, "title": "RAM\n=\nRAM per unit * Number of units\n=\n8 GB ram * 1\n=\n8 GB ram", "x": 180.0, "y": 450}, {"color": null, "id": "Power", "label": "Power", "shape": "dot", "size": 15, "title": "Power\n=\nPower per unit * Number of units\n=\n10 W * 1\n=\n10 W", "x": 180.0, "y": 750}, {"color": null, "id": "Idle power", "label": "Idle power", "shape": "dot", "size": 15, "title": "Idle power\n=\nIdle power per unit * Number of units\n=\n2 W * 1\n=\n2 W", "x": 360.0, "y": 750}]);
                   edges = new vis.DataSet([{"arrows": "to", "from": "Hourly RAM need for Default edge usage pattern", "to": "Unitary power for Default edge usage pattern"}, {"arrows": "to", "from": "Base RAM consumption", "to": "Unitary power for Default edge usage pattern"}, {"arrows": "to", "from": "RAM", "to": "Unitary power for Default edge usage pattern"}, {"arrows": "to", "from": "Power", "to": "Unitary power for Default edge usage pattern"}, {"arrows": "to", "from": "Idle power", "to": "Unitary power for Default edge usage pattern"}]);
 
                   nodeColors = {};
@@ -5017,9 +5069,7 @@ EdgeUsagePattern Default edge usage pattern (1a8380b7-86b): 105192 values from 2
 <h3 id="fabrication_footprint_per_edge_device_per_usage_pattern">fabrication_footprint_per_edge_device_per_usage_pattern</h3>
 <p>Hourly fabrication footprint of one component on one device, broken down by usage pattern. Equal to the component's amortised fabrication intensity times the number of concurrent edge journeys.  </p>
 <p>Example value: {<br />
-EdgeUsagePattern Default edge usage pattern (1a8380b7-86b): 105192 values from 2025-01-01 00:00:00+00:00 to 2037-01-01 00:00:00+00:00 in t:<br />
-    first 10 vals [0.000000404, 0.000000231, 0, 0, 0.000000173, 0, 0.0000000865, 0.00038, 0.000761, 0.00114],<br />
-    last 10 vals [0.0019, 0.0019, 0.0019, 0.0019, 0.0019, 0.00152, 0.00114, 0.000761, 0.00038, 0.000000231], <br />
+EdgeUsagePattern Default edge usage pattern (b29a7b03-dba): 105192 values from 2025-01-01 00:00:00+00:00 to 2037-01-01 00:00:00+00:00: first=404 mg, last=231 mg, mean=3.93 t, min=0, max=7.86 t, std=2.27 t, <br />
 }  </p>
 <p>Depends directly on:  </p>
 <ul>
@@ -5061,7 +5111,7 @@ EdgeUsagePattern Default edge usage pattern (1a8380b7-86b): 105192 values from 2
         </center>
         <style type="text/css">
 
-             #mynetwork_617f8a {
+             #mynetwork_27c078 {
                  width: 760px;
                  height: 300px;
                  background-color: #ffffff;
@@ -5083,7 +5133,7 @@ EdgeUsagePattern Default edge usage pattern (1a8380b7-86b): 105192 values from 2
         <div class="card" style="width: 100%">
 
 
-            <div id="mynetwork_617f8a" class="card-body"></div>
+            <div id="mynetwork_27c078" class="card-body"></div>
         </div>
 
 
@@ -5113,12 +5163,12 @@ EdgeUsagePattern Default edge usage pattern (1a8380b7-86b): 105192 values from 2
 
               // This method is responsible for drawing the graph, returns the drawn network
               function drawGraph() {
-                  var container = document.getElementById('mynetwork_617f8a');
+                  var container = document.getElementById('mynetwork_27c078');
 
 
 
                   // parsing and collecting nodes and edges from the python
-                  nodes = new vis.DataSet([{"color": null, "id": "Hourly fabrication footprint per edge device for Default edge usage pattern", "label": "Hourly fabrication\nfootprint per edge\ndevice for Default\nedge usage pattern", "shape": "dot", "size": 15, "title": "Hourly fabrication footprint per edge device for Default edge usage pattern\n=\nHourly nb of edge usage journeys in parallel * (Carbon footprint fabrication /\nLifespan) * one hour\n=\n105192 values from 2025-01-01 00:00:00+00:00 to 2037-01-01 00:00:00+00:00 in M:\nfirst 10 vals [0.00000106, 0.000000607, 0, 0, 0.000000455, 0, 0.000000228,\n0.001, 0.002, 0.003],\nlast 10 vals [0.005, 0.005, 0.005, 0.005, 0.005, 0.004, 0.003, 0.002, 0.001,\n0.000000607] * (20 kg / 6 yr) * 1 h\n=\n105192 values from 2025-01-01 00:00:00+00:00 to 2037-01-01 00:00:00+00:00 in t:\nfirst 10 vals [0.000000404, 0.000000231, 0, 0, 0.000000173, 0, 0.0000000865,\n0.00038, 0.000761, 0.00114],\nlast 10 vals [0.0019, 0.0019, 0.0019, 0.0019, 0.0019, 0.00152, 0.00114,\n0.000761, 0.00038, 0.000000231]", "x": 0.0, "y": 600}, {"color": null, "id": "Hourly nb of edge usage journeys in parallel", "label": "Hourly nb of edge\nusage journeys in\nparallel", "shape": "dot", "size": 15, "title": "Hourly nb of edge usage journeys in parallel\n=\nHourly nb of edge usage journey starts (UTC) hourly occurrences average Usage\nspan\n=\n52597 values from 2025-01-01 00:00:00+00:00 to 2031-01-01 13:00:00+00:00 in :\nfirst 10 vals [0, 0, 0, 0, 0, 0, 0, 1000, 1000, 1000],\nlast 10 vals [0, 0, 0, 0, 1000, 1000, 1000, 1000, 1000, 0] hourly occurrences\naverage 6 yr\n=\n105192 values from 2025-01-01 00:00:00+00:00 to 2037-01-01 00:00:00+00:00 in M:\nfirst 10 vals [0.00000106, 0.000000607, 0, 0, 0.000000455, 0, 0.000000228,\n0.001, 0.002, 0.003],\nlast 10 vals [0.005, 0.005, 0.005, 0.005, 0.005, 0.004, 0.003, 0.002, 0.001,\n0.000000607]", "x": -200.0, "y": 450}, {"color": null, "id": "Carbon footprint fabrication", "label": "Carbon footprint\nfabrication", "shape": "dot", "size": 15, "title": "Carbon footprint fabrication\n=\nCarbon footprint fabrication per unit * Number of units\n=\n20 kg * 1\n=\n20 kg", "x": 0.0, "y": 450}, {"color": null, "id": "Lifespan", "label": "Lifespan", "shape": "dot", "size": 15, "title": "Lifespan = 6 yr", "x": 200.0, "y": 450}]);
+                  nodes = new vis.DataSet([{"color": null, "id": "Hourly fabrication footprint per edge device for Default edge usage pattern", "label": "Hourly fabrication\nfootprint per edge\ndevice for Default\nedge usage pattern", "shape": "dot", "size": 15, "title": "Hourly fabrication footprint per edge device for Default edge usage pattern\n=\nHourly nb of edge usage journeys in parallel * (Carbon footprint fabrication /\nLifespan) * one hour\n=\n105192 values from 2025-01-01 00:00:00+00:00 to 2037-01-01 00:00:00+00:00:\nfirst=1.06 , last=0.607 , mean=10.3 M, min=0, max=20.7 M, std=5.96 M * (20 kg /\n6 yr) * 1 h\n=\n105192 values from 2025-01-01 00:00:00+00:00 to 2037-01-01 00:00:00+00:00:\nfirst=404 mg, last=231 mg, mean=3.93 t, min=0, max=7.86 t, std=2.27 t", "x": 0.0, "y": 600}, {"color": null, "id": "Hourly nb of edge usage journeys in parallel", "label": "Hourly nb of edge\nusage journeys in\nparallel", "shape": "dot", "size": 15, "title": "Hourly nb of edge usage journeys in parallel\n=\nHourly nb of edge usage journey starts (UTC) hourly occurrences average Usage\nspan\n=\n52597 values from 2025-01-01 00:00:00+00:00 to 2031-01-01 13:00:00+00:00:\nfirst=0, last=0, mean=393 , min=0, max=1 k, std=488 hourly occurrences average 6\nyr\n=\n105192 values from 2025-01-01 00:00:00+00:00 to 2037-01-01 00:00:00+00:00:\nfirst=1.06 , last=0.607 , mean=10.3 M, min=0, max=20.7 M, std=5.96 M", "x": -200.0, "y": 450}, {"color": null, "id": "Carbon footprint fabrication", "label": "Carbon footprint\nfabrication", "shape": "dot", "size": 15, "title": "Carbon footprint fabrication\n=\nCarbon footprint fabrication per unit * Number of units\n=\n20 kg * 1\n=\n20 kg", "x": 0.0, "y": 450}, {"color": null, "id": "Lifespan", "label": "Lifespan", "shape": "dot", "size": 15, "title": "Lifespan = 6 yr", "x": 200.0, "y": 450}]);
                   edges = new vis.DataSet([{"arrows": "to", "from": "Hourly nb of edge usage journeys in parallel", "to": "Hourly fabrication footprint per edge device for Default edge usage pattern"}, {"arrows": "to", "from": "Carbon footprint fabrication", "to": "Hourly fabrication footprint per edge device for Default edge usage pattern"}, {"arrows": "to", "from": "Lifespan", "to": "Hourly fabrication footprint per edge device for Default edge usage pattern"}]);
 
                   nodeColors = {};
@@ -5188,9 +5238,7 @@ EdgeUsagePattern Default edge usage pattern (1a8380b7-86b): 105192 values from 2
 <h3 id="energy_per_edge_device_per_usage_pattern">energy_per_edge_device_per_usage_pattern</h3>
 <p>Hourly energy consumed by one component on one device, broken down by usage pattern. Equal to the unitary power profile times the number of concurrent edge journeys.  </p>
 <p>Example value: {<br />
-EdgeUsagePattern Default edge usage pattern (1a8380b7-86b): 105192 values from 2025-01-01 00:00:00+00:00 to 2037-01-01 00:00:00+00:00 in MWh:<br />
-    first 10 vals [0.00000425, 0.00000243, 0, 0, 0.00000182, 0, 0.00000091, 0.004, 0.008, 0.012],<br />
-    last 10 vals [0.02, 0.02, 0.02, 0.02, 0.02, 0.016, 0.012, 0.008, 0.004, 0.00000243], <br />
+EdgeUsagePattern Default edge usage pattern (b29a7b03-dba): 105192 values from 2025-01-01 00:00:00+00:00 to 2037-01-01 00:00:00+00:00: first=4.25 Wh, last=2.43 Wh, mean=41.3 MWh, min=0, max=82.7 MWh, std=23.9 MWh, <br />
 }  </p>
 <p>Depends directly on:  </p>
 <ul>
@@ -5231,7 +5279,7 @@ EdgeUsagePattern Default edge usage pattern (1a8380b7-86b): 105192 values from 2
         </center>
         <style type="text/css">
 
-             #mynetwork_c8fe95 {
+             #mynetwork_263125 {
                  width: 760px;
                  height: 300px;
                  background-color: #ffffff;
@@ -5253,7 +5301,7 @@ EdgeUsagePattern Default edge usage pattern (1a8380b7-86b): 105192 values from 2
         <div class="card" style="width: 100%">
 
 
-            <div id="mynetwork_c8fe95" class="card-body"></div>
+            <div id="mynetwork_263125" class="card-body"></div>
         </div>
 
 
@@ -5283,12 +5331,12 @@ EdgeUsagePattern Default edge usage pattern (1a8380b7-86b): 105192 values from 2
 
               // This method is responsible for drawing the graph, returns the drawn network
               function drawGraph() {
-                  var container = document.getElementById('mynetwork_c8fe95');
+                  var container = document.getElementById('mynetwork_263125');
 
 
 
                   // parsing and collecting nodes and edges from the python
-                  nodes = new vis.DataSet([{"color": null, "id": "Hourly energy consumed by per edge device for Default edge usage pattern", "label": "Hourly energy\nconsumed by per edge\ndevice for Default\nedge usage pattern", "shape": "dot", "size": 15, "title": "Hourly energy consumed by per edge device for Default edge usage pattern\n=\nHourly nb of edge usage journeys in parallel * Unitary power for Default edge\nusage pattern * one hour\n=\n105192 values from 2025-01-01 00:00:00+00:00 to 2037-01-01 00:00:00+00:00 in M:\nfirst 10 vals [0.00000106, 0.000000607, 0, 0, 0.000000455, 0, 0.000000228,\n0.001, 0.002, 0.003],\nlast 10 vals [0.005, 0.005, 0.005, 0.005, 0.005, 0.004, 0.003, 0.002, 0.001,\n0.000000607] * 105192 values from 2025-01-01 00:00:00+00:00 to 2037-01-01\n00:00:00+00:00 in W:\nfirst 10 vals [4, 4, 4, 4, 4, 4, 4, 4, 4, 4],\nlast 10 vals [4, 4, 4, 4, 4, 4, 4, 4, 4, 4] * 1 h\n=\n105192 values from 2025-01-01 00:00:00+00:00 to 2037-01-01 00:00:00+00:00 in\nMWh:\nfirst 10 vals [0.00000425, 0.00000243, 0, 0, 0.00000182, 0, 0.00000091, 0.004,\n0.008, 0.012],\nlast 10 vals [0.02, 0.02, 0.02, 0.02, 0.02, 0.016, 0.012, 0.008, 0.004,\n0.00000243]", "x": 0.0, "y": 1050}, {"color": null, "id": "Hourly nb of edge usage journeys in parallel", "label": "Hourly nb of edge\nusage journeys in\nparallel", "shape": "dot", "size": 15, "title": "Hourly nb of edge usage journeys in parallel\n=\nHourly nb of edge usage journey starts (UTC) hourly occurrences average Usage\nspan\n=\n52597 values from 2025-01-01 00:00:00+00:00 to 2031-01-01 13:00:00+00:00 in :\nfirst 10 vals [0, 0, 0, 0, 0, 0, 0, 1000, 1000, 1000],\nlast 10 vals [0, 0, 0, 0, 1000, 1000, 1000, 1000, 1000, 0] hourly occurrences\naverage 6 yr\n=\n105192 values from 2025-01-01 00:00:00+00:00 to 2037-01-01 00:00:00+00:00 in M:\nfirst 10 vals [0.00000106, 0.000000607, 0, 0, 0.000000455, 0, 0.000000228,\n0.001, 0.002, 0.003],\nlast 10 vals [0.005, 0.005, 0.005, 0.005, 0.005, 0.004, 0.003, 0.002, 0.001,\n0.000000607]", "x": -180.0, "y": 450}, {"color": null, "id": "Unitary power for Default edge usage pattern", "label": "Unitary power for\nDefault edge usage\npattern", "shape": "dot", "size": 15, "title": "Unitary power for Default edge usage pattern\n=\n((Hourly RAM need for Default edge usage pattern + Base RAM consumption) / RAM)\n* (Power - Idle power) + Idle power\n=\n((105192 values from 2025-01-01 00:00:00+00:00 to 2037-01-01 00:00:00+00:00 in\nGB ram:\nfirst 10 vals [1, 1, 1, 1, 1, 1, 1, 1, 1, 1],\nlast 10 vals [1, 1, 1, 1, 1, 1, 1, 1, 1, 1] + 1 GB ram) / 8 GB ram) * (10 W - 2\nW) + 2 W\n=\n105192 values from 2025-01-01 00:00:00+00:00 to 2037-01-01 00:00:00+00:00 in W:\nfirst 10 vals [4, 4, 4, 4, 4, 4, 4, 4, 4, 4],\nlast 10 vals [4, 4, 4, 4, 4, 4, 4, 4, 4, 4]", "x": 0.0, "y": 900}]);
+                  nodes = new vis.DataSet([{"color": null, "id": "Hourly energy consumed by per edge device for Default edge usage pattern", "label": "Hourly energy\nconsumed by per edge\ndevice for Default\nedge usage pattern", "shape": "dot", "size": 15, "title": "Hourly energy consumed by per edge device for Default edge usage pattern\n=\nHourly nb of edge usage journeys in parallel * Unitary power for Default edge\nusage pattern * one hour\n=\n105192 values from 2025-01-01 00:00:00+00:00 to 2037-01-01 00:00:00+00:00:\nfirst=1.06 , last=0.607 , mean=10.3 M, min=0, max=20.7 M, std=5.96 M * 105192\nvalues from 2025-01-01 00:00:00+00:00 to 2037-01-01 00:00:00+00:00: first=4 W,\nlast=4 W, mean=4 W, min=4 W, max=4 W, std=0 * 1 h\n=\n105192 values from 2025-01-01 00:00:00+00:00 to 2037-01-01 00:00:00+00:00:\nfirst=4.25 Wh, last=2.43 Wh, mean=41.3 MWh, min=0, max=82.7 MWh, std=23.9 MWh", "x": 0.0, "y": 1050}, {"color": null, "id": "Hourly nb of edge usage journeys in parallel", "label": "Hourly nb of edge\nusage journeys in\nparallel", "shape": "dot", "size": 15, "title": "Hourly nb of edge usage journeys in parallel\n=\nHourly nb of edge usage journey starts (UTC) hourly occurrences average Usage\nspan\n=\n52597 values from 2025-01-01 00:00:00+00:00 to 2031-01-01 13:00:00+00:00:\nfirst=0, last=0, mean=393 , min=0, max=1 k, std=488 hourly occurrences average 6\nyr\n=\n105192 values from 2025-01-01 00:00:00+00:00 to 2037-01-01 00:00:00+00:00:\nfirst=1.06 , last=0.607 , mean=10.3 M, min=0, max=20.7 M, std=5.96 M", "x": -180.0, "y": 450}, {"color": null, "id": "Unitary power for Default edge usage pattern", "label": "Unitary power for\nDefault edge usage\npattern", "shape": "dot", "size": 15, "title": "Unitary power for Default edge usage pattern\n=\n((Hourly RAM need for Default edge usage pattern + Base RAM consumption) / RAM)\n* (Power - Idle power) + Idle power\n=\n((105192 values from 2025-01-01 00:00:00+00:00 to 2037-01-01 00:00:00+00:00:\nfirst=1 GB ram, last=1 GB ram, mean=1 GB ram, min=1 GB ram, max=1 GB ram, std=0\n+ 1 GB ram) / 8 GB ram) * (10 W - 2 W) + 2 W\n=\n105192 values from 2025-01-01 00:00:00+00:00 to 2037-01-01 00:00:00+00:00:\nfirst=4 W, last=4 W, mean=4 W, min=4 W, max=4 W, std=0", "x": 0.0, "y": 900}]);
                   edges = new vis.DataSet([{"arrows": "to", "from": "Hourly nb of edge usage journeys in parallel", "to": "Hourly energy consumed by per edge device for Default edge usage pattern"}, {"arrows": "to", "from": "Unitary power for Default edge usage pattern", "to": "Hourly energy consumed by per edge device for Default edge usage pattern"}]);
 
                   nodeColors = {};
@@ -5358,9 +5406,7 @@ EdgeUsagePattern Default edge usage pattern (1a8380b7-86b): 105192 values from 2
 <h3 id="energy_footprint_per_edge_device_per_usage_pattern">energy_footprint_per_edge_device_per_usage_pattern</h3>
 <p>Hourly carbon emissions caused by the component's electricity use, broken down by usage pattern. Equal to energy consumption times the country's grid carbon intensity.  </p>
 <p>Example value: {<br />
-EdgeUsagePattern Default edge usage pattern (1a8380b7-86b): 105192 values from 2025-01-01 00:00:00+00:00 to 2037-01-01 00:00:00+00:00 in t:<br />
-    first 10 vals [0.000000361, 0.000000206, 0, 0, 0.000000155, 0, 0.0000000774, 0.00034, 0.00068, 0.00102],<br />
-    last 10 vals [0.0017, 0.0017, 0.0017, 0.0017, 0.0017, 0.00136, 0.00102, 0.00068, 0.00034, 0.000000206], <br />
+EdgeUsagePattern Default edge usage pattern (b29a7b03-dba): 105192 values from 2025-01-01 00:00:00+00:00 to 2037-01-01 00:00:00+00:00: first=361 mg, last=206 mg, mean=3.51 t, min=0, max=7.03 t, std=2.03 t, <br />
 }  </p>
 <p>Depends directly on:  </p>
 <ul>
@@ -5401,7 +5447,7 @@ EdgeUsagePattern Default edge usage pattern (1a8380b7-86b): 105192 values from 2
         </center>
         <style type="text/css">
 
-             #mynetwork_11b901 {
+             #mynetwork_8755fe {
                  width: 760px;
                  height: 300px;
                  background-color: #ffffff;
@@ -5423,7 +5469,7 @@ EdgeUsagePattern Default edge usage pattern (1a8380b7-86b): 105192 values from 2
         <div class="card" style="width: 100%">
 
 
-            <div id="mynetwork_11b901" class="card-body"></div>
+            <div id="mynetwork_8755fe" class="card-body"></div>
         </div>
 
 
@@ -5453,12 +5499,12 @@ EdgeUsagePattern Default edge usage pattern (1a8380b7-86b): 105192 values from 2
 
               // This method is responsible for drawing the graph, returns the drawn network
               function drawGraph() {
-                  var container = document.getElementById('mynetwork_11b901');
+                  var container = document.getElementById('mynetwork_8755fe');
 
 
 
                   // parsing and collecting nodes and edges from the python
-                  nodes = new vis.DataSet([{"color": null, "id": "Energy footprint per edge device for Default edge usage pattern", "label": "Energy footprint per\nedge device for\nDefault edge usage\npattern", "shape": "dot", "size": 15, "title": "Energy footprint per edge device for Default edge usage pattern\n=\nHourly energy consumed by per edge device for Default edge usage pattern *\nAverage carbon intensity\n=\n105192 values from 2025-01-01 00:00:00+00:00 to 2037-01-01 00:00:00+00:00 in\nMWh:\nfirst 10 vals [0.00000425, 0.00000243, 0, 0, 0.00000182, 0, 0.00000091, 0.004,\n0.008, 0.012],\nlast 10 vals [0.02, 0.02, 0.02, 0.02, 0.02, 0.016, 0.012, 0.008, 0.004,\n0.00000243] * 85 g/kWh\n=\n105192 values from 2025-01-01 00:00:00+00:00 to 2037-01-01 00:00:00+00:00 in t:\nfirst 10 vals [0.000000361, 0.000000206, 0, 0, 0.000000155, 0, 0.0000000774,\n0.00034, 0.00068, 0.00102],\nlast 10 vals [0.0017, 0.0017, 0.0017, 0.0017, 0.0017, 0.00136, 0.00102, 0.00068,\n0.00034, 0.000000206]", "x": 0.0, "y": 1200}, {"color": null, "id": "Hourly energy consumed by per edge device for Default edge usage pattern", "label": "Hourly energy\nconsumed by per edge\ndevice for Default\nedge usage pattern", "shape": "dot", "size": 15, "title": "Hourly energy consumed by per edge device for Default edge usage pattern\n=\nHourly nb of edge usage journeys in parallel * Unitary power for Default edge\nusage pattern * one hour\n=\n105192 values from 2025-01-01 00:00:00+00:00 to 2037-01-01 00:00:00+00:00 in M:\nfirst 10 vals [0.00000106, 0.000000607, 0, 0, 0.000000455, 0, 0.000000228,\n0.001, 0.002, 0.003],\nlast 10 vals [0.005, 0.005, 0.005, 0.005, 0.005, 0.004, 0.003, 0.002, 0.001,\n0.000000607] * 105192 values from 2025-01-01 00:00:00+00:00 to 2037-01-01\n00:00:00+00:00 in W:\nfirst 10 vals [4, 4, 4, 4, 4, 4, 4, 4, 4, 4],\nlast 10 vals [4, 4, 4, 4, 4, 4, 4, 4, 4, 4] * 1 h\n=\n105192 values from 2025-01-01 00:00:00+00:00 to 2037-01-01 00:00:00+00:00 in\nMWh:\nfirst 10 vals [0.00000425, 0.00000243, 0, 0, 0.00000182, 0, 0.00000091, 0.004,\n0.008, 0.012],\nlast 10 vals [0.02, 0.02, 0.02, 0.02, 0.02, 0.016, 0.012, 0.008, 0.004,\n0.00000243]", "x": -225.0, "y": 1050}, {"color": null, "id": "Average carbon intensity", "label": "Average carbon\nintensity", "shape": "dot", "size": 15, "title": "Average carbon intensity = 85 g/kWh", "x": 225.0, "y": 1050}]);
+                  nodes = new vis.DataSet([{"color": null, "id": "Energy footprint per edge device for Default edge usage pattern", "label": "Energy footprint per\nedge device for\nDefault edge usage\npattern", "shape": "dot", "size": 15, "title": "Energy footprint per edge device for Default edge usage pattern\n=\nHourly energy consumed by per edge device for Default edge usage pattern *\nAverage carbon intensity\n=\n105192 values from 2025-01-01 00:00:00+00:00 to 2037-01-01 00:00:00+00:00:\nfirst=4.25 Wh, last=2.43 Wh, mean=41.3 MWh, min=0, max=82.7 MWh, std=23.9 MWh *\n85 g/kWh\n=\n105192 values from 2025-01-01 00:00:00+00:00 to 2037-01-01 00:00:00+00:00:\nfirst=361 mg, last=206 mg, mean=3.51 t, min=0, max=7.03 t, std=2.03 t", "x": 0.0, "y": 1200}, {"color": null, "id": "Hourly energy consumed by per edge device for Default edge usage pattern", "label": "Hourly energy\nconsumed by per edge\ndevice for Default\nedge usage pattern", "shape": "dot", "size": 15, "title": "Hourly energy consumed by per edge device for Default edge usage pattern\n=\nHourly nb of edge usage journeys in parallel * Unitary power for Default edge\nusage pattern * one hour\n=\n105192 values from 2025-01-01 00:00:00+00:00 to 2037-01-01 00:00:00+00:00:\nfirst=1.06 , last=0.607 , mean=10.3 M, min=0, max=20.7 M, std=5.96 M * 105192\nvalues from 2025-01-01 00:00:00+00:00 to 2037-01-01 00:00:00+00:00: first=4 W,\nlast=4 W, mean=4 W, min=4 W, max=4 W, std=0 * 1 h\n=\n105192 values from 2025-01-01 00:00:00+00:00 to 2037-01-01 00:00:00+00:00:\nfirst=4.25 Wh, last=2.43 Wh, mean=41.3 MWh, min=0, max=82.7 MWh, std=23.9 MWh", "x": -225.0, "y": 1050}, {"color": null, "id": "Average carbon intensity", "label": "Average carbon\nintensity", "shape": "dot", "size": 15, "title": "Average carbon intensity = 85 g/kWh", "x": 225.0, "y": 1050}]);
                   edges = new vis.DataSet([{"arrows": "to", "from": "Hourly energy consumed by per edge device for Default edge usage pattern", "to": "Energy footprint per edge device for Default edge usage pattern"}, {"arrows": "to", "from": "Average carbon intensity", "to": "Energy footprint per edge device for Default edge usage pattern"}]);
 
                   nodeColors = {};
@@ -5527,9 +5573,7 @@ EdgeUsagePattern Default edge usage pattern (1a8380b7-86b): 105192 values from 2
 <p>You can also visit the <a href='../calculus_graphs/edge_RAM_component_energy_footprint_per_edge_device_per_usage_pattern.html' target='_blank'>link to Energy footprint per edge device for Default edge usage pattern’s full calculation graph</a>.</p>
 <h3 id="fabrication_footprint_per_edge_device">fabrication_footprint_per_edge_device</h3>
 <p>Total hourly fabrication footprint per edge device, summed across all usage patterns this component appears in.  </p>
-<p>Example value: 105192 values from 2025-01-01 00:00:00+00:00 to 2037-01-01 00:00:00+00:00 in t:<br />
-    first 10 vals [0.000000404, 0.000000231, 0, 0, 0.000000173, 0, 0.0000000865, 0.00038, 0.000761, 0.00114],<br />
-    last 10 vals [0.0019, 0.0019, 0.0019, 0.0019, 0.0019, 0.00152, 0.00114, 0.000761, 0.00038, 0.000000231]  </p>
+<p>Example value: 105192 values from 2025-01-01 00:00:00+00:00 to 2037-01-01 00:00:00+00:00: first=404 mg, last=231 mg, mean=3.93 t, min=0, max=7.86 t, std=2.27 t  </p>
 <p>Depends directly on:  </p>
 <ul>
 <li><a href="./#fabrication_footprint_per_edge_device_per_usage_pattern">Hourly fabrication footprint per edge device for Default edge usage pattern</a>  </li>
@@ -5568,7 +5612,7 @@ EdgeUsagePattern Default edge usage pattern (1a8380b7-86b): 105192 values from 2
         </center>
         <style type="text/css">
 
-             #mynetwork_b2e7de {
+             #mynetwork_f116a0 {
                  width: 760px;
                  height: 300px;
                  background-color: #ffffff;
@@ -5590,7 +5634,7 @@ EdgeUsagePattern Default edge usage pattern (1a8380b7-86b): 105192 values from 2
         <div class="card" style="width: 100%">
 
 
-            <div id="mynetwork_b2e7de" class="card-body"></div>
+            <div id="mynetwork_f116a0" class="card-body"></div>
         </div>
 
 
@@ -5620,12 +5664,12 @@ EdgeUsagePattern Default edge usage pattern (1a8380b7-86b): 105192 values from 2
 
               // This method is responsible for drawing the graph, returns the drawn network
               function drawGraph() {
-                  var container = document.getElementById('mynetwork_b2e7de');
+                  var container = document.getElementById('mynetwork_f116a0');
 
 
 
                   // parsing and collecting nodes and edges from the python
-                  nodes = new vis.DataSet([{"color": null, "id": "Total fabrication footprint per edge device across usage patterns", "label": "Total fabrication\nfootprint per edge\ndevice across usage\npatterns", "shape": "dot", "size": 15, "title": "Total fabrication footprint per edge device across usage patterns\n=\nHourly fabrication footprint per edge device for Default edge usage pattern\n=\n105192 values from 2025-01-01 00:00:00+00:00 to 2037-01-01 00:00:00+00:00 in t:\nfirst 10 vals [0.000000404, 0.000000231, 0, 0, 0.000000173, 0, 0.0000000865,\n0.00038, 0.000761, 0.00114],\nlast 10 vals [0.0019, 0.0019, 0.0019, 0.0019, 0.0019, 0.00152, 0.00114,\n0.000761, 0.00038, 0.000000231]\n=\n105192 values from 2025-01-01 00:00:00+00:00 to 2037-01-01 00:00:00+00:00 in t:\nfirst 10 vals [0.000000404, 0.000000231, 0, 0, 0.000000173, 0, 0.0000000865,\n0.00038, 0.000761, 0.00114],\nlast 10 vals [0.0019, 0.0019, 0.0019, 0.0019, 0.0019, 0.00152, 0.00114,\n0.000761, 0.00038, 0.000000231]", "x": 0.0, "y": 750}, {"color": null, "id": "Hourly fabrication footprint per edge device for Default edge usage pattern", "label": "Hourly fabrication\nfootprint per edge\ndevice for Default\nedge usage pattern", "shape": "dot", "size": 15, "title": "Hourly fabrication footprint per edge device for Default edge usage pattern\n=\nHourly nb of edge usage journeys in parallel * (Carbon footprint fabrication /\nLifespan) * one hour\n=\n105192 values from 2025-01-01 00:00:00+00:00 to 2037-01-01 00:00:00+00:00 in M:\nfirst 10 vals [0.00000106, 0.000000607, 0, 0, 0.000000455, 0, 0.000000228,\n0.001, 0.002, 0.003],\nlast 10 vals [0.005, 0.005, 0.005, 0.005, 0.005, 0.004, 0.003, 0.002, 0.001,\n0.000000607] * (20 kg / 6 yr) * 1 h\n=\n105192 values from 2025-01-01 00:00:00+00:00 to 2037-01-01 00:00:00+00:00 in t:\nfirst 10 vals [0.000000404, 0.000000231, 0, 0, 0.000000173, 0, 0.0000000865,\n0.00038, 0.000761, 0.00114],\nlast 10 vals [0.0019, 0.0019, 0.0019, 0.0019, 0.0019, 0.00152, 0.00114,\n0.000761, 0.00038, 0.000000231]", "x": 0.0, "y": 600}]);
+                  nodes = new vis.DataSet([{"color": null, "id": "Total fabrication footprint per edge device across usage patterns", "label": "Total fabrication\nfootprint per edge\ndevice across usage\npatterns", "shape": "dot", "size": 15, "title": "Total fabrication footprint per edge device across usage patterns\n=\nHourly fabrication footprint per edge device for Default edge usage pattern\n=\n105192 values from 2025-01-01 00:00:00+00:00 to 2037-01-01 00:00:00+00:00:\nfirst=404 mg, last=231 mg, mean=3.93 t, min=0, max=7.86 t, std=2.27 t\n=\n105192 values from 2025-01-01 00:00:00+00:00 to 2037-01-01 00:00:00+00:00:\nfirst=404 mg, last=231 mg, mean=3.93 t, min=0, max=7.86 t, std=2.27 t", "x": 0.0, "y": 750}, {"color": null, "id": "Hourly fabrication footprint per edge device for Default edge usage pattern", "label": "Hourly fabrication\nfootprint per edge\ndevice for Default\nedge usage pattern", "shape": "dot", "size": 15, "title": "Hourly fabrication footprint per edge device for Default edge usage pattern\n=\nHourly nb of edge usage journeys in parallel * (Carbon footprint fabrication /\nLifespan) * one hour\n=\n105192 values from 2025-01-01 00:00:00+00:00 to 2037-01-01 00:00:00+00:00:\nfirst=1.06 , last=0.607 , mean=10.3 M, min=0, max=20.7 M, std=5.96 M * (20 kg /\n6 yr) * 1 h\n=\n105192 values from 2025-01-01 00:00:00+00:00 to 2037-01-01 00:00:00+00:00:\nfirst=404 mg, last=231 mg, mean=3.93 t, min=0, max=7.86 t, std=2.27 t", "x": 0.0, "y": 600}]);
                   edges = new vis.DataSet([{"arrows": "to", "from": "Hourly fabrication footprint per edge device for Default edge usage pattern", "to": "Total fabrication footprint per edge device across usage patterns"}]);
 
                   nodeColors = {};
@@ -5694,9 +5738,7 @@ EdgeUsagePattern Default edge usage pattern (1a8380b7-86b): 105192 values from 2
 <p>You can also visit the <a href='../calculus_graphs/edge_RAM_component_fabrication_footprint_per_edge_device.html' target='_blank'>link to Total fabrication footprint per edge device across usage patterns’s full calculation graph</a>.</p>
 <h3 id="energy_per_edge_device">energy_per_edge_device</h3>
 <p>Total hourly energy consumed per edge device, summed across all usage patterns.  </p>
-<p>Example value: 105192 values from 2025-01-01 00:00:00+00:00 to 2037-01-01 00:00:00+00:00 in MWh:<br />
-    first 10 vals [0.00000425, 0.00000243, 0, 0, 0.00000182, 0, 0.00000091, 0.004, 0.008, 0.012],<br />
-    last 10 vals [0.02, 0.02, 0.02, 0.02, 0.02, 0.016, 0.012, 0.008, 0.004, 0.00000243]  </p>
+<p>Example value: 105192 values from 2025-01-01 00:00:00+00:00 to 2037-01-01 00:00:00+00:00: first=4.25 Wh, last=2.43 Wh, mean=41.3 MWh, min=0, max=82.7 MWh, std=23.9 MWh  </p>
 <p>Depends directly on:  </p>
 <ul>
 <li><a href="./#energy_per_edge_device_per_usage_pattern">Hourly energy consumed by per edge device for Default edge usage pattern</a>  </li>
@@ -5735,7 +5777,7 @@ EdgeUsagePattern Default edge usage pattern (1a8380b7-86b): 105192 values from 2
         </center>
         <style type="text/css">
 
-             #mynetwork_508a58 {
+             #mynetwork_e707fc {
                  width: 760px;
                  height: 300px;
                  background-color: #ffffff;
@@ -5757,7 +5799,7 @@ EdgeUsagePattern Default edge usage pattern (1a8380b7-86b): 105192 values from 2
         <div class="card" style="width: 100%">
 
 
-            <div id="mynetwork_508a58" class="card-body"></div>
+            <div id="mynetwork_e707fc" class="card-body"></div>
         </div>
 
 
@@ -5787,12 +5829,12 @@ EdgeUsagePattern Default edge usage pattern (1a8380b7-86b): 105192 values from 2
 
               // This method is responsible for drawing the graph, returns the drawn network
               function drawGraph() {
-                  var container = document.getElementById('mynetwork_508a58');
+                  var container = document.getElementById('mynetwork_e707fc');
 
 
 
                   // parsing and collecting nodes and edges from the python
-                  nodes = new vis.DataSet([{"color": null, "id": "Total energy consumed per edge device across usage patterns", "label": "Total energy\nconsumed per edge\ndevice across usage\npatterns", "shape": "dot", "size": 15, "title": "Total energy consumed per edge device across usage patterns\n=\nHourly energy consumed by per edge device for Default edge usage pattern\n=\n105192 values from 2025-01-01 00:00:00+00:00 to 2037-01-01 00:00:00+00:00 in\nMWh:\nfirst 10 vals [0.00000425, 0.00000243, 0, 0, 0.00000182, 0, 0.00000091, 0.004,\n0.008, 0.012],\nlast 10 vals [0.02, 0.02, 0.02, 0.02, 0.02, 0.016, 0.012, 0.008, 0.004,\n0.00000243]\n=\n105192 values from 2025-01-01 00:00:00+00:00 to 2037-01-01 00:00:00+00:00 in\nMWh:\nfirst 10 vals [0.00000425, 0.00000243, 0, 0, 0.00000182, 0, 0.00000091, 0.004,\n0.008, 0.012],\nlast 10 vals [0.02, 0.02, 0.02, 0.02, 0.02, 0.016, 0.012, 0.008, 0.004,\n0.00000243]", "x": 0.0, "y": 1200}, {"color": null, "id": "Hourly energy consumed by per edge device for Default edge usage pattern", "label": "Hourly energy\nconsumed by per edge\ndevice for Default\nedge usage pattern", "shape": "dot", "size": 15, "title": "Hourly energy consumed by per edge device for Default edge usage pattern\n=\nHourly nb of edge usage journeys in parallel * Unitary power for Default edge\nusage pattern * one hour\n=\n105192 values from 2025-01-01 00:00:00+00:00 to 2037-01-01 00:00:00+00:00 in M:\nfirst 10 vals [0.00000106, 0.000000607, 0, 0, 0.000000455, 0, 0.000000228,\n0.001, 0.002, 0.003],\nlast 10 vals [0.005, 0.005, 0.005, 0.005, 0.005, 0.004, 0.003, 0.002, 0.001,\n0.000000607] * 105192 values from 2025-01-01 00:00:00+00:00 to 2037-01-01\n00:00:00+00:00 in W:\nfirst 10 vals [4, 4, 4, 4, 4, 4, 4, 4, 4, 4],\nlast 10 vals [4, 4, 4, 4, 4, 4, 4, 4, 4, 4] * 1 h\n=\n105192 values from 2025-01-01 00:00:00+00:00 to 2037-01-01 00:00:00+00:00 in\nMWh:\nfirst 10 vals [0.00000425, 0.00000243, 0, 0, 0.00000182, 0, 0.00000091, 0.004,\n0.008, 0.012],\nlast 10 vals [0.02, 0.02, 0.02, 0.02, 0.02, 0.016, 0.012, 0.008, 0.004,\n0.00000243]", "x": 0.0, "y": 1050}]);
+                  nodes = new vis.DataSet([{"color": null, "id": "Total energy consumed per edge device across usage patterns", "label": "Total energy\nconsumed per edge\ndevice across usage\npatterns", "shape": "dot", "size": 15, "title": "Total energy consumed per edge device across usage patterns\n=\nHourly energy consumed by per edge device for Default edge usage pattern\n=\n105192 values from 2025-01-01 00:00:00+00:00 to 2037-01-01 00:00:00+00:00:\nfirst=4.25 Wh, last=2.43 Wh, mean=41.3 MWh, min=0, max=82.7 MWh, std=23.9 MWh\n=\n105192 values from 2025-01-01 00:00:00+00:00 to 2037-01-01 00:00:00+00:00:\nfirst=4.25 Wh, last=2.43 Wh, mean=41.3 MWh, min=0, max=82.7 MWh, std=23.9 MWh", "x": 0.0, "y": 1200}, {"color": null, "id": "Hourly energy consumed by per edge device for Default edge usage pattern", "label": "Hourly energy\nconsumed by per edge\ndevice for Default\nedge usage pattern", "shape": "dot", "size": 15, "title": "Hourly energy consumed by per edge device for Default edge usage pattern\n=\nHourly nb of edge usage journeys in parallel * Unitary power for Default edge\nusage pattern * one hour\n=\n105192 values from 2025-01-01 00:00:00+00:00 to 2037-01-01 00:00:00+00:00:\nfirst=1.06 , last=0.607 , mean=10.3 M, min=0, max=20.7 M, std=5.96 M * 105192\nvalues from 2025-01-01 00:00:00+00:00 to 2037-01-01 00:00:00+00:00: first=4 W,\nlast=4 W, mean=4 W, min=4 W, max=4 W, std=0 * 1 h\n=\n105192 values from 2025-01-01 00:00:00+00:00 to 2037-01-01 00:00:00+00:00:\nfirst=4.25 Wh, last=2.43 Wh, mean=41.3 MWh, min=0, max=82.7 MWh, std=23.9 MWh", "x": 0.0, "y": 1050}]);
                   edges = new vis.DataSet([{"arrows": "to", "from": "Hourly energy consumed by per edge device for Default edge usage pattern", "to": "Total energy consumed per edge device across usage patterns"}]);
 
                   nodeColors = {};
@@ -5861,9 +5903,7 @@ EdgeUsagePattern Default edge usage pattern (1a8380b7-86b): 105192 values from 2
 <p>You can also visit the <a href='../calculus_graphs/edge_RAM_component_energy_per_edge_device.html' target='_blank'>link to Total energy consumed per edge device across usage patterns’s full calculation graph</a>.</p>
 <h3 id="energy_footprint_per_edge_device">energy_footprint_per_edge_device</h3>
 <p>Total hourly energy-use footprint per edge device, summed across all usage patterns.  </p>
-<p>Example value: 105192 values from 2025-01-01 00:00:00+00:00 to 2037-01-01 00:00:00+00:00 in t:<br />
-    first 10 vals [0.000000361, 0.000000206, 0, 0, 0.000000155, 0, 0.0000000774, 0.00034, 0.00068, 0.00102],<br />
-    last 10 vals [0.0017, 0.0017, 0.0017, 0.0017, 0.0017, 0.00136, 0.00102, 0.00068, 0.00034, 0.000000206]  </p>
+<p>Example value: 105192 values from 2025-01-01 00:00:00+00:00 to 2037-01-01 00:00:00+00:00: first=361 mg, last=206 mg, mean=3.51 t, min=0, max=7.03 t, std=2.03 t  </p>
 <p>Depends directly on:  </p>
 <ul>
 <li><a href="./#energy_footprint_per_edge_device_per_usage_pattern">Energy footprint per edge device for Default edge usage pattern</a>  </li>
@@ -5902,7 +5942,7 @@ EdgeUsagePattern Default edge usage pattern (1a8380b7-86b): 105192 values from 2
         </center>
         <style type="text/css">
 
-             #mynetwork_8fb643 {
+             #mynetwork_3b9376 {
                  width: 760px;
                  height: 300px;
                  background-color: #ffffff;
@@ -5924,7 +5964,7 @@ EdgeUsagePattern Default edge usage pattern (1a8380b7-86b): 105192 values from 2
         <div class="card" style="width: 100%">
 
 
-            <div id="mynetwork_8fb643" class="card-body"></div>
+            <div id="mynetwork_3b9376" class="card-body"></div>
         </div>
 
 
@@ -5954,12 +5994,12 @@ EdgeUsagePattern Default edge usage pattern (1a8380b7-86b): 105192 values from 2
 
               // This method is responsible for drawing the graph, returns the drawn network
               function drawGraph() {
-                  var container = document.getElementById('mynetwork_8fb643');
+                  var container = document.getElementById('mynetwork_3b9376');
 
 
 
                   // parsing and collecting nodes and edges from the python
-                  nodes = new vis.DataSet([{"color": null, "id": "Total energy footprint per edge device across usage patterns", "label": "Total energy\nfootprint per edge\ndevice across usage\npatterns", "shape": "dot", "size": 15, "title": "Total energy footprint per edge device across usage patterns\n=\nEnergy footprint per edge device for Default edge usage pattern\n=\n105192 values from 2025-01-01 00:00:00+00:00 to 2037-01-01 00:00:00+00:00 in t:\nfirst 10 vals [0.000000361, 0.000000206, 0, 0, 0.000000155, 0, 0.0000000774,\n0.00034, 0.00068, 0.00102],\nlast 10 vals [0.0017, 0.0017, 0.0017, 0.0017, 0.0017, 0.00136, 0.00102, 0.00068,\n0.00034, 0.000000206]\n=\n105192 values from 2025-01-01 00:00:00+00:00 to 2037-01-01 00:00:00+00:00 in t:\nfirst 10 vals [0.000000361, 0.000000206, 0, 0, 0.000000155, 0, 0.0000000774,\n0.00034, 0.00068, 0.00102],\nlast 10 vals [0.0017, 0.0017, 0.0017, 0.0017, 0.0017, 0.00136, 0.00102, 0.00068,\n0.00034, 0.000000206]", "x": 0.0, "y": 1350}, {"color": null, "id": "Energy footprint per edge device for Default edge usage pattern", "label": "Energy footprint per\nedge device for\nDefault edge usage\npattern", "shape": "dot", "size": 15, "title": "Energy footprint per edge device for Default edge usage pattern\n=\nHourly energy consumed by per edge device for Default edge usage pattern *\nAverage carbon intensity\n=\n105192 values from 2025-01-01 00:00:00+00:00 to 2037-01-01 00:00:00+00:00 in\nMWh:\nfirst 10 vals [0.00000425, 0.00000243, 0, 0, 0.00000182, 0, 0.00000091, 0.004,\n0.008, 0.012],\nlast 10 vals [0.02, 0.02, 0.02, 0.02, 0.02, 0.016, 0.012, 0.008, 0.004,\n0.00000243] * 85 g/kWh\n=\n105192 values from 2025-01-01 00:00:00+00:00 to 2037-01-01 00:00:00+00:00 in t:\nfirst 10 vals [0.000000361, 0.000000206, 0, 0, 0.000000155, 0, 0.0000000774,\n0.00034, 0.00068, 0.00102],\nlast 10 vals [0.0017, 0.0017, 0.0017, 0.0017, 0.0017, 0.00136, 0.00102, 0.00068,\n0.00034, 0.000000206]", "x": 0.0, "y": 1200}]);
+                  nodes = new vis.DataSet([{"color": null, "id": "Total energy footprint per edge device across usage patterns", "label": "Total energy\nfootprint per edge\ndevice across usage\npatterns", "shape": "dot", "size": 15, "title": "Total energy footprint per edge device across usage patterns\n=\nEnergy footprint per edge device for Default edge usage pattern\n=\n105192 values from 2025-01-01 00:00:00+00:00 to 2037-01-01 00:00:00+00:00:\nfirst=361 mg, last=206 mg, mean=3.51 t, min=0, max=7.03 t, std=2.03 t\n=\n105192 values from 2025-01-01 00:00:00+00:00 to 2037-01-01 00:00:00+00:00:\nfirst=361 mg, last=206 mg, mean=3.51 t, min=0, max=7.03 t, std=2.03 t", "x": 0.0, "y": 1350}, {"color": null, "id": "Energy footprint per edge device for Default edge usage pattern", "label": "Energy footprint per\nedge device for\nDefault edge usage\npattern", "shape": "dot", "size": 15, "title": "Energy footprint per edge device for Default edge usage pattern\n=\nHourly energy consumed by per edge device for Default edge usage pattern *\nAverage carbon intensity\n=\n105192 values from 2025-01-01 00:00:00+00:00 to 2037-01-01 00:00:00+00:00:\nfirst=4.25 Wh, last=2.43 Wh, mean=41.3 MWh, min=0, max=82.7 MWh, std=23.9 MWh *\n85 g/kWh\n=\n105192 values from 2025-01-01 00:00:00+00:00 to 2037-01-01 00:00:00+00:00:\nfirst=361 mg, last=206 mg, mean=3.51 t, min=0, max=7.03 t, std=2.03 t", "x": 0.0, "y": 1200}]);
                   edges = new vis.DataSet([{"arrows": "to", "from": "Energy footprint per edge device for Default edge usage pattern", "to": "Total energy footprint per edge device across usage patterns"}]);
 
                   nodeColors = {};

@@ -575,6 +575,34 @@
   
   
     <li class="md-nav__item">
+      <a href="../serverless_modeling/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    How to model serverless workloads
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
       <a href="../server_to_server_interaction/" class="md-nav__link">
         
   
@@ -583,6 +611,34 @@
     
   
     How to model server to server interaction
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../attributing_footprint/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    How to attribute a footprint
   
 
     
@@ -3492,9 +3548,7 @@
 <h2 id="calculated-attributes">Calculated attributes</h2>
 <h3 id="recurrent_need">recurrent_need</h3>
 <p>Recurrent compute need, copied from the parent <a href="../RecurrentEdgeProcess/">RecurrentEdgeProcess</a>'s compute profile.  </p>
-<p>Example value: 168 values in cpu core:<br />
-    first 10 vals [1, 1, 1, 1, 1, 1, 1, 1, 1, 1],<br />
-    last 10 vals [1, 1, 1, 1, 1, 1, 1, 1, 1, 1]  </p>
+<p>Example value: 168 values: first=1 cpu core, last=1 cpu core, mean=1 cpu core, min=1 cpu core, max=1 cpu core, std=0  </p>
 <p>Depends directly on:  </p>
 <ul>
 <li><a href="../RecurrentEdgeProcess/#recurrent_compute_needed">Recurrent compute needed</a>  </li>
@@ -3533,7 +3587,7 @@
         </center>
         <style type="text/css">
 
-             #mynetwork_04f884 {
+             #mynetwork_0dc882 {
                  width: 760px;
                  height: 300px;
                  background-color: #ffffff;
@@ -3555,7 +3609,7 @@
         <div class="card" style="width: 100%">
 
 
-            <div id="mynetwork_04f884" class="card-body"></div>
+            <div id="mynetwork_0dc882" class="card-body"></div>
         </div>
 
 
@@ -3585,12 +3639,12 @@
 
               // This method is responsible for drawing the graph, returns the drawn network
               function drawGraph() {
-                  var container = document.getElementById('mynetwork_04f884');
+                  var container = document.getElementById('mynetwork_0dc882');
 
 
 
                   // parsing and collecting nodes and edges from the python
-                  nodes = new vis.DataSet([{"color": null, "id": "Recurrent need", "label": "Recurrent need", "shape": "dot", "size": 15, "title": "Recurrent need\n=\nduplicate (Recurrent compute needed)\n=\nduplicate (168 values in cpu core:\nfirst 10 vals [1, 1, 1, 1, 1, 1, 1, 1, 1, 1],\nlast 10 vals [1, 1, 1, 1, 1, 1, 1, 1, 1, 1])\n=\n168 values in cpu core:\nfirst 10 vals [1, 1, 1, 1, 1, 1, 1, 1, 1, 1],\nlast 10 vals [1, 1, 1, 1, 1, 1, 1, 1, 1, 1]", "x": 0.0, "y": 300}, {"color": null, "id": "Recurrent compute needed", "label": "Recurrent compute\nneeded", "shape": "dot", "size": 15, "title": "Recurrent compute needed = 168 values in cpu core:\nfirst 10 vals [1, 1, 1, 1, 1, 1, 1, 1, 1, 1],\nlast 10 vals [1, 1, 1, 1, 1, 1, 1, 1, 1, 1]", "x": 0.0, "y": 150}]);
+                  nodes = new vis.DataSet([{"color": null, "id": "Recurrent need", "label": "Recurrent need", "shape": "dot", "size": 15, "title": "Recurrent need\n=\nduplicate (Recurrent compute needed)\n=\nduplicate (168 values: first=1 cpu core, last=1 cpu core, mean=1 cpu core, min=1\ncpu core, max=1 cpu core, std=0)\n=\n168 values: first=1 cpu core, last=1 cpu core, mean=1 cpu core, min=1 cpu core,\nmax=1 cpu core, std=0", "x": 0.0, "y": 300}, {"color": null, "id": "Recurrent compute needed", "label": "Recurrent compute\nneeded", "shape": "dot", "size": 15, "title": "Recurrent compute needed = 168 values: first=1 cpu core, last=1 cpu core, mean=1\ncpu core, min=1 cpu core, max=1 cpu core, std=0", "x": 0.0, "y": 150}]);
                   edges = new vis.DataSet([{"arrows": "to", "from": "Recurrent compute needed", "to": "Recurrent need"}]);
 
                   nodeColors = {};
@@ -3659,9 +3713,7 @@
 <p>You can also visit the <a href='../calculus_graphs/edge_process_CPU_need_recurrent_need.html' target='_blank'>link to Recurrent need’s full calculation graph</a>.</p>
 <h3 id="recurrent_need_validation">recurrent_need_validation</h3>
 <p>Validates that the recurrent need uses a unit compatible with its target component, and (for workload-style needs) that values stay between 0 and 1.  </p>
-<p>Example value: 168 values in cpu core:<br />
-    first 10 vals [1, 1, 1, 1, 1, 1, 1, 1, 1, 1],<br />
-    last 10 vals [1, 1, 1, 1, 1, 1, 1, 1, 1, 1]  </p>
+<p>Example value: 168 values: first=1 cpu core, last=1 cpu core, mean=1 cpu core, min=1 cpu core, max=1 cpu core, std=0  </p>
 <p>Depends directly on:  </p>
 <ul>
 <li><a href="./#recurrent_need">Recurrent need</a>  </li>
@@ -3700,7 +3752,7 @@
         </center>
         <style type="text/css">
 
-             #mynetwork_48ada3 {
+             #mynetwork_47e94d {
                  width: 760px;
                  height: 300px;
                  background-color: #ffffff;
@@ -3722,7 +3774,7 @@
         <div class="card" style="width: 100%">
 
 
-            <div id="mynetwork_48ada3" class="card-body"></div>
+            <div id="mynetwork_47e94d" class="card-body"></div>
         </div>
 
 
@@ -3752,12 +3804,12 @@
 
               // This method is responsible for drawing the graph, returns the drawn network
               function drawGraph() {
-                  var container = document.getElementById('mynetwork_48ada3');
+                  var container = document.getElementById('mynetwork_47e94d');
 
 
 
                   // parsing and collecting nodes and edges from the python
-                  nodes = new vis.DataSet([{"color": null, "id": "Validated recurrent need", "label": "Validated recurrent\nneed", "shape": "dot", "size": 15, "title": "Validated recurrent need\n=\nduplicate (Recurrent need)\n=\nduplicate (168 values in cpu core:\nfirst 10 vals [1, 1, 1, 1, 1, 1, 1, 1, 1, 1],\nlast 10 vals [1, 1, 1, 1, 1, 1, 1, 1, 1, 1])\n=\n168 values in cpu core:\nfirst 10 vals [1, 1, 1, 1, 1, 1, 1, 1, 1, 1],\nlast 10 vals [1, 1, 1, 1, 1, 1, 1, 1, 1, 1]", "x": 0.0, "y": 450}, {"color": null, "id": "Recurrent need", "label": "Recurrent need", "shape": "dot", "size": 15, "title": "Recurrent need\n=\nduplicate (Recurrent compute needed)\n=\nduplicate (168 values in cpu core:\nfirst 10 vals [1, 1, 1, 1, 1, 1, 1, 1, 1, 1],\nlast 10 vals [1, 1, 1, 1, 1, 1, 1, 1, 1, 1])\n=\n168 values in cpu core:\nfirst 10 vals [1, 1, 1, 1, 1, 1, 1, 1, 1, 1],\nlast 10 vals [1, 1, 1, 1, 1, 1, 1, 1, 1, 1]", "x": 0.0, "y": 300}]);
+                  nodes = new vis.DataSet([{"color": null, "id": "Validated recurrent need", "label": "Validated recurrent\nneed", "shape": "dot", "size": 15, "title": "Validated recurrent need\n=\nduplicate (Recurrent need)\n=\nduplicate (168 values: first=1 cpu core, last=1 cpu core, mean=1 cpu core, min=1\ncpu core, max=1 cpu core, std=0)\n=\n168 values: first=1 cpu core, last=1 cpu core, mean=1 cpu core, min=1 cpu core,\nmax=1 cpu core, std=0", "x": 0.0, "y": 450}, {"color": null, "id": "Recurrent need", "label": "Recurrent need", "shape": "dot", "size": 15, "title": "Recurrent need\n=\nduplicate (Recurrent compute needed)\n=\nduplicate (168 values: first=1 cpu core, last=1 cpu core, mean=1 cpu core, min=1\ncpu core, max=1 cpu core, std=0)\n=\n168 values: first=1 cpu core, last=1 cpu core, mean=1 cpu core, min=1 cpu core,\nmax=1 cpu core, std=0", "x": 0.0, "y": 300}]);
                   edges = new vis.DataSet([{"arrows": "to", "from": "Recurrent need", "to": "Validated recurrent need"}]);
 
                   nodeColors = {};
@@ -3827,9 +3879,7 @@
 <h3 id="unitary_hourly_need_per_usage_pattern">unitary_hourly_need_per_usage_pattern</h3>
 <p>Hourly resource demand for one edge device, generated by replaying the typical-week pattern across the modeling period in the country's timezone, and scaled by how often the need appears in the journey.  </p>
 <p>Example value: {<br />
-EdgeUsagePattern Default edge usage pattern (1a8380b7-86b): 105192 values from 2025-01-01 00:00:00+00:00 to 2037-01-01 00:00:00+00:00 in cpu core:<br />
-    first 10 vals [1, 1, 1, 1, 1, 1, 1, 1, 1, 1],<br />
-    last 10 vals [1, 1, 1, 1, 1, 1, 1, 1, 1, 1], <br />
+EdgeUsagePattern Default edge usage pattern (b29a7b03-dba): 105192 values from 2025-01-01 00:00:00+00:00 to 2037-01-01 00:00:00+00:00: first=1 cpu core, last=1 cpu core, mean=1 cpu core, min=1 cpu core, max=1 cpu core, std=0, <br />
 }  </p>
 <p>Depends directly on:  </p>
 <ul>
@@ -3871,7 +3921,7 @@ EdgeUsagePattern Default edge usage pattern (1a8380b7-86b): 105192 values from 2
         </center>
         <style type="text/css">
 
-             #mynetwork_82e580 {
+             #mynetwork_98c289 {
                  width: 760px;
                  height: 300px;
                  background-color: #ffffff;
@@ -3893,7 +3943,7 @@ EdgeUsagePattern Default edge usage pattern (1a8380b7-86b): 105192 values from 2
         <div class="card" style="width: 100%">
 
 
-            <div id="mynetwork_82e580" class="card-body"></div>
+            <div id="mynetwork_98c289" class="card-body"></div>
         </div>
 
 
@@ -3923,12 +3973,12 @@ EdgeUsagePattern Default edge usage pattern (1a8380b7-86b): 105192 values from 2
 
               // This method is responsible for drawing the graph, returns the drawn network
               function drawGraph() {
-                  var container = document.getElementById('mynetwork_82e580');
+                  var container = document.getElementById('mynetwork_98c289');
 
 
 
                   // parsing and collecting nodes and edges from the python
-                  nodes = new vis.DataSet([{"color": null, "id": "Unitary hourly need for Default edge usage pattern", "label": "Unitary hourly need\nfor Default edge\nusage pattern", "shape": "dot", "size": 15, "title": "Unitary hourly need for Default edge usage pattern\n=\n(Recurrent need expanded over timespan Hourly nb of edge usage journeys in\nparallel converted to UTC from Timezone) * Occurrences within Default edge usage\npattern\n=\n(168 values in cpu core:\nfirst 10 vals [1, 1, 1, 1, 1, 1, 1, 1, 1, 1],\nlast 10 vals [1, 1, 1, 1, 1, 1, 1, 1, 1, 1] expanded over timespan 105192 values\nfrom 2025-01-01 00:00:00+00:00 to 2037-01-01 00:00:00+00:00 in M:\nfirst 10 vals [0.00000106, 0.000000607, 0, 0, 0.000000455, 0, 0.000000228,\n0.001, 0.002, 0.003],\nlast 10 vals [0.005, 0.005, 0.005, 0.005, 0.005, 0.004, 0.003, 0.002, 0.001,\n0.000000607] converted to UTC from Europe/Paris) * 1\n=\n105192 values from 2025-01-01 00:00:00+00:00 to 2037-01-01 00:00:00+00:00 in cpu\ncore:\nfirst 10 vals [1, 1, 1, 1, 1, 1, 1, 1, 1, 1],\nlast 10 vals [1, 1, 1, 1, 1, 1, 1, 1, 1, 1]", "x": 0.0, "y": 600}, {"color": null, "id": "Recurrent need", "label": "Recurrent need", "shape": "dot", "size": 15, "title": "Recurrent need\n=\nduplicate (Recurrent compute needed)\n=\nduplicate (168 values in cpu core:\nfirst 10 vals [1, 1, 1, 1, 1, 1, 1, 1, 1, 1],\nlast 10 vals [1, 1, 1, 1, 1, 1, 1, 1, 1, 1])\n=\n168 values in cpu core:\nfirst 10 vals [1, 1, 1, 1, 1, 1, 1, 1, 1, 1],\nlast 10 vals [1, 1, 1, 1, 1, 1, 1, 1, 1, 1]", "x": -150.0, "y": 450}, {"color": null, "id": "Hourly nb of edge usage journeys in parallel", "label": "Hourly nb of edge\nusage journeys in\nparallel", "shape": "dot", "size": 15, "title": "Hourly nb of edge usage journeys in parallel\n=\nHourly nb of edge usage journey starts (UTC) hourly occurrences average Usage\nspan\n=\n52597 values from 2025-01-01 00:00:00+00:00 to 2031-01-01 13:00:00+00:00 in :\nfirst 10 vals [0, 0, 0, 0, 0, 0, 0, 1000, 1000, 1000],\nlast 10 vals [0, 0, 0, 0, 1000, 1000, 1000, 1000, 1000, 0] hourly occurrences\naverage 6 yr\n=\n105192 values from 2025-01-01 00:00:00+00:00 to 2037-01-01 00:00:00+00:00 in M:\nfirst 10 vals [0.00000106, 0.000000607, 0, 0, 0.000000455, 0, 0.000000228,\n0.001, 0.002, 0.003],\nlast 10 vals [0.005, 0.005, 0.005, 0.005, 0.005, 0.004, 0.003, 0.002, 0.001,\n0.000000607]", "x": 0.0, "y": 450}, {"color": "gold", "id": "Timezone", "label": "Timezone", "shape": "dot", "size": 15, "title": "Timezone = Europe/Paris", "x": 112.5, "y": 150}]);
+                  nodes = new vis.DataSet([{"color": null, "id": "Unitary hourly need for Default edge usage pattern", "label": "Unitary hourly need\nfor Default edge\nusage pattern", "shape": "dot", "size": 15, "title": "Unitary hourly need for Default edge usage pattern\n=\n(Recurrent need expanded over timespan Hourly nb of edge usage journeys in\nparallel converted to UTC from Timezone) * Occurrences within Default edge usage\npattern\n=\n(168 values: first=1 cpu core, last=1 cpu core, mean=1 cpu core, min=1 cpu core,\nmax=1 cpu core, std=0 expanded over timespan 105192 values from 2025-01-01\n00:00:00+00:00 to 2037-01-01 00:00:00+00:00: first=1.06 , last=0.607 , mean=10.3\nM, min=0, max=20.7 M, std=5.96 M converted to UTC from Europe/Paris) * 1\n=\n105192 values from 2025-01-01 00:00:00+00:00 to 2037-01-01 00:00:00+00:00:\nfirst=1 cpu core, last=1 cpu core, mean=1 cpu core, min=1 cpu core, max=1 cpu\ncore, std=0", "x": 0.0, "y": 600}, {"color": null, "id": "Recurrent need", "label": "Recurrent need", "shape": "dot", "size": 15, "title": "Recurrent need\n=\nduplicate (Recurrent compute needed)\n=\nduplicate (168 values: first=1 cpu core, last=1 cpu core, mean=1 cpu core, min=1\ncpu core, max=1 cpu core, std=0)\n=\n168 values: first=1 cpu core, last=1 cpu core, mean=1 cpu core, min=1 cpu core,\nmax=1 cpu core, std=0", "x": -150.0, "y": 450}, {"color": null, "id": "Hourly nb of edge usage journeys in parallel", "label": "Hourly nb of edge\nusage journeys in\nparallel", "shape": "dot", "size": 15, "title": "Hourly nb of edge usage journeys in parallel\n=\nHourly nb of edge usage journey starts (UTC) hourly occurrences average Usage\nspan\n=\n52597 values from 2025-01-01 00:00:00+00:00 to 2031-01-01 13:00:00+00:00:\nfirst=0, last=0, mean=393 , min=0, max=1 k, std=488 hourly occurrences average 6\nyr\n=\n105192 values from 2025-01-01 00:00:00+00:00 to 2037-01-01 00:00:00+00:00:\nfirst=1.06 , last=0.607 , mean=10.3 M, min=0, max=20.7 M, std=5.96 M", "x": 0.0, "y": 450}, {"color": "gold", "id": "Timezone", "label": "Timezone", "shape": "dot", "size": 15, "title": "Timezone = Europe/Paris", "x": 112.5, "y": 150}]);
                   edges = new vis.DataSet([{"arrows": "to", "from": "Recurrent need", "to": "Unitary hourly need for Default edge usage pattern"}, {"arrows": "to", "from": "Hourly nb of edge usage journeys in parallel", "to": "Unitary hourly need for Default edge usage pattern"}, {"arrows": "to", "from": "Timezone", "to": "Unitary hourly need for Default edge usage pattern"}]);
 
                   nodeColors = {};
@@ -3997,9 +4047,7 @@ EdgeUsagePattern Default edge usage pattern (1a8380b7-86b): 105192 values from 2
 <p>You can also visit the <a href='../calculus_graphs/edge_process_CPU_need_unitary_hourly_need_per_usage_pattern.html' target='_blank'>link to Unitary hourly need for Default edge usage pattern’s full calculation graph</a>.</p>
 <h3 id="total_hourly_need_across_usage_patterns">total_hourly_need_across_usage_patterns</h3>
 <p>Total hourly demand on the component, summed across every <a href="../EdgeUsagePattern/">EdgeUsagePattern</a> after multiplying by the hourly count of edge devices in deployment.  </p>
-<p>Example value: 105192 values from 2025-01-01 00:00:00+00:00 to 2037-01-01 00:00:00+00:00 in ·cpu core:<br />
-    first 10 vals [1.06, 0.607, 0, 0, 0.455, 0, 0.228, 1000, 2000, 3000],<br />
-    last 10 vals [5000, 5000, 5000, 5000, 5000, 4000, 3000, 2000, 1000, 0.607]  </p>
+<p>Example value: 105192 values from 2025-01-01 00:00:00+00:00 to 2037-01-01 00:00:00+00:00: first=1.06 ·cpu core, last=0.607 ·cpu core, mean=10300000 ·cpu core, min=0, max=20700000 ·cpu core, std=5960000 ·cpu core  </p>
 <p>Depends directly on:  </p>
 <ul>
 <li><a href="./#unitary_hourly_need_per_usage_pattern">Unitary hourly need for Default edge usage pattern</a></li>
@@ -4039,7 +4087,7 @@ EdgeUsagePattern Default edge usage pattern (1a8380b7-86b): 105192 values from 2
         </center>
         <style type="text/css">
 
-             #mynetwork_83430d {
+             #mynetwork_3ffac2 {
                  width: 760px;
                  height: 300px;
                  background-color: #ffffff;
@@ -4061,7 +4109,7 @@ EdgeUsagePattern Default edge usage pattern (1a8380b7-86b): 105192 values from 2
         <div class="card" style="width: 100%">
 
 
-            <div id="mynetwork_83430d" class="card-body"></div>
+            <div id="mynetwork_3ffac2" class="card-body"></div>
         </div>
 
 
@@ -4091,12 +4139,12 @@ EdgeUsagePattern Default edge usage pattern (1a8380b7-86b): 105192 values from 2
 
               // This method is responsible for drawing the graph, returns the drawn network
               function drawGraph() {
-                  var container = document.getElementById('mynetwork_83430d');
+                  var container = document.getElementById('mynetwork_3ffac2');
 
 
 
                   // parsing and collecting nodes and edges from the python
-                  nodes = new vis.DataSet([{"color": null, "id": "Total hourly need across usage patterns", "label": "Total hourly need\nacross usage\npatterns", "shape": "dot", "size": 15, "title": "Total hourly need across usage patterns\n=\nUnitary hourly need for Default edge usage pattern * Hourly nb of edge usage\njourneys in parallel\n=\n105192 values from 2025-01-01 00:00:00+00:00 to 2037-01-01 00:00:00+00:00 in cpu\ncore:\nfirst 10 vals [1, 1, 1, 1, 1, 1, 1, 1, 1, 1],\nlast 10 vals [1, 1, 1, 1, 1, 1, 1, 1, 1, 1] * 105192 values from 2025-01-01\n00:00:00+00:00 to 2037-01-01 00:00:00+00:00 in M:\nfirst 10 vals [0.00000106, 0.000000607, 0, 0, 0.000000455, 0, 0.000000228,\n0.001, 0.002, 0.003],\nlast 10 vals [0.005, 0.005, 0.005, 0.005, 0.005, 0.004, 0.003, 0.002, 0.001,\n0.000000607]\n=\n105192 values from 2025-01-01 00:00:00+00:00 to 2037-01-01 00:00:00+00:00 in\n\u00b7cpu core:\nfirst 10 vals [1.06, 0.607, 0, 0, 0.455, 0, 0.228, 1000, 2000, 3000],\nlast 10 vals [5000, 5000, 5000, 5000, 5000, 4000, 3000, 2000, 1000, 0.607]", "x": 0.0, "y": 750}, {"color": null, "id": "Unitary hourly need for Default edge usage pattern", "label": "Unitary hourly need\nfor Default edge\nusage pattern", "shape": "dot", "size": 15, "title": "Unitary hourly need for Default edge usage pattern\n=\n(Recurrent need expanded over timespan Hourly nb of edge usage journeys in\nparallel converted to UTC from Timezone) * Occurrences within Default edge usage\npattern\n=\n(168 values in cpu core:\nfirst 10 vals [1, 1, 1, 1, 1, 1, 1, 1, 1, 1],\nlast 10 vals [1, 1, 1, 1, 1, 1, 1, 1, 1, 1] expanded over timespan 105192 values\nfrom 2025-01-01 00:00:00+00:00 to 2037-01-01 00:00:00+00:00 in M:\nfirst 10 vals [0.00000106, 0.000000607, 0, 0, 0.000000455, 0, 0.000000228,\n0.001, 0.002, 0.003],\nlast 10 vals [0.005, 0.005, 0.005, 0.005, 0.005, 0.004, 0.003, 0.002, 0.001,\n0.000000607] converted to UTC from Europe/Paris) * 1\n=\n105192 values from 2025-01-01 00:00:00+00:00 to 2037-01-01 00:00:00+00:00 in cpu\ncore:\nfirst 10 vals [1, 1, 1, 1, 1, 1, 1, 1, 1, 1],\nlast 10 vals [1, 1, 1, 1, 1, 1, 1, 1, 1, 1]", "x": -187.5, "y": 600}, {"color": null, "id": "Hourly nb of edge usage journeys in parallel", "label": "Hourly nb of edge\nusage journeys in\nparallel", "shape": "dot", "size": 15, "title": "Hourly nb of edge usage journeys in parallel\n=\nHourly nb of edge usage journey starts (UTC) hourly occurrences average Usage\nspan\n=\n52597 values from 2025-01-01 00:00:00+00:00 to 2031-01-01 13:00:00+00:00 in :\nfirst 10 vals [0, 0, 0, 0, 0, 0, 0, 1000, 1000, 1000],\nlast 10 vals [0, 0, 0, 0, 1000, 1000, 1000, 1000, 1000, 0] hourly occurrences\naverage 6 yr\n=\n105192 values from 2025-01-01 00:00:00+00:00 to 2037-01-01 00:00:00+00:00 in M:\nfirst 10 vals [0.00000106, 0.000000607, 0, 0, 0.000000455, 0, 0.000000228,\n0.001, 0.002, 0.003],\nlast 10 vals [0.005, 0.005, 0.005, 0.005, 0.005, 0.004, 0.003, 0.002, 0.001,\n0.000000607]", "x": -93.75, "y": 450}]);
+                  nodes = new vis.DataSet([{"color": null, "id": "Total hourly need across usage patterns", "label": "Total hourly need\nacross usage\npatterns", "shape": "dot", "size": 15, "title": "Total hourly need across usage patterns\n=\nUnitary hourly need for Default edge usage pattern * Hourly nb of edge usage\njourneys in parallel\n=\n105192 values from 2025-01-01 00:00:00+00:00 to 2037-01-01 00:00:00+00:00:\nfirst=1 cpu core, last=1 cpu core, mean=1 cpu core, min=1 cpu core, max=1 cpu\ncore, std=0 * 105192 values from 2025-01-01 00:00:00+00:00 to 2037-01-01\n00:00:00+00:00: first=1.06 , last=0.607 , mean=10.3 M, min=0, max=20.7 M,\nstd=5.96 M\n=\n105192 values from 2025-01-01 00:00:00+00:00 to 2037-01-01 00:00:00+00:00:\nfirst=1.06 \u00b7cpu core, last=0.607 \u00b7cpu core, mean=10300000 \u00b7cpu core, min=0,\nmax=20700000 \u00b7cpu core, std=5960000 \u00b7cpu core", "x": 0.0, "y": 750}, {"color": null, "id": "Unitary hourly need for Default edge usage pattern", "label": "Unitary hourly need\nfor Default edge\nusage pattern", "shape": "dot", "size": 15, "title": "Unitary hourly need for Default edge usage pattern\n=\n(Recurrent need expanded over timespan Hourly nb of edge usage journeys in\nparallel converted to UTC from Timezone) * Occurrences within Default edge usage\npattern\n=\n(168 values: first=1 cpu core, last=1 cpu core, mean=1 cpu core, min=1 cpu core,\nmax=1 cpu core, std=0 expanded over timespan 105192 values from 2025-01-01\n00:00:00+00:00 to 2037-01-01 00:00:00+00:00: first=1.06 , last=0.607 , mean=10.3\nM, min=0, max=20.7 M, std=5.96 M converted to UTC from Europe/Paris) * 1\n=\n105192 values from 2025-01-01 00:00:00+00:00 to 2037-01-01 00:00:00+00:00:\nfirst=1 cpu core, last=1 cpu core, mean=1 cpu core, min=1 cpu core, max=1 cpu\ncore, std=0", "x": -187.5, "y": 600}, {"color": null, "id": "Hourly nb of edge usage journeys in parallel", "label": "Hourly nb of edge\nusage journeys in\nparallel", "shape": "dot", "size": 15, "title": "Hourly nb of edge usage journeys in parallel\n=\nHourly nb of edge usage journey starts (UTC) hourly occurrences average Usage\nspan\n=\n52597 values from 2025-01-01 00:00:00+00:00 to 2031-01-01 13:00:00+00:00:\nfirst=0, last=0, mean=393 , min=0, max=1 k, std=488 hourly occurrences average 6\nyr\n=\n105192 values from 2025-01-01 00:00:00+00:00 to 2037-01-01 00:00:00+00:00:\nfirst=1.06 , last=0.607 , mean=10.3 M, min=0, max=20.7 M, std=5.96 M", "x": -93.75, "y": 450}]);
                   edges = new vis.DataSet([{"arrows": "to", "from": "Unitary hourly need for Default edge usage pattern", "to": "Total hourly need across usage patterns"}, {"arrows": "to", "from": "Hourly nb of edge usage journeys in parallel", "to": "Total hourly need across usage patterns"}]);
 
                   nodeColors = {};
