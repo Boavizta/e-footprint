@@ -7,18 +7,25 @@ from efootprint.abstract_modeling_classes.object_linked_to_modeling_obj import (
     ObjectLinkedToModelingObj, ObjectLinkedToModelingObjBase)
 from efootprint.abstract_modeling_classes.empty_explainable_object import EmptyExplainableObject
 from efootprint.abstract_modeling_classes.modeling_object import (
-    ModelingObject, pull_invalidated_slots, pull_slots_system_wide)
+    ModelingObject, pull_guard_slots, pull_invalidated_slots)
 from efootprint.abstract_modeling_classes.reactive_core import (
-    collect_invalidated_slots, invalidate, slot_of_attached_value)
+    collect_invalidated_slots, invalidate, prune_stale_computed_dict_keys, slot_of_attached_value)
 from efootprint.logger import logger
 
 
 class ModelingUpdate:
     """Transactional model update: apply the changes, invalidate the slots they touch (the deletion
-    wave voids every dependent), then eagerly pull every slot back to cached so computation errors
-    surface now — and on error, restore the inputs, re-invalidate, and recompute the restored state."""
+    wave voids every dependent), then eagerly pull the configured outputs so computation errors
+    surface now — and on error, restore the inputs, re-invalidate, and recompute the restored state.
 
-    def __init__(self, changes_list: List[List[ObjectLinkedToModelingObj | list | dict]]):
+    ``eager_outputs`` configures what recomputes at update time, as (modeling object, attribute name)
+    pairs. The default (None) reads the affected system's total footprint — the whole footprint cone
+    of the change recomputes and anything outside it stays void until read. Tight loops pass an empty
+    collection to skip eager recomputation entirely (values compute on the next read). Validation
+    slots the change invalidated always recompute, whatever the eager set."""
+
+    def __init__(self, changes_list: List[List[ObjectLinkedToModelingObj | list | dict]],
+                 eager_outputs: list | tuple | None = None):
         start = perf_counter()
         self.system = None
         for change in changes_list:
@@ -26,6 +33,7 @@ class ModelingUpdate:
             if isinstance(changed_val, ObjectLinkedToModelingObjBase) and changed_val.modeling_obj_container.systems:
                 self.system = changed_val.modeling_obj_container.systems[0]
                 break
+        self.eager_outputs = eager_outputs
         self.changes_list = changes_list
         self.parse_changes_list()
 
@@ -51,8 +59,8 @@ class ModelingUpdate:
             raise e
 
         compute_time_ms = round(1000 * (perf_counter() - start), 1)
-        logger.info(f"{len(self.changes_list)} changes invalidated {recomputed_slots_count} slots, "
-                    f"recomputed in {compute_time_ms} ms.")
+        logger.info("%s changes invalidated %s slots, recomputed in %s ms.",
+                    len(self.changes_list), recomputed_slots_count, compute_time_ms)
 
     def parse_changes_list(self):
         indexes_to_skip = []
@@ -118,13 +126,20 @@ class ModelingUpdate:
             old_value.replace_in_mod_obj_container_without_recomputation(new_value)
 
     def pull_eagerly(self, visited_slots) -> int:
-        """Recompute the invalidated cone: pull every slot of the system when one is involved (the
-        transitional every-slot-cached eager set), plus every slot the wave visited — objects the
-        change detached from the system keep consistent values and bookkeeping, exactly as the eager
-        engine recomputed them. Returns the number of slots voided by the wave."""
-        if self.system is not None:
-            pull_slots_system_wide([self.system])
-        pull_invalidated_slots(visited_slots)
+        """Recompute the invalidated validation slots, then the eager outputs: the configured
+        (object, attribute) pairs, or by default the affected system's total footprint. A change on
+        objects linked to no system falls back to recomputing the whole invalidated cone — there is
+        no footprint to pull errors through, and detached subgraphs are small. Returns the number of
+        slots voided by the wave."""
+        prune_stale_computed_dict_keys(visited_slots)
+        pull_guard_slots(visited_slots)
+        if self.eager_outputs is not None:
+            for mod_obj, attr_name in self.eager_outputs:
+                getattr(mod_obj, attr_name)
+        elif self.system is not None:
+            self.system.total_footprint
+        else:
+            pull_invalidated_slots(visited_slots)
         return len(visited_slots)
 
     def rollback(self):

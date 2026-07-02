@@ -18,8 +18,8 @@ class EcoLogitsExplainableQuantity(ExplainableQuantity):
         self._ancestors = ancestors
         self.formula = formula
 
-    def to_json(self, save_calculated_attributes=False):
-        output_dict = super().to_json(save_calculated_attributes)
+    def to_json(self, with_formula=False):
+        output_dict = super().to_json(with_formula)
         output_dict["ancestors"] = self._ancestors
         output_dict["formula"] = self.formula
 

@@ -1,7 +1,7 @@
-"""Integrity checks for the big-system fixtures.
+"""Integrity checks for the big-system fixture.
 
-The fixtures are gitignored (too heavy to commit) and regenerated locally with
-`python tests/performance_tests/generate_big_system.py`; these tests are skipped when they are
+The fixture is gitignored (too heavy to commit) and regenerated locally with
+`python tests/performance_tests/generate_big_system.py`; these tests are skipped when it is
 absent (e.g. in CI). They guard against fixture drift: a fixture saved with an older serialized
 shape can load but crash on the first live update.
 """
@@ -10,31 +10,35 @@ import os
 from unittest import TestCase, skipUnless
 from unittest.mock import patch
 
+from efootprint.abstract_modeling_classes.modeling_object import (
+    invalidate_slots_system_wide, pull_slots_system_wide)
 from efootprint.abstract_modeling_classes.reactive_core import ReactiveSlot, _compute_stack
 from efootprint.abstract_modeling_classes.source_objects import SourceValue
 from efootprint.api_utils.json_to_system import json_to_system
-from tests.performance_tests.generate_big_system import INPUTS_ONLY_FIXTURE, WITH_CALC_ATTR_FIXTURE
+from tests.performance_tests.generate_big_system import BIG_SYSTEM_FIXTURE
 
-fixtures_exist = os.path.exists(INPUTS_ONLY_FIXTURE) and os.path.exists(WITH_CALC_ATTR_FIXTURE)
+fixture_exists = os.path.exists(BIG_SYSTEM_FIXTURE)
 
 
-@skipUnless(fixtures_exist, "big-system fixtures not generated locally")
-class TestBigSystemFixtures(TestCase):
-    def test_inputs_only_fixture_loads(self):
-        """Test that the inputs-only fixture loads with the current engine."""
-        with open(INPUTS_ONLY_FIXTURE) as file:
+@skipUnless(fixture_exists, "big-system fixture not generated locally")
+class TestBigSystemFixture(TestCase):
+    def test_fixture_loads_without_any_computation_and_accepts_updates(self):
+        """Test that the canonical fixture loads with zero slot computations (stored values attach as
+        trusted caches) and supports live updates afterwards."""
+        with open(BIG_SYSTEM_FIXTURE) as file:
             system_dict = json.load(file)
 
-        class_obj_dict, _, _ = json_to_system(system_dict, launch_system_computations=False)
+        computed_slot_names = []
+        original_compute = ReactiveSlot._compute
 
-        self.assertEqual(1, len(class_obj_dict["System"]))
+        def counting_compute(slot):
+            computed_slot_names.append(slot.name)
+            return original_compute(slot)
 
-    def test_with_calc_attr_fixture_loads_and_accepts_updates(self):
-        """Test that the calculated-attributes fixture loads without recomputation and supports live updates."""
-        with open(WITH_CALC_ATTR_FIXTURE) as file:
-            system_dict = json.load(file)
+        with patch.object(ReactiveSlot, "_compute", counting_compute):
+            class_obj_dict, _, _ = json_to_system(system_dict)
 
-        class_obj_dict, _, _ = json_to_system(system_dict, launch_system_computations=False)
+        self.assertEqual([], computed_slot_names)
         system = next(iter(class_obj_dict["System"].values()))
         initial_footprint = system.total_footprint
         job = next(iter(class_obj_dict["Job"].values()))
@@ -47,8 +51,12 @@ class TestBigSystemFixtures(TestCase):
         """Test that computing the big fixture from inputs keeps the compute-stack depth (the pull
         recursion, which follows the longest dependency chain, not the model size) within a small
         fraction of the interpreter's recursion budget."""
-        with open(INPUTS_ONLY_FIXTURE) as file:
+        with open(BIG_SYSTEM_FIXTURE) as file:
             system_dict = json.load(file)
+
+        class_obj_dict, _, _ = json_to_system(system_dict)
+        system = next(iter(class_obj_dict["System"].values()))
+        invalidate_slots_system_wide([system])
 
         max_depth = 0
         original_compute = ReactiveSlot._compute
@@ -59,7 +67,7 @@ class TestBigSystemFixtures(TestCase):
             return original_compute(slot)
 
         with patch.object(ReactiveSlot, "_compute", depth_tracking_compute):
-            class_obj_dict, _, _ = json_to_system(system_dict, launch_system_computations=True)
+            pull_slots_system_wide([system])
 
         self.assertGreater(max_depth, 5)
         self.assertLess(max_depth, 100, f"compute-stack depth reached {max_depth}")

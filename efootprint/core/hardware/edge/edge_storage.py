@@ -144,7 +144,7 @@ class EdgeStorage(EdgeComponent):
             * self.storage_capacity
         ).set_label(f"Carbon footprint")
 
-    @computed_dict(keys="edge_usage_patterns")
+    @computed_dict(keys="edge_usage_patterns", guard=True)
     def cumulative_unitary_storage_need_per_usage_pattern(self, usage_pattern):
         """Hourly cumulative storage held on one device, summing all storage needs that target this component plus the base need. Raises error if the cumulative goes negative or exceeds capacity."""
         total = sum(

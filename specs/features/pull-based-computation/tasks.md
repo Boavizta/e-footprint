@@ -392,6 +392,26 @@ both matrix encodings and **report the numbers to the user** before finalizing (
 
 **Depends on:** Task 7.
 
+**Status:** Done — three checkpoints await user ratification (numbers in the implementation report):
+(1) **matrix encoding**: shipped dict rows (313 kB compact / 416 kB indented on the big fixture,
+encode 1.1 ms / decode 0.9 ms, zero extra code) vs columnar (271 kB compact but 474 kB indented,
+1.3/1.0 ms, ~15 extra encoder/decoder lines + positional consumers) — a possible switch lands as a
+follow-up commit; (2) **breakdown-by-source**: serializing the hourly breakdown dicts would have
+added 8.4 MB (+66% of the file) for 5 edge devices, and they are not derivable from the device-level
+pairs, so the Sankey decoration now reads a new condensed `EdgeDevice.footprint_breakdown_summary`
+(`@lazy_attribute(serialize=True)`, period sums keyed by phase and component id, ~2 kB, matrix-style);
+(3) **nudge-loop gate target**: the ≥10× criterion is met on the finest calibration read (22.4×);
+coarser targets recompute wider genuine aggregation cones (job's network energy 6.7×, network total
+4.3× — hub re-aggregation cost, the early-cutoff/incremental-sum territory). Other notes: update-time
+safety under the narrow eager set required an explicit `guard=True` slot flag (capacity checks living
+outside the footprint cone — server/edge available-capacity, edge-storage cumulative check); loading
+uses the new side-effect-free `ModelingObject.enable_modeling_updates` (`Service`/`ExternalAPI`
+`after_init` eagerly pull); computed-dict facades of detached objects prune stale keys on the write
+path; scope grew beyond the listed files to the slot-declaration sites (serialize/guard flags), the
+Sankey decoration, `modeling_object.py`/`explainable_object*.py` (to_json contract, loader hooks) and
+regenerated committed fixtures (integration refs, templates, ecologits ref) — all serialization-contract
+mechanics. Equal-value recomputes re-measured: 61/94 (64.9%) on the 3 representative edits.
+
 ---
 
 ## Task 9 — Interface adaptation (stage 4, part 3 — lands in e-footprint-interface)

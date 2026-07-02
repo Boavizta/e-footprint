@@ -125,7 +125,7 @@ class Device(HardwareBase, AttributionSource):
             instances_energy * usage_pattern.country.average_carbon_intensity
         ).to(u.kg).set_label(f"Usage footprint for {usage_pattern.name}")
 
-    @computed_attribute
+    @computed_attribute(serialize=True)
     def energy_footprint(self):
         """Total hourly carbon emissions caused by the device's electricity use, summed across all usage patterns that run on this device."""
         return sum(
@@ -146,7 +146,7 @@ class Device(HardwareBase, AttributionSource):
             * self.device_fabrication_footprint_over_one_hour).to(u.kg).set_label(
             f"Fabrication footprint for {usage_pattern.name}")
 
-    @computed_attribute
+    @computed_attribute(serialize=True)
     def instances_fabrication_footprint(self):
         """Total hourly fabrication-phase emissions of all devices in use, summed across all usage patterns that run on this device."""
         return sum(

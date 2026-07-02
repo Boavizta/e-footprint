@@ -240,7 +240,7 @@ class TestEdgeComponentJsonRoundTrip(TestCase):
 
         # Save to JSON without calculated attributes and reload
         # That tests that the RAM dict calculated attributes have been duly initialized as dicts.
-        system_json = system_to_json(system, save_calculated_attributes=False)
+        system_json = system_to_json(system, save_computed_state=False)
         _, flat_obj_dict, _ = json_to_system(system_json)
 
 

@@ -54,7 +54,7 @@ class TestWeightedRelationships(TestCase):
     def test_json_round_trip_preserves_non_default_weights(self):
         system, journey, step_1, step_2, job = build_system(
             lambda s1, s2: {s1: 2, s2: 0.5}, lambda j: {j: 3}, "weighted")
-        system_json = system_to_json(system, save_calculated_attributes=False)
+        system_json = system_to_json(system, save_computed_state=False)
 
         class_obj_dict, flat_obj_dict, _ = json_to_system(json.loads(json.dumps(system_json)))
         reloaded_journey = flat_obj_dict[journey.id]
@@ -70,7 +70,7 @@ class TestWeightedRelationships(TestCase):
         reloaded_system = list(class_obj_dict["System"].values())[0]
         self.assertEqual(
             system.total_footprint.value_as_float_list, reloaded_system.total_footprint.value_as_float_list)
-        self.assertEqual(system_json, system_to_json(reloaded_system, save_calculated_attributes=False))
+        self.assertEqual(system_json, system_to_json(reloaded_system, save_computed_state=False))
 
     def test_weights_change_computed_results(self):
         baseline_system, *_ = build_system(lambda s1, s2: {s1: 1, s2: 1}, lambda j: {j: 1}, "baseline")

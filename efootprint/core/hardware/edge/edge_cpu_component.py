@@ -57,7 +57,7 @@ class EdgeCPUComponent(EdgeComponent):
         """Total compute provided by the CPU component, equal to per-unit compute times the number of units."""
         return (self.compute_per_unit * self.nb_of_units).set_label(f"Compute")
 
-    @computed_attribute
+    @computed_attribute(guard=True)
     def available_compute_per_instance(self):
         """Compute available for recurring needs after subtracting the base consumption. Raises error if the component is over-subscribed at design time."""
         available_compute_per_instance = (self.compute - self.base_compute_consumption)

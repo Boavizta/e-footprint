@@ -301,7 +301,7 @@ class TestRandomizedMutationParity(TestCase):
                 recomputed_value, incremental_value)
 
     def assert_parity_with_from_scratch_rebuild(self, system):
-        system_dict = system_to_json(system, save_calculated_attributes=False)
+        system_dict = system_to_json(system, save_computed_state=False)
         _, flat_obj_dict, _ = json_to_system(system_dict)
         rebuilt_by_id = {obj.id: obj for obj in self.all_objects(flat_obj_dict[system.id])}
         live_by_id = {obj.id: obj for obj in self.all_objects(system)}
@@ -355,3 +355,43 @@ class TestRandomizedMutationParity(TestCase):
             expected_op_names, applied_op_names,
             "Some mutation kinds never applied successfully across all seeds — the harness lost coverage:\n"
             + "\n".join(full_log))
+
+    def test_random_mutation_sequences_from_freshly_loaded_file_match_from_scratch_rebuild(self):
+        """Test parity for mutation sequences starting from a freshly deserialized canonical file —
+        the partial-reload state where cached serialized footprints sit below valueless
+        intermediates, so every invalidation must traverse the reinstalled calculation graph."""
+        import json
+
+        applied_op_names = set()
+        full_log = []
+        for seed in (101, 202):
+            with self.subTest(seed=seed):
+                rng = random.Random(seed)
+                built_system = self.build_system()
+                # Fill the lazy serialize-flagged slots, like a session after its first Sankey render.
+                built_system.impact_repartition_matrix
+                canonical_dict = json.loads(json.dumps(system_to_json(built_system)))
+                _, flat_obj_dict, _ = json_to_system(canonical_dict)
+                system = flat_obj_dict[built_system.id]
+                mutation_log = []
+                for mutation_index in range(MUTATIONS_PER_SEQUENCE):
+                    op_name, description, applied = self.apply_random_mutation(rng, system)
+                    mutation_log.append(f"{mutation_index + 1}. {description}")
+                    if applied:
+                        applied_op_names.add(op_name)
+                    try:
+                        self.assert_parity_with_from_scratch_rebuild(system)
+                    except AssertionError as e:
+                        raise AssertionError(
+                            f"Parity failure for loaded-file seed {seed} after mutations:\n"
+                            + "\n".join(mutation_log)) from e
+                try:
+                    self.assert_no_stale_slot_after_full_recompute(system)
+                except AssertionError as e:
+                    raise AssertionError(
+                        f"Staleness detected for loaded-file seed {seed} after mutations:\n"
+                        + "\n".join(mutation_log)) from e
+                full_log += [f"loaded-file seed {seed}:"] + mutation_log
+        self.assertGreater(
+            len(applied_op_names), 4,
+            "Too few mutation kinds applied on the loaded-file variant:\n" + "\n".join(full_log))

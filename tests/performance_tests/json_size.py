@@ -38,17 +38,17 @@ if __name__ == "__main__":
     system = generate_big_system(
         nb_of_servers_of_each_type=3, nb_of_uj_per_each_server_type=3, nb_of_uj_steps_per_uj=4, nb_of_up_per_uj=3,
         nb_years=5)
-    data = system_to_json(system, save_calculated_attributes=True)
+    data = system_to_json(system)
 
     # Step 1: Serialize JSON and get size
     json_str = json.dumps(data, separators=(",", ":"))  # compact encoding
     json_bytes = json_str.encode('utf-8')
     total_json_size = len(json_bytes) / 1000
-    with open("big_system_with_calc_attr_compact.json", "w") as file:
+    with open("big_system_compact.json", "w") as file:
         file.write(json.dumps(data, separators=(",", ":")))
-    with open("big_system_with_calc_attr_no_compact.json", "w") as file:
+    with open("big_system_no_compact.json", "w") as file:
         file.write(json.dumps(data))
-    with open("big_system_with_calc_attr_no_compact_indent.json", "w") as file:
+    with open("big_system_no_compact_indent.json", "w") as file:
         file.write(json.dumps(data, indent=4))
     # Step 2: Get compressed_values byte size
     compressed_values_size = get_values_size(data, "compressed_values")

@@ -10,6 +10,7 @@ from efootprint.abstract_modeling_classes.modeling_object import ModelingObject
 from efootprint.abstract_modeling_classes.explainable_object_base_class import Source, explainable_object_from_json
 from efootprint.all_classes_in_order import ALL_EFOOTPRINT_CLASSES
 from efootprint.api_utils.suppressed_efootprint_classes import ALL_SUPPRESSED_EFOOTPRINT_CLASSES_DICT
+from efootprint.api_utils.system_to_json import CALCULATION_GRAPH_KEY
 from efootprint.constants.sources import Sources
 from efootprint.logger import logger
 from efootprint.utils.tools import get_init_signature_params
@@ -130,32 +131,13 @@ def upgrade_system_dict_to_current_version(system_dict, efootprint_classes_dict=
         system_dict = deepcopy(system_dict)
         for version in range(json_major_version, efootprint_major_version):
             system_dict = VERSION_UPGRADE_HANDLERS[version](system_dict, efootprint_classes_dict)
-    elif json_major_version != efootprint_major_version:
+    elif json_major_version > efootprint_major_version:
         logger.warning(
             f"Warning: the version of the efootprint library used to generate the JSON file is "
             f"{json_efootprint_version} while the current version of the efootprint library is "
             f"{efootprint.__version__}. Please make sure that the JSON file is compatible with the current version"
             f" of the efootprint library.")
     return system_dict
-
-
-def detect_system_saved_with_calculated_attributes(
-        system_dict, classes_generation_order, efootprint_classes_dict) -> bool:
-    """True when the file stores computed values (an object serializes every one of its computed
-    attributes). Detected up front so loading can attach stored computed values as caches — or skip
-    the stray now-computed attributes older inputs-only files stored back when they were inputs."""
-    from efootprint.abstract_modeling_classes.reactive_core import computed_slots
-
-    for class_key in classes_generation_order:
-        if class_key not in system_dict:
-            continue
-        computed_names = list(computed_slots(efootprint_classes_dict[class_key]))
-        if not computed_names:
-            continue
-        for object_json_dict in system_dict[class_key].values():
-            if all(computed_name in object_json_dict for computed_name in computed_names):
-                return True
-    return False
 
 
 def build_sources_dict_from_system_dict(system_dict):
@@ -170,8 +152,16 @@ def build_sources_dict_from_system_dict(system_dict):
     return sources_dict
 
 
-def json_to_system(
-        system_dict, launch_system_computations=True, efootprint_classes_dict=None):
+def json_to_system(system_dict, efootprint_classes_dict=None):
+    """Rebuild a system from its serialized form, without running any computation.
+
+    Loading is version-aware: on an exact ``efootprint_version`` match, stored computed values attach
+    as trusted slot caches and the serialized calculation graph reinstalls the dependency edges, so
+    later edits invalidate exactly as on a live model. On ANY version mismatch, schema upgrade
+    handlers run, then whatever stored values survive them are demoted to an in-memory,
+    session-scoped baseline retained on each System (see ``System.compare_to_version_baseline``) —
+    the slots stay void and recompute on read, so methodology or upstream-data drift surfaces at
+    upgrade time instead of persisting silently."""
     if efootprint_classes_dict is None:
         efootprint_classes_dict = {modeling_object_class.__name__: modeling_object_class
                                    for modeling_object_class in ALL_EFOOTPRINT_CLASSES}
@@ -180,15 +170,20 @@ def json_to_system(
 
     validate_system_dict_structure(system_dict, valid_class_keys)
 
-    system_dict = upgrade_system_dict_to_current_version(system_dict, efootprint_classes_dict)
+    file_version = system_dict.get("efootprint_version")
+    version_matches = file_version == efootprint.__version__
+    if not version_matches:
+        system_dict = upgrade_system_dict_to_current_version(system_dict, efootprint_classes_dict)
+    # Stored values are only trusted as caches when their dependency edges can be reinstalled: a
+    # values-bearing file always carries the calculation-graph section, so its absence means an
+    # inputs-only file (nothing to attach anyway).
+    trust_stored_values = version_matches and CALCULATION_GRAPH_KEY in system_dict
 
     sources_dict = build_sources_dict_from_system_dict(system_dict)
 
     class_obj_dict = {}
     flat_obj_dict = {}
     explainable_object_dicts_to_create_after_objects_creation = {}
-    is_loaded_from_system_with_calculated_attributes = detect_system_saved_with_calculated_attributes(
-        system_dict, classes_generation_order, efootprint_classes_dict)
 
     for class_key in classes_generation_order:
         if class_key not in system_dict:
@@ -200,17 +195,13 @@ def json_to_system(
         for class_instance_key in system_dict[class_key]:
             new_obj, new_obj_expl_obj_dicts_to_create_after_objects_creation = current_class.from_json_dict(
                 system_dict[class_key][class_instance_key], flat_obj_dict, set_trigger_modeling_updates_to_true=False,
-                is_loaded_from_system_with_calculated_attributes=is_loaded_from_system_with_calculated_attributes,
-                sources_dict=sources_dict)
+                attach_stored_computed_values=trust_stored_values, sources_dict=sources_dict)
 
             explainable_object_dicts_to_create_after_objects_creation.update(
                 new_obj_expl_obj_dicts_to_create_after_objects_creation)
 
             if class_key != "System":
-                if is_loaded_from_system_with_calculated_attributes:
-                    new_obj.trigger_modeling_updates = True
-                else:
-                    new_obj.after_init()
+                new_obj.enable_modeling_updates()
 
             current_class_dict[class_instance_key] = new_obj
             flat_obj_dict[class_instance_key] = new_obj
@@ -218,13 +209,13 @@ def json_to_system(
         class_obj_dict[class_key] = current_class_dict
 
     for (modeling_obj, attr_key), attr_value in explainable_object_dicts_to_create_after_objects_creation.items():
+        if attr_key in modeling_obj.calculated_attributes and not trust_stored_values:
+            continue
         new_dict_items = {}
         for key, value in attr_value.items():
             new_dict_items[flat_obj_dict[key]] = explainable_object_from_json(value, sources_dict)
 
         if attr_key in modeling_obj.calculated_attributes:
-            if not is_loaded_from_system_with_calculated_attributes:
-                continue
             # Stored computed dict: attach as cached sub-slot values, never read the attribute first
             # (reading a void computed dict would compute it).
             from efootprint.abstract_modeling_classes.reactive_core import computed_slots
@@ -246,27 +237,29 @@ def json_to_system(
             explainable_object_item.initialize_calculus_graph_data_from_json(
                 explainable_object_json, flat_obj_dict, sources_dict)
 
-    if is_loaded_from_system_with_calculated_attributes:
-        rebuild_computed_dependency_edges(flat_obj_dict)
+    if trust_stored_values:
+        invert_children_links_of_stored_values(flat_obj_dict)
+        rebuild_dependency_graph(system_dict[CALCULATION_GRAPH_KEY], flat_obj_dict)
 
-    for system in class_obj_dict["System"].values():
-        if is_loaded_from_system_with_calculated_attributes:
-            # Calculus edges above make input edits invalidate precisely; structural edges only exist
-            # once getters have run, so the first relationship change triggers a full recompute.
-            from efootprint.abstract_modeling_classes.modeling_object import mark_system_edges_incomplete
-            mark_system_edges_incomplete(system)
-            system.trigger_modeling_updates = True
-        elif launch_system_computations:
-            system.after_init()
+    baseline_values = None
+    if not trust_stored_values and file_version is not None:
+        baseline_values = collect_baseline_values_from_other_version(
+            system_dict, efootprint_classes_dict, sources_dict)
+    for system in class_obj_dict.get("System", {}).values():
+        if baseline_values:
+            system.__dict__["_version_baseline"] = {
+                "efootprint_version": file_version, "values": baseline_values}
+        system.trigger_modeling_updates = True
 
     return class_obj_dict, flat_obj_dict, system_dict
 
 
-def rebuild_computed_dependency_edges(flat_obj_dict):
-    """Rebuild the calculus dependency edges of every stored computed value from its serialized
-    arithmetic ancestry, so input edits on a loaded model invalidate exactly as on a computed one."""
-    from efootprint.abstract_modeling_classes.reactive_core import (
-        _node_slot, instance_slot_registry, slot_of_attached_value)
+def invert_children_links_of_stored_values(flat_obj_dict):
+    """Serialized values carry only their direct-ancestor addresses; the reciprocal children links
+    are derived here by inversion, once every object is loaded (ancestors resolving to void slots are
+    filtered by the lazy hydration — a stored total's ancestors are themselves stored, by
+    construction of the serialize set)."""
+    from efootprint.abstract_modeling_classes.reactive_core import instance_slot_registry
 
     for obj in flat_obj_dict.values():
         for slot in list(instance_slot_registry(obj).values()):
@@ -275,13 +268,70 @@ def rebuild_computed_dependency_edges(flat_obj_dict):
             ancestors = getattr(slot._value, "direct_ancestors_with_id", None)
             if not ancestors:
                 continue
-            dependencies = set()
             for ancestor in ancestors:
-                is_input_dict_value = ancestor._reactive_slot is None and ancestor.dict_container is not None
-                dependencies.add(slot_of_attached_value(ancestor))
-                if is_input_dict_value:
-                    # An input-dict value: reading it live also couples the reader to the whole-dict
-                    # node (replacing the dict invalidates readers of any of its entries).
-                    dependencies.add(_node_slot(
-                        ancestor.modeling_obj_container, ancestor.attr_name_in_mod_obj_container))
-            slot.replace_dependencies(calculus_dependencies=dependencies)
+                ancestor.add_child_to_direct_children_with_id(slot._value)
+
+
+def rebuild_dependency_graph(calculation_graph, flat_obj_dict):
+    """Reinstall the serialized slot-level dependency edges (calculus and structural): materialize
+    each node's slot — computed, lazy, dict sub-slot or getter-less bump node — then wire the edges,
+    so later writes invalidate through the graph exactly as on the model that was saved."""
+    from efootprint.abstract_modeling_classes.reactive_core import (
+        _node_slot, computed_slots, lazy_slots)
+
+    slots = []
+    for container_id, attr_name, key_id in calculation_graph["nodes"]:
+        container = flat_obj_dict.get(container_id)
+        if container is None or (key_id is not None and key_id not in flat_obj_dict):
+            raise ValueError(
+                f"Calculation-graph node ({container_id}, {attr_name}, {key_id}) references an object absent "
+                f"from the file: the file is corrupted or was edited by hand.")
+        key = flat_obj_dict[key_id] if key_id is not None else None
+        container_class = container.efootprint_class
+        declared_computed_slots = computed_slots(container_class)
+        declared_lazy_slots = lazy_slots(container_class)
+        if attr_name in declared_computed_slots:
+            descriptor = declared_computed_slots[attr_name]
+            slots.append(descriptor.sub_slot(container, key) if key is not None else descriptor.slot(container))
+        elif attr_name in declared_lazy_slots:
+            slots.append(declared_lazy_slots[attr_name].slot(container))
+        else:
+            slots.append(_node_slot(container, attr_name, key))
+
+    for node_index, calculus_indices, structural_indices in calculation_graph["edges"]:
+        slots[node_index].replace_dependencies(
+            {slots[index] for index in calculus_indices}, {slots[index] for index in structural_indices})
+
+    for node_index_str, label in calculation_graph.get("labels", {}).items():
+        slots[int(node_index_str)].serialized_label = label
+
+
+def collect_baseline_values_from_other_version(system_dict, efootprint_classes_dict, sources_dict):
+    """Parse the stored computed values a version-mismatched file carries (after upgrade handlers
+    ran) into a side-band value bag keyed by (object id, attribute name, dict key id or None) — the
+    in-memory, never-serialized "as computed by vX" baseline the drift-comparison hook reads."""
+    from efootprint.abstract_modeling_classes.reactive_core import computed_slots, serialized_slots
+
+    baseline_values = {}
+    for class_key, class_dict in system_dict.items():
+        if class_key in ("efootprint_version", "Sources", CALCULATION_GRAPH_KEY) or not isinstance(class_dict, dict):
+            continue
+        efootprint_class = efootprint_classes_dict.get(class_key)
+        if efootprint_class is None:
+            continue
+        computed_names = set(computed_slots(efootprint_class))
+        raw_serialized_names = {
+            name for name, descriptor in serialized_slots(efootprint_class).items() if name not in computed_names}
+        for obj_id, obj_dict in class_dict.items():
+            for attr_key, attr_value in obj_dict.items():
+                if attr_key in computed_names and isinstance(attr_value, dict):
+                    if "label" in attr_value:
+                        baseline_values[(obj_id, attr_key, None)] = explainable_object_from_json(
+                            attr_value, sources_dict)
+                    else:
+                        for key_id, value_json in attr_value.items():
+                            baseline_values[(obj_id, attr_key, key_id)] = explainable_object_from_json(
+                                value_json, sources_dict)
+                elif attr_key in raw_serialized_names and isinstance(attr_value, list):
+                    baseline_values[(obj_id, attr_key, None)] = list(attr_value)
+    return baseline_values

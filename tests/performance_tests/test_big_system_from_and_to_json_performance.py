@@ -39,14 +39,12 @@ def update_on_system(
     system_to_json_duration = 0
     for i in range(nb_system_loadings):
         json_to_system_start = perf_counter()
-        class_obj_dict_computed, flat_obj_dict_computed, _ = json_to_system(
-            system_dict, launch_system_computations=False)
+        class_obj_dict_computed, flat_obj_dict_computed, _ = json_to_system(system_dict)
         json_to_system_duration += perf_counter() - json_to_system_start
         first_object = next(iter(class_obj_dict_computed[object_type].values()))
         first_object.__setattr__(attr_to_change, new_value)
         system_to_json_start = perf_counter()
-        system_to_json(next(iter(class_obj_dict_computed["System"].values())), save_calculated_attributes=True,
-                       output_filepath=None)
+        system_to_json(next(iter(class_obj_dict_computed["System"].values())), output_filepath=None)
         system_to_json_duration += perf_counter() - system_to_json_start
     avg_loading_editing_writing_time = round(1000 * (perf_counter() - start) / nb_system_loadings, 1)
     avg_json_to_system_time = round(1000 * json_to_system_duration / nb_system_loadings, 1)
@@ -66,14 +64,13 @@ class TestBigSystemFromAndToJsonPerformance(TestCase):
     def test_big_system_from_and_to_json_performance(self):
         big_system = generate_big_system(**BIG_SYSTEM_STANDARD_PARAMS)
         start = perf_counter()
-        system_dict = system_to_json(big_system, save_calculated_attributes=True, output_filepath=None)
+        system_dict = system_to_json(big_system, output_filepath=None)
         logger.info(f"Initial serialization of system to dict took {round((perf_counter() - start), 3)} seconds")
 
         start = perf_counter()
         nb_system_loadings = 2
         for i in range(nb_system_loadings):
-            class_obj_dict_computed, flat_obj_dict_computed, _ = json_to_system(
-                system_dict, launch_system_computations=False)
+            class_obj_dict_computed, flat_obj_dict_computed, _ = json_to_system(system_dict)
         avg_loading_time = (perf_counter() - start) / nb_system_loadings
         logger.info(
             f"deserializing system took {round(avg_loading_time, 3)} seconds on average for {nb_system_loadings} times")
@@ -81,8 +78,7 @@ class TestBigSystemFromAndToJsonPerformance(TestCase):
 
         start = perf_counter()
         for i in range(nb_system_loadings):
-            system_to_json(next(iter(class_obj_dict_computed["System"].values())), save_calculated_attributes=True,
-                                 output_filepath=None)
+            system_to_json(next(iter(class_obj_dict_computed["System"].values())), output_filepath=None)
         avg_writing_time = (perf_counter() - start) / nb_system_loadings
         logger.info(
             f"serializing system took {round(avg_writing_time, 3)} seconds on average for {nb_system_loadings} times")

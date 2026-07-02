@@ -14,7 +14,7 @@ from efootprint.core.hardware.edge.edge_component import EdgeComponent
 from efootprint.abstract_modeling_classes.source_objects import SourceValue
 from efootprint.core.hardware.hardware_base import InsufficientCapacityError
 from efootprint.abstract_modeling_classes.reactive_core import (
-    computed_attribute, computed_dict, lazy_attribute, ReverseCollection)
+    computed_attribute, computed_dict, lazy_attribute, record_calculus_edges_from_ancestry, ReverseCollection)
 
 if TYPE_CHECKING:
     from efootprint.core.usage.edge.recurrent_edge_device_need import RecurrentEdgeDeviceNeed
@@ -259,7 +259,7 @@ class EdgeDevice(ModelingObject, AttributionSource):
         return instances_energy.set_label(
             "Total energy consumed across usage patterns")
 
-    @computed_attribute
+    @computed_attribute(serialize=True)
     def energy_footprint(self):
         """Total hourly energy-use carbon footprint, summed across every usage pattern."""
         energy_footprint = sum(
@@ -267,7 +267,7 @@ class EdgeDevice(ModelingObject, AttributionSource):
         return energy_footprint.set_label(
             "Total energy footprint across usage patterns")
 
-    @computed_attribute
+    @computed_attribute(serialize=True)
     def instances_fabrication_footprint(self):
         """Total hourly fabrication-phase carbon footprint, summed across every usage pattern."""
         instances_fabrication_footprint = sum(
@@ -306,6 +306,23 @@ class EdgeDevice(ModelingObject, AttributionSource):
             LifeCyclePhases.MANUFACTURING: self.fabrication_footprint_breakdown_by_source,
             LifeCyclePhases.USAGE: self.energy_footprint_breakdown_by_source,
         }
+
+    @lazy_attribute(serialize=True)
+    def footprint_breakdown_summary(self) -> dict:
+        """The condensed per-component breakdown the Sankey decoration reads: each component's
+        attributed footprint reduced to its period sum in kg, by life-cycle phase —
+        {phase value: {component id: kg}}. Calculus edges are recorded from each hourly breakdown
+        value before the reduction drops its ancestry, so the summary invalidates with them."""
+        summary = {}
+        for phase, breakdown_by_component in self.footprint_breakdown_by_source.items():
+            phase_summary = {}
+            for component, breakdown_value in breakdown_by_component.items():
+                record_calculus_edges_from_ancestry(breakdown_value)
+                summed = breakdown_value.sum()
+                phase_summary[component.id] = (
+                    0.0 if isinstance(summed, EmptyExplainableObject) else summed.value.to(u.kg).magnitude)
+            summary[phase.value] = phase_summary
+        return summary
 
     # --- Attribution-only atom physics and builder (lazy projection slots / methods, consumed only by the
     # attribution layer, never by the eager calculated-attribute graph) ---

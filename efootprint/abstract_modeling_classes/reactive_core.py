@@ -103,9 +103,19 @@ class ReactiveSlot:
         # Lazy slots (read-time projections) are invalidated like any slot but never eagerly
         # recomputed: they stay void until the next read pulls them.
         self.lazy = False
+        # Guard slots (validation attributes) exist to reject invalid states: they are eagerly
+        # re-pulled after every invalidation that voids them, so bad edits fail at update time even
+        # when nothing else reads them.
+        self.guard = False
         # Eager sweeps pull lower precedence first: key-set nodes before their sub-slots, so stale
         # sub-slots are discarded before the sweep reaches them.
         self.pull_precedence = 0
+        # (descriptor, instance) backreference set on computed-dict key-set slots, so the write path
+        # can prune stale facade keys after an invalidation wave without recomputing any value.
+        self.key_set_binding = None
+        # Label carried by the serialized calculation graph for slots loaded valueless: kept so
+        # re-serializing a partially computed model doesn't lose the graph's display labels.
+        self.serialized_label = None
         self._value = _VOID
         self._wave_passed = False
         self._dependents = set()
@@ -359,24 +369,40 @@ def _release_value(value):
         value.set_modeling_obj_container(None, None)
 
 
+# MRO slot collection is on hot paths (every load-time slot resolution, every calculated_attributes
+# read): memoized per (registry, class), invalidated by any slot registration (which only happens at
+# class-definition time or through add_computed_attribute).
+_slot_collection_cache = {}
+
+
 def _register_slot(registry_name: str, owner: type, name: str, descriptor):
     if registry_name not in owner.__dict__:
         setattr(owner, registry_name, {})
     owner.__dict__[registry_name][name] = descriptor
+    _slot_collection_cache.clear()
 
 
 def _collect_slots(registry_name: str, cls: type) -> dict:
-    slots = {}
-    for klass in reversed(cls.__mro__):
-        slots.update(klass.__dict__.get(registry_name, {}))
+    cache_key = (registry_name, cls)
+    slots = _slot_collection_cache.get(cache_key)
+    if slots is None:
+        slots = {}
+        for klass in reversed(cls.__mro__):
+            slots.update(klass.__dict__.get(registry_name, {}))
+        _slot_collection_cache[cache_key] = slots
     return slots
 
 
 def computed_slots(cls: type) -> dict:
     """All computed-attribute descriptors visible on cls (name -> descriptor), the most derived
     declaration winning; attributes a subclass removed with removed_computed_attribute are excluded."""
-    return {name: descriptor for name, descriptor in _collect_slots("_declared_computed_slots", cls).items()
-            if not isinstance(descriptor, removed_computed_attribute)}
+    cache_key = ("computed_slots_filtered", cls)
+    slots = _slot_collection_cache.get(cache_key)
+    if slots is None:
+        slots = {name: descriptor for name, descriptor in _collect_slots("_declared_computed_slots", cls).items()
+                 if not isinstance(descriptor, removed_computed_attribute)}
+        _slot_collection_cache[cache_key] = slots
+    return slots
 
 
 def _inherited_slot_doc(owner: type, name: str) -> str | None:
@@ -402,8 +428,6 @@ def bump_reverse_nodes(value_mod_obj, container):
     whose member type matches the container."""
     if container is None:
         return
-    from efootprint.abstract_modeling_classes.modeling_object import wipe_slots_of_incomplete_edge_systems
-    wipe_slots_of_incomplete_edge_systems([value_mod_obj, container])
     invalidate_node_if_exists(value_mod_obj, CONTAINERS_NODE_NAME)
     for name, descriptor in reverse_slots(type(value_mod_obj)).items():
         member_type = descriptor._resolve_member_type()
@@ -439,9 +463,23 @@ class computed_attribute:
     owner (label/graph/container bookkeeping), record calculus edges from the result's arithmetic
     ancestry, cache. Calling the descriptor as ``ParentClass.<attr>(self)`` runs the parent's getter,
     mirroring unbound-method syntax for overriding getters that refine an inherited calculation.
+
+    Declared bare (``@computed_attribute``) or parametrized (``@computed_attribute(serialize=True)``):
+    the ``serialize`` flag marks the slot's cached value for persistence under the minimal
+    serialization contract (the single source of truth for "what serializes"), and ``guard=True``
+    marks a slot whose getter enforces a user-facing constraint (raising on invalid states) without
+    feeding the footprint totals: guard slots eagerly recompute whenever an update invalidates them,
+    so invalid edits are rejected at update time. ``<name>_validation`` slots are guards implicitly.
     """
 
-    def __init__(self, getter):
+    def __init__(self, getter=None, *, serialize=False, guard=False):
+        self.serialize = serialize
+        self.guard = guard
+        self.getter = None
+        if getter is not None:
+            self._bind_getter(getter)
+
+    def _bind_getter(self, getter):
         self.getter = getter
         self.attr_name = getter.__name__
         self.__doc__ = getter.__doc__
@@ -470,6 +508,7 @@ class computed_attribute:
             slot = ReactiveSlot(
                 f"{self.attr_name} of {getattr(instance, 'id', instance)}", on_value_dropped=self._on_value_dropped)
             slot.getter = self._make_compute_closure(instance, slot)
+            slot.guard = self.guard or self.attr_name.endswith("_validation")
             registry[self.attr_name] = slot
         return slot
 
@@ -527,6 +566,11 @@ class computed_attribute:
             slot._drop_value()
 
     def __call__(self, instance, *args):
+        if self.getter is None:
+            # Parametrized decorator form: @computed_attribute(serialize=True) first builds an
+            # unbound descriptor, then this call binds the decorated getter.
+            self._bind_getter(instance)
+            return self
         return self.getter(instance, *args)
 
 
@@ -543,8 +587,8 @@ class _ComputedDictAttribute(computed_attribute):
 
     _on_value_dropped = None
 
-    def __init__(self, getter, keys: str):
-        super().__init__(getter)
+    def __init__(self, getter, keys: str, guard=False, serialize=False):
+        super().__init__(getter, guard=guard, serialize=serialize)
         self.keys = keys
 
     def slot(self, instance) -> ReactiveSlot:
@@ -552,6 +596,7 @@ class _ComputedDictAttribute(computed_attribute):
         # Eager sweeps must sync the key set before touching sub-slots, so stale sub-slots are
         # discarded before being pulled.
         slot.pull_precedence = -1
+        slot.key_set_binding = (self, instance)
         return slot
 
     def facade(self, instance):
@@ -568,16 +613,21 @@ class _ComputedDictAttribute(computed_attribute):
             facades[self.attr_name] = facade
         return facade
 
+    def discard_stale_keys(self, instance, current_keys):
+        """Drop facade entries (and their sub-slots) for keys that left the key collection."""
+        facade = self.facade(instance)
+        registry = instance_slot_registry(instance)
+        for stale_key in [key for key in list(dict.keys(facade)) if key not in current_keys]:
+            stale_slot = registry.pop((self.attr_name, stale_key), None)
+            if stale_slot is not None:
+                stale_slot.discarded = True
+            facade._drop_entry_passively(stale_key)
+
     def _make_compute_closure(self, instance, slot):
         def compute():
             current_keys = list(getattr(instance, self.keys))
             facade = self.facade(instance)
-            registry = instance_slot_registry(instance)
-            for stale_key in [key for key in list(dict.keys(facade)) if key not in current_keys]:
-                stale_slot = registry.pop((self.attr_name, stale_key), None)
-                if stale_slot is not None:
-                    stale_slot.discarded = True
-                facade._drop_entry_passively(stale_key)
+            self.discard_stale_keys(instance, current_keys)
             for key in current_keys:
                 self.sub_slot(instance, key).pull()
             ordered_keys = list(dict.fromkeys(current_keys))
@@ -599,6 +649,7 @@ class _ComputedDictAttribute(computed_attribute):
                 f"{self.attr_name}[{getattr(key, 'id', key)}] of {getattr(instance, 'id', instance)}",
                 on_value_dropped=_release_value)
             slot.getter = self._make_element_compute_closure(instance, key, slot)
+            slot.guard = self.guard or self.attr_name.endswith("_validation")
             registry[registry_key] = slot
         return slot
 
@@ -626,18 +677,27 @@ class _ComputedDictAttribute(computed_attribute):
         self._attach_element(instance, key, value, slot)
         slot.attach_cached_value(value)
 
+    def peek(self, instance):
+        """The facade, only when fully cached (key-set node and every entry's sub-slot) — a facade
+        with invalidated sub-slots still holds the dropped, unlinked values until the next read syncs
+        it, and those must never be observed as current state (display or serialization)."""
+        registry = instance.__dict__.get(_INSTANCE_SLOT_REGISTRY_ATTR, {})
+        slot = registry.get(self.attr_name)
+        if slot is None or not slot.has_cached_value:
+            return None
+        facade = slot._value
+        for key in dict.keys(facade):
+            sub_slot = registry.get((self.attr_name, key))
+            if sub_slot is None or not sub_slot.has_cached_value:
+                return None
+        return facade
+
     def attach_cached_value(self, instance, value):
         """Store a whole dict without computing: attach each entry as a cached sub-slot and cache the
         synced facade in the key-set node."""
         facade = self.facade(instance)
-        registry = instance_slot_registry(instance)
         input_items = list(dict.items(value)) if isinstance(value, dict) else []
-        input_keys = [key for key, item_value in input_items]
-        for stale_key in [key for key in list(dict.keys(facade)) if key not in input_keys]:
-            stale_slot = registry.pop((self.attr_name, stale_key), None)
-            if stale_slot is not None:
-                stale_slot.discarded = True
-            facade._drop_entry_passively(stale_key)
+        self.discard_stale_keys(instance, [key for key, item_value in input_items])
         for key, item_value in input_items:
             self.attach_element_cached_value(instance, key, item_value)
         self.slot(instance).attach_cached_value(facade)
@@ -652,12 +712,28 @@ class _ComputedDictAttribute(computed_attribute):
         return slot.pull()
 
 
-def computed_dict(keys: str):
+def computed_dict(keys: str, guard=False, serialize=False):
     """Decorator declaring a computed dict attribute keyed by the objects listed by the ``keys``
-    attribute name, e.g. ``@computed_dict(keys="usage_patterns")``."""
+    attribute name, e.g. ``@computed_dict(keys="usage_patterns")``. ``guard=True`` marks a dict whose
+    element getters enforce user-facing constraints outside the footprint cone (see
+    ``computed_attribute``): its key-set node and sub-slots eagerly recompute when invalidated.
+    ``serialize=True`` persists the materialized entries under the minimal serialization contract."""
     def decorator(getter):
-        return _ComputedDictAttribute(getter, keys)
+        return _ComputedDictAttribute(getter, keys, guard=guard, serialize=serialize)
     return decorator
+
+
+def prune_stale_computed_dict_keys(invalidated_slots):
+    """Post-wave write-path pass: for every computed-dict key-set slot the wave visited, drop facade
+    keys that left the key collection. The full facade sync only happens on read, so without this
+    pass a detached object's facades would keep registering their stale keys' container bookkeeping —
+    keeping the detached object reachable (e.g. serialized back into the model). Values are not
+    recomputed: only the key collection is read."""
+    for slot in invalidated_slots:
+        if slot.key_set_binding is None or slot.discarded:
+            continue
+        descriptor, instance = slot.key_set_binding
+        descriptor.discard_stale_keys(instance, list(getattr(instance, descriptor.keys)))
 
 
 class lazy_attribute:
@@ -667,12 +743,29 @@ class lazy_attribute:
     eagerly recomputed — after an invalidation it stays void until the next read. Its value is held
     raw, not attached to the owner's explainability bookkeeping, so getters may return plain dicts,
     tuples or dataclass instances of explainable values; the engine records calculus edges from every
-    explainable found in the returned structure, on top of the reads recorded while the getter ran."""
+    explainable found in the returned structure, on top of the reads recorded while the getter ran.
 
-    def __init__(self, getter):
+    Declared bare (``@lazy_attribute``) or parametrized (``@lazy_attribute(serialize=True)``): a
+    serialize-flagged lazy slot persists its cached value when materialized (it fills lazily, so a
+    save before the first read simply omits it) — the value must then be JSON-native, since raw lazy
+    values bypass the explainable serialization machinery."""
+
+    def __init__(self, getter=None, *, serialize=False):
+        self.serialize = serialize
+        self.getter = None
+        if getter is not None:
+            self._bind_getter(getter)
+
+    def _bind_getter(self, getter):
         self.getter = getter
         self.attr_name = getter.__name__
         self.__doc__ = getter.__doc__
+
+    def __call__(self, getter):
+        if self.getter is not None:
+            raise TypeError(f"Lazy attribute {self.attr_name} is not callable")
+        self._bind_getter(getter)
+        return self
 
     def __set_name__(self, owner, name):
         if name != self.getter.__name__:
@@ -698,8 +791,16 @@ class lazy_attribute:
         return compute
 
     def attach_cached_value(self, instance, value):
-        """Store a value in the slot without computing — the pinning path tests use."""
+        """Store a value in the slot without computing — the load path for serialize-flagged lazy
+        slots and the pinning path tests use."""
         self.slot(instance).attach_cached_value(value)
+
+    def peek(self, instance):
+        """The cached value, or None when the slot is void — never computes (save paths)."""
+        slot = instance.__dict__.get(_INSTANCE_SLOT_REGISTRY_ATTR, {}).get(self.attr_name)
+        if slot is not None and slot.has_cached_value:
+            return slot._value
+        return None
 
     def __get__(self, instance, owner=None):
         if instance is None:
@@ -720,6 +821,13 @@ def lazy_slots(cls: type) -> dict:
     """All lazy-projection descriptors visible on cls (name -> descriptor), the most derived
     declaration winning."""
     return _collect_slots("_declared_lazy_slots", cls)
+
+
+def serialized_slots(cls: type) -> dict:
+    """All serialize-flagged slot descriptors visible on cls (computed and lazy), name -> descriptor —
+    the single source of truth for which slots persist under the minimal serialization contract."""
+    return {name: descriptor for name, descriptor in {**computed_slots(cls), **lazy_slots(cls)}.items()
+            if descriptor.serialize}
 
 
 def add_computed_attribute(cls: type, name: str, getter):

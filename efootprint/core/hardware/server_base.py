@@ -241,7 +241,7 @@ class ServerBase(InfraHardware, AttributionSource):
             [service.base_compute_consumption for service in self.installed_services])).set_label(
             f"Occupied CPU per instance including services")
 
-    @computed_attribute
+    @computed_attribute(guard=True)
     def available_ram_per_instance(self):
         """RAM each instance has left for jobs after applying the utilization rate and subtracting RAM occupied by installed services."""
         available_ram_per_instance_before_services_installation = (self.ram * self.utilization_rate).to(u.GB_ram)
@@ -254,7 +254,7 @@ class ServerBase(InfraHardware, AttributionSource):
         return available_ram_per_instance.set_label(
             f"Available RAM per instance")
 
-    @computed_attribute
+    @computed_attribute(guard=True)
     def available_compute_per_instance(self):
         """Compute each instance has left for jobs after applying the utilization rate and subtracting compute occupied by installed services."""
         available_compute_per_instance_before_services_installation = self.compute * self.utilization_rate
@@ -321,7 +321,7 @@ class ServerBase(InfraHardware, AttributionSource):
 
         return load_energy_footprint.to(u.kg).set_label(f"Hourly load energy footprint")
 
-    @computed_attribute
+    @computed_attribute(serialize=True)
     def energy_footprint(self):
         """Hourly carbon emissions caused by the electricity consumed by the server, equal to the sum of its idle and load energy footprints."""
         return (self.idle_energy_footprint + self.load_energy_footprint).to(u.kg).set_label(

@@ -25,9 +25,11 @@ def duplicate_system(system) -> "System":
     """Return a deep copy of ``system`` with a fresh System id and every object id preserved.
 
     Serialize→deserialize round-trip: the JSON carries the original ids, so the copy's objects keep them
-    (which lets the comparison diff pair objects by identity), and only the System gets a new id.
+    (which lets the comparison diff pair objects by identity), and only the System gets a new id. The
+    round-trip happens in-process at the current version, so cached computed values carry over as
+    trusted caches — reading the duplicate does not recompute what the original had already computed.
     """
-    system_dict = system_to_json(system, save_calculated_attributes=False)
+    system_dict = system_to_json(system)
     class_obj_dict, _, _ = json_to_system(system_dict)
     duplicated_system = next(iter(class_obj_dict["System"].values()))
 

@@ -1,5 +1,6 @@
 import uuid
 from copy import copy
+from functools import lru_cache
 from typing import Literal, Type, Optional, TYPE_CHECKING
 import os
 
@@ -79,12 +80,20 @@ def _resolve_sentinel_source(source_id: str) -> Optional[Source]:
     return None
 
 
+@lru_cache(maxsize=None)
+def _parse_value_address(attr_key: str) -> tuple:
+    """Parse a serialized value address string back into its (container id, attribute, key id)
+    triple. Addresses are stable strings repeated across ancestor/children/formula references, and
+    eval-based parsing is slow, so the parse is memoized process-wide."""
+    return eval(attr_key)
+
+
 def get_attribute_from_flat_obj_dict(attr_key: str, flat_obj_dict: dict):
     """Resolve a serialized (container id, attribute[, key id]) address to its currently stored value,
     or None when the slot is void — never computes: resolution runs inside graph bookkeeping (value
     drops, rehydration), where a pull would recompute slots mid-invalidation. A void address means the
     referenced value generation was dropped, so there is no live object to link to."""
-    modeling_obj_container_id, attr_name_in_mod_obj_container, key_in_dict = eval(attr_key)
+    modeling_obj_container_id, attr_name_in_mod_obj_container, key_in_dict = _parse_value_address(attr_key)
     container_attr_value = peek_attribute_value(
         flat_obj_dict[modeling_obj_container_id], attr_name_in_mod_obj_container)
     if key_in_dict:
@@ -107,6 +116,7 @@ class ExplainableObject(ObjectLinkedToModelingObj):
         'operator',
         '_keys_of_direct_ancestors_with_id_loaded_from_json',
         '_keys_of_direct_children_with_id_loaded_from_json',
+        '_graph_links_hydrated_from_json',
         '_flat_obj_dict',
         '_sources_dict',
         '_direct_ancestors_with_id',
@@ -140,9 +150,12 @@ class ExplainableObject(ObjectLinkedToModelingObj):
         if "direct_ancestors_with_id" in json_input:
             self._keys_of_direct_ancestors_with_id_loaded_from_json = json_input[
                 "direct_ancestors_with_id"]
-            self._keys_of_direct_children_with_id_loaded_from_json = json_input[
-                "direct_children_with_id"]
-            self.explain_nested_tuples_from_json = json_input["explain_nested_tuples"]
+            # Children are not serialized: they are derived by inverting the stored ancestors once
+            # every object is loaded (see the loader's children-inversion pass).
+            self._keys_of_direct_children_with_id_loaded_from_json = json_input.get(
+                "direct_children_with_id", [])
+            self._graph_links_hydrated_from_json = False
+            self.explain_nested_tuples_from_json = json_input.get("explain_nested_tuples")
             self._flat_obj_dict = flat_obj_dict
 
     def __init__(
@@ -165,6 +178,7 @@ class ExplainableObject(ObjectLinkedToModelingObj):
         self.operator = operator
         self._keys_of_direct_ancestors_with_id_loaded_from_json = None
         self._keys_of_direct_children_with_id_loaded_from_json = None
+        self._graph_links_hydrated_from_json = False
         self._flat_obj_dict = None
         self._sources_dict = None
         self._direct_ancestors_with_id = []
@@ -225,15 +239,19 @@ class ExplainableObject(ObjectLinkedToModelingObj):
         self.explain_nested_tuples_from_json = None
 
     def load_ancestors_and_children_from_json(self):
-        if (self._keys_of_direct_ancestors_with_id_loaded_from_json is not None
-                and self._keys_of_direct_children_with_id_loaded_from_json is not None):
-            # Dropped value generations resolve to None and are filtered: their graph links are dead.
-            self.direct_ancestors_with_id = [
+        if (not self._graph_links_hydrated_from_json
+                and self._keys_of_direct_ancestors_with_id_loaded_from_json is not None):
+            self._graph_links_hydrated_from_json = True
+            # Dropped or valueless generations resolve to None and are filtered from the live links:
+            # their graph links are dead until recomputed. The serialized keys are kept as loaded
+            # (assigned directly, not through the setters that would clear them), so re-serializing
+            # never prunes references to slots that merely happen to be valueless right now.
+            self._direct_ancestors_with_id = [
                 ancestor for ancestor in (
                     get_attribute_from_flat_obj_dict(direct_ancestor_key, self._flat_obj_dict)
                     for direct_ancestor_key in self._keys_of_direct_ancestors_with_id_loaded_from_json)
                 if ancestor is not None]
-            self.direct_children_with_id = [
+            self._direct_children_with_id = [
                 child for child in (
                     get_attribute_from_flat_obj_dict(direct_child_key, self._flat_obj_dict)
                     for direct_child_key in self._keys_of_direct_children_with_id_loaded_from_json)
@@ -585,7 +603,7 @@ class ExplainableObject(ObjectLinkedToModelingObj):
 
         return recurse(self.explain_nested_tuples)
 
-    def to_json(self, save_calculated_attributes=False):
+    def to_json(self, with_formula=False):
         output_dict = {}
 
         if isinstance(self._value, (str, bool)):
@@ -602,15 +620,14 @@ class ExplainableObject(ObjectLinkedToModelingObj):
         if self.comment is not None:
             output_dict["comment"] = self.comment
 
-        if save_calculated_attributes:
+        if with_formula:
+            # Serialized computed values carry their direct-ancestor addresses (children derive by
+            # inversion at load) and their formula tuples, so a stored value stays explainable.
             if self._keys_of_direct_ancestors_with_id_loaded_from_json is not None:
                 output_dict["direct_ancestors_with_id"] = self._keys_of_direct_ancestors_with_id_loaded_from_json
-                output_dict["direct_children_with_id"] = self._keys_of_direct_children_with_id_loaded_from_json
             else:
                 output_dict["direct_ancestors_with_id"] = [
                     ancestor.full_str_tuple_id for ancestor in self.direct_ancestors_with_id]
-                output_dict["direct_children_with_id"] = [
-                    child.full_str_tuple_id for child in self.direct_children_with_id]
 
             if self.explain_nested_tuples_from_json is not None:
                 output_dict["explain_nested_tuples"] = self.explain_nested_tuples_from_json

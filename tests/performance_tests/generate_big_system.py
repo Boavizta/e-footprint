@@ -39,8 +39,9 @@ from efootprint.logger import logger
 logger.info(f"Finished importing modules in {round((perf_counter() - start), 3)} seconds")
 
 root_dir = os.path.dirname(os.path.abspath(__file__))
-INPUTS_ONLY_FIXTURE = os.path.join(root_dir, "big_system.json")
-WITH_CALC_ATTR_FIXTURE = os.path.join(root_dir, "big_system_with_calc_attr.json")
+# Canonical-format fixture: inputs, serialize-flagged slot values (impact-repartition matrix filled,
+# as after a session's first Sankey render) and the values-free calculation graph.
+BIG_SYSTEM_FIXTURE = os.path.join(root_dir, "big_system.json")
 
 # Reference configuration for the committed big-system fixtures and the baseline benchmarks.
 BIG_SYSTEM_STANDARD_PARAMS = {
@@ -252,7 +253,7 @@ def generate_big_system(
     return system
 
 if __name__ == "__main__":
-    # Regenerate the committed performance fixtures (run after any change to the serialized shape).
+    # Regenerate the local performance fixture (run after any change to the serialized shape).
     # Name-based ids keep regenerated fixtures deterministic and diffable, like in tests/conftest.py.
     from efootprint.abstract_modeling_classes.explainable_object_base_class import Source
     from efootprint.abstract_modeling_classes.modeling_object import ModelingObject
@@ -260,6 +261,8 @@ if __name__ == "__main__":
     Source._use_name_as_id = True
 
     system = generate_big_system(**BIG_SYSTEM_STANDARD_PARAMS)
-    system_to_json(system, save_calculated_attributes=False, output_filepath=INPUTS_ONLY_FIXTURE)
-    system_to_json(system, save_calculated_attributes=True, output_filepath=WITH_CALC_ATTR_FIXTURE)
-    logger.info("Regenerated big_system.json and big_system_with_calc_attr.json")
+    # Fill the lazy impact-repartition summary so the fixture matches an interface session saved
+    # after its first Sankey render.
+    system.impact_repartition_matrix
+    system_to_json(system, output_filepath=BIG_SYSTEM_FIXTURE)
+    logger.info("Regenerated big_system.json")

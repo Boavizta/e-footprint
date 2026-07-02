@@ -112,7 +112,7 @@ class TestEcoLogitsVideoIntegration(unittest.TestCase):
         try:
             with tempfile.TemporaryDirectory() as tmpdir:
                 path = os.path.join(tmpdir, "video_system.json")
-                system_to_json(system, save_calculated_attributes=True, output_filepath=path)
+                system_to_json(system, output_filepath=path)
                 with open(path) as f:
                     system_dict = json.load(f)
                 _, flat_obj_dict, _ = json_to_system(system_dict)

@@ -9,8 +9,8 @@ class ExplainableDict(ExplainableObject):
     def from_json_dict(cls, d):
         return cls(d["value"], label=d["label"])
 
-    def to_json(self, save_calculated_attributes=False):
+    def to_json(self, with_formula=False):
         output_dict = {"value": self.value}
-        output_dict.update(super().to_json(save_calculated_attributes))
+        output_dict.update(super().to_json(with_formula))
 
         return output_dict

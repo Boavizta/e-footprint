@@ -350,14 +350,15 @@ class ExplainableObjectDict(ObjectLinkedToModelingObjBase, dict):
             )
         ]
 
-    def to_json(self, save_calculated_attributes=False):
+    def to_json(self, with_formula=False):
         output_dict = {}
 
-        for key, value in self.items():
+        # Raw dict reads: serialization peeks the current entries and must never pull sub-slots.
+        for key, value in dict.items(self):
             if isinstance(key, ModelingObject):
-                output_dict[key.id] = value.to_json(save_calculated_attributes)
+                output_dict[key.id] = value.to_json(with_formula)
             elif isinstance(key, str):
-                output_dict[key] = value.to_json(save_calculated_attributes)
+                output_dict[key] = value.to_json(with_formula)
             else:
                 raise ValueError(f"Key {key} is not a ModelingObject or a string")
 

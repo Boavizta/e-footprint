@@ -163,7 +163,7 @@ class IntegrationEdgeDeviceGroupBaseClass(IntegrationTestBaseClass):
         # (child_group) and the system device (self.edge_device) are computed in the same recomputation pass. Without
         # topological ordering of EdgeDeviceGroup instances within that pass, child_group.effective_nb_of_units_within_root
         # can be computed before parent_group's, embedding a stale EmptyExplainableObject as a graph ancestor. That
-        # orphaned object then causes system_to_json(save_calculated_attributes=True) to raise a ValueError when
+        # orphaned object then causes system_to_json to raise a ValueError when
         # traversing the calculation graph. This test guards against that regression.
         parent_group = EdgeDeviceGroup("transient parent group")
         child_group = EdgeDeviceGroup("transient child group")
@@ -184,7 +184,7 @@ class IntegrationEdgeDeviceGroupBaseClass(IntegrationTestBaseClass):
                 [parent_group.edge_device_counts, updated_edge_device_counts],
             ])
 
-            system_json = system_to_json(self.system, save_calculated_attributes=True)
+            system_json = system_to_json(self.system)
             parent_group_json = system_json["EdgeDeviceGroup"][parent_group.id]
 
             self.assertEqual(
@@ -218,7 +218,7 @@ class IntegrationEdgeDeviceGroupBaseClass(IntegrationTestBaseClass):
 
     def run_test_system_to_json_and_back_preserves_group_counts(self):
         """JSON round-trip must preserve sub_group_counts and edge_device_counts."""
-        system_json = system_to_json(self.system, save_calculated_attributes=False)
+        system_json = system_to_json(self.system, save_computed_state=False)
         _, flat_obj_dict, _ = json_to_system(system_json)
 
         reloaded_building = flat_obj_dict[self.building_group.id]
@@ -247,7 +247,7 @@ class IntegrationEdgeDeviceGroupBaseClass(IntegrationTestBaseClass):
 
     def run_test_json_round_trip_recalculates_correct_effective_nb(self):
         """After a JSON round-trip, calculated attributes are correct."""
-        system_json = system_to_json(self.system, save_calculated_attributes=False)
+        system_json = system_to_json(self.system, save_computed_state=False)
         _, flat_obj_dict, _ = json_to_system(system_json)
 
         reloaded_building = flat_obj_dict[self.building_group.id]

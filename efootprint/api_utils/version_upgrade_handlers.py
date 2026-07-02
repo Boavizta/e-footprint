@@ -746,6 +746,36 @@ def upgrade_version_21_to_22(system_dict, efootprint_classes_dict=None):
     return system_dict
 
 
+def upgrade_version_22_to_23(system_dict, efootprint_classes_dict=None):
+    """Version 23 introduces the minimal persistence contract: only serialize-flagged slots persist
+    (with a values-free calculation-graph section), and stored values are only trusted on an exact
+    version match. Pre-23 files either carried no computed values (inputs-only saves) or every one of
+    them in the exhaustive legacy format; both cases upgrade to inputs-only — computed entries are
+    dropped and everything absent recomputes on read."""
+    from efootprint.abstract_modeling_classes.reactive_core import computed_slots
+
+    if efootprint_classes_dict is None:
+        from efootprint.all_classes_in_order import ALL_EFOOTPRINT_CLASSES
+        efootprint_classes_dict = {cls.__name__: cls for cls in ALL_EFOOTPRINT_CLASSES}
+    dropped_computed_entries = 0
+    for class_key, class_dict in system_dict.items():
+        if class_key in ("efootprint_version", "Sources") or not isinstance(class_dict, dict):
+            continue
+        efootprint_class = efootprint_classes_dict.get(class_key)
+        if efootprint_class is None or not isinstance(efootprint_class, type):
+            continue
+        computed_names = set(computed_slots(efootprint_class))
+        for obj_dict in class_dict.values():
+            for attr_key in [key for key in obj_dict if key in computed_names]:
+                del obj_dict[attr_key]
+                dropped_computed_entries += 1
+    if dropped_computed_entries:
+        logger.info(
+            f"Upgraded system dict from version 22 to 23: dropped {dropped_computed_entries} stored computed "
+            f"values (the minimal persistence contract recomputes them on read).")
+    return system_dict
+
+
 VERSION_UPGRADE_HANDLERS = {
     9: upgrade_version_9_to_10,
     10: upgrade_version_10_to_11,
@@ -760,4 +790,5 @@ VERSION_UPGRADE_HANDLERS = {
     19: upgrade_version_19_to_20,
     20: upgrade_version_20_to_21,
     21: upgrade_version_21_to_22,
+    22: upgrade_version_22_to_23,
 }

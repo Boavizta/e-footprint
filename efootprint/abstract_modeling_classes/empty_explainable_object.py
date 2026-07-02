@@ -141,8 +141,8 @@ class EmptyExplainableObject(ExplainableObject):
             raise ValueError(f"Can only compare with another EmptyExplainableObject or ExplainableHourlyQuantities,"
                              f" not {type(compared_object)}")
 
-    def to_json(self, save_calculated_attributes=False):
+    def to_json(self, with_formula=False):
         output_dict = {"value": None}
-        output_dict.update(super().to_json(save_calculated_attributes))
+        output_dict.update(super().to_json(with_formula))
 
         return output_dict

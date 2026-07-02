@@ -1,5 +1,4 @@
 import uuid
-import weakref
 from abc import ABCMeta
 from copy import copy
 from typing import List, Type, get_origin, get_args, TYPE_CHECKING
@@ -14,7 +13,7 @@ from efootprint.logger import logger
 from efootprint.abstract_modeling_classes.object_linked_to_modeling_obj import ObjectLinkedToModelingObjBase
 from efootprint.abstract_modeling_classes.reactive_core import (
     CONTAINERS_NODE_NAME, collect_invalidated_slots, computed_attribute, computed_slots, instance_slot_registry,
-    invalidate, lazy_attribute, record_read_of_node)
+    invalidate, lazy_attribute, lazy_slots, prune_stale_computed_dict_keys, record_read_of_node, serialized_slots)
 from efootprint.utils.graph_tools import WIDTH, HEIGHT, add_unique_id_to_mynetwork
 from efootprint.utils.object_relationships_graphs import build_object_relationships_graph, \
     USAGE_PATTERN_VIEW_CLASSES_TO_IGNORE
@@ -46,6 +45,15 @@ def pull_invalidated_slots(invalidated_slots):
             slot.pull()
 
 
+def pull_guard_slots(invalidated_slots):
+    """Recompute the validation slots a write invalidated: guard slots exist to reject invalid
+    states, so they must run at update time even though nothing downstream reads them."""
+    guard_slots = [slot for slot in invalidated_slots
+                   if slot.guard and slot.getter is not None and not slot.discarded]
+    for slot in sorted(guard_slots, key=lambda slot: slot.name):
+        slot.pull()
+
+
 def invalidate_slots_system_wide(systems: list):
     """Void every slot of every object linked to the given systems. Used when a model whose values
     were attached at load time (dependency edges only partially rebuilt) receives a relationship
@@ -55,40 +63,6 @@ def invalidate_slots_system_wide(systems: list):
         for mod_obj in dict.fromkeys([system] + system.all_linked_objects):
             slots += list(instance_slot_registry(mod_obj).values())
     invalidate(*slots)
-
-
-_incomplete_edge_systems = weakref.WeakSet()
-
-
-def mark_system_edges_incomplete(system):
-    """Flag a system loaded with stored values: its calculus edges are rebuilt from the serialized
-    ancestry but structural edges only exist once getters have run, so the first relationship change
-    must void everything for the recompute to re-record the full edge set."""
-    system.__dict__["_computed_edges_incomplete"] = True
-    _incomplete_edge_systems.add(system)
-
-
-def wipe_slots_of_incomplete_edge_systems(mod_objs: list):
-    """Called by the relationship write hook: when any of the given objects belongs to a system whose
-    structural edges are incomplete, void every slot of that system (once — the flag clears)."""
-    if not _incomplete_edge_systems:
-        return
-    flagged_systems = []
-    for mod_obj in mod_objs:
-        # The hook fires inside container transitions: one side may be mid-construction (e.g. a
-        # service whose server link is being stored — trigger_modeling_updates not yet enabled) and
-        # unable to resolve its systems. The other, live side of the transition resolves them; a
-        # flagged system's objects are always live (the load path enables their triggers). Any
-        # exception from a live object's systems resolution is a real bug and must propagate.
-        if (mod_obj is None or not isinstance(mod_obj, ModelingObject)
-                or not getattr(mod_obj, "trigger_modeling_updates", False)):
-            continue
-        for system in list(mod_obj.systems):
-            if isinstance(system, ModelingObject) and system.__dict__.pop("_computed_edges_incomplete", False):
-                flagged_systems.append(system)
-                _incomplete_edge_systems.discard(system)
-    if flagged_systems:
-        invalidate_slots_system_wide(flagged_systems)
 
 
 def get_instance_attributes(obj, target_class):
@@ -134,7 +108,7 @@ class ModelingObject(metaclass=ABCAfterInitMeta):
 
     @classmethod
     def from_json_dict(cls, object_json_dict: dict, flat_obj_dict: dict, set_trigger_modeling_updates_to_true=False,
-                       is_loaded_from_system_with_calculated_attributes=False, sources_dict: dict | None = None):
+                       attach_stored_computed_values=True, sources_dict: dict | None = None):
         from efootprint.abstract_modeling_classes.explainable_object_dict import ExplainableObjectDict
         from efootprint.abstract_modeling_classes.explainable_object_base_class import explainable_object_from_json
         new_obj = cls.__new__(cls)
@@ -143,11 +117,12 @@ class ModelingObject(metaclass=ABCAfterInitMeta):
         new_obj.trigger_modeling_updates = False
         explainable_object_dicts_to_create_after_objects_creation = {}
         declared_computed_slots = computed_slots(cls)
+        declared_lazy_slots = lazy_slots(cls)
         for attr_key, attr_value in object_json_dict.items():
             if isinstance(attr_value, dict) and "label" in attr_value:
-                if attr_key in declared_computed_slots and not is_loaded_from_system_with_calculated_attributes:
-                    # A now-computed attribute stored by an older version (when it was an input, or a
-                    # legacy placeholder): the stored value is stale by definition — the slot computes.
+                if attr_key in declared_computed_slots and not attach_stored_computed_values:
+                    # Values computed by another library version are not trusted as caches: the
+                    # loader demotes them to a comparison baseline and the slot recomputes on read.
                     continue
                 new_value = explainable_object_from_json(attr_value, sources_dict)
                 if attr_key in declared_computed_slots:
@@ -159,6 +134,12 @@ class ModelingObject(metaclass=ABCAfterInitMeta):
                 new_value.initialize_calculus_graph_data_from_json(attr_value, flat_obj_dict, sources_dict)
             elif isinstance(attr_value, dict) and "label" not in attr_value:
                 explainable_object_dicts_to_create_after_objects_creation[(new_obj, attr_key)] = attr_value
+            elif attr_key in declared_lazy_slots:
+                # Serialize-flagged lazy slots hold raw JSON-native values (e.g. the dict-encoded
+                # impact-repartition matrix rows), attached as-is when trusted.
+                if attach_stored_computed_values:
+                    declared_lazy_slots[attr_key].attach_cached_value(
+                        new_obj, tuple(attr_value) if isinstance(attr_value, list) else attr_value)
             elif isinstance(attr_value, str) and attr_key not in ("id", "name") and attr_value in flat_obj_dict:
                 # A scalar string attribute is treated as a reference when it matches an existing object id.
                 # `name` is always a plain label, never a reference: excluding it prevents an object whose name
@@ -443,6 +424,13 @@ class ModelingObject(metaclass=ABCAfterInitMeta):
             getattr(self, attr_name)
 
     def after_init(self):
+        self.enable_modeling_updates()
+
+    def enable_modeling_updates(self):
+        """Turn on live-update triggers on the object and its input dicts. The loader calls this
+        instead of after_init: subclass after_init overrides carry construction-time side effects
+        (eager pulls surfacing configuration errors, default sub-object creation) and loading a
+        saved model must never compute nor mutate the deserialized structure."""
         from efootprint.abstract_modeling_classes.explainable_object_dict import ExplainableObjectDict
         self.trigger_modeling_updates = True
         for attr_name, attr_value in self.__dict__.items():
@@ -588,12 +576,14 @@ class ModelingObject(metaclass=ABCAfterInitMeta):
                     attr_value.set_modeling_obj_container(None, None)
 
         if self.trigger_modeling_updates and systems:
-            pull_slots_system_wide(systems)
-            pull_invalidated_slots(invalidated_slots)
+            prune_stale_computed_dict_keys(invalidated_slots)
+            pull_guard_slots(invalidated_slots)
+            for system in systems:
+                system.total_footprint
 
         del self
 
-    def to_json(self, save_calculated_attributes=False) -> dict:
+    def to_json(self, save_computed_state=True) -> dict:
         output_dict = {}
 
         for key, value in self.__dict__.items():
@@ -606,13 +596,23 @@ class ModelingObject(metaclass=ABCAfterInitMeta):
             elif isinstance(value, ModelingObject):
                 output_dict[key] = value.id
             elif getattr(value, "to_json", None) is not None:
-                output_dict[key] = value.to_json(save_calculated_attributes)
+                output_dict[key] = value.to_json()
             else:
                 raise ValueError(f"Attribute {key} of {self.name} {type(value)}) is not handled in to_json")
 
-        if save_calculated_attributes:
-            for attr_name in self.calculated_attributes:
-                output_dict[attr_name] = getattr(self, attr_name).to_json(save_calculated_attributes)
+        if save_computed_state:
+            # Serialize-flagged slots persist their cached value (peek, never pull: saving a model
+            # must not compute it — a void flagged slot is simply absent and recomputes on read).
+            # Explainable values carry their formula; raw lazy values (e.g. the impact-repartition
+            # matrix rows) must be JSON-native.
+            for attr_name, descriptor in serialized_slots(type(self)).items():
+                value = descriptor.peek(self)
+                if value is None:
+                    continue
+                if getattr(value, "to_json", None) is not None:
+                    output_dict[attr_name] = value.to_json(with_formula=True)
+                else:
+                    output_dict[attr_name] = list(value)
 
         return output_dict
 

@@ -1,3 +1,4 @@
+import json
 from datetime import timezone
 from typing import Literal, TYPE_CHECKING
 
@@ -28,7 +29,9 @@ class ExplainableRecurrentQuantities(ExplainableObject):
 
     @classmethod
     def from_json_dict(cls, d):
-        value = Quantity(np.array(eval(d["recurring_values"]), dtype=np.float32), get_unit(d["unit"]))
+        # The recurring values are stored as the string repr of a list of finite floats, which is
+        # valid JSON — json.loads parses it an order of magnitude faster than eval.
+        value = Quantity(np.array(json.loads(d["recurring_values"]), dtype=np.float32), get_unit(d["unit"]))
 
         return cls(value, label=d["label"])
 
@@ -184,13 +187,13 @@ class ExplainableRecurrentQuantities(ExplainableObject):
             f"{self.label} expanded over {timespan_hourly_quantities.label} timespan (UTC)" if self.label else None,
         )
 
-    def to_json(self, save_calculated_attributes=False):
+    def to_json(self, with_formula=False):
         output_dict = {
                 "recurring_values": str(self.magnitude.tolist()),
                 "unit": str(self.unit),
             }
 
-        output_dict.update(super().to_json(save_calculated_attributes))
+        output_dict.update(super().to_json(with_formula))
 
         return output_dict
 

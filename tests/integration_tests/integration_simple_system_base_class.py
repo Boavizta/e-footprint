@@ -220,9 +220,8 @@ class IntegrationTestSimpleSystemBaseClass(IntegrationTestBaseClass):
         storage = Storage.from_defaults("Storage")
         server = Server.from_defaults("Server", storage=storage)
         job = Job.from_defaults("Job", server=server)
-        json_job = job.to_json(save_calculated_attributes=True)
-        job_from_json, _ = Job.from_json_dict(
-            json_job, flat_obj_dict={server.id: server}, is_loaded_from_system_with_calculated_attributes=True)
+        json_job = job.to_json()
+        job_from_json, _ = Job.from_json_dict(json_job, flat_obj_dict={server.id: server})
         job.self_delete()
         uj_step = UsageJourneyStep.from_defaults("UJ step", jobs=[job_from_json])
         uj = UsageJourney.from_defaults("Usage journey", uj_steps=[uj_step])
@@ -233,10 +232,10 @@ class IntegrationTestSimpleSystemBaseClass(IntegrationTestBaseClass):
             create_source_hourly_values_from_list(
                 [elt * 1000 for elt in [1, 2, 4, 5, 8, 12, 2, 2, 3]], start_date))
         system = System("System", [usage_pattern], edge_usage_patterns=[])
-        # job data transferred should save its children calculated attributes to json
-        children_data = job_from_json.data_transferred.to_json(save_calculated_attributes=True)[
-            "direct_children_with_id"]
-        self.assertGreater(len(children_data), 0)
+        # Building the system computes the round-tripped job's dependents, so its data transferred
+        # input must carry live children links in the calculus graph.
+        self.assertGreater(len(job_from_json.data_transferred.direct_children_with_id), 0)
+        self.assertIsNotNone(system.total_footprint)
 
     def run_test_uj_step_update(self):
         scenario = ObjectLinkScenario(

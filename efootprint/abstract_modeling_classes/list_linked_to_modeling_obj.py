@@ -92,7 +92,7 @@ class ListLinkedToModelingObj(ObjectLinkedToModelingObjBase, list, metaclass=Aft
         super().append(value_to_set)
         value_to_set.set_modeling_obj_container(self.modeling_obj_container, self.attr_name_in_mod_obj_container)
 
-    def to_json(self, save_calculated_attributes=False):
+    def to_json(self, with_formula=False):
         return [elt.id for elt in self]
 
     def __repr__(self):

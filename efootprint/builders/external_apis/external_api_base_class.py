@@ -22,7 +22,7 @@ class ExternalAPIServer(ModelingObject, AttributionSource):
         return self.modeling_obj_containers[0]
 
 
-    @computed_attribute
+    @computed_attribute(serialize=True)
     @abstractmethod
     def instances_fabrication_footprint(self):
         pass
@@ -32,7 +32,7 @@ class ExternalAPIServer(ModelingObject, AttributionSource):
     def instances_energy(self):
         pass
 
-    @computed_attribute
+    @computed_attribute(serialize=True)
     @abstractmethod
     def energy_footprint(self):
         pass

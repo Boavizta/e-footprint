@@ -49,7 +49,7 @@ class EcoLogitsExternalAPIServerBase(ExternalAPIServer):
             return str(self.external_api.model_name)
         return "no external API"
 
-    @computed_attribute
+    @computed_attribute(serialize=True)
     def instances_fabrication_footprint(self):
         """Hourly fabrication-phase footprint of the model server: each job's per-request embodied GWP spread over its request_duration (per-request * 1h / request_duration * hourly average occurrences across usage patterns), summed over jobs."""
         instances_fabrication_footprint = EmptyExplainableObject()
@@ -70,7 +70,7 @@ class EcoLogitsExternalAPIServerBase(ExternalAPIServer):
 
         return instances_energy.set_label(f"Instances energy for {self.external_api_model_name}")
 
-    @computed_attribute
+    @computed_attribute(serialize=True)
     def energy_footprint(self):
         """Hourly energy-use footprint of the model server: each job's per-request usage GWP spread over its request_duration (per-request * 1h / request_duration * hourly average occurrences across usage patterns), summed over jobs."""
         energy_footprint = EmptyExplainableObject()

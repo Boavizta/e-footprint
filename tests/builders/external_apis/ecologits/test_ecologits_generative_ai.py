@@ -320,8 +320,8 @@ class TestEcoLogitsGenAIExternalAPIJob(TestCase):
         self.job.pull_computed_attributes()
         root_dir = os.path.dirname(__file__)
         tmp_filepath = os.path.join(root_dir, f"job_serialization_tmp_file.json")
-        serialization_dict = {"job": self.job.to_json(save_calculated_attributes=True)}
-        serialization_dict.update({"external_api": self.external_api.to_json(save_calculated_attributes=True)})
+        serialization_dict = {"job": self.job.to_json()}
+        serialization_dict.update({"external_api": self.external_api.to_json()})
         with open(tmp_filepath, "w") as f:
             json.dump(serialization_dict, f, indent=2)
 
@@ -354,7 +354,7 @@ class TestEcoLogitsGenAIExternalAPIJob(TestCase):
         # There was a bug (resolved in efootprint 16.0.4) where serializing job2 wouldn’t work because
         # the external API would have been recomputed after job2 had been recomputed.
         # The serialization shouldn’t raise any error.
-        job2_serialization = job2.to_json(save_calculated_attributes=True)
+        job2_serialization = job2.to_json()
 
         job2.self_delete()
         self.assertNotIn(job2, external_api.jobs)

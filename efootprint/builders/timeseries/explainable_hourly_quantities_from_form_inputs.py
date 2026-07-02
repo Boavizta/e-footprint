@@ -133,10 +133,10 @@ class ExplainableHourlyQuantitiesFromFormInputs(ExplainableHourlyQuantities):
 
         return Quantity(hourly_values, volume_unit)
 
-    def to_json(self, save_calculated_attributes=False):
+    def to_json(self, with_formula=False):
         output_dict = {"form_inputs": self.form_inputs}
 
-        output_dict.update(super(ExplainableHourlyQuantities, self).to_json(save_calculated_attributes))
+        output_dict.update(super(ExplainableHourlyQuantities, self).to_json(with_formula))
 
         return output_dict
 

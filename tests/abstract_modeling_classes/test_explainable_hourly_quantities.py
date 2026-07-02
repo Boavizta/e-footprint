@@ -370,10 +370,10 @@ class TestExplainableHourlyQuantities(unittest.TestCase):
             "timezone": None
         }
         obj = ExplainableHourlyQuantities.from_json_dict(json_data)
-        json_output = obj.to_json(save_calculated_attributes=True)
+        json_output = obj.to_json(with_formula=True)
         self.assertIn("direct_ancestors_with_id", json_output)
         self.assertNotIn("direct_ancestors_with_id", obj.json_compressed_value_data)
-        self.assertNotIn("direct_ancestors_with_id", obj.to_json(save_calculated_attributes=False))
+        self.assertNotIn("direct_ancestors_with_id", obj.to_json(with_formula=False))
 
     def test_ceil_dimensionless(self):
         usage_data = [1.5] * 24

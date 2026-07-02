@@ -5,7 +5,7 @@
 
 [project]
 name = "efootprint"
-version = "22.3.1"
+version = "23.0.0"
 description = "Digital service environmental footprint model"
 authors = [{name = "Vincent Villet for Publicis Sapient"}]
 readme = "README.md"

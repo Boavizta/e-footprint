@@ -488,7 +488,7 @@ class ExplainableHourlyQuantities(ExplainableObject):
         decompressed = dctx.decompress(compressed)
         return np.frombuffer(decompressed, dtype=np.float32)
 
-    def to_json(self, save_calculated_attributes=False):
+    def to_json(self, with_formula=False):
         if self.json_compressed_value_data is not None:
             output_dict = deepcopy(self.json_compressed_value_data)
         else:
@@ -499,7 +499,7 @@ class ExplainableHourlyQuantities(ExplainableObject):
                     "timezone": str(self.start_date.tzinfo) if self.start_date.tzinfo is not None else None,
                 }
 
-        output_dict.update(super().to_json(save_calculated_attributes))
+        output_dict.update(super().to_json(with_formula))
 
         return output_dict
 

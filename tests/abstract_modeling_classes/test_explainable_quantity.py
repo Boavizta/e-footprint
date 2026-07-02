@@ -68,10 +68,10 @@ class TestExplainableQuantity(unittest.TestCase):
     def test_to_json_with_calculated_attributes_after_init_from_json_doesnt_update_json_data(self):
         json_data = {"label": "1 Watt", "value": 1, "unit": "watt"}
         obj = ExplainableQuantity.from_json_dict(json_data)
-        json_output = obj.to_json(save_calculated_attributes=True)
+        json_output = obj.to_json(with_formula=True)
         self.assertIn("direct_ancestors_with_id", json_output)
         self.assertNotIn("direct_ancestors_with_id", obj.json_value_data)
-        self.assertNotIn("direct_ancestors_with_id", obj.to_json(save_calculated_attributes=False))
+        self.assertNotIn("direct_ancestors_with_id", obj.to_json(with_formula=False))
 
     def test_ceil(self):
         self.a = ExplainableQuantity(1.5 * u.W, "1.5 Watt")

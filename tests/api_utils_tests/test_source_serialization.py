@@ -62,7 +62,7 @@ class TestTopLevelSourcesBlockRoundTrip(TestCase):
         cls.system, _ = IntegrationTestSimpleSystemBaseClass.generate_simple_system()
 
     def test_top_level_sources_block_present(self):
-        system_dict = system_to_json(self.system, save_calculated_attributes=False)
+        system_dict = system_to_json(self.system, save_computed_state=False)
         self.assertIn("Sources", system_dict)
         for source_id, source_payload in system_dict["Sources"].items():
             self.assertEqual(source_id, source_payload["id"])
@@ -70,7 +70,7 @@ class TestTopLevelSourcesBlockRoundTrip(TestCase):
             self.assertIn("link", source_payload)
 
     def test_inline_source_no_longer_present_in_explainable_payloads(self):
-        system_dict = system_to_json(self.system, save_calculated_attributes=False)
+        system_dict = system_to_json(self.system, save_computed_state=False)
         for class_key, class_dict in system_dict.items():
             if class_key in ("efootprint_version", "Sources") or not isinstance(class_dict, dict):
                 continue
@@ -80,7 +80,7 @@ class TestTopLevelSourcesBlockRoundTrip(TestCase):
                         self.assertIsInstance(value["source"], str)
 
     def test_source_identity_restored_across_round_trip(self):
-        system_dict = system_to_json(self.system, save_calculated_attributes=False)
+        system_dict = system_to_json(self.system, save_computed_state=False)
         class_obj_dict, flat_obj_dict, _ = json_to_system(system_dict)
         sources_seen_by_id = {}
         for mod_obj in flat_obj_dict.values():
@@ -90,7 +90,7 @@ class TestTopLevelSourcesBlockRoundTrip(TestCase):
                     self.assertIs(seen, value.source)
 
     def test_sentinels_re_identify_with_live_singletons(self):
-        system_dict = system_to_json(self.system, save_calculated_attributes=False)
+        system_dict = system_to_json(self.system, save_computed_state=False)
         class_obj_dict, flat_obj_dict, _ = json_to_system(system_dict)
         for mod_obj in flat_obj_dict.values():
             for value in mod_obj.__dict__.values():
@@ -193,6 +193,6 @@ class TestSystemToJsonOnNonSystemObject(TestCase):
         """Regression: no AttributeError when calling system_to_json on a non-System ModelingObject.
         Previously collect_referenced_sources used all_linked_objects, a System-only attribute."""
         server = next(obj for obj in self.system.all_linked_objects if isinstance(obj, Server))
-        result = system_to_json(server, save_calculated_attributes=False)
+        result = system_to_json(server, save_computed_state=False)
         self.assertIn("efootprint_version", result)
         self.assertIn("Server", result)

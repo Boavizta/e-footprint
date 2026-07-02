@@ -21,7 +21,7 @@ class IntegrationTestSimpleEdgeSystemFromJson(IntegrationTestSimpleEdgeSystemBas
         # Save to JSON and reload
         cls.system_json_filepath = os.path.join(
             INTEGRATION_TEST_DIR, "simple_edge_system_with_calculated_attributes.json")
-        system_to_json(system, save_calculated_attributes=True, output_filepath=cls.system_json_filepath)
+        system_to_json(system, output_filepath=cls.system_json_filepath)
         with open(cls.system_json_filepath, "r") as file:
             system_dict = json.load(file)
         _, flat_obj_dict, _ = json_to_system(system_dict)
@@ -42,4 +42,7 @@ class IntegrationTestSimpleEdgeSystemFromJson(IntegrationTestSimpleEdgeSystemBas
             notebook=False)
         with open(os.path.join(os.path.abspath(os.path.dirname(__file__)), "full_edge_calculation_graph.html"), "r") as f:
             content = f.read()
-        self.assertGreater(len(content), 30000)
+        # Under the minimal persistence contract the stored graph is condensed: the total's
+        # ancestors are the per-source footprint pairs, and deeper intermediates render on
+        # demand once pulled (lazy auditability).
+        self.assertGreater(len(content), 5000)

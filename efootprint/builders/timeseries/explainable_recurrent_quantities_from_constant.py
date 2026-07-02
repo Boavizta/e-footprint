@@ -62,12 +62,12 @@ class ExplainableRecurrentQuantitiesFromConstant(ExplainableRecurrentQuantities)
         recurrent_array = np.array([float(self.form_inputs["constant_value"])] * 168, dtype=np.float32)
         return Quantity(recurrent_array, self.form_inputs["constant_unit"])
 
-    def to_json(self, save_calculated_attributes=False):
+    def to_json(self, with_formula=False):
         """Save constant value to JSON (no need to save recurring_values since constant is already compressed)."""
         output_dict = {"form_inputs": self.form_inputs}
 
         # Add parent class metadata (label, source, etc.)
-        output_dict.update(super(ExplainableRecurrentQuantities, self).to_json(save_calculated_attributes))
+        output_dict.update(super(ExplainableRecurrentQuantities, self).to_json(with_formula))
 
         return output_dict
 

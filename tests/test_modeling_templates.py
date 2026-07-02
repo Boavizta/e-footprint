@@ -121,7 +121,7 @@ def test_authoring_script_round_trips_to_committed_json(tpl: HowToTemplate):
     authoring = importlib.import_module(
         f"efootprint.modeling_templates.how_to._authoring.{tpl.id}")
     freshly_built = system_to_json(
-        authoring.build_system(), save_calculated_attributes=False)
+        authoring.build_system(), save_computed_state=False)
     with open(tpl.json_path) as f:
         committed = json.load(f)
     assert freshly_built == committed, (
@@ -201,7 +201,7 @@ def test_introductory_authoring_script_round_trips_to_committed_json(tpl: Introd
     authoring = importlib.import_module(
         f"efootprint.modeling_templates.introductory._authoring.{tpl.id}")
     freshly_built = system_to_json(
-        authoring.build_system(), save_calculated_attributes=False)
+        authoring.build_system(), save_computed_state=False)
     with open(tpl.json_path) as f:
         committed = json.load(f)
     assert freshly_built == committed, (

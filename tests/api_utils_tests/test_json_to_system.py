@@ -222,8 +222,7 @@ class TestJsonToSystem(IntegrationTestBaseClass):
 
         system_filepath = os.path.join(
             root_test_dir, "api_utils_tests", "unique_uj_without_uj_step_and_linked_to_up.json")
-        system_to_json(
-            system, save_calculated_attributes=True, output_filepath=system_filepath)
+        system_to_json(system, output_filepath=system_filepath)
 
         with open(system_filepath, "r") as file:
             system_dict = json.load(file)

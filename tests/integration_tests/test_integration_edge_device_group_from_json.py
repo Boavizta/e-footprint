@@ -18,7 +18,7 @@ class IntegrationTestEdgeDeviceGroupFromJson(IntegrationEdgeDeviceGroupBaseClass
 
         cls.system_json_filepath = os.path.join(
             INTEGRATION_TEST_DIR, "edge_device_group_system_with_calculated_attributes.json")
-        system_to_json(system, save_calculated_attributes=True, output_filepath=cls.system_json_filepath)
+        system_to_json(system, output_filepath=cls.system_json_filepath)
 
         with open(cls.system_json_filepath, "r") as f:
             system_dict = json.load(f)

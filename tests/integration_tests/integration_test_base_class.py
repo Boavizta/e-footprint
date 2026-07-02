@@ -254,7 +254,7 @@ class IntegrationTestBaseClass(TestCase):
 
     def run_test_system_to_json(self, input_system):
         tmp_filepath = os.path.join(INTEGRATION_TEST_DIR, f"{self.ref_json_filename}_tmp_file.json")
-        system_to_json(input_system, save_calculated_attributes=False, output_filepath=tmp_filepath)
+        system_to_json(input_system, save_computed_state=False, output_filepath=tmp_filepath)
 
         with (open(os.path.join(INTEGRATION_TEST_DIR, f"{self.ref_json_filename}.json"), 'r') as ref_file,
               open(tmp_filepath, 'r') as tmp_file):

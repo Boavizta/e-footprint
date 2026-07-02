@@ -3,10 +3,10 @@
 The data layer is one ``attribution.node_totals_and_links`` call per life-cycle phase — a fold over the
 stored ``System.impact_repartition_matrix`` period sums, so the fold behind every column/phase/exclusion
 combination touches no hourly data. The breakdown-by-source decoration (``_render_breakdown`` and its
-``_get_source_phase_footprint`` normalization) is the one data read outside the matrix: it pulls
-per-source footprint slots (``energy_footprint``, ``instances_fabrication_footprint``,
-``footprint_breakdown_by_source``) and period-sums them at render time — cached under the transitional
-pull-ALL eager set; whether they join the serialize set is a stage-4-part-2 decision. Conservation
+``_get_source_phase_footprint`` normalization) reads outside the matrix: the per-source footprint slots
+(``energy_footprint``, ``instances_fabrication_footprint``) and each edge device's condensed
+``footprint_breakdown_summary`` — all serialize-flagged, so a loaded session renders every combination
+from stored data. Conservation
 (Σ incoming == node total == Σ outgoing at every node, column sums == phase total minus exclusions) is
 structural in the fold. Everything in this class
 is presentation: the System root and life-cycle-phase
@@ -277,10 +277,12 @@ class ImpactRepartitionSankey:
 
     @staticmethod
     def _get_footprint_breakdown_by_source(source: ModelingObject, phase: LifeCyclePhases) -> dict[ModelingObject, Any]:
-        breakdown_by_source = getattr(source, "footprint_breakdown_by_source", None)
-        if not isinstance(breakdown_by_source, dict):
+        summary = getattr(source, "footprint_breakdown_summary", None)
+        if not isinstance(summary, dict):
             return {}
-        return breakdown_by_source.get(phase, {})
+        components_by_id = {component.id: component for component in source.components}
+        return {components_by_id[component_id]: kg_value * u.kg
+                for component_id, kg_value in summary.get(phase.value, {}).items()}
 
     def _render_breakdown(
             self, source: ModelingObject, parent_idx: int | None, phase: LifeCyclePhases, phase_context: str | None,

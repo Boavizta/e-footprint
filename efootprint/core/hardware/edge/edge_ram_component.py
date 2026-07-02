@@ -57,7 +57,7 @@ class EdgeRAMComponent(EdgeComponent):
         """Total memory provided by the RAM component, equal to per-unit RAM times the number of units."""
         return (self.ram_per_unit * self.nb_of_units).set_label(f"RAM")
 
-    @computed_attribute
+    @computed_attribute(guard=True)
     def available_ram_per_instance(self):
         """Memory available for recurring needs after subtracting the base consumption. Raises error if the component is over-subscribed at design time."""
         available_ram_per_instance = self.ram.to(u.GB_ram) - self.base_ram_consumption.to(u.GB_ram)

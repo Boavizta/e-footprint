@@ -39,7 +39,7 @@ class InfraHardware(HardwareBase):
     def systems(self) -> List:
         return list(dict.fromkeys(sum([job.systems for job in self.jobs], start=[])))
 
-    @computed_attribute
+    @computed_attribute(serialize=True)
     def instances_fabrication_footprint(self):
         """Hourly fabrication-phase emissions of all instances, equal to the embodied carbon of one instance amortised over its lifespan and multiplied by the number of instances active in each hour."""
         instances_fabrication_footprint = (
@@ -49,7 +49,7 @@ class InfraHardware(HardwareBase):
         return instances_fabrication_footprint.to(u.kg).set_label(
                 f"Hourly instances fabrication footprint")
 
-    @computed_attribute
+    @computed_attribute(serialize=True)
     def energy_footprint(self):
         """Hourly carbon emissions caused by the electricity consumed by this hardware, equal to its hourly energy use times the local grid carbon intensity."""
         if getattr(self, "average_carbon_intensity", None) is None:

@@ -285,7 +285,7 @@ class System(ModelingObject):
 
         return ExplainableObjectDict(energy_footprints)
 
-    @computed_attribute
+    @computed_attribute(serialize=True)
     def total_footprint(self):
         """Total system carbon footprint as an hourly timeseries, summing fabrication and energy footprints across every category of object (servers, storages, devices, networks, edge components)."""
         # Re-checked on every recompute, mirroring the former per-update check of the eager engine.
@@ -308,7 +308,7 @@ class System(ModelingObject):
 
         return round(total_footprint, 4)
 
-    @lazy_attribute
+    @lazy_attribute(serialize=True)
     def impact_repartition_matrix(self) -> tuple:
         """The condensed impact-repartition summary: one dict-encoded row per attribution atom of the
         system's impact sources — (source, stream, cell coordinate ids, usage pattern, phase) with the
@@ -323,6 +323,57 @@ class System(ModelingObject):
         """Return a {class:SystemComparison} of this system against ``other`` — the notebook entry point for the comparison capability (totals + deltas, per-(category, phase) decomposition, aligned/cumulative time-series, input diff)."""
         from efootprint.comparison.system_comparison import SystemComparison
         return SystemComparison(self, other)
+
+    @property
+    def has_version_baseline(self) -> bool:
+        """True when this system was loaded from a file saved by another library version that stored
+        computed values: those values are retained in memory as an "as computed by vX" baseline
+        (never re-serialized) instead of being trusted as caches."""
+        return self.__dict__.get("_version_baseline") is not None
+
+    def compare_to_version_baseline(self):
+        """Return a {class:SystemComparison} of this system (recomputed by the current library version on
+        read) against its retained "as computed by vX" baseline, so methodology or upstream-data drift
+        introduced by a library upgrade is quantified with the standard comparison machinery. Only
+        available on systems loaded from a file saved by a different library version; the baseline is
+        session-scoped — the old file itself is the durable record."""
+        baseline = self.__dict__.get("_version_baseline")
+        if baseline is None:
+            raise ValueError(
+                f"{self.name} carries no version baseline: baselines only exist on systems loaded from a "
+                f"file saved by a different library version that stored computed values.")
+        from copy import copy as copy_value
+        from efootprint.abstract_modeling_classes.reactive_core import computed_slots, lazy_slots
+        from efootprint.api_utils.json_to_system import json_to_system
+        from efootprint.api_utils.system_to_json import system_to_json
+        from efootprint.comparison.duplication import assign_fresh_system_id
+        from efootprint.comparison.system_comparison import SystemComparison
+
+        # Inputs-only duplicate: the baseline system must carry the stored vX values and nothing
+        # computed by the current version.
+        class_obj_dict, flat_obj_dict, _ = json_to_system(system_to_json(self, save_computed_state=False))
+        baseline_system = assign_fresh_system_id(next(iter(class_obj_dict["System"].values())))
+        baseline_system.name = f"{self.name} as computed by v{baseline['efootprint_version']}"
+
+        for (container_id, attr_name, key_id), value in baseline["values"].items():
+            container = flat_obj_dict.get(container_id)
+            if container is None:
+                # Upgrade handlers may drop objects entirely (e.g. suppressed classes); their stored
+                # values have no current counterpart to compare against.
+                continue
+            declared_computed_slots = computed_slots(container.efootprint_class)
+            declared_lazy_slots = lazy_slots(container.efootprint_class)
+            if attr_name in declared_computed_slots:
+                descriptor = declared_computed_slots[attr_name]
+                if key_id is not None:
+                    if key_id in flat_obj_dict:
+                        descriptor.attach_element_cached_value(container, flat_obj_dict[key_id], copy_value(value))
+                else:
+                    descriptor.attach_cached_value(container, copy_value(value))
+            elif attr_name in declared_lazy_slots:
+                declared_lazy_slots[attr_name].attach_cached_value(container, tuple(value))
+
+        return SystemComparison(baseline_system, self)
 
     def plot_footprints_by_category_and_object(self, filename=None, height=400, width=800, notebook=True):
         import plotly.express as px

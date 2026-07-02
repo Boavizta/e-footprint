@@ -23,5 +23,5 @@ def _write_template(template_id, build_system):
         "Authoring scripts must run with name-based ids; "
         "import efootprint.modeling_templates.how_to._authoring before building.")
     target = next(tpl.json_path for tpl in HOW_TO_TEMPLATES if tpl.id == template_id)
-    system_to_json(build_system(), save_calculated_attributes=False, output_filepath=str(target))
+    system_to_json(build_system(), save_computed_state=False, output_filepath=str(target))
     print(f"Wrote {target}")
