@@ -277,6 +277,16 @@ edits: 103 slot recomputations, 64 (62%) equal-value — input for the stage-4 e
 Unit tests migrated from `update_*` calls to reads plus `recompute_attribute`/`patch_attribute` helpers
 in `tests/utils.py`.
 
+Post-landing review fixes: the staleness gate snapshots dict entries (facades are live views — comparing
+them to themselves was vacuous) and compares bitwise, no float tolerance; the live-vs-rebuilt fallback
+tolerance narrowed to rtol=1e-4 (scoped to observed float32 reduction noise, ~4e-5 relative; a genuine
+quantization flip exceeding it must be examined before any widening); computed-dict facades raise
+KeyError for keys outside their key collection (membership read without recording an edge, so per-key
+granularity is preserved); assigning a computed attribute on a live model raises — pin via
+`patch_attribute` / the descriptor's `attach_cached_value` (mock unit tests migrated accordingly);
+inputs-only serialization peeks slots instead of pulling (saving never computes); the loaded-model wipe
+hook skips mid-construction objects explicitly instead of swallowing exceptions.
+
 ---
 
 ## Task 7 — Impact-repartition matrix slot and attribution rework (stage 4, part 1)

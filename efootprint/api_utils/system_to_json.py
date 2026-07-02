@@ -4,6 +4,7 @@ import efootprint
 from efootprint.abstract_modeling_classes.explainable_object_base_class import ExplainableObject
 from efootprint.abstract_modeling_classes.explainable_object_dict import ExplainableObjectDict
 from efootprint.abstract_modeling_classes.modeling_object import ModelingObject
+from efootprint.abstract_modeling_classes.reactive_core import computed_slots
 
 
 def recursively_write_json_dict(
@@ -30,9 +31,14 @@ def recursively_write_json_dict(
 
         # Computed values live in the reactive slots, not the instance dict: scan them too so their
         # sources and dict keys are discovered (sources are collected for inputs-only files as well,
-        # matching the historical Sources block content).
+        # matching the historical Sources block content). peek, never pull — only materialized values
+        # ever contributed, and saving a model must not compute it (dict entries are read through the
+        # raw dict for the same reason: facade iteration would pull).
+        # efootprint_class, not type(mod_obj): objects reached through relationships arrive wrapped in
+        # ContextualModelingObjectAttribute, whose own class declares no computed slots.
         attributes_to_scan = list(mod_obj.__dict__.items()) + [
-            (attr_name, getattr(mod_obj, attr_name)) for attr_name in mod_obj.calculated_attributes]
+            (attr_name, peeked_value) for attr_name, descriptor in computed_slots(mod_obj.efootprint_class).items()
+            if (peeked_value := descriptor.peek(mod_obj)) is not None]
         for key, value in attributes_to_scan:
             if key.startswith("_"):
                 continue
@@ -40,7 +46,7 @@ def recursively_write_json_dict(
                 if isinstance(value, ExplainableObject) and value.source is not None:
                     sources_by_id.setdefault(value.source.id, value.source)
                 elif isinstance(value, ExplainableObjectDict):
-                    for elt in value.values():
+                    for elt in dict.values(value):
                         if isinstance(elt, ExplainableObject) and elt.source is not None:
                             sources_by_id.setdefault(elt.source.id, elt.source)
             if isinstance(value, ModelingObject):
@@ -52,7 +58,7 @@ def recursively_write_json_dict(
                                                 deferred_linked_objects, deferred_linked_object_ids,
                                                 sources_by_id=sources_by_id)
             elif isinstance(value, ExplainableObjectDict):
-                for dict_key in value:
+                for dict_key in dict.keys(value):
                     add_deferred_linked_object(dict_key)
         for dict_container in mod_obj.explainable_object_dicts_containers:
             add_deferred_linked_object(dict_container.modeling_obj_container)
