@@ -1,6 +1,3 @@
-import math
-from copy import copy
-from datetime import datetime, timedelta
 from time import perf_counter
 from typing import List
 
@@ -9,7 +6,6 @@ from efootprint.abstract_modeling_classes.explainable_object_base_class import E
     optimize_attr_updates_chain
 from efootprint.abstract_modeling_classes.object_linked_to_modeling_obj import (
     ObjectLinkedToModelingObj, ObjectLinkedToModelingObjBase)
-from efootprint.abstract_modeling_classes.explainable_hourly_quantities import ExplainableHourlyQuantities
 from efootprint.abstract_modeling_classes.empty_explainable_object import EmptyExplainableObject
 from efootprint.abstract_modeling_classes.modeling_object import (
     ModelingObject, flush_cached_properties_system_wide, optimize_mod_objs_computation_chain)
@@ -26,9 +22,7 @@ def compute_attr_updates_chain_from_mod_objs_computation_chain(mod_objs_computat
 
 
 class ModelingUpdate:
-    def __init__(
-            self, changes_list: List[List[ObjectLinkedToModelingObj | list | dict]], simulation_date: datetime = None,
-            compute_previous_system_footprints=True):
+    def __init__(self, changes_list: List[List[ObjectLinkedToModelingObj | list | dict]]):
         start = perf_counter()
         self.system = None
         for change in changes_list:
@@ -38,22 +32,6 @@ class ModelingUpdate:
                 break
         self.changes_list = changes_list
         self.parse_changes_list()
-        if self.changes_list and self.system and compute_previous_system_footprints:
-            self.system.previous_total_energy_footprints_sum_over_period = (
-                self.system.total_energy_footprint_sum_over_period)
-            self.system.previous_total_fabrication_footprints_sum_over_period = \
-                self.system.total_fabrication_footprint_sum_over_period
-            self.system.previous_change = changes_list
-            self.system.all_changes += changes_list
-
-        self.simulation_date = simulation_date
-        if simulation_date is not None:
-            assert self.system is not None
-            if simulation_date.tzinfo is None:
-                raise ValueError(
-                    f"Simulation date {simulation_date} should be timezone aware. "
-                    f"Please use a timezone aware datetime object by setting its tzinfo attribute.")
-            self.system.simulation = self
 
         self.mod_objs_computation_chain = self.compute_mod_objs_computation_chain()
         if self.mod_objs_computation_chain:
@@ -64,16 +42,7 @@ class ModelingUpdate:
             compute_attr_updates_chain_from_mod_objs_computation_chain(self.mod_objs_computation_chain))
         self.values_to_recompute = self.generate_optimized_attr_updates_chain()
 
-        self.ancestors_not_in_computation_chain = []
-        self.hourly_quantities_to_filter = []
-        self.filtered_hourly_quantities = []
-        self.ancestors_to_replace_by_copies = []
-        self.replaced_ancestors_copies = []
         self.recomputed_values = []
-        if self.simulation_date is not None:
-            self.make_simulation_specific_operations()
-            logger.info("Simulation specific operations done.")
-
         self.apply_changes()
         try:
             for new_sourcevalue in self.new_sourcevalues:
@@ -90,11 +59,6 @@ class ModelingUpdate:
                       f"\nOriginal error:\n {e}",) + e.args[1:]
             raise e
 
-        if self.simulation_date is not None:
-            self.link_simulated_and_baseline_twins()
-
-        if simulation_date is not None:
-            self.reset_values()
         flush_cached_properties_system_wide(
             self.mod_objs_computation_chain + ([self.system] if self.system is not None else []))
         compute_time_ms = round(1000 * (perf_counter() - start), 1)
@@ -107,8 +71,6 @@ class ModelingUpdate:
     def previous_and_new_objects_organized_in_sections(self):
         return [
             ["direct changes", [change[0] for change in self.changes_list], [change[1] for change in self.changes_list]],
-            ["filtered hourly quantities", self.hourly_quantities_to_filter, self.filtered_hourly_quantities],
-            ["replaced ancestors copies", self.ancestors_to_replace_by_copies, self.replaced_ancestors_copies],
             ["recomputed values", self.values_to_recompute, self.recomputed_values]
         ]
 
@@ -218,28 +180,6 @@ class ModelingUpdate:
         self.mod_objs_computation_chain = result
         self.revert_changes()
 
-    def make_simulation_specific_operations(self):
-        assert self.simulation_date is not None
-        self.ancestors_not_in_computation_chain = self.compute_ancestors_not_in_computation_chain()
-        self.hourly_quantities_to_filter = self.compute_hourly_quantities_to_filter()
-        if self.mod_objs_computation_chain:
-            # The simulation will change the calculation graph, so we need to replace all ancestors not in
-            # computation chain by their copies to keep the original calculation graph unchanged.
-            # Values carried by a directly-changed dict (e.g. weights of an updated weighted dict) are excluded:
-            # the dict swap itself manages their linking, so copying them too would conflict at set/reset time.
-            from efootprint.abstract_modeling_classes.explainable_object_dict import ExplainableObjectDict
-            changed_dict_value_ids = set()
-            for old_value, new_value in self.changes_list:
-                if isinstance(old_value, ExplainableObjectDict):
-                    changed_dict_value_ids.update(
-                        id(value) for value in list(old_value.values()) + list(new_value.values()))
-            self.ancestors_to_replace_by_copies = [
-                ancestor for ancestor in self.ancestors_not_in_computation_chain
-                if ancestor.id not in [value.id for value in self.hourly_quantities_to_filter]
-                and id(ancestor) not in changed_dict_value_ids]
-            self.replaced_ancestors_copies = self.replace_ancestors_not_in_computation_chain_by_copies()
-        self.filter_hourly_quantities_to_filter()
-
     def recompute_attributes(self):
         for value_to_recompute in self.values_to_recompute:
             attr_name_in_mod_obj_container = value_to_recompute.attr_name_in_mod_obj_container
@@ -272,117 +212,8 @@ class ModelingUpdate:
 
         # Necessary to do the sum in this order because calculations from modeling objects computation chains must be
         # done after the calculations from input updates.
-        optimized_chain = optimize_attr_updates_chain(
+        return optimize_attr_updates_chain(
             attr_updates_chain_from_attributes_updates + self.attr_updates_chain_from_mod_objs_computation_chains)
-
-        optimized_chain_without_previous_nor_initial_values = [
-            attr for attr in optimized_chain if not attr.attr_name_in_mod_obj_container.startswith("previous_")
-                                                and not attr.attr_name_in_mod_obj_container.startswith("initial_")]
-
-        return optimized_chain_without_previous_nor_initial_values
-
-    def compute_ancestors_not_in_computation_chain(self):
-        all_ancestors_of_values_to_recompute = sum(
-            [value.all_ancestors_with_id for value in self.values_to_recompute], start=[])
-        deduplicated_all_ancestors_of_values_to_recompute = []
-        for ancestor in all_ancestors_of_values_to_recompute:
-            if ancestor.id not in [elt.id for elt in deduplicated_all_ancestors_of_values_to_recompute]:
-                deduplicated_all_ancestors_of_values_to_recompute.append(ancestor)
-        values_to_recompute_attribute_ids = [elt.attribute_id for elt in self.values_to_recompute]
-        old_sourcevalues_attribute_ids = [old_value.attribute_id for old_value in self.old_sourcevalues]
-        ancestors_not_in_computation_chain = [
-            ancestor for ancestor in deduplicated_all_ancestors_of_values_to_recompute
-            if ancestor.attribute_id not in values_to_recompute_attribute_ids + old_sourcevalues_attribute_ids]
-
-        return ancestors_not_in_computation_chain
-
-    def compute_hourly_quantities_to_filter(self):
-        hourly_quantities_ancestors_not_in_computation_chain = [
-            ancestor for ancestor in self.ancestors_not_in_computation_chain
-            if isinstance(ancestor, ExplainableHourlyQuantities)
-        ]
-
-        hourly_quantities_to_filter = []
-        global_min_date = None
-        global_max_date = None
-
-        for ancestor in hourly_quantities_ancestors_not_in_computation_chain:
-            start = ancestor.start_date
-            end = start + timedelta(hours=len(ancestor.value) - 1)
-
-            # Ensure timezone awareness
-            if start.tzinfo is None:
-                # Should only be the case for UsagePattern’s hourly_usage_journeys
-                start = start.replace(tzinfo=ancestor.modeling_obj_container.country.timezone.value)
-            if end.tzinfo is None:
-                end = end.replace(tzinfo=ancestor.modeling_obj_container.country.timezone.value)
-
-            # Track global range
-            if global_min_date is None:
-                global_min_date = start
-            else:
-                global_min_date = min(global_min_date, start)
-
-            if global_max_date is None:
-                global_max_date = end
-            else:
-                global_max_date = max(global_max_date, end)
-
-            # Filtering condition
-            if self.simulation_date <= end:
-                hourly_quantities_to_filter.append(ancestor)
-
-        # Final consistency check
-        if not (global_min_date <= self.simulation_date <= global_max_date):
-            raise ValueError(
-                f"Can't start a simulation on {self.simulation_date} because "
-                f"{self.simulation_date} doesn't belong to the existing modeling period "
-                f"from {global_min_date} to {global_max_date}"
-            )
-
-        return hourly_quantities_to_filter
-
-    def filter_hourly_quantities_to_filter(self):
-        for hourly_quantities in self.hourly_quantities_to_filter:
-            start = hourly_quantities.start_date
-            if start.tzinfo is None:
-                start = hourly_quantities.modeling_obj_container.country.timezone.value.localize(start)
-
-            # Array is hour-spaced from start, so the first index i with (start + i h) >= simulation_date
-            # is ceil((simulation_date - start) / 1h). Closed-form avoids an O(N) tz-aware datetime loop.
-            delta_hours = (self.simulation_date - start).total_seconds() / 3600
-            first_idx = max(0, math.ceil(delta_hours))
-            filtered_values = hourly_quantities.value[first_idx:]
-
-            if len(filtered_values) == 0:
-                new_value = EmptyExplainableObject()
-            else:
-                new_value = ExplainableHourlyQuantities(
-                    filtered_values,
-                    start_date=self.simulation_date,
-                    label=hourly_quantities.label,
-                    left_parent=hourly_quantities.left_parent,
-                    right_parent=hourly_quantities.right_parent,
-                    operator=hourly_quantities.operator,
-                    source=hourly_quantities.source,
-                )
-
-            hourly_quantities.replace_in_mod_obj_container_without_recomputation(new_value)
-            self.filtered_hourly_quantities.append(new_value)
-
-    def replace_ancestors_not_in_computation_chain_by_copies(self):
-        copies = []
-        for ancestor_to_replace_by_copy in self.ancestors_to_replace_by_copies:
-            # Replace all ancestors not in computation chain by their copy so that the original calculation graph
-            # will remain unchanged when the simulation is over
-            ancestor_copy = copy(ancestor_to_replace_by_copy)
-            ancestor_copy.left_parent = None
-            ancestor_copy.right_parent = None
-            ancestor_copy.operator = None
-            ancestor_to_replace_by_copy.replace_in_mod_obj_container_without_recomputation(ancestor_copy)
-            copies.append(ancestor_copy)
-
-        return copies
 
     def reset_values(self):
         if self.updated_values_set:
@@ -391,19 +222,3 @@ class ModelingUpdate:
                 for new_value, previous_value in zip(new_values, previous_values):
                     new_value.replace_in_mod_obj_container_without_recomputation(previous_value)
                 self.updated_values_set = False
-
-    def set_updated_values(self):
-        if not self.updated_values_set:
-            for section_name, previous_values, new_values in self.previous_and_new_objects_organized_in_sections:
-                logger.info(f"Setting {section_name} from {len(previous_values)} previous values")
-                for new_value, previous_value in zip(new_values, previous_values):
-                    previous_value.replace_in_mod_obj_container_without_recomputation(new_value)
-                self.updated_values_set = True
-
-    def link_simulated_and_baseline_twins(self):
-        assert self.simulation_date is not None
-        for value_to_recompute, recomputed_value in zip(self.values_to_recompute, self.recomputed_values):
-            value_to_recompute.simulation_twin = recomputed_value
-            recomputed_value.baseline_twin = value_to_recompute
-            value_to_recompute.simulation = self
-            recomputed_value.simulation = self

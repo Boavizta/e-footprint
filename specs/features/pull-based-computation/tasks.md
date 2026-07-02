@@ -45,6 +45,12 @@ Transactional rollback for ordinary updates (`reset_values` path in `modeling_up
 
 **Depends on:** none.
 
+**Status:** Done. Note: the generic single-timeseries plotting helpers (`get_time_axis`, `prepare_data`,
+single-series plot) survive in a new `efootprint/utils/plot_timeseries.py` (consumed by
+`ExplainableHourlyQuantities.plot` and `system_comparison`); `modeling_object.py` needed no
+simulation-specific deletions beyond the dead `ModelingUpdate` branch in `to_json` (the old/new swap
+preview at `:568–632` is the ordinary relationship-update path, deleted at Task 6 per the plan's ledger).
+
 ---
 
 ## Task 2 — Regenerate fixtures, parity harness, baseline benchmarks (stage 1, part 2)

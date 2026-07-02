@@ -720,7 +720,6 @@ class ModelingObject(metaclass=ABCAfterInitMeta):
         del self
 
     def to_json(self, save_calculated_attributes=False) -> dict:
-        from efootprint.abstract_modeling_classes.modeling_update import ModelingUpdate
         output_dict = {}
 
         for key, value in self.__dict__.items():
@@ -735,8 +734,6 @@ class ModelingObject(metaclass=ABCAfterInitMeta):
                 output_dict[key] = value
             elif isinstance(value, ModelingObject):
                 output_dict[key] = value.id
-            elif isinstance(value, ModelingUpdate):
-                continue
             elif getattr(value, "to_json", None) is not None:
                 output_dict[key] = value.to_json(save_calculated_attributes)
             else:

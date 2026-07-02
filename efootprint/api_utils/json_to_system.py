@@ -225,7 +225,6 @@ def json_to_system(
             explainable_object_dict.trigger_modeling_updates = True
 
     for system in class_obj_dict["System"].values():
-        system.set_initial_and_previous_footprints()
         if is_loaded_from_system_with_calculated_attributes:
             system.trigger_modeling_updates = True
         elif launch_system_computations:

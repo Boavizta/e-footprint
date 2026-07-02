@@ -475,46 +475,6 @@ class TestSystem(TestCase):
             self.system.plot_footprints_by_category_and_object(
                 filename=os.path.join(root_test_dir, "footprints by category and object unit test.html"))
 
-    def test_plot_emission_diffs(self):
-        change_test = "changed energy footprint value"
-
-        previous_fab_footprints = {
-            "Servers": ExplainableQuantity(6 * u.kg, "server"),
-            "Storage": ExplainableQuantity(6 * u.kg, "storage"),
-            "Devices": ExplainableQuantity(6 * u.kg, "usage_pattern"),
-            "Network": ExplainableQuantity(0 * u.kg, "network")
-        }
-
-        previous_energy_footprints = {
-            "Servers": ExplainableQuantity(5 * u.kg, "server"),
-            "Storage": ExplainableQuantity(5 * u.kg, "storage"),
-            "Devices": ExplainableQuantity(5 * u.kg, "usage_pattern"),
-            "Network": ExplainableQuantity(5 * u.kg, "network")
-        }
-
-        fab_footprints = {
-           "Servers": ExplainableQuantity(6 * u.kg, "server"),
-           "Storage": ExplainableQuantity(6 * u.kg, "storage"),
-           "Devices": ExplainableQuantity(6 * u.kg, "usage_pattern"),
-           "Network": ExplainableQuantity(0 * u.kg, "network")
-        }
-
-        energy_footprints = {
-            "Servers": ExplainableQuantity(2 * u.kg, "server"),
-            "Storage": ExplainableQuantity(10 * u.kg, "storage"),
-            "Devices": ExplainableQuantity(15 * u.kg, "usage_pattern"),
-            "Network": ExplainableQuantity(5 * u.kg, "network")
-        }
-
-        with patch.object(self.system, "previous_total_energy_footprints_sum_over_period", previous_energy_footprints),\
-            patch.object(self.system, "previous_total_fabrication_footprints_sum_over_period", previous_fab_footprints), \
-            patch.object(System, "total_energy_footprint_sum_over_period", new_callable=PropertyMock) as eneg, \
-            patch.object(System, "total_fabrication_footprint_sum_over_period", new_callable=PropertyMock) as fab, \
-            patch.object(self.system, "previous_change", change_test):
-            eneg.return_value = energy_footprints
-            fab.return_value = fab_footprints
-            self.system.plot_emission_diffs(filepath=os.path.join(root_test_dir, "test_system_diff_plot.png"))
-
     def test_creating_system_with_empty_up_list_is_possible(self):
         system = System("Test system", usage_patterns=[], edge_usage_patterns=[])
 

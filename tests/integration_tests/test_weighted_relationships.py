@@ -1,5 +1,5 @@
 import json
-from datetime import datetime, timezone
+from datetime import datetime
 from unittest import TestCase
 
 from efootprint.abstract_modeling_classes.explainable_object_dict import (
@@ -102,43 +102,3 @@ class TestWeightedRelationships(TestCase):
 
         self.assertEqual([step_2, step_1], list(journey.uj_steps.keys()))
         self.assertEqual([1, 1], [weight.magnitude for weight in journey.uj_steps.values()])
-
-    def test_simulation_dict_change_preserves_weight_linking_through_set_and_reset(self):
-        """Regression test for the simulation ancestors-replaced-by-copies exclusion: weights carried by a
-        directly-changed dict must not be replaced by copies — the dict swap manages their linking — so
-        set_updated_values / reset_values restore the dict and its weights' linking exactly."""
-        system, journey, step_1, step_2, job = build_system(
-            lambda s1, s2: {s1: 1, s2: 1}, lambda j: {j: 1}, "sim dict change")
-        new_server = Server.from_defaults(
-            "sim new server", server_type=ServerTypes.autoscaling(), storage=Storage.from_defaults("sim new storage"))
-        new_job = Job.from_defaults("sim new job", server=new_server)
-
-        old_jobs_dict = step_1.jobs
-        shared_weight = old_jobs_dict[job]
-        new_jobs_dict = to_weighted_explainable_object_dict({**step_1.jobs, new_job: 1})
-        new_job_weight = new_jobs_dict[new_job]
-        self.assertIs(shared_weight, new_jobs_dict[job])
-
-        simulation = ModelingUpdate(
-            [[step_1.jobs, new_jobs_dict]], datetime(2026, 1, 1, 1, tzinfo=timezone.utc))
-
-        # The shared weight is an ancestor outside the computation chain, so without the exclusion it would
-        # have been replaced by a copy — corrupting the dict swap's set/reset linking below.
-        self.assertIn(
-            id(shared_weight), [id(ancestor) for ancestor in simulation.ancestors_not_in_computation_chain])
-        self.assertNotIn(
-            id(shared_weight), [id(ancestor) for ancestor in simulation.ancestors_to_replace_by_copies])
-        self.assertIs(old_jobs_dict, step_1.jobs)
-        self.assertIs(shared_weight, step_1.jobs[job])
-        self.assertIs(step_1, shared_weight.modeling_obj_container)
-
-        simulation.set_updated_values()
-        self.assertIs(new_jobs_dict, step_1.jobs)
-        self.assertIs(step_1, shared_weight.modeling_obj_container)
-        self.assertIs(step_1, new_job_weight.modeling_obj_container)
-
-        simulation.reset_values()
-        self.assertIs(old_jobs_dict, step_1.jobs)
-        self.assertIs(shared_weight, step_1.jobs[job])
-        self.assertIs(step_1, shared_weight.modeling_obj_container)
-        self.assertIsNone(new_job_weight.modeling_obj_container)

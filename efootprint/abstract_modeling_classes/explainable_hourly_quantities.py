@@ -16,7 +16,7 @@ from efootprint.abstract_modeling_classes.explainable_timezone import Explainabl
 from efootprint.constants.units import u, get_unit
 from efootprint.logger import logger
 from efootprint.utils.display import best_display_unit, format_quantity_for_display, summarize_timeseries_for_display
-from efootprint.utils.plot_baseline_and_simulation_data import plot_baseline_and_simulation_data, prepare_data
+from efootprint.utils.plot_timeseries import plot_timeseries_data, prepare_data
 from efootprint.abstract_modeling_classes.aggregation_utils import validate_timeseries_unit
 
 if TYPE_CHECKING:
@@ -513,43 +513,8 @@ class ExplainableHourlyQuantities(ExplainableObject):
     def plot(self, figsize=(10, 4), filepath=None, plt_show=False, xlims=None, cumsum=False):
         import matplotlib.pyplot as plt
 
-        if self.baseline_twin is None and self.simulation_twin is None:
-            baseline_q = self.value
-            baseline_start = self.start_date
-            simulated_q = None
-        elif self.baseline_twin is not None and self.simulation_twin is None:
-            baseline_q = self.baseline_twin.value
-            baseline_start = self.baseline_twin.start_date
-            simulated_q = self.value
-            simulated_start = self.start_date
-        elif self.simulation_twin is not None and self.baseline_twin is None:
-            baseline_q = self.value
-            baseline_start = self.start_date
-            simulated_q = self.simulation_twin.value
-            simulated_start = self.simulation_twin.start_date
-        else:
-            raise ValueError("Both baseline and simulation twins are not None, this should not happen")
-
-        time_baseline, baseline_q = prepare_data(baseline_q, baseline_start, cumsum)
-
-        if simulated_q is not None:
-            if isinstance(simulated_q, self._EmptyExplainableObject):
-                sim_len = len(baseline_q.magnitude)
-                simulated_q = Quantity(np.zeros(sim_len), baseline_q.units)
-                simulated_start = self.simulation.simulation_date
-
-            time_sim, simulated_q = prepare_data(simulated_q, simulated_start, cumsum)
-
-            # Align simulation start offset with baseline in cumsum mode
-            if cumsum:
-                baseline_interp_index = np.where(time_baseline == time_sim[0])[0]
-                if baseline_interp_index.size > 0:
-                    simulated_q += baseline_q[baseline_interp_index[0]]
-        else:
-            time_sim = None
-
-        # Plotting
-        fig, ax = plot_baseline_and_simulation_data(baseline_q, time_baseline, simulated_q, time_sim, figsize, xlims)
+        time_axis, quantity = prepare_data(self.value, self.start_date, cumsum)
+        fig, ax = plot_timeseries_data(quantity, time_axis, figsize, xlims)
 
         if self.label:
             title = self.label if not cumsum else "Cumulative " + self.label[0].lower() + self.label[1:]

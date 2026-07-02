@@ -12,7 +12,7 @@ from efootprint.abstract_modeling_classes.explainable_quantity import Explainabl
 from efootprint.abstract_modeling_classes.modeling_object import ModelingObject
 from efootprint.all_classes_in_order import OBJECT_CATEGORIES
 from efootprint.constants.units import u
-from efootprint.utils.plot_baseline_and_simulation_data import get_time_axis
+from efootprint.utils.plot_timeseries import get_time_axis
 from efootprint.utils.tools import get_init_signature_params
 
 PHASES = ("energy", "fabrication")

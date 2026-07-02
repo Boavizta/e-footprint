@@ -141,10 +141,6 @@ def get_attribute_from_flat_obj_dict(attr_key: str, flat_obj_dict: dict):
 class ExplainableObject(ObjectLinkedToModelingObj):
     __slots__ = (
         # ExplainableObject's own attributes (parent ObjectLinkedToModelingObj has its own slots)
-        'simulation_twin',
-        'baseline_twin',
-        'simulation',
-        'initial_modeling_obj_container',
         '_value',
         'source',
         'confidence',
@@ -198,10 +194,6 @@ class ExplainableObject(ObjectLinkedToModelingObj):
             right_parent: "ExplainableObject" = None, operator: str = None, source: Source = None,
             confidence: Literal["low", "medium", "high"] | None = None, comment: str = None):
         super().__init__()
-        self.simulation_twin = None
-        self.baseline_twin = None
-        self.simulation = None
-        self.initial_modeling_obj_container = None
         self._value = value
         if not label and (left_parent is None and right_parent is None):
             raise ValueError(f"ExplainableObject without parent should have a label")
@@ -373,8 +365,6 @@ class ExplainableObject(ObjectLinkedToModelingObj):
         super().set_modeling_obj_container(new_modeling_obj_container, attr_name)
 
         if new_modeling_obj_container is not None:
-            if self.initial_modeling_obj_container is None:
-                self.initial_modeling_obj_container = new_modeling_obj_container
             for direct_ancestor_with_id in self.direct_ancestors_with_id:
                 direct_ancestor_with_id.add_child_to_direct_children_with_id(direct_child=self)
 

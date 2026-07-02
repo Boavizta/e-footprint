@@ -50,34 +50,16 @@ class System(ModelingObject):
         self.usage_patterns = usage_patterns
         self.edge_usage_patterns = edge_usage_patterns
         self.check_no_object_to_link_is_already_linked_to_another_system()
-        self.simulation = None
-        self.set_initial_and_previous_footprints()
 
     @property
     def modeling_objects_whose_attributes_depend_directly_on_me(self):
         return self.countries + self.edge_usage_patterns + self.usage_patterns
-
-    def set_initial_and_previous_footprints(self):
-        self.previous_change = None
-        self.previous_total_energy_footprints_sum_over_period = ExplainableObjectDict()
-        self.previous_total_fabrication_footprints_sum_over_period = ExplainableObjectDict()
-        self.all_changes = []
-        self.initial_total_energy_footprints_sum_over_period = ExplainableObjectDict()
-        self.initial_total_fabrication_footprints_sum_over_period = ExplainableObjectDict()
 
     def compute_calculated_attributes(self):
         self.check_no_object_to_link_is_already_linked_to_another_system()
         super().compute_calculated_attributes()
 
     calculated_attributes: List[str] = ["total_footprint"]
-
-    @property
-    def attributes_that_shouldnt_trigger_update_logic(self):
-        return (super().attributes_that_shouldnt_trigger_update_logic
-                + ["all_changes", "previous_change", "previous_total_energy_footprints_sum_over_period",
-                   "previous_total_fabrication_footprints_sum_over_period",
-                   "initial_total_energy_footprints_sum_over_period",
-                   "initial_total_fabrication_footprints_sum_over_period", "simulation"])
 
     def check_no_object_to_link_is_already_linked_to_another_system(self):
         for mod_obj in self.all_linked_objects:
@@ -110,8 +92,6 @@ class System(ModelingObject):
                 f"Computed {nb_of_calculated_attributes} calculated attributes over {len(all_objects)} objects in "
                 f"{compute_duration} seconds or {round(1000 * compute_duration / nb_of_calculated_attributes, 2)} "
                 f"ms per computation")
-        self.initial_total_energy_footprints_sum_over_period = self.total_energy_footprint_sum_over_period
-        self.initial_total_fabrication_footprints_sum_over_period = self.total_fabrication_footprint_sum_over_period
         self.trigger_modeling_updates = True
 
     def get_objects_linked_to_usage_patterns(
@@ -432,38 +412,3 @@ class System(ModelingObject):
             return HTML(filename)
 
         return fig
-
-    def plot_emission_diffs(self, filepath=None, figsize=(10, 5), from_start=False, plt_show=False):
-        import os
-        import matplotlib
-        if not plt_show and os.environ.get("MPLBACKEND") is None:
-            matplotlib.use("Agg", force=True)
-        from matplotlib import pyplot as plt
-
-        if self.previous_change is None:
-            raise ValueError(
-                f"There has been no change to the system yet so no diff to plot.\n"
-                f"Use System.plot_footprints_by_category_and_object() to visualize footprints")
-
-        if from_start and len(self.all_changes) > 1:
-            emissions_dict__old = [self.initial_total_energy_footprints_sum_over_period,
-                                   self.initial_total_fabrication_footprints_sum_over_period]
-        else:
-            emissions_dict__old = [self.previous_total_energy_footprints_sum_over_period,
-                                   self.previous_total_fabrication_footprints_sum_over_period]
-
-        emissions_dict__new = [self.total_energy_footprint_sum_over_period,
-                               self.total_fabrication_footprint_sum_over_period]
-
-        fig, ax = plt.subplots(nrows=1, ncols=1, figsize=figsize)
-        from efootprint.utils.plot_emission_diffs import EmissionPlotter
-        EmissionPlotter(
-            ax, emissions_dict__old, emissions_dict__new, rounding_value=0).plot_emission_diffs()
-
-        if filepath is not None:
-            plt.savefig(filepath, bbox_inches='tight')
-
-        if plt_show:
-            plt.show()
-
-        return fig, ax

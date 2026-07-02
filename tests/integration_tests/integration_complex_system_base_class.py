@@ -2,12 +2,10 @@ import os.path
 from copy import copy
 
 from efootprint.abstract_modeling_classes.explainable_object_dict import to_weighted_explainable_object_dict
-from datetime import datetime, timedelta, timezone
+from datetime import datetime
 from efootprint.core.usage.edge.recurrent_server_need import RecurrentServerNeed
 
-from efootprint.abstract_modeling_classes.modeling_update import ModelingUpdate
 from efootprint.builders.time_builders import create_source_hourly_values_from_list
-from efootprint.constants.sources import Sources
 from efootprint.abstract_modeling_classes.source_objects import SourceValue
 from efootprint.core.hardware.device import Device
 from efootprint.core.hardware.server import Server, ServerTypes
@@ -258,153 +256,6 @@ class IntegrationTestComplexSystemBaseClass(IntegrationTestBaseClass):
         fig = self.system.plot_footprints_by_category_and_object(width=400, height=100, notebook=False)
         html = fig.to_html(full_html=False, include_plotlyjs=False)
         self.assertTrue(len(html) > 1000)
-
-    def run_test_plot_emission_diffs(self):
-        file = "system_emission_diffs.png"
-        self.system.previous_change = None
-
-        with self.assertRaises(ValueError):
-            self.system.plot_emission_diffs(filepath=file)
-
-        with self.cleanup_stack(verify_total_footprint_changed_before_cleanup=True) as cleanup:
-            uj_step_1_job = list(self.uj_step_1.jobs)[0]
-            cleanup.callback(setattr, uj_step_1_job, "data_transferred", uj_step_1_job.data_transferred)
-            uj_step_1_job.data_transferred = SourceValue(500 * u.kB)
-            self.system.plot_emission_diffs(filepath=file)
-
-        self.assertTrue(os.path.isfile(file))
-
-    def run_test_simulation_input_change(self):
-        simulation = ModelingUpdate([[self.uj_step_1.user_time_spent, SourceValue(25 * u.min)]],
-                                    self.start_date.replace(tzinfo=timezone.utc) + timedelta(hours=1))
-
-        self.assertEqual(self.system.total_footprint, self.initial_footprint)
-        self.assertEqual(self.system.simulation, simulation)
-        self.assertEqual(simulation.old_sourcevalues, [self.uj_step_1.user_time_spent])
-        self.assertEqual(len(simulation.values_to_recompute), len(simulation.recomputed_values))
-        # Depending job occurrences should have been recomputed since a changing user_time_spent might shift jobs
-        # distribution across time
-        for elt in list(self.uj_step_2.jobs)[0].hourly_occurrences_per_usage_pattern.values():
-            self.assertIn(elt.id, [elt.id for elt in simulation.values_to_recompute])
-
-    def run_test_simulation_multiple_input_changes(self):
-        simulation = ModelingUpdate([
-                [self.uj_step_1.user_time_spent, SourceValue(25 * u.min)],
-                [self.server1.compute, SourceValue(42 * u.cpu_core, Sources.USER_DATA)]],
-                self.start_date.replace(tzinfo=timezone.utc) + timedelta(hours=1))
-
-        self.assertEqual(self.system.total_footprint, self.initial_footprint)
-        self.assertEqual(self.system.simulation, simulation)
-        self.assertEqual(simulation.old_sourcevalues, [self.uj_step_1.user_time_spent, self.server1.compute])
-        self.assertEqual(len(simulation.values_to_recompute), len(simulation.recomputed_values))
-        recomputed_elements_ids = [elt.id for elt in simulation.values_to_recompute]
-        for elt in list(self.uj_step_2.jobs)[0].hourly_occurrences_per_usage_pattern.values():
-            self.assertIn(elt.id, recomputed_elements_ids)
-        self.assertIn(self.server1.energy_footprint.id, recomputed_elements_ids)
-
-    def run_test_simulation_add_new_object(self):
-        new_server = Server.from_defaults("new server", server_type=ServerTypes.on_premise(),
-                                          storage=Storage.from_defaults("new storage"))
-        new_job = Job.from_defaults(
-            "new job 2", server=new_server, data_transferred=SourceValue((2.5 / 3) * u.GB),
-            data_stored=SourceValue(50 * u.kB_stored), request_duration=SourceValue(4 * u.min),
-            ram_needed=SourceValue(100 * u.MB_ram), compute_needed=SourceValue(1 * u.cpu_core))
-
-        initial_uj_step_2_jobs = list(self.uj_step_2.jobs)
-        simulation = ModelingUpdate(
-            [[self.uj_step_2.jobs, to_weighted_explainable_object_dict({**self.uj_step_2.jobs, new_job: 1})]],
-            self.start_date.replace(tzinfo=timezone.utc) + timedelta(hours=1))
-
-        self.assertEqual(self.system.total_footprint, self.initial_footprint)
-        self.assertEqual(self.system.simulation, simulation)
-        self.assertEqual(simulation.old_sourcevalues, [])
-        self.assertEqual(len(simulation.values_to_recompute), len(simulation.recomputed_values))
-        recomputed_elements_ids = [elt.id for elt in simulation.values_to_recompute]
-        self.assertIn(list(self.uj_step_2.jobs)[0].hourly_occurrences_per_usage_pattern.id, recomputed_elements_ids)
-        self.assertEqual(initial_uj_step_2_jobs, list(self.uj_step_2.jobs))
-        with self.cleanup_stack(verify_total_footprint_changed_before_cleanup=True) as cleanup:
-            cleanup.callback(simulation.reset_values)
-            simulation.set_updated_values()
-            self.assertEqual(initial_uj_step_2_jobs + [new_job], list(self.uj_step_2.jobs))
-
-    def run_test_simulation_add_existing_object(self):
-        logger.info(f"Launching simulation")
-        # Doubling the weight of an already-linked job is the dict analogue of the old duplicate-entry idiom.
-        simulation = ModelingUpdate(
-            [[self.uj_step_2.jobs[self.server1_job2], SourceValue(2 * u.dimensionless)]],
-            self.start_date.replace(tzinfo=timezone.utc) + timedelta(hours=1))
-        logger.info("Simulation computed")
-
-        self.assertEqual(self.system.total_footprint, self.initial_footprint)
-        self.assertEqual(self.system.simulation, simulation)
-        self.assertEqual(len(simulation.values_to_recompute), len(simulation.recomputed_values))
-        recomputed_elements_ids = [elt.id for elt in simulation.values_to_recompute]
-        self.assertIn(self.server1_job2.server.hour_by_hour_compute_need.id, recomputed_elements_ids)
-        self.assertEqual(1, self.uj_step_2.jobs[self.server1_job2].magnitude)
-        with self.cleanup_stack(verify_total_footprint_changed_before_cleanup=True) as cleanup:
-            cleanup.callback(simulation.reset_values)
-            simulation.set_updated_values()
-            self.assertEqual(2, self.uj_step_2.jobs[self.server1_job2].magnitude)
-
-    def run_test_simulation_add_multiple_objects(self):
-        new_server = Server.from_defaults("new server", server_type=ServerTypes.on_premise(),
-                                          storage=Storage.from_defaults("new storage"))
-        new_job = Job.from_defaults(
-            "new job 3", server=new_server, data_transferred=SourceValue((2.5 / 3) * u.GB),
-            data_stored=SourceValue(50 * u.kB_stored), request_duration=SourceValue(4 * u.min),
-            ram_needed=SourceValue(100 * u.MB_ram), compute_needed=SourceValue(1 * u.cpu_core))
-
-        new_job2 = Job.from_defaults(
-            "new job 4", server=new_server, data_transferred=SourceValue((2.5 / 3) * u.GB),
-            data_stored=SourceValue(50 * u.kB_stored), request_duration=SourceValue(4 * u.min),
-            ram_needed=SourceValue(100 * u.MB_ram), compute_needed=SourceValue(1 * u.cpu_core))
-
-        initial_uj_step_2_jobs = list(self.uj_step_2.jobs)
-        simulation = ModelingUpdate(
-            [[self.uj_step_2.jobs, to_weighted_explainable_object_dict({**self.uj_step_2.jobs, new_job: 1, new_job2: 1, self.server1_job1: 1})]],
-            self.start_date.replace(tzinfo=timezone.utc) + timedelta(hours=1))
-
-        self.assertEqual(self.system.total_footprint, self.initial_footprint)
-        self.assertEqual(self.system.simulation, simulation)
-        self.assertEqual(simulation.old_sourcevalues, [])
-        self.assertEqual(len(simulation.values_to_recompute), len(simulation.recomputed_values))
-        recomputed_elements_ids = [elt.id for elt in simulation.values_to_recompute]
-        for job in [new_job, new_job2, self.server1_job1]:
-            self.assertIn(job.server.hour_by_hour_compute_need.id, recomputed_elements_ids)
-        self.assertEqual(initial_uj_step_2_jobs, list(self.uj_step_2.jobs))
-        with self.cleanup_stack(verify_total_footprint_changed_before_cleanup=True) as cleanup:
-            cleanup.callback(simulation.reset_values)
-            simulation.set_updated_values()
-            self.assertEqual(initial_uj_step_2_jobs + [new_job, new_job2, self.server1_job1], list(self.uj_step_2.jobs))
-
-    def run_test_simulation_add_objects_and_make_input_changes(self):
-        new_server = Server.from_defaults("new server", server_type=ServerTypes.on_premise(),
-                                          storage=Storage.from_defaults("new storage"))
-        new_job = Job.from_defaults(
-            "new job 5", server=new_server, data_transferred=SourceValue((2.5 / 3) * u.GB),
-            data_stored=SourceValue(50 * u.kB_stored), request_duration=SourceValue(4 * u.min),
-            ram_needed=SourceValue(100 * u.MB_ram), compute_needed=SourceValue(1 * u.cpu_core))
-
-        new_job2 = Job.from_defaults(
-            "new job 6", server=new_server, data_transferred=SourceValue((2.5 / 3) * u.GB),
-            data_stored=SourceValue(50 * u.kB_stored), request_duration=SourceValue(4 * u.min),
-            ram_needed=SourceValue(100 * u.MB_ram), compute_needed=SourceValue(1 * u.cpu_core))
-
-        simulation = ModelingUpdate(
-            [
-                [self.uj_step_2.jobs, to_weighted_explainable_object_dict({**self.uj_step_2.jobs, new_job: 1, new_job2: 1, self.server1_job1: 1})],
-                [self.uj_step_1.user_time_spent, SourceValue(25 * u.min)],
-                [self.server1.compute, SourceValue(42 * u.cpu_core, Sources.USER_DATA)]],
-        self.start_date.replace(tzinfo=timezone.utc) + timedelta(hours=1))
-
-        self.assertEqual(self.system.total_footprint, self.initial_footprint)
-        self.assertEqual(self.system.simulation, simulation)
-        self.assertEqual(simulation.old_sourcevalues, [self.uj_step_1.user_time_spent, self.server1.compute])
-        self.assertEqual(len(simulation.values_to_recompute), len(simulation.recomputed_values))
-        recomputed_elements_ids = [elt.id for elt in simulation.values_to_recompute]
-        for job in [new_job, new_job2, self.server1_job1]:
-            self.assertIn(job.server.hour_by_hour_compute_need.id, recomputed_elements_ids)
-        self.assertIn(list(self.uj_step_2.jobs)[0].hourly_occurrences_per_usage_pattern.id, recomputed_elements_ids)
 
     def run_test_dict_container_integrity(self):
         """Test bidirectional consistency of explainable_object_dicts_containers tracking."""

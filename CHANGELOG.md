@@ -4,6 +4,13 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](http://keepachangelog.com/)
 and this project adheres to [Semantic Versioning](http://semver.org/)
 
+## [Unreleased]
+
+### Removed
+- Simulation machinery: `ModelingUpdate`'s `simulation_date` parameter and all its supporting code (ancestor forking, hourly-quantity truncation, simulation/baseline twin links on `ExplainableObject`, `ModelingUpdate.set_updated_values`). What-if analysis is now done by comparing systems (`System.compare_to`, `efootprint/comparison/`); rebuild recipes for future what-if / calibration features are recorded in the project plans.
+- Previous/initial footprint capture on `System` (`previous_total_*`, `initial_total_*`, `previous_change`, `all_changes`, `compute_previous_system_footprints` parameter) and `System.plot_emission_diffs`. The tutorial's change-analysis sections now snapshot the system with `duplicate_system` and use `SystemComparison` plots.
+- `efootprint/utils/plot_emission_diffs.py` and `efootprint/utils/plot_baseline_and_simulation_data.py`. The generic single-timeseries plotting helpers move to `efootprint/utils/plot_timeseries.py`; `ExplainableHourlyQuantities.plot` now always plots its own values and `EmptyExplainableObject` no longer has a `plot` method.
+
 ## [V22.3.1]
 
 ### Fixed

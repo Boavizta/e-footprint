@@ -1,11 +1,9 @@
 from copy import copy
 import os
-from datetime import datetime, timedelta, timezone
+from datetime import datetime
 import numpy as np
 from pint import Quantity
 
-from efootprint.abstract_modeling_classes.modeling_update import ModelingUpdate
-from efootprint.constants.sources import Sources
 from efootprint.abstract_modeling_classes.source_objects import SourceValue, SourceRecurrentValues
 from efootprint.core.hardware.edge.edge_storage import EdgeStorage
 from efootprint.builders.hardware.edge.edge_computer import EdgeComputer
@@ -457,68 +455,6 @@ class IntegrationTestSimpleEdgeSystemBaseClass(IntegrationTestBaseClass):
             post_reset_assertions=post_reset,
         )
         self._run_object_link_scenario(scenario)
-
-    # SIMULATION TESTING
-
-    def run_test_simulation_input_change(self):
-        simulation = ModelingUpdate([[self.edge_computer.power, SourceValue(35 * u.W)]],
-                                    self.start_date.replace(tzinfo=timezone.utc) + timedelta(hours=1))
-
-        self.assertEqual(self.system.total_footprint, self.initial_footprint)
-        self.assertEqual(self.system.simulation, simulation)
-        self.edge_computer.energy_footprint.plot(plt_show=False, cumsum=False)
-        self.edge_computer.energy_footprint.plot(plt_show=False, cumsum=True)
-        self.system.total_footprint.plot(plt_show=False, cumsum=False)
-        self.system.total_footprint.plot(plt_show=False, cumsum=True)
-        self.assertEqual(len(simulation.values_to_recompute), len(simulation.recomputed_values))
-
-    def run_test_simulation_multiple_input_changes(self):
-        simulation = ModelingUpdate([
-                [self.edge_computer.power, SourceValue(35 * u.W)],
-                [self.edge_computer.compute, SourceValue(6 * u.cpu_core, Sources.USER_DATA)]],
-                 self.start_date.replace(tzinfo=timezone.utc) + timedelta(hours=1))
-
-        self.assertEqual(self.system.total_footprint, self.initial_footprint)
-        self.assertEqual(self.system.simulation, simulation)
-        self.assertEqual(simulation.old_sourcevalues, [self.edge_computer.power, self.edge_computer.compute])
-        self.assertEqual(len(simulation.values_to_recompute), len(simulation.recomputed_values))
-        recomputed_elements_ids = [elt.id for elt in simulation.values_to_recompute]
-        self.assertIn(self.edge_computer.energy_footprint.id, recomputed_elements_ids)
-
-    def run_test_simulation_add_new_edge_process(self):
-        new_edge_process = RecurrentEdgeProcess.from_defaults("New edge process", edge_device=self.edge_computer)
-
-        initial_edge_needs = copy(self.edge_function.recurrent_edge_device_needs)
-        simulation = ModelingUpdate([[self.edge_function.recurrent_edge_device_needs,
-                                    self.edge_function.recurrent_edge_device_needs + [new_edge_process]]],
-                                    copy(self.start_date).replace(tzinfo=timezone.utc) + timedelta(hours=1))
-
-        self.assertEqual(self.system.total_footprint, self.initial_footprint)
-        self.assertEqual(self.system.simulation, simulation)
-        self.assertEqual(len(simulation.values_to_recompute), len(simulation.recomputed_values))
-        self.assertEqual(initial_edge_needs, self.edge_function.recurrent_edge_device_needs)
-        with self.cleanup_stack(verify_total_footprint_changed_before_cleanup=True) as cleanup:
-            cleanup.callback(new_edge_process.self_delete)
-            cleanup.callback(simulation.reset_values)
-            simulation.set_updated_values()
-            self.assertNotEqual(self.system.total_footprint, self.initial_footprint)
-            self.assertEqual(initial_edge_needs + [new_edge_process], self.edge_function.recurrent_edge_device_needs)
-
-    def run_test_simulation_add_existing_edge_process(self):
-        simulation = ModelingUpdate([[self.edge_function.recurrent_edge_device_needs,
-                                    self.edge_function.recurrent_edge_device_needs + [self.edge_process]]],
-                                    copy(self.start_date).replace(tzinfo=timezone.utc) + timedelta(hours=1))
-
-        initial_edge_needs = copy(self.edge_function.recurrent_edge_device_needs)
-        self.assertEqual(self.system.total_footprint, self.initial_footprint)
-        self.assertEqual(self.system.simulation, simulation)
-        self.assertEqual(len(simulation.values_to_recompute), len(simulation.recomputed_values))
-        self.assertEqual(initial_edge_needs, self.edge_function.recurrent_edge_device_needs)
-        with self.cleanup_stack(verify_total_footprint_changed_before_cleanup=True) as cleanup:
-            cleanup.callback(simulation.reset_values)
-            simulation.set_updated_values()
-            self.assertNotEqual(self.system.total_footprint, self.initial_footprint)
-            self.assertEqual(initial_edge_needs + [self.edge_process], self.edge_function.recurrent_edge_device_needs)
 
     def run_test_add_edge_usage_journey_to_edge_computer(self):
         logger.warning("Adding new edge usage journey to edge computer")

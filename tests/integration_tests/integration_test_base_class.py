@@ -147,8 +147,7 @@ class SystemTestFixture:
         """Auto-initialize footprint tracking dictionaries.
 
         Returns:
-            Tuple of (initial_footprint, initial_fab_footprints, initial_energy_footprints,
-                     initial_system_total_fab_footprint, initial_system_total_energy_footprint)
+            Tuple of (initial_footprint, initial_fab_footprints, initial_energy_footprints)
         """
         initial_footprint = self.system.total_footprint
         initial_fab_footprints = {}
@@ -165,11 +164,7 @@ class SystemTestFixture:
             if hasattr(obj, 'devices_energy_footprint'):
                 initial_energy_footprints[obj] = obj.devices_energy_footprint
 
-        initial_system_total_fab_footprint = self.system.total_fabrication_footprint_sum_over_period
-        initial_system_total_energy_footprint = self.system.total_energy_footprint_sum_over_period
-
-        return (initial_footprint, initial_fab_footprints, initial_energy_footprints,
-                initial_system_total_fab_footprint, initial_system_total_energy_footprint)
+        return initial_footprint, initial_fab_footprints, initial_energy_footprints
 
 
 class IntegrationTestBaseClass(TestCase):
@@ -199,13 +194,12 @@ class IntegrationTestBaseClass(TestCase):
             setattr(cls, attr_name, cls.fixture.get(object_name))
 
         # Auto-initialize footprints
-        (cls.initial_footprint, cls.initial_fab_footprints, cls.initial_energy_footprints,
-         cls.initial_system_total_fab_footprint, cls.initial_system_total_energy_footprint) = \
+        cls.initial_footprint, cls.initial_fab_footprints, cls.initial_energy_footprints = \
             cls.fixture.initialize_footprints()
 
         cls.ref_json_filename = cls.REF_JSON_FILENAME
 
-    def footprint_has_changed(self, objects_to_test: List[ModelingObject], system=None):
+    def footprint_has_changed(self, objects_to_test: List[ModelingObject]):
         for obj in objects_to_test:
             try:
                 initial_footprint = self.initial_energy_footprints[obj]
@@ -220,16 +214,6 @@ class IntegrationTestBaseClass(TestCase):
                     f" to {str(new_footprint)}")
             except AssertionError:
                 raise AssertionError(f"Footprint hasn’t changed for {obj.name}")
-        if objects_to_test[0].systems:
-            system = objects_to_test[0].systems[0]
-        else:
-            assert system is not None
-        for prev_fp, initial_fp in zip(
-                (system.previous_total_energy_footprints_sum_over_period,
-                 system.previous_total_fabrication_footprints_sum_over_period),
-                (self.initial_system_total_energy_footprint, self.initial_system_total_fab_footprint)):
-            for key in ["Servers", "Storage", "Devices", "Network"]:
-                self.assertEqual(round(initial_fp[key], 4), round(prev_fp[key], 4), f"{key} footprint is not equal")
 
     def footprint_has_not_changed(self, objects_to_test: List[ModelingObject]):
         for obj in objects_to_test:
@@ -372,7 +356,7 @@ class IntegrationTestBaseClass(TestCase):
                 self.assertEqual(self.initial_footprint, self.system.total_footprint)
 
             if scenario.expected_changed:
-                self.footprint_has_changed(list(scenario.expected_changed), system=self.system)
+                self.footprint_has_changed(list(scenario.expected_changed))
             if scenario.expected_unchanged:
                 self.footprint_has_not_changed(list(scenario.expected_unchanged))
             if scenario.post_assertions:
