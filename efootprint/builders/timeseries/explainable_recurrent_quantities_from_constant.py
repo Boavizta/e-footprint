@@ -45,6 +45,18 @@ class ExplainableRecurrentQuantitiesFromConstant(ExplainableRecurrentQuantities)
         )
 
 
+    @property
+    def form_inputs_for_display(self):
+        """The constant parameter the user entered, as an ordered ``{label: value}`` of human-readable
+        strings — surfacing the value + unit that shaped this weekly pattern (e.g. in a model comparison)
+        instead of the computed 168-value array. Mirrors the hourly form-input class's read surface."""
+        from efootprint.utils.display import format_display_number
+        try:
+            value = format_display_number(float(self.form_inputs.get("constant_value")))
+        except (TypeError, ValueError):
+            value = str(self.form_inputs.get("constant_value"))
+        return {"constant value": f"{value} {self.form_inputs.get('constant_unit')}"}
+
     def _compute_recurrent_values(self) -> Quantity:
         """Generate 168-element array (7 days * 24 hours) with constant value."""
         recurrent_array = np.array([float(self.form_inputs["constant_value"])] * 168, dtype=np.float32)

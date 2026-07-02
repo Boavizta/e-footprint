@@ -66,6 +66,32 @@ class ExplainableHourlyQuantitiesFromFormInputs(ExplainableHourlyQuantities):
     def value(self):
         self._value = None
 
+    @property
+    def form_inputs_for_display(self):
+        """The growth parameters the user entered, as an ordered ``{label: value}`` of human-readable
+        strings — surfacing what actually shaped this timeseries (e.g. in a model comparison) instead of
+        the opaque computed array. Only the parameters that drive the projection are included; each value
+        carries its unit / timespan. Missing keys degrade gracefully (defensive against partial inputs)."""
+        from efootprint.utils.display import format_display_number
+
+        def fmt(raw):
+            try:
+                return format_display_number(float(raw))
+            except (TypeError, ValueError):
+                return str(raw)
+
+        form_inputs = self.form_inputs
+        initial_volume = form_inputs.get("initial_volume")
+        return {
+            "start date": str(form_inputs.get("start_date")),
+            "modeling duration": f"{fmt(form_inputs.get('modeling_duration_value'))} "
+                                 f"{form_inputs.get('modeling_duration_unit')}",
+            "initial volume": ("not set" if initial_volume in (None, "", "None")
+                               else f"{fmt(initial_volume)} per {form_inputs.get('initial_volume_timespan')}"),
+            "net growth rate": f"{fmt(form_inputs.get('net_growth_rate_in_percentage'))} % per "
+                               f"{form_inputs.get('net_growth_rate_timespan')}",
+        }
+
     def _compute_hourly_timeseries(self) -> Quantity:
         """
         Compute hourly timeseries from form inputs using exponential growth.

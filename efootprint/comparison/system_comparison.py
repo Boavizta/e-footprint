@@ -300,6 +300,18 @@ class SystemComparison:
         diffs = []
         for attribute in inputs_a.keys() & inputs_b.keys():
             value_a, value_b = inputs_a[attribute], inputs_b[attribute]
+            # Form-built timeseries (hourly-from-growth, recurrent-from-constant) carry the raw parameters
+            # the user entered. When both sides are form-built, diff those parameters directly — surfacing
+            # "net growth rate: 10 % per year → 20 % per year" instead of two opaque array summaries — and
+            # skip the array comparison entirely (the parameters are the source of truth, and the lazy
+            # arrays stay unbuilt). A form-built vs code-built pair falls through to the array diff below.
+            form_display_a = getattr(value_a, "form_inputs_for_display", None)
+            form_display_b = getattr(value_b, "form_inputs_for_display", None)
+            if form_display_a is not None and form_display_b is not None:
+                form_diff = self._diff_form_inputs(obj_a, obj_b, attribute, form_display_a, form_display_b)
+                if form_diff is not None:
+                    diffs.append(form_diff)
+                continue
             if value_a == value_b:
                 continue
             diffs.append(AttributeDiff(
@@ -324,6 +336,29 @@ class SystemComparison:
                 obj_a, obj_b, attribute, lists_a[attribute], lists_b[attribute], in_both_models))
 
         return diffs
+
+    @staticmethod
+    def _diff_form_inputs(obj_a, obj_b, attribute, display_a, display_b) -> Optional[AttributeDiff]:
+        """One diff row for a form-built timeseries input whose parameters differ. Each changed parameter
+        becomes a ``"<label>: <value>"`` line, and only the changed parameters are listed (so a lone
+        net-growth-rate edit reads as a single line, not the whole projection). The lines are stacked
+        newline-joined in the two value cells — the same parameter labels on both sides so the columns
+        read against each other. Both sides are the same form-built subclass, so their parameter sets
+        match; a parameter missing on one side (schema drift) renders as an em-dash there. Returns
+        ``None`` when no parameter differs (identical form inputs are not a diff)."""
+        lines_a, lines_b = [], []
+        for label in list(display_a) + [key for key in display_b if key not in display_a]:
+            value_a, value_b = display_a.get(label), display_b.get(label)
+            if value_a == value_b:
+                continue
+            lines_a.append(f"{label}: {value_a if value_a is not None else '—'}")
+            lines_b.append(f"{label}: {value_b if value_b is not None else '—'}")
+        if not lines_a:
+            return None
+        return AttributeDiff(
+            object_class=obj_a.class_as_simple_str, object_name_a=obj_a.name, object_name_b=obj_b.name,
+            attribute=attribute, value_a="\n".join(lines_a), value_b="\n".join(lines_b),
+            source_a=None, source_b=None, confidence_a=None, confidence_b=None)
 
     def _diff_dict_input(self, obj_a, obj_b, attribute, dict_a, dict_b, in_both_models) -> List[AttributeDiff]:
         """Diff one dict-relationship input key by key: a changed count (the key in both, weight differs),

@@ -42,6 +42,29 @@ def build_system(system_name, server_name, hourly_starts=None, start="2025-01-01
     return System(system_name, [usage_pattern], edge_usage_patterns=[])
 
 
+def build_form_input_system(system_name, server_name, net_growth_rate=10, initial_volume=100,
+                            start="2025-01-01"):
+    """Like ``build_system`` but the usage volume is a *form-built* timeseries (hourly-from-growth),
+    so its ``hourly_usage_journey_starts`` carries the raw growth parameters a user would enter in the
+    interface — the shape the form-input diff surfaces parameter-by-parameter."""
+    from efootprint.builders.timeseries.explainable_hourly_quantities_from_form_inputs import (
+        ExplainableHourlyQuantitiesFromFormInputs)
+    storage = Storage.from_defaults(f"{server_name} storage")
+    server = Server.from_defaults(server_name, server_type=ServerTypes.on_premise(), storage=storage)
+    job = Job.from_defaults(f"{server_name} job", server=server)
+    uj_step = UsageJourneyStep.from_defaults(f"{system_name} step", jobs=[job])
+    uj = UsageJourney(f"{system_name} journey", uj_steps=[uj_step])
+    network = Network.from_defaults(f"{system_name} network")
+    hourly_starts = ExplainableHourlyQuantitiesFromFormInputs({
+        "start_date": start, "modeling_duration_value": 1, "modeling_duration_unit": "month",
+        "initial_volume": initial_volume, "initial_volume_timespan": "month",
+        "net_growth_rate_in_percentage": net_growth_rate, "net_growth_rate_timespan": "year"})
+    usage_pattern = UsagePattern(
+        f"{system_name} usage pattern", uj, [Device.laptop()], network, Countries.FRANCE(), hourly_starts)
+
+    return System(system_name, [usage_pattern], edge_usage_patterns=[])
+
+
 class TestDuplicateSystem(TestCase):
     def test_duplicate_system_mints_fresh_system_id_and_preserves_object_ids(self):
         """Test duplicate_system gives a new System id while every other object keeps its id."""
@@ -283,6 +306,49 @@ class TestSystemComparison(TestCase):
         self.assertTrue(diff.only_in_b)
         names_only_in_b = {row.object_name for row in diff.only_in_b}
         self.assertIn("server D", names_only_in_b)
+
+    def test_input_diff_surfaces_form_input_parameter_changes_for_form_built_timeseries(self):
+        """Test a changed form-built timeseries diffs by its form parameters, not the computed array: a
+        net-growth-rate edit reads as a single "net growth rate: 10 % per year → 20 % per year" line, and
+        the unchanged parameters (start date, modeling duration, initial volume) are not listed."""
+        system_a = build_form_input_system("model A", "shared server", net_growth_rate=10)
+        system_b = build_form_input_system("model A", "shared server", net_growth_rate=20)
+
+        diff = system_a.compare_to(system_b).input_diff
+
+        self.assertEqual([], diff.only_in_a)
+        self.assertEqual([], diff.only_in_b)
+        changed = [row for row in diff.changed if row.attribute == "hourly_usage_journey_starts"]
+        self.assertEqual(1, len(changed))
+        row = changed[0]
+        self.assertEqual("UsagePattern", row.object_class)
+        self.assertEqual("net growth rate: 10 % per year", row.value_a)
+        self.assertEqual("net growth rate: 20 % per year", row.value_b)
+        # Only the changed parameter is listed — the unchanged ones stay out of the diff.
+        for unchanged in ("start date", "modeling duration", "initial volume"):
+            self.assertNotIn(unchanged, row.value_a)
+
+    def test_input_diff_stacks_multiple_changed_form_input_parameters(self):
+        """Test several changed form parameters stack as one row per side, each a "<label>: <value>" line
+        that reads column-against-column (same labels, same order on both sides)."""
+        system_a = build_form_input_system("model A", "shared server", net_growth_rate=10, initial_volume=100)
+        system_b = build_form_input_system("model A", "shared server", net_growth_rate=20, initial_volume=250)
+
+        diff = system_a.compare_to(system_b).input_diff
+
+        row = next(r for r in diff.changed if r.attribute == "hourly_usage_journey_starts")
+        self.assertEqual("initial volume: 100 per month\nnet growth rate: 10 % per year", row.value_a)
+        self.assertEqual("initial volume: 250 per month\nnet growth rate: 20 % per year", row.value_b)
+
+    def test_input_diff_ignores_form_built_timeseries_with_identical_parameters(self):
+        """Test two form-built timeseries with identical parameters produce no diff row (the array is
+        never even built — the parameters are the source of truth)."""
+        system_a = build_form_input_system("model A", "shared server", net_growth_rate=10)
+        system_b = build_form_input_system("model A", "shared server", net_growth_rate=10)
+
+        diff = system_a.compare_to(system_b).input_diff
+
+        self.assertEqual([], [r for r in diff.changed if r.attribute == "hourly_usage_journey_starts"])
 
     def test_plot_helpers_smoke_render(self):
         """Test the notebook plot helpers render without error."""
