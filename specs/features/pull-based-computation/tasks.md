@@ -331,7 +331,11 @@ render. The matrix is two lazy layers: `impact_repartition_rows` per source (on 
 `AttributionSource` mixin; ancestry recorded per atom value *before* the period-sum reduction drops it)
 concatenated by `System.impact_repartition_matrix`; rows keep zero-valued atoms and matrix
 concatenation preserves atom enumeration order, so the fold's float accumulation is bit-identical to
-the former live-atom fold (Sankey expectations unchanged). Job's `flushed_memo` multi-arg functions
+the former live-atom fold (Sankey expectations unchanged). Scope note: only the *fold* is hourly-free —
+the Sankey's breakdown-by-source decoration still reads per-source footprint slots (`energy_footprint`,
+`instances_fabrication_footprint`, `footprint_breakdown_by_source`) at render time; cached under
+pull-ALL today, and Task 8 must decide whether those slots join the serialize set (else a loaded-session
+render pulls hourly recomputes). Job's `flushed_memo` multi-arg functions
 became plain methods (their per-call recompute cost is paid only inside lazy computations); scope grew
 to `job.py` + `usage_journey_step.py` because deleting `flushed_memo`/`render_cache` required it.
 `__setattr__`'s computed-name guard became a single class-attribute isinstance check (the added

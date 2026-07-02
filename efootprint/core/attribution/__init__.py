@@ -119,8 +119,10 @@ def atoms_of(source: ModelingObject, phase) -> tuple:
 
 
 def attribution_sources(system) -> list:
-    """The system's impact sources that implement the atom contract."""
-    return [obj for obj in system.all_linked_objects if hasattr(obj, "attribution_atoms")]
+    """The system's impact sources that implement the atom contract. Membership is checked on
+    ``efootprint_class`` because ``all_linked_objects`` yields contextual proxies, which delegate
+    attributes but are not ``AttributionSource`` instances themselves."""
+    return [obj for obj in system.all_linked_objects if issubclass(obj.efootprint_class, AttributionSource)]
 
 
 def atoms(system, phase, exclude: tuple = ()):

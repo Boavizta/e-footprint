@@ -21,7 +21,7 @@ computed value's arithmetic ancestry, and caches. Input values and relationship 
 getter-less bump nodes in the same registry, created lazily when first read during a computation or
 first written; writes invalidate those nodes and the deletion wave does the rest. ``@lazy_attribute``
 declares read-time projections: slots invalidated through the same graph but never eagerly recomputed,
-never serialized, holding raw values outside the container bookkeeping.
+not serialized under the current contract, holding raw values outside the container bookkeeping.
 """
 import contextvars
 import dataclasses
@@ -663,11 +663,11 @@ def computed_dict(keys: str):
 class lazy_attribute:
     """Descriptor declaring a lazy projection slot: computed on first read, cached in the reactive
     graph and invalidated through it like any slot, but excluded from ``calculated_attributes`` (so
-    eager sweeps, serialization and the docs reference never touch it) and never eagerly recomputed —
-    after an invalidation it stays void until the next read. Its value is held raw, not attached to
-    the owner's explainability bookkeeping, so getters may return plain dicts, tuples or dataclass
-    instances of explainable values; the engine records calculus edges from every explainable found
-    in the returned structure, on top of the reads recorded while the getter ran."""
+    eager sweeps, the current serialization contract and the docs reference never touch it) and never
+    eagerly recomputed — after an invalidation it stays void until the next read. Its value is held
+    raw, not attached to the owner's explainability bookkeeping, so getters may return plain dicts,
+    tuples or dataclass instances of explainable values; the engine records calculus edges from every
+    explainable found in the returned structure, on top of the reads recorded while the getter ran."""
 
     def __init__(self, getter):
         self.getter = getter

@@ -34,7 +34,7 @@ This separation is constitutional (`specs/constitution.md` §1.1). `core/` is bu
 Avoid gathering context here unless absolutely necessary — most modeling work doesn't require it.
 
 - **`ModelingObject`** — base class with dependency tracking and update logic. All e-footprint objects inherit from this.
-- **`reactive_core.py`** — the pull-based computation engine: `@computed_attribute` / `@computed_dict` descriptors (each computed attribute resolves to a per-instance `ReactiveSlot` that computes on read, caches, and is invalidated by deletion waves along recorded dependency edges), `@lazy_attribute` read-time projection slots (same graph and invalidation, but excluded from `calculated_attributes` — so never eagerly recomputed, serialized, or documented — and holding raw values such as plain dicts/tuples outside the container bookkeeping, with calculus edges recorded from every explainable found in the returned structure), `ReverseCollection`/`ReverseLink` declarative reverse relationships, and the relationship read/write hooks' primitives.
+- **`reactive_core.py`** — the pull-based computation engine: `@computed_attribute` / `@computed_dict` descriptors (each computed attribute resolves to a per-instance `ReactiveSlot` that computes on read, caches, and is invalidated by deletion waves along recorded dependency edges), `@lazy_attribute` read-time projection slots (same graph and invalidation, but excluded from `calculated_attributes` — so never eagerly recomputed or documented, and not serialized under the current contract — and holding raw values such as plain dicts/tuples outside the container bookkeeping, with calculus edges recorded from every explainable found in the returned structure), `ReverseCollection`/`ReverseLink` declarative reverse relationships, and the relationship read/write hooks' primitives.
 - **`ExplainableObject`** — manages the calculation graph; allows automatic explanations and incremental recomputation.
 - **`ExplainableQuantity`** — values with units; inherits from `ExplainableObject`.
 - **`ExplainableHourlyQuantities`** — hourly time-series.
@@ -126,7 +126,9 @@ The heavier per-source share physics (`binding_demand_per_job`, `attribution_cel
 `retention_cumulative_per_cell`, …) are lazy slots too. Everything computes on first read, caches, and is
 invalidated *precisely* through recorded dependency edges — a one-input edit voids only the row slots in
 its cone; there is no wholesale flush anywhere. Lazy slots are never eagerly recomputed by
-`ModelingUpdate` (they stay void until the next render) and never serialized.
+`ModelingUpdate` (they stay void until the next render) and, not being in `calculated_attributes`, are
+not serialized under the current contract (the stage-4 serialization contract flags the matrix slot for
+storage, which will need a peek/serialize hook on `lazy_attribute`).
 
 **EdgeDevice fabrication is deployment-booked; energy is need-booked.** A component with no needs at a
 pattern the device serves still books its embodied carbon eagerly with the deployment, exactly like the

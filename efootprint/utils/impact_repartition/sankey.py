@@ -1,9 +1,14 @@
 """Column-walk Sankey renderer over the attribution fold.
 
 The data layer is one ``attribution.node_totals_and_links`` call per life-cycle phase — a fold over the
-stored ``System.impact_repartition_matrix`` period sums, so every column/phase/exclusion combination
-renders without recomputing the model. Conservation (Σ incoming == node total == Σ outgoing at every
-node, column sums == phase total minus exclusions) is structural in the fold. Everything in this class
+stored ``System.impact_repartition_matrix`` period sums, so the fold behind every column/phase/exclusion
+combination touches no hourly data. The breakdown-by-source decoration (``_render_breakdown`` and its
+``_get_source_phase_footprint`` normalization) is the one data read outside the matrix: it pulls
+per-source footprint slots (``energy_footprint``, ``instances_fabrication_footprint``,
+``footprint_breakdown_by_source``) and period-sums them at render time — cached under the transitional
+pull-ALL eager set; whether they join the serialize set is a stage-4-part-2 decision. Conservation
+(Σ incoming == node total == Σ outgoing at every node, column sums == phase total minus exclusions) is
+structural in the fold. Everything in this class
 is presentation: the System root and life-cycle-phase
 columns, the object-category and breakdown-by-source decorations, the ExternalAPIServer → ExternalAPI
 display normalization, small-node aggregation, colors, hovers, and spacer nodes as pure geometry.
