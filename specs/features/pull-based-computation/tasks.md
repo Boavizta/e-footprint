@@ -392,17 +392,22 @@ both matrix encodings and **report the numbers to the user** before finalizing (
 
 **Depends on:** Task 7.
 
-**Status:** Done — three checkpoints await user ratification (numbers in the implementation report):
-(1) **matrix encoding**: shipped dict rows (313 kB compact / 416 kB indented on the big fixture,
-encode 1.1 ms / decode 0.9 ms, zero extra code) vs columnar (271 kB compact but 474 kB indented,
-1.3/1.0 ms, ~15 extra encoder/decoder lines + positional consumers) — a possible switch lands as a
-follow-up commit; (2) **breakdown-by-source**: serializing the hourly breakdown dicts would have
+**Status:** Done — the three checkpoints were user-ratified (2026-07-02):
+(1) **matrix encoding — dict rows ratified** (313 kB compact / 416 kB indented on the big fixture,
+encode 1.1 ms / decode 0.9 ms, zero extra code) over columnar (271 kB compact but 474 kB indented,
+1.3/1.0 ms, ~15 extra encoder/decoder lines + positional consumers); no switch planned;
+(2) **breakdown-by-source**: serializing the hourly breakdown dicts would have
 added 8.4 MB (+66% of the file) for 5 edge devices, and they are not derivable from the device-level
 pairs, so the Sankey decoration now reads a new condensed `EdgeDevice.footprint_breakdown_summary`
 (`@lazy_attribute(serialize=True)`, period sums keyed by phase and component id, ~2 kB, matrix-style);
-(3) **nudge-loop gate target**: the ≥10× criterion is met on the finest calibration read (22.4×);
-coarser targets recompute wider genuine aggregation cones (job's network energy 6.7×, network total
-4.3× — hub re-aggregation cost, the early-cutoff/incremental-sum territory). Other notes: update-time
+(3) **nudge-loop gate target — accepted as gated**: the ≥10× criterion is met on the finest
+calibration read (22.4×, the roadmap's traffic-calibration target); coarser targets recompute wider
+genuine aggregation cones (job's network energy 6.7×, network total 4.3×) because a hub slot re-sums
+*all* its contributors' hourly arrays when one changes — measured bound ~4–7× with sub-millisecond
+absolute cost per iteration (CPU recompute is the spec's non-binding constraint). The **early-cutoff
+knob is CLOSED**: the 64.9% equal-value-recompute rate cannot fix hub re-aggregation (the other 35%
+still pay the full re-sum); if hub reads ever need ≥10×, the lever is incremental aggregation
+(subtract-old/add-new at hub sum slots), recorded here, not implemented. Other notes: update-time
 safety under the narrow eager set required an explicit `guard=True` slot flag (capacity checks living
 outside the footprint cone — server/edge available-capacity, edge-storage cumulative check); loading
 uses the new side-effect-free `ModelingObject.enable_modeling_updates` (`Service`/`ExternalAPI`
@@ -411,6 +416,16 @@ path; scope grew beyond the listed files to the slot-declaration sites (serializ
 Sankey decoration, `modeling_object.py`/`explainable_object*.py` (to_json contract, loader hooks) and
 regenerated committed fixtures (integration refs, templates, ecologits ref) — all serialization-contract
 mechanics. Equal-value recomputes re-measured: 61/94 (64.9%) on the 3 representative edits.
+
+Post-landing review fixes: dict-valued serialize-flagged lazy slots (the breakdown summary) round-trip
+as JSON objects — the initial encoding flattened them to their keys and the corrupted value attached
+as a trusted cache (pinned by a new edge-system contract test class, and `generate_big_system.py` now
+fills every serialize-flagged lazy slot); `ModelingUpdate` computes all guard slots of newly linked
+objects (subtree included) at update time — a never-computed guard has no edges, so no invalidation
+wave could reach it and invalid *new* links were accepted silently; `_parse_value_address`'s memo is
+bounded; the calculation-graph section reads the slot registry through `peek_instance_slot_registry`;
+the unreachable stored-computed-dict loader branch became a corrupted-file error; the serialize-set
+pin test expects `footprint_breakdown_summary` on `EdgeDevice` unconditionally.
 
 ---
 
@@ -445,6 +460,12 @@ drill-down computing lazily (brief loading state), canonical-class consumers mig
   and recompute on pull
 
 **Depends on:** Task 8 (released efootprint version carrying the contract).
+
+**Save-on-change detection (user decision, 2026-07-02):** no library-side dirty signal — the
+interface infers flagged-slot changes: save after every mutating request (an edit always voids or
+recomputes flagged footprint slots), and after a render, save when a serialize-flagged lazy slot's
+`descriptor.peek` went from absent to filled (the first Sankey materialization of the matrix /
+breakdown summaries).
 
 ---
 
