@@ -34,6 +34,23 @@ _compute_stack: contextvars.ContextVar[tuple] = contextvars.ContextVar("reactive
 _invalidation_collector: contextvars.ContextVar[set | None] = contextvars.ContextVar(
     "reactive_invalidation_collector", default=None)
 
+_recording_suppressed: contextvars.ContextVar[bool] = contextvars.ContextVar(
+    "reactive_recording_suppressed", default=False)
+
+
+@contextmanager
+def suppress_dependency_recording():
+    """Read without recording any dependency edge — for bookkeeping reads that must not couple the
+    computation in progress to what they touch (e.g. the computed-dict facade checking a key's
+    membership in the key collection: indexing one key deliberately depends on that key's value only,
+    never on the key set). Only safe for reads that cannot pull a computed slot (relationship
+    collections and reverse lookups), since a nested compute frame would be suppressed too."""
+    token = _recording_suppressed.set(True)
+    try:
+        yield
+    finally:
+        _recording_suppressed.reset(token)
+
 
 @contextmanager
 def collect_invalidated_slots():
@@ -188,6 +205,8 @@ def record_structural_dependency(slot: ReactiveSlot):
 
 
 def _record_dependency(slot: ReactiveSlot, read_kind: str):
+    if _recording_suppressed.get():
+        return
     stack = _compute_stack.get()
     if stack:
         getattr(stack[-1], read_kind).add(slot)

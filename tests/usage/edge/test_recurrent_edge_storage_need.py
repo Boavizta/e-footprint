@@ -32,6 +32,7 @@ class TestRecurrentEdgeStorageNeed(TestCase):
 
         self.storage_need = RecurrentEdgeStorageNeed(name="Test Storage Need", edge_component=self.mock_storage,
                                                      recurrent_need=self.recurrent_storage_needed)
+        self.storage_need.trigger_modeling_updates = False
 
     def test_init(self):
         """Test initialization of RecurrentEdgeStorageNeed."""
@@ -71,10 +72,9 @@ class TestRecurrentEdgeStorageNeed(TestCase):
         # Patch at class level because __slots__ prevents instance-level patching
         with patch.object(SourceRecurrentValues, 'generate_hourly_quantities_over_timespan',
                           return_value=base_storage_result):
-            recompute_attribute(self.storage_need, "unitary_hourly_need_per_usage_pattern", mock_pattern)
+            result = recompute_attribute(self.storage_need, "unitary_hourly_need_per_usage_pattern", mock_pattern)
 
             # Since we start on Monday 00:00, no values should be zeroed
-            result = self.storage_need.unitary_hourly_need_per_usage_pattern[mock_pattern]
             np.testing.assert_array_equal(result.magnitude, original_values)
             self.assertEqual("Unitary hourly need for Test Pattern Monday", result.label)
 
@@ -112,9 +112,8 @@ class TestRecurrentEdgeStorageNeed(TestCase):
         # Patch at class level because __slots__ prevents instance-level patching
         with patch.object(SourceRecurrentValues, 'generate_hourly_quantities_over_timespan',
                           return_value=base_storage_result):
-            recompute_attribute(self.storage_need, "unitary_hourly_need_per_usage_pattern", mock_pattern)
+            result = recompute_attribute(self.storage_need, "unitary_hourly_need_per_usage_pattern", mock_pattern)
 
-            result = self.storage_need.unitary_hourly_need_per_usage_pattern[mock_pattern]
             # From Wednesday 00:00, we need to zero until Monday 00:00
             # Wednesday is weekday 2, so (7-2)*24 - 0 = 120 hours
             expected_zeros = 120
@@ -133,12 +132,10 @@ class TestRecurrentEdgeStorageNeed(TestCase):
             )
         }
 
-        recompute_attribute(self.storage_need, "cumulative_unitary_storage_need_per_usage_pattern", pattern)
+        result = recompute_attribute(self.storage_need, "cumulative_unitary_storage_need_per_usage_pattern", pattern)
 
         np.testing.assert_array_equal(
-            self.storage_need.cumulative_unitary_storage_need_per_usage_pattern[pattern].to(u.GB_stored).magnitude,
-            np.array([1.0, 1.0, 3.0], dtype=np.float32)
-        )
+            result.to(u.GB_stored).magnitude, np.array([1.0, 1.0, 3.0], dtype=np.float32))
 
     def test_update_total_hourly_need_across_usage_patterns_uses_cumulative_per_pattern(self):
         """Test total hourly need across usage patterns uses cumulative per-pattern need and parallel journeys."""

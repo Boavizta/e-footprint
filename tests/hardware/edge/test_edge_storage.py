@@ -156,14 +156,11 @@ class TestEdgeStorage(TestCase):
 
         with patch_attribute(self.edge_storage, "base_storage_need", SourceValue(5 * u.GB_stored)), \
              patch_attribute(self.edge_storage, "storage_capacity", SourceValue(100 * u.GB_stored)):
-            recompute_attribute(self.edge_storage, "cumulative_unitary_storage_need_per_usage_pattern", usage_pattern)
+            result = recompute_attribute(
+                self.edge_storage, "cumulative_unitary_storage_need_per_usage_pattern", usage_pattern)
 
             # Expected: [10+5, 30+5, 60+5] = [15, 35, 65]
-            self.assertTrue(np.allclose(
-                [15, 35, 65],
-                self.edge_storage.cumulative_unitary_storage_need_per_usage_pattern[
-                    usage_pattern].value_as_float_list
-            ))
+            self.assertTrue(np.allclose([15, 35, 65], result.value_as_float_list))
         set_modeling_obj_containers(self.edge_storage, [])
 
     def test_update_dict_element_in_cumulative_unitary_storage_need_per_usage_pattern_negative_cumulative_error(self):
@@ -216,12 +213,10 @@ class TestEdgeStorage(TestCase):
         self.edge_storage.nb_of_units = SourceValue(3 * u.dimensionless)
         recompute_attribute(self.edge_storage, "storage_capacity")
 
-        recompute_attribute(self.edge_storage, "cumulative_unitary_storage_need_per_usage_pattern", usage_pattern)
+        result = recompute_attribute(
+            self.edge_storage, "cumulative_unitary_storage_need_per_usage_pattern", usage_pattern)
 
-        self.assertTrue(np.allclose(
-            [80, 120],
-            self.edge_storage.cumulative_unitary_storage_need_per_usage_pattern[usage_pattern].value_as_float_list,
-        ))
+        self.assertTrue(np.allclose([80, 120], result.value_as_float_list))
         set_modeling_obj_containers(self.edge_storage, [])
 
     def test_update_cumulative_unitary_storage_need_per_usage_pattern_with_two_deployments(self):

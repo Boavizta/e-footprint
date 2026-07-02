@@ -76,9 +76,8 @@ class TestEdgeRAMComponent(TestCase):
         recompute_attribute(self.ram_component, "ram")
 
         recompute_attribute(self.ram_component, "available_ram_per_instance")
-        recompute_attribute(self.ram_component, "unitary_hourly_ram_need_per_usage_pattern", mock_pattern)
+        result = recompute_attribute(self.ram_component, "unitary_hourly_ram_need_per_usage_pattern", mock_pattern)
 
-        result = self.ram_component.unitary_hourly_ram_need_per_usage_pattern[mock_pattern]
         self.assertEqual([3, 6, 12], result.value_as_float_list)
 
     def test_update_available_ram_per_instance_insufficient_capacity(self):
@@ -109,10 +108,9 @@ class TestEdgeRAMComponent(TestCase):
         set_modeling_obj_containers(self.ram_component, [mock_need_1, mock_need_2])
 
         recompute_attribute(self.ram_component, "available_ram_per_instance")
-        recompute_attribute(self.ram_component, "unitary_hourly_ram_need_per_usage_pattern", mock_pattern)
+        result = recompute_attribute(self.ram_component, "unitary_hourly_ram_need_per_usage_pattern", mock_pattern)
 
         expected_values = [3, 3, 7]  # Sum of both needs
-        result = self.ram_component.unitary_hourly_ram_need_per_usage_pattern[mock_pattern]
         self.assertEqual(expected_values, result.value_as_float_list)
         self.assertEqual(u.GB_ram, result.unit)
         self.assertIn("Hourly RAM need for Test Pattern", result.label)

@@ -205,14 +205,13 @@ class TestEdgeDevice(TestCase):
         with patch.object(EdgeDevice, "edge_usage_patterns", new_callable=PropertyMock,
                           return_value=[mock_pattern]):
             recompute_attribute(self.edge_device, "structure_fabrication_footprint_per_usage_pattern", mock_pattern)
-            recompute_attribute(self.edge_device, "instances_fabrication_footprint_per_usage_pattern", mock_pattern)
+            result = recompute_attribute(
+                self.edge_device, "instances_fabrication_footprint_per_usage_pattern", mock_pattern)
 
         # Structure intensity: 100 kg / 5 year = 20 kg/year
         # Per hour: 20 kg/year / (365.25 * 24) kg/hour
         # For 10 instances: 10 * (100 / 5) / (365.25 * 24) kg
         expected_footprint = [10 * (100 / 5) / (365.25 * 24), 10 * (100 / 5) / (365.25 * 24)]
-
-        result = self.edge_device.instances_fabrication_footprint_per_usage_pattern[mock_pattern]
         self.assertTrue(np.allclose(expected_footprint, result.value.to(u.kg).magnitude, rtol=1e-5))
         self.assertIn("Hourly", result.label)
         self.assertIn("instances fabrication footprint", result.label)
@@ -239,14 +238,13 @@ class TestEdgeDevice(TestCase):
         with patch.object(EdgeDevice, "edge_usage_patterns", new_callable=PropertyMock,
                           return_value=[mock_pattern]):
             recompute_attribute(self.edge_device, "structure_fabrication_footprint_per_usage_pattern", mock_pattern)
-            recompute_attribute(self.edge_device, "instances_fabrication_footprint_per_usage_pattern", mock_pattern)
+            result = recompute_attribute(
+                self.edge_device, "instances_fabrication_footprint_per_usage_pattern", mock_pattern)
 
         # Structure footprint: 10 * (100 / 5) / (365.25 * 24) kg
         # Total: structure + 5 kg + 8 kg
         structure_footprint = 10 * (100 / 5) / (365.25 * 24)
         expected_footprint = [structure_footprint + 5 + 8, structure_footprint + 5 + 8]
-
-        result = self.edge_device.instances_fabrication_footprint_per_usage_pattern[mock_pattern]
         self.assertTrue(np.allclose(expected_footprint, result.value.to(u.kg).magnitude, rtol=1e-5))
 
     def test_update_dict_element_in_instances_fabrication_footprint_per_usage_pattern_unused_component(self):
@@ -266,13 +264,12 @@ class TestEdgeDevice(TestCase):
         with patch.object(EdgeDevice, "edge_usage_patterns", new_callable=PropertyMock,
                           return_value=[mock_pattern]):
             recompute_attribute(self.edge_device, "structure_fabrication_footprint_per_usage_pattern", mock_pattern)
-            recompute_attribute(self.edge_device, "instances_fabrication_footprint_per_usage_pattern", mock_pattern)
+            result = recompute_attribute(
+                self.edge_device, "instances_fabrication_footprint_per_usage_pattern", mock_pattern)
 
         # Structure: 10 * (100 / 5) / (365.25 * 24); unused component 1: 10 * (50 / 5) / (365.25 * 24)
         hourly = 10 / (365.25 * 24)
         expected_footprint = [hourly * (100 / 5 + 50 / 5)] * 2
-
-        result = self.edge_device.instances_fabrication_footprint_per_usage_pattern[mock_pattern]
         self.assertTrue(np.allclose(expected_footprint, result.value.to(u.kg).magnitude, rtol=1e-5))
 
     def test_unused_component_fabrication_raises_on_uncomputed_lifespan(self):
@@ -292,9 +289,8 @@ class TestEdgeDevice(TestCase):
         self.mock_component_1.energy_per_edge_device_per_usage_pattern = ExplainableObjectDict()
         self.mock_component_2.energy_per_edge_device_per_usage_pattern = ExplainableObjectDict()
 
-        recompute_attribute(self.edge_device, "instances_energy_per_usage_pattern", mock_pattern)
+        result = recompute_attribute(self.edge_device, "instances_energy_per_usage_pattern", mock_pattern)
 
-        result = self.edge_device.instances_energy_per_usage_pattern[mock_pattern]
         self.assertIsInstance(result, EmptyExplainableObject)
 
     def test_update_dict_element_in_instances_energy_per_usage_pattern_with_components(self):
@@ -311,12 +307,10 @@ class TestEdgeDevice(TestCase):
             mock_pattern: component_2_energy
         })
 
-        recompute_attribute(self.edge_device, "instances_energy_per_usage_pattern", mock_pattern)
+        result = recompute_attribute(self.edge_device, "instances_energy_per_usage_pattern", mock_pattern)
 
         # Total energy: [100, 200] + [50, 100] = [150, 300]
         expected_energy = [150, 300]
-
-        result = self.edge_device.instances_energy_per_usage_pattern[mock_pattern]
         self.assertTrue(np.allclose(expected_energy, result.value.to(u.Wh).magnitude))
 
     def test_update_dict_element_in_fabrication_footprint_breakdown_by_source(self):
@@ -375,9 +369,7 @@ class TestEdgeDevice(TestCase):
         self.mock_component_1.energy_footprint_per_edge_device_per_usage_pattern = ExplainableObjectDict()
         self.mock_component_2.energy_footprint_per_edge_device_per_usage_pattern = ExplainableObjectDict()
 
-        recompute_attribute(self.edge_device, "energy_footprint_per_usage_pattern", mock_pattern)
-
-        result = self.edge_device.energy_footprint_per_usage_pattern[mock_pattern]
+        result = recompute_attribute(self.edge_device, "energy_footprint_per_usage_pattern", mock_pattern)
         self.assertIsInstance(result, EmptyExplainableObject)
 
     def test_update_dict_element_in_energy_footprint_per_usage_pattern_with_components(self):
@@ -394,12 +386,11 @@ class TestEdgeDevice(TestCase):
             mock_pattern: component_2_footprint
         })
 
-        recompute_attribute(self.edge_device, "energy_footprint_per_usage_pattern", mock_pattern)
+        result = recompute_attribute(self.edge_device, "energy_footprint_per_usage_pattern", mock_pattern)
 
         # Total energy footprint: [1, 2] + [0.5, 1] = [1.5, 3]
         expected_footprint = [1.5, 3]
 
-        result = self.edge_device.energy_footprint_per_usage_pattern[mock_pattern]
         self.assertTrue(np.allclose(expected_footprint, result.value.to(u.kg).magnitude))
         self.assertIn("Energy footprint", result.label)
         self.assertIn("Test Pattern", result.label)

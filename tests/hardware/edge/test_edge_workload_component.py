@@ -61,10 +61,10 @@ class TestEdgeWorkloadComponent(TestCase):
 
         set_modeling_obj_containers(self.appliance_component, [mock_need_1, mock_need_2])
 
-        recompute_attribute(self.appliance_component, "unitary_hourly_workload_per_usage_pattern", mock_pattern)
+        result = recompute_attribute(
+            self.appliance_component, "unitary_hourly_workload_per_usage_pattern", mock_pattern)
 
         expected_values = [0.3, 0.45]  # Sum of both needs
-        result = self.appliance_component.unitary_hourly_workload_per_usage_pattern[mock_pattern]
         self.assertTrue(np.allclose(expected_values, result.value_as_float_list))
         self.assertEqual(u.concurrent, result.unit)
         self.assertIn("Hourly workload for Test Pattern", result.label)
@@ -125,9 +125,8 @@ class TestEdgeWorkloadComponent(TestCase):
         workload_values = create_source_hourly_values_from_list([0.0, 0.5, 1.0], pint_unit=u.concurrent)
         self.appliance_component.unitary_hourly_workload_per_usage_pattern[mock_pattern] = workload_values
 
-        recompute_attribute(self.appliance_component, "unitary_power_per_usage_pattern", mock_pattern)
+        result = recompute_attribute(self.appliance_component, "unitary_power_per_usage_pattern", mock_pattern)
 
-        result = self.appliance_component.unitary_power_per_usage_pattern[mock_pattern]
         # Power = idle_power + (power - idle_power) * workload
         # = 5 + (50 - 5) * [0.0, 0.5, 1.0]
         # = 5 + 45 * [0.0, 0.5, 1.0]
@@ -142,9 +141,8 @@ class TestEdgeWorkloadComponent(TestCase):
 
         self.appliance_component.unitary_hourly_workload_per_usage_pattern[mock_pattern] = EmptyExplainableObject()
 
-        recompute_attribute(self.appliance_component, "unitary_power_per_usage_pattern", mock_pattern)
+        result = recompute_attribute(self.appliance_component, "unitary_power_per_usage_pattern", mock_pattern)
 
-        result = self.appliance_component.unitary_power_per_usage_pattern[mock_pattern]
         # With empty workload, power should be idle_power
         self.assertEqual(5 * u.W, result.value)
         self.assertIn("Unitary power for Test Pattern", result.label)

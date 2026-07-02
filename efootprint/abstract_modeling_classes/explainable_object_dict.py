@@ -219,7 +219,19 @@ class ExplainableObjectDict(ObjectLinkedToModelingObjBase, dict):
         binding = self._computed_binding()
         if binding is not None:
             owner, descriptor = binding
-            sub_slot = descriptor.sub_slot(owner, key)
+            from efootprint.abstract_modeling_classes.reactive_core import (
+                instance_slot_registry, suppress_dependency_recording)
+            sub_slot = instance_slot_registry(owner).get((descriptor.attr_name, key))
+            if sub_slot is None:
+                # No sub-slot yet: only members of the key collection may compute lazily — indexing
+                # a foreign key must raise, not run the getter on it (and never insert it into the
+                # facade). Membership is read without recording so the reader keeps depending on the
+                # key's value only, never on the key set (a sibling key's change must not invalidate
+                # it); the key collections are relationship reads, so nothing computes here.
+                with suppress_dependency_recording():
+                    if key not in getattr(owner, descriptor.keys):
+                        raise KeyError(key)
+                sub_slot = descriptor.sub_slot(owner, key)
             if computation_in_progress():
                 # Indexing one key depends on that key's value, not on the key set: a sibling key's
                 # change never invalidates this reader.

@@ -98,16 +98,15 @@ def wipe_slots_of_incomplete_edge_systems(mod_objs: list):
         return
     flagged_systems = []
     for mod_obj in mod_objs:
-        if mod_obj is None:
+        # The hook fires inside container transitions: one side may be mid-construction (e.g. a
+        # service whose server link is being stored — trigger_modeling_updates not yet enabled) and
+        # unable to resolve its systems. The other, live side of the transition resolves them; a
+        # flagged system's objects are always live (the load path enables their triggers). Any
+        # exception from a live object's systems resolution is a real bug and must propagate.
+        if (mod_obj is None or not isinstance(mod_obj, ModelingObject)
+                or not getattr(mod_obj, "trigger_modeling_updates", False)):
             continue
-        try:
-            mod_obj_systems = list(mod_obj.systems)
-        except (AttributeError, TypeError):
-            # The hook fires inside container transitions: one side may be mid-construction (e.g. a
-            # service whose server link is being stored) or a test double, unable to resolve its
-            # systems. The other side of the transition resolves them.
-            continue
-        for system in mod_obj_systems:
+        for system in list(mod_obj.systems):
             if isinstance(system, ModelingObject) and system.__dict__.pop("_computed_edges_incomplete", False):
                 flagged_systems.append(system)
                 _incomplete_edge_systems.discard(system)
@@ -118,17 +117,6 @@ def wipe_slots_of_incomplete_edge_systems(mod_objs: list):
 def get_instance_attributes(obj, target_class):
     return {attr_name: attr_value for attr_name, attr_value in obj.__dict__.items()
             if isinstance(attr_value, target_class)}
-
-
-def check_type_homogeneity_within_list_or_set(input_list_or_set):
-    type_set = [type(value) for value in input_list_or_set]
-    base_type = type(type_set[0])
-
-    if not all(isinstance(item, base_type) for item in type_set):
-        raise ValueError(
-            f"There shouldn't be objects of different types within the same list, found {type_set}")
-    else:
-        return type_set.pop()
 
 
 def get_canonical_class_for_cls(modeling_object_class: type) -> type:
@@ -525,9 +513,17 @@ class ModelingObject(metaclass=ABCAfterInitMeta):
             return
         declared_computed_slots = computed_slots(type(self))
         if name in declared_computed_slots:
+            if getattr(self, "trigger_modeling_updates", False):
+                # Pinning a computed slot on a live model would leave its dependents cached against
+                # the unpinned value — a silent inconsistency.
+                raise AttributeError(
+                    f"{name} is a computed attribute of {type(self).__name__} and cannot be assigned on a live "
+                    f"model: change the inputs it derives from instead. Tests can pin a value with "
+                    f"tests.utils.patch_attribute or the descriptor's attach_cached_value.")
             if not self.__dict__.get("_under_construction", False):
                 # Computed storage lives in the reactive slot, never in the instance dict. Direct
-                # assignment attaches a cached value without computing (the manual pinning path).
+                # assignment attaches a cached value without computing (the manual pinning path for
+                # tests and non-live setups).
                 declared_computed_slots[name].attach_cached_value(self, input_value)
             # Constructor-time writes are dropped: they are legacy dummy values for attributes a
             # subclass computes (e.g. a parent constructor storing a zero the subclass derives from

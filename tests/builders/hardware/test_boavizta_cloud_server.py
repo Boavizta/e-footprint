@@ -33,6 +33,7 @@ class TestBoaviztaCloudServer(unittest.TestCase):
             storage=Storage.ssd(storage_capacity=SourceValue(32 * u.GB_stored)),
             fixed_nb_of_instances=EmptyExplainableObject()  # or None, if you prefer
         )
+        self.test_server.trigger_modeling_updates = False
 
     def test_raises_error_if_wrong_instance_type(self):
         with self.assertRaises(ValueError):

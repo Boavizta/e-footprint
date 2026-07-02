@@ -136,6 +136,7 @@ class TestEdgeUsageJourney(TestCase):
         edge_usage_pattern = EdgeUsagePattern("test edge usage pattern", edge_usage_journey=self.edge_usage_journey,
                                               network=mock_network, country=mock_country,
                                               hourly_edge_usage_journey_starts=hourly_starts)
+        edge_usage_pattern.trigger_modeling_updates = False
         utc_starts = ExplainableHourlyQuantities(np.array([1.0, 2.0, 3.0]) * u.concurrent,
                                                  datetime(2023, 1, 1, 0, 0, 0), "UTC starts")
         edge_usage_pattern.utc_hourly_edge_usage_journey_starts = utc_starts
