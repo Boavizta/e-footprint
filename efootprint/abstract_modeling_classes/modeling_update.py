@@ -2,26 +2,22 @@ from time import perf_counter
 from typing import List
 
 from efootprint.abstract_modeling_classes.contextual_modeling_object_attribute import ContextualModelingObjectAttribute
-from efootprint.abstract_modeling_classes.explainable_object_base_class import ExplainableObject, \
-    optimize_attr_updates_chain
+from efootprint.abstract_modeling_classes.explainable_object_base_class import ExplainableObject
 from efootprint.abstract_modeling_classes.object_linked_to_modeling_obj import (
     ObjectLinkedToModelingObj, ObjectLinkedToModelingObjBase)
 from efootprint.abstract_modeling_classes.empty_explainable_object import EmptyExplainableObject
 from efootprint.abstract_modeling_classes.modeling_object import (
-    ModelingObject, flush_cached_properties_system_wide, optimize_mod_objs_computation_chain)
+    ModelingObject, flush_cached_properties_system_wide, pull_invalidated_slots, pull_slots_system_wide)
+from efootprint.abstract_modeling_classes.reactive_core import (
+    collect_invalidated_slots, invalidate, slot_of_attached_value)
 from efootprint.logger import logger
 
 
-def compute_attr_updates_chain_from_mod_objs_computation_chain(mod_objs_computation_chain: List[ModelingObject]):
-    attr_updates_chain = []
-    for mod_obj in mod_objs_computation_chain:
-        for calculated_attribute in mod_obj.calculated_attributes:
-            attr_updates_chain.append(getattr(mod_obj, calculated_attribute))
-
-    return attr_updates_chain
-
-
 class ModelingUpdate:
+    """Transactional model update: apply the changes, invalidate the slots they touch (the deletion
+    wave voids every dependent), then eagerly pull every slot back to cached so computation errors
+    surface now — and on error, restore the inputs, re-invalidate, and recompute the restored state."""
+
     def __init__(self, changes_list: List[List[ObjectLinkedToModelingObj | list | dict]]):
         start = perf_counter()
         self.system = None
@@ -33,17 +29,12 @@ class ModelingUpdate:
         self.changes_list = changes_list
         self.parse_changes_list()
 
-        self.mod_objs_computation_chain = self.compute_mod_objs_computation_chain()
-        if self.mod_objs_computation_chain:
-            logger.info(f"{len(self.mod_objs_computation_chain)} recomputed objects: "
-                        f"{[mod_obj.name for mod_obj in self.mod_objs_computation_chain]}")
-        self.apply_within_class_sort_logics()
-        self.attr_updates_chain_from_mod_objs_computation_chains = (
-            compute_attr_updates_chain_from_mod_objs_computation_chain(self.mod_objs_computation_chain))
-        self.values_to_recompute = self.generate_optimized_attr_updates_chain()
+        self.changed_slots = [slot_of_attached_value(old_value) for old_value, new_value in self.changes_list]
 
-        self.recomputed_values = []
-        self.apply_changes()
+        with collect_invalidated_slots() as visited_slots:
+            self.apply_changes()
+            invalidate(*self.changed_slots)
+
         try:
             for new_sourcevalue in self.new_sourcevalues:
                 mod_obj_container = new_sourcevalue.modeling_obj_container
@@ -51,28 +42,20 @@ class ModelingUpdate:
                     new_sourcevalue.attr_name_in_mod_obj_container, new_sourcevalue,
                     mod_obj_container.attributes_with_depending_values())
 
-            self.recompute_attributes()
+            recomputed_slots_count = self.pull_eagerly(visited_slots)
         except Exception as e:
             logger.error("An error occurred during attribute recomputation. Resetting to previous values.")
-            self.reset_values()
+            self.rollback()
             e.args = (f"Error occurred while computing changes. All changes have been reset."
                       f"\nOriginal error:\n {e}",) + e.args[1:]
             raise e
 
         flush_cached_properties_system_wide(
-            self.mod_objs_computation_chain + ([self.system] if self.system is not None else []))
+            [old_value.modeling_obj_container for old_value, new_value in self.changes_list
+             if old_value.modeling_obj_container is not None] + ([self.system] if self.system is not None else []))
         compute_time_ms = round(1000 * (perf_counter() - start), 1)
-        avg_compute_time_per_value = round(compute_time_ms / len(self.values_to_recompute), 2)\
-            if self.values_to_recompute else 0
-        logger.info(f"{len(self.changes_list)} changes lead to {len(self.values_to_recompute)} update computations "
-                    f"done in {compute_time_ms} ms (avg {avg_compute_time_per_value} ms per computation).")
-
-    @property
-    def previous_and_new_objects_organized_in_sections(self):
-        return [
-            ["direct changes", [change[0] for change in self.changes_list], [change[1] for change in self.changes_list]],
-            ["recomputed values", self.values_to_recompute, self.recomputed_values]
-        ]
+        logger.info(f"{len(self.changes_list)} changes invalidated {recomputed_slots_count} slots, "
+                    f"recomputed in {compute_time_ms} ms.")
 
     def parse_changes_list(self):
         indexes_to_skip = []
@@ -133,70 +116,28 @@ class ModelingUpdate:
         for index in sorted(indexes_to_skip, reverse=True):
             del self.changes_list[index]
 
-    def compute_mod_objs_computation_chain(self):
-        from efootprint.abstract_modeling_classes.list_linked_to_modeling_obj import ListLinkedToModelingObj
-        from efootprint.abstract_modeling_classes.explainable_object_dict import ExplainableObjectDict
-        mod_objs_computation_chain = []
-        for old_value, new_value in self.changes_list:
-            if isinstance(old_value, ContextualModelingObjectAttribute):
-                mod_objs_computation_chain += (
-                    old_value.modeling_obj_container.compute_mod_objs_computation_chain_from_old_and_new_modeling_objs(
-                        old_value, new_value, optimize_chain=False))
-            elif isinstance(old_value, ListLinkedToModelingObj):
-                mod_objs_computation_chain += (
-                    old_value.modeling_obj_container.compute_mod_objs_computation_chain_from_old_and_new_lists(
-                        old_value, new_value, optimize_chain=False))
-            elif isinstance(old_value, ExplainableObjectDict):
-                mod_objs_computation_chain += (
-                    old_value.modeling_obj_container.compute_mod_objs_computation_chain_from_old_and_new_dicts(
-                        old_value, new_value, optimize_chain=False))
-
-        optimized_chain = optimize_mod_objs_computation_chain(mod_objs_computation_chain)
-
-        return optimized_chain
-
     def apply_changes(self):
         for old_value, new_value in self.changes_list:
             old_value.replace_in_mod_obj_container_without_recomputation(new_value)
-        self.updated_values_set = True
 
-    def revert_changes(self):
-        for old_value, new_value in self.changes_list:
-            new_value.replace_in_mod_obj_container_without_recomputation(old_value)
-        self.updated_values_set = False
+    def pull_eagerly(self, visited_slots) -> int:
+        """Recompute the invalidated cone: pull every slot of the system when one is involved (the
+        transitional every-slot-cached eager set), plus every slot the wave visited — objects the
+        change detached from the system keep consistent values and bookkeeping, exactly as the eager
+        engine recomputed them. Returns the number of slots voided by the wave."""
+        if self.system is not None:
+            pull_slots_system_wide([self.system])
+        pull_invalidated_slots(visited_slots)
+        return len(visited_slots)
 
-    def apply_within_class_sort_logics(self):
-        self.apply_changes()
-        result = []
-        i = 0
-        chain = self.mod_objs_computation_chain
-        while i < len(chain):
-            canonical_cls = chain[i].efootprint_class
-            j = i + 1
-            while j < len(chain) and chain[j].efootprint_class == canonical_cls:
-                j += 1
-            result.extend(canonical_cls.sort_within_computation_chain(chain[i:j]))
-            i = j
-        self.mod_objs_computation_chain = result
-        self.revert_changes()
-
-    def recompute_attributes(self):
-        for value_to_recompute in self.values_to_recompute:
-            attr_name_in_mod_obj_container = value_to_recompute.attr_name_in_mod_obj_container
-            modeling_obj_container = value_to_recompute.modeling_obj_container
-            key_in_dict = None
-            if value_to_recompute.dict_container is not None:
-                key_in_dict = value_to_recompute.key_in_dict
-            if not key_in_dict:
-                logger.debug(f"Recomputing {attr_name_in_mod_obj_container} in {modeling_obj_container.id}")
-                value_to_recompute.update_function()
-                recomputed_value = getattr(modeling_obj_container, attr_name_in_mod_obj_container)
-            else:
-                logger.debug(f"Recomputing {attr_name_in_mod_obj_container} in {modeling_obj_container.id} "
-                             f"with key {key_in_dict.id}")
-                value_to_recompute.update_function(key_in_dict)
-                recomputed_value = getattr(modeling_obj_container, attr_name_in_mod_obj_container)[key_in_dict]
-            self.recomputed_values.append(recomputed_value)
+    def rollback(self):
+        """Restore the inputs and relationships, invalidate again, and recompute the restored state so
+        the model stays fully cached and consistent after a rejected update."""
+        with collect_invalidated_slots() as visited_slots:
+            for old_value, new_value in self.changes_list:
+                new_value.replace_in_mod_obj_container_without_recomputation(old_value)
+            invalidate(*self.changed_slots)
+        self.pull_eagerly(visited_slots)
 
     @property
     def old_sourcevalues(self):
@@ -205,20 +146,3 @@ class ModelingUpdate:
     @property
     def new_sourcevalues(self):
         return [new_value for old_value, new_value in self.changes_list if isinstance(old_value, ExplainableObject)]
-
-    def generate_optimized_attr_updates_chain(self):
-        attr_updates_chain_from_attributes_updates = sum(
-            [old_value.attr_updates_chain for old_value in self.old_sourcevalues], start=[])
-
-        # Necessary to do the sum in this order because calculations from modeling objects computation chains must be
-        # done after the calculations from input updates.
-        return optimize_attr_updates_chain(
-            attr_updates_chain_from_attributes_updates + self.attr_updates_chain_from_mod_objs_computation_chains)
-
-    def reset_values(self):
-        if self.updated_values_set:
-            for section_name, previous_values, new_values in self.previous_and_new_objects_organized_in_sections:
-                logger.info(f"Resetting {section_name} from {len(new_values)} updated values")
-                for new_value, previous_value in zip(new_values, previous_values):
-                    new_value.replace_in_mod_obj_container_without_recomputation(previous_value)
-                self.updated_values_set = False

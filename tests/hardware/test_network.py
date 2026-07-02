@@ -36,6 +36,7 @@ from efootprint.core.usage.usage_pattern import UsagePattern
 from tests.core.attribution.conservation import (
     assert_hourly_quantities_equal, assert_source_atoms_conserve, sum_atom_values)
 from tests.utils import create_mod_obj_mock
+from tests.utils import patch_attribute, recompute_attribute
 
 
 class TestNetwork(TestCase):
@@ -70,10 +71,10 @@ class TestNetwork(TestCase):
         usage_pattern_us.jobs = [job_2]
 
         with patch.object(Network, "usage_patterns", new_callable=PropertyMock) as mock_ups, \
-                patch.object(self.network, "bandwidth_energy_intensity", SourceValue(1 * u.kWh / u.GB)):
+                patch_attribute(self.network, "bandwidth_energy_intensity", SourceValue(1 * u.kWh / u.GB)):
             mock_ups.return_value = [usage_pattern_fr, usage_pattern_us]
 
-            self.network.update_energy_footprint_per_job()
+            recompute_attribute(self.network, "energy_footprint_per_job")
 
         self.assertTrue(np.allclose([0.2], self.network.energy_footprint_per_job[job_1].magnitude))
         self.assertTrue(np.allclose([0.5], self.network.energy_footprint_per_job[job_2].magnitude))
@@ -86,7 +87,7 @@ class TestNetwork(TestCase):
         usage_pattern.country.average_carbon_intensity = SourceValue(100 * u.g / u.kWh)
         data_volume = create_source_hourly_values_from_list([2, 4], pint_unit=u.GB)
 
-        with patch.object(self.network, "bandwidth_energy_intensity", SourceValue(1 * u.kWh / u.GB)):
+        with patch_attribute(self.network, "bandwidth_energy_intensity", SourceValue(1 * u.kWh / u.GB)):
             footprint = self.network.energy_footprint_for_data_volume_and_usage_pattern(
                 data_volume, usage_pattern).to(u.kg)
 
@@ -102,7 +103,7 @@ class TestNetwork(TestCase):
         job_data = create_source_hourly_values_from_list([3, 1], pint_unit=u.GB)
         job.hourly_data_transferred_per_usage_pattern = {usage_pattern: job_data}
 
-        with patch.object(self.network, "bandwidth_energy_intensity", SourceValue(0.5 * u.kWh / u.GB)):
+        with patch_attribute(self.network, "bandwidth_energy_intensity", SourceValue(0.5 * u.kWh / u.GB)):
             per_job_footprint = self.network._compute_energy_footprint_for_job_and_usage_pattern(
                 job, usage_pattern).to(u.kg)
             physics_fn_footprint = self.network.energy_footprint_for_data_volume_and_usage_pattern(
@@ -118,7 +119,7 @@ class TestNetwork(TestCase):
             job_2: create_source_hourly_values_from_list([0.3, 0.1], pint_unit=u.kg),
         })
 
-        self.network.update_energy_footprint()
+        recompute_attribute(self.network, "energy_footprint")
 
         self.assertEqual(u.kg, self.network.energy_footprint.unit)
         self.assertTrue(np.allclose([0.5, 0.5], self.network.energy_footprint.magnitude))

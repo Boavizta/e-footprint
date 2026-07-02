@@ -1,8 +1,56 @@
+from contextlib import contextmanager
 from typing import List
-from unittest.mock import MagicMock
+from unittest.mock import MagicMock, patch as mock_patch
 
 from efootprint.abstract_modeling_classes.modeling_object import ModelingObject
 from efootprint.core.system import System
+
+
+@contextmanager
+def patch_attribute(target, attr_name: str, new_value):
+    """Pin an attribute for the duration of a with-block. For computed attributes the value is
+    attached to the reactive slot without computing (mock.patch.object would compute the current
+    value on entry just to snapshot it); anything else falls back to mock.patch.object."""
+    from efootprint.abstract_modeling_classes.reactive_core import computed_slots, computed_attribute
+
+    descriptor = None
+    if not isinstance(target, type):
+        target_class = getattr(target, "efootprint_class", type(target))
+        if isinstance(target_class, type):
+            descriptor = computed_slots(target_class).get(attr_name)
+    if not isinstance(descriptor, computed_attribute):
+        with mock_patch.object(target, attr_name, new_value):
+            yield new_value
+        return
+    slot = descriptor.slot(target)
+    had_value = slot.has_cached_value
+    original_value = slot._value if had_value else None
+    descriptor.attach_cached_value(target, new_value)
+    try:
+        yield new_value
+    finally:
+        slot._drop_value()
+        if had_value:
+            descriptor.attach_cached_value(target, original_value)
+
+
+def recompute_attribute(mod_obj, attr_name: str, key=None):
+    """Force a fresh computation of a computed attribute (or one key of a computed dict) and return
+    the new value — the unit-test replacement for the former update_<attr> calls, for tests that
+    change raw inputs in place and want the recomputation to run now."""
+    from efootprint.abstract_modeling_classes.reactive_core import computed_slots, invalidate, instance_slot_registry
+
+    descriptor = computed_slots(mod_obj.efootprint_class)[attr_name]
+    if key is not None:
+        slot = descriptor.sub_slot(mod_obj, key)
+        invalidate(slot)
+        return slot.pull()
+    slot = descriptor.slot(mod_obj)
+    slots_to_invalidate = [slot] + [
+        sub_slot for registry_key, sub_slot in instance_slot_registry(mod_obj).items()
+        if isinstance(registry_key, tuple) and registry_key[0] == attr_name]
+    invalidate(*slots_to_invalidate)
+    return slot.pull()
 
 
 def set_modeling_obj_containers(efootprint_obj: ModelingObject, mod_obj_containers_to_set: List):
@@ -28,13 +76,41 @@ def create_mod_obj_mock(efootprint_class, name: str = None, **kwargs):
     return mock_obj
 
 def get_canonical_class_index(obj: ModelingObject):
-    from efootprint.all_classes_in_order import CANONICAL_COMPUTATION_ORDER
-    index = 0
-    for efootprint_class in CANONICAL_COMPUTATION_ORDER:
+    """Index of the object's canonical family in a low-to-high dependency-level ordering, used by
+    check_all_calculus_graph_dependencies_consistencies to assert that calculated attributes only
+    depend on same-or-lower-level calculated ancestors."""
+    from efootprint.core.country import Country
+    from efootprint.core.usage.usage_pattern import UsagePattern
+    from efootprint.core.usage.usage_journey import UsageJourney
+    from efootprint.core.usage.usage_journey_step import UsageJourneyStep
+    from efootprint.core.hardware.device import Device
+    from efootprint.core.usage.edge.edge_usage_pattern import EdgeUsagePattern
+    from efootprint.core.usage.edge.edge_usage_journey import EdgeUsageJourney
+    from efootprint.core.usage.edge.edge_function import EdgeFunction
+    from efootprint.core.usage.edge.recurrent_edge_device_need import RecurrentEdgeDeviceNeed
+    from efootprint.core.usage.edge.recurrent_server_need import RecurrentServerNeed
+    from efootprint.core.usage.edge.recurrent_edge_component_need import RecurrentEdgeComponentNeed
+    from efootprint.core.hardware.edge.edge_component import EdgeComponent
+    from efootprint.core.hardware.edge.edge_device_group import EdgeDeviceGroup
+    from efootprint.core.hardware.edge.edge_device import EdgeDevice
+    from efootprint.builders.services.service_base_class import Service
+    from efootprint.core.usage.job import JobBase
+    from efootprint.core.hardware.network import Network
+    from efootprint.builders.external_apis.external_api_base_class import ExternalAPI, ExternalAPIServer
+    from efootprint.core.hardware.server_base import ServerBase
+    from efootprint.core.hardware.storage import Storage
+    from efootprint.core.system import System
+
+    dependency_level_order = [
+        Country, UsagePattern, UsageJourney, UsageJourneyStep, Device,
+        EdgeUsagePattern, EdgeUsageJourney, EdgeFunction,
+        RecurrentEdgeDeviceNeed, RecurrentServerNeed, RecurrentEdgeComponentNeed, EdgeComponent,
+        EdgeDeviceGroup, EdgeDevice, Service, JobBase, Network, ExternalAPI, ServerBase, ExternalAPIServer,
+        Storage, System]
+    for index, efootprint_class in enumerate(dependency_level_order):
         if isinstance(obj, efootprint_class):
             return index
-        index += 1
-    raise ValueError(f"Class of object {obj} not found in CANONICAL_COMPUTATION_ORDER.")
+    raise ValueError(f"Class of object {obj} not found in the dependency-level ordering.")
 
 def check_all_calculus_graph_dependencies_consistencies(system: System):
     for obj in system.all_linked_objects:

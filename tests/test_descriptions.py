@@ -6,18 +6,15 @@ These tests enforce the contract defined in
 1. Every concrete class has a non-empty ``__doc__``.
 2. ``param_descriptions`` is defined on the class itself and its keys exactly
    cover the ``__init__`` params minus ``self`` and ``name``.
-3. Every entry in ``calculated_attributes`` has a corresponding ``update_<attr>``
-   method on the class with a non-empty docstring.
-4. Every subclass's ``calculated_attributes`` is a superset of each base's,
-   so an author can't silently drop inherited entries when redeclaring the list.
-5. If ``param_interactions`` is defined, its keys are a subset of
+3. Every computed attribute getter has a non-empty docstring.
+4. If ``param_interactions`` is defined, its keys are a subset of
    ``param_descriptions`` keys.
-6. Every ``{kind:target}`` placeholder in any description string resolves:
+5. Every ``{kind:target}`` placeholder in any description string resolves:
    ``class:X`` → ``X`` is in ``ALL_EFOOTPRINT_CLASSES_DICT``;
    ``param:X.y`` → ``y`` is a ``__init__`` param of ``X`` (excluding ``self``);
-   ``calc:X.y`` → ``y`` is in ``X.calculated_attributes``; ``doc:...`` is
+   ``calc:X.y`` → ``y`` is a computed attribute of ``X``; ``doc:...`` is
    accepted (validated by the mkdocs build).
-7. ``{ui:...}`` and any unknown kind in library strings is a hard failure.
+6. ``{ui:...}`` and any unknown kind in library strings is a hard failure.
 """
 import re
 from pathlib import Path
@@ -52,7 +49,8 @@ def _own_class_attr(cls, name):
 
 def _calculated_attribute_names(cls) -> List[str]:
     """User-facing calculated attributes declared on ``cls`` (or inherited)."""
-    return list(cls.calculated_attributes)
+    from efootprint.abstract_modeling_classes.reactive_core import computed_slots
+    return list(computed_slots(cls))
 
 
 def _collect_description_strings(cls) -> List[Tuple[str, str]]:
@@ -79,10 +77,10 @@ def _collect_description_strings(cls) -> List[Tuple[str, str]]:
     for key, value in pi.items():
         items.append((f"{cls.__name__}.param_interactions[{key!r}]", value))
 
-    for attr in _calculated_attribute_names(cls):
-        method = getattr(cls, f"update_{attr}", None)
-        if method is not None and method.__doc__:
-            items.append((f"{cls.__name__}.update_{attr}.__doc__", method.__doc__))
+    from efootprint.abstract_modeling_classes.reactive_core import computed_slots
+    for attr, descriptor in computed_slots(cls).items():
+        if descriptor.__doc__:
+            items.append((f"{cls.__name__}.{attr} getter __doc__", descriptor.__doc__))
 
     return items
 
@@ -118,8 +116,9 @@ def _validate_placeholder(kind: str, target: str) -> Iterable[str]:
             if member not in params:
                 yield f"{{param:{target}}} is not in __init__ of {class_name}"
         else:  # calc
-            if member not in cls.calculated_attributes:
-                yield f"{{calc:{target}}} is not in {class_name}.calculated_attributes"
+            from efootprint.abstract_modeling_classes.reactive_core import computed_slots
+            if member not in computed_slots(cls):
+                yield f"{{calc:{target}}} is not a computed attribute of {class_name}"
 
 
 # Parametrize once — pytest uses ids for readable failure output.
@@ -178,43 +177,13 @@ def test_param_descriptions_cover_init_params(cls):
 
 
 @_class_params
-def test_update_methods_have_docstrings(cls):
+def test_computed_attribute_getters_have_docstrings(cls):
+    from efootprint.abstract_modeling_classes.reactive_core import computed_slots
     missing = []
-    for attr in _calculated_attribute_names(cls):
-        method = getattr(cls, f"update_{attr}", None)
-        if method is None:
-            missing.append(f"update_{attr} not resolvable on {cls.__name__}")
-            continue
-        if not (method.__doc__ and method.__doc__.strip()):
-            missing.append(f"update_{attr} has no docstring (resolved to {method.__qualname__})")
+    for attr, descriptor in computed_slots(cls).items():
+        if not (descriptor.__doc__ and descriptor.__doc__.strip()):
+            missing.append(f"{attr} getter has no docstring on {cls.__name__}")
     assert not missing, "\n".join(missing)
-
-
-@_class_params
-def test_calculated_attributes_covers_each_modeling_base_under_diamond(cls):
-    """For classes with multiple modeling-derived bases, `calculated_attributes`
-    must include every entry from each base's list. Python's MRO doesn't merge
-    class attributes across siblings, so a diamond-inherited subclass with a
-    plain `[X.calculated_attributes]` composition silently drops the other
-    parent's entries — this test pins the explicit-superset spelling.
-
-    Linear inheritance is the author's responsibility: many classes
-    intentionally redeclare a different list (System, EdgeComponent, Network,
-    EdgeStorage, ExternalAPI, Service all drop some inherited attrs by design).
-    """
-    modeling_bases = [b for b in cls.__bases__
-                      if b is not object and hasattr(b, "calculated_attributes")]
-    if len(modeling_bases) <= 1:
-        return
-    own = set(cls.calculated_attributes)
-    missing = []
-    for base in modeling_bases:
-        for attr in base.calculated_attributes:
-            if attr not in own:
-                missing.append(f"{attr!r} (from {base.__name__})")
-    assert not missing, (
-        f"{cls.__name__} has multiple modeling bases but its calculated_attributes "
-        f"is missing entries: {missing}. Spell out the merged list explicitly.")
 
 
 @_class_params

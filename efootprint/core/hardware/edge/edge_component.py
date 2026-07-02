@@ -54,31 +54,8 @@ class EdgeComponent(ModelingObject):
         self.lifespan = lifespan.set_label(f"Lifespan")
         self.idle_power_per_unit = idle_power_per_unit.set_label(f"Idle power per unit")
         self.nb_of_units = nb_of_units.set_label(f"Number of units")
-        self.carbon_footprint_fabrication = EmptyExplainableObject()
-        self.power = EmptyExplainableObject()
-        self.idle_power = EmptyExplainableObject()
-        self.unitary_power_per_usage_pattern = ExplainableObjectDict()
-        self.fabrication_footprint_per_edge_device_per_usage_pattern = ExplainableObjectDict()
-        self.energy_per_edge_device_per_usage_pattern = ExplainableObjectDict()
-        self.energy_footprint_per_edge_device_per_usage_pattern = ExplainableObjectDict()
-        self.fabrication_footprint_per_edge_device = EmptyExplainableObject()
-        self.energy_per_edge_device = EmptyExplainableObject()
-        self.energy_footprint_per_edge_device = EmptyExplainableObject()
 
-    @property
-    def modeling_objects_whose_attributes_depend_directly_on_me(self) -> List:
-        if self.edge_device:
-            root_groups = self.edge_device._find_root_groups()
-            if root_groups:
-                return root_groups
-            return [self.edge_device]
-        return []
 
-    calculated_attributes = ["carbon_footprint_fabrication", "power", "idle_power",
-                             "unitary_power_per_usage_pattern", "fabrication_footprint_per_edge_device_per_usage_pattern",
-                             "energy_per_edge_device_per_usage_pattern", "energy_footprint_per_edge_device_per_usage_pattern",
-                             "fabrication_footprint_per_edge_device", "energy_per_edge_device",
-                             "energy_footprint_per_edge_device"]
 
     recurrent_edge_component_needs = ReverseCollection("RecurrentEdgeComponentNeed")
     edge_device = ReverseLink("EdgeDevice")

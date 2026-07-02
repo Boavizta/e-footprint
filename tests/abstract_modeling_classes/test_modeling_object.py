@@ -7,18 +7,13 @@ from efootprint.abstract_modeling_classes.explainable_object_base_class import E
 from efootprint.abstract_modeling_classes.explainable_quantity import ExplainableQuantity
 from efootprint.abstract_modeling_classes.list_linked_to_modeling_obj import ListLinkedToModelingObj
 from efootprint.abstract_modeling_classes.modeling_object import (
-    ModelingObject, class_cached_property_names, flush_cached_properties_system_wide,
-    optimize_mod_objs_computation_chain)
+    ModelingObject, class_cached_property_names, flush_cached_properties_system_wide)
 from efootprint.abstract_modeling_classes.modeling_update import ModelingUpdate
 from efootprint.abstract_modeling_classes.object_linked_to_modeling_obj import ObjectLinkedToModelingObjBase
 from efootprint.abstract_modeling_classes.source_objects import SourceObject, SourceValue
+from efootprint.abstract_modeling_classes.reactive_core import computed_dict
 from efootprint.builders.time_builders import create_source_hourly_values_from_list
 from efootprint.constants.units import u
-from efootprint.core.hardware.server import Server
-from efootprint.core.hardware.storage import Storage
-from efootprint.core.usage.job import Job
-from efootprint.core.usage.usage_journey import UsageJourney
-from efootprint.core.usage.usage_pattern import UsagePattern
 
 MODELING_OBJ_CLASS_PATH = "efootprint.abstract_modeling_classes.modeling_object"
 
@@ -48,13 +43,6 @@ class ModelingObjectForTesting(ModelingObject):
     def class_as_simple_str(self):
         return "System"
 
-    def compute_calculated_attributes(self):
-        pass
-
-    @property
-    def modeling_objects_whose_attributes_depend_directly_on_me(self):
-        return []
-
     @property
     def systems(self):
         return []
@@ -68,39 +56,24 @@ class CachedPropertyModelingObject(ModelingObject):
         return ExplainableQuantity(7 * u.kg, label="custom lazy projection")
 
     @property
-    def modeling_objects_whose_attributes_depend_directly_on_me(self):
-        return []
-
-    @property
     def systems(self):
         return []
 
 
 class CalculatedDictModelingObject(ModelingObject):
     default_values = {}
-    calculated_attributes = ["calculated_dict"]
 
     def __init__(self, name, targets: list = None):
         super().__init__(name)
         self.targets = targets or []
-        self.calculated_dict = ExplainableObjectDict()
-
-    @property
-    def modeling_objects_whose_attributes_depend_directly_on_me(self):
-        return []
 
     @property
     def systems(self):
         return []
 
-    def update_dict_element_in_calculated_dict(self, modeling_object):
-        self.calculated_dict[modeling_object] = ExplainableQuantity(
-            1 * u.concurrent, label=f"{modeling_object.name} calculated value")
-
-    def update_calculated_dict(self):
-        self.calculated_dict = ExplainableObjectDict()
-        for modeling_object in self.targets:
-            self.update_dict_element_in_calculated_dict(modeling_object)
+    @computed_dict(keys="targets")
+    def calculated_dict(self, modeling_object):
+        return ExplainableQuantity(1 * u.concurrent, label=f"{modeling_object.name} calculated value")
 
 
 class CanonicalParentModelingObject(ModelingObjectForTesting):
@@ -158,7 +131,7 @@ class TestModelingObject(unittest.TestCase):
         new_input.set_modeling_obj_container.assert_called_once_with(parent_obj, "custom_input")
         custom_input.set_modeling_obj_container.assert_has_calls([call(parent_obj, "custom_input"), call(None, None)])
 
-    @patch("efootprint.all_classes_in_order.CANONICAL_COMPUTATION_ORDER", [CanonicalParentModelingObject])
+    @patch("efootprint.all_classes_in_order.CANONICAL_CLASSES", [CanonicalParentModelingObject])
     def test_canonical_class_returns_first_matching_canonical_class(self):
         """Test canonical class property resolves the first matching canonical class."""
         child_obj = CanonicalChildModelingObject("child_object")
@@ -166,25 +139,6 @@ class TestModelingObject(unittest.TestCase):
         self.assertIs(CanonicalParentModelingObject, CanonicalChildModelingObject.canonical_class)
         self.assertIs(CanonicalParentModelingObject, child_obj.canonical_class)
 
-    def test_attributes_computation_chain(self):
-        dep1 = MagicMock()
-        dep2 = MagicMock()
-        dep1_sub1 = MagicMock()
-        dep1_sub2 = MagicMock()
-        dep2_sub1 = MagicMock()
-        dep2_sub2 = MagicMock()
-
-        with patch.object(ModelingObjectForTesting, "modeling_objects_whose_attributes_depend_directly_on_me",
-                          new_callable=PropertyMock) as mock_modeling_objects_whose_attributes_depend_directly_on_me:
-            mock_modeling_objects_whose_attributes_depend_directly_on_me.return_value = [dep1, dep2]
-            dep1.modeling_objects_whose_attributes_depend_directly_on_me = [dep1_sub1, dep1_sub2]
-            dep2.modeling_objects_whose_attributes_depend_directly_on_me = [dep2_sub1, dep2_sub2]
-
-            for obj in [dep1_sub1, dep1_sub2, dep2_sub1, dep2_sub2]:
-                obj.modeling_objects_whose_attributes_depend_directly_on_me = []
-
-            self.assertEqual([self.modeling_object, dep1, dep2, dep1_sub1, dep1_sub2, dep2_sub1, dep2_sub2],
-                             self.modeling_object.mod_objs_computation_chain)
 
     @patch("efootprint.abstract_modeling_classes.modeling_update.ModelingUpdate")
     def test_list_attribute_update_works_with_classical_syntax(self, mock_modeling_update):
@@ -223,47 +177,7 @@ class TestModelingObject(unittest.TestCase):
         mod_obj.custom_list_input += [val3]
         self.assertEqual(mod_obj.custom_list_input, [val1, val2, val3])
 
-    def test_optimize_mod_objs_computation_chain_simple_case(self):
-        mod_obj1 = MagicMock(id=1)
-        mod_obj2 = MagicMock(id=2)
-        mod_obj3 = MagicMock(id=3)
 
-        for mod_obj in [mod_obj1, mod_obj3]:
-            mod_obj.systems = None
-
-        magic_system = MagicMock()
-        mod_obj2.systems = [magic_system]
-
-        mod_obj1.efootprint_class = UsagePattern
-        mod_obj2.efootprint_class = UsageJourney
-        mod_obj3.efootprint_class = Job
-
-        attributes_computation_chain = [mod_obj1, mod_obj2, mod_obj3]
-
-        self.assertEqual([mod_obj1, mod_obj2, mod_obj3, magic_system],
-                         optimize_mod_objs_computation_chain(attributes_computation_chain))
-
-    def test_optimize_mod_objs_computation_chain_complex_case(self):
-        mod_obj1 = MagicMock(id=1)
-        mod_obj2 = MagicMock(id=2)
-        mod_obj3 = MagicMock(id=3)
-        mod_obj4 = MagicMock(id=4)
-        mod_obj5 = MagicMock(id=5)
-
-        for mod_obj in [mod_obj1, mod_obj2, mod_obj3, mod_obj4, mod_obj5]:
-            mod_obj.systems = None
-
-        mod_obj5.efootprint_class = UsagePattern
-        mod_obj1.efootprint_class = UsageJourney
-        mod_obj2.efootprint_class = Job
-        mod_obj4.efootprint_class = Server
-        mod_obj3.efootprint_class = Storage
-
-        attributes_computation_chain = [
-            mod_obj1, mod_obj2, mod_obj3, mod_obj4, mod_obj5, mod_obj1, mod_obj2, mod_obj4, mod_obj3]
-
-        self.assertEqual([mod_obj5, mod_obj1, mod_obj2, mod_obj4, mod_obj3],
-                         optimize_mod_objs_computation_chain(attributes_computation_chain))
 
     def test_mod_obj_attributes(self):
         attr1 = MagicMock(spec=ModelingObject)
@@ -463,11 +377,10 @@ class TestModelingObject(unittest.TestCase):
             }),
         )
 
-        with patch("efootprint.all_classes_in_order.CANONICAL_COMPUTATION_ORDER", [ModelingObjectForTesting]):
-            ModelingUpdate([[
-                parent.custom_dict_input,
-                ExplainableObjectDict({new_child: SourceValue(2 * u.dimensionless, label="new dict child count")}),
-            ]])
+        ModelingUpdate([[
+            parent.custom_dict_input,
+            ExplainableObjectDict({new_child: SourceValue(2 * u.dimensionless, label="new dict child count")}),
+        ]])
 
         self.assertEqual([], old_child.modeling_obj_containers)
         self.assertEqual([parent], new_child.modeling_obj_containers)

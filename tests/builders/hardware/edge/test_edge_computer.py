@@ -7,6 +7,7 @@ from efootprint.abstract_modeling_classes.source_objects import SourceValue
 from efootprint.constants.units import u
 from efootprint.builders.hardware.edge.edge_computer import EdgeComputer
 from efootprint.core.hardware.edge.edge_storage import EdgeStorage
+from tests.utils import recompute_attribute
 
 
 class TestEdgeComputer(TestCase):
@@ -36,7 +37,10 @@ class TestEdgeComputer(TestCase):
         # structure_carbon_footprint_fabrication is defined at EdgeDevice level
         self.assertIn("Structure fabrication carbon footprint",
                       self.edge_computer.structure_carbon_footprint_fabrication.label)
-        self.assertEqual(0 * u.kg, self.edge_computer.structure_carbon_footprint_fabrication.value)
+        # Computed as a copy of the computer's own fabrication footprint input.
+        self.assertEqual(
+            self.edge_computer.carbon_footprint_fabrication.value,
+            self.edge_computer.structure_carbon_footprint_fabrication.value)
 
         # Properties delegate to components
         self.assertEqual(30 * u.W, self.edge_computer.power.value)
@@ -78,17 +82,13 @@ class TestEdgeComputer(TestCase):
         self.assertIn("base ram consumption", self.edge_computer.base_ram_consumption.label.lower())
         self.assertIn("base compute consumption", self.edge_computer.base_compute_consumption.label.lower())
 
-    def test_modeling_objects_whose_attributes_depend_directly_on_me(self):
-        """Test that components are returned as dependent objects."""
-        dependent_objects = self.edge_computer.modeling_objects_whose_attributes_depend_directly_on_me
-        self.assertEqual(0, len(dependent_objects))
 
     def test_lifespan_propagates_to_components(self):
         """Test that updating lifespan propagates copies to RAM and CPU components."""
         new_lifespan = SourceValue(10 * u.year)
         self.edge_computer.trigger_modeling_updates = True
-        self.edge_computer.ram_component.update_lifespan()
-        self.edge_computer.cpu_component.update_lifespan()
+        recompute_attribute(self.edge_computer.ram_component, "lifespan")
+        recompute_attribute(self.edge_computer.cpu_component, "lifespan")
         self.edge_computer.lifespan = new_lifespan
 
         # EdgeComputer's lifespan should be updated
@@ -110,9 +110,9 @@ class TestEdgeComputer(TestCase):
             storage=EdgeStorage.from_defaults("temporary edge storage for deletion test"))
 
         for component in edge_computer.components:
-            component.compute_calculated_attributes()
+            component.pull_computed_attributes()
 
-        edge_computer.compute_calculated_attributes()
+        edge_computer.pull_computed_attributes()
 
         edge_computer.self_delete()
 

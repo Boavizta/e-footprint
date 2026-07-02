@@ -141,14 +141,9 @@ class Storage(InfraHardware):
         self.base_storage_need = base_storage_need.set_label("Initial storage need")
         self.fixed_nb_of_instances = (fixed_nb_of_instances or EmptyExplainableObject()).set_label(
             f"User defined number of instances").to(u.concurrent)
-        self.full_cumulative_storage_need = EmptyExplainableObject()
-        self.full_cumulative_storage_need_per_job = ExplainableObjectDict()
 
     server = ReverseLink("ServerBase")
 
-    calculated_attributes = (
-        ["carbon_footprint_fabrication", "full_cumulative_storage_need_per_job", "full_cumulative_storage_need"]
-        + InfraHardware.calculated_attributes)
 
     @property
     def jobs(self) -> List["JobBase"]:

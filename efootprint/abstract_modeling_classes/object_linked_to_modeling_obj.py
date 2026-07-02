@@ -15,7 +15,25 @@ _OBJECT_LINKED_SLOTS = (
     '_cached_key_in_dict',
     '_cached_list_container',
     '_cached_indexes_in_list',
+    '_reactive_slot',
 )
+
+
+def peek_attribute_value(container, attr_name):
+    """The object stored at a (container, attribute) address, without ever running a computation:
+    instance dict for inputs, facade or cached slot value for computed attributes. Used by the graph
+    bookkeeping (id resolution, dict containers, lazy calculus-graph rehydration), which must never
+    re-enter the engine — pulling there would recurse into the very slot being attached or recompute
+    slots mid-invalidation."""
+    if attr_name in container.__dict__:
+        return container.__dict__[attr_name]
+    facade = container.__dict__.get("_computed_dict_facades", {}).get(attr_name)
+    if facade is not None:
+        return facade
+    slot = container.__dict__.get("_reactive_slots", {}).get(attr_name)
+    if slot is not None and slot.has_cached_value:
+        return slot._value
+    return None
 
 
 class ObjectLinkedToModelingObjBase:
@@ -41,6 +59,9 @@ class ObjectLinkedToModelingObjBase:
         self._cached_key_in_dict = None
         self._cached_list_container = _NOT_CACHED
         self._cached_indexes_in_list = None
+        # Backpointer to this value's node in the reactive dependency graph, set when the engine
+        # attaches the value to a computed slot (input values resolve their node lazily instead).
+        self._reactive_slot = None
 
     def set_modeling_obj_container(
             self, new_parent_modeling_object: Type["ModelingObject"] | None, attr_name: str | None):
@@ -59,6 +80,8 @@ class ObjectLinkedToModelingObjBase:
         self.former_attr_name_in_mod_obj_container = self.attr_name_in_mod_obj_container
         self.modeling_obj_container = new_parent_modeling_object
         self.attr_name_in_mod_obj_container = attr_name
+        if new_parent_modeling_object is None:
+            self._reactive_slot = None
         self._cached_id = None
         self._cached_full_str_tuple_id = None
         self._cached_attribute_id = None
@@ -102,17 +125,18 @@ class ObjectLinkedToModelingObjBase:
             self._cached_attribute_id = f"{self.attr_name_in_mod_obj_container}-in-{self.modeling_obj_container.id}"
         return self._cached_attribute_id
 
+    def _container_attr_value_without_computing(self):
+        return peek_attribute_value(self.modeling_obj_container, self.attr_name_in_mod_obj_container)
+
     @property
     def dict_container(self):
         if self._cached_dict_container is not _NOT_CACHED:
             return self._cached_dict_container
         output = None
-        if (
-                self.modeling_obj_container is not None
-                and isinstance(getattr(self.modeling_obj_container, self.attr_name_in_mod_obj_container), dict)
-                and id(getattr(self.modeling_obj_container, self.attr_name_in_mod_obj_container)) != id(self)
-        ):
-            output = getattr(self.modeling_obj_container, self.attr_name_in_mod_obj_container)
+        if self.modeling_obj_container is not None:
+            container_attr_value = self._container_attr_value_without_computing()
+            if isinstance(container_attr_value, dict) and id(container_attr_value) != id(self):
+                output = container_attr_value
         self._cached_dict_container = output
         return output
 
@@ -125,7 +149,7 @@ class ObjectLinkedToModelingObjBase:
             raise ValueError(f"{self} is not linked to a ModelingObject through a dictionary attribute.")
         else:
             output_key = None
-            for key, value in dict_container.items():
+            for key, value in dict.items(dict_container):
                 if id(value) == id(self):
                     if output_key is None:
                         output_key = key
@@ -139,12 +163,10 @@ class ObjectLinkedToModelingObjBase:
         if self._cached_list_container is not _NOT_CACHED:
             return self._cached_list_container
         output = None
-        if (
-                not isinstance(self, list)
-                and self.modeling_obj_container is not None
-                and isinstance(getattr(self.modeling_obj_container, self.attr_name_in_mod_obj_container), list)
-        ):
-            output = getattr(self.modeling_obj_container, self.attr_name_in_mod_obj_container)
+        if not isinstance(self, list) and self.modeling_obj_container is not None:
+            container_attr_value = self._container_attr_value_without_computing()
+            if isinstance(container_attr_value, list):
+                output = container_attr_value
         self._cached_list_container = output
         return output
 

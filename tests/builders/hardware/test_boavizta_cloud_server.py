@@ -10,6 +10,7 @@ from efootprint.core.hardware.storage import Storage
 from efootprint.core.hardware.server_base import ServerTypes
 
 from efootprint.builders.hardware.boavizta_cloud_server import BoaviztaCloudServer
+from tests.utils import recompute_attribute
 
 
 class TestBoaviztaCloudServer(unittest.TestCase):
@@ -89,7 +90,7 @@ class TestBoaviztaCloudServer(unittest.TestCase):
         }
         mock_call.return_value = mock_response_data
 
-        self.test_server.update_api_call_response()
+        recompute_attribute(self.test_server, "api_call_response")
 
         # api_call_response should now be an ExplainableQuantity with the entire dictionary in .value
         self.assertIsInstance(self.test_server.api_call_response, ExplainableObject)
@@ -113,7 +114,7 @@ class TestBoaviztaCloudServer(unittest.TestCase):
         # Provide a pre-populated ExplainableQuantity as if update_api_call_response had run
         self.test_server.api_call_response = ExplainableObject(mock_data, "API call response")
 
-        self.test_server.update_carbon_footprint_fabrication()
+        recompute_attribute(self.test_server, "carbon_footprint_fabrication")
         self.assertEqual(
             self.test_server.carbon_footprint_fabrication.value,
             123.45 * u.kg
@@ -134,7 +135,7 @@ class TestBoaviztaCloudServer(unittest.TestCase):
         }
         self.test_server.api_call_response = ExplainableObject(mock_data, "API call response")
 
-        self.test_server.update_power()
+        recompute_attribute(self.test_server, "power")
         self.assertEqual(self.test_server.power.value, 60.0 * u.W)
         self.assertIn("power", self.test_server.power.label.lower())
 
@@ -150,7 +151,7 @@ class TestBoaviztaCloudServer(unittest.TestCase):
         }
         self.test_server.api_call_response = ExplainableObject(mock_data, "API call response")
 
-        self.test_server.update_ram()
+        recompute_attribute(self.test_server, "ram")
         self.assertEqual(self.test_server.ram.value, 32 * u.GB_ram)
         self.assertIn("ram", self.test_server.ram.label.lower())
 
@@ -163,7 +164,7 @@ class TestBoaviztaCloudServer(unittest.TestCase):
         }
         self.test_server.api_call_response = ExplainableObject(mock_data, "API call response")
 
-        self.test_server.update_compute()
+        recompute_attribute(self.test_server, "compute")
         # 2 * 4 = 8 cpu_cores
         self.assertEqual(self.test_server.compute.value, 8 * u.cpu_core)
         self.assertIn("compute", self.test_server.compute.label.lower())

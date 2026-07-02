@@ -17,6 +17,7 @@ from efootprint.core.usage.edge.edge_usage_pattern import EdgeUsagePattern
 from efootprint.constants.units import u
 from efootprint.core.usage.usage_pattern import UsagePattern
 from tests.utils import create_mod_obj_mock, set_modeling_obj_containers
+from tests.utils import patch_attribute, recompute_attribute
 
 
 class TestJob(TestCase):
@@ -42,14 +43,14 @@ class TestJob(TestCase):
         with self.assertRaises(PermissionError):
             self.job.self_delete()
 
-    def test_self_delete_removes_backward_links_and_recomputes_server_and_network(self):
+    def test_self_delete_removes_backward_links(self):
         network = MagicMock(spec=Network, id="network")
-        network.efootprint_class = Network
+        network.class_as_simple_str = "Network"
         network.set_modeling_obj_container = MagicMock()
         server = MagicMock(spec=Server, id="server")
-        server.efootprint_class = Server
+        server.class_as_simple_str = "Server"
         server.name = "server"
-        server.mod_objs_computation_chain = [server, network]
+        server.systems = []
         server.set_modeling_obj_container = MagicMock()
         job = Job.from_defaults("test job", server=server)
         server.contextual_modeling_obj_containers = [ContextualModelingObjectAttribute(server, job, "server")]
@@ -60,27 +61,6 @@ class TestJob(TestCase):
             job.trigger_modeling_updates = True
             job.self_delete()
             server.set_modeling_obj_container.assert_called_once_with(None, None)
-            server.compute_calculated_attributes.assert_called_once()
-            network.compute_calculated_attributes.assert_called_once()
-
-    def test_self_delete_removes_backward_links_and_doesnt_recompute_server_and_network(self):
-        network = MagicMock(spec=Network, id="network")
-        network.class_as_simple_str = "Network"
-        network.set_modeling_obj_container = MagicMock()
-        server = MagicMock(spec=Server, id="server")
-        server.class_as_simple_str = "Server"
-        server.name = "server"
-        server.mod_objs_computation_chain = [server, network]
-        server.set_modeling_obj_container = MagicMock()
-        job = Job.from_defaults("test job", server=server)
-        server.contextual_modeling_obj_containers = [ContextualModelingObjectAttribute(server, job, "server")]
-        with patch.object(Job, "contextual_mod_obj_attributes", new_callable=PropertyMock) as mock_mod_obj_attributes:
-            mock_mod_obj_attributes.return_value = [server]
-            job.trigger_modeling_updates = False
-            job.self_delete()
-            server.set_modeling_obj_container.assert_called_once_with(None, None)
-            server.compute_calculated_attributes.assert_not_called()
-            network.compute_calculated_attributes.assert_not_called()
 
     def test_duration_in_full_hours(self):
         self.assertEqual(1 * u.dimensionless, self.job.duration_in_full_hours.value)
@@ -96,7 +76,7 @@ class TestJob(TestCase):
         usage_pattern.utc_hourly_usage_journey_starts = hourly_uj_starts
         self.job.hourly_occurrences_per_usage_pattern = ExplainableObjectDict()
 
-        self.job.update_dict_element_in_hourly_occurrences_per_usage_pattern(usage_pattern)
+        recompute_attribute(self.job, "hourly_occurrences_per_usage_pattern", usage_pattern)
         job_occurrences = self.job.hourly_occurrences_per_usage_pattern[usage_pattern]
         self.assertEqual(hourly_uj_starts.start_date, job_occurrences.start_date)
         self.assertEqual(hourly_uj_starts.value_as_float_list, job_occurrences.value_as_float_list)
@@ -113,7 +93,7 @@ class TestJob(TestCase):
         usage_pattern.utc_hourly_usage_journey_starts = hourly_uj_starts
         self.job.hourly_occurrences_per_usage_pattern = ExplainableObjectDict()
 
-        self.job.update_dict_element_in_hourly_occurrences_per_usage_pattern(usage_pattern)
+        recompute_attribute(self.job, "hourly_occurrences_per_usage_pattern", usage_pattern)
         job_occurrences = self.job.hourly_occurrences_per_usage_pattern[usage_pattern]
         self.assertEqual(hourly_uj_starts.start_date, job_occurrences.start_date)
         self.assertEqual([3 * value for value in hourly_uj_starts.value_as_float_list],
@@ -131,7 +111,7 @@ class TestJob(TestCase):
         usage_pattern.utc_hourly_usage_journey_starts = hourly_uj_starts
         self.job.hourly_occurrences_per_usage_pattern = ExplainableObjectDict()
 
-        self.job.update_dict_element_in_hourly_occurrences_per_usage_pattern(usage_pattern)
+        recompute_attribute(self.job, "hourly_occurrences_per_usage_pattern", usage_pattern)
         job_occurrences = self.job.hourly_occurrences_per_usage_pattern[usage_pattern]
         self.assertEqual([6 * value for value in hourly_uj_starts.value_as_float_list],
                          job_occurrences.value_as_float_list)
@@ -151,7 +131,7 @@ class TestJob(TestCase):
         usage_pattern.utc_hourly_usage_journey_starts = hourly_uj_starts
         self.job.hourly_occurrences_per_usage_pattern = ExplainableObjectDict()
 
-        self.job.update_dict_element_in_hourly_occurrences_per_usage_pattern(usage_pattern)
+        recompute_attribute(self.job, "hourly_occurrences_per_usage_pattern", usage_pattern)
         job_occurrences = self.job.hourly_occurrences_per_usage_pattern[usage_pattern]
         self.assertEqual([3 * value for value in hourly_uj_starts.value_as_float_list],
                          job_occurrences.value_as_float_list)
@@ -168,7 +148,7 @@ class TestJob(TestCase):
         usage_pattern.utc_hourly_usage_journey_starts = hourly_uj_starts
         self.job.hourly_occurrences_per_usage_pattern = ExplainableObjectDict()
 
-        self.job.update_dict_element_in_hourly_occurrences_per_usage_pattern(usage_pattern)
+        recompute_attribute(self.job, "hourly_occurrences_per_usage_pattern", usage_pattern)
         job_occurrences = self.job.hourly_occurrences_per_usage_pattern[usage_pattern]
         self.assertEqual([0, 0, 0, 0], job_occurrences.value_as_float_list)
         self.job.hourly_occurrences_per_usage_pattern = ExplainableObjectDict()
@@ -189,7 +169,7 @@ class TestJob(TestCase):
         usage_pattern.utc_hourly_usage_journey_starts = hourly_uj_starts
         self.job.hourly_occurrences_per_usage_pattern = ExplainableObjectDict()
 
-        self.job.update_dict_element_in_hourly_occurrences_per_usage_pattern(usage_pattern)
+        recompute_attribute(self.job, "hourly_occurrences_per_usage_pattern", usage_pattern)
         job_occurrences = self.job.hourly_occurrences_per_usage_pattern[usage_pattern]
         self.assertEqual(hourly_uj_starts.start_date + timedelta(hours=1), job_occurrences.start_date)
         self.assertEqual(hourly_uj_starts.value_as_float_list, job_occurrences.value_as_float_list)
@@ -210,7 +190,7 @@ class TestJob(TestCase):
         usage_pattern.utc_hourly_usage_journey_starts = hourly_uj_starts
         self.job.hourly_occurrences_per_usage_pattern = ExplainableObjectDict()
 
-        self.job.update_dict_element_in_hourly_occurrences_per_usage_pattern(usage_pattern)
+        recompute_attribute(self.job, "hourly_occurrences_per_usage_pattern", usage_pattern)
         job_occurrences = self.job.hourly_occurrences_per_usage_pattern[usage_pattern]
         self.assertEqual(hourly_uj_starts.start_date, job_occurrences.start_date)
         self.assertEqual(hourly_uj_starts.value_as_float_list, job_occurrences.value_as_float_list)
@@ -231,7 +211,7 @@ class TestJob(TestCase):
         usage_pattern.utc_hourly_usage_journey_starts = hourly_uj_starts
         self.job.hourly_occurrences_per_usage_pattern = ExplainableObjectDict()
 
-        self.job.update_dict_element_in_hourly_occurrences_per_usage_pattern(usage_pattern)
+        recompute_attribute(self.job, "hourly_occurrences_per_usage_pattern", usage_pattern)
         job_occurrences = self.job.hourly_occurrences_per_usage_pattern[usage_pattern]
         self.assertEqual(hourly_uj_starts.start_date + timedelta(hours=1),
         job_occurrences.start_date)
@@ -257,7 +237,7 @@ class TestJob(TestCase):
         usage_pattern.utc_hourly_usage_journey_starts = hourly_uj_starts
         self.job.hourly_occurrences_per_usage_pattern = ExplainableObjectDict()
 
-        self.job.update_dict_element_in_hourly_occurrences_per_usage_pattern(usage_pattern)
+        recompute_attribute(self.job, "hourly_occurrences_per_usage_pattern", usage_pattern)
         job_occurrences = self.job.hourly_occurrences_per_usage_pattern[usage_pattern]
         self.assertEqual(
             hourly_uj_starts.start_date + timedelta(hours=1),
@@ -272,9 +252,9 @@ class TestJob(TestCase):
         hourly_avg_occs_per_up = ExplainableObjectDict(
             {usage_pattern: create_source_hourly_values_from_list([1, 3, 5])})
 
-        with patch.object(self.job, "hourly_avg_occurrences_per_usage_pattern", hourly_avg_occs_per_up), \
-                patch.object(self.job, "data_stored", SourceValue(1 * u.GB_stored)), \
-                patch.object(self.job, "request_duration", SourceValue(0.5 * u.hour)):
+        with patch_attribute(self.job, "hourly_avg_occurrences_per_usage_pattern", hourly_avg_occs_per_up), \
+                patch_attribute(self.job, "data_stored", SourceValue(1 * u.GB_stored)), \
+                patch_attribute(self.job, "request_duration", SourceValue(0.5 * u.hour)):
             job_hourly_data_exchange = self.job.compute_hourly_data_exchange_for_usage_pattern(
                 usage_pattern, data_exchange)
 
@@ -383,7 +363,7 @@ class TestJob(TestCase):
         set_modeling_obj_containers(self.job, [mock_server_need])
         self.job.hourly_occurrences_per_usage_pattern = ExplainableObjectDict()
 
-        self.job.update_dict_element_in_hourly_occurrences_per_usage_pattern(edge_usage_pattern)
+        recompute_attribute(self.job, "hourly_occurrences_per_usage_pattern", edge_usage_pattern)
 
         job_occurrences = self.job.hourly_occurrences_per_usage_pattern[edge_usage_pattern]
         # unitary_volume * nb_parallel * nb of times job appears = [1*2*2, 1*3*2, 1*4*2, 1*5*2] = [4, 6, 8, 10]

@@ -22,6 +22,7 @@ from efootprint.core.usage.usage_journey_step import UsageJourneyStep
 from efootprint.core.usage.usage_pattern import UsagePattern
 from tests.core.attribution.conservation import assert_source_atoms_conserve
 from tests.utils import create_mod_obj_mock, set_modeling_obj_containers
+from tests.utils import recompute_attribute
 
 
 class TestEcoLogitsGenAIExternalAPI(TestCase):
@@ -74,7 +75,7 @@ class TestEcoLogitsGenAIExternalAPI(TestCase):
 
         set_modeling_obj_containers(self.external_api, [mock_job1, mock_job2])
 
-        self.external_api.server.update_instances_fabrication_footprint()
+        recompute_attribute(self.external_api.server, "instances_fabrication_footprint")
 
         expected_value = (10 * 5 + 20 * 3) * u.kg  # 50 + 60 = 110
         self.assertTrue(np.allclose(
@@ -90,7 +91,7 @@ class TestEcoLogitsGenAIExternalAPI(TestCase):
 
         set_modeling_obj_containers(self.external_api, [mock_job])
 
-        self.external_api.server.update_instances_fabrication_footprint()
+        recompute_attribute(self.external_api.server, "instances_fabrication_footprint")
 
         self.assertTrue(np.allclose(
             [10 * 0.5 * 4] * 24, self.external_api.server.instances_fabrication_footprint.magnitude))
@@ -99,7 +100,7 @@ class TestEcoLogitsGenAIExternalAPI(TestCase):
         """Test instances fabrication footprint calculation with no jobs."""
         set_modeling_obj_containers(self.external_api, [])
 
-        self.external_api.server.update_instances_fabrication_footprint()
+        recompute_attribute(self.external_api.server, "instances_fabrication_footprint")
 
         self.assertIsInstance(self.external_api.server.instances_fabrication_footprint, EmptyExplainableObject)
 
@@ -115,7 +116,7 @@ class TestEcoLogitsGenAIExternalAPI(TestCase):
 
         set_modeling_obj_containers(self.external_api, [mock_job1, mock_job2])
 
-        self.external_api.server.update_instances_energy()
+        recompute_attribute(self.external_api.server, "instances_energy")
 
         expected_value = (100 * 8 + 50 * 4) * u.kWh  # 800 + 200 = 1000
         self.assertTrue(np.allclose(
@@ -125,7 +126,7 @@ class TestEcoLogitsGenAIExternalAPI(TestCase):
         """Test instances energy calculation with no jobs."""
         set_modeling_obj_containers(self.external_api, [])
 
-        self.external_api.server.update_instances_energy()
+        recompute_attribute(self.external_api.server, "instances_energy")
 
         self.assertIsInstance(self.external_api.server.instances_energy, EmptyExplainableObject)
 
@@ -141,7 +142,7 @@ class TestEcoLogitsGenAIExternalAPI(TestCase):
 
         set_modeling_obj_containers(self.external_api, [mock_job1, mock_job2])
 
-        self.external_api.server.update_energy_footprint()
+        recompute_attribute(self.external_api.server, "energy_footprint")
 
         expected_value = (25 * 6 + 15 * 10) * u.kg  # 150 + 150 = 300
         self.assertTrue(np.allclose(
@@ -151,7 +152,7 @@ class TestEcoLogitsGenAIExternalAPI(TestCase):
         """Test energy footprint calculation with no jobs."""
         set_modeling_obj_containers(self.external_api, [])
 
-        self.external_api.server.update_energy_footprint()
+        recompute_attribute(self.external_api.server, "energy_footprint")
 
         self.assertIsInstance(self.external_api.server.energy_footprint, EmptyExplainableObject)
 
@@ -178,7 +179,7 @@ class TestEcoLogitsGenAIExternalAPI(TestCase):
 
         set_modeling_obj_containers(self.external_api, [mock_job])
 
-        self.external_api.server.update_instances_energy()
+        recompute_attribute(self.external_api.server, "instances_energy")
 
         self.assertTrue(np.allclose(
             [100 * 0.5 * 4] * 24, self.external_api.server.instances_energy.magnitude))
@@ -210,8 +211,8 @@ class TestEcoLogitsGenAIExternalAPI(TestCase):
             attribution_cells=(cell("conserving up 3", 1, 1),))
         set_modeling_obj_containers(self.external_api, [mock_job_1, mock_job_2])
         server = self.external_api.server
-        server.update_instances_fabrication_footprint()
-        server.update_energy_footprint()
+        recompute_attribute(server, "instances_fabrication_footprint")
+        recompute_attribute(server, "energy_footprint")
 
         assert_source_atoms_conserve(self, server)
         fabrication_atoms = list(server.attribution_atoms(LifeCyclePhases.MANUFACTURING))
@@ -263,9 +264,6 @@ class TestEcoLogitsGenAIExternalAPIJob(TestCase):
             name="Test Job", external_api=self.external_api, output_token_count=self.output_token_count)
         self.job.trigger_modeling_updates = False
 
-    def test_modeling_objects_whose_attributes_depend_directly_on_me_returns_external_api_server(self):
-        """Test that the job returns its external_api as a dependency."""
-        self.assertEqual(self.job.modeling_objects_whose_attributes_depend_directly_on_me, [self.external_api.server])
 
     def test_compatible_external_apis(self):
         self.assertEqual(EcoLogitsGenAIExternalAPIJob.compatible_external_apis(), [EcoLogitsGenAIExternalAPI])
@@ -275,21 +273,21 @@ class TestEcoLogitsGenAIExternalAPIJob(TestCase):
         self.job.output_token_count = SourceValue(1000 * u.dimensionless)
         # Formula: data_transferred = 5 bytes/token * output_token_count
 
-        self.job.update_data_transferred()
+        recompute_attribute(self.job, "data_transferred")
 
         expected = 5 * 1000 * u.B  # 5000 bytes
         self.assertEqual(expected, self.job.data_transferred.value)
 
     def test_update_impacts_creates_impacts(self):
         """Test that impacts are created correctly."""
-        self.job.update_impacts()
+        recompute_attribute(self.job, "impacts")
 
         self.assertIsNotNone(self.job.impacts)
         self.assertGreater(len(self.job.impacts.value), 0)
 
     def test_compute_calculated_attributes_computes_ecologits_calculated_attributes(self):
         """Test that all calculated attributes are computed without errors."""
-        self.job.compute_calculated_attributes()
+        self.job.pull_computed_attributes()
         for ecologits_attr in ecologits_calculated_attributes:
             self.assertTrue(hasattr(self.job, ecologits_attr))
             self.assertIsInstance(getattr(self.job, ecologits_attr), EcoLogitsExplainableQuantity)
@@ -306,11 +304,12 @@ class TestEcoLogitsGenAIExternalAPIJob(TestCase):
             "hourly_data_stored_across_usage_patterns",
             "hourly_occurrences_across_usage_patterns"
         ]
-        self.assertEqual(self.job.calculated_attributes, calculated_attributes)
+        # Order carries no semantics (pull order is demand-driven recursion), so compare as sets.
+        self.assertCountEqual(self.job.calculated_attributes, calculated_attributes)
 
     def test_ancestors(self):
         """Test that ancestors are correctly set for calculated attributes."""
-        self.job.compute_calculated_attributes()
+        self.job.pull_computed_attributes()
         for attr in ecologits_calculated_attributes:
             calculated_attr = getattr(self.job, attr)
             self.assertIsInstance(calculated_attr, EcoLogitsExplainableQuantity)
@@ -318,7 +317,7 @@ class TestEcoLogitsGenAIExternalAPIJob(TestCase):
                 self.assertIsInstance(ancestor, Quantity)
 
     def test_to_json(self):
-        self.job.compute_calculated_attributes()
+        self.job.pull_computed_attributes()
         root_dir = os.path.dirname(__file__)
         tmp_filepath = os.path.join(root_dir, f"job_serialization_tmp_file.json")
         serialization_dict = {"job": self.job.to_json(save_calculated_attributes=True)}

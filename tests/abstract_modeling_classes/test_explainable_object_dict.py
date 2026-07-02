@@ -24,9 +24,6 @@ class ModelingObjectForContainerTest(ModelingObject):
         self.other_attr = None
         self.calculated_dict = ExplainableObjectDict()
 
-    @property
-    def modeling_objects_whose_attributes_depend_directly_on_me(self):
-        return []
 
     @property
     def systems(self):
@@ -40,9 +37,6 @@ class ModelingObjectWithInputDictForContainerTest(ModelingObject):
         super().__init__(name)
         self.input_dict = ExplainableObjectDict(input_dict or {})
 
-    @property
-    def modeling_objects_whose_attributes_depend_directly_on_me(self):
-        return []
 
     @property
     def systems(self):

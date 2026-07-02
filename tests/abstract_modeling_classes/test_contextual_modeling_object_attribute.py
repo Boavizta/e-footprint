@@ -19,12 +19,6 @@ class ModelingObjectForTesting(ModelingObject):
     def after_init(self):
         self.trigger_modeling_updates = False
 
-    def compute_calculated_attributes(self):
-        pass
-
-    @property
-    def modeling_objects_whose_attributes_depend_directly_on_me(self):
-        return []
 
     @property
     def systems(self):
@@ -32,9 +26,6 @@ class ModelingObjectForTesting(ModelingObject):
 
 
 class OtherModelingObjectForTesting(ModelingObject):
-    @property
-    def modeling_objects_whose_attributes_depend_directly_on_me(self):
-        return []
 
     @property
     def systems(self):

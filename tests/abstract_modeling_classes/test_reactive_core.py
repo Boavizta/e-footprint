@@ -17,7 +17,6 @@ from efootprint.constants.units import u
 
 class ReactiveCoreLeaf(ModelingObject):
     default_values = {"power": SourceValue(1 * u.W)}
-    calculated_attributes = ["double_power"]
 
     holders = ReverseCollection("ReactiveCoreHolder")
     unknown_members = ReverseCollection("ReactiveCoreNeverImportedClass")
@@ -26,11 +25,7 @@ class ReactiveCoreLeaf(ModelingObject):
     def __init__(self, name, power: ExplainableQuantity):
         super().__init__(name)
         self.power = power.set_label("Power")
-        self.double_power = EmptyExplainableObject()
 
-    @property
-    def modeling_objects_whose_attributes_depend_directly_on_me(self):
-        return []
 
     @computed_attribute
     def double_power(self):
@@ -40,16 +35,11 @@ class ReactiveCoreLeaf(ModelingObject):
 
 class ReactiveCoreHolder(ModelingObject):
     default_values = {}
-    calculated_attributes = ["value_per_leaf"]
 
     def __init__(self, name, leaves: list):
         super().__init__(name)
         self.leaves = leaves
-        self.value_per_leaf = ExplainableObjectDict()
 
-    @property
-    def modeling_objects_whose_attributes_depend_directly_on_me(self):
-        return []
 
     @computed_dict(keys="leaves")
     def value_per_leaf(self, leaf):
@@ -66,15 +56,10 @@ class ReactiveCoreSubHolder(ReactiveCoreHolder):
 
 class ReactiveCoreAbstractBase(ModelingObject):
     default_values = {}
-    calculated_attributes = ["derived"]
 
     def __init__(self, name):
         super().__init__(name)
-        self.derived = EmptyExplainableObject()
 
-    @property
-    def modeling_objects_whose_attributes_depend_directly_on_me(self):
-        return []
 
     @computed_attribute
     @abstractmethod
@@ -103,33 +88,48 @@ class TestComputedAttribute(TestCase):
         self.assertIsInstance(descriptor, computed_attribute)
         self.assertEqual("Twice the power.", descriptor.__doc__)
 
-    def test_synthesized_update_method_computes_and_stores_through_setattr(self):
-        """Test that the synthesized update_<attr> method runs the getter and stores the result with the
-        regular ModelingObject bookkeeping (container wiring)."""
-        self.leaf.update_double_power()
+    def test_read_computes_caches_and_does_container_bookkeeping(self):
+        """Test that reading a computed attribute computes it, wires the value to its owner, and
+        reuses the cached value on later reads."""
+        first_read = self.leaf.double_power
 
+        self.assertEqual(6, first_read.magnitude)
+        self.assertIs(self.leaf, first_read.modeling_obj_container)
+        self.assertEqual("double_power", first_read.attr_name_in_mod_obj_container)
+        self.assertIs(first_read, self.leaf.double_power)
+
+    def test_input_write_invalidates_and_next_read_recomputes(self):
+        """Test that writing an input voids the dependent computed slot and the next read recomputes."""
         self.assertEqual(6, self.leaf.double_power.magnitude)
-        self.assertIs(self.leaf, self.leaf.double_power.modeling_obj_container)
-        self.assertEqual("double_power", self.leaf.double_power.attr_name_in_mod_obj_container)
 
-    def test_synthesized_update_method_carries_getter_docstring(self):
-        """Test that the synthesized update method exposes the getter docstring (doc-as-code consumers)."""
-        self.assertEqual("Twice the power.", ReactiveCoreLeaf.update_double_power.__doc__)
+        self.leaf.power = SourceValue(5 * u.W)
 
-    def test_uncomputed_attribute_read_mimics_missing_attribute(self):
-        """Test that reading a computed attribute with no stored value raises AttributeError, as before."""
-        del self.leaf.__dict__["double_power"]
-        with self.assertRaises(AttributeError):
-            _ = self.leaf.double_power
-        self.assertIsNone(getattr(self.leaf, "double_power", None))
+        self.assertEqual(10, self.leaf.double_power.magnitude)
+
+    def test_computed_value_cycle_raises_readable_chain(self):
+        """Test that mutually dependent computed attributes raise CircularDependencyError with the
+        offending slot chain spelled out."""
+        class ReactiveCoreCyclic(ModelingObject):
+            default_values = {}
+
+            @computed_attribute
+            def ping(self):
+                return (self.pong * ExplainableQuantity(1 * u.dimensionless, "one")).set_label("ping")
+
+            @computed_attribute
+            def pong(self):
+                return (self.ping * ExplainableQuantity(1 * u.dimensionless, "one")).set_label("pong")
+
+        cyclic = ReactiveCoreCyclic("cyclic object")
+        with self.assertRaises(CircularDependencyError) as context:
+            _ = cyclic.ping
+        self.assertIn("ping", str(context.exception))
+        self.assertIn("pong", str(context.exception))
 
     def test_mismatched_declaration_name_raises(self):
         """Test that declaring a computed attribute under a name differing from its getter raises."""
         with self.assertRaises(ValueError):
             class Broken(ModelingObject):
-                @property
-                def modeling_objects_whose_attributes_depend_directly_on_me(self):
-                    return []
 
                 def _getter(self):
                     return None
@@ -140,17 +140,12 @@ class TestComputedAttribute(TestCase):
         with self.assertRaises(TypeError):
             ReactiveCoreAbstractBase("abstract instance")
         child = ReactiveCoreConcreteChild("concrete instance")
-        child.update_derived()
         self.assertEqual(1, child.derived.magnitude)
 
     def test_add_computed_attribute_on_existing_class(self):
         """Test attaching a dynamically generated computed attribute to an already-created class."""
         class DynamicTarget(ReactiveCoreLeaf):
-            calculated_attributes = ReactiveCoreLeaf.calculated_attributes + ["tripled_power"]
-
-            def __init__(self, name, power: ExplainableQuantity):
-                super().__init__(name, power)
-                self.tripled_power = EmptyExplainableObject()
+            pass
 
         def tripled_power(self):
             """Thrice the power."""
@@ -161,9 +156,8 @@ class TestComputedAttribute(TestCase):
 
         self.assertIn("tripled_power", computed_slots(DynamicTarget))
         obj = DynamicTarget("dynamic leaf", SourceValue(2 * u.W))
-        obj.update_tripled_power()
         self.assertEqual(6, obj.tripled_power.magnitude)
-        self.assertEqual("Thrice the power.", DynamicTarget.update_tripled_power.__doc__)
+        self.assertEqual("Thrice the power.", computed_slots(DynamicTarget)["tripled_power"].__doc__)
 
 
 class TestComputedDict(TestCase):
@@ -172,38 +166,43 @@ class TestComputedDict(TestCase):
         self.leaf_2 = ReactiveCoreLeaf("dict leaf 2", SourceValue(2 * u.W))
         self.holder = ReactiveCoreHolder("test holder", [self.leaf_1, self.leaf_2])
 
-    def test_synthesized_whole_dict_update_resets_and_populates_per_key(self):
-        """Test that update_<attr> resets the dict then populates one entry per key object."""
-        self.holder.update_value_per_leaf()
-
+    def test_whole_dict_read_populates_one_entry_per_key(self):
+        """Test that reading a computed dict populates one entry per key object with the owner wired."""
         self.assertEqual([self.leaf_1, self.leaf_2], list(self.holder.value_per_leaf.keys()))
         self.assertEqual(2, self.holder.value_per_leaf[self.leaf_1].magnitude)
         self.assertEqual(4, self.holder.value_per_leaf[self.leaf_2].magnitude)
         self.assertIs(self.holder, self.holder.value_per_leaf.modeling_obj_container)
 
-    def test_synthesized_element_update_refreshes_one_key(self):
-        """Test that update_dict_element_in_<attr> recomputes a single key in place."""
-        self.holder.update_value_per_leaf()
-        self.leaf_1.__dict__["power"] = SourceValue(5 * u.W).set_label("Power")
-
-        self.holder.update_dict_element_in_value_per_leaf(self.leaf_1)
+    def test_input_write_recomputes_only_the_affected_key(self):
+        """Test that a key object's input change recomputes that key's entry, reusing the sibling's."""
+        sibling_value = self.holder.value_per_leaf[self.leaf_2]
+        self.leaf_1.power = SourceValue(5 * u.W)
 
         self.assertEqual(10, self.holder.value_per_leaf[self.leaf_1].magnitude)
-        self.assertEqual(4, self.holder.value_per_leaf[self.leaf_2].magnitude)
+        self.assertIs(sibling_value, self.holder.value_per_leaf[self.leaf_2])
 
-    def test_whole_dict_update_dispatches_to_overriding_element_getter(self):
-        """Test that the parent-synthesized whole-dict update dispatches per-key work through the MRO,
-        so a subclass overriding only the per-key getter is honored."""
+    def test_key_set_change_drops_stale_entries_and_adds_new_ones(self):
+        """Test that a key collection change re-syncs the dict: removed keys drop with their container
+        bookkeeping, new keys compute."""
+        leaf_3 = ReactiveCoreLeaf("dict leaf 3", SourceValue(3 * u.W))
+        dropped_value = self.holder.value_per_leaf[self.leaf_2]
+
+        self.holder.leaves = [self.leaf_1, leaf_3]
+
+        self.assertEqual([self.leaf_1, leaf_3], list(self.holder.value_per_leaf.keys()))
+        self.assertEqual(6, self.holder.value_per_leaf[leaf_3].magnitude)
+        self.assertIsNone(dropped_value.modeling_obj_container)
+
+    def test_subclass_overriding_element_getter_is_dispatched_to(self):
+        """Test that a subclass overriding only the per-key getter is honored, including through the
+        parent-getter unbound-call refinement syntax."""
         sub_holder = ReactiveCoreSubHolder("sub holder", [self.leaf_1])
-
-        ReactiveCoreHolder.update_value_per_leaf(sub_holder)
 
         self.assertEqual(20, sub_holder.value_per_leaf[self.leaf_1].magnitude)
 
     def test_overriding_getter_without_docstring_inherits_parent_description(self):
         """Test that an overriding getter without its own docstring keeps the inherited description."""
         self.assertEqual("Per-leaf doubled power.", computed_slots(ReactiveCoreSubHolder)["value_per_leaf"].__doc__)
-        self.assertEqual("Per-leaf doubled power.", ReactiveCoreSubHolder.update_value_per_leaf.__doc__)
 
 
 class TestReverseSlots(TestCase):
@@ -720,22 +719,18 @@ def _all_registered_classes():
     return ALL_EFOOTPRINT_CLASSES + [BoaviztaServerFromConfig, BoaviztaStorageFromConfig]
 
 
-class TestRegistryMatchesCalculatedAttributes(TestCase):
-    def test_every_calculated_attribute_is_a_declared_computed_slot(self):
-        """Test that per class, the calculated_attributes list and the computed-slot registry agree —
-        a conversion-omission detector for the transition period where both coexist."""
+class TestRegistryConsistency(TestCase):
+    def test_removed_computed_attribute_leaves_registry_and_raises_on_read(self):
+        """Test that a subclass removing an inherited computed attribute drops it from the registry and
+        makes instance reads raise AttributeError (e.g. EdgeStorage's inapplicable power attributes)."""
         from efootprint.core.hardware.edge.edge_storage import EdgeStorage
 
-        # EdgeStorage deliberately drops these inherited EdgeComponent attributes from its
-        # calculated_attributes (it deletes the corresponding instance state in __init__).
-        deliberate_drops = {EdgeStorage: {"power", "idle_power"}}
-
-        for cls in _all_registered_classes():
-            declared = set(computed_slots(cls))
-            expected_drops = deliberate_drops.get(cls, set())
-            self.assertEqual(
-                set(cls.calculated_attributes), declared - expected_drops,
-                f"calculated_attributes and computed-slot registry diverge for {cls.__name__}")
+        self.assertNotIn("power", computed_slots(EdgeStorage))
+        self.assertNotIn("idle_power", computed_slots(EdgeStorage))
+        edge_storage = EdgeStorage.from_defaults("registry test storage")
+        with self.assertRaises(AttributeError):
+            _ = edge_storage.power
+        self.assertFalse(hasattr(edge_storage, "idle_power"))
 
     def test_every_reverse_slot_member_type_resolves(self):
         """Test that every reverse slot declared on a production class resolves its member-type name to a

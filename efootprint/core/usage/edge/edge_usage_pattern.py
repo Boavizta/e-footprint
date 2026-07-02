@@ -38,7 +38,6 @@ class EdgeUsagePattern(ModelingObject):
     def __init__(self, name: str, edge_usage_journey: EdgeUsageJourney, network: Network,
                  country: Country, hourly_edge_usage_journey_starts: ExplainableHourlyQuantities):
         super().__init__(name)
-        self.utc_hourly_edge_usage_journey_starts = EmptyExplainableObject()
 
         self.hourly_edge_usage_journey_starts = hourly_edge_usage_journey_starts.to(u.occurrence).set_label(
             "Hourly nb of edge usage journey starts")
@@ -46,11 +45,7 @@ class EdgeUsagePattern(ModelingObject):
         self.network = network
         self.country = country
 
-    @property
-    def modeling_objects_whose_attributes_depend_directly_on_me(self) -> (List[EdgeUsageJourney]):
-        return [self.edge_usage_journey]
 
-    calculated_attributes = ["utc_hourly_edge_usage_journey_starts"]
 
     @property
     def recurrent_edge_device_needs(self) -> List["RecurrentEdgeDeviceNeed"]:

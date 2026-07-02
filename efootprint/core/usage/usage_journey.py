@@ -32,12 +32,7 @@ class UsageJourney(ModelingObject):
         super().__init__(name)
         self.uj_steps = to_weighted_explainable_object_dict(uj_steps, weight_label=self.weight_labels["uj_steps"])
 
-        self.duration = EmptyExplainableObject()
-        self.nb_usage_journeys_in_parallel_per_usage_pattern = ExplainableObjectDict()
 
-    @property
-    def modeling_objects_whose_attributes_depend_directly_on_me(self) -> List["Device"] | List[UsageJourneyStep]:
-        return self.devices + list(self.uj_steps)
 
     @property
     def servers(self) -> List[Server]:
@@ -67,7 +62,6 @@ class UsageJourney(ModelingObject):
         # counting happens. Mirrors edge_usage_journey.
         return list(dict.fromkeys(sum([list(uj_step.jobs) for uj_step in self.uj_steps], start=[])))
 
-    calculated_attributes = ["duration", "nb_usage_journeys_in_parallel_per_usage_pattern"]
 
     @computed_attribute
     def duration(self):

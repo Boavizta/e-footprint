@@ -44,15 +44,9 @@ class EdgeRAMComponent(EdgeComponent):
             name, carbon_footprint_fabrication_per_unit, power_per_unit, lifespan, idle_power_per_unit,
             nb_of_units=nb_of_units)
         self.ram_per_unit = ram_per_unit.set_label(f"RAM per unit").to(u.GB_ram)
-        self.ram = EmptyExplainableObject()
         self.base_ram_consumption = base_ram_consumption.set_label(f"Base RAM consumption")
 
-        self.available_ram_per_instance = EmptyExplainableObject()
-        self.unitary_hourly_ram_need_per_usage_pattern = ExplainableObjectDict()
 
-    calculated_attributes = (
-        ["ram", "available_ram_per_instance", "unitary_hourly_ram_need_per_usage_pattern"]
-        + EdgeComponent.calculated_attributes)
 
     @computed_attribute
     def ram(self):
@@ -100,7 +94,7 @@ class EdgeRAMComponent(EdgeComponent):
             ram_need = EmptyExplainableObject()
 
         if isinstance(ram_need, EmptyExplainableObject):
-            unitary_power = self.idle_power
+            unitary_power = self.idle_power.copy()
         else:
             ram_workload = (ram_need + self.base_ram_consumption) / self.ram
             unitary_power = self.idle_power + (self.power - self.idle_power) * ram_workload

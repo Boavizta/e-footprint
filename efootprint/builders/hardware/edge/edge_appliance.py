@@ -21,8 +21,6 @@ class EdgeApplianceComponent(EdgeWorkloadComponent):
             idle_power_per_unit=SourceValue(0 * u.W),
             nb_of_units=SourceValue(1 * u.dimensionless))
 
-    calculated_attributes = (
-        ["power_per_unit", "idle_power_per_unit", "lifespan"] + EdgeWorkloadComponent.calculated_attributes)
 
     @computed_attribute
     def power_per_unit(self):
@@ -86,7 +84,6 @@ class EdgeAppliance(EdgeDevice):
         self.power = power.set_label(f"Power")
         self.idle_power = idle_power.set_label(f"Idle power")
 
-    calculated_attributes = ["structure_carbon_footprint_fabrication"] + EdgeDevice.calculated_attributes
 
     @computed_attribute
     def structure_carbon_footprint_fabrication(self):

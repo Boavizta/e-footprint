@@ -16,6 +16,7 @@ from efootprint.core.usage.edge.edge_usage_pattern import EdgeUsagePattern
 from efootprint.core.hardware.edge.edge_storage import EdgeStorage
 from efootprint.constants.units import u
 from tests.utils import create_mod_obj_mock
+from tests.utils import recompute_attribute
 
 
 class TestRecurrentEdgeStorageNeed(TestCase):
@@ -70,7 +71,7 @@ class TestRecurrentEdgeStorageNeed(TestCase):
         # Patch at class level because __slots__ prevents instance-level patching
         with patch.object(SourceRecurrentValues, 'generate_hourly_quantities_over_timespan',
                           return_value=base_storage_result):
-            self.storage_need.update_dict_element_in_unitary_hourly_need_per_usage_pattern(mock_pattern)
+            recompute_attribute(self.storage_need, "unitary_hourly_need_per_usage_pattern", mock_pattern)
 
             # Since we start on Monday 00:00, no values should be zeroed
             result = self.storage_need.unitary_hourly_need_per_usage_pattern[mock_pattern]
@@ -111,7 +112,7 @@ class TestRecurrentEdgeStorageNeed(TestCase):
         # Patch at class level because __slots__ prevents instance-level patching
         with patch.object(SourceRecurrentValues, 'generate_hourly_quantities_over_timespan',
                           return_value=base_storage_result):
-            self.storage_need.update_dict_element_in_unitary_hourly_need_per_usage_pattern(mock_pattern)
+            recompute_attribute(self.storage_need, "unitary_hourly_need_per_usage_pattern", mock_pattern)
 
             result = self.storage_need.unitary_hourly_need_per_usage_pattern[mock_pattern]
             # From Wednesday 00:00, we need to zero until Monday 00:00
@@ -132,7 +133,7 @@ class TestRecurrentEdgeStorageNeed(TestCase):
             )
         }
 
-        self.storage_need.update_dict_element_in_cumulative_unitary_storage_need_per_usage_pattern(pattern)
+        recompute_attribute(self.storage_need, "cumulative_unitary_storage_need_per_usage_pattern", pattern)
 
         np.testing.assert_array_equal(
             self.storage_need.cumulative_unitary_storage_need_per_usage_pattern[pattern].to(u.GB_stored).magnitude,
@@ -175,7 +176,7 @@ class TestRecurrentEdgeStorageNeed(TestCase):
         with patch.object(
             RecurrentEdgeStorageNeed, "edge_usage_patterns", new_callable=PropertyMock, return_value=[pattern_1, pattern_2]
         ):
-            self.storage_need.update_total_hourly_need_across_usage_patterns()
+            recompute_attribute(self.storage_need, "total_hourly_need_across_usage_patterns")
 
         np.testing.assert_array_equal(
             self.storage_need.total_hourly_need_across_usage_patterns.magnitude,

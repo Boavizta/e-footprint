@@ -15,6 +15,7 @@ from efootprint.core.usage.edge.recurrent_edge_component_need import (
 )
 from efootprint.core.usage.edge.edge_usage_pattern import EdgeUsagePattern
 from tests.utils import create_mod_obj_mock, set_modeling_obj_containers
+from tests.utils import recompute_attribute
 
 
 class TestEdgeWorkloadComponent(TestCase):
@@ -27,9 +28,9 @@ class TestEdgeWorkloadComponent(TestCase):
             idle_power_per_unit=SourceValue(5 * u.W)
         )
         self.appliance_component.trigger_modeling_updates = False
-        self.appliance_component.update_carbon_footprint_fabrication()
-        self.appliance_component.update_power()
-        self.appliance_component.update_idle_power()
+        recompute_attribute(self.appliance_component, "carbon_footprint_fabrication")
+        recompute_attribute(self.appliance_component, "power")
+        recompute_attribute(self.appliance_component, "idle_power")
 
     def test_init(self):
         """Test EdgeWorkloadComponent initialization."""
@@ -60,7 +61,7 @@ class TestEdgeWorkloadComponent(TestCase):
 
         set_modeling_obj_containers(self.appliance_component, [mock_need_1, mock_need_2])
 
-        self.appliance_component.update_dict_element_in_unitary_hourly_workload_per_usage_pattern(mock_pattern)
+        recompute_attribute(self.appliance_component, "unitary_hourly_workload_per_usage_pattern", mock_pattern)
 
         expected_values = [0.3, 0.45]  # Sum of both needs
         result = self.appliance_component.unitary_hourly_workload_per_usage_pattern[mock_pattern]
@@ -86,7 +87,7 @@ class TestEdgeWorkloadComponent(TestCase):
         set_modeling_obj_containers(self.appliance_component, [mock_need_1, mock_need_2])
 
         with self.assertRaises(WorkloadOutOfBoundsError) as context:
-            self.appliance_component.update_dict_element_in_unitary_hourly_workload_per_usage_pattern(mock_pattern)
+            recompute_attribute(self.appliance_component, "unitary_hourly_workload_per_usage_pattern", mock_pattern)
 
         self.assertIn("aggregated workload", str(context.exception).lower())
 
@@ -108,7 +109,7 @@ class TestEdgeWorkloadComponent(TestCase):
 
         set_modeling_obj_containers(self.appliance_component, [mock_need])
 
-        self.appliance_component.update_unitary_hourly_workload_per_usage_pattern()
+        recompute_attribute(self.appliance_component, "unitary_hourly_workload_per_usage_pattern")
 
         self.assertIn(mock_pattern1, self.appliance_component.unitary_hourly_workload_per_usage_pattern)
         self.assertIn(mock_pattern2, self.appliance_component.unitary_hourly_workload_per_usage_pattern)
@@ -124,7 +125,7 @@ class TestEdgeWorkloadComponent(TestCase):
         workload_values = create_source_hourly_values_from_list([0.0, 0.5, 1.0], pint_unit=u.concurrent)
         self.appliance_component.unitary_hourly_workload_per_usage_pattern[mock_pattern] = workload_values
 
-        self.appliance_component.update_dict_element_in_unitary_power_per_usage_pattern(mock_pattern)
+        recompute_attribute(self.appliance_component, "unitary_power_per_usage_pattern", mock_pattern)
 
         result = self.appliance_component.unitary_power_per_usage_pattern[mock_pattern]
         # Power = idle_power + (power - idle_power) * workload
@@ -141,7 +142,7 @@ class TestEdgeWorkloadComponent(TestCase):
 
         self.appliance_component.unitary_hourly_workload_per_usage_pattern[mock_pattern] = EmptyExplainableObject()
 
-        self.appliance_component.update_dict_element_in_unitary_power_per_usage_pattern(mock_pattern)
+        recompute_attribute(self.appliance_component, "unitary_power_per_usage_pattern", mock_pattern)
 
         result = self.appliance_component.unitary_power_per_usage_pattern[mock_pattern]
         # With empty workload, power should be idle_power
@@ -163,7 +164,7 @@ class TestEdgeWorkloadComponent(TestCase):
         mock_need.edge_usage_patterns = [mock_pattern1, mock_pattern2]
         set_modeling_obj_containers(self.appliance_component, [mock_need])
 
-        self.appliance_component.update_unitary_power_per_usage_pattern()
+        recompute_attribute(self.appliance_component, "unitary_power_per_usage_pattern")
 
         self.assertIn(mock_pattern1, self.appliance_component.unitary_power_per_usage_pattern)
         self.assertIn(mock_pattern2, self.appliance_component.unitary_power_per_usage_pattern)

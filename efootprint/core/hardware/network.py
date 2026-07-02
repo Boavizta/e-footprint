@@ -46,21 +46,10 @@ class Network(ModelingObject):
 
     def __init__(self, name: str, bandwidth_energy_intensity: ExplainableQuantity):
         super().__init__(name)
-        self.energy_footprint_per_job = ExplainableObjectDict()
-        self.energy_footprint = EmptyExplainableObject()
-        self.instances_fabrication_footprint = EmptyExplainableObject()
         self.bandwidth_energy_intensity = bandwidth_energy_intensity.set_label(
             f"bandwith energy intensity")
 
-    calculated_attributes = [
-        "energy_footprint_per_job",
-        "instances_fabrication_footprint",
-        "energy_footprint",
-    ]
 
-    @property
-    def modeling_objects_whose_attributes_depend_directly_on_me(self) -> List:
-        return []
 
     @property
     def usage_patterns(self) -> List["UsagePattern"] | List["EdgeUsagePattern"]:

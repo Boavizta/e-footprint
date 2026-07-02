@@ -28,6 +28,7 @@ from efootprint.core.usage.edge.edge_function import EdgeFunction
 from efootprint.core.usage.edge.recurrent_edge_device_need import RecurrentEdgeDeviceNeed
 from tests import root_test_dir
 from tests.utils import create_mod_obj_mock
+from tests.utils import recompute_attribute
 
 
 class TestSystem(TestCase):
@@ -246,7 +247,7 @@ class TestSystem(TestCase):
             mock_all_linked_objects.return_value = [new_up]
             with self.assertRaises(PermissionError):
                 self.system.usage_patterns = [new_up]
-                self.system.compute_calculated_attributes()
+                recompute_attribute(self.system, "total_footprint")
         
     def test_fabrication_footprints(self):
         self.assertDictEqual(self._base_fabrication_footprints(), self.system.fabrication_footprints)

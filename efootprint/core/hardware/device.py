@@ -103,10 +103,6 @@ class Device(HardwareBase):
                  lifespan: ExplainableQuantity, fraction_of_usage_time: ExplainableQuantity):
         super().__init__(name, carbon_footprint_fabrication, power, lifespan, fraction_of_usage_time)
 
-        self.energy_footprint_per_usage_pattern = ExplainableObjectDict()
-        self.energy_footprint = EmptyExplainableObject()
-        self.instances_fabrication_footprint_per_usage_pattern = ExplainableObjectDict()
-        self.instances_fabrication_footprint = EmptyExplainableObject()
 
     @property
     def usage_patterns(self) -> List["UsagePattern"]:
@@ -116,12 +112,6 @@ class Device(HardwareBase):
     def usage_journey_steps(self) -> List["UsageJourneyStep"]:
         return list(dict.fromkeys(sum([list(usage_pattern.usage_journey.uj_steps) for usage_pattern in self.usage_patterns], [])))
 
-    calculated_attributes: List[str] = [
-        "energy_footprint_per_usage_pattern",
-        "energy_footprint",
-        "instances_fabrication_footprint_per_usage_pattern",
-        "instances_fabrication_footprint",
-    ] + HardwareBase.calculated_attributes
 
     @computed_dict(keys="usage_patterns")
     def energy_footprint_per_usage_pattern(self, usage_pattern: "UsagePattern"):

@@ -1,5 +1,6 @@
 from efootprint.abstract_modeling_classes.modeling_object import ModelingObject
 from efootprint.abstract_modeling_classes.object_linked_to_modeling_obj import ObjectLinkedToModelingObj
+from efootprint.abstract_modeling_classes.reactive_core import bump_reverse_nodes, record_read_of_node
 
 
 class ContextualModelingObjectAttribute(ObjectLinkedToModelingObj):
@@ -21,7 +22,22 @@ class ContextualModelingObjectAttribute(ObjectLinkedToModelingObj):
     def id(self):
         return self._value.id
 
+    def set_modeling_obj_container(self, new_parent_modeling_object, attr_name):
+        # A container-field transition changes the wrapped object's reverse relationships: bump its
+        # reverse nodes for both the container being left and the one being joined — the one
+        # dependency defined by writing rather than discovered by reading.
+        previous_container = self.modeling_obj_container
+        super().set_modeling_obj_container(new_parent_modeling_object, attr_name)
+        if previous_container is not new_parent_modeling_object:
+            bump_reverse_nodes(self._value, previous_container)
+            bump_reverse_nodes(self._value, new_parent_modeling_object)
+
     def __getattr__(self, attr):
+        modeling_obj_container = self.modeling_obj_container
+        if modeling_obj_container is not None:
+            # Reading through the wrapper means the computation depends on which object this forward
+            # link points to.
+            record_read_of_node(modeling_obj_container, self.attr_name_in_mod_obj_container)
         return getattr(self._value, attr)  # Use `getattr` instead of `__getattr__`
 
     def __getattribute__(self, name):
@@ -35,7 +51,7 @@ class ContextualModelingObjectAttribute(ObjectLinkedToModelingObj):
                     "former_modeling_obj_container_id", "former_attr_name_in_mod_obj_container",
                     "_cached_id", "_cached_full_str_tuple_id", "_cached_attribute_id",
                     "_cached_dict_container", "_cached_key_in_dict", "_cached_list_container",
-                    "_dict_key_container",
+                    "_dict_key_container", "_reactive_slot",
                     "_cached_indexes_in_list"]:
             # If setting a class attribute, use the superclass's __setattr__
             super().__setattr__(name, input_value)
@@ -43,6 +59,9 @@ class ContextualModelingObjectAttribute(ObjectLinkedToModelingObj):
             setattr(self._value, name, input_value)  # Use `setattr` instead of `__setattr__`
 
     def __getitem__(self, key):
+        modeling_obj_container = self.modeling_obj_container
+        if modeling_obj_container is not None:
+            record_read_of_node(modeling_obj_container, self.attr_name_in_mod_obj_container)
         return self._value[key]
 
     def __repr__(self):

@@ -60,30 +60,8 @@ class EdgeDevice(ModelingObject):
             f"Structure fabrication carbon footprint")
         self.components = components
 
-        self.lifespan_validation = EmptyExplainableObject()
-        self.component_needs_edge_device_validation = EmptyExplainableObject()
-        self.total_nb_of_units = EmptyExplainableObject()
-        self.structure_fabrication_footprint_per_usage_pattern = ExplainableObjectDict()
-        self.instances_energy_per_usage_pattern = ExplainableObjectDict()
-        self.energy_footprint_per_usage_pattern = ExplainableObjectDict()
-        self.instances_fabrication_footprint_per_usage_pattern = ExplainableObjectDict()
-        self.fabrication_footprint_breakdown_by_source = ExplainableObjectDict()
-        self.instances_fabrication_footprint = EmptyExplainableObject()
-        self.instances_energy = EmptyExplainableObject()
-        self.energy_footprint = EmptyExplainableObject()
 
-    @property
-    def modeling_objects_whose_attributes_depend_directly_on_me(self) -> List:
-        return []
 
-    calculated_attributes = [
-        "lifespan_validation", "component_needs_edge_device_validation",
-        "total_nb_of_units",
-        "structure_fabrication_footprint_per_usage_pattern",
-        "instances_fabrication_footprint_per_usage_pattern",
-        "instances_energy_per_usage_pattern", "energy_footprint_per_usage_pattern",
-        "instances_fabrication_footprint", "fabrication_footprint_breakdown_by_source",
-        "instances_energy", "energy_footprint"]
 
     recurrent_edge_device_needs = ReverseCollection("RecurrentEdgeDeviceNeed")
     recurrent_server_needs = ReverseCollection("RecurrentServerNeed")

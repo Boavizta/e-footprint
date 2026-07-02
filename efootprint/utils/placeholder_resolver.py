@@ -1,7 +1,7 @@
 """Cross-reference placeholder syntax used in description metadata.
 
 Placeholders have the form ``{kind:target}`` and live inside class docstrings,
-``param_descriptions`` values, ``update_<attr>`` docstrings, ``disambiguation``,
+``param_descriptions`` values, computed-attribute getter docstrings, ``disambiguation``,
 ``pitfalls``, ``interactions``, and ``param_interactions`` values.
 
 Consumers (mkdocs generator, the e-footprint-interface adapter, the test suite)

@@ -165,8 +165,11 @@ class ServerBase(InfraHardware):
         self.server_type = server_type.set_label(f"Server type")
         self.idle_power = idle_power.set_label(f"Idle power")
         self.ram = ram.set_label(f"RAM").to(u.GB_ram)
-        self.compute = compute.set_label("tmp label")
-        self.compute.set_label(f"Nb {self.compute_type.replace("_", " ")}s")
+        # Derive the compute type from the constructor argument, not self.compute: subclasses that
+        # compute their compute attribute (rather than take it as input) would compute it here, before
+        # their own initialization is done.
+        compute_type = str(compute.value.units)
+        self.compute = compute.set_label(f"Nb {compute_type.replace("_", " ")}s")
         self.power_usage_effectiveness = power_usage_effectiveness.set_label(f"PUE")
         self.average_carbon_intensity = average_carbon_intensity
         if SOURCE_VALUE_DEFAULT_NAME in self.average_carbon_intensity.label:
@@ -174,44 +177,17 @@ class ServerBase(InfraHardware):
         self.utilization_rate = utilization_rate.set_label("Utilization rate")
         self.base_ram_consumption = base_ram_consumption.set_label(f"Base RAM consumption")
         self.base_compute_consumption = base_compute_consumption.set_label(
-            f"Base {self.compute_type.replace("_", " ")} consumption")
+            f"Base {compute_type.replace("_", " ")} consumption")
         self.fixed_nb_of_instances = (fixed_nb_of_instances or EmptyExplainableObject()).set_label(
             f"User defined number of instances").to(u.concurrent)
         self.storage = storage
 
-        self.hour_by_hour_compute_need = EmptyExplainableObject()
-        self.hour_by_hour_ram_need = EmptyExplainableObject()
-        self.available_compute_per_instance = EmptyExplainableObject()
-        self.available_ram_per_instance = EmptyExplainableObject()
-        self.raw_nb_of_instances = EmptyExplainableObject()
-        self.nb_of_instances = EmptyExplainableObject()
-        self.occupied_ram_per_instance = EmptyExplainableObject()
-        self.occupied_compute_per_instance = EmptyExplainableObject()
-        self.idle_energy_footprint = EmptyExplainableObject()
-        self.load_energy_footprint = EmptyExplainableObject()
 
-    @property
-    def modeling_objects_whose_attributes_depend_directly_on_me(self) -> List:
-        return [self.storage]
 
     @property
     def compute_type(self) -> str:
         return str(self.compute.value.units)
 
-    calculated_attributes: List[str] = [
-        "hour_by_hour_ram_need",
-        "hour_by_hour_compute_need",
-        "occupied_ram_per_instance",
-        "occupied_compute_per_instance",
-        "available_ram_per_instance",
-        "available_compute_per_instance",
-    ] + [
-        attr for attr in InfraHardware.calculated_attributes if attr != "energy_footprint"
-    ] + [
-        "idle_energy_footprint",
-        "load_energy_footprint",
-        "energy_footprint",
-    ]
 
     @property
     def resources_unit_dict(self):

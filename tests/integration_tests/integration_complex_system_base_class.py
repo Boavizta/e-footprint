@@ -210,10 +210,12 @@ class IntegrationTestComplexSystemBaseClass(IntegrationTestBaseClass):
             cleanup.callback(setattr, self.system, "usage_patterns", copy(self.system.usage_patterns))
             self.system.usage_patterns += [new_up]
             self.assertNotEqual(self.initial_footprint, self.system.total_footprint)
-            # server1_job1 has been recomputed, hour_occs_per_up should not be linked to a modeling object anymore
-            self.assertIsNone(hour_occs_per_up.modeling_obj_container)
+            # Per-key granularity: the pre-existing usage pattern's occurrences are untouched by the
+            # addition, so the exact same value object stays in place.
+            self.assertIs(hour_occs_per_up, server1_job1.hourly_occurrences_per_usage_pattern[up])
+            self.assertIsNotNone(hour_occs_per_up.modeling_obj_container)
             # server1_job1 has 4 usage patterns (2 web + 1 edge initially, + the new one)
-            # so its hourly_avg_occurrences_across_usage_patterns should have 3 ancestors
+            # so its hourly_avg_occurrences_across_usage_patterns should have 4 ancestors
             self.assertEqual(len(server1_job1.hourly_avg_occurrences_across_usage_patterns.direct_ancestors_with_id), 4)
 
             logger.warning("Editing the usage pattern network")

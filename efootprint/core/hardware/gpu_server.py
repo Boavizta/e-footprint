@@ -88,7 +88,6 @@ class GPUServer(ServerBase):
         self.carbon_footprint_fabrication_per_gpu = carbon_footprint_fabrication_per_gpu.set_label(
             "Carbon footprint one GPU")
 
-    calculated_attributes = ["carbon_footprint_fabrication", "power", "idle_power", "ram"] + ServerBase.calculated_attributes
 
     @computed_attribute
     def carbon_footprint_fabrication(self):

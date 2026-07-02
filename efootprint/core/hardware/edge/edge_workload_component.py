@@ -39,9 +39,7 @@ class EdgeWorkloadComponent(EdgeComponent):
         super().__init__(
             name, carbon_footprint_fabrication_per_unit, power_per_unit, lifespan, idle_power_per_unit,
             nb_of_units=nb_of_units)
-        self.unitary_hourly_workload_per_usage_pattern = ExplainableObjectDict()
 
-    calculated_attributes = ["unitary_hourly_workload_per_usage_pattern"] + EdgeComponent.calculated_attributes
 
     @computed_dict(keys="edge_usage_patterns")
     def unitary_hourly_workload_per_usage_pattern(self, usage_pattern: "EdgeUsagePattern"):
@@ -71,7 +69,7 @@ class EdgeWorkloadComponent(EdgeComponent):
             workload = EmptyExplainableObject()
 
         if isinstance(workload, EmptyExplainableObject):
-            unitary_power = self.idle_power
+            unitary_power = self.idle_power.copy()
         else:
             unitary_power = self.idle_power + (self.power - self.idle_power) * workload
 

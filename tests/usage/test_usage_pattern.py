@@ -12,6 +12,7 @@ from efootprint.core.hardware.network import Network
 from efootprint.core.usage.usage_journey import UsageJourney
 from efootprint.core.usage.usage_pattern import UsagePattern
 from efootprint.builders.time_builders import create_source_hourly_values_from_list, create_random_source_hourly_values
+from tests.utils import recompute_attribute
 
 
 class TestUsagePattern(unittest.TestCase):
@@ -53,7 +54,7 @@ class TestUsagePattern(unittest.TestCase):
             [1, 2, 3], start_date=datetime(2025, 1, 1, 0, 0, 0),
         )
 
-        self.usage_pattern.update_utc_hourly_usage_journey_starts()
+        recompute_attribute(self.usage_pattern, "utc_hourly_usage_journey_starts")
 
         self.assertEqual([2.0, 3.0, 1.0], self.usage_pattern.utc_hourly_usage_journey_starts.value_as_float_list)
         self.assertEqual(pytz.utc, self.usage_pattern.utc_hourly_usage_journey_starts.start_date.tzinfo)

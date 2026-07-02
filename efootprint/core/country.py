@@ -40,9 +40,6 @@ class Country(ModelingObject):
         self.average_carbon_intensity = average_carbon_intensity.set_label(f"Average carbon intensity")
         self.timezone = timezone.set_label("Timezone")
 
-    @property
-    def modeling_objects_whose_attributes_depend_directly_on_me(self):
-        return self.usage_patterns
 
     @property
     def attributes_that_shouldnt_trigger_update_logic(self):

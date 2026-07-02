@@ -10,6 +10,7 @@ from efootprint.core.hardware.hardware_base import InsufficientCapacityError
 from efootprint.core.usage.edge.recurrent_edge_component_need import RecurrentEdgeComponentNeed
 from efootprint.core.usage.edge.edge_usage_pattern import EdgeUsagePattern
 from tests.utils import create_mod_obj_mock, set_modeling_obj_containers
+from tests.utils import recompute_attribute
 
 
 class TestEdgeRAMComponent(TestCase):
@@ -24,10 +25,10 @@ class TestEdgeRAMComponent(TestCase):
             base_ram_consumption=SourceValue(2 * u.GB_ram)
         )
         self.ram_component.trigger_modeling_updates = False
-        self.ram_component.update_carbon_footprint_fabrication()
-        self.ram_component.update_power()
-        self.ram_component.update_idle_power()
-        self.ram_component.update_ram()
+        recompute_attribute(self.ram_component, "carbon_footprint_fabrication")
+        recompute_attribute(self.ram_component, "power")
+        recompute_attribute(self.ram_component, "idle_power")
+        recompute_attribute(self.ram_component, "ram")
 
     def test_init(self):
         """Test EdgeRAMComponent initialization."""
@@ -44,7 +45,7 @@ class TestEdgeRAMComponent(TestCase):
 
     def test_update_available_ram_per_instance(self):
         """Test update_available_ram_per_instance calculation."""
-        self.ram_component.update_available_ram_per_instance()
+        recompute_attribute(self.ram_component, "available_ram_per_instance")
 
         # available = ram - base_ram_consumption = 16 - 2 = 14 GB
         expected_value = 14
@@ -55,9 +56,9 @@ class TestEdgeRAMComponent(TestCase):
     def test_update_available_ram_per_instance_with_nb_of_units(self):
         """Test update_available_ram_per_instance multiplies RAM by nb_of_units."""
         self.ram_component.nb_of_units = SourceValue(3 * u.dimensionless)
-        self.ram_component.update_ram()
+        recompute_attribute(self.ram_component, "ram")
 
-        self.ram_component.update_available_ram_per_instance()
+        recompute_attribute(self.ram_component, "available_ram_per_instance")
 
         self.assertAlmostEqual(46, self.ram_component.available_ram_per_instance.value.magnitude, places=5)
 
@@ -72,10 +73,10 @@ class TestEdgeRAMComponent(TestCase):
         mock_need.edge_usage_patterns = [mock_pattern]
         set_modeling_obj_containers(self.ram_component, [mock_need])
         self.ram_component.nb_of_units = SourceValue(3 * u.dimensionless)
-        self.ram_component.update_ram()
+        recompute_attribute(self.ram_component, "ram")
 
-        self.ram_component.update_available_ram_per_instance()
-        self.ram_component.update_dict_element_in_unitary_hourly_ram_need_per_usage_pattern(mock_pattern)
+        recompute_attribute(self.ram_component, "available_ram_per_instance")
+        recompute_attribute(self.ram_component, "unitary_hourly_ram_need_per_usage_pattern", mock_pattern)
 
         result = self.ram_component.unitary_hourly_ram_need_per_usage_pattern[mock_pattern]
         self.assertEqual([3, 6, 12], result.value_as_float_list)
@@ -85,7 +86,7 @@ class TestEdgeRAMComponent(TestCase):
         self.ram_component.base_ram_consumption = SourceValue(20 * u.GB_ram)
 
         with self.assertRaises(InsufficientCapacityError) as context:
-            self.ram_component.update_available_ram_per_instance()
+            recompute_attribute(self.ram_component, "available_ram_per_instance")
 
         self.assertEqual("RAM", context.exception.capacity_type)
         self.assertEqual(self.ram_component, context.exception.overloaded_object)
@@ -107,8 +108,8 @@ class TestEdgeRAMComponent(TestCase):
 
         set_modeling_obj_containers(self.ram_component, [mock_need_1, mock_need_2])
 
-        self.ram_component.update_available_ram_per_instance()
-        self.ram_component.update_dict_element_in_unitary_hourly_ram_need_per_usage_pattern(mock_pattern)
+        recompute_attribute(self.ram_component, "available_ram_per_instance")
+        recompute_attribute(self.ram_component, "unitary_hourly_ram_need_per_usage_pattern", mock_pattern)
 
         expected_values = [3, 3, 7]  # Sum of both needs
         result = self.ram_component.unitary_hourly_ram_need_per_usage_pattern[mock_pattern]
@@ -127,10 +128,10 @@ class TestEdgeRAMComponent(TestCase):
 
         set_modeling_obj_containers(self.ram_component, [mock_need])
 
-        self.ram_component.update_available_ram_per_instance()
+        recompute_attribute(self.ram_component, "available_ram_per_instance")
 
         with self.assertRaises(InsufficientCapacityError) as context:
-            self.ram_component.update_dict_element_in_unitary_hourly_ram_need_per_usage_pattern(mock_pattern)
+            recompute_attribute(self.ram_component, "unitary_hourly_ram_need_per_usage_pattern", mock_pattern)
 
         self.assertEqual("RAM", context.exception.capacity_type)
         self.assertEqual(self.ram_component, context.exception.overloaded_object)

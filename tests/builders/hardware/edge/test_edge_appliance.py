@@ -62,9 +62,9 @@ class TestEdgeAppliance(TestCase):
         edge_appliance = EdgeAppliance.from_defaults("temporary edge appliance for deletion test")
 
         for component in edge_appliance.components:
-            component.compute_calculated_attributes()
+            component.pull_computed_attributes()
 
-        edge_appliance.compute_calculated_attributes()
+        edge_appliance.pull_computed_attributes()
 
         edge_appliance.self_delete()
 

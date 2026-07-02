@@ -263,6 +263,20 @@ chain optimizer, dies here): per plan §7, `CANONICAL_CLASSES` is derived from
 
 **Depends on:** Tasks 4 and 5.
 
+**Status:** Done. Notes: flush helpers (`flush_cached_properties_system_wide`, `render_cache`) survive
+until Task 7 retires the attribution wipe — deleting them here would have left attribution memos stale.
+Getters returning another attribute's value object directly (an aliasing pattern the eager engine
+re-addressed silently) now raise at attach time; the three edge-component sites derive with `.copy()`.
+Loads of calc-attr files rebuild calculus edges from serialized ancestry and defer structural edges to
+a one-shot full recompute on the first relationship change. The parity harness needed two hardenings:
+a quantization-aware fallback tolerance (live vs JSON-rebuilt systems legitimately iterate collections
+in different orders, and float32 reduction noise through `ceil` flips instance counts by one quantum)
+and a strict end-of-sequence staleness gate (full in-memory recompute must reproduce the incremental
+values — verified bitwise-identical during debugging). Recompute-counter numbers on 3 representative
+edits: 103 slot recomputations, 64 (62%) equal-value — input for the stage-4 early-cutoff decision.
+Unit tests migrated from `update_*` calls to reads plus `recompute_attribute`/`patch_attribute` helpers
+in `tests/utils.py`.
+
 ---
 
 ## Task 7 — Impact-repartition matrix slot and attribution rework (stage 4, part 1)

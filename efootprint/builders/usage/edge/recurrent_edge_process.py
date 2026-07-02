@@ -28,7 +28,6 @@ class RecurrentEdgeProcessNeed(RecurrentEdgeComponentNeed):
             recurrent_need=EmptyExplainableObject()
         )
 
-    calculated_attributes = ["recurrent_need"] + RecurrentEdgeComponentNeed.calculated_attributes
 
     @computed_attribute
     @abstractmethod
@@ -82,7 +81,6 @@ class RecurrentEdgeProcessStorageNeed(RecurrentEdgeProcessNeed, RecurrentEdgeSto
 
     # Diamond inheritance: spelt out so the storage-specific "cumulative_unitary_storage_need_per_usage_pattern"
     # entry is preserved alongside the "recurrent_need" prepended by RecurrentEdgeProcessNeed.
-    calculated_attributes = ["recurrent_need"] + RecurrentEdgeStorageNeed.calculated_attributes
 
     @computed_attribute
     def recurrent_need(self):

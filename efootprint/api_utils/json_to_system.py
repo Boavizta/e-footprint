@@ -139,6 +139,25 @@ def upgrade_system_dict_to_current_version(system_dict, efootprint_classes_dict=
     return system_dict
 
 
+def detect_system_saved_with_calculated_attributes(
+        system_dict, classes_generation_order, efootprint_classes_dict) -> bool:
+    """True when the file stores computed values (an object serializes every one of its computed
+    attributes). Detected up front so loading can attach stored computed values as caches — or skip
+    the stray now-computed attributes older inputs-only files stored back when they were inputs."""
+    from efootprint.abstract_modeling_classes.reactive_core import computed_slots
+
+    for class_key in classes_generation_order:
+        if class_key not in system_dict:
+            continue
+        computed_names = list(computed_slots(efootprint_classes_dict[class_key]))
+        if not computed_names:
+            continue
+        for object_json_dict in system_dict[class_key].values():
+            if all(computed_name in object_json_dict for computed_name in computed_names):
+                return True
+    return False
+
+
 def build_sources_dict_from_system_dict(system_dict):
     raw_sources = system_dict.get("Sources", {}) or {}
     sources_dict = {}
@@ -168,7 +187,8 @@ def json_to_system(
     class_obj_dict = {}
     flat_obj_dict = {}
     explainable_object_dicts_to_create_after_objects_creation = {}
-    is_loaded_from_system_with_calculated_attributes = False
+    is_loaded_from_system_with_calculated_attributes = detect_system_saved_with_calculated_attributes(
+        system_dict, classes_generation_order, efootprint_classes_dict)
 
     for class_key in classes_generation_order:
         if class_key not in system_dict:
@@ -186,11 +206,6 @@ def json_to_system(
             explainable_object_dicts_to_create_after_objects_creation.update(
                 new_obj_expl_obj_dicts_to_create_after_objects_creation)
 
-            if not is_loaded_from_system_with_calculated_attributes and len(new_obj.calculated_attributes) > 0:
-                if all([calc_attr in system_dict[class_key][class_instance_key]
-                        for calc_attr in new_obj.calculated_attributes]):
-                    is_loaded_from_system_with_calculated_attributes = True
-
             if class_key != "System":
                 if is_loaded_from_system_with_calculated_attributes:
                     new_obj.trigger_modeling_updates = True
@@ -206,28 +221,67 @@ def json_to_system(
         new_dict_items = {}
         for key, value in attr_value.items():
             new_dict_items[flat_obj_dict[key]] = explainable_object_from_json(value, sources_dict)
-        explainable_object_dict = explainable_object_dict_class_from_init_annotation(
-            type(modeling_obj), attr_key)(new_dict_items)
 
-        current_dict = getattr(modeling_obj, attr_key, None)
-        if current_dict is not None and isinstance(current_dict, ExplainableObjectDict):
-            current_dict.replace_in_mod_obj_container_without_recomputation(explainable_object_dict)
+        if attr_key in modeling_obj.calculated_attributes:
+            if not is_loaded_from_system_with_calculated_attributes:
+                continue
+            # Stored computed dict: attach as cached sub-slot values, never read the attribute first
+            # (reading a void computed dict would compute it).
+            from efootprint.abstract_modeling_classes.reactive_core import computed_slots
+            explainable_object_dict = ExplainableObjectDict(new_dict_items)
+            computed_slots(type(modeling_obj))[attr_key].attach_cached_value(
+                modeling_obj, explainable_object_dict)
         else:
-            modeling_obj.__setattr__(attr_key, explainable_object_dict, check_input_validity=False)
+            explainable_object_dict = explainable_object_dict_class_from_init_annotation(
+                type(modeling_obj), attr_key)(new_dict_items)
+            current_dict = getattr(modeling_obj, attr_key, None)
+            if current_dict is not None and isinstance(current_dict, ExplainableObjectDict):
+                current_dict.replace_in_mod_obj_container_without_recomputation(explainable_object_dict)
+            else:
+                modeling_obj.__setattr__(attr_key, explainable_object_dict, check_input_validity=False)
+            explainable_object_dict.trigger_modeling_updates = True
 
         for explainable_object_item, explainable_object_json \
-                in zip(explainable_object_dict.values(), attr_value.values()):
+                in zip(new_dict_items.values(), attr_value.values()):
             explainable_object_item.initialize_calculus_graph_data_from_json(
                 explainable_object_json, flat_obj_dict, sources_dict)
 
-        # Enable live updates on input dicts (those not in calculated_attributes)
-        if attr_key not in modeling_obj.calculated_attributes:
-            explainable_object_dict.trigger_modeling_updates = True
+    if is_loaded_from_system_with_calculated_attributes:
+        rebuild_computed_dependency_edges(flat_obj_dict)
 
     for system in class_obj_dict["System"].values():
         if is_loaded_from_system_with_calculated_attributes:
+            # Calculus edges above make input edits invalidate precisely; structural edges only exist
+            # once getters have run, so the first relationship change triggers a full recompute.
+            from efootprint.abstract_modeling_classes.modeling_object import mark_system_edges_incomplete
+            mark_system_edges_incomplete(system)
             system.trigger_modeling_updates = True
         elif launch_system_computations:
             system.after_init()
 
     return class_obj_dict, flat_obj_dict, system_dict
+
+
+def rebuild_computed_dependency_edges(flat_obj_dict):
+    """Rebuild the calculus dependency edges of every stored computed value from its serialized
+    arithmetic ancestry, so input edits on a loaded model invalidate exactly as on a computed one."""
+    from efootprint.abstract_modeling_classes.reactive_core import (
+        _node_slot, instance_slot_registry, slot_of_attached_value)
+
+    for obj in flat_obj_dict.values():
+        for slot in list(instance_slot_registry(obj).values()):
+            if slot.getter is None or not slot.has_cached_value:
+                continue
+            ancestors = getattr(slot._value, "direct_ancestors_with_id", None)
+            if not ancestors:
+                continue
+            dependencies = set()
+            for ancestor in ancestors:
+                is_input_dict_value = ancestor._reactive_slot is None and ancestor.dict_container is not None
+                dependencies.add(slot_of_attached_value(ancestor))
+                if is_input_dict_value:
+                    # An input-dict value: reading it live also couples the reader to the whole-dict
+                    # node (replacing the dict invalidates readers of any of its entries).
+                    dependencies.add(_node_slot(
+                        ancestor.modeling_obj_container, ancestor.attr_name_in_mod_obj_container))
+            slot.replace_dependencies(calculus_dependencies=dependencies)

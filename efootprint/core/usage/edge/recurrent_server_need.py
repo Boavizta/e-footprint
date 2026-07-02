@@ -62,12 +62,7 @@ class RecurrentServerNeed(ModelingObject):
         self.recurrent_volume_per_edge_device = recurrent_volume_per_edge_device
         self.jobs = to_weighted_explainable_object_dict(jobs, weight_label=self.weight_labels["jobs"])
 
-        self.recurrent_need_validation = EmptyExplainableObject()
-        self.unitary_hourly_volume_per_usage_pattern = ExplainableObjectDict()
 
-    @property
-    def modeling_objects_whose_attributes_depend_directly_on_me(self) -> List[JobBase]:
-        return list(self.jobs)
 
     @property
     def edge_functions(self) -> List["EdgeFunction"]:
@@ -81,9 +76,6 @@ class RecurrentServerNeed(ModelingObject):
     def edge_usage_patterns(self) -> List["EdgeUsagePattern"]:
         return list(dict.fromkeys(sum([euj.edge_usage_patterns for euj in self.edge_usage_journeys], start=[])))
 
-    calculated_attributes = (
-        ["recurrent_need_validation", "unitary_hourly_volume_per_usage_pattern"]
-        + ModelingObject.calculated_attributes)
 
     @computed_attribute
     def recurrent_need_validation(self):

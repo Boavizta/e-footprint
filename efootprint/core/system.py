@@ -2,7 +2,8 @@ from datetime import timedelta
 from typing import Dict, List, Optional
 
 from efootprint.abstract_modeling_classes.explainable_object_dict import ExplainableObjectDict
-from efootprint.abstract_modeling_classes.modeling_object import ModelingObject, optimize_mod_objs_computation_chain
+from efootprint.abstract_modeling_classes.modeling_object import (
+    ModelingObject, flush_cached_properties_system_wide, pull_slots_system_wide)
 from efootprint.builders.external_apis.external_api_base_class import ExternalAPI, ExternalAPIServer
 from efootprint.builders.external_apis.external_api_job_base_class import ExternalAPIJob
 from efootprint.builders.services.service_base_class import Service
@@ -47,20 +48,9 @@ class System(ModelingObject):
 
     def __init__(self, name: str, usage_patterns: List[UsagePattern], edge_usage_patterns: List[EdgeUsagePattern],):
         super().__init__(name)
-        self.total_footprint = EmptyExplainableObject()
         self.usage_patterns = usage_patterns
         self.edge_usage_patterns = edge_usage_patterns
         self.check_no_object_to_link_is_already_linked_to_another_system()
-
-    @property
-    def modeling_objects_whose_attributes_depend_directly_on_me(self):
-        return self.countries + self.edge_usage_patterns + self.usage_patterns
-
-    def compute_calculated_attributes(self):
-        self.check_no_object_to_link_is_already_linked_to_another_system()
-        super().compute_calculated_attributes()
-
-    calculated_attributes: List[str] = ["total_footprint"]
 
     def check_no_object_to_link_is_already_linked_to_another_system(self):
         for mod_obj in self.all_linked_objects:
@@ -80,11 +70,8 @@ class System(ModelingObject):
         from time import perf_counter
         start = perf_counter()
         logger.info(f"Starting computing {self.name} modeling")
-        mod_obj_computation_chain_excluding_self = self.mod_objs_computation_chain[1:]
-        optimized_chain = optimize_mod_objs_computation_chain(mod_obj_computation_chain_excluding_self)
-        if len(optimized_chain) == 0 or optimized_chain[-1] != self:
-            optimized_chain.append(self)
-        self.launch_mod_objs_computation_chain(optimized_chain)
+        pull_slots_system_wide([self])
+        flush_cached_properties_system_wide([self])
         all_objects = self.all_linked_objects
         nb_of_calculated_attributes = sum([len(obj.calculated_attributes) for obj in all_objects])
         if nb_of_calculated_attributes > 0:
@@ -302,6 +289,8 @@ class System(ModelingObject):
     @computed_attribute
     def total_footprint(self):
         """Total system carbon footprint as an hourly timeseries, summing fabrication and energy footprints across every category of object (servers, storages, devices, networks, edge components)."""
+        # Re-checked on every recompute, mirroring the former per-update check of the eager engine.
+        self.check_no_object_to_link_is_already_linked_to_another_system()
         # Snapshot the category breakdown once. Without this, `self.fabrication_footprints` and
         # `self.energy_footprints` each rebuild `_objects_by_category()` (which walks `all_linked_objects`
         # and re-derives jobs/servers/etc. from scratch), and the `for key in self.fabrication_footprints`

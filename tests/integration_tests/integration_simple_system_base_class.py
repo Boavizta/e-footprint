@@ -167,7 +167,7 @@ class IntegrationTestSimpleSystemBaseClass(IntegrationTestBaseClass):
 
         with self.cleanup_stack(verify_total_footprint_changed_before_cleanup=True) as cleanup:
             update = ModelingUpdate(changes)
-            cleanup.callback(update.reset_values)
+            cleanup.callback(update.rollback)
             self.assertNotEqual(self.initial_footprint, self.system.total_footprint)
 
     def run_test_make_sure_updating_available_capacity_raises_error_if_necessary(self):

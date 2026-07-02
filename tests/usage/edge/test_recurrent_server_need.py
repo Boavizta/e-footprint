@@ -17,6 +17,7 @@ from efootprint.core.usage.edge.edge_function import EdgeFunction
 from efootprint.core.usage.edge.edge_usage_journey import EdgeUsageJourney
 from efootprint.core.usage.edge.edge_usage_pattern import EdgeUsagePattern
 from tests.utils import create_mod_obj_mock, set_modeling_obj_containers
+from tests.utils import recompute_attribute
 
 
 class TestRecurrentServerNeed(TestCase):
@@ -36,9 +37,6 @@ class TestRecurrentServerNeed(TestCase):
             recurrent_volume_per_edge_device=self.recurrent_volume,
             jobs=[self.mock_job])
 
-    def test_modeling_objects_whose_attributes_depend_directly_on_me(self):
-        """Test that jobs are returned as dependent objects."""
-        self.assertEqual([self.mock_job], self.server_need.modeling_objects_whose_attributes_depend_directly_on_me)
 
     def test_edge_functions_property_no_containers(self):
         """Test edge_functions returns empty list when no containers."""
@@ -95,7 +93,7 @@ class TestRecurrentServerNeed(TestCase):
 
     def test_update_recurrent_need_validation_valid_unit(self):
         """Test update_recurrent_need_validation with valid occurrence unit."""
-        self.server_need.update_recurrent_need_validation()
+        recompute_attribute(self.server_need, "recurrent_need_validation")
 
         self.assertEqual("Validated recurrent need",
                         self.server_need.recurrent_need_validation.label)
@@ -109,7 +107,7 @@ class TestRecurrentServerNeed(TestCase):
             "invalid unit need", self.mock_edge_device, invalid_volume, [self.mock_job])
 
         with self.assertRaises(AssertionError) as context:
-            server_need.update_recurrent_need_validation()
+            recompute_attribute(server_need, "recurrent_need_validation")
 
         self.assertIn("invalid unit", str(context.exception))
         self.assertIn("occurrence", str(context.exception))
@@ -123,7 +121,7 @@ class TestRecurrentServerNeed(TestCase):
             "negative need", self.mock_edge_device, negative_volume, [self.mock_job])
 
         with self.assertRaises(NegativeServerNeedError) as context:
-            server_need.update_recurrent_need_validation()
+            recompute_attribute(server_need, "recurrent_need_validation")
 
         self.assertIn("negative need", str(context.exception))
         self.assertIn("negative values", str(context.exception))
@@ -150,7 +148,7 @@ class TestRecurrentServerNeed(TestCase):
 
         set_modeling_obj_containers(self.server_need, [mock_function])
 
-        self.server_need.update_unitary_hourly_volume_per_usage_pattern()
+        recompute_attribute(self.server_need, "unitary_hourly_volume_per_usage_pattern")
 
         self.assertIn(mock_pattern_1, self.server_need.unitary_hourly_volume_per_usage_pattern)
         result = self.server_need.unitary_hourly_volume_per_usage_pattern[mock_pattern_1]

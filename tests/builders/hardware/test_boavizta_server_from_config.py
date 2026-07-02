@@ -9,6 +9,7 @@ from efootprint.core.hardware.server_base import ServerTypes
 from efootprint.core.hardware.storage import Storage
 
 from efootprint.builders.hardware.boavizta_server_from_config import BoaviztaServerFromConfig
+from tests.utils import recompute_attribute
 
 
 class TestBoaviztaServerFromConfig(unittest.TestCase):
@@ -41,7 +42,7 @@ class TestBoaviztaServerFromConfig(unittest.TestCase):
         to set self.cpu_config properly.
         """
         # The default: nb_of_cpu_units=2, nb_of_cores_per_cpu_unit=4
-        self.test_server.update_cpu_config()
+        recompute_attribute(self.test_server, "cpu_config")
         self.assertIsInstance(self.test_server.cpu_config, ExplainableObject)
         self.assertEqual(
             self.test_server.cpu_config.value,
@@ -54,7 +55,7 @@ class TestBoaviztaServerFromConfig(unittest.TestCase):
         Verify update_ram_config() uses nb_of_ram_units & ram_quantity_per_unit to set self.ram_config.
         """
         # The default: nb_of_ram_units=2, ram_quantity_per_unit=8GB
-        self.test_server.update_ram_config()
+        recompute_attribute(self.test_server, "ram_config")
         self.assertIsInstance(self.test_server.ram_config, ExplainableObject)
         self.assertEqual(
             self.test_server.ram_config.value,
@@ -90,7 +91,7 @@ class TestBoaviztaServerFromConfig(unittest.TestCase):
         }
         mock_call.return_value = mock_response
 
-        self.test_server.update_api_call_response()
+        recompute_attribute(self.test_server, "api_call_response")
 
         # The call to call_boaviztapi should have used POST with certain json data
         expected_api_call_data = {
@@ -136,7 +137,7 @@ class TestBoaviztaServerFromConfig(unittest.TestCase):
             }
         }, label="Mocked response")
 
-        self.test_server.update_carbon_footprint_fabrication()
+        recompute_attribute(self.test_server, "carbon_footprint_fabrication")
 
         # carbon_footprint_fabrication should be total (500) minus storage portion (200) => 300 kg
         self.assertEqual(
@@ -157,7 +158,7 @@ class TestBoaviztaServerFromConfig(unittest.TestCase):
             }
         }, label="Mocked response")
 
-        self.test_server.update_power()
+        recompute_attribute(self.test_server, "power")
         self.assertEqual(self.test_server.power.value, 60.0 * u.W)
         self.assertIn("power", self.test_server.power.label.lower())
 
@@ -174,7 +175,7 @@ class TestBoaviztaServerFromConfig(unittest.TestCase):
             }
         }, label="Mocked response")
 
-        self.test_server.update_ram()
+        recompute_attribute(self.test_server, "ram")
         self.assertEqual(self.test_server.ram.value, 32 * u.GB_ram)
         self.assertIn("ram", self.test_server.ram.label.lower())
 
@@ -191,7 +192,7 @@ class TestBoaviztaServerFromConfig(unittest.TestCase):
             }
         }, label="Mocked response")
 
-        self.test_server.update_compute()
+        recompute_attribute(self.test_server, "compute")
         self.assertEqual(self.test_server.compute.value, 8 * u.cpu_core)
         self.assertIn("compute", self.test_server.compute.label.lower())
 

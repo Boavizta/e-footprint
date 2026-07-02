@@ -69,19 +69,6 @@ ALL_EFOOTPRINT_CLASSES = (
         + RECURRENT_EDGE_DEVICE_NEED_BUILDER_CLASSES + SERVICE_JOB_CLASSES + EXTERNAL_API_JOB_CLASSES
         + [Network] + SERVER_CLASSES + EXTERNAL_API_SERVER_CLASSES + [Storage, System])
 
-CANONICAL_COMPUTATION_ORDER = [
-    Country,
-    UsagePattern, UsageJourney, UsageJourneyStep, Device,
-    EdgeUsagePattern, EdgeUsageJourney, EdgeFunction,
-    RecurrentEdgeDeviceNeed, RecurrentServerNeed,
-    RecurrentEdgeComponentNeed, EdgeComponent,
-    EdgeDeviceGroup, EdgeDevice, Service, JobBase, Network, ExternalAPI, ServerBase, ExternalAPIServer, Storage, System]
-
-ALL_CANONICAL_CLASSES_DICT = {cls.__name__: cls for cls in CANONICAL_COMPUTATION_ORDER}
-ALL_CONCRETE_EFOOTPRINT_CLASSES_DICT = {cls.__name__: cls for cls in ALL_EFOOTPRINT_CLASSES}
-ALL_EFOOTPRINT_CLASSES_DICT = copy(ALL_CONCRETE_EFOOTPRINT_CLASSES_DICT)
-ALL_EFOOTPRINT_CLASSES_DICT.update(ALL_CANONICAL_CLASSES_DICT)
-
 SANKEY_COLUMNS = [
     [System],
     [Country],
@@ -95,6 +82,21 @@ SANKEY_COLUMNS = [
 
 # Classes that appear only as breakdown children (via footprint_breakdown_by_source), not as intermediate traversal nodes
 SANKEY_BREAKDOWN_ONLY_CLASSES = [EdgeComponent]
+
+# Canonical classes that never appear in the Sankey (neither as a column nor as a breakdown child)
+NON_SANKEY_CANONICAL_CLASSES = [Service, EdgeDeviceGroup]
+
+# Canonical-class registry: the top-level core families every object maps to (canonical_class), derived
+# from the Sankey structure since it enumerates the same families. No canonical class subclasses another,
+# so membership needs no ordering.
+CANONICAL_CLASSES = (
+    [canonical_class for column in SANKEY_COLUMNS for canonical_class in column]
+    + SANKEY_BREAKDOWN_ONLY_CLASSES + NON_SANKEY_CANONICAL_CLASSES)
+
+ALL_CANONICAL_CLASSES_DICT = {cls.__name__: cls for cls in CANONICAL_CLASSES}
+ALL_CONCRETE_EFOOTPRINT_CLASSES_DICT = {cls.__name__: cls for cls in ALL_EFOOTPRINT_CLASSES}
+ALL_EFOOTPRINT_CLASSES_DICT = copy(ALL_CONCRETE_EFOOTPRINT_CLASSES_DICT)
+ALL_EFOOTPRINT_CLASSES_DICT.update(ALL_CANONICAL_CLASSES_DICT)
 
 OBJECT_CATEGORIES = {
     "Servers": [ServerBase],

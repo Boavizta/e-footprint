@@ -19,6 +19,7 @@ from efootprint.core.usage.edge.edge_usage_pattern import EdgeUsagePattern
 from efootprint.core.usage.edge.recurrent_edge_device_need import RecurrentEdgeDeviceNeed
 from efootprint.core.hardware.edge.edge_device import EdgeDevice
 from tests.utils import create_mod_obj_mock, set_modeling_obj_containers
+from tests.utils import recompute_attribute
 
 
 class TestRecurrentEdgeComponentNeed(TestCase):
@@ -41,10 +42,6 @@ class TestRecurrentEdgeComponentNeed(TestCase):
         self.assertEqual(self.mock_edge_component, self.component_need.edge_component)
         self.assertEqual("Recurrent need", self.component_need.recurrent_need.label)
 
-    def test_modeling_objects_whose_attributes_depend_directly_on_me(self):
-        """Test that edge_component is returned as dependent object."""
-        dependent_objects = self.component_need.modeling_objects_whose_attributes_depend_directly_on_me
-        self.assertEqual([self.mock_edge_component], dependent_objects)
 
     def test_recurrent_edge_device_needs_property(self):
         """Test recurrent_edge_device_needs property returns containers."""
@@ -191,7 +188,7 @@ class TestRecurrentEdgeComponentNeed(TestCase):
         """Test update_recurrent_need_validation with valid unit."""
         self.mock_edge_component.compatible_root_units = [u.cpu_core]
 
-        self.component_need.update_recurrent_need_validation()
+        recompute_attribute(self.component_need, "recurrent_need_validation")
 
         self.assertEqual("Validated recurrent need",
                         self.component_need.recurrent_need_validation.label)
@@ -210,7 +207,7 @@ class TestRecurrentEdgeComponentNeed(TestCase):
             recurrent_need=self.recurrent_need
         )
 
-        self.component_need.update_recurrent_need_validation()
+        recompute_attribute(self.component_need, "recurrent_need_validation")
 
     def test_unit_validation_raises_error_if_different_semantics_but_same_dimension(self):
         self.mock_edge_component = MagicMock(spec=EdgeComponent)
@@ -227,14 +224,14 @@ class TestRecurrentEdgeComponentNeed(TestCase):
         )
 
         with self.assertRaises(InvalidComponentNeedUnitError) as context:
-            self.component_need.update_recurrent_need_validation()
+            recompute_attribute(self.component_need, "recurrent_need_validation")
 
     def test_update_recurrent_need_validation_invalid_unit(self):
         """Test update_recurrent_need_validation raises error for invalid unit."""
         self.mock_edge_component.compatible_root_units = [u.GB]
 
         with self.assertRaises(InvalidComponentNeedUnitError) as context:
-            self.component_need.update_recurrent_need_validation()
+            recompute_attribute(self.component_need, "recurrent_need_validation")
 
         self.assertIn("Mock Component", str(context.exception))
         self.assertIn("incompatible unit", str(context.exception))
@@ -249,7 +246,7 @@ class TestRecurrentEdgeComponentNeed(TestCase):
         workload_component_need = RecurrentEdgeComponentNeed(
             "workload need", self.mock_edge_component, valid_workload)
 
-        workload_component_need.update_recurrent_need_validation()
+        recompute_attribute(workload_component_need, "recurrent_need_validation")
 
         self.assertEqual("Validated recurrent need",
                         workload_component_need.recurrent_need_validation.label)
@@ -265,7 +262,7 @@ class TestRecurrentEdgeComponentNeed(TestCase):
             "workload need", self.mock_edge_component, invalid_workload)
 
         with self.assertRaises(WorkloadOutOfBoundsError):
-            workload_component_need.update_recurrent_need_validation()
+            recompute_attribute(workload_component_need, "recurrent_need_validation")
 
     def test_update_unitary_hourly_need_per_usage_pattern(self):
         """Test updating unitary hourly need for all usage patterns."""
@@ -309,7 +306,7 @@ class TestRecurrentEdgeComponentNeed(TestCase):
 
         set_modeling_obj_containers(self.component_need, [mock_device_need])
 
-        self.component_need.update_unitary_hourly_need_per_usage_pattern()
+        recompute_attribute(self.component_need, "unitary_hourly_need_per_usage_pattern")
 
         self.assertIn(mock_pattern_1, self.component_need.unitary_hourly_need_per_usage_pattern)
         self.assertIn(mock_pattern_2, self.component_need.unitary_hourly_need_per_usage_pattern)
@@ -340,7 +337,7 @@ class TestRecurrentEdgeComponentNeed(TestCase):
         mock_function.recurrent_edge_device_needs = [mock_device_need, mock_device_need]
         set_modeling_obj_containers(self.component_need, [mock_device_need])
 
-        self.component_need.update_unitary_hourly_need_per_usage_pattern()
+        recompute_attribute(self.component_need, "unitary_hourly_need_per_usage_pattern")
 
         self.assertTrue(np.allclose(
             [4.0, 4.0], self.component_need.unitary_hourly_need_per_usage_pattern[mock_pattern].magnitude))
@@ -371,7 +368,7 @@ class TestRecurrentEdgeComponentNeed(TestCase):
         mock_device_need.edge_functions = [mock_function]
         set_modeling_obj_containers(self.component_need, [mock_device_need])
 
-        self.component_need.update_total_hourly_need_across_usage_patterns()
+        recompute_attribute(self.component_need, "total_hourly_need_across_usage_patterns")
 
         self.assertTrue(np.allclose([10.0, 10.0], self.component_need.total_hourly_need_across_usage_patterns.magnitude))
         self.assertEqual(u.cpu_core * u.concurrent, self.component_need.total_hourly_need_across_usage_patterns.unit)

@@ -23,6 +23,7 @@ from efootprint.core.usage.usage_pattern import UsagePattern
 from tests.core.attribution.conservation import (
     assert_hourly_quantities_equal, assert_source_atoms_conserve, sum_atom_values)
 from tests.utils import create_mod_obj_mock, set_modeling_obj_containers
+from tests.utils import recompute_attribute
 
 
 class TestDevice(TestCase):
@@ -52,8 +53,8 @@ class TestDevice(TestCase):
 
         set_modeling_obj_containers(device, [usage_pattern_1, usage_pattern_2])
 
-        device.update_energy_footprint_per_usage_pattern()
-        device.update_energy_footprint()
+        recompute_attribute(device, "energy_footprint_per_usage_pattern")
+        recompute_attribute(device, "energy_footprint")
 
         self.assertEqual(u.kg, device.energy_footprint.unit)
         self.assertTrue(np.allclose([0.1, 0.4, 0.3], device.energy_footprint.magnitude))
@@ -82,8 +83,8 @@ class TestDevice(TestCase):
 
         set_modeling_obj_containers(device, [usage_pattern_1, usage_pattern_2])
 
-        device.update_instances_fabrication_footprint_per_usage_pattern()
-        device.update_instances_fabrication_footprint()
+        recompute_attribute(device, "instances_fabrication_footprint_per_usage_pattern")
+        recompute_attribute(device, "instances_fabrication_footprint")
 
         self.assertEqual(u.kg, device.instances_fabrication_footprint_per_usage_pattern[usage_pattern_1].unit)
         self.assertTrue(np.allclose(

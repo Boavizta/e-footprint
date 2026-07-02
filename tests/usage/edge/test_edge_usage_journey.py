@@ -18,6 +18,7 @@ from efootprint.core.usage.edge.recurrent_edge_device_need import RecurrentEdgeD
 from efootprint.core.hardware.edge.edge_device import EdgeDevice
 from efootprint.constants.units import u
 from tests.utils import create_mod_obj_mock, set_modeling_obj_containers
+from tests.utils import recompute_attribute
 
 
 class TestEdgeUsageJourney(TestCase):
@@ -119,24 +120,7 @@ class TestEdgeUsageJourney(TestCase):
         self.assertIn(mock_system_2, systems)
         self.assertIn(mock_system_3, systems)
 
-    def test_modeling_objects_whose_attributes_depend_directly_on_me_no_edge_usage_pattern(self):
-        """Test that edge_functions returned as dependent objects."""
-        self.assertEqual(len(self.edge_usage_journey.edge_usage_patterns), 0)
-        dependent_objects = self.edge_usage_journey.modeling_objects_whose_attributes_depend_directly_on_me
-        expected_objects = [self.mock_edge_function_1, self.mock_edge_function_2]
-        self.assertEqual(expected_objects, dependent_objects)
 
-    def test_modeling_objects_whose_attributes_depend_directly_on_me_with_edge_usage_patterns(self):
-        """Test that edge_functions stay as direct dependents even when patterns are linked."""
-        mock_pattern_1 = create_mod_obj_mock(EdgeUsageJourney, name="Mock Pattern 1")
-        mock_pattern_2 = create_mod_obj_mock(EdgeUsageJourney, name="Mock Pattern 2")
-
-        set_modeling_obj_containers(self.edge_usage_journey, [mock_pattern_1, mock_pattern_2])
-
-        dependent_objects = self.edge_usage_journey.modeling_objects_whose_attributes_depend_directly_on_me
-        expected_objects = [self.mock_edge_function_1, self.mock_edge_function_2]
-        self.assertEqual(expected_objects, dependent_objects)
-        self.assertEqual(len(expected_objects), len(dependent_objects))
 
     @patch('efootprint.core.usage.edge.edge_usage_journey.compute_nb_avg_hourly_occurrences')
     def test_update_nb_edge_usage_journeys_in_parallel_per_edge_usage_pattern(self, mock_compute_nb_avg):
@@ -157,7 +141,7 @@ class TestEdgeUsageJourney(TestCase):
         edge_usage_pattern.utc_hourly_edge_usage_journey_starts = utc_starts
         set_modeling_obj_containers(self.edge_usage_journey, [edge_usage_pattern])
 
-        self.edge_usage_journey.update_nb_edge_usage_journeys_in_parallel_per_edge_usage_pattern()
+        recompute_attribute(self.edge_usage_journey, "nb_edge_usage_journeys_in_parallel_per_edge_usage_pattern")
 
         mock_compute_nb_avg.assert_called_once_with(utc_starts, self.usage_span)
         self.assertEqual(

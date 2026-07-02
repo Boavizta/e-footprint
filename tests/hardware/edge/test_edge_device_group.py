@@ -9,6 +9,7 @@ from efootprint.constants.units import u
 from efootprint.core.hardware.edge.edge_device import EdgeDevice
 from efootprint.core.hardware.edge.edge_device_group import EdgeDeviceGroup
 from tests.utils import create_mod_obj_mock
+from tests.utils import recompute_attribute
 
 
 def make_group(name):
@@ -27,7 +28,8 @@ class TestEdgeDeviceGroupInit(TestCase):
         self.assertEqual("My Group", group.name)
         self.assertIsInstance(group.sub_group_counts, ExplainableObjectDict)
         self.assertIsInstance(group.edge_device_counts, ExplainableObjectDict)
-        self.assertIsInstance(group.effective_nb_of_units_within_root, EmptyExplainableObject)
+        # A group with no parents is a root group: reading computes an effective count of 1.
+        self.assertEqual(1, group.effective_nb_of_units_within_root.magnitude)
 
     def test_init_with_provided_empty_dicts(self):
         sub_groups = ExplainableObjectDict()
@@ -39,19 +41,7 @@ class TestEdgeDeviceGroupInit(TestCase):
         self.assertEqual({}, group.sub_group_counts)
         self.assertEqual({}, group.edge_device_counts)
 
-    def test_modeling_objects_whose_attributes_depend_on_me_empty(self):
-        group = make_group("G")
-        self.assertEqual([], group.modeling_objects_whose_attributes_depend_directly_on_me)
 
-    def test_modeling_objects_whose_attributes_depend_on_me_combines_sub_groups_and_devices(self):
-        group = make_group("Group")
-        child_group = make_group("Child")
-        mock_device = create_mod_obj_mock(EdgeDevice, "Device")
-        group.sub_group_counts[child_group] = SourceValue(2 * u.dimensionless)
-        group.edge_device_counts[mock_device] = SourceValue(3 * u.dimensionless)
-        result = group.modeling_objects_whose_attributes_depend_directly_on_me
-        self.assertIn(child_group, result)
-        self.assertIn(mock_device, result)
 
 
 class TestEdgeDeviceGroupFindParentGroups(TestCase):
@@ -168,14 +158,14 @@ class TestEdgeDeviceGroupNoCycleValidation(TestCase):
         root = make_group("Root")
         child = make_group("Child")
         root.sub_group_counts[child] = SourceValue(1 * u.dimensionless)
-        root.update_no_cycle_validation()
-        child.update_no_cycle_validation()
+        recompute_attribute(root, "no_cycle_validation")
+        recompute_attribute(child, "no_cycle_validation")
 
     def test_direct_self_reference_raises(self):
         group = make_group("Group")
         group.sub_group_counts[group] = SourceValue(1 * u.dimensionless)
         with self.assertRaises(ValueError) as ctx:
-            group.update_no_cycle_validation()
+            recompute_attribute(group, "no_cycle_validation")
         self.assertIn("Cycle detected", str(ctx.exception))
 
     def test_two_node_cycle_raises(self):
@@ -184,7 +174,7 @@ class TestEdgeDeviceGroupNoCycleValidation(TestCase):
         a.sub_group_counts[b] = SourceValue(1 * u.dimensionless)
         b.sub_group_counts[a] = SourceValue(1 * u.dimensionless)
         with self.assertRaises(ValueError):
-            a.update_no_cycle_validation()
+            recompute_attribute(a, "no_cycle_validation")
 
     def test_three_node_cycle_raises(self):
         a = make_group("A")
@@ -194,7 +184,7 @@ class TestEdgeDeviceGroupNoCycleValidation(TestCase):
         b.sub_group_counts[c] = SourceValue(1 * u.dimensionless)
         c.sub_group_counts[a] = SourceValue(1 * u.dimensionless)
         with self.assertRaises(ValueError):
-            a.update_no_cycle_validation()
+            recompute_attribute(a, "no_cycle_validation")
 
     def test_diamond_without_cycle_passes(self):
         root = make_group("Root")
@@ -206,27 +196,27 @@ class TestEdgeDeviceGroupNoCycleValidation(TestCase):
         left.sub_group_counts[shared] = SourceValue(1 * u.dimensionless)
         right.sub_group_counts[shared] = SourceValue(1 * u.dimensionless)
         for g in [root, left, right, shared]:
-            g.update_no_cycle_validation()
+            recompute_attribute(g, "no_cycle_validation")
 
 
 class TestEdgeDeviceGroupUpdateEffectiveNbOfUnits(TestCase):
 
     def test_root_group_effective_nb_is_one(self):
         root = make_group("Root")
-        root.update_effective_nb_of_units_within_root()
+        recompute_attribute(root, "effective_nb_of_units_within_root")
         self.assertAlmostEqual(1.0, root.effective_nb_of_units_within_root.value.magnitude)
 
     def test_root_label_mentions_root(self):
         root = make_group("Root")
-        root.update_effective_nb_of_units_within_root()
+        recompute_attribute(root, "effective_nb_of_units_within_root")
         self.assertIn("root", root.effective_nb_of_units_within_root.label.lower())
 
     def test_child_with_single_parent_count_3(self):
         parent = make_group("Parent")
         child = make_group("Child")
         parent.sub_group_counts[child] = SourceValue(3 * u.dimensionless)
-        parent.update_effective_nb_of_units_within_root()
-        child.update_effective_nb_of_units_within_root()
+        recompute_attribute(parent, "effective_nb_of_units_within_root")
+        recompute_attribute(child, "effective_nb_of_units_within_root")
         self.assertAlmostEqual(3.0, child.effective_nb_of_units_within_root.value.magnitude)
 
     def test_grandchild_effective_nb_is_product(self):
@@ -235,9 +225,9 @@ class TestEdgeDeviceGroupUpdateEffectiveNbOfUnits(TestCase):
         grandchild = make_group("Grandchild")
         root.sub_group_counts[middle] = SourceValue(2 * u.dimensionless)
         middle.sub_group_counts[grandchild] = SourceValue(5 * u.dimensionless)
-        root.update_effective_nb_of_units_within_root()
-        middle.update_effective_nb_of_units_within_root()
-        grandchild.update_effective_nb_of_units_within_root()
+        recompute_attribute(root, "effective_nb_of_units_within_root")
+        recompute_attribute(middle, "effective_nb_of_units_within_root")
+        recompute_attribute(grandchild, "effective_nb_of_units_within_root")
         self.assertAlmostEqual(10.0, grandchild.effective_nb_of_units_within_root.value.magnitude)
 
     def test_child_with_two_parents_sums_contributions(self):
@@ -247,15 +237,15 @@ class TestEdgeDeviceGroupUpdateEffectiveNbOfUnits(TestCase):
         child = make_group("Child")
         root_a.sub_group_counts[child] = SourceValue(2 * u.dimensionless)
         root_b.sub_group_counts[child] = SourceValue(3 * u.dimensionless)
-        root_a.update_effective_nb_of_units_within_root()
-        root_b.update_effective_nb_of_units_within_root()
-        child.update_effective_nb_of_units_within_root()
+        recompute_attribute(root_a, "effective_nb_of_units_within_root")
+        recompute_attribute(root_b, "effective_nb_of_units_within_root")
+        recompute_attribute(child, "effective_nb_of_units_within_root")
         # 2 * 1 + 3 * 1 = 5
         self.assertAlmostEqual(5.0, child.effective_nb_of_units_within_root.value.magnitude)
 
     def test_effective_nb_is_dimensionless(self):
         root = make_group("Root")
-        root.update_effective_nb_of_units_within_root()
+        recompute_attribute(root, "effective_nb_of_units_within_root")
         self.assertTrue(root.effective_nb_of_units_within_root.value.check("[]"))
 
 

@@ -15,21 +15,12 @@ class ExternalAPIServer(ModelingObject):
 
     def __init__(self, name: str):
         super().__init__(name=name)
-        self.instances_fabrication_footprint = EmptyExplainableObject()
-        self.instances_energy = EmptyExplainableObject()
-        self.energy_footprint = EmptyExplainableObject()
 
-    @property
-    def modeling_objects_whose_attributes_depend_directly_on_me(self) -> List[ModelingObject]:
-        return []
 
     @property
     def external_api(self) -> "ExternalAPI":
         return self.modeling_obj_containers[0]
 
-    calculated_attributes: List[str] = (
-        ["instances_fabrication_footprint", "instances_energy", "energy_footprint"]
-        + ModelingObject.calculated_attributes)
 
     @computed_attribute
     @abstractmethod
@@ -84,15 +75,12 @@ class ExternalAPI(ModelingObject):
         super().__init__(name=name)
         self.server = None
 
-    @property
-    def modeling_objects_whose_attributes_depend_directly_on_me(self) -> List[ExternalAPIServer]:
-        return [self.server] + self.jobs
 
     def after_init(self):
         if not hasattr(self, "server") or self.server is None:
             self.server = self.server_class(name=f"{self.name} server")
         super().after_init()
-        self.compute_calculated_attributes()
+        self.pull_computed_attributes()
 
     @classmethod
     def compatible_jobs(cls) -> List:
@@ -124,4 +112,3 @@ class ExternalAPI(ModelingObject):
         super().self_delete()
         self.server.self_delete()
 
-    calculated_attributes: List[str] = []

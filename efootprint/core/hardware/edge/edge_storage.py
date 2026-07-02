@@ -10,7 +10,8 @@ from efootprint.abstract_modeling_classes.explainable_object_dict import Explain
 from efootprint.abstract_modeling_classes.empty_explainable_object import EmptyExplainableObject
 from efootprint.abstract_modeling_classes.source_objects import SourceValue
 from efootprint.constants.units import u
-from efootprint.abstract_modeling_classes.reactive_core import computed_attribute, computed_dict
+from efootprint.abstract_modeling_classes.reactive_core import (
+    computed_attribute, computed_dict, removed_computed_attribute)
 
 if TYPE_CHECKING:
     from efootprint.core.usage.edge.recurrent_edge_storage_need import RecurrentEdgeStorageNeed
@@ -93,16 +94,12 @@ class EdgeStorage(EdgeComponent):
         super().__init__(
             name, carbon_footprint_fabrication_per_unit=SourceValue(0 * u.kg), power_per_unit=SourceValue(0 * u.W),
             lifespan=lifespan, idle_power_per_unit=SourceValue(0 * u.W), nb_of_units=nb_of_units)
-        del self.power
-        del self.idle_power
         self.carbon_footprint_fabrication_per_storage_capacity = (
             carbon_footprint_fabrication_per_storage_capacity.set_label(
                 f"Fabrication carbon footprint per unit per storage capacity"))
         self.storage_capacity_per_unit = storage_capacity_per_unit.set_label(
             f"Storage capacity per unit")
-        self.storage_capacity = EmptyExplainableObject()
         self.base_storage_need = base_storage_need.set_label("Initial storage need")
-        self.cumulative_unitary_storage_need_per_usage_pattern = ExplainableObjectDict()
 
     @property
     def recurrent_edge_storage_needs(self) -> List["RecurrentEdgeStorageNeed"]:
@@ -121,10 +118,10 @@ class EdgeStorage(EdgeComponent):
                 f"Please check your model structure.")
         return recurrent_edge_storage_needs
 
-    calculated_attributes = ["storage_capacity", "cumulative_unitary_storage_need_per_usage_pattern"] + [
-        attr for attr in EdgeComponent.calculated_attributes
-        if attr not in ["power", "idle_power"]
-    ]
+
+    # Storage operating power is considered neglectable: the inherited power attributes don't apply.
+    power = removed_computed_attribute()
+    idle_power = removed_computed_attribute()
 
     @computed_attribute
     def storage_capacity(self):

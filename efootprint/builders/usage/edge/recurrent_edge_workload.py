@@ -28,7 +28,6 @@ class RecurrentEdgeWorkloadNeed(RecurrentEdgeComponentNeed):
             edge_component=edge_component,
             recurrent_need=SourceRecurrentValues(Quantity(np.array([0] * 168, dtype=np.float32), u.concurrent)))
 
-    calculated_attributes = ["recurrent_need"] + RecurrentEdgeComponentNeed.calculated_attributes
 
     @computed_attribute
     def recurrent_need(self):

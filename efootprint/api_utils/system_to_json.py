@@ -28,7 +28,14 @@ def recursively_write_json_dict(
                 deferred_linked_objects.append(candidate)
                 deferred_linked_object_ids.add(candidate.id)
 
-        for key, value in mod_obj.__dict__.items():
+        # Computed values live in the reactive slots, not the instance dict: scan them too so their
+        # sources and dict keys are discovered (sources are collected for inputs-only files as well,
+        # matching the historical Sources block content).
+        attributes_to_scan = list(mod_obj.__dict__.items()) + [
+            (attr_name, getattr(mod_obj, attr_name)) for attr_name in mod_obj.calculated_attributes]
+        for key, value in attributes_to_scan:
+            if key.startswith("_"):
+                continue
             if sources_by_id is not None:
                 if isinstance(value, ExplainableObject) and value.source is not None:
                     sources_by_id.setdefault(value.source.id, value.source)

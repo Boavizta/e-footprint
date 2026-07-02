@@ -85,17 +85,7 @@ class EcoLogitsGenAIExternalAPI(ExternalAPI):
         super().__init__(name=name)
         self.provider = provider.set_label("Provider")
         self.model_name = model_name.set_label(f"Model used")
-        self.model_total_params = EmptyExplainableObject()
-        self.model_active_params = EmptyExplainableObject()
-        self.tokens_per_second = EmptyExplainableObject()
-        self.time_to_first_token = EmptyExplainableObject()
-        self.datacenter_location = EmptyExplainableObject()
-        self.data_center_pue = EmptyExplainableObject()
-        self.average_carbon_intensity = EmptyExplainableObject()
 
-    calculated_attributes: List[str] = ExternalAPI.calculated_attributes + [
-        "model_total_params", "model_active_params", "tokens_per_second", "time_to_first_token",
-        "datacenter_location", "data_center_pue", "average_carbon_intensity"]
 
 
     def _get_model_or_raise(self):
@@ -243,16 +233,9 @@ class EcoLogitsGenAIExternalAPIJob(ExternalAPIJob):
                          compute_needed = SourceValue(0 * u.cpu_core), ram_needed = SourceValue(0 * u.GB_ram))
         self.output_token_count = output_token_count.set_label(f"Output token count for {self.external_api.model_name}")
 
-        self.hourly_occurrences_across_usage_patterns = EmptyExplainableObject()
-        self.impacts = EmptyExplainableObject()
         for ecologits_attr in ecologits_calculated_attributes:
             setattr(self, ecologits_attr, EmptyExplainableObject())
 
-    calculated_attributes: List[str] = (
-        ["data_transferred", "impacts"] + ecologits_calculated_attributes
-        + ["request_duration"]
-        + ExternalAPIJob.calculated_attributes
-        + ["hourly_occurrences_across_usage_patterns"])
 
     @computed_attribute
     def data_transferred(self):

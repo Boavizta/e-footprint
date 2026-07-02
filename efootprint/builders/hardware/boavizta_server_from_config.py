@@ -58,13 +58,7 @@ class BoaviztaServerFromConfig(ServerBase):
         self.impact_source = Source(
             name="Boavizta API servers",
             link=f"{self.impact_url}?{'&'.join([key + '=' + str(self.params[key]) for key in self.params])}")
-        self.cpu_config = EmptyExplainableObject()
-        self.ram_config = EmptyExplainableObject()
-        self.api_call_response = EmptyExplainableObject()
         
-    calculated_attributes = (
-        ["cpu_config", "ram_config", "api_call_response", "carbon_footprint_fabrication", "power", "ram",
-         "compute"] + ServerBase.calculated_attributes)
 
     @property
     def attributes_that_shouldnt_trigger_update_logic(self):
@@ -74,8 +68,7 @@ class BoaviztaServerFromConfig(ServerBase):
 
     def after_init(self):
         super().after_init()
-        # TODO: uncomment line after fixing the API call structure
-        # self.compute_calculated_attributes()
+        # TODO: eagerly pull the computed attributes after fixing the API call structure
     
     @computed_attribute
     def cpu_config(self):
@@ -179,12 +172,7 @@ class BoaviztaStorageFromConfig(Storage):
             data_replication_factor=data_replication_factor, data_storage_duration=data_storage_duration, 
             base_storage_need=base_storage_need)
         
-        self.storage_type = EmptyExplainableObject()
 
-    calculated_attributes = (
-        ["storage_type", "storage_capacity", "fixed_nb_of_instances",
-         "carbon_footprint_fabrication_per_storage_capacity",
-         "power_per_storage_capacity", "lifespan"] + Storage.calculated_attributes)
 
     @computed_attribute
     def storage_type(self):

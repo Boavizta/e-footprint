@@ -1,11 +1,10 @@
 import uuid
-from abc import ABCMeta, abstractmethod
+import weakref
+from abc import ABCMeta
 from copy import copy
 from functools import cache, cached_property
 from typing import List, Type, get_origin, get_args, TYPE_CHECKING
 import os
-import time
-from collections import defaultdict
 
 from IPython.display import HTML
 
@@ -13,9 +12,10 @@ from efootprint.abstract_modeling_classes.explainable_quantity import Explainabl
 from efootprint.abstract_modeling_classes.empty_explainable_object import EmptyExplainableObject
 from efootprint.abstract_modeling_classes.utils import css_escape
 from efootprint.logger import logger
-from efootprint.abstract_modeling_classes.explainable_object_base_class import (
-    retrieve_update_function_from_mod_obj_and_attr_name)
 from efootprint.abstract_modeling_classes.object_linked_to_modeling_obj import ObjectLinkedToModelingObjBase
+from efootprint.abstract_modeling_classes.reactive_core import (
+    CONTAINERS_NODE_NAME, collect_invalidated_slots, computed_slots, instance_slot_registry, invalidate,
+    record_read_of_node)
 from efootprint.utils.graph_tools import WIDTH, HEIGHT, add_unique_id_to_mynetwork
 from efootprint.utils.object_relationships_graphs import build_object_relationships_graph, \
     USAGE_PATTERN_VIEW_CLASSES_TO_IGNORE
@@ -25,8 +25,6 @@ from efootprint.constants.units import u
 if TYPE_CHECKING:
     from efootprint.abstract_modeling_classes.contextual_modeling_object_attribute import ContextualModelingObjectAttribute
     from efootprint.abstract_modeling_classes.explainable_object_dict import ExplainableObjectDict
-
-compute_times = defaultdict(float)
 
 
 @cache
@@ -51,6 +49,72 @@ def flush_cached_properties_system_wide(mod_objs: list):
         mod_obj.flush_cached_properties()
 
 
+def pull_slots_system_wide(systems: list):
+    """Pull every computed slot of every object linked to the given systems (plus the systems
+    themselves). This is the transitional eager set: after every update, every slot is cached, keeping
+    serialization and error-surfacing behavior identical to the eager engine's."""
+    objs_to_pull = []
+    for system in dict.fromkeys(systems):
+        objs_to_pull += [system] + system.all_linked_objects
+    for mod_obj in dict.fromkeys(objs_to_pull):
+        mod_obj.pull_computed_attributes()
+
+
+def pull_invalidated_slots(invalidated_slots):
+    """Recompute the slots a write invalidated, key-set nodes first: their sync discards the
+    sub-slots of keys that left the key set, which must not be recomputed (their getters may
+    legitimately no longer apply)."""
+    for slot in sorted(invalidated_slots, key=lambda slot: (slot.pull_precedence, slot.name)):
+        if slot.getter is not None and not slot.discarded:
+            slot.pull()
+
+
+def invalidate_slots_system_wide(systems: list):
+    """Void every slot of every object linked to the given systems. Used when a model whose values
+    were attached at load time (dependency edges only partially rebuilt) receives a relationship
+    change: the full recompute that follows re-records every edge."""
+    slots = []
+    for system in dict.fromkeys(systems):
+        for mod_obj in dict.fromkeys([system] + system.all_linked_objects):
+            slots += list(instance_slot_registry(mod_obj).values())
+    invalidate(*slots)
+
+
+_incomplete_edge_systems = weakref.WeakSet()
+
+
+def mark_system_edges_incomplete(system):
+    """Flag a system loaded with stored values: its calculus edges are rebuilt from the serialized
+    ancestry but structural edges only exist once getters have run, so the first relationship change
+    must void everything for the recompute to re-record the full edge set."""
+    system.__dict__["_computed_edges_incomplete"] = True
+    _incomplete_edge_systems.add(system)
+
+
+def wipe_slots_of_incomplete_edge_systems(mod_objs: list):
+    """Called by the relationship write hook: when any of the given objects belongs to a system whose
+    structural edges are incomplete, void every slot of that system (once — the flag clears)."""
+    if not _incomplete_edge_systems:
+        return
+    flagged_systems = []
+    for mod_obj in mod_objs:
+        if mod_obj is None:
+            continue
+        try:
+            mod_obj_systems = list(mod_obj.systems)
+        except (AttributeError, TypeError):
+            # The hook fires inside container transitions: one side may be mid-construction (e.g. a
+            # service whose server link is being stored) or a test double, unable to resolve its
+            # systems. The other side of the transition resolves them.
+            continue
+        for system in mod_obj_systems:
+            if isinstance(system, ModelingObject) and system.__dict__.pop("_computed_edges_incomplete", False):
+                flagged_systems.append(system)
+                _incomplete_edge_systems.discard(system)
+    if flagged_systems:
+        invalidate_slots_system_wide(flagged_systems)
+
+
 def get_instance_attributes(obj, target_class):
     return {attr_name: attr_value for attr_name, attr_value in obj.__dict__.items()
             if isinstance(attr_value, target_class)}
@@ -68,9 +132,9 @@ def check_type_homogeneity_within_list_or_set(input_list_or_set):
 
 
 def get_canonical_class_for_cls(modeling_object_class: type) -> type:
-    from efootprint.all_classes_in_order import CANONICAL_COMPUTATION_ORDER
+    from efootprint.all_classes_in_order import CANONICAL_CLASSES
 
-    for canonical_class in CANONICAL_COMPUTATION_ORDER:
+    for canonical_class in CANONICAL_CLASSES:
         if issubclass(modeling_object_class, canonical_class):
             return canonical_class
     return modeling_object_class
@@ -99,58 +163,6 @@ class ABCAfterInitMeta(AfterInitMeta, ABCMeta):
         return AfterInitMeta.__instancecheck__(cls, instance)
 
 
-def optimize_mod_objs_computation_chain(mod_objs_computation_chain):
-    from efootprint.all_classes_in_order import CANONICAL_COMPUTATION_ORDER
-    initial_chain_len = len(mod_objs_computation_chain)
-    # Keep only last occurrence of each mod_obj
-    optimized_chain = []
-
-    for index in range(len(mod_objs_computation_chain)):
-        mod_obj = mod_objs_computation_chain[index]
-
-        if mod_obj not in mod_objs_computation_chain[index + 1:]:
-            optimized_chain.append(mod_obj)
-
-    optimized_chain_len = len(optimized_chain)
-
-    if optimized_chain_len != initial_chain_len:
-        logger.info(f"Optimized modeling object computation chain from {initial_chain_len} to {optimized_chain_len}"
-                    f" modeling object calculated attributes recomputations.")
-
-    ordered_chain = []
-    for efootprint_class in CANONICAL_COMPUTATION_ORDER:
-        for mod_obj in optimized_chain:
-            if issubclass(mod_obj.efootprint_class, efootprint_class):
-                ordered_chain.append(mod_obj)
-
-    ordered_chain_ids = [elt.id for elt in ordered_chain]
-    optimized_chain_ids = [elt.id for elt in optimized_chain]
-
-    if len(optimized_chain) != len(ordered_chain):
-        in_ordered_not_in_optimized = [elt_id for elt_id in ordered_chain_ids if elt_id not in optimized_chain_ids]
-        in_optimized_not_in_ordered = [elt_id for elt_id in optimized_chain_ids if elt_id not in ordered_chain_ids]
-        raise AssertionError(
-            f"Ordered modeling object computation chain \n{ordered_chain_ids} doesn’t have the same length as "
-            f"\n{optimized_chain_ids}. This should never happen.\n"
-            f"In ordered not in optimized: {in_ordered_not_in_optimized}\n"
-            f"In optimized not in ordered: {in_optimized_not_in_ordered}")
-
-    if ordered_chain_ids != optimized_chain_ids:
-        logger.debug(f"Reordered modeling object computation chain from \n{ordered_chain_ids} to "
-                    f"\n{optimized_chain_ids}")
-
-    # In case system isn’t naturally present in chain, add it at the end
-    from efootprint.core.system import System
-    if ordered_chain and not isinstance(ordered_chain[-1], System):
-        for mod_obj in ordered_chain:
-            if mod_obj.systems:
-                ordered_chain.append(mod_obj.systems[0])
-                logger.debug("Added system to optimized chain")
-                break
-
-    return ordered_chain
-
-
 class ModelingObject(metaclass=ABCAfterInitMeta):
     classes_outside_init_params_needed_for_generating_from_json = []
     _use_name_as_id: bool = False
@@ -165,10 +177,18 @@ class ModelingObject(metaclass=ABCAfterInitMeta):
         new_obj.__dict__["explainable_object_dicts_containers"] = []
         new_obj.trigger_modeling_updates = False
         explainable_object_dicts_to_create_after_objects_creation = {}
+        declared_computed_slots = computed_slots(cls)
         for attr_key, attr_value in object_json_dict.items():
             if isinstance(attr_value, dict) and "label" in attr_value:
+                if attr_key in declared_computed_slots and not is_loaded_from_system_with_calculated_attributes:
+                    # A now-computed attribute stored by an older version (when it was an input, or a
+                    # legacy placeholder): the stored value is stale by definition — the slot computes.
+                    continue
                 new_value = explainable_object_from_json(attr_value, sources_dict)
-                new_obj.__setattr__(attr_key, new_value, check_input_validity=False)
+                if attr_key in declared_computed_slots:
+                    declared_computed_slots[attr_key].attach_cached_value(new_obj, new_value)
+                else:
+                    new_obj.__setattr__(attr_key, new_value, check_input_validity=False)
                 # Calculus graph data is added after setting as new_obj attribute to not interfere
                 # with set_modeling_obj_container logic
                 new_value.initialize_calculus_graph_data_from_json(attr_value, flat_obj_dict, sources_dict)
@@ -185,15 +205,6 @@ class ModelingObject(metaclass=ABCAfterInitMeta):
                     attr_key, [flat_obj_dict[elt] for elt in attr_value], check_input_validity=False)
             else:
                 new_obj.__setattr__(attr_key, attr_value)
-
-        if not is_loaded_from_system_with_calculated_attributes:
-            for calculated_attribute_name in new_obj.calculated_attributes:
-                if getattr(new_obj, calculated_attribute_name, None) is None:
-                    if hasattr(new_obj, f"update_dict_element_in_{calculated_attribute_name}"):
-                        default_value = ExplainableObjectDict()
-                    else:
-                        default_value = EmptyExplainableObject()
-                    new_obj.__setattr__(calculated_attribute_name, default_value, check_input_validity=False)
 
         # Initialize input ExplainableObjectDicts that were deferred to empty, so they exist before after_init
         for (obj, attr_key) in list(explainable_object_dicts_to_create_after_objects_creation.keys()):
@@ -320,6 +331,7 @@ class ModelingObject(metaclass=ABCAfterInitMeta):
         return []
 
     def __init__(self, name):
+        self.__dict__["_under_construction"] = True
         self.trigger_modeling_updates = False
         self.name = name
         self.id = css_escape(name) if ModelingObject._use_name_as_id else str(uuid.uuid4())[:12]
@@ -333,10 +345,6 @@ class ModelingObject(metaclass=ABCAfterInitMeta):
     @property
     def efootprint_class(self):
         return type(self)
-
-    @classmethod
-    def sort_within_computation_chain(cls, instances):
-        return instances
 
     def check_input_value_type_positivity_and_unit(self, name, input_value):
         init_sig_params = get_init_signature_params(type(self))
@@ -408,6 +416,7 @@ class ModelingObject(metaclass=ABCAfterInitMeta):
 
     @property
     def modeling_obj_containers(self):
+        record_read_of_node(self, CONTAINERS_NODE_NAME)
         return list(dict.fromkeys(
             [contextual_mod_obj_container.modeling_obj_container
              for contextual_mod_obj_container in self.contextual_modeling_obj_containers
@@ -447,11 +456,9 @@ class ModelingObject(metaclass=ABCAfterInitMeta):
         return isinstance(attr_value, ExplainableObjectDict)
 
     @property
-    @abstractmethod
-    def modeling_objects_whose_attributes_depend_directly_on_me(self) -> List[Type["ModelingObject"]]:
-        pass
-
-    calculated_attributes: List[str] = []
+    def calculated_attributes(self) -> List[str]:
+        """Names of this object's computed attributes, from the class computed-slot registry."""
+        return list(computed_slots(type(self)))
 
     @property
     def validation_attributes(self) -> List[str]:
@@ -465,41 +472,11 @@ class ModelingObject(metaclass=ABCAfterInitMeta):
     def systems(self) -> List:
         return list(dict.fromkeys(sum([mod_obj.systems for mod_obj in self.modeling_obj_containers], start=[])))
 
-    def compute_calculated_attributes(self):
-        logger.info(f"Computing calculated attributes for {type(self).__name__} {self.name}")
+    def pull_computed_attributes(self):
+        """Read every computed attribute, computing and caching any void slot (whole-dict reads pull
+        their per-key sub-slots too)."""
         for attr_name in self.calculated_attributes:
-            start = time.perf_counter()
-            update_func = retrieve_update_function_from_mod_obj_and_attr_name(self, attr_name)
-            update_func()
-            duration = time.perf_counter() - start
-            if attr_name in compute_times:
-                compute_times[attr_name]["total_duration"] += duration
-                compute_times[attr_name]["nb_calls"] += 1
-            else:
-                compute_times[attr_name] = {"total_duration": duration, "nb_calls": 1}
-
-    @property
-    def mod_objs_computation_chain(self) -> List[Type["ModelingObject"]]:
-        mod_objs_computation_chain = [self]
-
-        mod_objs_with_attributes_to_compute = self.modeling_objects_whose_attributes_depend_directly_on_me
-
-        while len(mod_objs_with_attributes_to_compute) > 0:
-            current_mod_obj_to_update = mod_objs_with_attributes_to_compute[0]
-            mod_objs_computation_chain.append(current_mod_obj_to_update)
-            mod_objs_with_attributes_to_compute = mod_objs_with_attributes_to_compute[1:]
-
-            for mod_obj in current_mod_obj_to_update.modeling_objects_whose_attributes_depend_directly_on_me:
-                if mod_obj not in mod_objs_with_attributes_to_compute:
-                    mod_objs_with_attributes_to_compute.append(mod_obj)
-
-        return mod_objs_computation_chain
-
-    @staticmethod
-    def launch_mod_objs_computation_chain(mod_objs_computation_chain):
-        for mod_obj in mod_objs_computation_chain:
-            mod_obj.compute_calculated_attributes()
-        flush_cached_properties_system_wide(mod_objs_computation_chain)
+            getattr(self, attr_name)
 
     def flush_cached_properties(self):
         """Pop every materialized cached property (auto-discovered from the class MRO) so the next read
@@ -516,6 +493,7 @@ class ModelingObject(metaclass=ABCAfterInitMeta):
 
     def after_init(self):
         from efootprint.abstract_modeling_classes.explainable_object_dict import ExplainableObjectDict
+        self.__dict__["_under_construction"] = False
         self.trigger_modeling_updates = True
         for attr_name, attr_value in self.__dict__.items():
             if (isinstance(attr_value, ExplainableObjectDict)
@@ -542,18 +520,32 @@ class ModelingObject(metaclass=ABCAfterInitMeta):
                 "explainable_object_dicts_containers"] + list(class_cached_property_names(type(self)))
 
     def __setattr__(self, name, input_value, check_input_validity=True):
-        current_attr = getattr(self, name, None)
         if name in self.attributes_that_shouldnt_trigger_update_logic:
             super().__setattr__(name, input_value)
-        elif name in self.calculated_attributes or not self.trigger_modeling_updates:
-            if check_input_validity and name not in self.calculated_attributes:
+            return
+        declared_computed_slots = computed_slots(type(self))
+        if name in declared_computed_slots:
+            if not self.__dict__.get("_under_construction", False):
+                # Computed storage lives in the reactive slot, never in the instance dict. Direct
+                # assignment attaches a cached value without computing (the manual pinning path).
+                declared_computed_slots[name].attach_cached_value(self, input_value)
+            # Constructor-time writes are dropped: they are legacy dummy values for attributes a
+            # subclass computes (e.g. a parent constructor storing a zero the subclass derives from
+            # other inputs); the slot computes the real value on pull. The load path attaches stored
+            # values through the descriptor directly, never through __setattr__.
+            return
+        if not self.trigger_modeling_updates:
+            current_attr = getattr(self, name, None)
+            if check_input_validity:
                 self.check_input_value_type_positivity_and_unit(name, input_value)
                 self.check_belonging_to_authorized_values(name, input_value, self.attributes_with_depending_values())
             value_to_set = input_value
             if isinstance(value_to_set, ModelingObject):
                 from efootprint.abstract_modeling_classes.contextual_modeling_object_attribute import \
                     ContextualModelingObjectAttribute
-                value_to_set = ContextualModelingObjectAttribute(value_to_set, self, name)
+                # The container is set below through set_modeling_obj_container so the reverse-node
+                # bump of the container-field transition fires.
+                value_to_set = ContextualModelingObjectAttribute(value_to_set)
             elif type(value_to_set) == list:
                 from efootprint.abstract_modeling_classes.list_linked_to_modeling_obj import ListLinkedToModelingObj
                 value_to_set = ListLinkedToModelingObj(value_to_set)
@@ -571,82 +563,7 @@ class ModelingObject(metaclass=ABCAfterInitMeta):
         else:
             from efootprint.abstract_modeling_classes.modeling_update import ModelingUpdate
             logger.debug(f"Updating {name} in {self.name}")
-            ModelingUpdate([[current_attr, input_value]])
-
-    def compute_mod_objs_computation_chain_from_old_and_new_modeling_objs(
-            self, old_value: Type["ModelingObject"], input_value: Type["ModelingObject"], optimize_chain=True)\
-            -> List[Type["ModelingObject"]]:
-        if (self in old_value.modeling_objects_whose_attributes_depend_directly_on_me and
-                old_value in self.modeling_objects_whose_attributes_depend_directly_on_me):
-            raise AssertionError(
-                f"There is a circular recalculation dependency between {self.id} and {old_value.id}")
-
-        mod_objs_computation_chain = input_value.mod_objs_computation_chain + old_value.mod_objs_computation_chain
-
-        # Preventive: compute self.mod_objs_computation_chain for both old and new states, because
-        # dynamic properties on self (e.g. System.countries) may discover different objects depending
-        # on the attribute value. Old state catches objects being removed, new state catches objects
-        # being added.
-        mod_objs_computation_chain += self.mod_objs_computation_chain
-        attr_name = old_value.attr_name_in_mod_obj_container
-        self.__dict__[attr_name] = input_value
-        mod_objs_computation_chain += self.mod_objs_computation_chain
-        self.__dict__[attr_name] = old_value
-
-        if optimize_chain:
-            optimized_chain = optimize_mod_objs_computation_chain(mod_objs_computation_chain)
-            return optimized_chain
-        else:
-            return mod_objs_computation_chain
-
-    def compute_mod_objs_computation_chain_from_old_and_new_lists(
-            self, old_value: List[Type["ModelingObject"]], input_value: List[Type["ModelingObject"]],
-            optimize_chain=True) -> List[Type["ModelingObject"]]:
-        return self._compute_mod_objs_computation_chain_from_old_and_new_collection(
-            old_value, input_value,
-            old_mod_objs=old_value, new_mod_objs=input_value,
-            optimize_chain=optimize_chain)
-
-    def _compute_mod_objs_computation_chain_from_old_and_new_collection(
-            self, old_value, input_value, old_mod_objs, new_mod_objs,
-            optimize_chain=True) -> List[Type["ModelingObject"]]:
-        removed_objs = [obj for obj in old_mod_objs if obj not in new_mod_objs]
-        added_objs = [obj for obj in new_mod_objs if obj not in old_mod_objs]
-
-        mod_objs_computation_chain = []
-        attr_name = old_value.attr_name_in_mod_obj_container
-        for obj in removed_objs:
-            if self not in obj.modeling_objects_whose_attributes_depend_directly_on_me:
-                mod_objs_computation_chain += obj.mod_objs_computation_chain
-
-        mod_objs_computation_chain += self.mod_objs_computation_chain
-        # Evaluate added objects in the context of the new collection state, not as standalone objects.
-        # Example: when updating UsageJourneyStep.jobs, a freshly re-created Job only sees its Network once the
-        # temporary jobs list is attached to the step. Without this attachment, Job.networks is still empty while the
-        # recomputation chain is built, so the network would be skipped and remain stale after the update.
-        input_value.set_modeling_obj_container(self, attr_name)
-        self.__dict__[attr_name] = input_value
-        for obj in added_objs:
-            if self not in obj.modeling_objects_whose_attributes_depend_directly_on_me:
-                mod_objs_computation_chain += obj.mod_objs_computation_chain
-        # self.mod_objs_computation_chain is also evaluated in the previewed new state so container-side contextual
-        # links are discovered consistently with child-side ones.
-        mod_objs_computation_chain += self.mod_objs_computation_chain
-        self.__dict__[attr_name] = old_value
-        input_value.set_modeling_obj_container(None, None)
-
-        if optimize_chain:
-            return optimize_mod_objs_computation_chain(mod_objs_computation_chain)
-        return mod_objs_computation_chain
-
-    def compute_mod_objs_computation_chain_from_old_and_new_dicts(
-            self, old_value, input_value, optimize_chain=True) -> List[Type["ModelingObject"]]:
-        old_mod_obj_keys = [k for k in old_value if isinstance(k, ModelingObject)]
-        new_mod_obj_keys = [k for k in input_value if isinstance(k, ModelingObject)]
-        return self._compute_mod_objs_computation_chain_from_old_and_new_collection(
-            old_value, input_value,
-            old_mod_objs=old_mod_obj_keys, new_mod_objs=new_mod_obj_keys,
-            optimize_chain=optimize_chain)
+            ModelingUpdate([[getattr(self, name, None), input_value]])
 
     @property
     def contextual_mod_obj_attributes(self) -> List["ContextualModelingObjectAttribute"]:
@@ -703,18 +620,30 @@ class ModelingObject(metaclass=ABCAfterInitMeta):
                 f"You can’t delete {self.name} because "
                 f"{','.join([mod_obj.name for mod_obj in self.modeling_obj_containers])} have it as attribute.")
 
-        mod_objs_computation_chain = [elt for elt in self.mod_objs_computation_chain if elt != self]
+        # Capture the systems the neighbours belong to before unlinking makes them unreachable.
+        systems = list(dict.fromkeys(sum([mod_obj.systems for mod_obj in self.mod_obj_attributes], start=[])))
 
-        for contextual_attr in self.contextual_mod_obj_attributes:
-            contextual_attr.set_modeling_obj_container(None, None)
-        # ObjectLinkedToModelingObjBase also covers ExplainableObjectDicts, whose unlinking removes the
-        # backward links their keys hold to self (e.g. a deleted UsageJourneyStep's jobs).
-        for attr_value in get_instance_attributes(self, ObjectLinkedToModelingObjBase).values():
-                attr_value.set_modeling_obj_container(None, None)
+        # Drop this object's computed values so ancestor children links and container bookkeeping on
+        # surviving objects don't accumulate dead values.
+        for slot in list(instance_slot_registry(self).values()):
+            slot._drop_value()
+        for facade in self.__dict__.get("_computed_dict_facades", {}).values():
+            facade.set_modeling_obj_container(None, None)
 
-        if self.trigger_modeling_updates:
-            optimized_chain = optimize_mod_objs_computation_chain(mod_objs_computation_chain)
-            self.launch_mod_objs_computation_chain(optimized_chain)
+        # The unlinks below bump the reverse nodes of every object this one points to, invalidating
+        # their dependent slots.
+        with collect_invalidated_slots() as invalidated_slots:
+            for contextual_attr in self.contextual_mod_obj_attributes:
+                contextual_attr.set_modeling_obj_container(None, None)
+            # ObjectLinkedToModelingObjBase also covers ExplainableObjectDicts, whose unlinking removes the
+            # backward links their keys hold to self (e.g. a deleted UsageJourneyStep's jobs).
+            for attr_value in get_instance_attributes(self, ObjectLinkedToModelingObjBase).values():
+                    attr_value.set_modeling_obj_container(None, None)
+
+        if self.trigger_modeling_updates and systems:
+            pull_slots_system_wide(systems)
+            pull_invalidated_slots(invalidated_slots)
+            flush_cached_properties_system_wide(systems)
 
         del self
 
@@ -724,10 +653,7 @@ class ModelingObject(metaclass=ABCAfterInitMeta):
         for key, value in self.__dict__.items():
             if key in ["name", "id", "short_name", "impact_url"]:
                 output_dict[key] = value
-            if (
-                    (key in self.calculated_attributes and not save_calculated_attributes)
-                    or key in self.attributes_that_shouldnt_trigger_update_logic
-            ):
+            if key.startswith("_") or key in self.attributes_that_shouldnt_trigger_update_logic:
                 continue
             elif value is None or isinstance(value, str):
                 output_dict[key] = value
@@ -737,6 +663,10 @@ class ModelingObject(metaclass=ABCAfterInitMeta):
                 output_dict[key] = value.to_json(save_calculated_attributes)
             else:
                 raise ValueError(f"Attribute {key} of {self.name} {type(value)}) is not handled in to_json")
+
+        if save_calculated_attributes:
+            for attr_name in self.calculated_attributes:
+                output_dict[attr_name] = getattr(self, attr_name).to_json(save_calculated_attributes)
 
         return output_dict
 
@@ -778,14 +708,16 @@ class ModelingObject(metaclass=ABCAfterInitMeta):
         output_str += f"{self.class_as_simple_str} {self.id}\n \nname: {self.name}\n"
 
         for key, attr_value in self.__dict__.items():
-            if (key in self.attributes_that_shouldnt_trigger_update_logic or key in self.calculated_attributes):
+            if key.startswith("_") or key in self.attributes_that_shouldnt_trigger_update_logic:
                 continue
             output_str += key_value_to_str(key, attr_value)
 
-        if len(self.calculated_attributes) > 0:
+        declared_computed_slots = computed_slots(type(self))
+        if len(declared_computed_slots) > 0:
             output_str += " \ncalculated_attributes:\n"
-            for key in self.calculated_attributes:
-                output_str += "  " + key_value_to_str(key, getattr(self, key))
+            for key, descriptor in declared_computed_slots.items():
+                # peek, never pull: printing an object must not trigger computations.
+                output_str += "  " + key_value_to_str(key, descriptor.peek(self))
 
         return output_str
 
@@ -800,6 +732,7 @@ class ModelingObject(metaclass=ABCAfterInitMeta):
     def nb_of_occurrences_per_container(self) -> dict["ModelingObject", ExplainableQuantity]:
         from efootprint.abstract_modeling_classes.explainable_object_dict import ExplainableObjectDict
 
+        record_read_of_node(self, CONTAINERS_NODE_NAME)
         output_dict = {}
         for contextual_mod_obj_container in self.contextual_modeling_obj_containers:
             if contextual_mod_obj_container.modeling_obj_container is None:

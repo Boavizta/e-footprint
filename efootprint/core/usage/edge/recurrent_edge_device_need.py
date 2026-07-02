@@ -29,10 +29,6 @@ class RecurrentEdgeDeviceNeed(ModelingObject):
         self.edge_device = edge_device
         self.recurrent_edge_component_needs = recurrent_edge_component_needs
 
-    @property
-    def modeling_objects_whose_attributes_depend_directly_on_me(self) -> List[RecurrentEdgeComponentNeed]:
-        # edge_device is automatically included through components' modeling_objects_whose_attributes_depend_directly_on_me
-        return self.recurrent_edge_component_needs
 
     @property
     def edge_functions(self) -> List["EdgeFunction"]:

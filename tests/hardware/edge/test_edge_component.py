@@ -26,6 +26,7 @@ from efootprint.core.usage.edge.edge_usage_pattern import EdgeUsagePattern
 from efootprint.core.usage.edge.recurrent_edge_component_need import RecurrentEdgeComponentNeed
 from efootprint.core.usage.edge.recurrent_edge_device_need import RecurrentEdgeDeviceNeed
 from tests.utils import create_mod_obj_mock, set_modeling_obj_containers
+from tests.utils import recompute_attribute
 
 
 class ConcreteEdgeComponent(EdgeComponent):
@@ -54,9 +55,9 @@ class TestEdgeComponent(TestCase):
             idle_power_per_unit=SourceValue(10 * u.W)
         )
         self.component.trigger_modeling_updates = False
-        self.component.update_carbon_footprint_fabrication()
-        self.component.update_power()
-        self.component.update_idle_power()
+        recompute_attribute(self.component, "carbon_footprint_fabrication")
+        recompute_attribute(self.component, "power")
+        recompute_attribute(self.component, "idle_power")
 
     def test_update_dict_element_in_fabrication_footprint_per_edge_device_per_usage_pattern(self):
         """Test fabrication footprint per edge device calculation for a single pattern."""
@@ -66,7 +67,7 @@ class TestEdgeComponent(TestCase):
             mock_pattern: SourceValue(10 * u.concurrent)}
         mock_pattern.edge_usage_journey = mock_edge_usage_journey
 
-        self.component.update_dict_element_in_fabrication_footprint_per_edge_device_per_usage_pattern(mock_pattern)
+        recompute_attribute(self.component, "fabrication_footprint_per_edge_device_per_usage_pattern", mock_pattern)
 
         # Component intensity: 20 kg / 5 year = 4 kg/year
         # Per hour: 4 kg/year / (365.25 * 24) kg/hour
@@ -87,7 +88,7 @@ class TestEdgeComponent(TestCase):
         unitary_power = create_source_hourly_values_from_list([30, 40], pint_unit=u.W)
         self.component.unitary_power_per_usage_pattern = ExplainableObjectDict({mock_pattern: unitary_power})
 
-        self.component.update_dict_element_in_energy_per_edge_device_per_usage_pattern(mock_pattern)
+        recompute_attribute(self.component, "energy_per_edge_device_per_usage_pattern", mock_pattern)
 
         # Energy = nb_instances * unitary_power * 1 hour = [10, 20] * [30, 40] W * 1 hour = [300, 800] Wh
         expected_energy = [300, 800]
@@ -106,7 +107,7 @@ class TestEdgeComponent(TestCase):
         self.component.energy_per_edge_device_per_usage_pattern = ExplainableObjectDict(
             {mock_pattern: energy_per_edge_device})
 
-        self.component.update_dict_element_in_energy_footprint_per_edge_device_per_usage_pattern(mock_pattern)
+        recompute_attribute(self.component, "energy_footprint_per_edge_device_per_usage_pattern", mock_pattern)
 
         # Energy footprint = [1000, 2000] Wh * 0.5 kg/kWh = [0.5, 1.0] kg
         expected_footprint = [0.5, 1.0]
@@ -126,7 +127,7 @@ class TestEdgeComponent(TestCase):
             mock_pattern_2: footprint_2
         })
 
-        self.component.update_fabrication_footprint_per_edge_device()
+        recompute_attribute(self.component, "fabrication_footprint_per_edge_device")
 
         # Sum: [10, 20] + [5, 10] = [15, 30]
         result = self.component.fabrication_footprint_per_edge_device
@@ -144,7 +145,7 @@ class TestEdgeComponent(TestCase):
             mock_pattern_2: energy_2
         })
 
-        self.component.update_energy_per_edge_device()
+        recompute_attribute(self.component, "energy_per_edge_device")
 
         # Sum: [100, 200] + [50, 100] = [150, 300]
         result = self.component.energy_per_edge_device
@@ -162,7 +163,7 @@ class TestEdgeComponent(TestCase):
             mock_pattern_2: footprint_2
         })
 
-        self.component.update_energy_footprint_per_edge_device()
+        recompute_attribute(self.component, "energy_footprint_per_edge_device")
 
         # Sum: [1, 2] + [0.5, 1] = [1.5, 3]
         result = self.component.energy_footprint_per_edge_device
@@ -176,9 +177,9 @@ class TestEdgeComponent(TestCase):
             mock_pattern: SourceValue(2 * u.concurrent)}
         mock_pattern.edge_usage_journey = mock_edge_usage_journey
         self.component.nb_of_units = SourceValue(3 * u.dimensionless)
-        self.component.update_carbon_footprint_fabrication()
+        recompute_attribute(self.component, "carbon_footprint_fabrication")
 
-        self.component.update_dict_element_in_fabrication_footprint_per_edge_device_per_usage_pattern(mock_pattern)
+        recompute_attribute(self.component, "fabrication_footprint_per_edge_device_per_usage_pattern", mock_pattern)
 
         expected_footprint = 2 * ((20 / 5) * 3) / (365.25 * 24)
         result = self.component.fabrication_footprint_per_edge_device_per_usage_pattern[mock_pattern]
@@ -192,13 +193,13 @@ class TestEdgeComponent(TestCase):
             mock_pattern: create_source_hourly_values_from_list([2, 1], pint_unit=u.concurrent)}
         mock_pattern.edge_usage_journey = mock_edge_usage_journey
         self.component.nb_of_units = SourceValue(3 * u.dimensionless)
-        self.component.update_power()
-        self.component.update_idle_power()
+        recompute_attribute(self.component, "power")
+        recompute_attribute(self.component, "idle_power")
         self.component.unitary_power_per_usage_pattern = ExplainableObjectDict({
             mock_pattern: create_source_hourly_values_from_list([30, 60], pint_unit=u.W)
         })
 
-        self.component.update_dict_element_in_energy_per_edge_device_per_usage_pattern(mock_pattern)
+        recompute_attribute(self.component, "energy_per_edge_device_per_usage_pattern", mock_pattern)
 
         result = self.component.energy_per_edge_device_per_usage_pattern[mock_pattern]
         self.assertTrue(np.allclose([60, 60], result.value.to(u.Wh).magnitude))
@@ -244,121 +245,11 @@ class TestEdgeComponentJsonRoundTrip(TestCase):
         _, flat_obj_dict, _ = json_to_system(system_json)
 
 
-class TestEdgeComponentModelingObjectsDependency(TestCase):
-    """Tests for EdgeComponent.modeling_objects_whose_attributes_depend_directly_on_me
-    which routes through root EdgeDeviceGroup objects when present."""
 
-    def _make_group(self, name):
-        from efootprint.core.hardware.edge.edge_device_group import EdgeDeviceGroup
-        g = EdgeDeviceGroup(name)
-        g.trigger_modeling_updates = False
-        return g
 
-    def test_no_device_returns_empty_list(self):
-        component = ConcreteEdgeComponent(
-            name="Standalone",
-            carbon_footprint_fabrication_per_unit=SourceValue(10 * u.kg),
-            power_per_unit=SourceValue(20 * u.W),
-            lifespan=SourceValue(4 * u.year),
-            idle_power_per_unit=SourceValue(5 * u.W),
-        )
-        component.trigger_modeling_updates = False
-        result = component.modeling_objects_whose_attributes_depend_directly_on_me
-        self.assertEqual([], result)
 
-    def test_device_without_groups_returns_device(self):
-        component = ConcreteEdgeComponent(
-            name="CPU",
-            carbon_footprint_fabrication_per_unit=SourceValue(10 * u.kg),
-            power_per_unit=SourceValue(20 * u.W),
-            lifespan=SourceValue(4 * u.year),
-            idle_power_per_unit=SourceValue(5 * u.W),
-        )
-        device = EdgeDevice(
-            name="My Device",
-            structure_carbon_footprint_fabrication=SourceValue(50 * u.kg),
-            components=[component],
-            lifespan=SourceValue(5 * u.year),
-        )
-        component.trigger_modeling_updates = False
-        device.trigger_modeling_updates = False
-        result = component.modeling_objects_whose_attributes_depend_directly_on_me
-        self.assertEqual([device], result)
 
-    def test_device_with_one_root_group_returns_root_group(self):
-        component = ConcreteEdgeComponent(
-            name="CPU",
-            carbon_footprint_fabrication_per_unit=SourceValue(10 * u.kg),
-            power_per_unit=SourceValue(20 * u.W),
-            lifespan=SourceValue(4 * u.year),
-            idle_power_per_unit=SourceValue(5 * u.W),
-        )
-        device = EdgeDevice(
-            name="My Device",
-            structure_carbon_footprint_fabrication=SourceValue(50 * u.kg),
-            components=[component],
-            lifespan=SourceValue(5 * u.year),
-        )
-        component.trigger_modeling_updates = False
-        device.trigger_modeling_updates = False
 
-        root_group = self._make_group("Root Group")
-        root_group.edge_device_counts[device] = SourceValue(3 * u.dimensionless)
-
-        result = component.modeling_objects_whose_attributes_depend_directly_on_me
-        self.assertEqual([root_group], result)
-
-    def test_device_with_nested_groups_returns_root_group(self):
-        component = ConcreteEdgeComponent(
-            name="CPU",
-            carbon_footprint_fabrication_per_unit=SourceValue(10 * u.kg),
-            power_per_unit=SourceValue(20 * u.W),
-            lifespan=SourceValue(4 * u.year),
-            idle_power_per_unit=SourceValue(5 * u.W),
-        )
-        device = EdgeDevice(
-            name="My Device",
-            structure_carbon_footprint_fabrication=SourceValue(50 * u.kg),
-            components=[component],
-            lifespan=SourceValue(5 * u.year),
-        )
-        component.trigger_modeling_updates = False
-        device.trigger_modeling_updates = False
-
-        root_group = self._make_group("Root")
-        sub_group = self._make_group("Sub")
-        root_group.sub_group_counts[sub_group] = SourceValue(2 * u.dimensionless)
-        sub_group.edge_device_counts[device] = SourceValue(4 * u.dimensionless)
-
-        result = component.modeling_objects_whose_attributes_depend_directly_on_me
-        self.assertEqual([root_group], result)
-
-    def test_device_with_two_root_groups_returns_both(self):
-        component = ConcreteEdgeComponent(
-            name="CPU",
-            carbon_footprint_fabrication_per_unit=SourceValue(10 * u.kg),
-            power_per_unit=SourceValue(20 * u.W),
-            lifespan=SourceValue(4 * u.year),
-            idle_power_per_unit=SourceValue(5 * u.W),
-        )
-        device = EdgeDevice(
-            name="My Device",
-            structure_carbon_footprint_fabrication=SourceValue(50 * u.kg),
-            components=[component],
-            lifespan=SourceValue(5 * u.year),
-        )
-        component.trigger_modeling_updates = False
-        device.trigger_modeling_updates = False
-
-        root_a = self._make_group("Root A")
-        root_b = self._make_group("Root B")
-        root_a.edge_device_counts[device] = SourceValue(2 * u.dimensionless)
-        root_b.edge_device_counts[device] = SourceValue(3 * u.dimensionless)
-
-        result = component.modeling_objects_whose_attributes_depend_directly_on_me
-        self.assertIn(root_a, result)
-        self.assertIn(root_b, result)
-        self.assertEqual(2, len(result))
 
 
 if __name__ == "__main__":

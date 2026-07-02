@@ -38,10 +38,6 @@ class TestRecurrentEdgeDeviceNeed(TestCase):
             self.device_need.recurrent_edge_component_needs
         )
 
-    def test_modeling_objects_whose_attributes_depend_directly_on_me(self):
-        """Test that recurrent_edge_component_needs are returned as dependent objects."""
-        dependent_objects = self.device_need.modeling_objects_whose_attributes_depend_directly_on_me
-        self.assertEqual([self.mock_component_need_1, self.mock_component_need_2], dependent_objects)
 
     def test_edge_functions_property_no_containers(self):
         """Test edge_functions property when no containers are set."""

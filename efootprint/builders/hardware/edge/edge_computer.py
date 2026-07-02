@@ -27,7 +27,6 @@ class EdgeComputerRAMComponent(EdgeRAMComponent):
             ram_per_unit=SourceValue(1 * u.GB_ram),
             base_ram_consumption=SourceValue(0 * u.GB_ram))
 
-    calculated_attributes = ["ram_per_unit", "base_ram_consumption", "lifespan"] + EdgeRAMComponent.calculated_attributes
 
     @computed_attribute
     def ram_per_unit(self):
@@ -71,9 +70,6 @@ class EdgeComputerCPUComponent(EdgeCPUComponent):
             compute_per_unit=SourceValue(1 * u.cpu_core),
             base_compute_consumption=SourceValue(0 * u.cpu_core))
 
-    calculated_attributes = (
-        ["compute_per_unit", "base_compute_consumption", "lifespan", "power_per_unit", "idle_power_per_unit"]
-        + EdgeCPUComponent.calculated_attributes)
 
     @computed_attribute
     def compute_per_unit(self):
@@ -177,7 +173,6 @@ class EdgeComputer(EdgeDevice):
         self.base_ram_consumption = base_ram_consumption.set_label(f"Base RAM consumption")
         self.base_compute_consumption = base_compute_consumption.set_label(f"Base compute consumption")
 
-    calculated_attributes = ["structure_carbon_footprint_fabrication"] + EdgeDevice.calculated_attributes
 
     @property
     def attribute_update_entanglements(self):

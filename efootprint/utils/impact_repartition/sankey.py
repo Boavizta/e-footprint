@@ -155,7 +155,8 @@ class ImpactRepartitionSankey:
     def _sort_class_names(cls, class_names: set[str]) -> list[str]:
         canonical_order = {
             canonical_class.__name__: index
-            for index, canonical_class in enumerate(class_registry.CANONICAL_COMPUTATION_ORDER)
+            for index, canonical_class in enumerate(
+                canonical_class for column in class_registry.SANKEY_COLUMNS for canonical_class in column)
         }
         return sorted(
             class_names,

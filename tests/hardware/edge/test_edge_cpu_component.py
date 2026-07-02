@@ -12,6 +12,7 @@ from efootprint.core.hardware.hardware_base import InsufficientCapacityError
 from efootprint.core.usage.edge.recurrent_edge_component_need import RecurrentEdgeComponentNeed
 from efootprint.core.usage.edge.edge_usage_pattern import EdgeUsagePattern
 from tests.utils import create_mod_obj_mock, set_modeling_obj_containers
+from tests.utils import recompute_attribute
 
 
 class TestEdgeCPUComponent(TestCase):
@@ -26,10 +27,10 @@ class TestEdgeCPUComponent(TestCase):
             base_compute_consumption=SourceValue(1 * u.cpu_core)
         )
         self.cpu_component.trigger_modeling_updates = False
-        self.cpu_component.update_carbon_footprint_fabrication()
-        self.cpu_component.update_power()
-        self.cpu_component.update_idle_power()
-        self.cpu_component.update_compute()
+        recompute_attribute(self.cpu_component, "carbon_footprint_fabrication")
+        recompute_attribute(self.cpu_component, "power")
+        recompute_attribute(self.cpu_component, "idle_power")
+        recompute_attribute(self.cpu_component, "compute")
 
     def test_init(self):
         """Test EdgeCPUComponent initialization."""
@@ -48,7 +49,7 @@ class TestEdgeCPUComponent(TestCase):
 
     def test_update_available_compute_per_instance(self):
         """Test update_available_compute_per_instance calculation."""
-        self.cpu_component.update_available_compute_per_instance()
+        recompute_attribute(self.cpu_component, "available_compute_per_instance")
 
         # available = compute - base_compute_consumption = 8 - 1 = 7 cpu_core
         expected_value = 7
@@ -59,9 +60,9 @@ class TestEdgeCPUComponent(TestCase):
     def test_update_available_compute_per_instance_with_nb_of_units(self):
         """Test update_available_compute_per_instance multiplies compute by nb_of_units."""
         self.cpu_component.nb_of_units = SourceValue(3 * u.dimensionless)
-        self.cpu_component.update_compute()
+        recompute_attribute(self.cpu_component, "compute")
 
-        self.cpu_component.update_available_compute_per_instance()
+        recompute_attribute(self.cpu_component, "available_compute_per_instance")
 
         self.assertAlmostEqual(23, self.cpu_component.available_compute_per_instance.value.magnitude, places=5)
 
@@ -70,7 +71,7 @@ class TestEdgeCPUComponent(TestCase):
         self.cpu_component.base_compute_consumption = SourceValue(10 * u.cpu_core)
 
         with self.assertRaises(InsufficientCapacityError) as context:
-            self.cpu_component.update_available_compute_per_instance()
+            recompute_attribute(self.cpu_component, "available_compute_per_instance")
 
         self.assertEqual("compute", context.exception.capacity_type)
         self.assertEqual(self.cpu_component, context.exception.overloaded_object)
@@ -86,10 +87,10 @@ class TestEdgeCPUComponent(TestCase):
         mock_need.edge_usage_patterns = [mock_pattern]
         set_modeling_obj_containers(self.cpu_component, [mock_need])
         self.cpu_component.nb_of_units = SourceValue(3 * u.dimensionless)
-        self.cpu_component.update_compute()
+        recompute_attribute(self.cpu_component, "compute")
 
-        self.cpu_component.update_available_compute_per_instance()
-        self.cpu_component.update_dict_element_in_unitary_hourly_compute_need_per_usage_pattern(mock_pattern)
+        recompute_attribute(self.cpu_component, "available_compute_per_instance")
+        recompute_attribute(self.cpu_component, "unitary_hourly_compute_need_per_usage_pattern", mock_pattern)
 
         result = self.cpu_component.unitary_hourly_compute_need_per_usage_pattern[mock_pattern]
         self.assertEqual([3, 6, 9], result.value_as_float_list)
@@ -111,8 +112,8 @@ class TestEdgeCPUComponent(TestCase):
 
         set_modeling_obj_containers(self.cpu_component, [mock_need_1, mock_need_2])
 
-        self.cpu_component.update_available_compute_per_instance()
-        self.cpu_component.update_dict_element_in_unitary_hourly_compute_need_per_usage_pattern(mock_pattern)
+        recompute_attribute(self.cpu_component, "available_compute_per_instance")
+        recompute_attribute(self.cpu_component, "unitary_hourly_compute_need_per_usage_pattern", mock_pattern)
 
         expected_values = [1.5, 1.5, 3.5]  # Sum of both needs
         result = self.cpu_component.unitary_hourly_compute_need_per_usage_pattern[mock_pattern]
@@ -131,10 +132,10 @@ class TestEdgeCPUComponent(TestCase):
 
         set_modeling_obj_containers(self.cpu_component, [mock_need])
 
-        self.cpu_component.update_available_compute_per_instance()
+        recompute_attribute(self.cpu_component, "available_compute_per_instance")
 
         with self.assertRaises(InsufficientCapacityError) as context:
-            self.cpu_component.update_dict_element_in_unitary_hourly_compute_need_per_usage_pattern(mock_pattern)
+            recompute_attribute(self.cpu_component, "unitary_hourly_compute_need_per_usage_pattern", mock_pattern)
 
         self.assertEqual("compute", context.exception.capacity_type)
         self.assertEqual(self.cpu_component, context.exception.overloaded_object)
@@ -146,8 +147,8 @@ class TestEdgeCPUComponent(TestCase):
         compute_need = create_source_hourly_values_from_list([0, 4, 7], pint_unit=u.cpu_core)
         self.cpu_component.unitary_hourly_compute_need_per_usage_pattern = {mock_pattern: compute_need}
 
-        self.cpu_component.update_available_compute_per_instance()
-        self.cpu_component.update_dict_element_in_unitary_power_per_usage_pattern(mock_pattern)
+        recompute_attribute(self.cpu_component, "available_compute_per_instance")
+        recompute_attribute(self.cpu_component, "unitary_power_per_usage_pattern", mock_pattern)
 
         # Workload ratios: (compute_need + base_compute_consumption) / compute
         # = ([0, 4, 7] + 1) / 8

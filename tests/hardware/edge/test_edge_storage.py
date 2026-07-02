@@ -15,6 +15,7 @@ from efootprint.core.usage.edge.edge_usage_pattern import EdgeUsagePattern
 from efootprint.core.usage.edge.recurrent_edge_component_need import RecurrentEdgeComponentNeed
 from efootprint.core.usage.edge.recurrent_edge_storage_need import RecurrentEdgeStorageNeed
 from tests.utils import create_mod_obj_mock, set_modeling_obj_containers
+from tests.utils import patch_attribute, recompute_attribute
 
 
 class TestEdgeStorage(TestCase):
@@ -27,8 +28,8 @@ class TestEdgeStorage(TestCase):
             lifespan=SourceValue(6 * u.years)
         )
         self.edge_storage.trigger_modeling_updates = False
-        self.edge_storage.update_storage_capacity()
-        self.edge_storage.update_carbon_footprint_fabrication()
+        recompute_attribute(self.edge_storage, "storage_capacity")
+        recompute_attribute(self.edge_storage, "carbon_footprint_fabrication")
 
     def test_init(self):
         """Test EdgeStorage initialization."""
@@ -47,7 +48,7 @@ class TestEdgeStorage(TestCase):
     def test_ssd_classmethod(self):
         """Test SSD factory method."""
         ssd = EdgeStorage.ssd(name="Custom SSD")
-        ssd.update_storage_capacity()
+        recompute_attribute(ssd, "storage_capacity")
         self.assertEqual("Custom SSD", ssd.name)
         self.assertEqual(
             160 * u.kg / u.TB_stored,
@@ -61,7 +62,7 @@ class TestEdgeStorage(TestCase):
         """Test SSD factory method with custom parameters."""
         ssd = EdgeStorage.ssd(name="Custom SSD with kwargs", storage_capacity_per_unit=SourceValue(2 * u.TB_stored),
                               lifespan=SourceValue(8 * u.years))
-        ssd.update_storage_capacity()
+        recompute_attribute(ssd, "storage_capacity")
         self.assertEqual(2 * u.TB_stored, ssd.storage_capacity.value)
         self.assertEqual(8 * u.years, ssd.lifespan.value)
         self.assertEqual(
@@ -72,7 +73,7 @@ class TestEdgeStorage(TestCase):
     def test_hdd_classmethod(self):
         """Test HDD factory method."""
         hdd = EdgeStorage.hdd(name="Custom HDD")
-        hdd.update_storage_capacity()
+        recompute_attribute(hdd, "storage_capacity")
         self.assertEqual("Custom HDD", hdd.name)
         self.assertEqual(
             20 * u.kg / u.TB_stored,
@@ -85,7 +86,7 @@ class TestEdgeStorage(TestCase):
     def test_hdd_classmethod_with_kwargs(self):
         """Test HDD factory method with custom parameters."""
         hdd = EdgeStorage.hdd(name="Custom HDD with kwargs", storage_capacity_per_unit=SourceValue(4 * u.TB_stored))
-        hdd.update_storage_capacity()
+        recompute_attribute(hdd, "storage_capacity")
         self.assertEqual(4 * u.TB_stored, hdd.storage_capacity.value)
         self.assertEqual(
             20 * u.kg / u.TB_stored,
@@ -101,12 +102,12 @@ class TestEdgeStorage(TestCase):
 
     def test_update_carbon_footprint_fabrication(self):
         """Test update_carbon_footprint_fabrication calculation."""
-        with patch.object(
+        with patch_attribute(
             self.edge_storage,
             "carbon_footprint_fabrication_per_storage_capacity",
             SourceValue(100 * u.kg / u.TB_stored),
-        ), patch.object(self.edge_storage, "storage_capacity", SourceValue(2 * u.TB_stored)):
-            self.edge_storage.update_carbon_footprint_fabrication()
+        ), patch_attribute(self.edge_storage, "storage_capacity", SourceValue(2 * u.TB_stored)):
+            recompute_attribute(self.edge_storage, "carbon_footprint_fabrication")
 
             # Formula: 100 kg/TB * 2 TB = 200 kg
             self.assertAlmostEqual(200, self.edge_storage.carbon_footprint_fabrication.value.magnitude, places=5)
@@ -119,9 +120,9 @@ class TestEdgeStorage(TestCase):
         self.edge_storage.carbon_footprint_fabrication_per_storage_capacity = SourceValue(100 * u.kg / u.TB_stored)
         self.edge_storage.storage_capacity_per_unit = SourceValue(2 * u.TB_stored)
         self.edge_storage.nb_of_units = SourceValue(3 * u.dimensionless)
-        self.edge_storage.update_storage_capacity()
+        recompute_attribute(self.edge_storage, "storage_capacity")
 
-        self.edge_storage.update_carbon_footprint_fabrication()
+        recompute_attribute(self.edge_storage, "carbon_footprint_fabrication")
 
         self.assertAlmostEqual(600, self.edge_storage.carbon_footprint_fabrication.value.magnitude, places=5)
 
@@ -141,7 +142,7 @@ class TestEdgeStorage(TestCase):
     def test_update_cumulative_unitary_storage_need_per_usage_pattern_empty(self):
         """Test cumulative storage dict stays empty when no recurrent needs."""
         set_modeling_obj_containers(self.edge_storage, [])
-        self.edge_storage.update_cumulative_unitary_storage_need_per_usage_pattern()
+        recompute_attribute(self.edge_storage, "cumulative_unitary_storage_need_per_usage_pattern")
         self.assertEqual({}, self.edge_storage.cumulative_unitary_storage_need_per_usage_pattern)
 
     def test_update_dict_element_in_cumulative_unitary_storage_need_per_usage_pattern_with_data(self):
@@ -153,14 +154,16 @@ class TestEdgeStorage(TestCase):
         }
         set_modeling_obj_containers(self.edge_storage, [mock_need])
 
-        with patch.object(self.edge_storage, "base_storage_need", SourceValue(5 * u.GB_stored)), \
-             patch.object(self.edge_storage, "storage_capacity", SourceValue(100 * u.GB_stored)):
-            self.edge_storage.update_dict_element_in_cumulative_unitary_storage_need_per_usage_pattern(usage_pattern)
+        with patch_attribute(self.edge_storage, "base_storage_need", SourceValue(5 * u.GB_stored)), \
+             patch_attribute(self.edge_storage, "storage_capacity", SourceValue(100 * u.GB_stored)):
+            recompute_attribute(self.edge_storage, "cumulative_unitary_storage_need_per_usage_pattern", usage_pattern)
 
-        # Expected: [10+5, 30+5, 60+5] = [15, 35, 65]
-        self.assertTrue(np.allclose(
-            [15, 35, 65], self.edge_storage.cumulative_unitary_storage_need_per_usage_pattern[usage_pattern].value_as_float_list
-        ))
+            # Expected: [10+5, 30+5, 60+5] = [15, 35, 65]
+            self.assertTrue(np.allclose(
+                [15, 35, 65],
+                self.edge_storage.cumulative_unitary_storage_need_per_usage_pattern[
+                    usage_pattern].value_as_float_list
+            ))
         set_modeling_obj_containers(self.edge_storage, [])
 
     def test_update_dict_element_in_cumulative_unitary_storage_need_per_usage_pattern_negative_cumulative_error(self):
@@ -172,10 +175,10 @@ class TestEdgeStorage(TestCase):
         }
         set_modeling_obj_containers(self.edge_storage, [mock_need])
 
-        with patch.object(self.edge_storage, "base_storage_need", SourceValue(5 * u.GB_stored)), \
-             patch.object(self.edge_storage, "storage_capacity", SourceValue(100 * u.GB_stored)):
+        with patch_attribute(self.edge_storage, "base_storage_need", SourceValue(5 * u.GB_stored)), \
+             patch_attribute(self.edge_storage, "storage_capacity", SourceValue(100 * u.GB_stored)):
             with self.assertRaises(NegativeCumulativeStorageNeedError) as ctx:
-                self.edge_storage.update_dict_element_in_cumulative_unitary_storage_need_per_usage_pattern(usage_pattern)
+                recompute_attribute(self.edge_storage, "cumulative_unitary_storage_need_per_usage_pattern", usage_pattern)
 
         self.assertEqual(self.edge_storage, ctx.exception.storage_obj)
         self.assertIn("negative cumulative storage need detected", str(ctx.exception))
@@ -190,10 +193,10 @@ class TestEdgeStorage(TestCase):
         }
         set_modeling_obj_containers(self.edge_storage, [mock_need])
 
-        with patch.object(self.edge_storage, "base_storage_need", SourceValue(10 * u.GB_stored)), \
-             patch.object(self.edge_storage, "storage_capacity", SourceValue(50 * u.GB_stored)):
+        with patch_attribute(self.edge_storage, "base_storage_need", SourceValue(10 * u.GB_stored)), \
+             patch_attribute(self.edge_storage, "storage_capacity", SourceValue(50 * u.GB_stored)):
             with self.assertRaises(InsufficientCapacityError) as ctx:
-                self.edge_storage.update_dict_element_in_cumulative_unitary_storage_need_per_usage_pattern(usage_pattern)
+                recompute_attribute(self.edge_storage, "cumulative_unitary_storage_need_per_usage_pattern", usage_pattern)
 
         self.assertEqual("storage capacity", ctx.exception.capacity_type)
         self.assertEqual(self.edge_storage, ctx.exception.overloaded_object)
@@ -211,9 +214,9 @@ class TestEdgeStorage(TestCase):
         self.edge_storage.base_storage_need = SourceValue(0 * u.GB_stored)
         self.edge_storage.storage_capacity_per_unit = SourceValue(50 * u.GB_stored)
         self.edge_storage.nb_of_units = SourceValue(3 * u.dimensionless)
-        self.edge_storage.update_storage_capacity()
+        recompute_attribute(self.edge_storage, "storage_capacity")
 
-        self.edge_storage.update_dict_element_in_cumulative_unitary_storage_need_per_usage_pattern(usage_pattern)
+        recompute_attribute(self.edge_storage, "cumulative_unitary_storage_need_per_usage_pattern", usage_pattern)
 
         self.assertTrue(np.allclose(
             [80, 120],
@@ -233,9 +236,9 @@ class TestEdgeStorage(TestCase):
         }
         set_modeling_obj_containers(self.edge_storage, [mock_need])
 
-        with patch.object(self.edge_storage, "base_storage_need", SourceValue(5 * u.GB_stored)), \
+        with patch_attribute(self.edge_storage, "base_storage_need", SourceValue(5 * u.GB_stored)), \
              patch.object(EdgeStorage, "edge_usage_patterns", new_callable=PropertyMock, return_value=[pattern_1, pattern_2]):
-            self.edge_storage.update_cumulative_unitary_storage_need_per_usage_pattern()
+            recompute_attribute(self.edge_storage, "cumulative_unitary_storage_need_per_usage_pattern")
 
         self.assertTrue(np.allclose(
             [15, 35], self.edge_storage.cumulative_unitary_storage_need_per_usage_pattern[pattern_1].value_as_float_list
@@ -254,7 +257,7 @@ class TestEdgeStorage(TestCase):
         mock_need.edge_usage_patterns = [mock_pattern_1, mock_pattern_2]
 
         set_modeling_obj_containers(self.edge_storage, [mock_need])
-        self.edge_storage.update_unitary_power_per_usage_pattern()
+        recompute_attribute(self.edge_storage, "unitary_power_per_usage_pattern")
 
         self.assertIsInstance(self.edge_storage.unitary_power_per_usage_pattern[mock_pattern_1], EmptyExplainableObject)
         self.assertIsInstance(self.edge_storage.unitary_power_per_usage_pattern[mock_pattern_2], EmptyExplainableObject)

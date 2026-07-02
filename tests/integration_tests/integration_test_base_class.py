@@ -368,7 +368,7 @@ class IntegrationTestBaseClass(TestCase):
             raise
         finally:
             if modeling_update is not None:
-                modeling_update.reset_values()
+                modeling_update.rollback()
                 if scenario.post_reset_assertions:
                     scenario.post_reset_assertions(self)
                 self.footprint_has_not_changed(list(scenario.expected_changed) + list(scenario.expected_unchanged))

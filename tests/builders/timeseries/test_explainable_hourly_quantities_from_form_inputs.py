@@ -10,6 +10,7 @@ from efootprint.core.hardware.network import Network
 from efootprint.core.usage.usage_pattern import UsagePattern
 
 from efootprint.builders.timeseries import ExplainableHourlyQuantitiesFromFormInputs
+from tests.utils import recompute_attribute
 
 
 class CalculusGraphTest(TestCase):
@@ -37,7 +38,7 @@ class CalculusGraphTest(TestCase):
         calculated_attributes = self.usage_pattern.calculated_attributes
 
         # To get calculus graph html
-        self.usage_pattern.update_utc_hourly_usage_journey_starts()
+        recompute_attribute(self.usage_pattern, "utc_hourly_usage_journey_starts")
 
         calculus_graph = build_calculus_graph(self.usage_pattern.utc_hourly_usage_journey_starts)
         calculus_graph.cdn_resources = "remote"

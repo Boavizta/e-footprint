@@ -113,12 +113,7 @@ class EcoLogitsVideoGenExternalAPI(ExternalAPI):
         super().__init__(name=name)
         self.provider = provider.set_label("Provider")
         self.model_name = model_name.set_label("Model used")
-        self.datacenter_location = EmptyExplainableObject()
-        self.data_center_pue = EmptyExplainableObject()
-        self.average_carbon_intensity = EmptyExplainableObject()
 
-    calculated_attributes: List[str] = ExternalAPI.calculated_attributes + [
-        "datacenter_location", "data_center_pue", "average_carbon_intensity"]
 
     @computed_attribute
     def datacenter_location(self):
@@ -205,16 +200,9 @@ class EcoLogitsVideoGenExternalAPIJob(ExternalAPIJob):
         self.duration = duration.set_label("Video duration")
         self.with_audio = with_audio.set_label("Generates audio")
 
-        self.hourly_occurrences_across_usage_patterns = EmptyExplainableObject()
-        self.impacts = EmptyExplainableObject()
         for ecologits_attr in ecologits_video_calculated_attributes:
             setattr(self, ecologits_attr, EmptyExplainableObject())
 
-    calculated_attributes: List[str] = (
-        ["data_transferred", "impacts"] + ecologits_video_calculated_attributes
-        + ["request_duration"]
-        + ExternalAPIJob.calculated_attributes
-        + ["hourly_occurrences_across_usage_patterns"])
 
     @computed_attribute
     def data_transferred(self):

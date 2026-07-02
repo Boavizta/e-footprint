@@ -14,7 +14,7 @@ efootprint/abstract_modeling_classes/  (framework — dependency tracking, Expla
 
 This separation is constitutional (`specs/constitution.md` §1.1). `core/` is built on top of `abstract_modeling_classes/`, but it must not import from `api_utils/` — modeling code shouldn't know how it gets persisted. `api_utils/` is the only layer allowed to import from both.
 
-**Known back-edge.** `abstract_modeling_classes/modeling_object.py` imports `System` from `efootprint/core/` — a single function-local runtime import in the computation-chain optimizer (to append the System at the end of a chain). This is the only framework→core leak; it should be paid down opportunistically and must not grow. (The 2026-06 attribution revamp removed the former `LifeCyclePhases` import by moving the `attributed_*` convenience surface into `core/attribution`.)
+**No back-edge.** `abstract_modeling_classes/` no longer imports anything from `efootprint/core/`: the last framework→core leak (a function-local `System` import in the former computation-chain optimizer) was deleted with the eager push engine when computation became pull-based. Keep it that way.
 
 **No domain names in the framework layer.** The dependency rule applies to *names*, not just imports: `abstract_modeling_classes/` may not mention `core/` concepts (`UsagePattern`, `Job`, `Server`, …) by name — not in class attributes, not in strings, not in comments load-bearing for behaviour. When the framework needs to be polymorphic over a domain-specific extension (e.g., a cached property that only some subclasses define), it discovers the extension structurally rather than naming it. Example: `class_cached_property_names` auto-discovers every `functools.cached_property` through the class MRO; the flush machinery (`flush_cached_properties`, the system-wide sweep, `to_json` / `__setattr__` skip lists) consumes that discovery, so domain subclasses add cached properties without registering them anywhere. Corollary invariant: every `cached_property` on a `ModelingObject` is a flushable read-time projection (lazy attribution layer), never model state.
 
@@ -34,6 +34,7 @@ This separation is constitutional (`specs/constitution.md` §1.1). `core/` is bu
 Avoid gathering context here unless absolutely necessary — most modeling work doesn't require it.
 
 - **`ModelingObject`** — base class with dependency tracking and update logic. All e-footprint objects inherit from this.
+- **`reactive_core.py`** — the pull-based computation engine: `@computed_attribute` / `@computed_dict` descriptors (each computed attribute resolves to a per-instance `ReactiveSlot` that computes on read, caches, and is invalidated by deletion waves along recorded dependency edges), `ReverseCollection`/`ReverseLink` declarative reverse relationships, and the relationship read/write hooks' primitives.
 - **`ExplainableObject`** — manages the calculation graph; allows automatic explanations and incremental recomputation.
 - **`ExplainableQuantity`** — values with units; inherits from `ExplainableObject`.
 - **`ExplainableHourlyQuantities`** — hourly time-series.
@@ -53,35 +54,34 @@ Avoid gathering context here unless absolutely necessary — most modeling work 
 Every modeling object defines:
 
 - **`default_values`** — dict specifying default values for numerical attributes. Units are used for unit consistency checks.
-- **`calculated_attributes`** property — list of attribute names computed automatically.
-- **`update_<attribute_name>`** methods — one per calculated attribute, implementing the calculation logic.
-- **`after_init`** — called after initialization to toggle dynamic recomputation and trigger calculations.
+- **`@computed_attribute` / `@computed_dict` getters** — one per computed attribute; the getter body is the calculation and its docstring the doc-as-code description. `calculated_attributes` is derived from the class computed-slot registry (`computed_slots(cls)`); a subclass drops an inapplicable inherited attribute with `removed_computed_attribute()`.
+- **`after_init`** — called after initialization to enable live updates (`trigger_modeling_updates`).
 
-The `__setattr__` override in `ModelingObject` ensures that when a numerical or object attribute is changed, all dependent calculated attributes are recomputed automatically.
+Computation is pull-based: reading a computed attribute computes and caches it on demand. The `__setattr__` override in `ModelingObject` routes live input writes through `ModelingUpdate`, which invalidates the changed slots' dependency cones and eagerly recomputes (currently every slot, so errors surface at update time).
 
 ## Class registration and ordering
 
 `efootprint/all_classes_in_order.py` exposes two registries:
 
 - **`ALL_EFOOTPRINT_CLASSES`** — every concrete `ModelingObject` subclass (core + builders + services). Used by JSON serialization/deserialization to resolve class names round-trip.
-- **`CANONICAL_COMPUTATION_ORDER`** — top-level core classes ordered low → high level (`Country`, `UsagePattern`, …, `System` last). Used to walk objects deterministically when recomputing dependents (`ModelingUpdate`), to assign sankey columns, and to give tests a stable iteration order.
+- **`CANONICAL_CLASSES`** — the top-level core families every object maps to (`canonical_class`), derived from the Sankey structure: flattened `SANKEY_COLUMNS` plus `SANKEY_BREAKDOWN_ONLY_CLASSES` and `NON_SANKEY_CANONICAL_CLASSES`. Membership only — pull-based computation needs no class ordering.
 
 `SANKEY_COLUMNS`, `OBJECT_CATEGORIES`, and the various per-shape lists (`SERVER_CLASSES`, `EDGE_COMPONENT_CLASSES`, etc.) live alongside and are consumed by rendering and builder code.
 
 ## Adding a new modeling object
 
 1. Inherit from the appropriate core or builder base class.
-2. Define `default_values` and `calculated_attributes`.
-3. Implement an `update_<attr>` method per calculated attribute.
+2. Define `default_values`.
+3. Implement a `@computed_attribute` (or `@computed_dict`) getter per computed attribute.
 4. Register the class in `efootprint/all_classes_in_order.py`:
    - Always add to `ALL_EFOOTPRINT_CLASSES`.
-   - For top-level core classes, also add to `CANONICAL_COMPUTATION_ORDER` at the position that respects dependency order.
+   - For new top-level core families, extend the canonical-class registry (`SANKEY_COLUMNS` / `SANKEY_BREAKDOWN_ONLY_CLASSES` / `NON_SANKEY_CANONICAL_CLASSES`).
 
 This is a constitutional quality gate (`specs/constitution.md` §2.5).
 
 ## Object linking and dependencies
 
-Object dependencies are managed through `modeling_objects_whose_attributes_depend_directly_on_me` on `ModelingObject`. When a numerical input changes, the calculation graph (managed by `ExplainableObject`) ensures only affected calculations are recomputed.
+Object dependencies form one slot-addressed graph in `reactive_core`: calculus edges are recorded from each computed value's arithmetic ancestry (managed by `ExplainableObject`), and structural edges are recorded by relationship read hooks (list/dict/link wrappers, reverse relationships, `modeling_obj_containers`). Writes invalidate the changed node and the deletion wave voids its transitive dependents; membership writes additionally bump the affected reverse-relationship nodes at the container-field transition.
 
 There are three relationship types between modeling objects:
 
@@ -141,7 +141,7 @@ summed over its systems (Empty when system-less). It is the only `attributed_*` 
 
 `ExplainableObjectDict` can be used both as a calculated attribute and as an `__init__` parameter (input attribute). Behaviour differs:
 
-- **Calculated dicts.** `trigger_modeling_updates=False` (default). Mutations don't trigger recomputation — the owning `update_*` method manages them.
+- **Calculated dicts.** `trigger_modeling_updates=False` (default). Mutations don't trigger recomputation — the computed-dict slot machinery manages them (the dict is a live facade over the key-set node and per-key sub-slots).
 - **Input dicts.** `trigger_modeling_updates=True` (set automatically by `after_init()` for dicts that are `__init__` params). Mutations (`__setitem__`, `__delitem__`) trigger `ModelingUpdate` to recompute dependents.
 - **Re-entry guard.** When `ModelingUpdate.apply_changes()` replaces a value inside a trigger-enabled dict, triggers are temporarily disabled to prevent infinite loops.
 - **Deserialization order (critical).** Input dicts must be initialized empty before `after_init()` runs. Then a deferred loop populates them via `replace_in_mod_obj_container_without_recomputation`. Then triggers are enabled on the populated dicts. This prevents crashes from computing on incomplete state.
@@ -153,7 +153,7 @@ summed over its systems (Empty when system-less). It is the only `attributed_*` 
 
 - **Totals + delta** from `total_footprint.sum()`; the `Delta` value object exposes the absolute change and the relative fraction over the baseline (`None` when the baseline is zero).
 - **Per-(category, phase) decomposition** from each system's `total_energy_/fabrication_footprint_sum_over_period` dicts (category SSOT = `OBJECT_CATEGORIES`, phases = energy/fabrication). Because those dicts already sum to the total, the decomposition rows sum to the headline delta by construction.
-- **Aligned + cumulative time-series** from each system's `total_footprint`, sharing one calendar axis via `align_temporally_quantity_arrays` (non-overlapping hours zero-padded). The `TimeSeries` also carries the per-phase usage/fabrication split (`usage_*`/`fabrication_*`) on that same axis — summed across categories exactly as `update_total_footprint` builds the total, so `usage + fabrication` reconstructs the total hour-by-hour. This lets a consumer bucket usage vs fabrication exactly per period (e.g. per year) instead of with a single full-period ratio.
+- **Aligned + cumulative time-series** from each system's `total_footprint`, sharing one calendar axis via `align_temporally_quantity_arrays` (non-overlapping hours zero-padded). The `TimeSeries` also carries the per-phase usage/fabrication split (`usage_*`/`fabrication_*`) on that same axis — summed across categories exactly as the `total_footprint` getter builds the total, so `usage + fabrication` reconstructs the total hour-by-hour. This lets a consumer bucket usage vs fabrication exactly per period (e.g. per year) instead of with a single full-period ratio.
 - **Input diff**: walks `all_linked_objects`, pairs objects by id first then by (name, type), and emits changed input-attribute rows plus "only in A / only in B". Inputs are identified *positively* from the constructor signature (`get_init_signature_params(efootprint_class)` — same SSOT as `copy_with`), not by excluding `calculated_attributes`, then bucketed by type: scalar/array `ExplainableObject`s diff by value (+ unit/source/confidence) — except a *form-built* timeseries (one exposing `form_inputs_for_display`, i.e. `ExplainableHourlyQuantitiesFromFormInputs` / `ExplainableRecurrentQuantitiesFromConstant`) on both sides, which diffs by its form **parameters** (e.g. "net growth rate: 10 % per year → 20 %"), listing only the changed ones and skipping the opaque array comparison — while `ExplainableObjectDict` and `List[ModelingObject]` relationship inputs diff by membership (per-key counts / present-or-absent), their keys/elements paired id-first then (name, type). A membership add/remove row is only emitted when the member exists in *both* models (a genuine re-link); a member that lives in only one model is left to its "only in A / only in B" row, so it is never reported twice. Reading the signature off `efootprint_class` (not `type(obj)`) sees through the `ContextualModelingObjectAttribute` proxy.
 - **Notebook plots** (`plot_emissions_over_time`, `plot_cumulative_emissions`, `plot_decomposition`) reuse the existing matplotlib dependency.
 
@@ -177,7 +177,7 @@ The shape (when complete):
 
 - **Class docstring** — what the class is.
 - **`param_descriptions` dict** — one entry per `__init__` param (minus `self` and `name`).
-- **`update_<attr>` docstring** — what the calculated attribute means.
+- **computed-attribute getter docstring** — what the calculated attribute means.
 - Optional class attributes: `disambiguation`, `pitfalls`, `interactions`, `param_interactions`.
 
 The mkdocs reference and the e-footprint-interface both consume this metadata; descriptions are not duplicated elsewhere.

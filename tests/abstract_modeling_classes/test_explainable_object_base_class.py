@@ -9,7 +9,7 @@ from pint import Quantity
 
 from efootprint.abstract_modeling_classes.explainable_hourly_quantities import ExplainableHourlyQuantities
 from efootprint.abstract_modeling_classes.explainable_object_base_class import ExplainableObject, \
-    optimize_attr_updates_chain, _apply_json_metadata
+    _apply_json_metadata
 from efootprint.abstract_modeling_classes.explainable_quantity import ExplainableQuantity
 from efootprint.abstract_modeling_classes.empty_explainable_object import EmptyExplainableObject
 from efootprint.abstract_modeling_classes.explainable_timezone import ExplainableTimezone
@@ -204,136 +204,9 @@ class TestExplainableObjectBaseClass(TestCase):
         eo = ExplainableObject(value=7, left_parent=left_parent, right_parent=right_parent, label="Parent")
         self.assertEqual([left_parent, right_parent], eo.direct_ancestors_with_id)
 
-    def test_update_function_chain_single_level_descendants(self):
-        mod_obj_container = "mod_obj"
-        parent = ExplainableObject(1, "test")
-        parent.modeling_obj_container = MagicMock()
-        parent.modeling_obj_container.id = "id"
-        parent.attr_name_in_mod_obj_container = "parent_attr"
 
-        child1 = MagicMock()
-        child1.id = "child1_id"
-        child1.direct_children_with_id = []
-        child1.direct_ancestors_with_id = [parent]
 
-        child2 = MagicMock()
-        child2.id = "child2_id"
-        child2.direct_children_with_id = []
-        child2.direct_ancestors_with_id = [parent]
 
-        parent.direct_children_with_id = [child1, child2]
-
-        for index, child in enumerate([child1, child2]):
-            child.modeling_obj_container = mod_obj_container
-            child.attr_name_in_mod_obj_container = f"attr_{index}"
-            child.dict_container = None
-            child.update_function = MagicMock()
-
-        with patch.object(ExplainableObject, "all_descendants_with_id", new_callable=PropertyMock) \
-                as mock_all_descendants_with_id:
-            mock_all_descendants_with_id.return_value = [child1, child2]
-
-            result = parent.update_function_chain
-
-            self.assertEqual([child1.update_function, child2.update_function], result)
-
-    def test_update_function_chain_multiple_levels_of_descendants(self):
-        mod_obj_container = "mod_obj_container"
-        parent = ExplainableObject(1, "test")
-        parent.modeling_obj_container = MagicMock()
-        parent.modeling_obj_container.id = "id"
-        parent.attr_name_in_mod_obj_container = "parent_attr"
-
-        child1 = MagicMock()
-        child1.id = "child1_id"
-        child1.direct_ancestors_with_id = [parent]
-
-        grandchild1 = MagicMock()
-        grandchild1.id = "grandchild1_id"
-        grandchild1.direct_children_with_id = []
-        grandchild1.direct_ancestors_with_id = [child1]
-
-        grandchild2 = MagicMock()
-        grandchild2.id = "grandchild2_id"
-        grandchild2.direct_children_with_id = []
-        grandchild2.direct_ancestors_with_id = [child1]
-
-        child1.direct_children_with_id = [grandchild1, grandchild2]
-        parent.direct_children_with_id = [child1]
-
-        for index, child in enumerate([child1, grandchild1, grandchild2]):
-            child.modeling_obj_container = mod_obj_container
-            child.attr_name_in_mod_obj_container = f"attr_{index}"
-            child.dict_container = None
-            child.update_function = MagicMock()
-
-        with patch.object(ExplainableObject, "all_descendants_with_id", new_callable=PropertyMock) \
-                as mock_all_descendants_with_id:
-            mock_all_descendants_with_id.return_value = [child1, grandchild1, grandchild2]
-
-            result = parent.update_function_chain
-
-            self.assertEqual([child1.update_function, grandchild1.update_function, grandchild2.update_function], result)
-
-    def test_update_function_chain_optimizes_loops(self):
-        mod_obj_container = "mod_obj_container"
-        parent = ExplainableObject(1, "test")
-        parent.modeling_obj_container = MagicMock()
-        parent.modeling_obj_container.id = "id"
-        parent.attr_name_in_mod_obj_container = "parent_attr"
-
-        child1 = MagicMock()
-        child1.id = "child1_id"
-        child1.direct_ancestors_with_id = [parent]
-
-        child2 = MagicMock()
-        child2.id = "child2_id"
-        child2.direct_ancestors_with_id = [parent]
-        child2.dict_container = None
-        child2.update_function = MagicMock()
-
-        grandchild1 = MagicMock()
-        grandchild1.id = "grandchild1_id"
-        grandchild1.direct_children_with_id = []
-        grandchild1.direct_ancestors_with_id = [child1, child2]
-
-        grandchild2 = MagicMock()
-        grandchild2.id = "grandchild2_id"
-        grandchild2.direct_children_with_id = []
-        grandchild2.direct_ancestors_with_id = [child1]
-
-        child1.direct_children_with_id = [grandchild1, grandchild2]
-        child2.direct_children_with_id = [grandchild1]
-        parent.direct_children_with_id = [child1, child2]
-
-        for index, child in enumerate([child1, grandchild1, grandchild2]):
-            child.modeling_obj_container = mod_obj_container
-            child.attr_name_in_mod_obj_container = f"attr_{index}"
-            child.dict_container = None
-            child.update_function = MagicMock()
-
-        with patch.object(ExplainableObject, "all_descendants_with_id", new_callable=PropertyMock) \
-                as mock_all_descendants_with_id:
-            mock_all_descendants_with_id.return_value = [child1, child2, grandchild1, grandchild2]
-
-            result = parent.update_function_chain
-
-            self.assertEqual(
-                [child1.update_function, child2.update_function, grandchild1.update_function,
-                 grandchild2.update_function], result)
-
-    def test_optimize_attr_updates_chain_removes_dict_element_if_dict_is_recomputed_later(self):
-        element_in_dict = MagicMock()
-        element_in_dict.id = "element_id"
-        dict_container = MagicMock()
-        dict_container.id = "dict_container_id"
-        element_in_dict.dict_container = dict_container
-
-        attr_updates_chain = [element_in_dict, dict_container]
-
-        optimized_chain = optimize_attr_updates_chain(attr_updates_chain)
-
-        self.assertEqual(optimized_chain, [dict_container])
 
     def test_set_label(self):
         eo = ExplainableObject(value=5, label="Label A")

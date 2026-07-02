@@ -1,10 +1,10 @@
 import uuid
-from collections import deque
 from copy import copy
 from typing import Literal, Type, Optional, TYPE_CHECKING
 import os
 
-from efootprint.abstract_modeling_classes.object_linked_to_modeling_obj import ObjectLinkedToModelingObj
+from efootprint.abstract_modeling_classes.object_linked_to_modeling_obj import (
+    ObjectLinkedToModelingObj, peek_attribute_value)
 from efootprint.constants.units import u
 from efootprint.logger import logger
 from efootprint.abstract_modeling_classes.utils import css_escape
@@ -79,63 +79,19 @@ def _resolve_sentinel_source(source_id: str) -> Optional[Source]:
     return None
 
 
-def retrieve_update_function_from_mod_obj_and_attr_name(mod_obj: "ModelingObject", attr_name: str):
-    update_func_name = f"update_{attr_name}"
-    update_func = getattr(mod_obj, update_func_name, None)
-
-    if update_func is None:
-        raise AttributeError(f"No update function associated to {attr_name} in {mod_obj.class_as_simple_str} "
-                             f"{mod_obj.name} ({mod_obj.id}), please create it.")
-
-    return update_func
-
-
-def retrieve_dict_element_update_function_from_mod_obj_and_attr_name(
-        mod_obj: "ModelingObject", attr_name: str):
-    update_func_name = f"update_dict_element_in_{attr_name}"
-    update_func = getattr(mod_obj, update_func_name, None)
-
-    if update_func is None:
-        raise AttributeError(
-            f"No dict element update function associated to {attr_name} in {mod_obj.class_as_simple_str} {mod_obj.id}, "
-            f"please create it.")
-
-    return update_func
-
-
-def optimize_attr_updates_chain(attr_updates_chain):
-    # Walk backward keeping the last occurrence of each attr.id and dropping dict-element entries whose dict
-    # container is recomputed later (the whole-dict recomputation will refresh every key).
-    initial_chain_len = len(attr_updates_chain)
-    seen_later_ids = set()
-    reversed_result = []
-
-    for attr_to_update in reversed(attr_updates_chain):
-        attr_id = attr_to_update.id
-        if attr_id in seen_later_ids:
-            continue
-        dict_container = attr_to_update.dict_container
-        if dict_container is not None and dict_container.id in seen_later_ids:
-            continue
-        reversed_result.append(attr_to_update)
-        seen_later_ids.add(attr_id)
-
-    optimized_chain = reversed_result[::-1]
-    optimized_chain_len = len(optimized_chain)
-
-    if optimized_chain_len != initial_chain_len:
-        logger.info(f"Optimized update function chain from {initial_chain_len} to {optimized_chain_len} calculations")
-
-    return optimized_chain
-
-
 def get_attribute_from_flat_obj_dict(attr_key: str, flat_obj_dict: dict):
+    """Resolve a serialized (container id, attribute[, key id]) address to its currently stored value,
+    or None when the slot is void — never computes: resolution runs inside graph bookkeeping (value
+    drops, rehydration), where a pull would recompute slots mid-invalidation. A void address means the
+    referenced value generation was dropped, so there is no live object to link to."""
     modeling_obj_container_id, attr_name_in_mod_obj_container, key_in_dict = eval(attr_key)
+    container_attr_value = peek_attribute_value(
+        flat_obj_dict[modeling_obj_container_id], attr_name_in_mod_obj_container)
     if key_in_dict:
-        return getattr(flat_obj_dict[modeling_obj_container_id], attr_name_in_mod_obj_container)[
-            flat_obj_dict[key_in_dict]]
-    else:
-        return getattr(flat_obj_dict[modeling_obj_container_id], attr_name_in_mod_obj_container)
+        if not isinstance(container_attr_value, dict):
+            return None
+        return dict.get(container_attr_value, flat_obj_dict[key_in_dict])
+    return container_attr_value
 
 
 class ExplainableObject(ObjectLinkedToModelingObj):
@@ -271,14 +227,17 @@ class ExplainableObject(ObjectLinkedToModelingObj):
     def load_ancestors_and_children_from_json(self):
         if (self._keys_of_direct_ancestors_with_id_loaded_from_json is not None
                 and self._keys_of_direct_children_with_id_loaded_from_json is not None):
+            # Dropped value generations resolve to None and are filtered: their graph links are dead.
             self.direct_ancestors_with_id = [
-                get_attribute_from_flat_obj_dict(direct_ancestor_key, self._flat_obj_dict) for direct_ancestor_key in
-                self._keys_of_direct_ancestors_with_id_loaded_from_json
-            ]
+                ancestor for ancestor in (
+                    get_attribute_from_flat_obj_dict(direct_ancestor_key, self._flat_obj_dict)
+                    for direct_ancestor_key in self._keys_of_direct_ancestors_with_id_loaded_from_json)
+                if ancestor is not None]
             self.direct_children_with_id = [
-                get_attribute_from_flat_obj_dict(direct_child_key, self._flat_obj_dict) for direct_child_key in
-                self._keys_of_direct_children_with_id_loaded_from_json
-            ]
+                child for child in (
+                    get_attribute_from_flat_obj_dict(direct_child_key, self._flat_obj_dict)
+                    for direct_child_key in self._keys_of_direct_children_with_id_loaded_from_json)
+                if child is not None]
 
     @property
     def direct_ancestors_with_id(self):
@@ -420,71 +379,6 @@ class ExplainableObject(ObjectLinkedToModelingObj):
 
         return all_ancestors
 
-    @property
-    def attr_updates_chain(self):
-        attr_updates_chain = []
-        descendants = self.all_descendants_with_id
-        descendant_ids = {desc.id for desc in descendants if desc.id != self.id}
-        has_been_added_to_chain_dict = {desc.id: False for desc in descendants if desc.id != self.id}
-
-        # Use deque for efficient pops and removals
-        parents_with_children_to_add = deque([self])
-
-        # Precompute ancestor ids for each child
-        ancestor_ids_map = {
-            child.id: [ancestor.id for ancestor in child.direct_ancestors_with_id]
-            for child in descendants
-        }
-
-        while parents_with_children_to_add:
-            next_parents = deque()
-            while parents_with_children_to_add:
-                parent = parents_with_children_to_add.popleft()
-                keep_for_next_iteration = False
-
-                for child in parent.direct_children_with_id:
-                    if not has_been_added_to_chain_dict[child.id]:
-                        child_ancestor_ids = ancestor_ids_map.get(child.id, [])
-                        all_child_ancestors_that_need_to_be_updated_are_already_in_chain = all(
-                            has_been_added_to_chain_dict[ancestor_id] for ancestor_id in child_ancestor_ids if
-                               ancestor_id in descendant_ids)
-                        if all_child_ancestors_that_need_to_be_updated_are_already_in_chain:
-                            attr_updates_chain.append(child)
-                            has_been_added_to_chain_dict[child.id] = True
-
-                            if child.direct_children_with_id:
-                                next_parents.append(child)
-                        else:
-                            keep_for_next_iteration = True
-
-                if keep_for_next_iteration:
-                    next_parents.append(parent)
-
-            parents_with_children_to_add = next_parents
-
-        optimized_chain = optimize_attr_updates_chain(attr_updates_chain)
-        return optimized_chain
-
-    @property
-    def update_function(self):
-        if self.modeling_obj_container is None:
-            raise ValueError(
-                f"{self} doesn’t have a modeling_obj_container, hence it makes no sense "
-                f"to look for its update function")
-        dict_container = self.dict_container
-        if dict_container is None:
-            update_func = retrieve_update_function_from_mod_obj_and_attr_name(
-                self.modeling_obj_container, self.attr_name_in_mod_obj_container)
-        else:
-            update_func = retrieve_dict_element_update_function_from_mod_obj_and_attr_name(
-                self.modeling_obj_container, self.attr_name_in_mod_obj_container)
-
-        return update_func
-
-    @property
-    def update_function_chain(self):
-        return [attribute.update_function for attribute in self.attr_updates_chain]
-    
     def generate_explainable_object_with_logical_dependency(
             self, explainable_condition: Type["ExplainableObject"]):
         return self.__class__(value=self.value, label=self.label, left_parent=self, right_parent=explainable_condition,

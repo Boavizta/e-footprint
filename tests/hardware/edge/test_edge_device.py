@@ -37,6 +37,7 @@ from efootprint.core.usage.edge.recurrent_server_need import RecurrentServerNeed
 from tests.core.attribution.conservation import (
     assert_hourly_quantities_equal, assert_source_atoms_conserve, sum_atom_values)
 from tests.utils import create_mod_obj_mock, set_modeling_obj_containers
+from tests.utils import recompute_attribute
 
 
 class TestEdgeDevice(TestCase):
@@ -72,9 +73,6 @@ class TestEdgeDevice(TestCase):
         self.assertIsInstance(self.edge_device.instances_energy, EmptyExplainableObject)
         self.assertIsInstance(self.edge_device.energy_footprint, EmptyExplainableObject)
 
-    def test_modeling_objects_whose_attributes_depend_directly_on_me(self):
-        """Test that no objects depend directly on EdgeDevice."""
-        self.assertEqual([], self.edge_device.modeling_objects_whose_attributes_depend_directly_on_me)
 
     def test_recurrent_needs_property(self):
         """Test recurrent_needs property returns modeling_obj_containers."""
@@ -204,8 +202,10 @@ class TestEdgeDevice(TestCase):
         self.mock_component_1.fabrication_footprint_per_edge_device_per_usage_pattern = ExplainableObjectDict()
         self.mock_component_2.fabrication_footprint_per_edge_device_per_usage_pattern = ExplainableObjectDict()
 
-        self.edge_device.update_dict_element_in_structure_fabrication_footprint_per_usage_pattern(mock_pattern)
-        self.edge_device.update_dict_element_in_instances_fabrication_footprint_per_usage_pattern(mock_pattern)
+        with patch.object(EdgeDevice, "edge_usage_patterns", new_callable=PropertyMock,
+                          return_value=[mock_pattern]):
+            recompute_attribute(self.edge_device, "structure_fabrication_footprint_per_usage_pattern", mock_pattern)
+            recompute_attribute(self.edge_device, "instances_fabrication_footprint_per_usage_pattern", mock_pattern)
 
         # Structure intensity: 100 kg / 5 year = 20 kg/year
         # Per hour: 20 kg/year / (365.25 * 24) kg/hour
@@ -236,8 +236,10 @@ class TestEdgeDevice(TestCase):
             mock_pattern: component_2_footprint
         })
 
-        self.edge_device.update_dict_element_in_structure_fabrication_footprint_per_usage_pattern(mock_pattern)
-        self.edge_device.update_dict_element_in_instances_fabrication_footprint_per_usage_pattern(mock_pattern)
+        with patch.object(EdgeDevice, "edge_usage_patterns", new_callable=PropertyMock,
+                          return_value=[mock_pattern]):
+            recompute_attribute(self.edge_device, "structure_fabrication_footprint_per_usage_pattern", mock_pattern)
+            recompute_attribute(self.edge_device, "instances_fabrication_footprint_per_usage_pattern", mock_pattern)
 
         # Structure footprint: 10 * (100 / 5) / (365.25 * 24) kg
         # Total: structure + 5 kg + 8 kg
@@ -261,8 +263,10 @@ class TestEdgeDevice(TestCase):
         self.mock_component_1.lifespan = SourceValue(5 * u.year)
         self.mock_component_2.fabrication_footprint_per_edge_device_per_usage_pattern = ExplainableObjectDict()
 
-        self.edge_device.update_dict_element_in_structure_fabrication_footprint_per_usage_pattern(mock_pattern)
-        self.edge_device.update_dict_element_in_instances_fabrication_footprint_per_usage_pattern(mock_pattern)
+        with patch.object(EdgeDevice, "edge_usage_patterns", new_callable=PropertyMock,
+                          return_value=[mock_pattern]):
+            recompute_attribute(self.edge_device, "structure_fabrication_footprint_per_usage_pattern", mock_pattern)
+            recompute_attribute(self.edge_device, "instances_fabrication_footprint_per_usage_pattern", mock_pattern)
 
         # Structure: 10 * (100 / 5) / (365.25 * 24); unused component 1: 10 * (50 / 5) / (365.25 * 24)
         hourly = 10 / (365.25 * 24)
@@ -288,7 +292,7 @@ class TestEdgeDevice(TestCase):
         self.mock_component_1.energy_per_edge_device_per_usage_pattern = ExplainableObjectDict()
         self.mock_component_2.energy_per_edge_device_per_usage_pattern = ExplainableObjectDict()
 
-        self.edge_device.update_dict_element_in_instances_energy_per_usage_pattern(mock_pattern)
+        recompute_attribute(self.edge_device, "instances_energy_per_usage_pattern", mock_pattern)
 
         result = self.edge_device.instances_energy_per_usage_pattern[mock_pattern]
         self.assertIsInstance(result, EmptyExplainableObject)
@@ -307,7 +311,7 @@ class TestEdgeDevice(TestCase):
             mock_pattern: component_2_energy
         })
 
-        self.edge_device.update_dict_element_in_instances_energy_per_usage_pattern(mock_pattern)
+        recompute_attribute(self.edge_device, "instances_energy_per_usage_pattern", mock_pattern)
 
         # Total energy: [100, 200] + [50, 100] = [150, 300]
         expected_energy = [150, 300]
@@ -324,7 +328,7 @@ class TestEdgeDevice(TestCase):
         self.mock_component_1.fabrication_footprint_per_edge_device = SourceValue(4 * u.kg)
 
         self.edge_device.fabrication_footprint_breakdown_by_source = ExplainableObjectDict()
-        self.edge_device.update_dict_element_in_fabrication_footprint_breakdown_by_source(self.mock_component_1)
+        recompute_attribute(self.edge_device, "fabrication_footprint_breakdown_by_source", self.mock_component_1)
 
         breakdown = self.edge_device.fabrication_footprint_breakdown_by_source
         # Expected: total_nb_of_units * per_device + structure_total / nb_components = 2*4 + 10/2 = 13
@@ -341,7 +345,7 @@ class TestEdgeDevice(TestCase):
         self.mock_component_1.fabrication_footprint_per_edge_device = SourceValue(4 * u.kg)
         self.mock_component_2.fabrication_footprint_per_edge_device = SourceValue(10 * u.kg)
 
-        self.edge_device.update_fabrication_footprint_breakdown_by_source()
+        recompute_attribute(self.edge_device, "fabrication_footprint_breakdown_by_source")
 
         breakdown = self.edge_device.fabrication_footprint_breakdown_by_source
         self.assertEqual({self.mock_component_1, self.mock_component_2}, set(breakdown))
@@ -360,7 +364,7 @@ class TestEdgeDevice(TestCase):
         edge_device.trigger_modeling_updates = False
         edge_device.instances_fabrication_footprint = SourceValue(20 * u.kg)
 
-        edge_device.update_fabrication_footprint_breakdown_by_source()
+        recompute_attribute(edge_device, "fabrication_footprint_breakdown_by_source")
 
         self.assertEqual({}, edge_device.fabrication_footprint_breakdown_by_source)
 
@@ -371,7 +375,7 @@ class TestEdgeDevice(TestCase):
         self.mock_component_1.energy_footprint_per_edge_device_per_usage_pattern = ExplainableObjectDict()
         self.mock_component_2.energy_footprint_per_edge_device_per_usage_pattern = ExplainableObjectDict()
 
-        self.edge_device.update_dict_element_in_energy_footprint_per_usage_pattern(mock_pattern)
+        recompute_attribute(self.edge_device, "energy_footprint_per_usage_pattern", mock_pattern)
 
         result = self.edge_device.energy_footprint_per_usage_pattern[mock_pattern]
         self.assertIsInstance(result, EmptyExplainableObject)
@@ -390,7 +394,7 @@ class TestEdgeDevice(TestCase):
             mock_pattern: component_2_footprint
         })
 
-        self.edge_device.update_dict_element_in_energy_footprint_per_usage_pattern(mock_pattern)
+        recompute_attribute(self.edge_device, "energy_footprint_per_usage_pattern", mock_pattern)
 
         # Total energy footprint: [1, 2] + [0.5, 1] = [1.5, 3]
         expected_footprint = [1.5, 3]
@@ -412,7 +416,7 @@ class TestEdgeDevice(TestCase):
             mock_pattern_2: energy_2
         })
 
-        self.edge_device.update_instances_energy()
+        recompute_attribute(self.edge_device, "instances_energy")
 
         # Sum: [100, 200] + [50, 100] = [150, 300]
         expected_energy = [150, 300]
@@ -432,7 +436,7 @@ class TestEdgeDevice(TestCase):
             mock_pattern_2: footprint_2
         })
 
-        self.edge_device.update_energy_footprint()
+        recompute_attribute(self.edge_device, "energy_footprint")
 
         # Sum: [1, 2] + [0.5, 1] = [1.5, 3]
         expected_footprint = [1.5, 3]
@@ -452,7 +456,7 @@ class TestEdgeDevice(TestCase):
             mock_pattern_2: footprint_2
         })
 
-        self.edge_device.update_instances_fabrication_footprint()
+        recompute_attribute(self.edge_device, "instances_fabrication_footprint")
 
         # Sum: [10, 20] + [5, 10] = [15, 30]
         expected_footprint = [15, 30]
@@ -470,7 +474,7 @@ class TestEdgeDevice(TestCase):
         self.mock_component_2.fabrication_footprint_per_edge_device = SourceValue(6 * u.kg)
         self.mock_component_1.energy_footprint_per_edge_device = SourceValue(1 * u.kg)
         self.mock_component_2.energy_footprint_per_edge_device = SourceValue(5 * u.kg)
-        self.edge_device.update_fabrication_footprint_breakdown_by_source()
+        recompute_attribute(self.edge_device, "fabrication_footprint_breakdown_by_source")
 
         breakdown = self.edge_device.footprint_breakdown_by_source
 
@@ -505,7 +509,7 @@ class TestEdgeDevice(TestCase):
         mock_component_need_2.edge_component = mock_component_2
         mock_recurrent_edge_component_needs.return_value = [mock_component_need_1, mock_component_need_2]
 
-        self.edge_device.update_component_needs_edge_device_validation()
+        recompute_attribute(self.edge_device, "component_needs_edge_device_validation")
 
     @patch("efootprint.core.hardware.edge.edge_device.EdgeDevice.recurrent_edge_component_needs",
            new_callable=PropertyMock)
@@ -522,7 +526,7 @@ class TestEdgeDevice(TestCase):
         mock_component_need_2.edge_component = mock_component
         mock_recurrent_edge_component_needs.return_value = [mock_component_need_1, mock_component_need_2]
 
-        self.edge_device.update_component_needs_edge_device_validation()
+        recompute_attribute(self.edge_device, "component_needs_edge_device_validation")
 
     @patch("efootprint.core.hardware.edge.edge_device.EdgeDevice.recurrent_edge_component_needs",
            new_callable=PropertyMock)
@@ -547,7 +551,7 @@ class TestEdgeDevice(TestCase):
         mock_recurrent_edge_component_needs.return_value = [mock_component_need_1, mock_component_need_2]
 
         with self.assertRaises(ValueError) as context:
-            self.edge_device.update_component_needs_edge_device_validation()
+            recompute_attribute(self.edge_device, "component_needs_edge_device_validation")
 
     def test_changing_to_usage_span_superior_to_edge_device_lifespan_raises_error(self):
         edge_device = EdgeDevice(
@@ -562,7 +566,7 @@ class TestEdgeDevice(TestCase):
 
         usage_span = SourceValue(1 * u.year)
         euj = EdgeUsageJourney("test euj", edge_functions=[edge_function], usage_span=usage_span)
-        edge_device.compute_calculated_attributes()
+        edge_device.pull_computed_attributes()
 
         with self.assertRaises(InsufficientCapacityError):
             euj.usage_span = SourceValue(3 * u.year)
@@ -648,19 +652,19 @@ class TestEdgeDeviceUpdateTotalNbOfUnits(TestCase):
         self.device.trigger_modeling_updates = False
 
     def test_no_groups_gives_total_of_one(self):
-        self.device.update_total_nb_of_units()
+        recompute_attribute(self.device, "total_nb_of_units")
         self.assertAlmostEqual(1.0, self.device.total_nb_of_units.value.magnitude)
 
     def test_no_groups_label_mentions_no_group(self):
-        self.device.update_total_nb_of_units()
+        recompute_attribute(self.device, "total_nb_of_units")
         label = self.device.total_nb_of_units.label
         self.assertIn("no group", label.lower())
 
     def test_with_one_group_of_four(self):
         group = _make_edge_device_group("Group")
         group.edge_device_counts[self.device] = SourceValue(4 * u.dimensionless)
-        group.update_effective_nb_of_units_within_root()
-        self.device.update_total_nb_of_units()
+        recompute_attribute(group, "effective_nb_of_units_within_root")
+        recompute_attribute(self.device, "total_nb_of_units")
         self.assertAlmostEqual(4.0, self.device.total_nb_of_units.value.magnitude)
 
     def test_with_nested_groups_multiplies_counts(self):
@@ -668,9 +672,9 @@ class TestEdgeDeviceUpdateTotalNbOfUnits(TestCase):
         sub = _make_edge_device_group("Sub")
         root.sub_group_counts[sub] = SourceValue(3 * u.dimensionless)
         sub.edge_device_counts[self.device] = SourceValue(4 * u.dimensionless)
-        root.update_effective_nb_of_units_within_root()
-        sub.update_effective_nb_of_units_within_root()
-        self.device.update_total_nb_of_units()
+        recompute_attribute(root, "effective_nb_of_units_within_root")
+        recompute_attribute(sub, "effective_nb_of_units_within_root")
+        recompute_attribute(self.device, "total_nb_of_units")
         self.assertAlmostEqual(12.0, self.device.total_nb_of_units.value.magnitude)
 
     def test_with_two_independent_root_groups_sums_contributions(self):
@@ -678,16 +682,16 @@ class TestEdgeDeviceUpdateTotalNbOfUnits(TestCase):
         group_b = _make_edge_device_group("Group B")
         group_a.edge_device_counts[self.device] = SourceValue(2 * u.dimensionless)
         group_b.edge_device_counts[self.device] = SourceValue(3 * u.dimensionless)
-        group_a.update_effective_nb_of_units_within_root()
-        group_b.update_effective_nb_of_units_within_root()
-        self.device.update_total_nb_of_units()
+        recompute_attribute(group_a, "effective_nb_of_units_within_root")
+        recompute_attribute(group_b, "effective_nb_of_units_within_root")
+        recompute_attribute(self.device, "total_nb_of_units")
         self.assertAlmostEqual(5.0, self.device.total_nb_of_units.value.magnitude)
 
     def test_total_nb_is_dimensionless(self):
         group = _make_edge_device_group("Group")
         group.edge_device_counts[self.device] = SourceValue(3 * u.dimensionless)
-        group.update_effective_nb_of_units_within_root()
-        self.device.update_total_nb_of_units()
+        recompute_attribute(group, "effective_nb_of_units_within_root")
+        recompute_attribute(self.device, "total_nb_of_units")
         self.assertTrue(self.device.total_nb_of_units.value.check("[]"))
 
 

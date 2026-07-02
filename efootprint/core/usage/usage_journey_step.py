@@ -38,9 +38,6 @@ class UsageJourneyStep(ModelingObject):
         self.user_time_spent.set_label(f"Time spent by user")
         self.jobs = to_weighted_explainable_object_dict(jobs, weight_label=self.weight_labels["jobs"])
 
-    @property
-    def modeling_objects_whose_attributes_depend_directly_on_me(self) -> List["UsageJourney"] | List[JobBase]:
-        return list(self.jobs)
 
     @property
     def usage_journeys(self) -> List["UsageJourney"]:

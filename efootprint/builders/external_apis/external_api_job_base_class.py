@@ -41,6 +41,3 @@ class ExternalAPIJob(JobBase):
     def server(self) -> "ExternalAPIServer":
         return self.external_api.server
 
-    @property
-    def modeling_objects_whose_attributes_depend_directly_on_me(self) -> List[ModelingObject]:
-        return [self.server] + super().modeling_objects_whose_attributes_depend_directly_on_me

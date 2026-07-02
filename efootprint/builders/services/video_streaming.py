@@ -91,11 +91,7 @@ class VideoStreamingJob(ServiceJob):
         self.video_duration = video_duration.set_label("Video duration")
         self.resolution = resolution.set_label("Resolution")
         self.refresh_rate = refresh_rate.set_label("Frames per second")
-        self.dynamic_bitrate = EmptyExplainableObject()
 
-    calculated_attributes: List[str] = (
-        ["request_duration", "dynamic_bitrate", "data_transferred", "compute_needed", "ram_needed"]
-        + ServiceJob.calculated_attributes)
 
     @computed_attribute
     def request_duration(self):

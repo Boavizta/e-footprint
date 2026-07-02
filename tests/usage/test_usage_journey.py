@@ -9,6 +9,7 @@ from efootprint.core.usage.usage_journey import UsageJourney
 from efootprint.constants.units import u
 from efootprint.core.usage.usage_journey_step import UsageJourneyStep
 from tests.utils import create_mod_obj_mock
+from tests.utils import recompute_attribute
 
 
 class TestUsageJourney(TestCase):
@@ -107,7 +108,7 @@ class TestUsageJourney(TestCase):
         uj_step2.user_time_spent = SourceValue(3 * u.min)
         uj_step2.user_time_spent.set_modeling_obj_container(uj_step2, "user_time_spent")
         uj = UsageJourney("test user journey", uj_steps=[uj_step1, uj_step2])
-        uj.update_duration()
+        recompute_attribute(uj, "duration")
 
         self.assertEqual(SourceValue(8 * u.min), uj.duration)
 
@@ -119,7 +120,7 @@ class TestUsageJourney(TestCase):
         uj_step2.user_time_spent = SourceValue(3 * u.min)
         uj_step2.user_time_spent.set_modeling_obj_container(uj_step2, "user_time_spent")
         uj = UsageJourney("test user journey", uj_steps={uj_step1: 2, uj_step2: 0.5})
-        uj.update_duration()
+        recompute_attribute(uj, "duration")
 
         self.assertEqual(SourceValue(11.5 * u.min), uj.duration)
 
@@ -131,7 +132,7 @@ class TestUsageJourney(TestCase):
         uj_step2.user_time_spent = SourceValue(3 * u.min)
         uj_step2.user_time_spent.set_modeling_obj_container(uj_step2, "user_time_spent")
         uj = UsageJourney("test user journey", uj_steps={uj_step1: 0, uj_step2: 1})
-        uj.update_duration()
+        recompute_attribute(uj, "duration")
 
         self.assertEqual(SourceValue(3 * u.min), uj.duration)
 

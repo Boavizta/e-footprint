@@ -9,6 +9,7 @@ from efootprint.constants.sources import Sources
 from efootprint.abstract_modeling_classes.source_objects import SourceValue
 from efootprint.constants.units import u
 from efootprint.builders.time_builders import create_source_hourly_values_from_list
+from tests.utils import recompute_attribute
 
 
 class TestInfraHardware(TestCase):
@@ -44,8 +45,8 @@ class TestInfraHardware(TestCase):
             power=SourceValue(2 * u.W, Sources.USER_DATA), lifespan=SourceValue(6 * u.years))
 
     def test_instances_fabrication_footprint(self):
-        self.test_infra_hardware.update_nb_of_instances()
-        self.test_infra_hardware.update_instances_fabrication_footprint()
+        recompute_attribute(self.test_infra_hardware, "nb_of_instances")
+        recompute_attribute(self.test_infra_hardware, "instances_fabrication_footprint")
         self.assertEqual(u.kg, self.test_infra_hardware.instances_fabrication_footprint.unit)
         self.assertTrue(
             np.allclose([round(2 * 20 / (365.25 * 24), 3), round(3 * 20 / (365.25 * 24), 3)],
@@ -53,8 +54,8 @@ class TestInfraHardware(TestCase):
 
     def test_energy_footprints(self):
         self.test_infra_hardware.average_carbon_intensity = SourceValue(100 * u.g / u.kWh)
-        self.test_infra_hardware.update_instances_energy()
-        self.test_infra_hardware.update_energy_footprint()
+        recompute_attribute(self.test_infra_hardware, "instances_energy")
+        recompute_attribute(self.test_infra_hardware, "energy_footprint")
         self.assertEqual(u.kg, self.test_infra_hardware.energy_footprint.unit)
         self.assertTrue(np.allclose([0.2, 0.4],
                          self.test_infra_hardware.energy_footprint.magnitude))

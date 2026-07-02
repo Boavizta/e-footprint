@@ -42,10 +42,6 @@ class TestRecurrentEdgeWorkload(TestCase):
         self.assertIs(self.recurrent_workload, self.edge_workload.recurrent_workload)
         self.assertIsInstance(self.edge_workload.unitary_hourly_workload_per_usage_pattern, ExplainableObjectDict)
 
-    def test_modeling_objects_whose_attributes_depend_directly_on_me(self):
-        """Test modeling_objects_whose_attributes_depend_directly_on_me returns recurrent_edge_component_needs."""
-        dependent_objects = self.edge_workload.modeling_objects_whose_attributes_depend_directly_on_me
-        self.assertEqual(self.edge_workload.recurrent_edge_component_needs, dependent_objects)
 
 
 if __name__ == "__main__":

@@ -81,13 +81,6 @@ class JobBase(ModelingObject):
                  request_duration: ExplainableQuantity, compute_needed: ExplainableQuantity,
                  ram_needed: ExplainableQuantity):
         super().__init__(name)
-        self.hourly_occurrences_per_usage_pattern = ExplainableObjectDict()
-        self.hourly_avg_occurrences_per_usage_pattern = ExplainableObjectDict()
-        self.hourly_data_transferred_per_usage_pattern = ExplainableObjectDict()
-        self.hourly_data_stored_per_usage_pattern = ExplainableObjectDict()
-        self.hourly_avg_occurrences_across_usage_patterns = EmptyExplainableObject()
-        self.hourly_data_transferred_across_usage_patterns = EmptyExplainableObject()
-        self.hourly_data_stored_across_usage_patterns = EmptyExplainableObject()
         self.data_transferred = data_transferred.set_label(
             f"Sum of all data uploads and downloads by request")
         self.data_stored = data_stored.set_label(f"Data stored by request")
@@ -95,15 +88,7 @@ class JobBase(ModelingObject):
         self.ram_needed = ram_needed.set_label(f"RAM needed during job processing").to(u.MB_ram)
         self.compute_needed = compute_needed.set_label(f"CPU needed during job processing")
 
-    @property
-    def modeling_objects_whose_attributes_depend_directly_on_me(self) -> List[ModelingObject]:
-        return self.networks
 
-    calculated_attributes: List[str] = [
-        "hourly_occurrences_per_usage_pattern", "hourly_avg_occurrences_per_usage_pattern",
-        "hourly_data_transferred_per_usage_pattern", "hourly_data_stored_per_usage_pattern",
-        "hourly_avg_occurrences_across_usage_patterns", "hourly_data_transferred_across_usage_patterns",
-        "hourly_data_stored_across_usage_patterns"] + ModelingObject.calculated_attributes
 
     @property
     def duration_in_full_hours(self):
@@ -438,9 +423,6 @@ class DirectServerJob(JobBase):
             f"{str(compute_needed.value.units).replace('_', ' ')}s needed on server {self.server.name} "
             f"during job processing")
 
-    @property
-    def modeling_objects_whose_attributes_depend_directly_on_me(self) -> List[ModelingObject]:
-        return [self.server] + super().modeling_objects_whose_attributes_depend_directly_on_me
 
 
 class Job(DirectServerJob):

@@ -12,6 +12,7 @@ from efootprint.builders.external_apis.ecologits.ecologits_video_external_api im
     EcoLogitsVideoGenExternalAPI, EcoLogitsVideoGenExternalAPIJob,
     ecologits_video_calculated_attributes)
 from efootprint.constants.units import u
+from tests.utils import patch_attribute, recompute_attribute
 
 
 def _make_api(**overrides) -> EcoLogitsVideoGenExternalAPI:
@@ -47,14 +48,14 @@ class TestEcoLogitsVideoGenExternalAPI(TestCase):
 
     def test_datacenter_location_and_pue_inferred_from_provider_config(self):
         # openai video provider config: datacenter_location="USA", datacenter_pue=1.2
-        self.api.update_datacenter_location()
-        self.api.update_data_center_pue()
+        recompute_attribute(self.api, "datacenter_location")
+        recompute_attribute(self.api, "data_center_pue")
         self.assertEqual("USA", self.api.datacenter_location.value)
         self.assertEqual(1.2, self.api.data_center_pue.value.magnitude)
 
     def test_average_carbon_intensity_derived_from_datacenter_location(self):
-        self.api.update_datacenter_location()
-        self.api.update_average_carbon_intensity()
+        recompute_attribute(self.api, "datacenter_location")
+        recompute_attribute(self.api, "average_carbon_intensity")
         # Carbon intensity carries kg/kWh and hangs off datacenter_location in the explanation graph.
         self.assertEqual((1 * u.kg / u.kWh).dimensionality,
                          self.api.average_carbon_intensity.value.dimensionality)
@@ -95,8 +96,6 @@ class TestEcoLogitsVideoGenExternalAPIJob(TestCase):
     def test_compatible_external_apis(self):
         self.assertEqual([EcoLogitsVideoGenExternalAPI], EcoLogitsVideoGenExternalAPIJob.compatible_external_apis())
 
-    def test_modeling_objects_whose_attributes_depend_directly_on_me_includes_server(self):
-        self.assertIn(self.api.server, self.job.modeling_objects_whose_attributes_depend_directly_on_me)
 
     def test_param_descriptions_cover_every_init_param(self):
         init_params = set(inspect.signature(EcoLogitsVideoGenExternalAPIJob.__init__).parameters) - {"self", "name"}
@@ -112,7 +111,7 @@ class TestEcoLogitsVideoGenExternalAPIJob(TestCase):
         self.assertIn("1080p (1920 x 1080)", labels)
 
     def test_extracted_attributes_carry_expected_units(self):
-        self.job.compute_calculated_attributes()
+        self.job.pull_computed_attributes()
         expected_units = {
             "generation_latency": u.s,
             "request_energy": u.kWh,
@@ -127,7 +126,7 @@ class TestEcoLogitsVideoGenExternalAPIJob(TestCase):
                 f"{attr} has dimensionality {value.value.dimensionality}, expected {(1 * base_unit).dimensionality}")
 
     def test_update_request_duration_copies_generation_latency(self):
-        self.job.compute_calculated_attributes()
+        self.job.pull_computed_attributes()
         self.assertEqual(self.job.generation_latency.value, self.job.request_duration.value)
 
     def test_update_data_transferred_constructs_constants_fresh_inside_method(self):
@@ -143,24 +142,24 @@ class TestEcoLogitsVideoGenExternalAPIJob(TestCase):
         job_b = _make_job(self.api, name="Job B")
         job_a.trigger_modeling_updates = False
         job_b.trigger_modeling_updates = False
-        job_a.update_data_transferred()
-        job_b.update_data_transferred()
+        recompute_attribute(job_a, "data_transferred")
+        recompute_attribute(job_b, "data_transferred")
         self.assertEqual(job_a.data_transferred.value, job_b.data_transferred.value)
         # Distinct ExplainableQuantity instances along each calculation graph:
         self.assertIsNot(job_a.data_transferred, job_b.data_transferred)
 
     def test_update_data_transferred_scales_with_duration_and_resolution(self):
-        self.job.compute_calculated_attributes()
+        self.job.pull_computed_attributes()
         baseline = self.job.data_transferred.value.to(u.MB).magnitude
 
         longer = _make_job(self.api, name="Longer", duration=SourceValue(16 * u.s))
         longer.trigger_modeling_updates = False
-        longer.update_data_transferred()
+        recompute_attribute(longer, "data_transferred")
         self.assertAlmostEqual(2 * baseline, longer.data_transferred.value.to(u.MB).magnitude, places=4)
 
         bigger = _make_job(self.api, name="Bigger", resolution=SourceObject("1080p (1920 x 1080)"))
         bigger.trigger_modeling_updates = False
-        bigger.update_data_transferred()
+        recompute_attribute(bigger, "data_transferred")
         # Pixel count scales (1920 * 1080) / (1280 * 720) = 2.25
         self.assertAlmostEqual(2.25 * baseline, bigger.data_transferred.value.to(u.MB).magnitude, places=4)
 
@@ -168,7 +167,7 @@ class TestEcoLogitsVideoGenExternalAPIJob(TestCase):
         # Inputs whose modification must invalidate impacts: duration, resolution, with_audio,
         # data_center_pue, average_carbon_intensity. Verified by inspecting the impacts node's
         # direct ancestors via the explainability graph.
-        self.job.compute_calculated_attributes()
+        self.job.pull_computed_attributes()
         ancestor_labels = {a.label for a in self.job.impacts.direct_ancestors_with_id}
         for required in (
                 self.job.resolution.label, self.job.duration.label, self.job.with_audio.label,
@@ -185,8 +184,8 @@ class TestEcoLogitsVideoGenExternalAPIJob(TestCase):
         api = _make_api(provider=SourceObject("google"), model_name=SourceObject("veo-3.0"))
         with_audio_job = _make_job(api, name="With audio", with_audio=SourceObject(True))
         no_audio_job = _make_job(api, name="No audio", with_audio=SourceObject(False))
-        with_audio_job.compute_calculated_attributes()
-        no_audio_job.compute_calculated_attributes()
+        with_audio_job.pull_computed_attributes()
+        no_audio_job.pull_computed_attributes()
         self.assertGreater(with_audio_job.generation_latency.value.magnitude, 0)
         self.assertGreater(no_audio_job.generation_latency.value.magnitude, 0)
         self.assertNotEqual(
@@ -200,7 +199,7 @@ class TestEcoLogitsVideoGenExternalAPIJob(TestCase):
             self.assertIn(required, self.job.calculated_attributes)
 
     def test_ancestors_carry_pint_quantities(self):
-        self.job.compute_calculated_attributes()
+        self.job.pull_computed_attributes()
         for attr in ecologits_video_calculated_attributes:
             calc = getattr(self.job, attr)
             for ancestor in calc.ancestors.values():
@@ -209,15 +208,15 @@ class TestEcoLogitsVideoGenExternalAPIJob(TestCase):
     def test_invalid_resolution_raises(self):
         with self.assertRaises(ValueError):
             bad = _make_job(self.api, name="Bad", resolution=SourceObject("bad-format"))
-            bad.update_data_transferred()
+            recompute_attribute(bad, "data_transferred")
 
     def test_unknown_model_for_provider_raises(self):
         # Patch model_name on a valid API to ask for a model not in the catalog; update_impacts must raise.
         job = _make_job(self.api)
         job.trigger_modeling_updates = False
-        with patch.object(self.api.model_name, "value", "nope-2"):
+        with patch_attribute(self.api.model_name, "value", "nope-2"):
             with self.assertRaises(ValueError):
-                job.update_impacts()
+                recompute_attribute(job, "impacts")
 
 
 if __name__ == "__main__":

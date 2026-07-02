@@ -13,6 +13,7 @@ from efootprint.builders.external_apis.ecologits.ecologits_external_api_server_b
 from efootprint.builders.external_apis.external_api_job_base_class import ExternalAPIJob
 from efootprint.constants.units import u
 from tests.utils import create_mod_obj_mock, set_modeling_obj_containers
+from tests.utils import recompute_attribute
 
 
 class TestEcoLogitsExternalAPIServerBase(TestCase):
@@ -51,7 +52,7 @@ class TestEcoLogitsExternalAPIServerBase(TestCase):
             self._job("Job 2", request_embodied_gwp=ExplainableQuantity(20 * u.kg, "emb 2"),
                       hourly_avg_occurrences_across_usage_patterns=self._avg_occ(3, "occ 2"))])
 
-        self.server.update_instances_fabrication_footprint()
+        recompute_attribute(self.server, "instances_fabrication_footprint")
 
         self.assertTrue(np.allclose(
             [10 * 5 + 20 * 3] * 24, self.server.instances_fabrication_footprint.magnitude))
@@ -64,14 +65,14 @@ class TestEcoLogitsExternalAPIServerBase(TestCase):
                       request_embodied_gwp=ExplainableQuantity(10 * u.kg, "emb"),
                       hourly_avg_occurrences_across_usage_patterns=self._avg_occ(4, "avg occ"))])
 
-        self.server.update_instances_fabrication_footprint()
+        recompute_attribute(self.server, "instances_fabrication_footprint")
 
         self.assertTrue(np.allclose([10 * 0.5 * 4] * 24, self.server.instances_fabrication_footprint.magnitude))
 
     def test_update_instances_fabrication_footprint_with_no_jobs(self):
         self._attach_jobs([])
 
-        self.server.update_instances_fabrication_footprint()
+        recompute_attribute(self.server, "instances_fabrication_footprint")
 
         self.assertIsInstance(self.server.instances_fabrication_footprint, EmptyExplainableObject)
 
@@ -84,14 +85,14 @@ class TestEcoLogitsExternalAPIServerBase(TestCase):
             self._job("Job 2", request_energy=ExplainableQuantity(50 * u.kWh, "energy 2"),
                       hourly_avg_occurrences_across_usage_patterns=self._avg_occ(4, "occ 2"))])
 
-        self.server.update_instances_energy()
+        recompute_attribute(self.server, "instances_energy")
 
         self.assertTrue(np.allclose([100 * 8 + 50 * 4] * 24, self.server.instances_energy.magnitude))
 
     def test_update_instances_energy_with_no_jobs(self):
         self._attach_jobs([])
 
-        self.server.update_instances_energy()
+        recompute_attribute(self.server, "instances_energy")
 
         self.assertIsInstance(self.server.instances_energy, EmptyExplainableObject)
 
@@ -104,13 +105,13 @@ class TestEcoLogitsExternalAPIServerBase(TestCase):
             self._job("Job 2", request_usage_gwp=ExplainableQuantity(15 * u.kg, "usage 2"),
                       hourly_avg_occurrences_across_usage_patterns=self._avg_occ(10, "occ 2"))])
 
-        self.server.update_energy_footprint()
+        recompute_attribute(self.server, "energy_footprint")
 
         self.assertTrue(np.allclose([25 * 6 + 15 * 10] * 24, self.server.energy_footprint.magnitude))
 
     def test_update_energy_footprint_with_no_jobs(self):
         self._attach_jobs([])
 
-        self.server.update_energy_footprint()
+        recompute_attribute(self.server, "energy_footprint")
 
         self.assertIsInstance(self.server.energy_footprint, EmptyExplainableObject)

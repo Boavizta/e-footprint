@@ -4,6 +4,7 @@ from efootprint.abstract_modeling_classes.contextual_modeling_object_attribute i
 from efootprint.abstract_modeling_classes.object_linked_to_modeling_obj import ObjectLinkedToModelingObjBase
 from efootprint.abstract_modeling_classes.modeling_object import ModelingObject, AfterInitMeta
 from efootprint.abstract_modeling_classes.modeling_update import ModelingUpdate
+from efootprint.abstract_modeling_classes.reactive_core import record_read_of_node
 
 
 class ListLinkedToModelingObj(ObjectLinkedToModelingObjBase, list, metaclass=AfterInitMeta):
@@ -17,16 +18,54 @@ class ListLinkedToModelingObj(ObjectLinkedToModelingObjBase, list, metaclass=Aft
 
     def after_init(self):
         self.trigger_modeling_updates = True
-    
+
     @staticmethod
     def check_value_type(value):
         if not isinstance(value, ModelingObject):
             raise ValueError(
                 f"ListLinkedToModelingObjs only accept ModelingObjects as values, received {type(value)}")
 
+    def _record_read(self):
+        if self.modeling_obj_container is not None:
+            record_read_of_node(self.modeling_obj_container, self.attr_name_in_mod_obj_container)
+
+    def __iter__(self):
+        self._record_read()
+        return super().__iter__()
+
+    def __getitem__(self, index):
+        self._record_read()
+        return super().__getitem__(index)
+
+    def __len__(self):
+        self._record_read()
+        return super().__len__()
+
+    def __contains__(self, value):
+        self._record_read()
+        return super().__contains__(value)
+
+    def count(self, value):
+        self._record_read()
+        return super().count(value)
+
+    def index(self, *args):
+        self._record_read()
+        return super().index(*args)
+
+    # Concatenation happens at C level on list subclasses (e.g. sum(list_of_lists, start=[])) and
+    # would bypass the read hooks; both orientations return plain lists, as before.
+    def __add__(self, other):
+        self._record_read()
+        return list(self) + list(other)
+
+    def __radd__(self, other):
+        self._record_read()
+        return list(other) + list(self)
+
     def set_modeling_obj_container(self, new_parent_modeling_object: ModelingObject, attr_name: str):
         super().set_modeling_obj_container(new_parent_modeling_object, attr_name)
-        for value in self:
+        for value in list.__iter__(self):
             value.set_modeling_obj_container(self.modeling_obj_container, self.attr_name_in_mod_obj_container)
 
     def __setitem__(self, index: int, value: ModelingObject):

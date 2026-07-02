@@ -2,6 +2,46 @@
   "job": {
     "name": "Test Job",
     "id": "Test-Job",
+    "data_stored": {
+      "value": 0.0,
+      "unit": "megabyte_stored",
+      "label": "Data stored by request",
+      "source": "hypothesis",
+      "direct_ancestors_with_id": [],
+      "direct_children_with_id": [],
+      "explain_nested_tuples": null
+    },
+    "ram_needed": {
+      "value": 0.0,
+      "unit": "megabyte_ram",
+      "label": "RAM needed during job processing",
+      "source": "hypothesis",
+      "direct_ancestors_with_id": [],
+      "direct_children_with_id": [],
+      "explain_nested_tuples": null
+    },
+    "compute_needed": {
+      "value": 0.0,
+      "unit": "cpu_core",
+      "label": "CPU needed during job processing",
+      "source": "hypothesis",
+      "direct_ancestors_with_id": [],
+      "direct_children_with_id": [],
+      "explain_nested_tuples": null
+    },
+    "external_api": "Test-EcoLogits-API",
+    "output_token_count": {
+      "value": 1000.0,
+      "unit": "dimensionless",
+      "label": "Output token count for gpt-4o",
+      "source": "hypothesis",
+      "direct_ancestors_with_id": [],
+      "direct_children_with_id": [
+        "('Test-Job', 'data_transferred', None)",
+        "('Test-Job', 'impacts', None)"
+      ],
+      "explain_nested_tuples": null
+    },
     "hourly_occurrences_per_usage_pattern": {},
     "hourly_avg_occurrences_per_usage_pattern": {},
     "hourly_data_transferred_per_usage_pattern": {},
@@ -45,15 +85,6 @@
         "('Test-Job', 'output_token_count', None)"
       ]
     },
-    "data_stored": {
-      "value": 0.0,
-      "unit": "megabyte_stored",
-      "label": "Data stored by request",
-      "source": "hypothesis",
-      "direct_ancestors_with_id": [],
-      "direct_children_with_id": [],
-      "explain_nested_tuples": null
-    },
     "request_duration": {
       "value": 22.175021645021644,
       "unit": "second",
@@ -67,37 +98,6 @@
         "duplicate",
         null
       ]
-    },
-    "ram_needed": {
-      "value": 0.0,
-      "unit": "megabyte_ram",
-      "label": "RAM needed during job processing",
-      "source": "hypothesis",
-      "direct_ancestors_with_id": [],
-      "direct_children_with_id": [],
-      "explain_nested_tuples": null
-    },
-    "compute_needed": {
-      "value": 0.0,
-      "unit": "cpu_core",
-      "label": "CPU needed during job processing",
-      "source": "hypothesis",
-      "direct_ancestors_with_id": [],
-      "direct_children_with_id": [],
-      "explain_nested_tuples": null
-    },
-    "external_api": "Test-EcoLogits-API",
-    "output_token_count": {
-      "value": 1000.0,
-      "unit": "dimensionless",
-      "label": "Output token count for gpt-4o",
-      "source": "hypothesis",
-      "direct_ancestors_with_id": [],
-      "direct_children_with_id": [
-        "('Test-Job', 'data_transferred', None)",
-        "('Test-Job', 'impacts', None)"
-      ],
-      "explain_nested_tuples": null
     },
     "hourly_occurrences_across_usage_patterns": {
       "value": null,
@@ -167,8 +167,8 @@
         "('Test-EcoLogits-API', 'time_to_first_token', None)"
       ],
       "direct_children_with_id": [
-        "('Test-Job', 'gpu_energy', None)",
         "('Test-Job', 'generation_latency', None)",
+        "('Test-Job', 'gpu_energy', None)",
         "('Test-Job', 'model_required_memory', None)",
         "('Test-Job', 'gpu_required_count', None)",
         "('Test-Job', 'server_energy', None)",

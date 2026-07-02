@@ -43,11 +43,7 @@ class EdgeUsageJourney(ModelingObject):
         self.edge_functions = edge_functions
         self.usage_span = usage_span.set_label(f"Usage span")
 
-        self.nb_edge_usage_journeys_in_parallel_per_edge_usage_pattern = ExplainableObjectDict()
 
-    @property
-    def modeling_objects_whose_attributes_depend_directly_on_me(self) -> List["EdgeUsagePattern"] | List[EdgeFunction]:
-        return self.edge_functions
 
     @property
     def edge_usage_patterns(self) -> List["EdgeUsagePattern"]:
@@ -69,7 +65,6 @@ class EdgeUsageJourney(ModelingObject):
     def edge_devices(self) -> List["EdgeDevice"]:
         return list(dict.fromkeys([edge_need.edge_device for edge_need in self.recurrent_edge_device_needs]))
 
-    calculated_attributes: List[str] = ["nb_edge_usage_journeys_in_parallel_per_edge_usage_pattern"]
 
     @computed_dict(keys="edge_usage_patterns")
     def nb_edge_usage_journeys_in_parallel_per_edge_usage_pattern(

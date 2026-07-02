@@ -16,6 +16,7 @@ from efootprint.core.hardware.network import Network
 from efootprint.core.usage.edge.recurrent_server_need import RecurrentServerNeed
 from efootprint.constants.units import u
 from tests.utils import create_mod_obj_mock, set_modeling_obj_containers
+from tests.utils import recompute_attribute
 
 
 class TestEdgeUsagePattern(TestCase):
@@ -48,12 +49,11 @@ class TestEdgeUsagePattern(TestCase):
         self.assertEqual(self.mock_network, self.edge_usage_pattern.network)
         self.assertEqual(self.real_hourly_starts, self.edge_usage_pattern.hourly_edge_usage_journey_starts)
 
-        self.assertIsInstance(self.edge_usage_pattern.utc_hourly_edge_usage_journey_starts, EmptyExplainableObject)
+        # Reading the computed attribute computes it on demand.
+        self.assertEqual(
+            len(self.edge_usage_pattern.hourly_edge_usage_journey_starts),
+            len(self.edge_usage_pattern.utc_hourly_edge_usage_journey_starts))
 
-    def test_modeling_objects_whose_attributes_depend_directly_on_me(self):
-        """Test that the journey is the direct dependent of a usage pattern."""
-        dependent_objects = self.edge_usage_pattern.modeling_objects_whose_attributes_depend_directly_on_me
-        self.assertEqual([self.mock_edge_usage_journey], dependent_objects)
 
     def test_recurrent_edge_device_needs(self):
         """Test recurrent_edge_device_needs property delegates to edge_usage_journey."""
@@ -78,7 +78,7 @@ class TestEdgeUsagePattern(TestCase):
         # Patch at class level because __slots__ prevents instance-level patching
         with patch.object(ExplainableHourlyQuantities, 'convert_to_utc',
                           return_value=mock_utc_result) as mock_convert:
-            self.edge_usage_pattern.update_utc_hourly_edge_usage_journey_starts()
+            recompute_attribute(self.edge_usage_pattern, "utc_hourly_edge_usage_journey_starts")
             mock_convert.assert_called_once_with(local_timezone=self.mock_country.timezone)
 
             self.assertEqual(self.edge_usage_pattern.utc_hourly_edge_usage_journey_starts, mock_utc_result)

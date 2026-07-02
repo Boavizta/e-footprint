@@ -99,11 +99,7 @@ class BoaviztaCloudServer(Server):
         self.provider = provider.set_label("Cloud provider")
         self.instance_type = instance_type.set_label("Instance type")
         self.impact_url = "https://api.boavizta.org/v1/cloud/instance"
-        self.api_call_response = EmptyExplainableObject()
 
-    calculated_attributes = (
-        ["api_call_response", "carbon_footprint_fabrication", "power", "ram", "compute"]
-        + Server.calculated_attributes)
 
     @property
     def attributes_that_shouldnt_trigger_update_logic(self):
@@ -167,9 +163,6 @@ logger.info(f"Imported BoaviztaCloudServer in {perf_counter() - start:.5f} secon
 
 
 if __name__ == "__main__":
-    from efootprint.abstract_modeling_classes.explainable_object_base_class import \
-        retrieve_update_function_from_mod_obj_and_attr_name
-
     for provider in all_boavizta_cloud_providers:
         for instance_type in instance_types_conditional_list_values_dict["conditional_list_values"][provider]:
             try:
@@ -185,8 +178,7 @@ if __name__ == "__main__":
                                     base_compute_consumption=SourceValue(0 * u.cpu_core),
                                     storage=Storage.ssd())
                 for attr_name in ["api_call_response", "carbon_footprint_fabrication", "power", "ram", "compute"]:
-                    update_func = retrieve_update_function_from_mod_obj_and_attr_name(cloud_server, attr_name)
-                    update_func()
+                    getattr(cloud_server, attr_name)
                 logger.info(f"{provider} - {instance_type}: Compute {cloud_server.compute} RAM {cloud_server.ram} "
                             f"CCF {cloud_server.carbon_footprint_fabrication} power {cloud_server.power}.")
             except Exception as e:

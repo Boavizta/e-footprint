@@ -58,11 +58,6 @@ class TestEdgeFunction(TestCase):
 
         self.assertEqual({mock_journey_1, mock_journey_2}, set(self.edge_function.edge_usage_journeys))
 
-    def test_modeling_objects_whose_attributes_depend_directly_on_me(self):
-        """Test that recurrent_edge_device_needs and recurrent_server_needs are returned as dependent objects."""
-        dependent_objects = self.edge_function.modeling_objects_whose_attributes_depend_directly_on_me
-        self.assertEqual(
-            [self.mock_edge_need_1, self.mock_edge_need_2, self.mock_server_need], dependent_objects)
 
     def test_systems_property_no_journeys(self):
         """Test systems property when no journeys are set."""

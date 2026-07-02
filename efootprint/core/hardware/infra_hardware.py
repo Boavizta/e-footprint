@@ -18,15 +18,7 @@ class InfraHardware(HardwareBase):
                  lifespan: ExplainableQuantity):
         super().__init__(
             name, carbon_footprint_fabrication, power, lifespan, SourceValue(1 * u.dimensionless))
-        self.raw_nb_of_instances = EmptyExplainableObject()
-        self.nb_of_instances = EmptyExplainableObject()
-        self.instances_energy = EmptyExplainableObject()
-        self.energy_footprint = EmptyExplainableObject()
-        self.instances_fabrication_footprint = EmptyExplainableObject()
 
-    calculated_attributes = [
-        "raw_nb_of_instances", "nb_of_instances", "instances_fabrication_footprint", "instances_energy",
-        "energy_footprint"]
 
     @computed_attribute
     @abstractmethod

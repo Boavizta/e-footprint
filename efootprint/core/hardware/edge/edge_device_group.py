@@ -38,26 +38,15 @@ class EdgeDeviceGroup(ModelingObject):
             sub_group_counts, weight_label=self.weight_labels["sub_group_counts"])
         self.edge_device_counts = to_weighted_explainable_object_dict(
             edge_device_counts, weight_label=self.weight_labels["edge_device_counts"])
-        self.no_cycle_validation = EmptyExplainableObject()
-        self.effective_nb_of_units_within_root = EmptyExplainableObject()
 
-    @property
-    def modeling_objects_whose_attributes_depend_directly_on_me(self) -> List[ModelingObject]:
-        # Child groups and edge devices depend on this group's effective_nb_of_units_within_root.
-        # When sub-groups are shared across multiple roots, the BFS + dedup-keep-last mechanism
-        # in mod_objs_computation_chain / optimize_mod_objs_computation_chain guarantees
-        # topological ordering (parents computed before children). This relies on:
-        # - BFS re-adding already-processed objects when discovered from a later parent
-        # - Dedup keeping the last occurrence, which is after all parents
-        # Cycles are structurally impossible (a group cannot be its own ancestor).
-        return list(self.sub_group_counts.keys()) + list(self.edge_device_counts.keys())
 
-    calculated_attributes = ["no_cycle_validation", "effective_nb_of_units_within_root"]
 
     def _find_parent_groups(self) -> List["EdgeDeviceGroup"]:
         from efootprint.abstract_modeling_classes.contextual_modeling_object_attribute import (
             ContextualModelingObjectDictKey)
+        from efootprint.abstract_modeling_classes.reactive_core import CONTAINERS_NODE_NAME, record_read_of_node
 
+        record_read_of_node(self, CONTAINERS_NODE_NAME)
         return list(dict.fromkeys([
             contextual_container.modeling_obj_container
             for contextual_container in self.contextual_modeling_obj_containers
@@ -124,20 +113,6 @@ class EdgeDeviceGroup(ModelingObject):
             start=EmptyExplainableObject())
         return effective_nb.set_label(
             f"Effective nb within root group")
-
-    @classmethod
-    def sort_within_computation_chain(cls, instances):
-        remaining = list(instances)
-        sorted_instances = []
-        while remaining:
-            ready = [g for g in remaining if not any(p in remaining for p in g._find_parent_groups())]
-            if not ready:
-                sorted_instances.extend(remaining)
-                break
-            sorted_instances.extend(ready)
-            for g in ready:
-                remaining.remove(g)
-        return sorted_instances
 
     def self_delete(self):
         parent_groups = self._find_parent_groups()

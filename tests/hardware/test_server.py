@@ -40,6 +40,7 @@ from efootprint.core.usage.usage_journey_step import UsageJourneyStep
 from efootprint.core.usage.usage_pattern import UsagePattern
 from tests.core.attribution.conservation import assert_source_atoms_conserve, sum_atom_values
 from tests.utils import create_mod_obj_mock
+from tests.utils import patch_attribute, recompute_attribute
 
 
 class TestServer(TestCase):
@@ -77,7 +78,7 @@ class TestServer(TestCase):
 
         with patch.object(Server, "jobs", new_callable=PropertyMock) as mock_jobs:
             mock_jobs.return_value = {job1, job2}
-            self.server_base.update_hour_by_hour_compute_need()
+            recompute_attribute(self.server_base, "hour_by_hour_compute_need")
 
         self.assertEqual([80, 85, 17, 9], self.server_base.hour_by_hour_compute_need.value_as_float_list)
 
@@ -92,36 +93,36 @@ class TestServer(TestCase):
 
         with patch.object(Server, "jobs", new_callable=PropertyMock) as mock_jobs:
             mock_jobs.return_value = {job1, job2}
-            self.server_base.update_hour_by_hour_ram_need()
+            recompute_attribute(self.server_base, "hour_by_hour_ram_need")
 
         self.assertEqual([80, 85, 17, 9], self.server_base.hour_by_hour_ram_need.value_as_float_list)
 
 
     def test_available_compute_per_instance(self):
-        with patch.object(self.server_base, "occupied_compute_per_instance", SourceValue(2 * u.cpu_core)), \
-                patch.object(self.server_base, "compute", SourceValue(24 * u.cpu_core)), \
-                patch.object(self.server_base, "utilization_rate", SourceValue(0.7 * u.dimensionless)):
-            self.server_base.update_available_compute_per_instance()
+        with patch_attribute(self.server_base, "occupied_compute_per_instance", SourceValue(2 * u.cpu_core)), \
+                patch_attribute(self.server_base, "compute", SourceValue(24 * u.cpu_core)), \
+                patch_attribute(self.server_base, "utilization_rate", SourceValue(0.7 * u.dimensionless)):
+            recompute_attribute(self.server_base, "available_compute_per_instance")
             expected_value = SourceValue((24 * 0.7 - 2) * u.cpu_core)
 
             self.assertEqual(expected_value, self.server_base.available_compute_per_instance)
 
     def test_available_ram_per_instance(self):
-        with patch.object(self.server_base, "occupied_ram_per_instance", SourceValue(2 * u.GB_ram)), \
-                patch.object(self.server_base, "ram", SourceValue(24 * u.GB_ram)), \
-                patch.object(self.server_base, "utilization_rate", SourceValue(0.7 * u.dimensionless)):
-            self.server_base.update_available_ram_per_instance()
+        with patch_attribute(self.server_base, "occupied_ram_per_instance", SourceValue(2 * u.GB_ram)), \
+                patch_attribute(self.server_base, "ram", SourceValue(24 * u.GB_ram)), \
+                patch_attribute(self.server_base, "utilization_rate", SourceValue(0.7 * u.dimensionless)):
+            recompute_attribute(self.server_base, "available_ram_per_instance")
             expected_value = SourceValue((24 * 0.7 - 2) * u.GB_ram)
 
             self.assertEqual(expected_value, self.server_base.available_ram_per_instance)
 
 
     def test_available_ram_per_instance_should_raise_value_error_when_demand_exceeds_server_capacity(self):
-        with patch.object(self.server_base, "ram", SourceValue(128 * u.GB_ram)), \
-            patch.object(self.server_base, "occupied_ram_per_instance", SourceValue(129 * u.GB_ram)), \
-            patch.object(self.server_base, "utilization_rate", SourceValue(0.7 * u.dimensionless)):
+        with patch_attribute(self.server_base, "ram", SourceValue(128 * u.GB_ram)), \
+            patch_attribute(self.server_base, "occupied_ram_per_instance", SourceValue(129 * u.GB_ram)), \
+            patch_attribute(self.server_base, "utilization_rate", SourceValue(0.7 * u.dimensionless)):
             with self.assertRaises(InsufficientCapacityError) as context:
-                self.server_base.update_available_ram_per_instance()
+                recompute_attribute(self.server_base, "available_ram_per_instance")
             self.assertIn(
                 "Test server has available RAM capacity of 89.6 gigabyte_ram but is asked for 129.0 gigabyte_ram",
                 str(context.exception))
@@ -131,9 +132,9 @@ class TestServer(TestCase):
         service_2 = MagicMock()
         service_1.base_compute_consumption = SourceValue(2 * u.cpu_core)
         service_2.base_compute_consumption = SourceValue(3 * u.cpu_core)
-        with patch.object(self.server_base, "base_compute_consumption", SourceValue(5 * u.cpu_core)), \
-                patch.object(Server, "installed_services", [service_1, service_2]):
-            self.server_base.update_occupied_compute_per_instance()
+        with patch_attribute(self.server_base, "base_compute_consumption", SourceValue(5 * u.cpu_core)), \
+                patch_attribute(Server, "installed_services", [service_1, service_2]):
+            recompute_attribute(self.server_base, "occupied_compute_per_instance")
             expected_value = SourceValue(10 * u.cpu_core)
 
             self.assertEqual(expected_value.value, self.server_base.occupied_compute_per_instance.value)
@@ -143,9 +144,9 @@ class TestServer(TestCase):
         service_2 = MagicMock()
         service_1.base_ram_consumption = SourceValue(2 * u.GB_ram)
         service_2.base_ram_consumption = SourceValue(3 * u.GB_ram)
-        with patch.object(self.server_base, "base_ram_consumption", SourceValue(5 * u.GB_ram)), \
-                patch.object(Server, "installed_services", [service_1, service_2]):
-            self.server_base.update_occupied_ram_per_instance()
+        with patch_attribute(self.server_base, "base_ram_consumption", SourceValue(5 * u.GB_ram)), \
+                patch_attribute(Server, "installed_services", [service_1, service_2]):
+            recompute_attribute(self.server_base, "occupied_ram_per_instance")
             expected_value = SourceValue(10 * u.GB_ram)
 
             self.assertEqual(expected_value.value, self.server_base.occupied_ram_per_instance.value)
@@ -154,11 +155,11 @@ class TestServer(TestCase):
         ram_need = create_source_hourly_values_from_list([0, 1, 3, 3, 10], pint_unit=u.GB_ram)
         cpu_need = create_source_hourly_values_from_list([2, 4, 2, 6, 3], pint_unit=u.cpu_core)
 
-        with patch.object(self.server_base, "hour_by_hour_ram_need", new=ram_need), \
-                patch.object(self.server_base, "hour_by_hour_compute_need", new=cpu_need), \
-                patch.object(self.server_base, "available_ram_per_instance", new=SourceValue(2 * u.GB_ram)), \
-                patch.object(self.server_base, "available_compute_per_instance", new=SourceValue(4 * u.cpu_core)):
-            self.server_base.update_raw_nb_of_instances()
+        with patch_attribute(self.server_base, "hour_by_hour_ram_need", ram_need), \
+                patch_attribute(self.server_base, "hour_by_hour_compute_need", cpu_need), \
+                patch_attribute(self.server_base, "available_ram_per_instance", SourceValue(2 * u.GB_ram)), \
+                patch_attribute(self.server_base, "available_compute_per_instance", SourceValue(4 * u.cpu_core)):
+            recompute_attribute(self.server_base, "raw_nb_of_instances")
 
             self.assertEqual([0.5, 1, 1.5, 1.5, 5], self.server_base.raw_nb_of_instances.value_as_float_list)
 
@@ -176,51 +177,51 @@ class TestServer(TestCase):
         expected_data = [0.5, 1, 1.5, 1.5, 5] + [0] * 19 + [0.5, 1, 1.5, 1.5, 5]
         expected_max_date = start_date_b + timedelta(hours=(len(ram_need_b)-1))
 
-        with patch.object(self.server_base, "hour_by_hour_ram_need", new=all_ram_need), \
-                patch.object(self.server_base, "hour_by_hour_compute_need", new=all_cpu_need), \
-                patch.object(self.server_base, "available_ram_per_instance", new=SourceValue(2 * u.GB_ram)), \
-                patch.object(self.server_base, "available_compute_per_instance", new=SourceValue(4 * u.cpu_core)):
-            self.server_base.update_raw_nb_of_instances()
+        with patch_attribute(self.server_base, "hour_by_hour_ram_need", all_ram_need), \
+                patch_attribute(self.server_base, "hour_by_hour_compute_need", all_cpu_need), \
+                patch_attribute(self.server_base, "available_ram_per_instance", SourceValue(2 * u.GB_ram)), \
+                patch_attribute(self.server_base, "available_compute_per_instance", SourceValue(4 * u.cpu_core)):
+            recompute_attribute(self.server_base, "raw_nb_of_instances")
 
             self.assertEqual(expected_data, self.server_base.raw_nb_of_instances.value_as_float_list)
             self.assertEqual(start_date_a, self.server_base.raw_nb_of_instances.start_date)
 
     def test_compute_instances_energy_simple_case(self):
-        with patch.object(self.server_base, "nb_of_instances",
+        with patch_attribute(self.server_base, "nb_of_instances",
                           create_source_hourly_values_from_list([1, 0, 2])), \
-                patch.object(self.server_base, "raw_nb_of_instances",
+                patch_attribute(self.server_base, "raw_nb_of_instances",
                              create_source_hourly_values_from_list([1, 0, 2])), \
-                patch.object(self.server_base, "power", SourceValue(300 * u.W)), \
-                patch.object(self.server_base, "idle_power", SourceValue(50 * u.W)), \
-                patch.object(self.server_base, "power_usage_effectiveness", SourceValue(3 * u.dimensionless)):
-            self.server_base.update_instances_energy()
+                patch_attribute(self.server_base, "power", SourceValue(300 * u.W)), \
+                patch_attribute(self.server_base, "idle_power", SourceValue(50 * u.W)), \
+                patch_attribute(self.server_base, "power_usage_effectiveness", SourceValue(3 * u.dimensionless)):
+            recompute_attribute(self.server_base, "instances_energy")
             self.assertEqual(u.kWh, self.server_base.instances_energy.unit)
             self.assertTrue(np.allclose([0.9, 0, 1.8], self.server_base.instances_energy.magnitude))
 
     def test_compute_instances_energy_complex_case(self):
-        with patch.object(self.server_base, "nb_of_instances",
+        with patch_attribute(self.server_base, "nb_of_instances",
                           create_source_hourly_values_from_list([1, 0, 2])), \
-                patch.object(self.server_base, "raw_nb_of_instances",
+                patch_attribute(self.server_base, "raw_nb_of_instances",
                              create_source_hourly_values_from_list([1, 0, 1.5])), \
-                patch.object(self.server_base, "power", SourceValue(300 * u.W)), \
-                patch.object(self.server_base, "idle_power", SourceValue(50 * u.W)), \
-                patch.object(self.server_base, "power_usage_effectiveness", SourceValue(3 * u.dimensionless)):
-            self.server_base.update_instances_energy()
+                patch_attribute(self.server_base, "power", SourceValue(300 * u.W)), \
+                patch_attribute(self.server_base, "idle_power", SourceValue(50 * u.W)), \
+                patch_attribute(self.server_base, "power_usage_effectiveness", SourceValue(3 * u.dimensionless)):
+            recompute_attribute(self.server_base, "instances_energy")
             self.assertEqual(u.kWh, self.server_base.instances_energy.unit)
             self.assertTrue(np.allclose([0.9, 0, 0.9 + 0.525], self.server_base.instances_energy.magnitude))
 
     def test_energy_footprints(self):
         """Test that the idle footprint scales with nb_of_instances, the load footprint with raw_nb_of_instances,
         and the energy footprint sums them."""
-        with patch.object(self.server_base, "nb_of_instances", create_source_hourly_values_from_list([1, 0, 2])), \
-                patch.object(self.server_base, "raw_nb_of_instances",
+        with patch_attribute(self.server_base, "nb_of_instances", create_source_hourly_values_from_list([1, 0, 2])), \
+                patch_attribute(self.server_base, "raw_nb_of_instances",
                              create_source_hourly_values_from_list([1, 0, 1.5])), \
-                patch.object(self.server_base, "power", SourceValue(300 * u.W)), \
-                patch.object(self.server_base, "idle_power", SourceValue(50 * u.W)), \
-                patch.object(self.server_base, "power_usage_effectiveness", SourceValue(3 * u.dimensionless)):
-            self.server_base.update_idle_energy_footprint()
-            self.server_base.update_load_energy_footprint()
-            self.server_base.update_energy_footprint()
+                patch_attribute(self.server_base, "power", SourceValue(300 * u.W)), \
+                patch_attribute(self.server_base, "idle_power", SourceValue(50 * u.W)), \
+                patch_attribute(self.server_base, "power_usage_effectiveness", SourceValue(3 * u.dimensionless)):
+            recompute_attribute(self.server_base, "idle_energy_footprint")
+            recompute_attribute(self.server_base, "load_energy_footprint")
+            recompute_attribute(self.server_base, "energy_footprint")
 
             # idle energy = 50W * 3 * 1h * nb = [0.15, 0, 0.3] kWh; load = 250W * 3 * 1h * raw = [0.75, 0, 1.125]
             # CI = 100 g/kWh
@@ -234,9 +235,9 @@ class TestServer(TestCase):
         expected_data = [1, 1, 2, 2, 5]
 
         hourly_raw_data = create_source_hourly_values_from_list(raw_data, pint_unit=u.concurrent)
-        with patch.object(self.server_base, "raw_nb_of_instances", hourly_raw_data), \
-                patch.object(self.server_base, "server_type", ServerTypes.autoscaling()):
-            self.server_base.update_nb_of_instances()
+        with patch_attribute(self.server_base, "raw_nb_of_instances", hourly_raw_data), \
+                patch_attribute(self.server_base, "server_type", ServerTypes.autoscaling()):
+            recompute_attribute(self.server_base, "nb_of_instances")
 
             self.assertEqual(expected_data, self.server_base.nb_of_instances.value_as_float_list)
 
@@ -245,9 +246,9 @@ class TestServer(TestCase):
         expected_data = [6, 6, 6, 6, 6]
 
         hourly_raw_data = create_source_hourly_values_from_list(raw_data, pint_unit=u.concurrent)
-        with patch.object(self.server_base, "raw_nb_of_instances", new=hourly_raw_data), \
-                patch.object(self.server_base, "server_type", ServerTypes.on_premise()):
-            self.server_base.update_nb_of_instances()
+        with patch_attribute(self.server_base, "raw_nb_of_instances", hourly_raw_data), \
+                patch_attribute(self.server_base, "server_type", ServerTypes.on_premise()):
+            recompute_attribute(self.server_base, "nb_of_instances")
             self.assertEqual(expected_data, self.server_base.nb_of_instances.value_as_float_list)
 
     def test_nb_of_instances_takes_fixed_nb_of_instances_into_account(self):
@@ -256,10 +257,10 @@ class TestServer(TestCase):
 
         hourly_raw_data = create_source_hourly_values_from_list(raw_data, pint_unit=u.concurrent)
 
-        with patch.object(self.server_base, "raw_nb_of_instances", new=hourly_raw_data), \
-                patch.object(self.server_base, "server_type", ServerTypes.on_premise()), \
-                patch.object(self.server_base, "fixed_nb_of_instances", SourceValue(12 * u.dimensionless)):
-            self.server_base.update_nb_of_instances()
+        with patch_attribute(self.server_base, "raw_nb_of_instances", hourly_raw_data), \
+                patch_attribute(self.server_base, "server_type", ServerTypes.on_premise()), \
+                patch_attribute(self.server_base, "fixed_nb_of_instances", SourceValue(12 * u.dimensionless)):
+            recompute_attribute(self.server_base, "nb_of_instances")
             self.assertEqual(
                 expected_data,
                 self.server_base.nb_of_instances.value_as_float_list)
@@ -269,19 +270,19 @@ class TestServer(TestCase):
 
         hourly_raw_data = create_source_hourly_values_from_list(raw_data, pint_unit=u.concurrent)
 
-        with patch.object(self.server_base, "raw_nb_of_instances", new=hourly_raw_data), \
-                patch.object(self.server_base, "server_type", ServerTypes.on_premise()), \
-                patch.object(self.server_base, "fixed_nb_of_instances", SourceValue(12 * u.concurrent)):
+        with patch_attribute(self.server_base, "raw_nb_of_instances", hourly_raw_data), \
+                patch_attribute(self.server_base, "server_type", ServerTypes.on_premise()), \
+                patch_attribute(self.server_base, "fixed_nb_of_instances", SourceValue(12 * u.concurrent)):
             with self.assertRaises(InsufficientCapacityError) as context:
-                self.server_base.update_nb_of_instances()
+                recompute_attribute(self.server_base, "nb_of_instances")
             self.assertIn(
                 "Test server has available number of instances capacity of 12.0 concurrent but is asked for 14.0 concurrent",
                 str(context.exception))
 
     def test_nb_of_instances_returns_emptyexplainableobject_if_raw_nb_of_instances_is_emptyexplainableobject(self):
-        with patch.object(self.server_base, "raw_nb_of_instances", new=EmptyExplainableObject()), \
-                patch.object(self.server_base, "server_type", ServerTypes.on_premise()):
-            self.server_base.update_nb_of_instances()
+        with patch_attribute(self.server_base, "raw_nb_of_instances", EmptyExplainableObject()), \
+                patch_attribute(self.server_base, "server_type", ServerTypes.on_premise()):
+            recompute_attribute(self.server_base, "nb_of_instances")
             self.assertIsInstance(self.server_base.nb_of_instances, EmptyExplainableObject)
 
     def test_nb_of_instances_serverless(self):
@@ -289,9 +290,9 @@ class TestServer(TestCase):
         expected_data = [0.5, 1, 1.5, 1.5, 5]
 
         hourly_raw_data = create_source_hourly_values_from_list(raw_data, pint_unit=u.concurrent)
-        with patch.object(self.server_base, "raw_nb_of_instances", new=hourly_raw_data), \
-                patch.object(self.server_base, "server_type", ServerTypes.serverless()):
-            self.server_base.update_nb_of_instances()
+        with patch_attribute(self.server_base, "raw_nb_of_instances", hourly_raw_data), \
+                patch_attribute(self.server_base, "server_type", ServerTypes.serverless()):
+            recompute_attribute(self.server_base, "nb_of_instances")
 
             self.assertEqual(expected_data, self.server_base.nb_of_instances.value_as_float_list)
 
@@ -300,13 +301,13 @@ class TestServer(TestCase):
             self.server_base.server_type = SourceObject("unsupported_server_type")
 
     def test_server_raises_error_if_fixed_nb_of_instances_is_defined_for_non_on_premise_server(self):
-        with patch.object(self.server_base, "server_type", ServerTypes.serverless()):
+        with patch_attribute(self.server_base, "server_type", ServerTypes.serverless()):
             with self.assertRaises(ValueError):
                 self.server_base.fixed_nb_of_instances = SourceValue(12 * u.dimensionless)
 
     def test_server_raises_error_if_fixed_nb_of_instances_is_defined_and_server_type_changes_for_non_on_premise_server(
             self):
-        with patch.object(self.server_base, "fixed_nb_of_instances", SourceValue(12 * u.dimensionless)):
+        with patch_attribute(self.server_base, "fixed_nb_of_instances", SourceValue(12 * u.dimensionless)):
             with self.assertRaises(ValueError):
                 self.server_base.server_type = ServerTypes.serverless()
 
@@ -341,12 +342,12 @@ class TestServer(TestCase):
             hourly_avg_occurrences_across_usage_patterns=create_source_hourly_values_from_list(
                 [2, 1], pint_unit=u.concurrent))
 
-        with patch.object(self.server_base, "hour_by_hour_compute_need",
+        with patch_attribute(self.server_base, "hour_by_hour_compute_need",
                           create_source_hourly_values_from_list([8, 2], pint_unit=u.cpu_core)), \
-                patch.object(self.server_base, "hour_by_hour_ram_need",
+                patch_attribute(self.server_base, "hour_by_hour_ram_need",
                              create_source_hourly_values_from_list([10, 30], pint_unit=u.GB_ram)), \
-                patch.object(self.server_base, "available_compute_per_instance", SourceValue(4 * u.cpu_core)), \
-                patch.object(self.server_base, "available_ram_per_instance", SourceValue(10 * u.GB_ram)), \
+                patch_attribute(self.server_base, "available_compute_per_instance", SourceValue(4 * u.cpu_core)), \
+                patch_attribute(self.server_base, "available_ram_per_instance", SourceValue(10 * u.GB_ram)), \
                 patch.object(Server, "jobs", new_callable=PropertyMock) as mock_jobs:
             mock_jobs.return_value = [job]
             binding_demand = self.server_base.binding_demand_per_job[job]
@@ -373,13 +374,13 @@ class TestServer(TestCase):
                 [10], pint_unit=u.concurrent))
         service.jobs = [job1, job2]
 
-        with patch.object(self.server_base, "hour_by_hour_compute_need",
+        with patch_attribute(self.server_base, "hour_by_hour_compute_need",
                           create_source_hourly_values_from_list([8], pint_unit=u.cpu_core)), \
-                patch.object(self.server_base, "hour_by_hour_ram_need",
+                patch_attribute(self.server_base, "hour_by_hour_ram_need",
                              create_source_hourly_values_from_list([10], pint_unit=u.GB_ram)), \
-                patch.object(self.server_base, "available_compute_per_instance", SourceValue(4 * u.cpu_core)), \
-                patch.object(self.server_base, "available_ram_per_instance", SourceValue(10 * u.GB_ram)), \
-                patch.object(self.server_base, "nb_of_instances",
+                patch_attribute(self.server_base, "available_compute_per_instance", SourceValue(4 * u.cpu_core)), \
+                patch_attribute(self.server_base, "available_ram_per_instance", SourceValue(10 * u.GB_ram)), \
+                patch_attribute(self.server_base, "nb_of_instances",
                              create_source_hourly_values_from_list([2], pint_unit=u.concurrent)), \
                 patch.object(Server, "installed_services", new_callable=PropertyMock) as mock_services, \
                 patch.object(Server, "jobs", new_callable=PropertyMock) as mock_jobs:
@@ -409,12 +410,12 @@ class TestServer(TestCase):
             hourly_avg_occurrences_across_usage_patterns=create_source_hourly_values_from_list(
                 [1, 0], pint_unit=u.concurrent))
 
-        with patch.object(self.server_base, "hour_by_hour_compute_need",
+        with patch_attribute(self.server_base, "hour_by_hour_compute_need",
                           create_source_hourly_values_from_list([8, 0], pint_unit=u.cpu_core)), \
-                patch.object(self.server_base, "hour_by_hour_ram_need",
+                patch_attribute(self.server_base, "hour_by_hour_ram_need",
                              create_source_hourly_values_from_list([4, 0], pint_unit=u.GB_ram)), \
-                patch.object(self.server_base, "available_compute_per_instance", SourceValue(4 * u.cpu_core)), \
-                patch.object(self.server_base, "available_ram_per_instance", SourceValue(10 * u.GB_ram)), \
+                patch_attribute(self.server_base, "available_compute_per_instance", SourceValue(4 * u.cpu_core)), \
+                patch_attribute(self.server_base, "available_ram_per_instance", SourceValue(10 * u.GB_ram)), \
                 patch.object(Server, "jobs", new_callable=PropertyMock) as mock_jobs:
             mock_jobs.return_value = [job1, job2]
             dynamic_share_per_job = self.server_base.dynamic_share_per_job
@@ -431,13 +432,13 @@ class TestServer(TestCase):
             hourly_avg_occurrences_across_usage_patterns=create_source_hourly_values_from_list(
                 [2], pint_unit=u.concurrent))
 
-        with patch.object(self.server_base, "server_type", ServerTypes.autoscaling()), \
-                patch.object(self.server_base, "hour_by_hour_compute_need",
+        with patch_attribute(self.server_base, "server_type", ServerTypes.autoscaling()), \
+                patch_attribute(self.server_base, "hour_by_hour_compute_need",
                              create_source_hourly_values_from_list([2], pint_unit=u.cpu_core)), \
-                patch.object(self.server_base, "hour_by_hour_ram_need",
+                patch_attribute(self.server_base, "hour_by_hour_ram_need",
                              create_source_hourly_values_from_list([2], pint_unit=u.GB_ram)), \
-                patch.object(self.server_base, "available_compute_per_instance", SourceValue(4 * u.cpu_core)), \
-                patch.object(self.server_base, "available_ram_per_instance", SourceValue(10 * u.GB_ram)), \
+                patch_attribute(self.server_base, "available_compute_per_instance", SourceValue(4 * u.cpu_core)), \
+                patch_attribute(self.server_base, "available_ram_per_instance", SourceValue(10 * u.GB_ram)), \
                 patch.object(Server, "jobs", new_callable=PropertyMock) as mock_jobs:
             mock_jobs.return_value = [job]
             self.assertIs(self.server_base.dynamic_share_per_job, self.server_base.provisioned_share_per_job)
@@ -450,9 +451,9 @@ class TestServer(TestCase):
             job1: create_source_hourly_values_from_list([3, 1], pint_unit=u.concurrent),
             job2: create_source_hourly_values_from_list([0, 1], pint_unit=u.concurrent)}
 
-        with patch.object(self.server_base, "raw_nb_of_instances",
+        with patch_attribute(self.server_base, "raw_nb_of_instances",
                           create_source_hourly_values_from_list([3, 2], pint_unit=u.concurrent)), \
-                patch.object(self.server_base, "nb_of_instances",
+                patch_attribute(self.server_base, "nb_of_instances",
                              create_source_hourly_values_from_list([3, 3], pint_unit=u.concurrent)), \
                 patch.object(Server, "jobs", new_callable=PropertyMock) as mock_jobs:
             mock_jobs.return_value = [job1, job2]

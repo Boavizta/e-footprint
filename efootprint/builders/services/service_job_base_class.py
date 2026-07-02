@@ -33,13 +33,8 @@ class ServiceJob(JobBase):
                  compute_needed: ExplainableQuantity, ram_needed: ExplainableQuantity):
         super().__init__(name, data_transferred, data_stored, request_duration, compute_needed, ram_needed)
         self.service = service
-        self.ram_needed.set_label(f"RAM needed on during job processing")
-        self.compute_needed.set_label(f"CPU needed during job processing")
 
     @property
     def server(self) -> ModelingObject:
         return self.service.server
 
-    @property
-    def modeling_objects_whose_attributes_depend_directly_on_me(self) -> List[ModelingObject]:
-        return [self.server] + super().modeling_objects_whose_attributes_depend_directly_on_me
