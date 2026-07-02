@@ -1,7 +1,7 @@
 """Randomized mutation parity harness.
 
 Applies seeded random mutation sequences (input edits, relinks, list add/remove, object add/delete)
-to a live system and, after every mutation, checks that every calculated attribute equals the one
+to a live system and, after every mutation, checks that every computed slot equals the one
 obtained by rebuilding the system from scratch (inputs-only JSON round-trip + full recomputation).
 ExplainableObject equality carries float tolerance, so incremental and from-scratch results may
 differ by floating-point noise but not more.
@@ -18,15 +18,29 @@ from efootprint.abstract_modeling_classes.explainable_quantity import Explainabl
 from efootprint.abstract_modeling_classes.modeling_object import (
     ModelingObject, class_cached_property_names, get_instance_attributes)
 from efootprint.abstract_modeling_classes.modeling_update import ModelingUpdate
+from efootprint.abstract_modeling_classes.reactive_core import computed_slots
 from efootprint.abstract_modeling_classes.source_objects import SourceValue
 from efootprint.api_utils.json_to_system import json_to_system
 from efootprint.api_utils.system_to_json import system_to_json
+from efootprint.core.hardware.edge.edge_storage import NegativeCumulativeStorageNeedError
+from efootprint.core.hardware.hardware_base import InsufficientCapacityError
+from efootprint.core.usage.edge.recurrent_edge_component_need import WorkloadOutOfBoundsError
+from efootprint.core.usage.edge.recurrent_server_need import NegativeServerNeedError
 from efootprint.core.usage.job import Job
+from efootprint.core.usage.usage_pattern import UsagePattern
 from tests.performance_tests.generate_big_system import generate_big_system, form_inputs_hourly_starts
 
 SEEDS = (7, 21, 42)
-MUTATIONS_PER_SEQUENCE = 15
+MUTATIONS_PER_SEQUENCE = 18
 NB_YEARS = 1
+MISSING = object()
+
+# Mutations rejected by the engine with one of these roll the model back and stay part of the run
+# (parity must hold after rollbacks too); any other exception is a harness or engine bug and fails
+# the test.
+EXPECTED_REJECTION_EXCEPTIONS = (
+    ValueError, InsufficientCapacityError, NegativeCumulativeStorageNeedError, NegativeServerNeedError,
+    WorkloadOutOfBoundsError)
 
 RELINK_SPECS = (
     ("UsagePattern", "usage_journey"),
@@ -78,8 +92,9 @@ class TestRandomizedMutationParity(TestCase):
         candidates = []
         for obj in self.all_objects(system):
             cached_names = class_cached_property_names(type(obj))
+            computed_names = computed_slots(type(obj))
             for attr_name, attr in get_instance_attributes(obj, ExplainableQuantity).items():
-                if attr_name not in obj.calculated_attributes and attr_name not in cached_names:
+                if attr_name not in computed_names and attr_name not in cached_names:
                     candidates.append((obj, attr_name, attr))
         obj, attr_name, attr = rng.choice(candidates)
         factor = rng.uniform(0.5, 1.8)
@@ -155,17 +170,38 @@ class TestRandomizedMutationParity(TestCase):
         job.self_delete()
         return f"delete job {job.name} (unlinked from {', '.join(c.name for c in containers)})"
 
+    def mutate_add_usage_pattern(self, rng, system):
+        template = rng.choice(list(system.usage_patterns))
+        self.created_objects_count += 1
+        new_pattern = UsagePattern(
+            f"parity harness usage pattern {self.created_objects_count}",
+            usage_journey=rng.choice(self.objects_of_class(system, "UsageJourney")),
+            devices=list(template.devices), network=template.network, country=template.country,
+            hourly_usage_journey_starts=form_inputs_hourly_starts(
+                NB_YEARS, initial_volume=round(rng.uniform(200, 5000), 1)))
+        system.usage_patterns = list(system.usage_patterns) + [new_pattern]
+        return f"add new usage pattern {new_pattern.name} on {new_pattern.usage_journey.name}"
+
+    def mutate_delete_usage_pattern(self, rng, system):
+        if len(system.usage_patterns) < 2:
+            return None
+        pattern = rng.choice(list(system.usage_patterns))
+        system.usage_patterns = [up for up in system.usage_patterns if up.id != pattern.id]
+        pattern.self_delete()
+        return f"delete usage pattern {pattern.name}"
+
     def apply_random_mutation(self, rng, system):
         """Apply one random mutation; returns (op_name, description, applied) where applied is False
         when the engine rejected the change (e.g. insufficient server capacity) and rolled the model
         back — parity must hold after rollbacks too."""
         mutation_operations = (
             self.mutate_scalar_input, self.mutate_timeseries_input, self.mutate_relink,
-            self.mutate_list, self.mutate_add_object, self.mutate_delete_object)
+            self.mutate_list, self.mutate_add_object, self.mutate_delete_object,
+            self.mutate_add_usage_pattern, self.mutate_delete_usage_pattern)
         operation = rng.choice(mutation_operations)
         try:
             description = operation(rng, system)
-        except Exception as e:
+        except EXPECTED_REJECTION_EXCEPTIONS as e:
             return operation.__name__, f"{operation.__name__} rejected and rolled back ({type(e).__name__}: {e})", False
         if description is None:
             return operation.__name__, f"{operation.__name__} skipped (no applicable target)", False
@@ -194,13 +230,21 @@ class TestRandomizedMutationParity(TestCase):
         self.assertEqual(set(live_by_id), set(rebuilt_by_id), "live and rebuilt systems link different objects")
         for obj_id, live_obj in live_by_id.items():
             rebuilt_obj = rebuilt_by_id[obj_id]
-            for attr_name in live_obj.calculated_attributes:
-                self.assert_explainable_equal(
-                    f"{live_obj.class_as_simple_str} {live_obj.name}.{attr_name}",
-                    getattr(live_obj, attr_name), getattr(rebuilt_obj, attr_name))
+            for attr_name in computed_slots(type(live_obj)):
+                location = f"{live_obj.class_as_simple_str} {live_obj.name}.{attr_name}"
+                live_value = getattr(live_obj, attr_name, MISSING)
+                rebuilt_value = getattr(rebuilt_obj, attr_name, MISSING)
+                if live_value is MISSING and rebuilt_value is MISSING:
+                    # Slots a subclass deliberately drops stay uncomputed on both sides
+                    # (e.g. EdgeStorage deletes its inherited power/idle_power in __init__).
+                    continue
+                self.assertFalse(
+                    live_value is MISSING or rebuilt_value is MISSING,
+                    f"{location} computed on only one of the live and rebuilt systems")
+                self.assert_explainable_equal(location, live_value, rebuilt_value)
 
     def test_random_mutation_sequences_match_from_scratch_rebuild(self):
-        """Test that seeded random mutation sequences leave every calculated attribute equal to a
+        """Test that seeded random mutation sequences leave every computed slot equal to a
         from-scratch rebuild's, checking parity after each mutation."""
         applied_op_names = set()
         full_log = []
@@ -222,7 +266,8 @@ class TestRandomizedMutationParity(TestCase):
                 full_log += [f"seed {seed}:"] + mutation_log
         expected_op_names = {
             "mutate_scalar_input", "mutate_timeseries_input", "mutate_relink", "mutate_list",
-            "mutate_add_object", "mutate_delete_object"}
+            "mutate_add_object", "mutate_delete_object", "mutate_add_usage_pattern",
+            "mutate_delete_usage_pattern"}
         self.assertEqual(
             expected_op_names, applied_op_names,
             "Some mutation kinds never applied successfully across all seeds — the harness lost coverage:\n"
