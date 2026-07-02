@@ -1,6 +1,5 @@
 import math
 from copy import copy
-from functools import cached_property
 from typing import List, TYPE_CHECKING
 
 import numpy as np
@@ -8,7 +7,7 @@ from pint import Quantity
 
 from efootprint.abstract_modeling_classes.explainable_object_dict import ExplainableObjectDict
 from efootprint.constants.sources import Sources
-from efootprint.core.attribution import Atom
+from efootprint.core.attribution import Atom, AttributionSource
 from efootprint.core.hardware.infra_hardware import InfraHardware
 from efootprint.core.hardware.hardware_base import InsufficientCapacityError
 from efootprint.abstract_modeling_classes.explainable_hourly_quantities import (
@@ -18,7 +17,8 @@ from efootprint.abstract_modeling_classes.empty_explainable_object import EmptyE
 from efootprint.abstract_modeling_classes.source_objects import SourceValue
 from efootprint.constants.units import u
 from efootprint.core.lifecycle_phases import LifeCyclePhases
-from efootprint.abstract_modeling_classes.reactive_core import computed_attribute, computed_dict, ReverseLink
+from efootprint.abstract_modeling_classes.reactive_core import (
+    computed_attribute, computed_dict, lazy_attribute, ReverseLink)
 
 if TYPE_CHECKING:
     from efootprint.core.usage.job import JobBase
@@ -46,7 +46,7 @@ def cumulative_storage_need_with_dumps(replicated_storage_rate, data_storage_dur
         operator="cumulative sum with automatic dumps")
 
 
-class Storage(InfraHardware):
+class Storage(InfraHardware, AttributionSource):
     """Persistent storage backing a {class:Server} (typically SSD or HDD). Capacity is sized to the cumulative volume of data jobs write, plus an optional baseline."""
 
     disambiguation = (
@@ -240,10 +240,10 @@ class Storage(InfraHardware):
         """Hourly energy consumed by storage instances. Currently always empty: storage operating energy is folded into the hosting server's energy footprint rather than tracked separately."""
         return EmptyExplainableObject()
 
-    # --- Attribution-only stream split and atom builder (lazy cached properties, consumed only by the
+    # --- Attribution-only stream split and atom builder (lazy projection slots, consumed only by the
     # attribution layer, never by the eager calculated-attribute graph) ---
 
-    @cached_property
+    @lazy_attribute
     def job_written_cumulative_storage_need(self):
         """N — the job-written cumulative storage volume held over time, excluding base_storage_need: the sum
         of full_cumulative_storage_need_per_job over the storage's jobs. The retention stream's driver and the
@@ -252,7 +252,7 @@ class Storage(InfraHardware):
             self.full_cumulative_storage_need_per_job.values(), start=EmptyExplainableObject()
         ).set_label(f"Job-written cumulative storage need of {self.name}")
 
-    @cached_property
+    @lazy_attribute
     def storage_retention_fabrication_footprint(self):
         """Retention stream — the share of the fabrication footprint driven by job-written data:
         F × N / provisioned_capacity, with provisioned_capacity = nb_of_instances × storage_capacity.
@@ -268,7 +268,7 @@ class Storage(InfraHardware):
         return (self.instances_fabrication_footprint * retention_share).to(u.kg).set_label(
             f"{self.name} retention fabrication footprint")
 
-    @cached_property
+    @lazy_attribute
     def storage_baseline_fabrication_footprint(self):
         """Baseline stream — the rest of the fabrication footprint: F × (unused_storage + base_storage_need)
         / provisioned_capacity. Since provisioned_capacity = N + unused + base, the two streams sum to F
@@ -285,7 +285,7 @@ class Storage(InfraHardware):
         return (self.instances_fabrication_footprint * baseline_share).to(u.kg).set_label(
             f"{self.name} baseline fabrication footprint")
 
-    @cached_property
+    @lazy_attribute
     def retention_cumulative_per_cell(self) -> dict:
         """Per-cell cumulative storage volume held, over every attribution cell of the storage's jobs — the
         hourly numerators of the retention weights. A cell's replicated data-stored rate is its hourly
@@ -303,7 +303,7 @@ class Storage(InfraHardware):
 
         return cumulatives
 
-    @cached_property
+    @lazy_attribute
     def baseline_flat_share_per_job(self) -> dict:
         """Flat period-total occurrence share of each job in the storage's total job occurrences — the
         always-on baseline stream's job weights (flat shares carry footprint at idle hours, where hourly

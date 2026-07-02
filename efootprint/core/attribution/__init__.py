@@ -11,24 +11,38 @@ operation — group atoms by a key and sum:
 - exclude a source          = filter its atoms out (no rescale)
 - conservation              = Σ(atoms of a stream) == that stream's footprint   (structural)
 
-Caching is two-tier, matching what depends on what: atom values depend only on (source, phase) —
-memoized at that key — while groupings depend on the query, so folded results are memoized per
-(phase, visible levels, exclude). Both tiers live in each owner's ``render_cache`` (a flushed
-cached property), never as model state: they are wiped wholesale by the system-wide
-cached-property flush after every ModelingUpdate and after the initial build.
-
-Invariant: calculated attributes never read attribution results — the one-way rule that makes
-wholesale lazy flushing correct.
+Caching follows the one paradigm of the reactive graph: each source's ``impact_repartition_rows``
+lazy slot holds its atoms reduced to period-sum matrix rows, and ``System.impact_repartition_matrix``
+concatenates them — computed on first read, cached, and invalidated precisely through recorded
+dependency edges like any other slot (no wholesale wipes). The Sankey fold
+(``node_totals_and_links``) runs over the matrix's summed scalars and needs no memoization; the
+hourly reads (``footprint_per_node`` and friends) fold live atoms on every call.
 """
-import inspect
+from abc import abstractmethod
 from dataclasses import dataclass
-from functools import wraps
-from itertools import pairwise
 
 from efootprint.abstract_modeling_classes.empty_explainable_object import EmptyExplainableObject
 from efootprint.abstract_modeling_classes.modeling_object import ModelingObject
+from efootprint.abstract_modeling_classes.reactive_core import lazy_attribute, record_calculus_edges_from_ancestry
 from efootprint.constants.units import u
 from efootprint.core.lifecycle_phases import LifeCyclePhases
+
+_CELL_FIELDS = ("job", "step", "rsn", "ef", "recn", "redn")
+
+
+def _chain_nodes(source, up, job=None, step=None, rsn=None, ef=None, recn=None, redn=None):
+    """Ordered nodes an atom climbs through, source-ward -> System-ward. Coarser keys (journey,
+    country) are derived from ``up``, never stored.
+
+    web job cell     : [source, job, step, up.usage_journey, up, up.country]
+    edge job cell    : [source, job, rsn, ef, up.edge_usage_journey, up, up.country]
+    device cell      : [source, step, up.usage_journey, up, up.country]
+    edge device cell : [source, recn, redn, ef, up.edge_usage_journey, up, up.country]
+    """
+    journey = up.usage_journey if hasattr(up, "usage_journey") else up.edge_usage_journey
+    nodes = (source, job, recn, rsn, redn, ef, step, journey, up, up.country)
+
+    return [node for node in nodes if node is not None]
 
 
 @dataclass(frozen=True, eq=False)
@@ -37,8 +51,7 @@ class Atom:
 
     ``source`` and ``stream`` say who emitted it and which physical stream (provisioned / dynamic /
     retention / baseline / single / …) it belongs to. The cell coordinates are source-specific —
-    absent ones stay None — and ``up`` is always present. Coarser keys (journey, country) are
-    derived from ``up`` in ``chain()``, never stored.
+    absent ones stay None — and ``up`` is always present.
     """
     source: ModelingObject
     stream: str
@@ -52,48 +65,56 @@ class Atom:
     redn: ModelingObject = None
 
     def chain(self):
-        """Ordered nodes this atom climbs through, source-ward -> System-ward.
-
-        web job cell     : [source, job, step, up.usage_journey, up, up.country]
-        edge job cell    : [source, job, rsn, ef, up.edge_usage_journey, up, up.country]
-        device cell      : [source, step, up.usage_journey, up, up.country]
-        edge device cell : [source, recn, redn, ef, up.edge_usage_journey, up, up.country]
-        """
-        journey = (self.up.usage_journey if hasattr(self.up, "usage_journey")
-                   else self.up.edge_usage_journey)
-        nodes = (self.source, self.job, self.recn, self.rsn, self.redn, self.ef, self.step,
-                 journey, self.up, self.up.country)
-
-        return [node for node in nodes if node is not None]
+        """The atom's ordered chain nodes (see ``_chain_nodes``)."""
+        return _chain_nodes(
+            self.source, self.up, job=self.job, step=self.step, rsn=self.rsn, ef=self.ef, recn=self.recn,
+            redn=self.redn)
 
 
-def _hashable(arg):
-    return tuple(arg) if isinstance(arg, list) else arg
+def _period_sum_in_kg(atom_value) -> float:
+    """One atom's value reduced to its period sum in kg — the matrix rows' and folds' single scalar
+    reduction (``.to(u.kg)`` raises on a non-mass atom value)."""
+    summed = atom_value.sum()
+    return 0.0 if isinstance(summed, EmptyExplainableObject) else summed.value.to(u.kg).magnitude
 
 
-def flushed_memo(func):
-    """Memoize on the first argument's ``render_cache`` — the per-ModelingObject scratch dict wiped by the
-    system-wide cached-property flush — keyed by function name + remaining (hashable) args."""
-    signature = inspect.signature(func)
-
-    @wraps(func)
-    def wrapper(cache_owner, *args, **kwargs):
-        bound_args = signature.bind(cache_owner, *args, **kwargs)
-        bound_args.apply_defaults()
-        normalized_args = tuple(_hashable(arg) for arg in list(bound_args.arguments.values())[1:])
-        cache = cache_owner.render_cache
-        key = (func.__name__, *normalized_args)
-        if key not in cache:
-            cache[key] = func(cache_owner, *normalized_args)
-        return cache[key]
-
-    return wrapper
+def _atom_row(atom: Atom, phase: LifeCyclePhases) -> dict:
+    """The atom's dict-encoded matrix row: source, stream and phase, the cell coordinate ids (absent
+    coordinates omitted), and the value reduced to its period sum in kg."""
+    row = {"source": atom.source.id, "stream": atom.stream, "phase": phase.value, "up": atom.up.id,
+           "value": _period_sum_in_kg(atom.value)}
+    for cell_field in _CELL_FIELDS:
+        node = getattr(atom, cell_field)
+        if node is not None:
+            row[cell_field] = node.id
+    return row
 
 
-@flushed_memo
+class AttributionSource:
+    """Mixin for impact sources implementing the atom contract: an ``attribution_atoms(phase)``
+    generator, and the lazy ``impact_repartition_rows`` slot summarizing those atoms for the
+    system-level repartition matrix."""
+
+    @abstractmethod
+    def attribution_atoms(self, phase: LifeCyclePhases):
+        pass
+
+    @lazy_attribute
+    def impact_repartition_rows(self) -> tuple:
+        """One dict-encoded matrix row per attribution atom of this source, across both life-cycle
+        phases, each value reduced to its period sum in kg. Calculus edges are recorded from each
+        atom's hourly value before the reduction drops its ancestry, so the rows are invalidated
+        exactly like the atoms they summarize."""
+        rows = []
+        for phase in LifeCyclePhases:
+            for atom in self.attribution_atoms(phase):
+                record_calculus_edges_from_ancestry(atom.value)
+                rows.append(_atom_row(atom, phase))
+        return tuple(rows)
+
+
 def atoms_of(source: ModelingObject, phase) -> tuple:
-    """TIER 1 — the source's atom list for a life-cycle phase, materialized once per render and reused by
-    every fold (atom values are query-invariant)."""
+    """The source's materialized atom list for a life-cycle phase."""
     return tuple(source.attribution_atoms(phase))
 
 
@@ -105,45 +126,52 @@ def attribution_sources(system) -> list:
 def atoms(system, phase, exclude: tuple = ()):
     """All sources' atoms for a phase, excluded source classes filtered out (exclusion = filter, never
     rescale)."""
+    exclude = tuple(exclude)
     for source in attribution_sources(system):
         if isinstance(source, exclude):
             continue
-        yield from atoms_of(source, phase)
+        yield from source.attribution_atoms(phase)
 
 
-@flushed_memo
+def _resolved_row_chain(row: dict, objects_by_id: dict) -> list:
+    up = objects_by_id[row["up"]]
+    cell_nodes = {cell_field: objects_by_id[row[cell_field]] for cell_field in _CELL_FIELDS if cell_field in row}
+    return _chain_nodes(objects_by_id[row["source"]], up, **cell_nodes)
+
+
 def node_totals_and_links(system, phase, visible_levels: tuple, exclude: tuple = ()):
-    """TIER 2 — the Sankey feed: ``({node: kg Quantity}, {(finer, coarser): kg Quantity})`` for one
-    life-cycle phase. Values are period-total pint Quantities in kg, not hourly explainables: the Sankey
-    renders sums only and reads magnitudes, so each atom is reduced to a kg float once (``.to(u.kg)``
-    raises on a non-mass atom value) and accumulated as plain floats — no explainable ancestry, no pint
-    arithmetic in the hot loop (the folds run cold on every render; see ``footprint_per_node`` for the
-    hourly explainable read).
+    """The Sankey feed: ``({node: kg Quantity}, {(finer, coarser): kg Quantity})`` for one life-cycle
+    phase, folded over the stored ``System.impact_repartition_matrix`` rows — period-total scalars, no
+    hourly data, no model recomputation beyond the (cached) matrix itself.
 
     ``visible_levels`` is a tuple of ModelingObject classes; a chain node is visible iff it is an instance
     of one of them — skipping a column = leaving its classes out (adjacent visible nodes link directly).
-    Each atom contributes its value to every visible node of its chain and to the link between each
+    Each row contributes its value to every visible node of its chain and to the link between each
     consecutive pair, so Σ incoming == node total == Σ outgoing holds at every node BY CONSTRUCTION —
-    no normalization, no rescaling, anywhere. Returned dicts are memoized — treat them as read-only."""
+    no normalization, no rescaling, anywhere."""
+    visible_levels = tuple(visible_levels)
+    exclude = tuple(exclude)
+    objects_by_id = {obj.id: obj for obj in system.all_linked_objects}
     node_totals, links = {}, {}
-    for atom in atoms(system, phase, exclude):
-        chain = [node for node in atom.chain() if isinstance(node, visible_levels)]
-        summed = atom.value.sum()
-        value = 0.0 if isinstance(summed, EmptyExplainableObject) else summed.value.to(u.kg).magnitude
+    for row in system.impact_repartition_matrix:
+        if row["phase"] != phase.value or isinstance(objects_by_id[row["source"]], exclude):
+            continue
+        chain = [node for node in _resolved_row_chain(row, objects_by_id) if isinstance(node, visible_levels)]
+        value = row["value"]
         for node in chain:
             node_totals[node] = node_totals.get(node, 0.0) + value
-        for finer, coarser in pairwise(chain):
-            links[(finer, coarser)] = links.get((finer, coarser), 0.0) + value
+        for index in range(len(chain) - 1):
+            pair = (chain[index], chain[index + 1])
+            links[pair] = links.get(pair, 0.0) + value
 
     return ({node: total * u.kg for node, total in node_totals.items()},
             {pair: total * u.kg for pair, total in links.items()})
 
 
-@flushed_memo
 def footprint_per_node(system, level, phase, exclude: tuple = ()):
     """Programmatic per-level read: ``{node: hourly}`` grouping each atom by its chain node at ``level``
     (a ModelingObject class or tuple of classes). Atoms with no node at that level don't contribute.
-    The returned dict is memoized — treat it as read-only."""
+    Folds live atoms on every call — the hourly counterpart of the period-sum matrix."""
     totals = {}
     for atom in atoms(system, phase, exclude):
         node = next((node for node in atom.chain() if isinstance(node, level)), None)
@@ -153,11 +181,9 @@ def footprint_per_node(system, level, phase, exclude: tuple = ()):
     return totals
 
 
-@flushed_memo
 def footprint_per_node_per_source(system, level, phase, exclude: tuple = ()):
     """Per-source variant of ``footprint_per_node``: ``{(source, node): hourly}`` — the footprint of any
-    container at ``level`` due to any source, not just leaves.
-    The returned dict is memoized — treat it as read-only."""
+    container at ``level`` due to any source, not just leaves."""
     totals = {}
     for atom in atoms(system, phase, exclude):
         node = next((node for node in atom.chain() if isinstance(node, level)), None)

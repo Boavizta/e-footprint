@@ -5,12 +5,12 @@ from efootprint.abstract_modeling_classes.empty_explainable_object import EmptyE
 from efootprint.abstract_modeling_classes.explainable_hourly_quantities import ExplainableHourlyQuantities
 from efootprint.abstract_modeling_classes.modeling_object import ModelingObject
 from efootprint.constants.units import u
-from efootprint.core.attribution import Atom
+from efootprint.core.attribution import Atom, AttributionSource
 from efootprint.core.lifecycle_phases import LifeCyclePhases
 from efootprint.abstract_modeling_classes.reactive_core import computed_attribute
 
 
-class ExternalAPIServer(ModelingObject):
+class ExternalAPIServer(ModelingObject, AttributionSource):
     param_descriptions = {}
 
     def __init__(self, name: str):

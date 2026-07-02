@@ -18,8 +18,7 @@ from efootprint.abstract_modeling_classes.explainable_object_dict import (
     ExplainableObjectDict, to_weighted_explainable_object_dict)
 from efootprint.abstract_modeling_classes.explainable_quantity import ExplainableQuantity
 from efootprint.abstract_modeling_classes.modeling_object import (
-    ModelingObject, class_cached_property_names, get_instance_attributes, invalidate_slots_system_wide,
-    pull_slots_system_wide)
+    ModelingObject, get_instance_attributes, invalidate_slots_system_wide, pull_slots_system_wide)
 from efootprint.abstract_modeling_classes.modeling_update import ModelingUpdate
 from efootprint.abstract_modeling_classes.reactive_core import computed_slots
 from efootprint.abstract_modeling_classes.source_objects import SourceValue
@@ -94,10 +93,9 @@ class TestRandomizedMutationParity(TestCase):
     def mutate_scalar_input(self, rng, system):
         candidates = []
         for obj in self.all_objects(system):
-            cached_names = class_cached_property_names(type(obj))
             computed_names = computed_slots(type(obj))
             for attr_name, attr in get_instance_attributes(obj, ExplainableQuantity).items():
-                if attr_name not in computed_names and attr_name not in cached_names:
+                if attr_name not in computed_names:
                     candidates.append((obj, attr_name, attr))
         obj, attr_name, attr = rng.choice(candidates)
         factor = rng.uniform(0.5, 1.8)

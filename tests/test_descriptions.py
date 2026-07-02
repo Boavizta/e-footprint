@@ -38,8 +38,11 @@ OPTIONAL_STRING_ATTRS = ("disambiguation", "pitfalls", "interactions")
 
 
 def _expected_param_keys(cls) -> List[str]:
-    """Return the ``__init__`` param names that ``param_descriptions`` must cover."""
-    return [name for name in get_init_signature_params(cls) if name not in {"self", "name"}]
+    """Return the ``__init__`` param names that ``param_descriptions`` must cover. Varargs are not
+    user-facing params (a mixin without its own ``__init__`` resolves to ``object.__init__``'s
+    ``*args, **kwargs``)."""
+    return [name for name, param in get_init_signature_params(cls).items()
+            if name not in {"self", "name"} and param.kind not in (param.VAR_POSITIONAL, param.VAR_KEYWORD)]
 
 
 def _own_class_attr(cls, name):

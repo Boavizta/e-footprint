@@ -17,7 +17,7 @@ class _EmptySystem:
         self.name = name
         self.id = "test_system"
         self.all_linked_objects = []
-        self.render_cache = {}
+        self.impact_repartition_matrix = ()
 
 
 _FIXTURE_NAMES = ("simple", "simple_edge", "complex", "services", "edge_group")

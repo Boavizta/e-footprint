@@ -2,8 +2,7 @@ from datetime import timedelta
 from typing import Dict, List, Optional
 
 from efootprint.abstract_modeling_classes.explainable_object_dict import ExplainableObjectDict
-from efootprint.abstract_modeling_classes.modeling_object import (
-    ModelingObject, flush_cached_properties_system_wide, pull_slots_system_wide)
+from efootprint.abstract_modeling_classes.modeling_object import ModelingObject, pull_slots_system_wide
 from efootprint.builders.external_apis.external_api_base_class import ExternalAPI, ExternalAPIServer
 from efootprint.builders.external_apis.external_api_job_base_class import ExternalAPIJob
 from efootprint.builders.services.service_base_class import Service
@@ -27,7 +26,8 @@ from efootprint.abstract_modeling_classes.explainable_quantity import Explainabl
 from efootprint.abstract_modeling_classes.empty_explainable_object import EmptyExplainableObject
 from efootprint.logger import logger
 from efootprint.utils.display import human_readable_unit, display_quantity_as_str
-from efootprint.abstract_modeling_classes.reactive_core import computed_attribute
+from efootprint.abstract_modeling_classes.reactive_core import computed_attribute, lazy_attribute
+from efootprint.core.attribution import attribution_sources
 
 
 class System(ModelingObject):
@@ -71,7 +71,6 @@ class System(ModelingObject):
         start = perf_counter()
         logger.info(f"Starting computing {self.name} modeling")
         pull_slots_system_wide([self])
-        flush_cached_properties_system_wide([self])
         all_objects = self.all_linked_objects
         nb_of_calculated_attributes = sum([len(obj.calculated_attributes) for obj in all_objects])
         if nb_of_calculated_attributes > 0:
@@ -308,6 +307,17 @@ class System(ModelingObject):
         ).to(u.kg).set_label("Total carbon footprint")
 
         return round(total_footprint, 4)
+
+    @lazy_attribute
+    def impact_repartition_matrix(self) -> tuple:
+        """The condensed impact-repartition summary: one dict-encoded row per attribution atom of the
+        system's impact sources — (source, stream, cell coordinate ids, usage pattern, phase) with the
+        atom's value reduced to its period sum in kg. Sankey folds and repartition reads run over these
+        summed scalars; the hourly attribution reads keep folding the live atoms."""
+        rows = []
+        for source in attribution_sources(self):
+            rows += source.impact_repartition_rows
+        return tuple(rows)
 
     def compare_to(self, other: "System"):
         """Return a {class:SystemComparison} of this system against ``other`` — the notebook entry point for the comparison capability (totals + deltas, per-(category, phase) decomposition, aligned/cumulative time-series, input diff)."""

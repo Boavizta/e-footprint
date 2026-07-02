@@ -87,6 +87,28 @@ class TestRecomputeCounter(TestCase):
                 owner_id, edge_object_ids,
                 f"{slot_name} recomputed but its owner is only linked to the edge side of the model")
 
+    def test_one_input_edit_invalidates_only_the_matrix_rows_in_its_cone(self):
+        """Test that with the impact-repartition matrix materialized, a one-input edit voids only the
+        per-source row slots in its dependency cone: re-reading the matrix recomputes the edited server's
+        rows and the matrix concatenation, nothing else in the lazy attribution layer."""
+        system = self.build_system()
+        _ = system.impact_repartition_matrix
+        edited_server = system.servers[0]
+        untouched_rows_before = {
+            source.id: source.impact_repartition_rows
+            for source in [system.servers[1], system.networks[0], system.devices[0]]}
+
+        edited_server.lifespan = SourceValue(edited_server.lifespan.value * 1.5)
+
+        with RecomputeRecorder() as recorder:
+            _ = system.impact_repartition_matrix
+        self.assertEqual(
+            {f"impact_repartition_rows of {edited_server.id}", f"impact_repartition_matrix of {system.id}"},
+            set(recorder.computed_slot_names))
+        for source_id, rows in untouched_rows_before.items():
+            source = next(obj for obj in system.all_linked_objects if obj.id == source_id)
+            self.assertIs(rows, source.impact_repartition_rows)
+
     def test_equal_value_recompute_frequency_is_measured(self):
         """Test that recomputations yielding a value equal to the replaced one are counted — the
         measurement that feeds the decision on a selective early-cutoff invalidation mode."""

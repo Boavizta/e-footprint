@@ -7,7 +7,7 @@ from efootprint.abstract_modeling_classes.modeling_object import ModelingObject
 from efootprint.abstract_modeling_classes.source_objects import SourceValue
 from efootprint.constants.sources import Sources
 from efootprint.constants.units import u
-from efootprint.core.attribution import Atom
+from efootprint.core.attribution import Atom, AttributionSource
 from efootprint.core.lifecycle_phases import LifeCyclePhases
 from efootprint.abstract_modeling_classes.reactive_core import computed_attribute, computed_dict
 
@@ -17,7 +17,7 @@ if TYPE_CHECKING:
     from efootprint.core.usage.job import JobBase
 
 
-class Network(ModelingObject):
+class Network(ModelingObject, AttributionSource):
     """Telecommunications network carrying traffic between users and the servers — Wi-Fi, fixed broadband, cellular. Modeled by its energy intensity per gigabyte transferred."""
 
     param_descriptions = {

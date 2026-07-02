@@ -12,8 +12,7 @@ from efootprint.abstract_modeling_classes.empty_explainable_object import EmptyE
 from efootprint.abstract_modeling_classes.explainable_object_base_class import ExplainableObject
 from efootprint.abstract_modeling_classes.explainable_hourly_quantities import ExplainableHourlyQuantities
 from efootprint.abstract_modeling_classes.explainable_quantity import ExplainableQuantity
-from efootprint.abstract_modeling_classes.modeling_object import (
-    ModelingObject, class_cached_property_names, get_instance_attributes)
+from efootprint.abstract_modeling_classes.modeling_object import ModelingObject, get_instance_attributes
 from efootprint.abstract_modeling_classes.modeling_update import ModelingUpdate
 from efootprint.api_utils.json_to_system import json_to_system
 from efootprint.api_utils.system_to_json import system_to_json
@@ -322,7 +321,6 @@ class IntegrationTestBaseClass(TestCase):
     def _test_variations_on_obj_inputs(self, input_object: ModelingObject, attrs_to_skip=None, special_mult=None):
         if attrs_to_skip is None:
             attrs_to_skip = []
-        attrs_to_skip += list(class_cached_property_names(type(input_object)))
         logger.warning(f"Testing input variations on {input_object.name}")
         for expl_attr_name, expl_attr in get_instance_attributes(input_object, ExplainableObject).items():
             if expl_attr_name not in attrs_to_skip and expl_attr_name not in input_object.calculated_attributes:
@@ -475,30 +473,26 @@ class IntegrationTestBaseClass(TestCase):
         """Test that all calculated attributes use correct semantic units (occurrence, concurrent, byte_ram)."""
         self.check_semantic_units_in_calculated_attributes(self.system)
 
-    def run_test_materialize_all_cached_properties(self):
-        """Force every cached_property on every linked modeling object to compute.
+    def run_test_materialize_all_lazy_projections(self):
+        """Force every lazy projection slot on every linked modeling object (and the system, including
+        the impact-repartition matrix) to compute.
 
         Defends against bugs that only surface through lazy attribution paths (e.g. Sankey)
         and never run during plain total_footprint computation.
         """
-        import functools
+        from efootprint.abstract_modeling_classes.reactive_core import lazy_slots
 
         failures = []
         for obj in [self.system] + self.system.all_linked_objects:
-            seen = set()
-            for cls in type(obj).__mro__:
-                for name, attr in vars(cls).items():
-                    if name in seen or not isinstance(attr, functools.cached_property):
-                        continue
-                    seen.add(name)
-                    try:
-                        getattr(obj, name)
-                    except Exception as e:
-                        failures.append(
-                            f"{type(obj).__name__}({getattr(obj, 'name', '?')!r}).{name} "
-                            f"raised {type(e).__name__}: {e}")
+            for name in lazy_slots(obj.efootprint_class):
+                try:
+                    getattr(obj, name)
+                except Exception as e:
+                    failures.append(
+                        f"{type(obj).__name__}({getattr(obj, 'name', '?')!r}).{name} "
+                        f"raised {type(e).__name__}: {e}")
         if failures:
-            self.fail("Cached property materialization failures:\n" + "\n".join(failures))
+            self.fail("Lazy projection materialization failures:\n" + "\n".join(failures))
 
     def run_test_attribution_atoms_conserve(self):
         """Test that every attribution source's atoms conserve its eager phase totals (Σ atoms == footprint).

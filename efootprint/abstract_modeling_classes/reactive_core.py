@@ -19,9 +19,12 @@ interface). The descriptors drive the reactive engine: each attribute read resol
 the container bookkeeping the eager ``__setattr__`` used to do, records its calculus edges from the
 computed value's arithmetic ancestry, and caches. Input values and relationship memberships get
 getter-less bump nodes in the same registry, created lazily when first read during a computation or
-first written; writes invalidate those nodes and the deletion wave does the rest.
+first written; writes invalidate those nodes and the deletion wave does the rest. ``@lazy_attribute``
+declares read-time projections: slots invalidated through the same graph but never eagerly recomputed,
+never serialized, holding raw values outside the container bookkeeping.
 """
 import contextvars
+import dataclasses
 from contextlib import contextmanager
 from typing import Type
 
@@ -97,6 +100,9 @@ class ReactiveSlot:
         # Set when the slot leaves its owner's registry (a dict key left the key set): stale
         # dependents may still pull it, but eager sweeps must not.
         self.discarded = False
+        # Lazy slots (read-time projections) are invalidated like any slot but never eagerly
+        # recomputed: they stay void until the next read pulls them.
+        self.lazy = False
         # Eager sweeps pull lower precedence first: key-set nodes before their sub-slots, so stale
         # sub-slots are discarded before the sweep reaches them.
         self.pull_precedence = 0
@@ -310,6 +316,27 @@ def record_calculus_edges_from_ancestry(value):
         return
     for ancestor in ancestors:
         record_calculus_dependency(slot_of_attached_value(ancestor))
+
+
+def record_calculus_edges_from_value_structure(value):
+    """Record calculus edges for every explainable found in a raw projection value — a bare explainable,
+    or dicts / lists / tuples / dataclass instances containing them. An attached explainable contributes
+    its own slot; an unattached one the slots of its nearest attached ancestors. This is how lazy slots
+    holding plain containers capture the input reads that only surface through arithmetic ancestry."""
+    if hasattr(value, "direct_ancestors_with_id"):
+        if value.modeling_obj_container is not None:
+            record_calculus_dependency(slot_of_attached_value(value))
+        else:
+            record_calculus_edges_from_ancestry(value)
+    elif isinstance(value, dict):
+        for item in value.values():
+            record_calculus_edges_from_value_structure(item)
+    elif isinstance(value, (list, tuple, set, frozenset)):
+        for item in value:
+            record_calculus_edges_from_value_structure(item)
+    elif dataclasses.is_dataclass(value) and not isinstance(value, type):
+        for field in dataclasses.fields(value):
+            record_calculus_edges_from_value_structure(getattr(value, field.name))
 
 
 def _assert_not_attached_elsewhere(value, instance, attr_name):
@@ -631,6 +658,68 @@ def computed_dict(keys: str):
     def decorator(getter):
         return _ComputedDictAttribute(getter, keys)
     return decorator
+
+
+class lazy_attribute:
+    """Descriptor declaring a lazy projection slot: computed on first read, cached in the reactive
+    graph and invalidated through it like any slot, but excluded from ``calculated_attributes`` (so
+    eager sweeps, serialization and the docs reference never touch it) and never eagerly recomputed —
+    after an invalidation it stays void until the next read. Its value is held raw, not attached to
+    the owner's explainability bookkeeping, so getters may return plain dicts, tuples or dataclass
+    instances of explainable values; the engine records calculus edges from every explainable found
+    in the returned structure, on top of the reads recorded while the getter ran."""
+
+    def __init__(self, getter):
+        self.getter = getter
+        self.attr_name = getter.__name__
+        self.__doc__ = getter.__doc__
+
+    def __set_name__(self, owner, name):
+        if name != self.getter.__name__:
+            raise ValueError(
+                f"Lazy attribute declared as {name} but its getter is named {self.getter.__name__}")
+        _register_slot("_declared_lazy_slots", owner, name, self)
+
+    def slot(self, instance) -> ReactiveSlot:
+        registry = instance_slot_registry(instance)
+        slot = registry.get(self.attr_name)
+        if slot is None or slot.getter is None:
+            slot = ReactiveSlot(f"{self.attr_name} of {getattr(instance, 'id', instance)}")
+            slot.lazy = True
+            slot.getter = self._make_compute_closure(instance)
+            registry[self.attr_name] = slot
+        return slot
+
+    def _make_compute_closure(self, instance):
+        def compute():
+            value = self.getter(instance)
+            record_calculus_edges_from_value_structure(value)
+            return value
+        return compute
+
+    def attach_cached_value(self, instance, value):
+        """Store a value in the slot without computing — the pinning path tests use."""
+        self.slot(instance).attach_cached_value(value)
+
+    def __get__(self, instance, owner=None):
+        if instance is None:
+            return self
+        slot = self.slot(instance)
+        if _compute_stack.get():
+            record_calculus_dependency(slot)
+        return slot.pull()
+
+    def __set__(self, instance, value):
+        raise AttributeError(
+            f"{self.attr_name} is a lazy projection of {type(instance).__name__} and cannot be assigned: "
+            f"change the inputs it derives from instead, or pin it in tests with "
+            f"tests.utils.patch_attribute / the descriptor's attach_cached_value.")
+
+
+def lazy_slots(cls: type) -> dict:
+    """All lazy-projection descriptors visible on cls (name -> descriptor), the most derived
+    declaration winning."""
+    return _collect_slots("_declared_lazy_slots", cls)
 
 
 def add_computed_attribute(cls: type, name: str, getter):

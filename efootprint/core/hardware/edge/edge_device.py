@@ -1,5 +1,4 @@
 from collections import defaultdict
-from functools import cached_property
 from typing import List, TYPE_CHECKING
 
 
@@ -9,12 +8,13 @@ from efootprint.abstract_modeling_classes.explainable_object_dict import Explain
 from efootprint.abstract_modeling_classes.explainable_quantity import ExplainableQuantity
 from efootprint.abstract_modeling_classes.modeling_object import ModelingObject
 from efootprint.constants.units import u
-from efootprint.core.attribution import Atom
+from efootprint.core.attribution import Atom, AttributionSource
 from efootprint.core.lifecycle_phases import LifeCyclePhases
 from efootprint.core.hardware.edge.edge_component import EdgeComponent
 from efootprint.abstract_modeling_classes.source_objects import SourceValue
 from efootprint.core.hardware.hardware_base import InsufficientCapacityError
-from efootprint.abstract_modeling_classes.reactive_core import computed_attribute, computed_dict, ReverseCollection
+from efootprint.abstract_modeling_classes.reactive_core import (
+    computed_attribute, computed_dict, lazy_attribute, ReverseCollection)
 
 if TYPE_CHECKING:
     from efootprint.core.usage.edge.recurrent_edge_device_need import RecurrentEdgeDeviceNeed
@@ -26,7 +26,7 @@ if TYPE_CHECKING:
     from efootprint.core.hardware.edge.edge_storage import EdgeStorage
 
 
-class EdgeDevice(ModelingObject):
+class EdgeDevice(ModelingObject, AttributionSource):
     """A piece of edge hardware (sensor, gateway, controller, embedded computer) made up of one or more {class:EdgeComponent}s plus a structural chassis. Aggregates fabrication and energy footprints of its components, then attributes them to the {class:RecurrentEdgeComponentNeed}s that load each one."""
 
     disambiguation = (
@@ -307,10 +307,10 @@ class EdgeDevice(ModelingObject):
             LifeCyclePhases.USAGE: self.energy_footprint_breakdown_by_source,
         }
 
-    # --- Attribution-only atom physics and builder (lazy cached properties / methods, consumed only by the
+    # --- Attribution-only atom physics and builder (lazy projection slots / methods, consumed only by the
     # attribution layer, never by the eager calculated-attribute graph) ---
 
-    @cached_property
+    @lazy_attribute
     def demand_share_per_need_and_pattern(self) -> dict:
         """Each component need's hourly share of the capacity-occupying demand on its component in a pattern —
         CPU / RAM / workload by the hourly resource need, EdgeStorage by the need's own cumulative HELD volume
@@ -342,7 +342,7 @@ class EdgeDevice(ModelingObject):
 
         return shares
 
-    @cached_property
+    @lazy_attribute
     def fabrication_pool_share_per_carrier_and_pattern(self) -> dict:
         """Chassis-pool rule: components unused at a pattern are part of the chassis. The
         pool at a pattern — every unused component's deployment-booked fabrication plus its equal chassis
@@ -389,7 +389,7 @@ class EdgeDevice(ModelingObject):
 
         return shares
 
-    @cached_property
+    @lazy_attribute
     def fabrication_atom_value_per_need_and_pattern(self) -> dict:
         """Fabrication atom value: (component fabrication + an equal 1/nb_components chassis share,
         matching the breakdown-by-source axis) × the need's demand share, plus the need's equal carrier share
@@ -410,7 +410,7 @@ class EdgeDevice(ModelingObject):
 
         return values
 
-    @cached_property
+    @lazy_attribute
     def energy_atom_value_per_need_and_pattern(self) -> dict:
         """Energy atom value: the idle/base floor of the component's affine power curve — which no
         need's demand changes — split equally across the component's needs at every hour, plus the need's own

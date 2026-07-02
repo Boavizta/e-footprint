@@ -1,8 +1,10 @@
 """Column-walk Sankey renderer over the attribution fold.
 
-The data layer is one ``attribution.node_totals_and_links`` call per life-cycle phase — conservation
-(Σ incoming == node total == Σ outgoing at every node, column sums == phase total minus exclusions) is
-structural in the fold. Everything in this class is presentation: the System root and life-cycle-phase
+The data layer is one ``attribution.node_totals_and_links`` call per life-cycle phase — a fold over the
+stored ``System.impact_repartition_matrix`` period sums, so every column/phase/exclusion combination
+renders without recomputing the model. Conservation (Σ incoming == node total == Σ outgoing at every
+node, column sums == phase total minus exclusions) is structural in the fold. Everything in this class
+is presentation: the System root and life-cycle-phase
 columns, the object-category and breakdown-by-source decorations, the ExternalAPIServer → ExternalAPI
 display normalization, small-node aggregation, colors, hovers, and spacer nodes as pure geometry.
 

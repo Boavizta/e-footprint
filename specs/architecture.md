@@ -16,7 +16,7 @@ This separation is constitutional (`specs/constitution.md` §1.1). `core/` is bu
 
 **No back-edge.** `abstract_modeling_classes/` no longer imports anything from `efootprint/core/`: the last framework→core leak (a function-local `System` import in the former computation-chain optimizer) was deleted with the eager push engine when computation became pull-based. Keep it that way.
 
-**No domain names in the framework layer.** The dependency rule applies to *names*, not just imports: `abstract_modeling_classes/` may not mention `core/` concepts (`UsagePattern`, `Job`, `Server`, …) by name — not in class attributes, not in strings, not in comments load-bearing for behaviour. When the framework needs to be polymorphic over a domain-specific extension (e.g., a cached property that only some subclasses define), it discovers the extension structurally rather than naming it. Example: `class_cached_property_names` auto-discovers every `functools.cached_property` through the class MRO; the flush machinery (`flush_cached_properties`, the system-wide sweep, `to_json` / `__setattr__` skip lists) consumes that discovery, so domain subclasses add cached properties without registering them anywhere. Corollary invariant: every `cached_property` on a `ModelingObject` is a flushable read-time projection (lazy attribution layer), never model state.
+**No domain names in the framework layer.** The dependency rule applies to *names*, not just imports: `abstract_modeling_classes/` may not mention `core/` concepts (`UsagePattern`, `Job`, `Server`, …) by name — not in class attributes, not in strings, not in comments load-bearing for behaviour. When the framework needs to be polymorphic over a domain-specific extension, it discovers the extension structurally rather than naming it. Example: `@lazy_attribute` (in `reactive_core.py`) is the framework-level notion of a read-time projection slot; the attribution layer declares its projections with it without the framework ever naming attribution. (`functools.cached_property` is no longer used on `ModelingObject`s — the former "every cached_property is a flushable projection" invariant died, together with the wholesale flush machinery, when attribution caching joined the reactive graph.)
 
 `efootprint/builders/` provides convenience subclasses of core objects with sensible defaults and external-data integrations (EcoLogits, Boavizta).
 
@@ -34,7 +34,7 @@ This separation is constitutional (`specs/constitution.md` §1.1). `core/` is bu
 Avoid gathering context here unless absolutely necessary — most modeling work doesn't require it.
 
 - **`ModelingObject`** — base class with dependency tracking and update logic. All e-footprint objects inherit from this.
-- **`reactive_core.py`** — the pull-based computation engine: `@computed_attribute` / `@computed_dict` descriptors (each computed attribute resolves to a per-instance `ReactiveSlot` that computes on read, caches, and is invalidated by deletion waves along recorded dependency edges), `ReverseCollection`/`ReverseLink` declarative reverse relationships, and the relationship read/write hooks' primitives.
+- **`reactive_core.py`** — the pull-based computation engine: `@computed_attribute` / `@computed_dict` descriptors (each computed attribute resolves to a per-instance `ReactiveSlot` that computes on read, caches, and is invalidated by deletion waves along recorded dependency edges), `@lazy_attribute` read-time projection slots (same graph and invalidation, but excluded from `calculated_attributes` — so never eagerly recomputed, serialized, or documented — and holding raw values such as plain dicts/tuples outside the container bookkeeping, with calculus edges recorded from every explainable found in the returned structure), `ReverseCollection`/`ReverseLink` declarative reverse relationships, and the relationship read/write hooks' primitives.
 - **`ExplainableObject`** — manages the calculation graph; allows automatic explanations and incremental recomputation.
 - **`ExplainableQuantity`** — values with units; inherits from `ExplainableObject`.
 - **`ExplainableHourlyQuantities`** — hourly time-series.
@@ -96,11 +96,11 @@ Downwards, `mod_obj_attributes` is the SSOT: it returns every referenced object 
 ## Attribution layer (the atom model)
 
 Attribution lives entirely in `efootprint/core/attribution/` and is lazy, read-time-only — calculated
-attributes never read attribution results (the one-way rule that makes wholesale cached-property flushing
-correct). Each impact source decomposes its footprint exactly once into **atoms** — the finest
-`(source, stream, containment cell, usage pattern)` slices of hourly footprint, emitted by the source's
-`attribution_atoms(phase)` generator. Every attribution number is the same operation, a fold: group atoms by
-a key and sum.
+attributes never read attribution results (the one-way rule that keeps the projection layer strictly
+downstream of the footprint graph). Each impact source decomposes its footprint exactly once into
+**atoms** — the finest `(source, stream, containment cell, usage pattern)` slices of hourly footprint,
+emitted by the source's `attribution_atoms(phase)` generator. Every attribution number is the same
+operation, a fold: group atoms by a key and sum.
 
 - node total at any level = group by that level's key; link between columns = consecutive visible chain nodes
 - **skip a column** = leave its classes out of the fold's `visible_levels` (adjacent visible nodes link
@@ -113,13 +113,20 @@ a key and sum.
   streams (on-premise provisioned, storage baseline, edge idle floor) relay by *flat period-total* shares
   (a scalar), so footprint at idle hours is conserved instead of dropped or double-counted
 - renderers are presentation-only: `ImpactRepartitionSankey` makes one `node_totals_and_links` call per
-  life-cycle phase and owns nothing but layout, colors and aggregation. That fold returns *period-total
-  scalars* (each atom is `.sum()`-ed once before accumulation — the Sankey renders sums only, and folds run
-  cold on every render); `footprint_per_node[_per_source]` remain the hourly reads
+  life-cycle phase and owns nothing but layout, colors and aggregation. That fold runs over the stored
+  matrix's *period-total scalars* (the Sankey renders sums only); `footprint_per_node[_per_source]` remain
+  the hourly reads, folding live atoms on every call
 
-Caching is two-tier in each owner's `render_cache` (itself a cached property): atom lists per
-`(source, phase)`, fold results per query. Both are wiped by the system-wide cached-property flush after
-every `ModelingUpdate` and after the initial build.
+Caching follows the one paradigm of the reactive graph, in two `@lazy_attribute` projection layers: each
+source (the `AttributionSource` mixin: `ServerBase`, `Storage`, `Device`, `Network`, `EdgeDevice`,
+`ExternalAPIServer`) exposes `impact_repartition_rows` — its atoms reduced to dict-encoded matrix rows
+`(source, stream, cell coordinate ids, up, phase) → period sum in kg`, with calculus edges recorded from
+each atom's hourly value before reduction — and `System.impact_repartition_matrix` concatenates them.
+The heavier per-source share physics (`binding_demand_per_job`, `attribution_cells`,
+`retention_cumulative_per_cell`, …) are lazy slots too. Everything computes on first read, caches, and is
+invalidated *precisely* through recorded dependency edges — a one-input edit voids only the row slots in
+its cone; there is no wholesale flush anywhere. Lazy slots are never eagerly recomputed by
+`ModelingUpdate` (they stay void until the next render) and never serialized.
 
 **EdgeDevice fabrication is deployment-booked; energy is need-booked.** A component with no needs at a
 pattern the device serves still books its embodied carbon eagerly with the deployment, exactly like the

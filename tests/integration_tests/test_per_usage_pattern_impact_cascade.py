@@ -223,17 +223,11 @@ class TestPerUsagePatternImpactCascade(TestCase):
 
         def assert_invalidates(label: str, mutate):
             before = read_low_footprint()
-            # The read memoizes the fold in the system's render_cache; the mutation must wipe it.
-            self.assertIn("render_cache", system.__dict__, label)
             mutate()
-            self.assertNotIn(
-                "render_cache", system.__dict__,
-                f"{label}: attribution fold memo not flushed",
-            )
             after = read_low_footprint()
             self.assertNotAlmostEqual(before, after, places=6, msg=f"{label}: footprint unchanged after mutation")
             # Conservation: per-pattern attribution must sum to system total after the mutation,
-            # which fails if any stale memo survives the post-recompute flush.
+            # which fails if any stale attribution slot survives the invalidation wave.
             self.assertAlmostEqual(
                 system.total_footprint.sum().to(u.kg).magnitude,
                 (attributed_footprint(low_carbon_pattern, LifeCyclePhases.USAGE).sum()

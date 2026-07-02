@@ -40,7 +40,7 @@ from efootprint.core.usage.usage_journey_step import UsageJourneyStep
 from efootprint.core.usage.usage_pattern import UsagePattern
 from tests.core.attribution.conservation import assert_source_atoms_conserve, sum_atom_values
 from tests.utils import create_mod_obj_mock
-from tests.utils import patch_attribute, recompute_attribute
+from tests.utils import attach_attribute, patch_attribute, recompute_attribute
 
 
 class TestServer(TestCase):
@@ -447,9 +447,9 @@ class TestServer(TestCase):
         """Test that an on-premise server's provisioned shares are the flat per-tier weights, summing to 1."""
         job1 = create_mod_obj_mock(DirectServerJob, "Peak job")
         job2 = create_mod_obj_mock(DirectServerJob, "Off peak job")
-        self.server_base.__dict__["binding_demand_per_job"] = {
+        attach_attribute(self.server_base, "binding_demand_per_job", {
             job1: create_source_hourly_values_from_list([3, 1], pint_unit=u.concurrent),
-            job2: create_source_hourly_values_from_list([0, 1], pint_unit=u.concurrent)}
+            job2: create_source_hourly_values_from_list([0, 1], pint_unit=u.concurrent)})
 
         with patch_attribute(self.server_base, "raw_nb_of_instances",
                           create_source_hourly_values_from_list([3, 2], pint_unit=u.concurrent)), \
@@ -660,10 +660,10 @@ class TestAttributionCachesAfterModelingUpdate(TestCase):
             create_source_hourly_values_from_list([10, 20], datetime(2026, 1, 1)))
         System("stale weights system", [up], edge_usage_patterns=[])
 
-        _ = server.binding_demand_per_job  # a render materializes the lazy attribution caches
+        _ = server.binding_demand_per_job  # a render materializes the lazy attribution slots
 
         up.hourly_usage_journey_starts = create_source_hourly_values_from_list([100, 200], datetime(2026, 1, 1))
 
         demand_after_update = server.binding_demand_per_job[job].magnitude.copy()
-        server.flush_cached_properties()
-        self.assertTrue(np.allclose(demand_after_update, server.binding_demand_per_job[job].magnitude))
+        self.assertTrue(np.allclose(
+            demand_after_update, recompute_attribute(server, "binding_demand_per_job")[job].magnitude))

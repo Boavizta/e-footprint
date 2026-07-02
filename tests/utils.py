@@ -11,14 +11,15 @@ def patch_attribute(target, attr_name: str, new_value):
     """Pin an attribute for the duration of a with-block. For computed attributes the value is
     attached to the reactive slot without computing (mock.patch.object would compute the current
     value on entry just to snapshot it); anything else falls back to mock.patch.object."""
-    from efootprint.abstract_modeling_classes.reactive_core import computed_slots, computed_attribute
+    from efootprint.abstract_modeling_classes.reactive_core import (
+        computed_slots, computed_attribute, lazy_attribute, lazy_slots)
 
     descriptor = None
     if not isinstance(target, type):
         target_class = getattr(target, "efootprint_class", type(target))
         if isinstance(target_class, type):
-            descriptor = computed_slots(target_class).get(attr_name)
-    if not isinstance(descriptor, computed_attribute):
+            descriptor = computed_slots(target_class).get(attr_name) or lazy_slots(target_class).get(attr_name)
+    if not isinstance(descriptor, (computed_attribute, lazy_attribute)):
         with mock_patch.object(target, attr_name, new_value):
             yield new_value
         return
@@ -34,12 +35,21 @@ def patch_attribute(target, attr_name: str, new_value):
             descriptor.attach_cached_value(target, original_value)
 
 
-def attach_attribute(mod_obj, attr_name: str, value, key=None):
-    """Pin a computed attribute (or one key of a computed dict) through the descriptor's attach path —
-    the test replacement for plain assignment, which raises on computed names."""
-    from efootprint.abstract_modeling_classes.reactive_core import computed_slots
+def _slot_descriptor(efootprint_class, attr_name: str):
+    from efootprint.abstract_modeling_classes.reactive_core import computed_slots, lazy_slots
 
-    descriptor = computed_slots(mod_obj.efootprint_class)[attr_name]
+    descriptor = computed_slots(efootprint_class).get(attr_name) or lazy_slots(efootprint_class).get(attr_name)
+    if descriptor is None:
+        raise KeyError(f"{attr_name} is neither a computed attribute nor a lazy projection of "
+                       f"{efootprint_class.__name__}")
+    return descriptor
+
+
+def attach_attribute(mod_obj, attr_name: str, value, key=None):
+    """Pin a computed attribute or lazy projection (or one key of a computed dict) through the
+    descriptor's attach path — the test replacement for plain assignment, which raises on computed
+    names."""
+    descriptor = _slot_descriptor(mod_obj.efootprint_class, attr_name)
     if key is not None:
         descriptor.attach_element_cached_value(mod_obj, key, value)
     else:
@@ -48,12 +58,12 @@ def attach_attribute(mod_obj, attr_name: str, value, key=None):
 
 
 def recompute_attribute(mod_obj, attr_name: str, key=None):
-    """Force a fresh computation of a computed attribute (or one key of a computed dict) and return
-    the new value — the unit-test replacement for the former update_<attr> calls, for tests that
-    change raw inputs in place and want the recomputation to run now."""
-    from efootprint.abstract_modeling_classes.reactive_core import computed_slots, invalidate, instance_slot_registry
+    """Force a fresh computation of a computed attribute or lazy projection (or one key of a computed
+    dict) and return the new value — the unit-test replacement for the former update_<attr> calls, for
+    tests that change raw inputs in place and want the recomputation to run now."""
+    from efootprint.abstract_modeling_classes.reactive_core import invalidate, instance_slot_registry
 
-    descriptor = computed_slots(mod_obj.efootprint_class)[attr_name]
+    descriptor = _slot_descriptor(mod_obj.efootprint_class, attr_name)
     if key is not None:
         slot = descriptor.sub_slot(mod_obj, key)
         invalidate(slot)

@@ -1,4 +1,3 @@
-from functools import cached_property
 from typing import List, TYPE_CHECKING
 from abc import abstractmethod
 
@@ -11,14 +10,14 @@ from efootprint.abstract_modeling_classes.explainable_hourly_quantities import (
 from efootprint.abstract_modeling_classes.explainable_object_dict import ExplainableObjectDict
 from efootprint.abstract_modeling_classes.explainable_quantity import ExplainableQuantity
 from efootprint.abstract_modeling_classes.empty_explainable_object import EmptyExplainableObject
-from efootprint.core.attribution import Atom
+from efootprint.core.attribution import Atom, AttributionSource
 from efootprint.core.hardware.infra_hardware import InfraHardware
 from efootprint.core.hardware.hardware_base import InsufficientCapacityError
 from efootprint.core.lifecycle_phases import LifeCyclePhases
 from efootprint.abstract_modeling_classes.source_objects import SOURCE_VALUE_DEFAULT_NAME, SourceObject
 from efootprint.constants.units import u
 from efootprint.core.hardware.storage import Storage
-from efootprint.abstract_modeling_classes.reactive_core import computed_attribute, ReverseCollection
+from efootprint.abstract_modeling_classes.reactive_core import computed_attribute, lazy_attribute, ReverseCollection
 
 if TYPE_CHECKING:
     from efootprint.core.usage.job import JobBase, DirectServerJob
@@ -72,7 +71,7 @@ def on_premise_provisioned_tier_shares(
     return shares
 
 
-class ServerBase(InfraHardware):
+class ServerBase(InfraHardware, AttributionSource):
     """Abstract base for the infrastructure hardware that runs {class:Job}s as part of a digital service. Concrete subclasses model on-premise servers ({class:Server}), GPU servers ({class:GPUServer}), and cloud servers with provider-supplied hardware profiles ({class:BoaviztaCloudServer}); each rolls hourly job demand into energy and fabrication footprints according to its {param:ServerBase.server_type}."""
 
     @abstractmethod
@@ -380,7 +379,7 @@ class ServerBase(InfraHardware):
         }
         return logic_mapping[self.server_type]()
 
-    @cached_property
+    @lazy_attribute
     def service_total_job_volumes(self) -> dict:
         """Total hourly volume of jobs going through each installed service, used to attribute each service's
         standing base consumption to its own jobs proportionally to their volumes (attribution-only, lazy)."""
@@ -391,14 +390,14 @@ class ServerBase(InfraHardware):
             ).set_label(f"Total job volume for {service.name}")
             for service in self.installed_services}
 
-    # --- Attribution-only binding-resource physics and atom builder (lazy cached properties, consumed only by
+    # --- Attribution-only binding-resource physics and atom builder (lazy projection slots, consumed only by
     # the attribution layer, never by the eager calculated-attribute graph) ---
 
     @property
     def is_on_premise(self) -> bool:
         return self.server_type == ServerTypes.on_premise()
 
-    @cached_property
+    @lazy_attribute
     def binding_demand_per_job(self) -> dict:
         """Each job's hourly demand on the server's binding resource, the resource picked per hour by
         raw[h] = max(compute_need[h] / available_compute_per_instance, ram_need[h] / available_ram_per_instance)
@@ -444,7 +443,7 @@ class ServerBase(InfraHardware):
 
         return binding_demand_per_job
 
-    @cached_property
+    @lazy_attribute
     def dynamic_share_per_job(self) -> dict:
         """Each job's hourly share of the total binding-resource demand, divide_or_fallback(fallback=0) —
         exact for the demand streams: zero demand at an hour means zero dynamic footprint at that hour."""
@@ -455,7 +454,7 @@ class ServerBase(InfraHardware):
                   else divide_or_fallback(demand, total_demand, fallback=0))
             for job, demand in self.binding_demand_per_job.items()}
 
-    @cached_property
+    @lazy_attribute
     def provisioned_share_per_job(self) -> dict:
         """Per-job weights for the provisioned stream (fabrication + idle energy, both proportional to
         nb_of_instances). On-premise provisions once for the whole period, so the weights are flat scalars from

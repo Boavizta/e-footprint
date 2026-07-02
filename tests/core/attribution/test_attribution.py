@@ -6,6 +6,7 @@ import pytz
 
 from efootprint.abstract_modeling_classes.empty_explainable_object import EmptyExplainableObject
 from efootprint.abstract_modeling_classes.explainable_timezone import ExplainableTimezone
+from efootprint.abstract_modeling_classes.reactive_core import lazy_slots
 from efootprint.abstract_modeling_classes.source_objects import SourceValue
 from efootprint.builders.time_builders import create_source_hourly_values_from_list
 from efootprint.constants.units import u
@@ -29,6 +30,11 @@ class TrackedDevice(Device):
 
 
 ALL_LEVELS = (Device, UsageJourneyStep, UsageJourney, UsagePattern, Country)
+
+
+def lazy_slot(mod_obj, attr_name):
+    """The reactive slot behind a lazy projection attribute."""
+    return lazy_slots(mod_obj.efootprint_class)[attr_name].slot(mod_obj)
 
 
 class TestAttributionFold(TestCase):
@@ -179,33 +185,70 @@ class TestAttributionFold(TestCase):
         assert_hourly_quantities_equal(
             self, per_up[self.up1] + per_up[self.up3], per_country[self.low_ci_country])
 
-    def test_memo_hit_within_a_query(self):
-        """Test that atom lists and folded results are memoized: same args return the same objects, and list
-        args normalize to the same key as tuple args."""
-        phase = LifeCyclePhases.USAGE
-        self.assertIs(atoms_of(self.device, phase), atoms_of(self.device, phase))
-        self.assertIs(
-            node_totals_and_links(self.system, phase, ALL_LEVELS),
-            node_totals_and_links(self.system, phase, list(ALL_LEVELS)))
+    def test_impact_repartition_matrix_rows_carry_atom_period_sums(self):
+        """Test row content: the device's matrix rows mirror its atoms one-to-one — same source, stream,
+        phase and cell coordinate ids, and each value is the atom's period sum in kg."""
+        for phase in LifeCyclePhases:
+            device_atoms = atoms_of(self.device, phase)
+            device_rows = [row for row in self.system.impact_repartition_matrix
+                           if row["source"] == self.device.id and row["phase"] == phase.value]
+            self.assertEqual(len(device_atoms), len(device_rows))
+            for atom, row in zip(device_atoms, device_rows):
+                self.assertEqual(atom.stream, row["stream"])
+                self.assertEqual(atom.up.id, row["up"])
+                self.assertEqual(atom.step.id, row["step"])
+                self.assertNotIn("job", row)
+                atom_sum = atom.value.sum()
+                expected = 0.0 if isinstance(atom_sum, EmptyExplainableObject) else atom_sum.to(u.kg).magnitude
+                self.assertEqual(expected, row["value"])
 
-    def test_modeling_update_flushes_attribution_memos_and_cached_primitives(self):
-        """Test that an input change wipes every render cache and cached primitive system-wide, so the next
-        query rebuilds atoms that conserve the new eager totals."""
+    def test_impact_repartition_matrix_is_cached_until_invalidated(self):
+        """Test that the matrix and the per-source row slots are ordinary cached slots: repeated reads
+        return the same object, with no recomputation in between."""
+        self.assertIs(self.system.impact_repartition_matrix, self.system.impact_repartition_matrix)
+        self.assertIs(self.device.impact_repartition_rows, self.device.impact_repartition_rows)
+
+    def test_input_change_invalidates_attribution_through_the_graph(self):
+        """Test that an input change voids the affected lazy attribution slots through the dependency graph
+        — no wholesale wipe — so the next query rebuilds atoms and matrix rows that conserve the new eager
+        totals."""
         phase = LifeCyclePhases.USAGE
         stale_atoms = atoms_of(self.device, phase)
-        node_totals_and_links(self.system, phase, ALL_LEVELS)
-        self.assertIn("render_cache", self.device.__dict__)
+        stale_matrix = self.system.impact_repartition_matrix
+        _ = self.step_a.hourly_avg_occurrences_per_usage_pattern
         initial_power = self.device.power
         try:
             self.device.power = SourceValue(100 * u.W)
-            self.assertNotIn("render_cache", self.device.__dict__)
-            self.assertNotIn("render_cache", self.system.__dict__)
-            self.assertNotIn("hourly_avg_occurrences_per_usage_pattern", self.step_a.__dict__)
+            self.assertFalse(lazy_slot(self.device, "impact_repartition_rows").has_cached_value)
+            self.assertFalse(lazy_slot(self.system, "impact_repartition_matrix").has_cached_value)
             fresh_atoms = atoms_of(self.device, phase)
             self.assertIsNot(stale_atoms, fresh_atoms)
             assert_hourly_quantities_equal(self, self.device.energy_footprint, sum_atom_values(fresh_atoms))
+            fresh_matrix = self.system.impact_repartition_matrix
+            self.assertIsNot(stale_matrix, fresh_matrix)
+            self.assertAlmostEqual(
+                self.device.energy_footprint.sum().to(u.kg).magnitude,
+                sum(row["value"] for row in fresh_matrix
+                    if row["source"] == self.device.id and row["phase"] == phase.value),
+                places=4)
         finally:
             self.device.power = initial_power
+
+    def test_input_change_invalidates_only_the_matrix_rows_in_its_cone(self):
+        """Test cone-scoped matrix invalidation: a step-duration edit voids the row slots of the sources it
+        feeds (devices, via step occupancy) but leaves an untouched source's cached rows intact."""
+        _ = self.system.impact_repartition_matrix
+        network_rows = lazy_slot(self.up1.network, "impact_repartition_rows")
+        self.assertTrue(network_rows.has_cached_value)
+        initial_time_spent = self.step_a.user_time_spent
+        try:
+            self.step_a.user_time_spent = SourceValue(25 * u.min)
+            self.assertFalse(lazy_slot(self.device, "impact_repartition_rows").has_cached_value)
+            self.assertFalse(lazy_slot(self.system, "impact_repartition_matrix").has_cached_value)
+            # The network has no jobs in this model, so its (empty) rows depend on no step input.
+            self.assertTrue(network_rows.has_cached_value)
+        finally:
+            self.step_a.user_time_spent = initial_time_spent
 
     def test_attributed_footprint_equals_footprint_per_node_entry(self):
         """Test that the attributed_footprint convenience read is an exact delegation: each object's value
@@ -220,24 +263,23 @@ class TestAttributionFold(TestCase):
                 attributed_footprint(obj, LifeCyclePhases.MANUFACTURING),
                 msg=f"{obj.name} fabrication delegation mismatch")
 
-    def test_attributed_footprint_flushes_on_modeling_update(self):
-        """Test that a ModelingUpdate flushes the fold memo behind attributed_footprint so the next read
-        reflects the new inputs."""
+    def test_attributed_footprint_reflects_modeling_update(self):
+        """Test that attributed_footprint reads fresh atoms after a ModelingUpdate and stays consistent with
+        footprint_per_node."""
         initial_power = self.device.power
-        _ = attributed_footprint(self.up1, LifeCyclePhases.USAGE)
-        self.assertIn("render_cache", self.system.__dict__)
+        before = attributed_footprint(self.up1, LifeCyclePhases.USAGE)
         try:
             self.device.power = SourceValue(100 * u.W)
-            self.assertNotIn("render_cache", self.system.__dict__)
+            after = attributed_footprint(self.up1, LifeCyclePhases.USAGE)
+            self.assertNotEqual(before.sum().magnitude, after.sum().magnitude)
             assert_hourly_quantities_equal(
-                self, footprint_per_node(self.system, UsagePattern, LifeCyclePhases.USAGE)[self.up1],
-                attributed_footprint(self.up1, LifeCyclePhases.USAGE))
+                self, footprint_per_node(self.system, UsagePattern, LifeCyclePhases.USAGE)[self.up1], after)
         finally:
             self.device.power = initial_power
 
-    def test_initial_build_flushes_cached_properties_materialized_before_system_creation(self):
-        """Test that a cached property materialized on a not-yet-linked object is flushed by the initial
-        build, so post-build reads see the full graph."""
+    def test_lazy_projection_materialized_before_system_creation_is_invalidated_by_linking(self):
+        """Test that a lazy projection materialized on a not-yet-linked object is invalidated by the linking
+        writes through the dependency graph, so post-build reads see the full graph."""
         step = UsageJourneyStep("prebuild step", SourceValue(10 * u.min), [])
         self.assertEqual({}, step.hourly_avg_occurrences_per_usage_pattern)
         journey = UsageJourney("prebuild journey", [step])

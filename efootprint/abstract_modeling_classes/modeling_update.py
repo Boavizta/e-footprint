@@ -7,7 +7,7 @@ from efootprint.abstract_modeling_classes.object_linked_to_modeling_obj import (
     ObjectLinkedToModelingObj, ObjectLinkedToModelingObjBase)
 from efootprint.abstract_modeling_classes.empty_explainable_object import EmptyExplainableObject
 from efootprint.abstract_modeling_classes.modeling_object import (
-    ModelingObject, flush_cached_properties_system_wide, pull_invalidated_slots, pull_slots_system_wide)
+    ModelingObject, pull_invalidated_slots, pull_slots_system_wide)
 from efootprint.abstract_modeling_classes.reactive_core import (
     collect_invalidated_slots, invalidate, slot_of_attached_value)
 from efootprint.logger import logger
@@ -50,9 +50,6 @@ class ModelingUpdate:
                       f"\nOriginal error:\n {e}",) + e.args[1:]
             raise e
 
-        flush_cached_properties_system_wide(
-            [old_value.modeling_obj_container for old_value, new_value in self.changes_list
-             if old_value.modeling_obj_container is not None] + ([self.system] if self.system is not None else []))
         compute_time_ms = round(1000 * (perf_counter() - start), 1)
         logger.info(f"{len(self.changes_list)} changes invalidated {recomputed_slots_count} slots, "
                     f"recomputed in {compute_time_ms} ms.")

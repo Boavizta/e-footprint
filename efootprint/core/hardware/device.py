@@ -6,7 +6,7 @@ from efootprint.abstract_modeling_classes.explainable_quantity import Explainabl
 from efootprint.constants.sources import Sources
 from efootprint.abstract_modeling_classes.source_objects import SourceValue
 from efootprint.constants.units import u
-from efootprint.core.attribution import Atom
+from efootprint.core.attribution import Atom, AttributionSource
 from efootprint.core.hardware.hardware_base import HardwareBase
 from efootprint.core.lifecycle_phases import LifeCyclePhases
 from efootprint.abstract_modeling_classes.reactive_core import computed_attribute, computed_dict
@@ -16,7 +16,7 @@ if TYPE_CHECKING:
     from efootprint.core.usage.usage_journey_step import UsageJourneyStep
 
 
-class Device(HardwareBase):
+class Device(HardwareBase, AttributionSource):
     """End-user hardware (smartphone, laptop, set-top box, screen) on which a {class:UsageJourney} is performed. Contributes both fabrication and electricity-use emissions to each {class:UsagePattern} that runs on it."""
 
     pitfalls = (

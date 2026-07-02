@@ -2,7 +2,6 @@ import uuid
 import weakref
 from abc import ABCMeta
 from copy import copy
-from functools import cache, cached_property
 from typing import List, Type, get_origin, get_args, TYPE_CHECKING
 import os
 
@@ -14,8 +13,8 @@ from efootprint.abstract_modeling_classes.utils import css_escape
 from efootprint.logger import logger
 from efootprint.abstract_modeling_classes.object_linked_to_modeling_obj import ObjectLinkedToModelingObjBase
 from efootprint.abstract_modeling_classes.reactive_core import (
-    CONTAINERS_NODE_NAME, collect_invalidated_slots, computed_slots, instance_slot_registry, invalidate,
-    record_read_of_node)
+    CONTAINERS_NODE_NAME, collect_invalidated_slots, computed_attribute, computed_slots, instance_slot_registry,
+    invalidate, lazy_attribute, record_read_of_node)
 from efootprint.utils.graph_tools import WIDTH, HEIGHT, add_unique_id_to_mynetwork
 from efootprint.utils.object_relationships_graphs import build_object_relationships_graph, \
     USAGE_PATTERN_VIEW_CLASSES_TO_IGNORE
@@ -25,28 +24,6 @@ from efootprint.constants.units import u
 if TYPE_CHECKING:
     from efootprint.abstract_modeling_classes.contextual_modeling_object_attribute import ContextualModelingObjectAttribute
     from efootprint.abstract_modeling_classes.explainable_object_dict import ExplainableObjectDict
-
-
-@cache
-def class_cached_property_names(cls: type) -> tuple:
-    """Names of every functools.cached_property in the class MRO, memoized per class.
-
-    Codebase invariant: every cached property on a ModelingObject is a flushable read-time projection
-    (the lazy attribution layer) — never model state — so the wholesale flush may pop them all.
-    """
-    return tuple(dict.fromkeys(
-        name for klass in cls.__mro__ for name, attr in vars(klass).items() if isinstance(attr, cached_property)))
-
-
-def flush_cached_properties_system_wide(mod_objs: list):
-    """Flat, system-wide flush of every cached property: the given objects plus every object linked to their
-    systems. Runs after every ModelingUpdate and after the initial build, keeping lazy read-time projections
-    (attribution memos and the like) consistent with the recomputed calculated-attribute graph."""
-    objs_to_flush = list(mod_objs)
-    for system in dict.fromkeys(sum([mod_obj.systems for mod_obj in mod_objs], start=[])):
-        objs_to_flush += system.all_linked_objects + [system]
-    for mod_obj in dict.fromkeys(objs_to_flush):
-        mod_obj.flush_cached_properties()
 
 
 def pull_slots_system_wide(systems: list):
@@ -63,9 +40,9 @@ def pull_slots_system_wide(systems: list):
 def pull_invalidated_slots(invalidated_slots):
     """Recompute the slots a write invalidated, key-set nodes first: their sync discards the
     sub-slots of keys that left the key set, which must not be recomputed (their getters may
-    legitimately no longer apply)."""
+    legitimately no longer apply). Lazy projection slots stay void: they recompute on next read."""
     for slot in sorted(invalidated_slots, key=lambda slot: (slot.pull_precedence, slot.name)):
-        if slot.getter is not None and not slot.discarded:
+        if slot.getter is not None and not slot.discarded and not slot.lazy:
             slot.pull()
 
 
@@ -465,19 +442,6 @@ class ModelingObject(metaclass=ABCAfterInitMeta):
         for attr_name in self.calculated_attributes:
             getattr(self, attr_name)
 
-    def flush_cached_properties(self):
-        """Pop every materialized cached property (auto-discovered from the class MRO) so the next read
-        recomputes from the fresh calculated-attribute graph."""
-        for cached_property_name in class_cached_property_names(type(self)):
-            self.__dict__.pop(cached_property_name, None)
-
-    @cached_property
-    def render_cache(self) -> dict:
-        """Scratch store for lazy, query-time memos (e.g. the attribution layer's atom lists and fold
-        results). Being itself a cached property, it is wiped wholesale by flush_cached_properties and is
-        never serialized."""
-        return {}
-
     def after_init(self):
         from efootprint.abstract_modeling_classes.explainable_object_dict import ExplainableObjectDict
         self.trigger_modeling_updates = True
@@ -503,13 +467,13 @@ class ModelingObject(metaclass=ABCAfterInitMeta):
     @property
     def attributes_that_shouldnt_trigger_update_logic(self):
         return ["name", "id", "trigger_modeling_updates", "contextual_modeling_obj_containers",
-                "explainable_object_dicts_containers"] + list(class_cached_property_names(type(self)))
+                "explainable_object_dicts_containers"]
 
     def __setattr__(self, name, input_value, check_input_validity=True):
         if name in self.attributes_that_shouldnt_trigger_update_logic:
             super().__setattr__(name, input_value)
             return
-        if name in computed_slots(type(self)):
+        if isinstance(getattr(type(self), name, None), (computed_attribute, lazy_attribute)):
             # Computed values only enter their slot by computation or by the descriptor's explicit
             # attach_cached_value (the load path and the test pinning path): a plain assignment would
             # either silently vanish or leave dependents cached against the unpinned value.
@@ -626,7 +590,6 @@ class ModelingObject(metaclass=ABCAfterInitMeta):
         if self.trigger_modeling_updates and systems:
             pull_slots_system_wide(systems)
             pull_invalidated_slots(invalidated_slots)
-            flush_cached_properties_system_wide(systems)
 
         del self
 

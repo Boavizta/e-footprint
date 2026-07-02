@@ -322,6 +322,23 @@ folds the matrix's summed scalars (no memoization needed).
 
 **Depends on:** Task 6.
 
+**Status:** Done. Notes: the engine gained a `@lazy_attribute` descriptor (own class registry, so lazy
+slots never enter `calculated_attributes` — no eager pull, no serialization, no docs entry; values held
+raw, with calculus edges recorded from every explainable found in the returned structure so
+ancestry-only input reads still invalidate) — the framework-level replacement for the cached-property
+projection layer, and `pull_invalidated_slots` skips lazy slots so they stay void until the next
+render. The matrix is two lazy layers: `impact_repartition_rows` per source (on a new
+`AttributionSource` mixin; ancestry recorded per atom value *before* the period-sum reduction drops it)
+concatenated by `System.impact_repartition_matrix`; rows keep zero-valued atoms and matrix
+concatenation preserves atom enumeration order, so the fold's float accumulation is bit-identical to
+the former live-atom fold (Sankey expectations unchanged). Job's `flushed_memo` multi-arg functions
+became plain methods (their per-call recompute cost is paid only inside lazy computations); scope grew
+to `job.py` + `usage_journey_step.py` because deleting `flushed_memo`/`render_cache` required it.
+`__setattr__`'s computed-name guard became a single class-attribute isinstance check (the added
+lazy-registry lookup had pushed big-fixture load past its perf threshold). Cone check: unit-level in
+`test_attribution.py` plus a big-fixture recompute-counter test asserting a server-lifespan edit
+recomputes exactly {edited server's rows, matrix} among lazy slots.
+
 ---
 
 ## Task 8 — Serialization contract, lazy default, migration, perf gates (stage 4, part 2)

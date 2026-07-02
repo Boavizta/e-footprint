@@ -1,4 +1,3 @@
-from functools import cached_property
 from typing import List, TYPE_CHECKING
 
 from efootprint.abstract_modeling_classes.empty_explainable_object import EmptyExplainableObject
@@ -10,6 +9,7 @@ from efootprint.abstract_modeling_classes.source_objects import SourceValue
 from efootprint.constants.units import u
 from efootprint.core.usage.compute_nb_occurrences_in_parallel import compute_nb_avg_hourly_occurrences
 from efootprint.core.usage.job import JobBase
+from efootprint.abstract_modeling_classes.reactive_core import lazy_attribute
 
 if TYPE_CHECKING:
     from efootprint.core.usage.usage_journey import UsageJourney
@@ -51,7 +51,7 @@ class UsageJourneyStep(ModelingObject):
     def networks(self) -> List["Network"]:
         return list(dict.fromkeys([up.network for up in self.usage_patterns]))
 
-    @cached_property
+    @lazy_attribute
     def hourly_avg_occurrences_per_usage_pattern(self):
         """The step's concurrent occupancy per usage pattern — the journeys concurrently inside the step's
         [delay, delay + times_per_journey × user_time_spent] window, computed as the difference of
