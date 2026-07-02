@@ -85,9 +85,7 @@ class VideoStreamingJob(ServiceJob):
     def __init__(self, name: str, service: VideoStreaming, resolution: ExplainableObject,
                  video_duration: ExplainableQuantity, refresh_rate: ExplainableQuantity,
                  data_stored: ExplainableQuantity):
-        super().__init__(name or f"{resolution} streaming on {service.name}",
-                         service, SourceValue(0 * u.kB), data_stored,
-                         SourceValue(0 * u.s), SourceValue(0 * u.cpu_core), SourceValue(0 * u.GB_ram))
+        super().__init__(name or f"{resolution} streaming on {service.name}", service, data_stored=data_stored)
         self.video_duration = video_duration.set_label("Video duration")
         self.resolution = resolution.set_label("Resolution")
         self.refresh_rate = refresh_rate.set_label("Frames per second")

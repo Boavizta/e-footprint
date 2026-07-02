@@ -282,10 +282,17 @@ them to themselves was vacuous) and compares bitwise, no float tolerance; the li
 tolerance narrowed to rtol=1e-4 (scoped to observed float32 reduction noise, ~4e-5 relative; a genuine
 quantization flip exceeding it must be examined before any widening); computed-dict facades raise
 KeyError for keys outside their key collection (membership read without recording an edge, so per-key
-granularity is preserved); assigning a computed attribute on a live model raises — pin via
-`patch_attribute` / the descriptor's `attach_cached_value` (mock unit tests migrated accordingly);
-inputs-only serialization peeks slots instead of pulling (saving never computes); the loaded-model wipe
-hook skips mid-construction objects explicitly instead of swallowing exceptions.
+granularity is preserved); assigning a computed attribute raises in every context — pin via
+`patch_attribute` / `attach_attribute` / the descriptor's `attach_cached_value` (mock unit tests
+migrated accordingly); inputs-only serialization peeks slots instead of pulling (saving never
+computes); the loaded-model wipe hook skips mid-construction objects explicitly instead of swallowing
+exceptions. The unconditional raise required retiring the dummy-constructor pattern: the parent
+constructor params that subclasses compute (`HardwareBase`/`Server(Base)` hardware specs, `JobBase`
+request needs, `EdgeComponent` per-unit specs, `EdgeDevice.structure_carbon_footprint_fabrication`,
+`RecurrentEdgeComponentNeed.recurrent_need`) default to `None` and are not stored when absent, the 15
+dummy-forwarding `super()` calls and the EcoLogits constructor placeholder loops are gone, and the
+`_under_construction` flag died with them (accepted trade-off: a forgotten required input on a
+concrete class surfaces at first computation, not as a constructor TypeError).
 
 ---
 

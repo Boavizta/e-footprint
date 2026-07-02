@@ -228,13 +228,9 @@ class EcoLogitsGenAIExternalAPIJob(ExternalAPIJob):
         "output_token_count": SourceValue(1000 * u.dimensionless)
     }
     def __init__(self, name: str, external_api: EcoLogitsGenAIExternalAPI, output_token_count: ExplainableQuantity):
-        super().__init__(name=name, external_api=external_api, data_transferred=SourceValue(0 * u.MB),
-                         data_stored=SourceValue(0 * u.MB_stored), request_duration=SourceValue(0 * u.s),
-                         compute_needed = SourceValue(0 * u.cpu_core), ram_needed = SourceValue(0 * u.GB_ram))
+        super().__init__(name=name, external_api=external_api, data_stored=SourceValue(0 * u.MB_stored),
+                         compute_needed=SourceValue(0 * u.cpu_core), ram_needed=SourceValue(0 * u.GB_ram))
         self.output_token_count = output_token_count.set_label(f"Output token count for {self.external_api.model_name}")
-
-        for ecologits_attr in ecologits_calculated_attributes:
-            setattr(self, ecologits_attr, EmptyExplainableObject())
 
 
     @computed_attribute

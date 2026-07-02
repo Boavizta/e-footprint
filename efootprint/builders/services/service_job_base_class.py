@@ -28,9 +28,9 @@ class ServiceJob(JobBase):
 
         return [service_annotation]
 
-    def __init__(self, name: str, service: Service, data_transferred: ExplainableQuantity,
-                 data_stored: ExplainableQuantity, request_duration: ExplainableQuantity,
-                 compute_needed: ExplainableQuantity, ram_needed: ExplainableQuantity):
+    def __init__(self, name: str, service: Service, data_transferred: ExplainableQuantity = None,
+                 data_stored: ExplainableQuantity = None, request_duration: ExplainableQuantity = None,
+                 compute_needed: ExplainableQuantity = None, ram_needed: ExplainableQuantity = None):
         super().__init__(name, data_transferred, data_stored, request_duration, compute_needed, ram_needed)
         self.service = service
 

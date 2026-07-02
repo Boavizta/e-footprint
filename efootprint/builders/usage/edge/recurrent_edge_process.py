@@ -22,11 +22,7 @@ class RecurrentEdgeProcessNeed(RecurrentEdgeComponentNeed):
     }
 
     def __init__(self, name: str, edge_component: EdgeComponent):
-        super().__init__(
-            name=name,
-            edge_component=edge_component,
-            recurrent_need=EmptyExplainableObject()
-        )
+        super().__init__(name=name, edge_component=edge_component)
 
 
     @computed_attribute

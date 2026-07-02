@@ -154,22 +154,31 @@ class ServerBase(InfraHardware):
         return installable_services
 
 
-    def __init__(self, name: str, server_type: ExplainableObject, carbon_footprint_fabrication: ExplainableQuantity,
-                 power: ExplainableQuantity, lifespan: ExplainableQuantity, idle_power: ExplainableQuantity,
-                 ram: ExplainableQuantity, compute: ExplainableQuantity,
-                 power_usage_effectiveness: ExplainableQuantity, average_carbon_intensity: ExplainableQuantity,
-                 utilization_rate: ExplainableQuantity, base_ram_consumption: ExplainableQuantity,
-                 base_compute_consumption: ExplainableQuantity, storage: Storage,
+    # carbon_footprint_fabrication, power, idle_power, ram and compute are None (and not stored) for
+    # subclasses that compute them from other inputs (Boavizta and GPU server builders) — assigning a
+    # computed name raises.
+    def __init__(self, name: str, server_type: ExplainableObject,
+                 carbon_footprint_fabrication: ExplainableQuantity = None, power: ExplainableQuantity = None,
+                 lifespan: ExplainableQuantity = None, idle_power: ExplainableQuantity = None,
+                 ram: ExplainableQuantity = None, compute: ExplainableQuantity = None,
+                 power_usage_effectiveness: ExplainableQuantity = None,
+                 average_carbon_intensity: ExplainableQuantity = None,
+                 utilization_rate: ExplainableQuantity = None, base_ram_consumption: ExplainableQuantity = None,
+                 base_compute_consumption: ExplainableQuantity = None, storage: Storage = None,
                  fixed_nb_of_instances: ExplainableQuantity | EmptyExplainableObject = None):
         super().__init__(name, carbon_footprint_fabrication, power, lifespan)
         self.server_type = server_type.set_label(f"Server type")
-        self.idle_power = idle_power.set_label(f"Idle power")
-        self.ram = ram.set_label(f"RAM").to(u.GB_ram)
+        if idle_power is not None:
+            self.idle_power = idle_power.set_label(f"Idle power")
+        if ram is not None:
+            self.ram = ram.set_label(f"RAM").to(u.GB_ram)
         # Derive the compute type from the constructor argument, not self.compute: subclasses that
         # compute their compute attribute (rather than take it as input) would compute it here, before
-        # their own initialization is done.
-        compute_type = str(compute.value.units)
-        self.compute = compute.set_label(f"Nb {compute_type.replace("_", " ")}s")
+        # their own initialization is done. When compute is computed by the subclass, its unit family
+        # comes from the always-provided base consumption input instead.
+        compute_type = str((compute if compute is not None else base_compute_consumption).value.units)
+        if compute is not None:
+            self.compute = compute.set_label(f"Nb {compute_type.replace("_", " ")}s")
         self.power_usage_effectiveness = power_usage_effectiveness.set_label(f"PUE")
         self.average_carbon_intensity = average_carbon_intensity
         if SOURCE_VALUE_DEFAULT_NAME in self.average_carbon_intensity.label:

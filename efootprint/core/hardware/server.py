@@ -47,12 +47,16 @@ class Server(ServerBase):
             "fixed_nb_of_instances": EmptyExplainableObject()
         }
 
-    def __init__(self, name: str, server_type: ExplainableObject, carbon_footprint_fabrication: ExplainableQuantity,
-                 power: ExplainableQuantity, lifespan: ExplainableQuantity, idle_power: ExplainableQuantity,
-                 ram: ExplainableQuantity, compute: ExplainableQuantity,
-                 power_usage_effectiveness: ExplainableQuantity, average_carbon_intensity: ExplainableQuantity,
-                 utilization_rate: ExplainableQuantity, base_ram_consumption: ExplainableQuantity,
-                 base_compute_consumption: ExplainableQuantity, storage: Storage,
+    # The hardware-spec params default to None like ServerBase's because BoaviztaCloudServer subclasses
+    # Server and computes them from the Boavizta API response.
+    def __init__(self, name: str, server_type: ExplainableObject,
+                 carbon_footprint_fabrication: ExplainableQuantity = None, power: ExplainableQuantity = None,
+                 lifespan: ExplainableQuantity = None, idle_power: ExplainableQuantity = None,
+                 ram: ExplainableQuantity = None, compute: ExplainableQuantity = None,
+                 power_usage_effectiveness: ExplainableQuantity = None,
+                 average_carbon_intensity: ExplainableQuantity = None,
+                 utilization_rate: ExplainableQuantity = None, base_ram_consumption: ExplainableQuantity = None,
+                 base_compute_consumption: ExplainableQuantity = None, storage: Storage = None,
                  fixed_nb_of_instances: ExplainableQuantity | EmptyExplainableObject = None):
         super().__init__(
             name, server_type, carbon_footprint_fabrication, power, lifespan, idle_power, ram, compute,

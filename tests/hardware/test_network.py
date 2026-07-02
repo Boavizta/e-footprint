@@ -35,7 +35,7 @@ from efootprint.core.usage.usage_journey_step import UsageJourneyStep
 from efootprint.core.usage.usage_pattern import UsagePattern
 from tests.core.attribution.conservation import (
     assert_hourly_quantities_equal, assert_source_atoms_conserve, sum_atom_values)
-from tests.utils import create_mod_obj_mock
+from tests.utils import attach_attribute, create_mod_obj_mock
 from tests.utils import patch_attribute, recompute_attribute
 
 
@@ -114,10 +114,10 @@ class TestNetwork(TestCase):
     def test_update_energy_footprint_sums_precomputed_per_job_values(self):
         job_1 = create_mod_obj_mock(JobBase, name="Job 1")
         job_2 = create_mod_obj_mock(JobBase, name="Job 2")
-        self.network.energy_footprint_per_job = ExplainableObjectDict({
+        attach_attribute(self.network, "energy_footprint_per_job", ExplainableObjectDict({
             job_1: create_source_hourly_values_from_list([0.2, 0.4], pint_unit=u.kg),
             job_2: create_source_hourly_values_from_list([0.3, 0.1], pint_unit=u.kg),
-        })
+        }))
 
         recompute_attribute(self.network, "energy_footprint")
 

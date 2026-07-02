@@ -41,18 +41,24 @@ class EdgeComponent(ModelingObject):
             "Number of identical units in the component."),
     }
 
-    def __init__(self, name: str, carbon_footprint_fabrication_per_unit: ExplainableQuantity,
-                 power_per_unit: ExplainableQuantity, lifespan: ExplainableQuantity,
-                 idle_power_per_unit: ExplainableQuantity,
+    # power_per_unit, lifespan and idle_power_per_unit are None (and not stored) for subclasses that
+    # compute them from the parent device (the EdgeAppliance and EdgeComputer internal components) —
+    # assigning a computed name raises.
+    def __init__(self, name: str, carbon_footprint_fabrication_per_unit: ExplainableQuantity = None,
+                 power_per_unit: ExplainableQuantity = None, lifespan: ExplainableQuantity = None,
+                 idle_power_per_unit: ExplainableQuantity = None,
                  nb_of_units: ExplainableQuantity | None = None):
         super().__init__(name)
         if nb_of_units is None:
             nb_of_units = SourceValue(1 * u.dimensionless)
         self.carbon_footprint_fabrication_per_unit = carbon_footprint_fabrication_per_unit.set_label(
             f"Carbon footprint fabrication per unit")
-        self.power_per_unit = power_per_unit.set_label(f"Power per unit")
-        self.lifespan = lifespan.set_label(f"Lifespan")
-        self.idle_power_per_unit = idle_power_per_unit.set_label(f"Idle power per unit")
+        if power_per_unit is not None:
+            self.power_per_unit = power_per_unit.set_label(f"Power per unit")
+        if lifespan is not None:
+            self.lifespan = lifespan.set_label(f"Lifespan")
+        if idle_power_per_unit is not None:
+            self.idle_power_per_unit = idle_power_per_unit.set_label(f"Idle power per unit")
         self.nb_of_units = nb_of_units.set_label(f"Number of units")
 
 

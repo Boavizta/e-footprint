@@ -16,9 +16,6 @@ class EdgeApplianceComponent(EdgeWorkloadComponent):
         super().__init__(
             name=name,
             carbon_footprint_fabrication_per_unit=SourceValue(0 * u.kg),
-            power_per_unit=SourceValue(1 * u.W),
-            lifespan=SourceValue(1 * u.year),
-            idle_power_per_unit=SourceValue(0 * u.W),
             nb_of_units=SourceValue(1 * u.dimensionless))
 
 
@@ -74,11 +71,7 @@ class EdgeAppliance(EdgeDevice):
 
     def __init__(self, name: str, carbon_footprint_fabrication: ExplainableQuantity,
                  power: ExplainableQuantity, lifespan: ExplainableQuantity, idle_power: ExplainableQuantity):
-        super().__init__(
-            name=name,
-            structure_carbon_footprint_fabrication=SourceValue(0 * u.kg),
-            components=[],
-            lifespan=lifespan)
+        super().__init__(name=name, components=[], lifespan=lifespan)
         self.carbon_footprint_fabrication = carbon_footprint_fabrication.set_label(
             f"Carbon footprint fabrication")
         self.power = power.set_label(f"Power")

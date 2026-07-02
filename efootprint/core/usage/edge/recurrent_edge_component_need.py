@@ -45,10 +45,14 @@ class RecurrentEdgeComponentNeed(ModelingObject):
             "pattern is repeated to cover the modeling period."),
     }
 
-    def __init__(self, name: str, edge_component: EdgeComponent, recurrent_need: ExplainableRecurrentQuantities):
+    # recurrent_need is None (and not stored) for subclasses that compute it from other inputs (the
+    # RecurrentEdgeProcess and RecurrentEdgeWorkload need builders) — assigning a computed name raises.
+    def __init__(self, name: str, edge_component: EdgeComponent,
+                 recurrent_need: ExplainableRecurrentQuantities = None):
         super().__init__(name)
         self.edge_component = edge_component
-        self.recurrent_need = recurrent_need.set_label("Recurrent need")
+        if recurrent_need is not None:
+            self.recurrent_need = recurrent_need.set_label("Recurrent need")
 
 
 

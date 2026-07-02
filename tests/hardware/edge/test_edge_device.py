@@ -36,7 +36,7 @@ from efootprint.core.usage.edge.recurrent_edge_storage_need import RecurrentEdge
 from efootprint.core.usage.edge.recurrent_server_need import RecurrentServerNeed
 from tests.core.attribution.conservation import (
     assert_hourly_quantities_equal, assert_source_atoms_conserve, sum_atom_values)
-from tests.utils import create_mod_obj_mock, set_modeling_obj_containers
+from tests.utils import attach_attribute, create_mod_obj_mock, set_modeling_obj_containers
 from tests.utils import recompute_attribute
 
 
@@ -56,7 +56,7 @@ class TestEdgeDevice(TestCase):
             lifespan=SourceValue(5 * u.year)
         )
         self.edge_device.trigger_modeling_updates = False
-        self.edge_device.total_nb_of_units = ExplainableQuantity(1 * u.dimensionless, "one device")
+        attach_attribute(self.edge_device, "total_nb_of_units", ExplainableQuantity(1 * u.dimensionless, "one device"))
 
     def test_init(self):
         """Test EdgeDevice initialization."""
@@ -315,27 +315,27 @@ class TestEdgeDevice(TestCase):
 
     def test_update_dict_element_in_fabrication_footprint_breakdown_by_source(self):
         """Test per-component fabrication breakdown scales by total_nb_of_units and splits structure equally."""
-        self.edge_device.total_nb_of_units = ExplainableQuantity(2 * u.dimensionless, "two devices")
+        attach_attribute(self.edge_device, "total_nb_of_units", ExplainableQuantity(2 * u.dimensionless, "two devices"))
         pattern = create_mod_obj_mock(EdgeUsagePattern, name="Test Pattern")
-        self.edge_device.structure_fabrication_footprint_per_usage_pattern = ExplainableObjectDict({
-            pattern: SourceValue(10 * u.kg)})
+        attach_attribute(self.edge_device, "structure_fabrication_footprint_per_usage_pattern", ExplainableObjectDict({
+            pattern: SourceValue(10 * u.kg)}))
         self.mock_component_1.fabrication_footprint_per_edge_device = SourceValue(4 * u.kg)
 
-        self.edge_device.fabrication_footprint_breakdown_by_source = ExplainableObjectDict()
-        recompute_attribute(self.edge_device, "fabrication_footprint_breakdown_by_source", self.mock_component_1)
+        result = recompute_attribute(
+            self.edge_device, "fabrication_footprint_breakdown_by_source", self.mock_component_1)
 
-        breakdown = self.edge_device.fabrication_footprint_breakdown_by_source
         # Expected: total_nb_of_units * per_device + structure_total / nb_components = 2*4 + 10/2 = 13
-        self.assertEqual(13, breakdown[self.mock_component_1].value.to(u.kg).magnitude)
-        self.assertIn("Fabrication footprint attributed to", breakdown[self.mock_component_1].label)
-        self.assertIn("Component 1", breakdown[self.mock_component_1].label)
+        self.assertEqual(13, result.value.to(u.kg).magnitude)
+        self.assertIn("Fabrication footprint attributed to", result.label)
+        self.assertIn("Component 1", result.label)
 
     def test_update_fabrication_footprint_breakdown_by_source(self):
         """Test fabrication breakdown updates every component contribution and scales by total_nb_of_units."""
-        self.edge_device.total_nb_of_units = ExplainableQuantity(3 * u.dimensionless, "three devices")
+        attach_attribute(
+            self.edge_device, "total_nb_of_units", ExplainableQuantity(3 * u.dimensionless, "three devices"))
         pattern = create_mod_obj_mock(EdgeUsagePattern, name="Test Pattern")
-        self.edge_device.structure_fabrication_footprint_per_usage_pattern = ExplainableObjectDict({
-            pattern: SourceValue(12 * u.kg)})
+        attach_attribute(self.edge_device, "structure_fabrication_footprint_per_usage_pattern", ExplainableObjectDict({
+            pattern: SourceValue(12 * u.kg)}))
         self.mock_component_1.fabrication_footprint_per_edge_device = SourceValue(4 * u.kg)
         self.mock_component_2.fabrication_footprint_per_edge_device = SourceValue(10 * u.kg)
 
@@ -356,7 +356,7 @@ class TestEdgeDevice(TestCase):
             lifespan=SourceValue(5 * u.year)
         )
         edge_device.trigger_modeling_updates = False
-        edge_device.instances_fabrication_footprint = SourceValue(20 * u.kg)
+        attach_attribute(edge_device, "instances_fabrication_footprint", SourceValue(20 * u.kg))
 
         recompute_attribute(edge_device, "fabrication_footprint_breakdown_by_source")
 
@@ -402,10 +402,10 @@ class TestEdgeDevice(TestCase):
 
         energy_1 = create_source_hourly_values_from_list([100, 200], pint_unit=u.Wh)
         energy_2 = create_source_hourly_values_from_list([50, 100], pint_unit=u.Wh)
-        self.edge_device.instances_energy_per_usage_pattern = ExplainableObjectDict({
+        attach_attribute(self.edge_device, "instances_energy_per_usage_pattern", ExplainableObjectDict({
             mock_pattern_1: energy_1,
             mock_pattern_2: energy_2
-        })
+        }))
 
         recompute_attribute(self.edge_device, "instances_energy")
 
@@ -422,10 +422,10 @@ class TestEdgeDevice(TestCase):
 
         footprint_1 = create_source_hourly_values_from_list([1, 2], pint_unit=u.kg)
         footprint_2 = create_source_hourly_values_from_list([0.5, 1], pint_unit=u.kg)
-        self.edge_device.energy_footprint_per_usage_pattern = ExplainableObjectDict({
+        attach_attribute(self.edge_device, "energy_footprint_per_usage_pattern", ExplainableObjectDict({
             mock_pattern_1: footprint_1,
             mock_pattern_2: footprint_2
-        })
+        }))
 
         recompute_attribute(self.edge_device, "energy_footprint")
 
@@ -442,10 +442,10 @@ class TestEdgeDevice(TestCase):
 
         footprint_1 = create_source_hourly_values_from_list([10, 20], pint_unit=u.kg)
         footprint_2 = create_source_hourly_values_from_list([5, 10], pint_unit=u.kg)
-        self.edge_device.instances_fabrication_footprint_per_usage_pattern = ExplainableObjectDict({
+        attach_attribute(self.edge_device, "instances_fabrication_footprint_per_usage_pattern", ExplainableObjectDict({
             mock_pattern_1: footprint_1,
             mock_pattern_2: footprint_2
-        })
+        }))
 
         recompute_attribute(self.edge_device, "instances_fabrication_footprint")
 
@@ -457,10 +457,10 @@ class TestEdgeDevice(TestCase):
 
     def test_footprint_breakdown_by_source_distributes_computed_structure_across_components_and_keeps_energy(self):
         """Test footprint_breakdown_by_source scales by total_nb_of_units for both fabrication and energy."""
-        self.edge_device.total_nb_of_units = ExplainableQuantity(2 * u.dimensionless, "two devices")
+        attach_attribute(self.edge_device, "total_nb_of_units", ExplainableQuantity(2 * u.dimensionless, "two devices"))
         pattern = create_mod_obj_mock(EdgeUsagePattern, name="Test Pattern")
-        self.edge_device.structure_fabrication_footprint_per_usage_pattern = ExplainableObjectDict({
-            pattern: SourceValue(100 * u.kg)})
+        attach_attribute(self.edge_device, "structure_fabrication_footprint_per_usage_pattern", ExplainableObjectDict({
+            pattern: SourceValue(100 * u.kg)}))
         self.mock_component_1.fabrication_footprint_per_edge_device = SourceValue(4 * u.kg)
         self.mock_component_2.fabrication_footprint_per_edge_device = SourceValue(6 * u.kg)
         self.mock_component_1.energy_footprint_per_edge_device = SourceValue(1 * u.kg)

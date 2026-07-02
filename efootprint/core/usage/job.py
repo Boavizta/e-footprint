@@ -77,16 +77,22 @@ class JobBase(ModelingObject):
             "Memory held by one invocation of the job for its full duration."),
     }
 
-    def __init__(self, name: str, data_transferred: ExplainableQuantity, data_stored: ExplainableQuantity,
-                 request_duration: ExplainableQuantity, compute_needed: ExplainableQuantity,
-                 ram_needed: ExplainableQuantity):
+    # All params except data_stored are None (and not stored) for subclasses that compute them from
+    # other inputs (VideoStreamingJob, the EcoLogits jobs) — assigning a computed name raises.
+    def __init__(self, name: str, data_transferred: ExplainableQuantity = None,
+                 data_stored: ExplainableQuantity = None, request_duration: ExplainableQuantity = None,
+                 compute_needed: ExplainableQuantity = None, ram_needed: ExplainableQuantity = None):
         super().__init__(name)
-        self.data_transferred = data_transferred.set_label(
-            f"Sum of all data uploads and downloads by request")
+        if data_transferred is not None:
+            self.data_transferred = data_transferred.set_label(
+                f"Sum of all data uploads and downloads by request")
         self.data_stored = data_stored.set_label(f"Data stored by request")
-        self.request_duration = request_duration.set_label(f"Request duration")
-        self.ram_needed = ram_needed.set_label(f"RAM needed during job processing").to(u.MB_ram)
-        self.compute_needed = compute_needed.set_label(f"CPU needed during job processing")
+        if request_duration is not None:
+            self.request_duration = request_duration.set_label(f"Request duration")
+        if ram_needed is not None:
+            self.ram_needed = ram_needed.set_label(f"RAM needed during job processing").to(u.MB_ram)
+        if compute_needed is not None:
+            self.compute_needed = compute_needed.set_label(f"CPU needed during job processing")
 
 
 

@@ -34,6 +34,19 @@ def patch_attribute(target, attr_name: str, new_value):
             descriptor.attach_cached_value(target, original_value)
 
 
+def attach_attribute(mod_obj, attr_name: str, value, key=None):
+    """Pin a computed attribute (or one key of a computed dict) through the descriptor's attach path —
+    the test replacement for plain assignment, which raises on computed names."""
+    from efootprint.abstract_modeling_classes.reactive_core import computed_slots
+
+    descriptor = computed_slots(mod_obj.efootprint_class)[attr_name]
+    if key is not None:
+        descriptor.attach_element_cached_value(mod_obj, key, value)
+    else:
+        descriptor.attach_cached_value(mod_obj, value)
+    return value
+
+
 def recompute_attribute(mod_obj, attr_name: str, key=None):
     """Force a fresh computation of a computed attribute (or one key of a computed dict) and return
     the new value — the unit-test replacement for the former update_<attr> calls, for tests that

@@ -31,9 +31,9 @@ class ExternalAPIJob(JobBase):
 
         return [external_api_annotation]
 
-    def __init__(self, name: str, external_api: ExternalAPI, data_transferred: ExplainableQuantity,
-                 data_stored: ExplainableQuantity, request_duration: ExplainableQuantity,
-                 compute_needed: ExplainableQuantity, ram_needed: ExplainableQuantity):
+    def __init__(self, name: str, external_api: ExternalAPI, data_transferred: ExplainableQuantity = None,
+                 data_stored: ExplainableQuantity = None, request_duration: ExplainableQuantity = None,
+                 compute_needed: ExplainableQuantity = None, ram_needed: ExplainableQuantity = None):
         super().__init__(name, data_transferred, data_stored, request_duration, compute_needed, ram_needed)
         self.external_api = external_api
 

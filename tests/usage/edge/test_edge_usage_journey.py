@@ -17,7 +17,7 @@ from efootprint.core.usage.edge.edge_usage_pattern import EdgeUsagePattern
 from efootprint.core.usage.edge.recurrent_edge_device_need import RecurrentEdgeDeviceNeed
 from efootprint.core.hardware.edge.edge_device import EdgeDevice
 from efootprint.constants.units import u
-from tests.utils import create_mod_obj_mock, set_modeling_obj_containers
+from tests.utils import attach_attribute, create_mod_obj_mock, set_modeling_obj_containers
 from tests.utils import recompute_attribute
 
 
@@ -139,7 +139,7 @@ class TestEdgeUsageJourney(TestCase):
         edge_usage_pattern.trigger_modeling_updates = False
         utc_starts = ExplainableHourlyQuantities(np.array([1.0, 2.0, 3.0]) * u.concurrent,
                                                  datetime(2023, 1, 1, 0, 0, 0), "UTC starts")
-        edge_usage_pattern.utc_hourly_edge_usage_journey_starts = utc_starts
+        attach_attribute(edge_usage_pattern, "utc_hourly_edge_usage_journey_starts", utc_starts)
         set_modeling_obj_containers(self.edge_usage_journey, [edge_usage_pattern])
 
         recompute_attribute(self.edge_usage_journey, "nb_edge_usage_journeys_in_parallel_per_edge_usage_pattern")

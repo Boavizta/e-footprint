@@ -319,7 +319,6 @@ class ModelingObject(metaclass=ABCAfterInitMeta):
         return []
 
     def __init__(self, name):
-        self.__dict__["_under_construction"] = True
         self.trigger_modeling_updates = False
         self.name = name
         self.id = css_escape(name) if ModelingObject._use_name_as_id else str(uuid.uuid4())[:12]
@@ -481,7 +480,6 @@ class ModelingObject(metaclass=ABCAfterInitMeta):
 
     def after_init(self):
         from efootprint.abstract_modeling_classes.explainable_object_dict import ExplainableObjectDict
-        self.__dict__["_under_construction"] = False
         self.trigger_modeling_updates = True
         for attr_name, attr_value in self.__dict__.items():
             if (isinstance(attr_value, ExplainableObjectDict)
@@ -511,25 +509,14 @@ class ModelingObject(metaclass=ABCAfterInitMeta):
         if name in self.attributes_that_shouldnt_trigger_update_logic:
             super().__setattr__(name, input_value)
             return
-        declared_computed_slots = computed_slots(type(self))
-        if name in declared_computed_slots:
-            if getattr(self, "trigger_modeling_updates", False):
-                # Pinning a computed slot on a live model would leave its dependents cached against
-                # the unpinned value — a silent inconsistency.
-                raise AttributeError(
-                    f"{name} is a computed attribute of {type(self).__name__} and cannot be assigned on a live "
-                    f"model: change the inputs it derives from instead. Tests can pin a value with "
-                    f"tests.utils.patch_attribute or the descriptor's attach_cached_value.")
-            if not self.__dict__.get("_under_construction", False):
-                # Computed storage lives in the reactive slot, never in the instance dict. Direct
-                # assignment attaches a cached value without computing (the manual pinning path for
-                # tests and non-live setups).
-                declared_computed_slots[name].attach_cached_value(self, input_value)
-            # Constructor-time writes are dropped: they are legacy dummy values for attributes a
-            # subclass computes (e.g. a parent constructor storing a zero the subclass derives from
-            # other inputs); the slot computes the real value on pull. The load path attaches stored
-            # values through the descriptor directly, never through __setattr__.
-            return
+        if name in computed_slots(type(self)):
+            # Computed values only enter their slot by computation or by the descriptor's explicit
+            # attach_cached_value (the load path and the test pinning path): a plain assignment would
+            # either silently vanish or leave dependents cached against the unpinned value.
+            raise AttributeError(
+                f"{name} is a computed attribute of {type(self).__name__} and cannot be assigned: change the "
+                f"inputs it derives from instead. Tests can pin a value with tests.utils.patch_attribute / "
+                f"attach_attribute or the descriptor's attach_cached_value.")
         if not self.trigger_modeling_updates:
             current_attr = getattr(self, name, None)
             if check_input_validity:

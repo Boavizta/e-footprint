@@ -89,9 +89,7 @@ class BoaviztaCloudServer(Server):
             base_compute_consumption: ExplainableQuantity, storage: Storage,
             fixed_nb_of_instances: ExplainableQuantity | EmptyExplainableObject | None = None):
         super().__init__(
-            name, server_type, carbon_footprint_fabrication=SourceValue(0 * u.kg), power=SourceValue(0 * u.W),
-            lifespan=lifespan, idle_power=idle_power, ram=SourceValue(0 * u.GB_ram),
-            compute=SourceValue(0 * u.cpu_core),
+            name, server_type, lifespan=lifespan, idle_power=idle_power,
             power_usage_effectiveness=power_usage_effectiveness, average_carbon_intensity=average_carbon_intensity,
             utilization_rate=utilization_rate, base_ram_consumption=base_ram_consumption,
             base_compute_consumption=base_compute_consumption, storage=storage,

@@ -10,7 +10,7 @@ from efootprint.core.hardware.storage import Storage
 from efootprint.core.hardware.server_base import ServerTypes
 
 from efootprint.builders.hardware.boavizta_cloud_server import BoaviztaCloudServer
-from tests.utils import recompute_attribute
+from tests.utils import attach_attribute, recompute_attribute
 
 
 class TestBoaviztaCloudServer(unittest.TestCase):
@@ -113,7 +113,7 @@ class TestBoaviztaCloudServer(unittest.TestCase):
             "verbose": {}
         }
         # Provide a pre-populated ExplainableQuantity as if update_api_call_response had run
-        self.test_server.api_call_response = ExplainableObject(mock_data, "API call response")
+        attach_attribute(self.test_server, "api_call_response", ExplainableObject(mock_data, "API call response"))
 
         recompute_attribute(self.test_server, "carbon_footprint_fabrication")
         self.assertEqual(
@@ -134,7 +134,7 @@ class TestBoaviztaCloudServer(unittest.TestCase):
                 "use_time_ratio": {"value": 1.0}
             }
         }
-        self.test_server.api_call_response = ExplainableObject(mock_data, "API call response")
+        attach_attribute(self.test_server, "api_call_response", ExplainableObject(mock_data, "API call response"))
 
         recompute_attribute(self.test_server, "power")
         self.assertEqual(self.test_server.power.value, 60.0 * u.W)
@@ -150,7 +150,7 @@ class TestBoaviztaCloudServer(unittest.TestCase):
                 }
             }
         }
-        self.test_server.api_call_response = ExplainableObject(mock_data, "API call response")
+        attach_attribute(self.test_server, "api_call_response", ExplainableObject(mock_data, "API call response"))
 
         recompute_attribute(self.test_server, "ram")
         self.assertEqual(self.test_server.ram.value, 32 * u.GB_ram)
@@ -163,7 +163,7 @@ class TestBoaviztaCloudServer(unittest.TestCase):
                 "vcpu": {"value": 8},
             }
         }
-        self.test_server.api_call_response = ExplainableObject(mock_data, "API call response")
+        attach_attribute(self.test_server, "api_call_response", ExplainableObject(mock_data, "API call response"))
 
         recompute_attribute(self.test_server, "compute")
         # 2 * 4 = 8 cpu_cores

@@ -35,16 +35,20 @@ class EdgeRAMComponent(EdgeComponent):
         "base_ram_consumption": SourceValue(1 * u.GB_ram),
     }
 
-    def __init__(self, name: str, carbon_footprint_fabrication_per_unit: ExplainableQuantity,
-                 power_per_unit: ExplainableQuantity, lifespan: ExplainableQuantity,
-                 idle_power_per_unit: ExplainableQuantity, ram_per_unit: ExplainableQuantity,
-                 base_ram_consumption: ExplainableQuantity,
+    # ram_per_unit and base_ram_consumption are None (and not stored) for subclasses that compute them
+    # from the parent device (EdgeComputerRAMComponent) — assigning a computed name raises.
+    def __init__(self, name: str, carbon_footprint_fabrication_per_unit: ExplainableQuantity = None,
+                 power_per_unit: ExplainableQuantity = None, lifespan: ExplainableQuantity = None,
+                 idle_power_per_unit: ExplainableQuantity = None, ram_per_unit: ExplainableQuantity = None,
+                 base_ram_consumption: ExplainableQuantity = None,
                  nb_of_units: ExplainableQuantity | None = None):
         super().__init__(
             name, carbon_footprint_fabrication_per_unit, power_per_unit, lifespan, idle_power_per_unit,
             nb_of_units=nb_of_units)
-        self.ram_per_unit = ram_per_unit.set_label(f"RAM per unit").to(u.GB_ram)
-        self.base_ram_consumption = base_ram_consumption.set_label(f"Base RAM consumption")
+        if ram_per_unit is not None:
+            self.ram_per_unit = ram_per_unit.set_label(f"RAM per unit").to(u.GB_ram)
+        if base_ram_consumption is not None:
+            self.base_ram_consumption = base_ram_consumption.set_label(f"Base RAM consumption")
 
 
 

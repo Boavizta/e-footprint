@@ -15,7 +15,7 @@ from efootprint.core.usage.edge.edge_usage_journey import EdgeUsageJourney
 from efootprint.core.usage.edge.edge_usage_pattern import EdgeUsagePattern
 from efootprint.core.hardware.edge.edge_storage import EdgeStorage
 from efootprint.constants.units import u
-from tests.utils import create_mod_obj_mock
+from tests.utils import attach_attribute, create_mod_obj_mock
 from tests.utils import recompute_attribute
 
 
@@ -124,13 +124,13 @@ class TestRecurrentEdgeStorageNeed(TestCase):
     def test_update_cumulative_unitary_storage_need_per_usage_pattern(self):
         """Test cumulative unitary storage need per usage pattern is computed independently."""
         pattern = create_mod_obj_mock(EdgeUsagePattern, name="Pattern 1")
-        self.storage_need.unitary_hourly_need_per_usage_pattern = {
+        attach_attribute(self.storage_need, "unitary_hourly_need_per_usage_pattern", {
             pattern: ExplainableHourlyQuantities(
                 np.array([1.0, 0.0, 2.0], dtype=np.float32) * u.GB_stored,
                 ciso8601.parse_datetime("2025-01-06T00:00:00"),
                 "pattern need",
             )
-        }
+        })
 
         result = recompute_attribute(self.storage_need, "cumulative_unitary_storage_need_per_usage_pattern", pattern)
 
@@ -157,7 +157,7 @@ class TestRecurrentEdgeStorageNeed(TestCase):
                 "pattern 2 journeys",
             )
         }
-        self.storage_need.cumulative_unitary_storage_need_per_usage_pattern = {
+        attach_attribute(self.storage_need, "cumulative_unitary_storage_need_per_usage_pattern", {
             pattern_1: ExplainableHourlyQuantities(
                 np.array([1.0, 1.0, 3.0], dtype=np.float32) * u.GB_stored,
                 ciso8601.parse_datetime("2025-01-06T00:00:00"),
@@ -168,7 +168,7 @@ class TestRecurrentEdgeStorageNeed(TestCase):
                 ciso8601.parse_datetime("2025-01-06T00:00:00"),
                 "pattern 2 cumulative need",
             ),
-        }
+        })
 
         with patch.object(
             RecurrentEdgeStorageNeed, "edge_usage_patterns", new_callable=PropertyMock, return_value=[pattern_1, pattern_2]

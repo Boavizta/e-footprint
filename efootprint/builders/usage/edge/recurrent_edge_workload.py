@@ -22,11 +22,7 @@ class RecurrentEdgeWorkloadNeed(RecurrentEdgeComponentNeed):
     }
 
     def __init__(self, name: str, edge_component: EdgeComponent):
-        from efootprint.abstract_modeling_classes.source_objects import SourceRecurrentValues
-        super().__init__(
-            name=name,
-            edge_component=edge_component,
-            recurrent_need=SourceRecurrentValues(Quantity(np.array([0] * 168, dtype=np.float32), u.concurrent)))
+        super().__init__(name=name, edge_component=edge_component)
 
 
     @computed_attribute

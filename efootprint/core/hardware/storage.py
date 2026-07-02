@@ -131,8 +131,7 @@ class Storage(InfraHardware):
                  data_replication_factor: ExplainableQuantity, data_storage_duration: ExplainableQuantity,
                  base_storage_need: ExplainableQuantity, lifespan: ExplainableQuantity,
                  fixed_nb_of_instances: ExplainableQuantity | EmptyExplainableObject = None):
-        super().__init__(
-            name, carbon_footprint_fabrication=SourceValue(0 * u.kg), power=SourceValue(0 * u.W), lifespan=lifespan)
+        super().__init__(name, power=SourceValue(0 * u.W), lifespan=lifespan)
         self.carbon_footprint_fabrication_per_storage_capacity = (carbon_footprint_fabrication_per_storage_capacity
             .set_label(f"Fabrication carbon footprint per storage capacity"))
         self.storage_capacity = storage_capacity.set_label(f"Storage capacity")

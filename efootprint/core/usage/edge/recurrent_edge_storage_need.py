@@ -31,7 +31,7 @@ class RecurrentEdgeStorageNeed(RecurrentEdgeComponentNeed):
             "to derive the cumulative volume actually held."),
     }
 
-    def __init__(self, name: str, edge_component: EdgeStorage, recurrent_need: ExplainableRecurrentQuantities):
+    def __init__(self, name: str, edge_component: EdgeStorage, recurrent_need: ExplainableRecurrentQuantities = None):
         super().__init__(name, edge_component, recurrent_need)
 
 

@@ -8,7 +8,6 @@ from ecologits.estimations.video import (
 from ecologits.impacts.video import compute_video_impacts_dag, dag as video_dag
 from ecologits.utils.range_value import RangeValue
 
-from efootprint.abstract_modeling_classes.empty_explainable_object import EmptyExplainableObject
 from efootprint.abstract_modeling_classes.explainable_dict import ExplainableDict
 from efootprint.abstract_modeling_classes.explainable_object_base_class import ExplainableObject, Source
 from efootprint.abstract_modeling_classes.explainable_quantity import ExplainableQuantity
@@ -193,15 +192,11 @@ class EcoLogitsVideoGenExternalAPIJob(ExternalAPIJob):
 
     def __init__(self, name: str, external_api: EcoLogitsVideoGenExternalAPI, resolution: ExplainableObject,
                  duration: ExplainableQuantity, with_audio: ExplainableObject):
-        super().__init__(name=name, external_api=external_api, data_transferred=SourceValue(0 * u.MB),
-                         data_stored=SourceValue(0 * u.MB_stored), request_duration=SourceValue(0 * u.s),
+        super().__init__(name=name, external_api=external_api, data_stored=SourceValue(0 * u.MB_stored),
                          compute_needed=SourceValue(0 * u.cpu_core), ram_needed=SourceValue(0 * u.GB_ram))
         self.resolution = resolution.set_label("Resolution")
         self.duration = duration.set_label("Video duration")
         self.with_audio = with_audio.set_label("Generates audio")
-
-        for ecologits_attr in ecologits_video_calculated_attributes:
-            setattr(self, ecologits_attr, EmptyExplainableObject())
 
 
     @computed_attribute

@@ -18,7 +18,7 @@ from efootprint.core.usage.edge.edge_usage_journey import EdgeUsageJourney
 from efootprint.core.usage.edge.edge_usage_pattern import EdgeUsagePattern
 from efootprint.core.usage.edge.recurrent_edge_device_need import RecurrentEdgeDeviceNeed
 from efootprint.core.hardware.edge.edge_device import EdgeDevice
-from tests.utils import create_mod_obj_mock, set_modeling_obj_containers
+from tests.utils import attach_attribute, create_mod_obj_mock, set_modeling_obj_containers
 from tests.utils import recompute_attribute
 
 
@@ -357,12 +357,12 @@ class TestRecurrentEdgeComponentNeed(TestCase):
         mock_pattern_2.edge_usage_journey.nb_edge_usage_journeys_in_parallel_per_edge_usage_pattern = {
             mock_pattern_2: ExplainableHourlyQuantities(
                 np.array([4.0, 4.0], dtype=np.float32) * u.concurrent, datetime(2023, 1, 1), "parallel 2")}
-        self.component_need.unitary_hourly_need_per_usage_pattern = ExplainableObjectDict({
+        attach_attribute(self.component_need, "unitary_hourly_need_per_usage_pattern", ExplainableObjectDict({
             mock_pattern_1: ExplainableHourlyQuantities(
                 np.array([1.0, 1.0], dtype=np.float32) * u.cpu_core, datetime(2023, 1, 1), "need 1"),
             mock_pattern_2: ExplainableHourlyQuantities(
                 np.array([2.0, 2.0], dtype=np.float32) * u.cpu_core, datetime(2023, 1, 1), "need 2"),
-        })
+        }))
         mock_function = create_mod_obj_mock(EdgeFunction, name="Mock Function")
         mock_function.edge_usage_journeys = [mock_pattern_1.edge_usage_journey, mock_pattern_2.edge_usage_journey]
         mock_device_need = create_mod_obj_mock(RecurrentEdgeDeviceNeed, name="Mock Device Need")

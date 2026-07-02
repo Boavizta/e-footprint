@@ -14,8 +14,8 @@ class InfraHardware(HardwareBase):
         k: v for k, v in HardwareBase.param_descriptions.items() if k != "fraction_of_usage_time"
     }
 
-    def __init__(self, name: str, carbon_footprint_fabrication: ExplainableQuantity, power: ExplainableQuantity,
-                 lifespan: ExplainableQuantity):
+    def __init__(self, name: str, carbon_footprint_fabrication: ExplainableQuantity = None,
+                 power: ExplainableQuantity = None, lifespan: ExplainableQuantity = None):
         super().__init__(
             name, carbon_footprint_fabrication, power, lifespan, SourceValue(1 * u.dimensionless))
 

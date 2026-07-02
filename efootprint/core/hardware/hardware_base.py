@@ -25,12 +25,18 @@ class HardwareBase(ModelingObject):
             "Fraction of the modeling period during which the hardware is in active use."),
     }
 
-    def __init__(self, name: str, carbon_footprint_fabrication: ExplainableQuantity, power: ExplainableQuantity,
-                 lifespan: ExplainableQuantity, fraction_of_usage_time: ExplainableQuantity):
+    # carbon_footprint_fabrication and power are None (and not stored) for subclasses that compute
+    # them from other inputs (e.g. Storage, the Boavizta and GPU server builders) — assigning a
+    # computed name raises.
+    def __init__(self, name: str, carbon_footprint_fabrication: ExplainableQuantity = None,
+                 power: ExplainableQuantity = None, lifespan: ExplainableQuantity = None,
+                 fraction_of_usage_time: ExplainableQuantity = None):
         super().__init__(name)
-        self.carbon_footprint_fabrication = carbon_footprint_fabrication.set_label(
-            f"Carbon footprint fabrication")
-        self.power = power.set_label(f"Power")
+        if carbon_footprint_fabrication is not None:
+            self.carbon_footprint_fabrication = carbon_footprint_fabrication.set_label(
+                f"Carbon footprint fabrication")
+        if power is not None:
+            self.power = power.set_label(f"Power")
         self.lifespan = lifespan.set_label(f"Lifespan")
         self.fraction_of_usage_time = fraction_of_usage_time.set_label("Fraction of usage time")
 

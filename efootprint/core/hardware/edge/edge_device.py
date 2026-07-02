@@ -52,12 +52,15 @@ class EdgeDevice(ModelingObject):
         "lifespan": SourceValue(6 * u.year)
     }
 
-    def __init__(self, name: str, structure_carbon_footprint_fabrication: ExplainableQuantity,
-                 components: List[EdgeComponent], lifespan: ExplainableQuantity):
+    # structure_carbon_footprint_fabrication is None (and not stored) for subclasses that compute it
+    # from other inputs (EdgeAppliance, EdgeComputer) — assigning a computed name raises.
+    def __init__(self, name: str, structure_carbon_footprint_fabrication: ExplainableQuantity = None,
+                 components: List[EdgeComponent] = None, lifespan: ExplainableQuantity = None):
         super().__init__(name)
         self.lifespan = lifespan.set_label(f"Lifespan")
-        self.structure_carbon_footprint_fabrication = structure_carbon_footprint_fabrication.set_label(
-            f"Structure fabrication carbon footprint")
+        if structure_carbon_footprint_fabrication is not None:
+            self.structure_carbon_footprint_fabrication = structure_carbon_footprint_fabrication.set_label(
+                f"Structure fabrication carbon footprint")
         self.components = components
 
 

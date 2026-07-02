@@ -25,7 +25,7 @@ from efootprint.core.usage.edge.edge_usage_journey import EdgeUsageJourney
 from efootprint.core.usage.edge.edge_usage_pattern import EdgeUsagePattern
 from efootprint.core.usage.edge.recurrent_edge_component_need import RecurrentEdgeComponentNeed
 from efootprint.core.usage.edge.recurrent_edge_device_need import RecurrentEdgeDeviceNeed
-from tests.utils import create_mod_obj_mock, set_modeling_obj_containers
+from tests.utils import attach_attribute, create_mod_obj_mock, set_modeling_obj_containers
 from tests.utils import recompute_attribute
 
 
@@ -86,7 +86,8 @@ class TestEdgeComponent(TestCase):
         mock_pattern.edge_usage_journey = mock_edge_usage_journey
 
         unitary_power = create_source_hourly_values_from_list([30, 40], pint_unit=u.W)
-        self.component.unitary_power_per_usage_pattern = ExplainableObjectDict({mock_pattern: unitary_power})
+        attach_attribute(
+            self.component, "unitary_power_per_usage_pattern", ExplainableObjectDict({mock_pattern: unitary_power}))
 
         result = recompute_attribute(self.component, "energy_per_edge_device_per_usage_pattern", mock_pattern)
 
@@ -103,8 +104,8 @@ class TestEdgeComponent(TestCase):
         mock_pattern.country = mock_country
 
         energy_per_edge_device = create_source_hourly_values_from_list([1000, 2000], pint_unit=u.Wh)
-        self.component.energy_per_edge_device_per_usage_pattern = ExplainableObjectDict(
-            {mock_pattern: energy_per_edge_device})
+        attach_attribute(self.component, "energy_per_edge_device_per_usage_pattern", ExplainableObjectDict(
+            {mock_pattern: energy_per_edge_device}))
 
         result = recompute_attribute(self.component, "energy_footprint_per_edge_device_per_usage_pattern", mock_pattern)
 
@@ -120,10 +121,11 @@ class TestEdgeComponent(TestCase):
 
         footprint_1 = create_source_hourly_values_from_list([10, 20], pint_unit=u.kg)
         footprint_2 = create_source_hourly_values_from_list([5, 10], pint_unit=u.kg)
-        self.component.fabrication_footprint_per_edge_device_per_usage_pattern = ExplainableObjectDict({
+        attach_attribute(
+            self.component, "fabrication_footprint_per_edge_device_per_usage_pattern", ExplainableObjectDict({
             mock_pattern_1: footprint_1,
             mock_pattern_2: footprint_2
-        })
+        }))
 
         recompute_attribute(self.component, "fabrication_footprint_per_edge_device")
 
@@ -138,10 +140,10 @@ class TestEdgeComponent(TestCase):
 
         energy_1 = create_source_hourly_values_from_list([100, 200], pint_unit=u.Wh)
         energy_2 = create_source_hourly_values_from_list([50, 100], pint_unit=u.Wh)
-        self.component.energy_per_edge_device_per_usage_pattern = ExplainableObjectDict({
+        attach_attribute(self.component, "energy_per_edge_device_per_usage_pattern", ExplainableObjectDict({
             mock_pattern_1: energy_1,
             mock_pattern_2: energy_2
-        })
+        }))
 
         recompute_attribute(self.component, "energy_per_edge_device")
 
@@ -156,10 +158,10 @@ class TestEdgeComponent(TestCase):
 
         footprint_1 = create_source_hourly_values_from_list([1, 2], pint_unit=u.kg)
         footprint_2 = create_source_hourly_values_from_list([0.5, 1], pint_unit=u.kg)
-        self.component.energy_footprint_per_edge_device_per_usage_pattern = ExplainableObjectDict({
+        attach_attribute(self.component, "energy_footprint_per_edge_device_per_usage_pattern", ExplainableObjectDict({
             mock_pattern_1: footprint_1,
             mock_pattern_2: footprint_2
-        })
+        }))
 
         recompute_attribute(self.component, "energy_footprint_per_edge_device")
 
@@ -193,9 +195,9 @@ class TestEdgeComponent(TestCase):
         self.component.nb_of_units = SourceValue(3 * u.dimensionless)
         recompute_attribute(self.component, "power")
         recompute_attribute(self.component, "idle_power")
-        self.component.unitary_power_per_usage_pattern = ExplainableObjectDict({
+        attach_attribute(self.component, "unitary_power_per_usage_pattern", ExplainableObjectDict({
             mock_pattern: create_source_hourly_values_from_list([30, 60], pint_unit=u.W)
-        })
+        }))
 
         result = recompute_attribute(self.component, "energy_per_edge_device_per_usage_pattern", mock_pattern)
 

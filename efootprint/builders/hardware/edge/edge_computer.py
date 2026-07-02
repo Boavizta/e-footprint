@@ -21,11 +21,8 @@ class EdgeComputerRAMComponent(EdgeRAMComponent):
             name=name,
             carbon_footprint_fabrication_per_unit=SourceValue(0 * u.kg),
             power_per_unit=SourceValue(0 * u.W),
-            lifespan=SourceValue(1 * u.year),
             idle_power_per_unit=SourceValue(0 * u.W),
-            nb_of_units=SourceValue(1 * u.dimensionless),
-            ram_per_unit=SourceValue(1 * u.GB_ram),
-            base_ram_consumption=SourceValue(0 * u.GB_ram))
+            nb_of_units=SourceValue(1 * u.dimensionless))
 
 
     @computed_attribute
@@ -63,12 +60,7 @@ class EdgeComputerCPUComponent(EdgeCPUComponent):
         super().__init__(
             name=name,
             carbon_footprint_fabrication_per_unit=SourceValue(0 * u.kg),
-            power_per_unit=SourceValue(1 * u.W),
-            lifespan=SourceValue(1 * u.year),
-            idle_power_per_unit=SourceValue(0 * u.W),
-            nb_of_units=SourceValue(1 * u.dimensionless),
-            compute_per_unit=SourceValue(1 * u.cpu_core),
-            base_compute_consumption=SourceValue(0 * u.cpu_core))
+            nb_of_units=SourceValue(1 * u.dimensionless))
 
 
     @computed_attribute
@@ -158,11 +150,7 @@ class EdgeComputer(EdgeDevice):
                  ram: ExplainableQuantity, compute: ExplainableQuantity,
                  base_ram_consumption: ExplainableQuantity, base_compute_consumption: ExplainableQuantity,
                  storage: EdgeStorage):
-        super().__init__(
-            name=name,
-            structure_carbon_footprint_fabrication=SourceValue(0 * u.kg),
-            components=[],
-            lifespan=lifespan)
+        super().__init__(name=name, components=[], lifespan=lifespan)
         self.storage = storage
         self.carbon_footprint_fabrication = carbon_footprint_fabrication.set_label(
             f"Carbon footprint fabrication")

@@ -11,7 +11,7 @@ from efootprint.core.hardware.edge.edge_cpu_component import EdgeCPUComponent
 from efootprint.core.hardware.hardware_base import InsufficientCapacityError
 from efootprint.core.usage.edge.recurrent_edge_component_need import RecurrentEdgeComponentNeed
 from efootprint.core.usage.edge.edge_usage_pattern import EdgeUsagePattern
-from tests.utils import create_mod_obj_mock, set_modeling_obj_containers
+from tests.utils import attach_attribute, create_mod_obj_mock, set_modeling_obj_containers
 from tests.utils import recompute_attribute
 
 
@@ -143,7 +143,8 @@ class TestEdgeCPUComponent(TestCase):
         mock_pattern = create_mod_obj_mock(EdgeUsagePattern, name="Test Pattern")
 
         compute_need = create_source_hourly_values_from_list([0, 4, 7], pint_unit=u.cpu_core)
-        self.cpu_component.unitary_hourly_compute_need_per_usage_pattern = {mock_pattern: compute_need}
+        attach_attribute(
+            self.cpu_component, "unitary_hourly_compute_need_per_usage_pattern", {mock_pattern: compute_need})
 
         recompute_attribute(self.cpu_component, "available_compute_per_instance")
         result = recompute_attribute(self.cpu_component, "unitary_power_per_usage_pattern", mock_pattern)
