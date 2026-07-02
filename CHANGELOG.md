@@ -6,6 +6,11 @@ and this project adheres to [Semantic Versioning](http://semver.org/)
 
 ## [Unreleased]
 
+### Added
+- Randomized mutation parity harness (`tests/integration_tests/test_randomized_mutation_parity.py`): seeded random mutation sequences (input edits, relinks, list add/remove, object add/delete) applied to a live system, with every calculated attribute compared against a from-scratch rebuild (inputs-only JSON round-trip + full recomputation) after each mutation. Passes trivially on the current eager engine; it is the safety gate for upcoming computation-engine changes.
+- Baseline benchmark suite (`tests/performance_tests/benchmark_baselines.py`) with committed reference numbers in `tests/performance_tests/baseline_results.json`: full eager build, peak RSS after build, single scalar/timeseries edit recompute, load-to-ready from the calculated-attributes fixture, deserialize-edit-reserialize round-trip, 1,000-iteration nudge-and-read loop, and serialized fixture weights. Engine changes are evaluated by re-running the script and diffing against the reference file.
+- `tests/performance_tests/generate_big_system.py` run as a script now regenerates the two big-system fixtures (`big_system.json`, `big_system_with_calc_attr.json` — gitignored, generated locally) with deterministic name-based ids; both were drifted, the calculated-attributes one crashing on the first live update. `tests/performance_tests/test_big_system_fixtures.py` now guards against such drift (skipped when the fixtures are absent, e.g. in CI).
+
 ### Removed
 - Simulation machinery: `ModelingUpdate`'s `simulation_date` parameter and all its supporting code (ancestor forking, hourly-quantity truncation, simulation/baseline twin links on `ExplainableObject`, `ModelingUpdate.set_updated_values`). What-if analysis is now done by comparing systems (`System.compare_to`, `efootprint/comparison/`); rebuild recipes for future what-if / calibration features are recorded in the project plans.
 - Previous/initial footprint capture on `System` (`previous_total_*`, `initial_total_*`, `previous_change`, `all_changes`, `compute_previous_system_footprints` parameter) and `System.plot_emission_diffs`. The tutorial's change-analysis sections now snapshot the system with `duplicate_system` and use `SystemComparison` plots.

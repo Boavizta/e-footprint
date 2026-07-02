@@ -1,0 +1,36 @@
+{
+    "recorded_at": "2026-07-02 10:16 UTC",
+    "platform": "macOS-26.5-arm64-arm-64bit-Mach-O",
+    "machine": "arm64",
+    "python_version": "3.13.5",
+    "efootprint_version": "22.3.0",
+    "fixture_params": {
+        "nb_of_servers_of_each_type": 2,
+        "nb_of_uj_per_each_server_type": 2,
+        "nb_of_uj_steps_per_uj": 4,
+        "nb_of_up_per_uj": 3,
+        "nb_of_edge_usage_patterns": 5,
+        "nb_of_edge_processes_and_server_needs_per_edge_computer": 5,
+        "nb_of_jobs_per_server_need": 1,
+        "nb_years": 5
+    },
+    "results": {
+        "full_build_seconds": 0.382,
+        "peak_rss_after_build_mb": 589.4,
+        "scalar_edit_avg_ms": 5.5,
+        "timeseries_edit_avg_ms": 25.8,
+        "nudge_and_read_loop": {
+            "iterations": 1000,
+            "avg_ms_per_iteration": 5.5,
+            "projected_1000_iterations_seconds": 5.5
+        },
+        "load_to_ready": {
+            "json_parse_avg_ms": 128.7,
+            "json_to_system_avg_ms": 45.6,
+            "total_avg_ms": 174.3
+        },
+        "load_edit_save_avg_ms": 100.9,
+        "inputs_only_json_bytes": 351666,
+        "with_calc_attr_json_bytes": 202755812
+    }
+}

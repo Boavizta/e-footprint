@@ -17,7 +17,6 @@ start = perf_counter()
 import os
 
 from efootprint.api_utils.system_to_json import system_to_json
-from efootprint.utils.tools import time_it
 from efootprint.abstract_modeling_classes.source_objects import SourceValue, SourceRecurrentValues
 from efootprint.builders.hardware.boavizta_cloud_server import BoaviztaCloudServer
 from efootprint.builders.services.video_streaming import VideoStreaming, VideoStreamingJob
@@ -40,6 +39,12 @@ from efootprint.logger import logger
 logger.info(f"Finished importing modules in {round((perf_counter() - start), 3)} seconds")
 
 root_dir = os.path.dirname(os.path.abspath(__file__))
+
+# Reference configuration for the committed big-system fixtures and the baseline benchmarks.
+BIG_SYSTEM_STANDARD_PARAMS = {
+    "nb_of_servers_of_each_type": 2, "nb_of_uj_per_each_server_type": 2, "nb_of_uj_steps_per_uj": 4,
+    "nb_of_up_per_uj": 3, "nb_of_edge_usage_patterns": 5,
+    "nb_of_edge_processes_and_server_needs_per_edge_computer": 5, "nb_of_jobs_per_server_need": 1, "nb_years": 5}
 
 
 def form_inputs_hourly_starts(nb_years: int, initial_volume: float = 1000.0):
@@ -244,57 +249,17 @@ def generate_big_system(
 
     return system
 
-@time_it
-def timed_system_to_json(system, *args, **kwargs):
-    return system_to_json(system, *args, **kwargs)
-
 if __name__ == "__main__":
-    # Live system editions benchmarking
-    nb_years = 5
-    system = generate_big_system(
-        nb_of_servers_of_each_type=2, nb_of_uj_per_each_server_type=2, nb_of_uj_steps_per_uj=4, nb_of_up_per_uj=3,
-        nb_of_edge_usage_patterns=3, nb_of_edge_processes_and_server_needs_per_edge_computer=3,
-        nb_of_jobs_per_server_need=1, nb_years=nb_years)
+    # Regenerate the committed performance fixtures (run after any change to the serialized shape).
+    # Name-based ids keep regenerated fixtures deterministic and diffable, like in tests/conftest.py.
+    from efootprint.abstract_modeling_classes.explainable_object_base_class import Source
+    from efootprint.abstract_modeling_classes.modeling_object import ModelingObject
+    ModelingObject._use_name_as_id = True
+    Source._use_name_as_id = True
 
-    edition_iterations = 10
-    start = perf_counter()
-    edited_job = list(list(system.usage_patterns[0].usage_journey.uj_steps)[0].jobs)[1]
-    for i in range(edition_iterations):
-        edited_job.data_transferred = SourceValue(100 * u.MB)
-        edited_job.data_transferred = SourceValue(30 * u.MB)
-    end = perf_counter()
-    compute_time_per_edition = round(1000 * (end - start) / (edition_iterations * 2), 1)
-    logger.info(f"edition took {compute_time_per_edition} ms on average per data transferred edition")
-
-    start = perf_counter()
-    for i in range(edition_iterations):
-        system.usage_patterns[0].hourly_usage_journey_starts = form_inputs_hourly_starts(
-            nb_years, initial_volume=2000 if i % 2 == 0 else 3000)
-    end = perf_counter()
-    compute_time_per_edition = round(1000 * (end - start) / edition_iterations, 1)
-    logger.info(f"edition took {compute_time_per_edition} ms on average per hourly usage journey starts edition")
-
-    start = perf_counter()
-    for i in range(edition_iterations):
-        system.edge_usage_patterns[0].hourly_edge_usage_journey_starts = form_inputs_hourly_starts(
-            nb_years, initial_volume=2000 if i % 2 == 0 else 3000)
-    end = perf_counter()
-    compute_time_per_edition = round(1000 * (end - start) / edition_iterations, 1)
-    logger.info(f"edition took {compute_time_per_edition} ms on average per edge hourly usage journey starts edition")
-
-    from efootprint.abstract_modeling_classes.modeling_object import compute_times
-    total_time = 0
-    for data in compute_times.values():
-        total_time += data["total_duration"]
-    nb_update_functions = len(compute_times)
-    print(f"Total time in update functions: {round(total_time, 3)}s, nb_update_functions: {nb_update_functions}, "
-          f"avg %: {round(100 / nb_update_functions, 2)}")
-    cumulated_time = 0
-    i = 0
-    for update_function_name, update_function_dict in sorted(compute_times.items(), key=lambda x: -x[1]["total_duration"]):
-        i += 1
-        update_function_time = update_function_dict.get("total_duration")
-        cumulated_time += update_function_time
-        time_pct = round(100 * update_function_time / total_time, 2)
-        cum_time_pct = round(100 * cumulated_time / total_time, 2)
-        print(f"{i}: {update_function_time:.3f}s ({time_pct}%, cum {cum_time_pct}%) for {update_function_dict["nb_calls"]} calls of {update_function_name}")
+    system = generate_big_system(**BIG_SYSTEM_STANDARD_PARAMS)
+    system_to_json(system, save_calculated_attributes=False, output_filepath=os.path.join(root_dir, "big_system.json"))
+    system_to_json(
+        system, save_calculated_attributes=True,
+        output_filepath=os.path.join(root_dir, "big_system_with_calc_attr.json"))
+    logger.info("Regenerated big_system.json and big_system_with_calc_attr.json")

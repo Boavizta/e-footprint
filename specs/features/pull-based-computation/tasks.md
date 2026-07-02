@@ -79,6 +79,17 @@ spec §2 performance criteria.
 
 **Depends on:** Task 1.
 
+**Status:** Done. Notes: the fixtures turn out to be **gitignored** (repo-wide `*.json` ignore), so
+"regenerated" means the `generate_big_system.py` `__main__` now (re)writes them locally with
+deterministic name-based ids, and a skip-guarded `test_big_system_fixtures.py` pins "loads + accepts
+updates" (the drifted calc-attr fixture loaded but crashed on first update — stale
+`usage_impact_repartition_weight_sum`). Baselines committed via `git add -f` in
+`tests/performance_tests/baseline_results.json`; regenerated calc-attr fixture weighs 202 MB (not
+the spec's 28.2 MB analytical estimate) and full eager build is only 0.4 s — CPU recompute is indeed
+non-binding, JSON weight is. Engine-overhead (< 5%) baseline is the one spec §2 number not
+measurable pre-refactor. Parity harness: 3 seeds × 15 mutations, rebuild comparison after every
+mutation, per-op coverage asserted so silently-rejected mutation kinds fail the test.
+
 ---
 
 ## Task 3 — Mechanical conversion: update_* bodies become decorated getters (stage 2)

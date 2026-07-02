@@ -1,5 +1,3 @@
-import json
-import os
 from time import perf_counter, sleep
 from unittest import TestCase
 import gc
@@ -13,7 +11,8 @@ from efootprint.api_utils.json_to_system import json_to_system
 from efootprint.api_utils.system_to_json import system_to_json
 from efootprint.logger import logger
 from efootprint.constants.units import u
-from tests.performance_tests.generate_big_system import generate_big_system, form_inputs_hourly_starts, root_dir
+from tests.performance_tests.generate_big_system import (
+    BIG_SYSTEM_STANDARD_PARAMS, generate_big_system, form_inputs_hourly_starts, root_dir)
 
 
 def log_number_of_live_objects(sleep_duration=0.5):
@@ -65,10 +64,7 @@ def update_on_system(
 
 class TestBigSystemFromAndToJsonPerformance(TestCase):
     def test_big_system_from_and_to_json_performance(self):
-        big_system = generate_big_system(
-            nb_of_servers_of_each_type=2, nb_of_uj_per_each_server_type=2, nb_of_uj_steps_per_uj=4, nb_of_up_per_uj=3,
-            nb_of_edge_usage_patterns=5, nb_of_edge_processes_and_server_needs_per_edge_computer=5,
-            nb_of_jobs_per_server_need=1, nb_years=5)
+        big_system = generate_big_system(**BIG_SYSTEM_STANDARD_PARAMS)
         start = perf_counter()
         system_dict = system_to_json(big_system, save_calculated_attributes=True, output_filepath=None)
         logger.info(f"Initial serialization of system to dict took {round((perf_counter() - start), 3)} seconds")
@@ -111,55 +107,3 @@ class TestBigSystemFromAndToJsonPerformance(TestCase):
             nb_system_loadings, system_dict, "Storage", "data_storage_duration",
             SourceValue(3 * u.year))
         self.assertLess(avg_loading_editing_writing_time, 700)
-
-
-if __name__ == "__main__":
-    start = perf_counter()
-    with open("big_system_with_calc_attr.json", "r") as file:
-        system_dict = json.load(file)
-    logger.info(f"Finished loading JSON file in {round((perf_counter() - start), 3)} seconds")
-
-    start = perf_counter()
-    nb_system_loadings = 100
-    for i in range(nb_system_loadings):
-        class_obj_dict_computed, flat_obj_dict_computed, _ = json_to_system(system_dict, launch_system_computations=False)
-    avg_loading_time = (perf_counter() - start) / nb_system_loadings
-    logger.info(
-        f"deserializing system took {round(avg_loading_time, 3)} seconds on average for {nb_system_loadings} times")
-
-    start = perf_counter()
-    for i in range(nb_system_loadings):
-        system_to_json(next(iter(class_obj_dict_computed["System"].values())), save_calculated_attributes=True,
-                       output_filepath=None)
-    avg_writing_time = (perf_counter() - start) / nb_system_loadings
-    logger.info(
-        f"serializing system took {round(avg_writing_time, 3)} seconds on average for {nb_system_loadings} times")
-
-    with open("big_system_with_calc_attr.json") as f1, open("big_system_with_calc_attr_2.json") as f2:
-        data1 = json.load(f1)
-        data2 = json.load(f2)
-
-    print(data1 == data2)
-
-    run_cprofile = False
-
-    if run_cprofile:
-        import cProfile
-        import pstats
-        import io
-
-        pr = cProfile.Profile()
-        pr.enable()
-
-        # 🔥 Call the function you want to profile
-        system_to_json(next(iter(class_obj_dict_computed["System"].values())), save_calculated_attributes=True,
-                                 output_filepath=None)
-
-        pr.disable()
-
-        # 👇 This keeps full paths instead of just __init__.py
-        s = io.StringIO()
-        ps = pstats.Stats(pr, stream=s)
-        ps.sort_stats("cumtime").print_stats(30)  # Adjust number of lines as needed
-
-        print(s.getvalue())
