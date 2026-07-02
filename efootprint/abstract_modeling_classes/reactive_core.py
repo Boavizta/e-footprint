@@ -53,7 +53,8 @@ class ReactiveSlot:
     computation (``record_calculus_dependency`` / ``record_structural_dependency``) and replace the
     previous edges when it succeeds, so a dependency read only under a stale conditional branch stops
     invalidating the slot. A failed computation keeps the previous edges — over-invalidation is safe,
-    a missed edge is not — and leaves the slot void, so a later pull simply retries.
+    a missed edge is not — and leaves the slot void and unmarked, so a later pull simply retries and
+    the next deletion wave still traverses it.
     """
 
     def __init__(self, name: str, getter):
@@ -106,6 +107,10 @@ class ReactiveSlot:
             value = self.getter()
         finally:
             _compute_stack.reset(token)
+            # Cleared on failure too (success re-clears it in attach_cached_value): a failed compute left
+            # marked would let a dependent whose getter catches the failure cache a fallback below a
+            # marked slot, which the next wave would prune past — a stale value.
+            self._wave_passed = False
         self.replace_dependencies(frame.calculus_reads, frame.structural_reads)
         self.attach_cached_value(value)
         return value
@@ -132,13 +137,16 @@ class ReactiveSlot:
 
 def record_calculus_dependency(slot: ReactiveSlot):
     """Record that the slot currently being computed depends on ``slot`` through a calculation
-    (arithmetic ancestry). No-op outside a computation."""
+    (arithmetic ancestry). No-op outside a computation. Only record slots the computation actually
+    pulled: wave-pruning soundness relies on every recorded edge tracing a real read (production edges
+    derive from the ancestry of values actually obtained, so this holds by construction)."""
     _record_dependency(slot, "calculus_reads")
 
 
 def record_structural_dependency(slot: ReactiveSlot):
     """Record that the slot currently being computed depends on ``slot`` through a relationship read
-    (who read this membership). No-op outside a computation."""
+    (who read this membership). No-op outside a computation. As for calculus edges, only record slots
+    the computation actually pulled."""
     _record_dependency(slot, "structural_reads")
 
 
@@ -151,10 +159,11 @@ def _record_dependency(slot: ReactiveSlot, read_kind: str):
 def invalidate(*slots: ReactiveSlot) -> set[ReactiveSlot]:
     """Deletion wave: delete the cached values of ``slots`` and of all their transitive dependents,
     returning the slots the wave visited. The wave prunes at slots whose marker is already set: a
-    marked slot's dependents were all marked by the same or an earlier wave, and gaining a new
-    dependent requires that dependent to recompute — which pulls (hence recomputes and unmarks) this
-    slot first — so nothing cached can hide below a marked slot. Voidness itself cannot prune: after
-    a partial reload, cached slots legitimately sit below valueless, unmarked intermediates."""
+    marked slot's dependents were all marked by the same or an earlier wave, and a dependent can only
+    cache a new value after pulling this slot again — which clears the marker whether that compute
+    succeeds or fails — so nothing cached can hide below a marked slot (given edges only trace real
+    reads, see ``record_calculus_dependency``). Voidness itself cannot prune: after a partial reload,
+    cached slots legitimately sit below valueless, unmarked intermediates."""
     if _compute_stack.get():
         computing_chain = " -> ".join(frame.slot.name for frame in _compute_stack.get())
         raise RuntimeError(

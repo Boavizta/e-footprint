@@ -417,6 +417,59 @@ class TestInvalidationWave(TestCase):
 
         self.assertEqual({self.a, left, right, join}, invalidate(self.a))
 
+    def test_bulk_invalidation_of_several_slots_voids_the_union_of_their_cones(self):
+        """Test that one wave started from several written slots visits the union of their dependent
+        cones exactly once, voiding and marking a dependent shared by both start slots."""
+        self.values["d"] = 10
+        d = _source_slot("d", self.values, self.compute_counts)
+        join = _summing_slot("join", [self.a, d], self.compute_counts)
+        self.c.pull()
+        self.assertEqual(11, join.pull())
+
+        visited = invalidate(self.a, d)
+
+        self.assertEqual({self.a, d, self.b, self.c, join}, visited)
+        for slot in visited:
+            self.assertFalse(slot.has_cached_value)
+            self.assertTrue(slot.wave_passed)
+
+    def test_failed_compute_clears_marker_so_next_wave_reaches_fallback_caching_dependent(self):
+        """Test that a failed compute clears the wave marker: a dependent whose getter catches the
+        failure and caches a fallback with an edge onto the failed slot is still reached by the next
+        wave (a retained marker would prune the wave there and leave the fallback value stale)."""
+        switches = {"fail": False}
+
+        def fragile_getter():
+            value = self.a.pull()
+            record_calculus_dependency(self.a)
+            if switches["fail"]:
+                raise ValueError("synthetic computation failure")
+            return value
+        fragile = ReactiveSlot("fragile", fragile_getter)
+
+        def catching_getter():
+            try:
+                value = fragile.pull()
+            except ValueError:
+                value = -1
+            record_calculus_dependency(fragile)
+            return value
+        catching = ReactiveSlot("catching", catching_getter)
+
+        self.assertEqual(1, catching.pull())
+        invalidate(self.a)
+        switches["fail"] = True
+        self.assertEqual(-1, catching.pull())
+        self.assertFalse(fragile.wave_passed)
+
+        switches["fail"] = False
+        self.values["a"] = 5
+        visited = invalidate(self.a)
+
+        self.assertEqual({self.a, fragile, catching}, visited)
+        self.assertFalse(catching.has_cached_value)
+        self.assertEqual(5, catching.pull())
+
     def test_invalidation_during_computation_raises_and_unwinds_stack(self):
         """Test that a getter triggering invalidation raises with the computing chain, and leaves the
         compute stack consistent for later pulls."""
@@ -475,9 +528,10 @@ class TestDependencyEdgeRefresh(TestCase):
         self.assertEqual(frozenset([self.a]), summing.calculus_dependencies)
         self.assertEqual(frozenset([summing]), self.a.dependents)
 
-    def test_failed_recompute_keeps_previous_edges_and_leaves_slot_void(self):
+    def test_failed_recompute_keeps_previous_edges_and_leaves_slot_void_and_unmarked(self):
         """Test that a getter raising during recompute keeps the previous dependency edges (safe
-        over-approximation) and leaves the slot void, so a later pull retries and refreshes them."""
+        over-approximation), leaves the slot void so a later pull retries and refreshes them, and
+        clears the wave marker so the next wave still traverses the slot."""
         switches = {"fail": False}
 
         def getter():
@@ -495,6 +549,7 @@ class TestDependencyEdgeRefresh(TestCase):
             fragile.pull()
 
         self.assertFalse(fragile.has_cached_value)
+        self.assertFalse(fragile.wave_passed)
         self.assertEqual(frozenset([self.a]), fragile.calculus_dependencies)
         self.assertEqual(frozenset([fragile]), self.a.dependents)
 
