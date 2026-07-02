@@ -116,8 +116,10 @@
       <li>Keeping live models in worker memory across interface requests (future optimization,
           noted as a knob).</li>
       <li>The calibration feature itself.</li>
-      <li>Reading computed values from old-format files: inputs are honored, stale computed values
-          are ignored and recomputed.</li>
+      <li>Trusting computed values from files saved by a different library version: inputs are
+          honored, stored values are kept only as a comparison baseline and recomputed. The
+          upgrade-time drift <em>visualization</em> built on that baseline is a future feature
+          (see <code>specs/roadmap.md</code>).</li>
     </ul>
   </details>
 </section>

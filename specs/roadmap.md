@@ -14,6 +14,19 @@ SSOT metadata content (`param_descriptions`, docstrings, `tests/test_description
 
 ## Mid-term horizon
 
+### Upgrade-time drift visualization
+
+Depends on the pull-based-computation feature landing (its serialization contract ships the
+protocol: stored footprints are trusted caches only on exact `efootprint_version` match; any
+mismatch demotes them to a retained "as computed by vX" baseline and recomputes on pull, with a
+`system_comparison`-based hook returning the drift). This feature adds the user-facing layer:
+visualize how a library methodology change or upstream-data update (Boaviztapi, EcoLogits) shifted
+a saved model's footprints at upgrade time — notebook output first, interface view later. The
+in-memory baseline is session-scoped and never serialized; if this feature needs the comparison to
+survive past the upgrade session (e.g. interface toast shown later), persist the condensed drift
+summary (~kB of per-source deltas), not old timeseries. Goal: trust through transparency of
+calculus-methodology evolution. Decided 2026-07-02 during pull-based-computation tasks review.
+
 ### Boavizta API expansion
 
 Currently used for server fabrication (`BoaviztaCloudServer`). Planned expansion to **water (WUE)** and **rare-earth metals**. Will require new modeling primitives to carry multi-impact footprints alongside CO₂-eq.

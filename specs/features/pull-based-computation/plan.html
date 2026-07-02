@@ -139,8 +139,15 @@ inherited from the kickoff discussion (7-point decision log).</p>
               <code>(source, stream, cell ids…, up, phase) → kg</code>; values-free topology
               (ancestors + structural reads per slot, with labels; children derived by inversion at
               load; formula tuples only for serialized slots). Save whenever flagged slots change
-              (edits and lazy fills). A value present in the file is attached as cached; anything
-              absent is valueless and computes on pull — staleness-resilient by construction.
+              (edits and lazy fills). This is the <em>single canonical</em> protocol —
+              <code>save_calculated_attributes</code> and the detection flag die; one format, one
+              loader path. Load is version-aware: on exact <code>efootprint_version</code> match,
+              values present in the file attach as trusted caches (zero compute); on any mismatch,
+              after schema upgrade handlers run, stored values are <em>demoted</em> to a retained
+              "as computed by vX" baseline (side-band, not slot caches) and recompute on pull — so
+              methodology or upstream-data drifts (Boaviztapi, EcoLogits) surface at upgrade time
+              instead of persisting silently. Anything absent is valueless and computes on pull —
+              staleness-resilient by construction.
               <code>render_cache</code>/<code>flushed_memo</code> retire (folds over the matrix's
               10³–10⁴ scalars need no memoization).</td></tr>
     </tbody>
@@ -168,10 +175,12 @@ inherited from the kickoff discussion (7-point decision log).</p>
               harness and baseline benchmarks against the current engine.</td>
           <td>suite green; baselines recorded</td><td>library-only</td></tr>
       <tr><td>2 · Single-source bodies</td>
-          <td>Mechanical conversion: ~250 <code>update_*</code> functions → getters behind an eager
-              shim preserving today's semantics exactly; <code>ReverseCollection</code> declarations
-              as today-equivalent filters. Constitutional §1.4 amendment ships alongside (own
-              commit).</td>
+          <td>Mechanical conversion: ~250 <code>update_*</code> functions → getters behind a
+              minimal eager shim (descriptors synthesize the old <code>update_&lt;attr&gt;</code>
+              methods; the eager engine and the <code>calculated_attributes</code> lists stay
+              untouched until stage 3 — no transitional ordering machinery);
+              <code>ReverseCollection</code> declarations as today-equivalent filters.
+              Constitutional §1.4 amendment ships alongside (own commit).</td>
           <td>suite green; behavior-identical</td><td>library-only</td></tr>
       <tr><td>3 · Engine swap</td>
           <td>Reactive core in; ModelingUpdate = apply + invalidate + pull with a transitional
@@ -223,7 +232,7 @@ inherited from the kickoff discussion (7-point decision log).</p>
       <tr><td><code>core/attribution/__init__.py</code></td><td>rework (shrinks)</td>
           <td><code>flushed_memo</code>/<code>render_cache</code> retire; atom generation feeds the matrix slot; folds run on summed scalars.</td></tr>
       <tr><td><code>core/system.py</code></td><td>modified</td>
-          <td><code>impact_repartition_matrix</code> slot; previous-footprint machinery simplified or moved interface-side (§7).</td></tr>
+          <td><code>impact_repartition_matrix</code> slot; <code>previous_*</code>/<code>initial_*</code> capture and <code>plot_emission_diffs</code> deleted — tutorial moves to <code>comparison/system_comparison.py</code> (§7).</td></tr>
       <tr><td><code>core/hardware/server_base.py</code> (+ storage, edge devices)</td><td>modified</td>
           <td>Attribution <code>@cached_property</code> layer becomes ordinary computed slots.</td></tr>
       <tr><td><code>api_utils/system_to_json.py</code> / <code>json_to_system.py</code></td><td>rework</td>
@@ -231,7 +240,7 @@ inherited from the kickoff discussion (7-point decision log).</p>
       <tr><td><code>api_utils/version_upgrade_handlers.py</code></td><td>modified</td>
           <td>Upgrade handler: read inputs, drop stale computed values (constitution §2.4).</td></tr>
       <tr><td><code>all_classes_in_order.py</code></td><td>modified</td>
-          <td><code>CANONICAL_COMPUTATION_ORDER</code> likely retires; verify residual instantiation-order use (§7).</td></tr>
+          <td><code>CANONICAL_COMPUTATION_ORDER</code> retired; <code>CANONICAL_CLASSES</code> derived from <code>SANKEY_COLUMNS</code> + breakdown + <code>NON_SANKEY_CANONICAL_CLASSES</code> (§7).</td></tr>
       <tr><td><code>tests/**</code></td><td>new + regenerated</td>
           <td>Parity property test (+ recompute-counter and deserialized-file variants); regenerated fixtures; benchmark suite; simulation tests deleted.</td></tr>
       <tr><td><em>interface:</em> <code>model_web.py</code>, session repository, <code>sankey_views.py</code>, emissions service, calc-graph views</td><td>stage 4</td>
@@ -298,9 +307,18 @@ inherited from the kickoff discussion (7-point decision log).</p>
     <li><strong>Full read tracking (signals purism)</strong> — rejected: the calculus graph already
         records exact value-level dependencies for free; instrumenting all reads discards a working
         mechanism.</li>
-    <li><strong>Stale values + dirty flags instead of deletion</strong> — rejected: retained values
-        only enable equality cutoffs (irrelevant under eager wave-marking) at megabytes of RAM per
-        slot; deletion matches today's flush semantics and frees memory.</li>
+    <li><strong>Stale values + dirty flags instead of deletion</strong> — deletion by default;
+        <em>selective early cutoff kept as a deferred, measured knob</em> (revised 2026-07-02 after
+        external review pointing at Salsa's backdating). Honest pricing: cutoff cannot be grafted
+        onto write-time deletion (the wave destroys what cutoff would salvage) — it is a second
+        invalidation mode where the wave <em>stops</em> at designated hub slots (object-boundary
+        footprints, ~30 slots, which retain their previous value + a dirty bit) and pull verifies
+        the hub before propagating below. Domain priors cut both ways: smooth timeseries
+        arithmetic rarely recomputes to exact equality, and CPU recompute is the non-binding
+        constraint (§5 of the spec) — but discretization points absorb changes
+        (<code>math.ceil</code> full-hours, capacity clamps, zero branches) and equal-footprint
+        relinks exist. Decision deferred to data: the recompute-counter instrumentation counts
+        equal-value recomputes, and the stage-4 perf run reports the frequency.</li>
     <li><strong>Coarse single-node dicts</strong> — rejected: diverges from the entry-level
         ancestry explainability requires (two graph views) and regresses live-model loops ~×N(keys);
         granularity is engine policy behind the same API, so this remains revisable.</li>
@@ -337,21 +355,57 @@ inherited from the kickoff discussion (7-point decision log).</p>
 </section>
 
 <section>
-  <h2>7. Open questions (resolve before tasks)</h2>
+  <h2>7. Resolved questions (user decisions, 2026-07-02)</h2>
   <ul>
-    <li>Repartition-matrix encoding: dict rows vs columnar int-indexed arrays — measure both on the
-        regenerated fixture (target ≤ 0.3 MB serialized).</li>
-    <li>Eager-output-set API shape: <code>ModelingUpdate(…, eager_outputs=…)</code> per call vs a
-        system-level setting; and whether the interface needs anything beyond the default.</li>
-    <li>Reactive core module name/location within <code>abstract_modeling_classes/</code>.</li>
-    <li><code>@computed_dict</code> key declaration form (collection attribute name as string vs
-        callable) for non-trivial key sets.</li>
-    <li>Fate of <code>System.previous_*</code> footprint capture (interface edit-diff toast):
-        simplify in-library or move to interface-side capture before applying changes.</li>
-    <li>Stage-2 codemod tooling: libcst-based transform vs scripted regex + review, and how
-        docstrings migrate for the doc-as-code reader.</li>
-    <li><code>CANONICAL_COMPUTATION_ORDER</code>: fully retired or kept for instantiation order in
-        <code>json_to_system</code>?</li>
+    <li><strong>Repartition-matrix encoding</strong> — implement dict rows first, then measure both
+        encodings on the regenerated fixture (target ≤ 0.3 MB serialized) and <em>return to the
+        user with the numbers</em> to call the complexity/speed/size tradeoff (explicit stage-4
+        task).</li>
+    <li><strong>Eager-output-set API</strong> — per-call parameter
+        <code>ModelingUpdate(…, eager_outputs=…)</code>, default = system total footprints; no
+        system-level setting. The interface needs nothing beyond the default; tight loops pass an
+        empty set.</li>
+    <li><strong>Reactive core module</strong> —
+        <code>abstract_modeling_classes/reactive_core.py</code>.</li>
+    <li><strong><code>@computed_dict</code> keys</strong> — string attribute name
+        (<code>@computed_dict(keys="usage_patterns")</code>); a non-trivial key set gets its own
+        computed property and is referenced by name.</li>
+    <li><strong><code>System.previous_*</code> capture</strong> — deleted together with
+        <code>plot_emission_diffs</code> (the interface already disables it; its only consumer is
+        the notebook tutorial). The tutorial switches to the existing
+        <code>efootprint/comparison/system_comparison.py</code> module for comparison work (which
+        already overlapped) and points to the interface for a richer comparison UI.</li>
+    <li><strong>Stage-2 codemod</strong> — agent-performed mechanical edits file-by-file (final
+        assignment → <code>return</code>, decorator added, docstring kept on the getter), gated by
+        the behavior-identical suite; no throwaway transform tooling.</li>
+    <li><strong>Early cutoff (Salsa-style backdating)</strong> — deletion by default; selective
+        hub-slot cutoff is a deferred knob, not a closed door (see §5 alternatives for the full
+        pricing). The recompute-counter parity variant additionally counts recomputes that yield a
+        value equal to the one they replaced; stage 4 reports the frequency on representative
+        edits and the cutoff decision is made on that data. Additionally, the reactive core's
+        review checklist draws its correctness conditions from the signals/Salsa/Adapton
+        literature (dependency-edge refresh on recompute, exception-safe stack, re-entrancy, cycle
+        reporting, partial-reload verification) rather than rediscovering them in debugging.</li>
+    <li><strong>Version-trust rule at load</strong> — stored footprint values are trusted caches
+        only on exact <code>efootprint_version</code> match. Any mismatch (major, minor or patch —
+        today's loader only reacts to major bumps) demotes them to a retained "as computed by vX"
+        baseline and recomputes on pull, enabling upgrade-time drift comparison via
+        <code>system_comparison</code>. The baseline is <em>in-memory and session-scoped, never
+        serialized</em>: the JSON always carries only current-version values (persisting two
+        generations would double the footprint payload against the binding weight constraint);
+        the old file itself is the durable baseline, and if the future drift-viz feature needs
+        persistence it stores the condensed drift summary (~kB), not old timeseries. This feature
+        ships the protocol: version check, demotion, baseline retention hook. The drift
+        <em>visualization</em> itself is a future feature (added to
+        <code>specs/roadmap.md</code>).</li>
+    <li><strong><code>CANONICAL_COMPUTATION_ORDER</code></strong> — retired (no subclass pairs
+        exist among canonical classes, so family resolution never needed order). Canonical-family
+        membership is derived: <code>CANONICAL_CLASSES = flatten(SANKEY_COLUMNS) +
+        SANKEY_BREAKDOWN_ONLY_CLASSES + [Service, EdgeDeviceGroup]</code> (tiny
+        <code>NON_SANKEY_CANONICAL_CLASSES</code> additive); Sankey sorting keys off
+        <code>SANKEY_COLUMNS</code> directly. Interface consumers
+        (<code>efootprint_to_web_mapping.py</code>, <code>all_efootprint_classes.py</code>) migrate
+        in stage 4; §2.5 constitution wording amended in the planned §1.4 commit.</li>
   </ul>
 </section>
 
