@@ -169,6 +169,11 @@ which Task 6 retires). One deliberate commit, separate from feature work, with j
 
 **Depends on:** Task 3 (getter docstrings must exist before §1.4 names them).
 
+**Status:** Done (commit `860a243a`). §2.5 uses role-based wording (canonical-class registry =
+flattened `SANKEY_COLUMNS` + breakdown-only + non-Sankey canonical classes) valid before and after
+the Task-6 retirement. Noted for Task 6: constitution §1.1's documented chain-optimizer back-edge
+paragraph goes stale when the optimizer is deleted — amend in its own commit then.
+
 ---
 
 ## Task 5 — Reactive core engine (lands unused) (stage 3, part 1)

@@ -200,15 +200,13 @@ class JobBase(ModelingObject):
     def hourly_data_transferred_per_usage_pattern(
             self, usage_pattern: "UsagePattern | EdgeUsagePattern"):
         """Hourly volume of data transferred over the network by this job, broken down by usage pattern."""
-        return \
-            self.compute_hourly_data_exchange_for_usage_pattern(usage_pattern, "data_transferred")
+        return self.compute_hourly_data_exchange_for_usage_pattern(usage_pattern, "data_transferred")
 
     @computed_dict(keys="usage_patterns")
     def hourly_data_stored_per_usage_pattern(
             self, usage_pattern: "UsagePattern | EdgeUsagePattern"):
         """Hourly net change in storage volume caused by this job, broken down by usage pattern."""
-        return \
-            self.compute_hourly_data_exchange_for_usage_pattern(usage_pattern, "data_stored")
+        return self.compute_hourly_data_exchange_for_usage_pattern(usage_pattern, "data_stored")
 
     def sum_calculated_attribute_across_usage_patterns(
             self, calculated_attribute_name: str, calculated_attribute_label: str):

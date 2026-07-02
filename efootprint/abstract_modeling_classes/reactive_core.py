@@ -152,15 +152,18 @@ def _find_modeling_class(class_name: str) -> Type | None:
     from efootprint.abstract_modeling_classes.modeling_object import ModelingObject
 
     def _search(cls):
-        if cls.__name__ == class_name:
-            return cls
+        matches = [cls] if cls.__name__ == class_name else []
         for subclass in cls.__subclasses__():
-            found = _search(subclass)
-            if found is not None:
-                return found
-        return None
+            matches += _search(subclass)
+        return matches
 
-    return _search(ModelingObject)
+    matches = list(dict.fromkeys(_search(ModelingObject)))
+    if len(matches) > 1:
+        raise ValueError(
+            f"Several ModelingObject subclasses are named {class_name}: "
+            f"{[f'{cls.__module__}.{cls.__qualname__}' for cls in matches]}. Reverse-slot member types resolve "
+            f"by class name, so the name must be unambiguous.")
+    return matches[0] if matches else None
 
 
 class ReverseCollection:
@@ -199,6 +202,13 @@ class ReverseCollection:
         if instance is None:
             return self
         return self._containers_of_member_type(instance)
+
+    def __set__(self, instance, value):
+        # Data-descriptor guard: reverse relationships are derived from modeling_obj_containers and are
+        # read-only, exactly like the properties they replaced.
+        raise AttributeError(
+            f"{type(instance).__name__}.{self.attr_name} is a reverse relationship derived from "
+            f"modeling_obj_containers and cannot be set directly.")
 
 
 class ReverseLink(ReverseCollection):

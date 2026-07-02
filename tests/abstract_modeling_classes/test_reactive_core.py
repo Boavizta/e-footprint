@@ -234,24 +234,54 @@ class TestReverseSlots(TestCase):
         with self.assertRaises(PermissionError):
             _ = self.leaf.single_holder
 
+    def test_reverse_slots_cannot_be_assigned(self):
+        """Test that storing a value under a reverse slot raises AttributeError, like the read-only
+        properties these declarations replaced (a silent instance-dict shadow would corrupt the reverse
+        lookup). object.__setattr__ is the storage path ModelingObject.__setattr__ bookkeeping uses."""
+        holder = ReactiveCoreHolder("assignment holder", [self.leaf])
+        with self.assertRaises(AttributeError):
+            object.__setattr__(self.leaf, "holders", [holder])
+        with self.assertRaises(AttributeError):
+            object.__setattr__(self.leaf, "single_holder", holder)
+        self.assertEqual([holder], self.leaf.holders)
+
+
+def _all_registered_classes():
+    from efootprint.all_classes_in_order import ALL_EFOOTPRINT_CLASSES
+    # The from-config Boavizta builders are not part of ALL_EFOOTPRINT_CLASSES but carry converted
+    # calculated attributes, so the transition-period checks must cover them too.
+    from efootprint.builders.hardware.boavizta_server_from_config import (
+        BoaviztaServerFromConfig, BoaviztaStorageFromConfig)
+    return ALL_EFOOTPRINT_CLASSES + [BoaviztaServerFromConfig, BoaviztaStorageFromConfig]
+
 
 class TestRegistryMatchesCalculatedAttributes(TestCase):
     def test_every_calculated_attribute_is_a_declared_computed_slot(self):
         """Test that per class, the calculated_attributes list and the computed-slot registry agree —
         a conversion-omission detector for the transition period where both coexist."""
-        from efootprint.all_classes_in_order import ALL_EFOOTPRINT_CLASSES
         from efootprint.core.hardware.edge.edge_storage import EdgeStorage
 
         # EdgeStorage deliberately drops these inherited EdgeComponent attributes from its
         # calculated_attributes (it deletes the corresponding instance state in __init__).
         deliberate_drops = {EdgeStorage: {"power", "idle_power"}}
 
-        for cls in ALL_EFOOTPRINT_CLASSES:
+        for cls in _all_registered_classes():
             declared = set(computed_slots(cls))
             expected_drops = deliberate_drops.get(cls, set())
             self.assertEqual(
                 set(cls.calculated_attributes), declared - expected_drops,
                 f"calculated_attributes and computed-slot registry diverge for {cls.__name__}")
+
+    def test_every_reverse_slot_member_type_resolves(self):
+        """Test that every reverse slot declared on a production class resolves its member-type name to a
+        real ModelingObject subclass once all classes are imported — a typo'd name would otherwise
+        silently yield an empty collection forever."""
+        for cls in _all_registered_classes():
+            for name, slot in reverse_slots(cls).items():
+                self.assertIsNotNone(
+                    slot._resolve_member_type(),
+                    f"{cls.__name__}.{name} declares member type {slot.member_type_name}, "
+                    f"which matches no ModelingObject subclass")
 
 
 if __name__ == "__main__":
