@@ -201,6 +201,19 @@ partial-reload state (cached slots below valueless ones) treated as a first-clas
 
 **Depends on:** Task 3 (descriptors + registries it extends). Can proceed in parallel with Task 4.
 
+**Status:** Done. Notes: engine = `ReactiveSlot` (name + zero-arg getter; `pull`/`attach_cached_value`/
+`replace_dependencies`), module-level `record_calculus_dependency` / `record_structural_dependency`
+(no-ops outside a computation; pull alone records nothing — production edges come from the ancestry
+walk and relationship read hooks) and `invalidate(*slots) -> visited set`. Correctness choices per the
+literature checklist: edges are collected per compute frame and committed only on success (a failed
+getter keeps the previous edges as a safe over-approximation and leaves the slot void for retry); wave
+pruning keys off the marker, not voidness (partial reload legitimately leaves void, unmarked
+intermediates above cached slots — the marked-implies-dependents-marked invariant is what makes pruning
+sound); the compute stack is an immutable-tuple contextvar with token reset in `finally`;
+`invalidate` raises if called during a computation (write-during-compute guard).
+`attach_cached_value` + `replace_dependencies` are the stage-4 load-path surface. Descriptors untouched
+(still eager shim); full suite and parity harness green.
+
 ---
 
 ## Task 6 — Engine swap with pull-ALL eager set (stage 3, part 2)

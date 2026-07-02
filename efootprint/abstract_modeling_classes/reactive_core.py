@@ -1,19 +1,176 @@
-"""Declarative descriptors for computed modeling attributes.
+"""Reactive pull engine and declarative descriptors for computed modeling attributes.
 
-The descriptors below are the single source of truth for how each computed attribute is derived: the
-decorated getter's body is the calculation and its docstring is the doc-as-code description of the
-attribute (consumed by the mkdocs object reference and the interface).
+Two layers live here.
 
-The computation engine itself still runs in an eager shim mode: values are computed eagerly by the
-push-based machinery (``calculated_attributes`` ordering, ``ModelingUpdate`` chains), which expects one
-``update_<attr>`` method per computed attribute (plus ``update_dict_element_in_<attr>`` for dict
-attributes). Each descriptor synthesizes those methods from its getter at class-creation time
-(``__set_name__``): call the getter, store the result through the regular ``ModelingObject.__setattr__``
-bookkeeping. Computed values are therefore stored as plain instance attributes exactly as before, and
-always shadow these (non-data) descriptors on read; ``__get__`` only fires when no value has been stored
-yet and mimics a missing attribute.
+The reactive engine primitives: ``ReactiveSlot`` — one node of the dependency graph, cached or void,
+carrying its dependency edges (calculus edges from arithmetic ancestry, structural edges from
+relationship reads) and a one-bit invalidation-wave marker — plus the contextvar compute stack shared
+by all slots (it records dependency edges against the slot currently computing and doubles as the
+cycle guard) and the ``invalidate`` deletion wave. Slots compute on pull, cache, and are invalidated
+by deleting cached values along the recorded edges: stale values are never retained, while dependency
+edges and the wave marker survive valuelessness — so a wave can reach cached slots through valueless
+intermediates, the normal state after loading a file that stores only some values.
+
+The ``@computed_attribute`` / ``@computed_dict`` descriptors are the single source of truth for how
+each computed attribute is derived: the decorated getter's body is the calculation and its docstring
+is the doc-as-code description of the attribute (consumed by the mkdocs object reference and the
+interface). The descriptors do not drive the reactive engine yet: the computation engine still runs
+in an eager shim mode where values are computed eagerly by the push-based machinery
+(``calculated_attributes`` ordering, ``ModelingUpdate`` chains), which expects one ``update_<attr>``
+method per computed attribute (plus ``update_dict_element_in_<attr>`` for dict attributes). Each
+descriptor synthesizes those methods from its getter at class-creation time (``__set_name__``): call
+the getter, store the result through the regular ``ModelingObject.__setattr__`` bookkeeping. Computed
+values are therefore stored as plain instance attributes exactly as before, and always shadow these
+(non-data) descriptors on read; ``__get__`` only fires when no value has been stored yet and mimics a
+missing attribute.
 """
+import contextvars
 from typing import Type
+
+_VOID = object()
+
+_compute_stack: contextvars.ContextVar[tuple] = contextvars.ContextVar("reactive_compute_stack", default=())
+
+
+class CircularDependencyError(Exception):
+    """Computing a slot ended up pulling that same slot again; the message carries the offending chain."""
+
+
+class _ComputeFrame:
+    __slots__ = ("slot", "calculus_reads", "structural_reads")
+
+    def __init__(self, slot):
+        self.slot = slot
+        self.calculus_reads = set()
+        self.structural_reads = set()
+
+
+class ReactiveSlot:
+    """One node of the pull-based dependency graph.
+
+    A slot is either cached (holds a value) or void. ``pull`` returns the cached value or runs the
+    getter, recursively computing any void ancestor it pulls. Dependency edges are recorded during the
+    computation (``record_calculus_dependency`` / ``record_structural_dependency``) and replace the
+    previous edges when it succeeds, so a dependency read only under a stale conditional branch stops
+    invalidating the slot. A failed computation keeps the previous edges — over-invalidation is safe,
+    a missed edge is not — and leaves the slot void, so a later pull simply retries.
+    """
+
+    def __init__(self, name: str, getter):
+        self.name = name
+        self.getter = getter
+        self._value = _VOID
+        self._wave_passed = False
+        self._dependents = set()
+        self._calculus_dependencies = set()
+        self._structural_dependencies = set()
+
+    def __repr__(self):
+        return f"<ReactiveSlot {self.name} ({'cached' if self.has_cached_value else 'void'})>"
+
+    @property
+    def has_cached_value(self) -> bool:
+        return self._value is not _VOID
+
+    @property
+    def wave_passed(self) -> bool:
+        return self._wave_passed
+
+    @property
+    def dependents(self) -> frozenset:
+        return frozenset(self._dependents)
+
+    @property
+    def calculus_dependencies(self) -> frozenset:
+        return frozenset(self._calculus_dependencies)
+
+    @property
+    def structural_dependencies(self) -> frozenset:
+        return frozenset(self._structural_dependencies)
+
+    def pull(self):
+        """Return the slot's value, computing it (and recursively any void ancestor it reads) if void."""
+        if self._value is not _VOID:
+            return self._value
+        return self._compute()
+
+    def _compute(self):
+        stack = _compute_stack.get()
+        for position, frame in enumerate(stack):
+            if frame.slot is self:
+                chain = " -> ".join([f.slot.name for f in stack[position:]] + [self.name])
+                raise CircularDependencyError(f"Circular dependency between computed slots: {chain}")
+        frame = _ComputeFrame(self)
+        token = _compute_stack.set(stack + (frame,))
+        try:
+            value = self.getter()
+        finally:
+            _compute_stack.reset(token)
+        self.replace_dependencies(frame.calculus_reads, frame.structural_reads)
+        self.attach_cached_value(value)
+        return value
+
+    def replace_dependencies(self, calculus_dependencies=frozenset(), structural_dependencies=frozenset()):
+        """Install the slot's dependency edges, updating the reverse (dependents) index on both the
+        dropped and the added dependencies. Called with each successful computation's recorded reads,
+        and directly by the load path to rebuild serialized topology without computing anything."""
+        old_dependencies = self._calculus_dependencies | self._structural_dependencies
+        new_dependencies = set(calculus_dependencies) | set(structural_dependencies)
+        for dependency in old_dependencies - new_dependencies:
+            dependency._dependents.discard(self)
+        for dependency in new_dependencies - old_dependencies:
+            dependency._dependents.add(self)
+        self._calculus_dependencies = set(calculus_dependencies)
+        self._structural_dependencies = set(structural_dependencies)
+
+    def attach_cached_value(self, value):
+        """Cache a value directly — a computation result, or a trusted stored value at load time.
+        Clears the wave marker: a freshly cached slot must be reachable by the next deletion wave."""
+        self._value = value
+        self._wave_passed = False
+
+
+def record_calculus_dependency(slot: ReactiveSlot):
+    """Record that the slot currently being computed depends on ``slot`` through a calculation
+    (arithmetic ancestry). No-op outside a computation."""
+    _record_dependency(slot, "calculus_reads")
+
+
+def record_structural_dependency(slot: ReactiveSlot):
+    """Record that the slot currently being computed depends on ``slot`` through a relationship read
+    (who read this membership). No-op outside a computation."""
+    _record_dependency(slot, "structural_reads")
+
+
+def _record_dependency(slot: ReactiveSlot, read_kind: str):
+    stack = _compute_stack.get()
+    if stack:
+        getattr(stack[-1], read_kind).add(slot)
+
+
+def invalidate(*slots: ReactiveSlot) -> set[ReactiveSlot]:
+    """Deletion wave: delete the cached values of ``slots`` and of all their transitive dependents,
+    returning the slots the wave visited. The wave prunes at slots whose marker is already set: a
+    marked slot's dependents were all marked by the same or an earlier wave, and gaining a new
+    dependent requires that dependent to recompute — which pulls (hence recomputes and unmarks) this
+    slot first — so nothing cached can hide below a marked slot. Voidness itself cannot prune: after
+    a partial reload, cached slots legitimately sit below valueless, unmarked intermediates."""
+    if _compute_stack.get():
+        computing_chain = " -> ".join(frame.slot.name for frame in _compute_stack.get())
+        raise RuntimeError(
+            f"Invalidation triggered while computing {computing_chain}: a slot getter must only read "
+            f"values, never write inputs or relationships.")
+    visited = set()
+    work = list(slots)
+    while work:
+        slot = work.pop()
+        if slot._wave_passed:
+            continue
+        slot._wave_passed = True
+        slot._value = _VOID
+        visited.add(slot)
+        work.extend(slot._dependents)
+    return visited
 
 
 def _register_slot(registry_name: str, owner: type, name: str, descriptor):
