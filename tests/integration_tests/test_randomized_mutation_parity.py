@@ -228,36 +228,77 @@ class TestRandomizedMutationParity(TestCase):
     @staticmethod
     def _within_quantization_tolerance(live_value, rebuilt_value):
         """Live and rebuilt systems iterate collections in legitimately different orders (container
-        registration history vs load order), so float32 reductions differ by bit-level noise; where a
-        formula quantizes (instance counts are ceiled), that noise can flip the result by one quantum
-        (e.g. one storage instance in ~1000). Accept such flips by relative size — genuinely stale
-        values differ by far more (the strict staleness gate is the end-of-sequence full recompute)."""
+        registration history vs load order), so float32 reductions differ by bit-level noise — observed
+        up to ~4e-5 relative on aggregate timeseries, which the tight ExplainableHourlyQuantities rtol
+        rejects. The tolerance is scoped to that noise (2× margin); a genuine quantization flip (e.g. a
+        ceiled instance count moving by one quantum) would exceed it and must be examined — widening is
+        a deliberate, evidence-based decision, not a default. Genuinely stale values differ by far more
+        and are also caught bitwise by the end-of-sequence full-recompute gate."""
         live_magnitude = getattr(live_value, "magnitude", None)
         rebuilt_magnitude = getattr(rebuilt_value, "magnitude", None)
         if live_magnitude is None or rebuilt_magnitude is None:
             return False
         try:
-            return np.allclose(live_magnitude, rebuilt_magnitude, rtol=2e-3, atol=1e-3)
+            return np.allclose(live_magnitude, rebuilt_magnitude, rtol=1e-4, atol=5e-5)
         except (TypeError, ValueError):
             return False
 
-    def assert_no_stale_slot_after_full_recompute(self, system):
-        """The strict staleness gate: voiding every slot and recomputing in place must reproduce the
-        incrementally maintained values — a missed invalidation would leave a value the recompute
-        contradicts. Run at the end of each mutation sequence (recomputing resets the caches, so
-        running it per-mutation would stop exercising long incremental histories)."""
-        incrementally_computed_values = {}
+    def snapshot_computed_slot_values(self, system):
+        """Snapshot every cached computed value. Dict-valued slots are materialized entry by entry
+        (bypassing the sync hooks): attribute reads return a persistent live facade, which a later
+        read would return again — comparing it to itself would make the staleness gate vacuous for
+        every computed dict."""
+        snapshot = {}
         for obj in self.all_objects(system):
             for attr_name in computed_slots(type(obj)):
                 value = getattr(obj, attr_name, MISSING)
-                if value is not MISSING:
-                    incrementally_computed_values[(obj.id, attr_name)] = value
+                if value is MISSING:
+                    continue
+                if isinstance(value, ExplainableObjectDict):
+                    snapshot[(obj.id, attr_name)] = {key: dict.__getitem__(value, key)
+                                                     for key in dict.keys(value)}
+                else:
+                    snapshot[(obj.id, attr_name)] = value
+        return snapshot
+
+    def assert_bitwise_equal(self, location, recomputed_value, snapshotted_value):
+        """Strict comparator for the staleness gate: incremental and in-place full recompute run over
+        the same objects in the same collection orders, so magnitudes must match bitwise — no float
+        tolerance, and in particular not the live-vs-rebuilt quantization fallback."""
+        if isinstance(snapshotted_value, dict):
+            self.assertIsInstance(recomputed_value, dict, location)
+            snapshotted_items = {getattr(key, "id", key): value for key, value in snapshotted_value.items()}
+            recomputed_items = {getattr(key, "id", key): dict.__getitem__(recomputed_value, key)
+                                for key in dict.keys(recomputed_value)}
+            self.assertEqual(set(snapshotted_items), set(recomputed_items), f"{location} keys differ")
+            for key, snapshotted_item in snapshotted_items.items():
+                self.assert_bitwise_equal(f"{location}[{key}]", recomputed_items[key], snapshotted_item)
+            return
+        snapshotted_magnitude = getattr(snapshotted_value, "magnitude", None)
+        recomputed_magnitude = getattr(recomputed_value, "magnitude", None)
+        if snapshotted_magnitude is None or recomputed_magnitude is None:
+            self.assertEqual(
+                recomputed_value, snapshotted_value,
+                f"{location} differs between incremental and full recompute: "
+                f"{snapshotted_value} != {recomputed_value}")
+            return
+        self.assertTrue(
+            np.array_equal(np.asarray(snapshotted_magnitude), np.asarray(recomputed_magnitude)),
+            f"{location} differs bitwise between incremental and full recompute: "
+            f"{snapshotted_value} != {recomputed_value}")
+
+    def assert_no_stale_slot_after_full_recompute(self, system):
+        """The strict staleness gate: voiding every slot and recomputing in place must reproduce the
+        incrementally maintained values bitwise — a missed invalidation would leave a value the
+        recompute contradicts. Run at the end of each mutation sequence (recomputing resets the
+        caches, so running it per-mutation would stop exercising long incremental histories)."""
+        incrementally_computed_values = self.snapshot_computed_slot_values(system)
         invalidate_slots_system_wide([system])
         pull_slots_system_wide([system])
         for (obj_id, attr_name), incremental_value in incrementally_computed_values.items():
             live_obj = next(obj for obj in self.all_objects(system) if obj.id == obj_id)
             recomputed_value = getattr(live_obj, attr_name)
-            self.assert_explainable_equal(
+            self.assert_bitwise_equal(
                 f"{live_obj.class_as_simple_str} {live_obj.name}.{attr_name} (incremental vs full recompute)",
                 recomputed_value, incremental_value)
 
