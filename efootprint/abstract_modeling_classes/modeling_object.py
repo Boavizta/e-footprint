@@ -119,7 +119,15 @@ class ModelingObject(metaclass=ABCAfterInitMeta):
         declared_computed_slots = computed_slots(cls)
         declared_lazy_slots = lazy_slots(cls)
         for attr_key, attr_value in object_json_dict.items():
-            if isinstance(attr_value, dict) and "label" in attr_value:
+            if attr_key in declared_lazy_slots:
+                # Serialize-flagged lazy slots hold raw JSON-native values (list rows like the
+                # impact-repartition matrix, plain dicts like the edge-device breakdown summary),
+                # attached as-is when trusted. Checked before the generic dict branches: a dict-valued
+                # lazy slot is neither an explainable value nor a deferred input ExplainableObjectDict.
+                if attach_stored_computed_values:
+                    declared_lazy_slots[attr_key].attach_cached_value(
+                        new_obj, tuple(attr_value) if isinstance(attr_value, list) else attr_value)
+            elif isinstance(attr_value, dict) and "label" in attr_value:
                 if attr_key in declared_computed_slots and not attach_stored_computed_values:
                     # Values computed by another library version are not trusted as caches: the
                     # loader demotes them to a comparison baseline and the slot recomputes on read.
@@ -134,12 +142,6 @@ class ModelingObject(metaclass=ABCAfterInitMeta):
                 new_value.initialize_calculus_graph_data_from_json(attr_value, flat_obj_dict, sources_dict)
             elif isinstance(attr_value, dict) and "label" not in attr_value:
                 explainable_object_dicts_to_create_after_objects_creation[(new_obj, attr_key)] = attr_value
-            elif attr_key in declared_lazy_slots:
-                # Serialize-flagged lazy slots hold raw JSON-native values (e.g. the dict-encoded
-                # impact-repartition matrix rows), attached as-is when trusted.
-                if attach_stored_computed_values:
-                    declared_lazy_slots[attr_key].attach_cached_value(
-                        new_obj, tuple(attr_value) if isinstance(attr_value, list) else attr_value)
             elif isinstance(attr_value, str) and attr_key not in ("id", "name") and attr_value in flat_obj_dict:
                 # A scalar string attribute is treated as a reference when it matches an existing object id.
                 # `name` is always a plain label, never a reference: excluding it prevents an object whose name
@@ -611,6 +613,8 @@ class ModelingObject(metaclass=ABCAfterInitMeta):
                     continue
                 if getattr(value, "to_json", None) is not None:
                     output_dict[attr_name] = value.to_json(with_formula=True)
+                elif isinstance(value, dict):
+                    output_dict[attr_name] = value
                 else:
                     output_dict[attr_name] = list(value)
 

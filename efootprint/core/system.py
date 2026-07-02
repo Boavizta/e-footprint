@@ -371,7 +371,8 @@ class System(ModelingObject):
                 else:
                     descriptor.attach_cached_value(container, copy_value(value))
             elif attr_name in declared_lazy_slots:
-                declared_lazy_slots[attr_name].attach_cached_value(container, tuple(value))
+                declared_lazy_slots[attr_name].attach_cached_value(
+                    container, tuple(value) if isinstance(value, list) else value)
 
         return SystemComparison(baseline_system, self)
 

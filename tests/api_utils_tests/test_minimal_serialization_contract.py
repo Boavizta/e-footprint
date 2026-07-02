@@ -214,6 +214,7 @@ class TestMinimalSerializationContract(TestCase):
         from efootprint.all_classes_in_order import ALL_EFOOTPRINT_CLASSES
         from efootprint.core.attribution import AttributionSource
         from efootprint.core.hardware.edge.edge_component import EdgeComponent
+        from efootprint.core.hardware.edge.edge_device import EdgeDevice
         from efootprint.core.system import System
 
         for efootprint_class in ALL_EFOOTPRINT_CLASSES:
@@ -222,8 +223,70 @@ class TestMinimalSerializationContract(TestCase):
                 self.assertEqual({"total_footprint", "impact_repartition_matrix"}, serialized_names)
             elif issubclass(efootprint_class, AttributionSource):
                 expected = {"energy_footprint", "instances_fabrication_footprint"}
-                if "footprint_breakdown_summary" in serialized_names:
+                if issubclass(efootprint_class, EdgeDevice):
                     expected.add("footprint_breakdown_summary")
                 self.assertEqual(expected, serialized_names, efootprint_class.__name__)
             elif issubclass(efootprint_class, EdgeComponent):
                 self.assertEqual(set(), serialized_names, efootprint_class.__name__)
+
+
+class TestEdgeSystemSerializationContract(TestCase):
+    """The simple system carries no edge device: the dict-valued footprint_breakdown_summary
+    (a serialize-flagged lazy slot holding a plain dict, not explainable values or matrix-style
+    list rows) only exists on edge systems, so its persistence is pinned here."""
+
+    @classmethod
+    def setUpClass(cls):
+        from tests.integration_tests.integration_simple_edge_system_base_class import (
+            IntegrationTestSimpleEdgeSystemBaseClass)
+        cls.system, _ = IntegrationTestSimpleEdgeSystemBaseClass.generate_simple_edge_system()
+        cls.edge_device = next(
+            obj for obj in cls.system.all_linked_objects if obj.class_as_simple_str == "EdgeDevice")
+        # Materialize every serialize-flagged lazy slot (matrix + every device's breakdown summary),
+        # like a session after its first Sankey render.
+        from efootprint.abstract_modeling_classes.reactive_core import lazy_slots
+        for obj in [cls.system] + cls.system.all_linked_objects:
+            for lazy_name, lazy_descriptor in lazy_slots(obj.efootprint_class).items():
+                if lazy_descriptor.serialize:
+                    getattr(obj, lazy_name)
+        cls.live_summary = cls.edge_device.footprint_breakdown_summary
+        cls.canonical_dict = system_to_json(cls.system)
+
+    def load_canonical(self):
+        _, flat_obj_dict, _ = json_to_system(json.loads(json.dumps(self.canonical_dict)))
+        return flat_obj_dict[self.system.id], flat_obj_dict[self.edge_device.id]
+
+    def test_breakdown_summary_round_trips_as_dict(self):
+        """Test that the dict-valued breakdown summary serializes with its per-component values and
+        attaches unchanged on a trusted load."""
+        from efootprint.abstract_modeling_classes.reactive_core import lazy_slots
+
+        serialized_summary = self.canonical_dict["EdgeDevice"][self.edge_device.id]["footprint_breakdown_summary"]
+        self.assertEqual(json.loads(json.dumps(self.live_summary)), serialized_summary)
+
+        _, loaded_device = self.load_canonical()
+        loaded_summary = lazy_slots(loaded_device.efootprint_class)["footprint_breakdown_summary"].peek(loaded_device)
+        self.assertEqual(json.loads(json.dumps(self.live_summary)), loaded_summary)
+
+    def test_canonical_round_trip_is_identity(self):
+        """Test that loading an edge-system canonical file and re-serializing reproduces the same
+        dict, breakdown summaries included."""
+        loaded_system, _ = self.load_canonical()
+        self.assertEqual(
+            json.loads(json.dumps(self.canonical_dict)), json.loads(json.dumps(system_to_json(loaded_system))))
+
+    def test_sankey_renders_breakdown_from_stored_data_without_recompute(self):
+        """Test that a loaded edge session builds its Sankey — per-component breakdown decoration
+        included, and non-empty — from stored data only."""
+        from efootprint.core.lifecycle_phases import LifeCyclePhases
+        from efootprint.utils.impact_repartition import ImpactRepartitionSankey
+
+        loaded_system, loaded_device = self.load_canonical()
+        with ComputeCounter() as counter:
+            sankey = ImpactRepartitionSankey(loaded_system)
+            sankey.build()
+            breakdown = sankey._get_footprint_breakdown_by_source(loaded_device, LifeCyclePhases.USAGE)
+
+        self.assertEqual([], counter.computed_slot_names)
+        self.assertEqual(len(self.live_summary[LifeCyclePhases.USAGE.value]), len(breakdown))
+        self.assertGreater(len(breakdown), 0)

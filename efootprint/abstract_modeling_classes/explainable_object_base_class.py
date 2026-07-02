@@ -80,11 +80,13 @@ def _resolve_sentinel_source(source_id: str) -> Optional[Source]:
     return None
 
 
-@lru_cache(maxsize=None)
+@lru_cache(maxsize=2 ** 17)
 def _parse_value_address(attr_key: str) -> tuple:
     """Parse a serialized value address string back into its (container id, attribute, key id)
     triple. Addresses are stable strings repeated across ancestor/children/formula references, and
-    eval-based parsing is slow, so the parse is memoized process-wide."""
+    eval-based parsing is slow, so the parse is memoized. The cache is bounded because addresses
+    carry per-model uuids: a long-lived process loading many models must not grow it forever —
+    repeat lookups are intra-load, so a generous bound keeps the full speedup."""
     return eval(attr_key)
 
 

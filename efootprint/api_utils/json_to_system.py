@@ -209,28 +209,27 @@ def json_to_system(system_dict, efootprint_classes_dict=None):
         class_obj_dict[class_key] = current_class_dict
 
     for (modeling_obj, attr_key), attr_value in explainable_object_dicts_to_create_after_objects_creation.items():
-        if attr_key in modeling_obj.calculated_attributes and not trust_stored_values:
+        if attr_key in modeling_obj.calculated_attributes:
+            # Canonical files never serialize computed dicts (no computed_dict slot is
+            # serialize-flagged): a trusted file carrying one is corrupted or hand-edited. On a
+            # version mismatch the entry is legacy data already demoted to the baseline — skip it.
+            if trust_stored_values:
+                raise ValueError(
+                    f"{type(modeling_obj).__name__} {modeling_obj.id} stores computed dict {attr_key}, which the "
+                    f"minimal serialization contract never writes: the file is corrupted or was edited by hand.")
             continue
         new_dict_items = {}
         for key, value in attr_value.items():
             new_dict_items[flat_obj_dict[key]] = explainable_object_from_json(value, sources_dict)
 
-        if attr_key in modeling_obj.calculated_attributes:
-            # Stored computed dict: attach as cached sub-slot values, never read the attribute first
-            # (reading a void computed dict would compute it).
-            from efootprint.abstract_modeling_classes.reactive_core import computed_slots
-            explainable_object_dict = ExplainableObjectDict(new_dict_items)
-            computed_slots(type(modeling_obj))[attr_key].attach_cached_value(
-                modeling_obj, explainable_object_dict)
+        explainable_object_dict = explainable_object_dict_class_from_init_annotation(
+            type(modeling_obj), attr_key)(new_dict_items)
+        current_dict = getattr(modeling_obj, attr_key, None)
+        if current_dict is not None and isinstance(current_dict, ExplainableObjectDict):
+            current_dict.replace_in_mod_obj_container_without_recomputation(explainable_object_dict)
         else:
-            explainable_object_dict = explainable_object_dict_class_from_init_annotation(
-                type(modeling_obj), attr_key)(new_dict_items)
-            current_dict = getattr(modeling_obj, attr_key, None)
-            if current_dict is not None and isinstance(current_dict, ExplainableObjectDict):
-                current_dict.replace_in_mod_obj_container_without_recomputation(explainable_object_dict)
-            else:
-                modeling_obj.__setattr__(attr_key, explainable_object_dict, check_input_validity=False)
-            explainable_object_dict.trigger_modeling_updates = True
+            modeling_obj.__setattr__(attr_key, explainable_object_dict, check_input_validity=False)
+        explainable_object_dict.trigger_modeling_updates = True
 
         for explainable_object_item, explainable_object_json \
                 in zip(new_dict_items.values(), attr_value.values()):
@@ -332,6 +331,7 @@ def collect_baseline_values_from_other_version(system_dict, efootprint_classes_d
                         for key_id, value_json in attr_value.items():
                             baseline_values[(obj_id, attr_key, key_id)] = explainable_object_from_json(
                                 value_json, sources_dict)
-                elif attr_key in raw_serialized_names and isinstance(attr_value, list):
-                    baseline_values[(obj_id, attr_key, None)] = list(attr_value)
+                elif attr_key in raw_serialized_names and isinstance(attr_value, (list, dict)):
+                    baseline_values[(obj_id, attr_key, None)] = (
+                        list(attr_value) if isinstance(attr_value, list) else dict(attr_value))
     return baseline_values

@@ -272,6 +272,12 @@ def instance_slot_registry(instance) -> dict:
     return registry
 
 
+def peek_instance_slot_registry(instance) -> dict:
+    """The per-instance slot registry without creating it — for read-only consumers (serialization)
+    that must not mutate the objects they walk."""
+    return instance.__dict__.get(_INSTANCE_SLOT_REGISTRY_ATTR) or {}
+
+
 def _node_slot(instance, name, key=None) -> ReactiveSlot:
     """Get or create a getter-less bump node — the graph identity of an input value or a relationship
     membership. Bump nodes never compute: they exist to carry dependents recorded by read hooks and to

@@ -4,7 +4,7 @@ import efootprint
 from efootprint.abstract_modeling_classes.explainable_object_base_class import ExplainableObject
 from efootprint.abstract_modeling_classes.explainable_object_dict import ExplainableObjectDict
 from efootprint.abstract_modeling_classes.modeling_object import ModelingObject
-from efootprint.abstract_modeling_classes.reactive_core import computed_slots
+from efootprint.abstract_modeling_classes.reactive_core import computed_slots, peek_instance_slot_registry
 
 CALCULATION_GRAPH_KEY = "calculation_graph"
 
@@ -100,7 +100,7 @@ def calculation_graph_section(objects) -> dict:
     address_by_slot_id = {}
     slot_by_address = {}
     for obj in objects:
-        registry = obj.__dict__.get("_reactive_slots") or {}
+        registry = peek_instance_slot_registry(obj)
         for registry_key, slot in registry.items():
             if slot.discarded:
                 continue
