@@ -9,7 +9,7 @@ These are the project's immutable rules. They must be respected by every code ch
 1. **Three-layer separation.** `efootprint/abstract_modeling_classes/` is the framework layer (ModelingObject, ExplainableObject, dependency graph). `efootprint/core/` builds on it with the modeling primitives. `efootprint/api_utils/` builds on both for serialization. The dependency direction is strictly upward: `core/` must not import from `api_utils/`, and `abstract_modeling_classes/` must not import from `core/` or `api_utils/` (one remaining back-edge — a single function-local import of `System` in `abstract_modeling_classes/modeling_object.py`'s computation-chain optimizer — is documented in `architecture.md` and must not grow).
 2. **No backward compatibility burden.** There are no other external callers besides e-footprint-interface, which is co-developed. Don't carry shims, deprecation cycles, or compatibility branches.
 3. **Leanness over cleverness.** Three similar lines beat a premature abstraction. Avoid speculative generality, defensive code for impossible states, and refactor-on-the-side during bug fixes.
-4. **Doc-as-code is the SSOT for object semantics.** Class docstrings, `param_descriptions` dicts, and `update_<attr>` method docstrings are the authoritative description of what an object/param/calculated-attribute means. The mkdocs reference and the interface both read from them; do not duplicate descriptions elsewhere.
+4. **Doc-as-code is the SSOT for object semantics.** Class docstrings, `param_descriptions` dicts, and the docstrings of computed-attribute getters (the `@computed_attribute` / `@computed_dict` descriptors from `efootprint/abstract_modeling_classes/reactive_core.py`) are the authoritative description of what an object/param/calculated-attribute means. The mkdocs reference and the interface both read from them; do not duplicate descriptions elsewhere.
 
 ## 2. Quality gates (a change is not ready until)
 
@@ -17,7 +17,7 @@ These are the project's immutable rules. They must be respected by every code ch
 2. `mkdocs build --strict` is clean (once CI is wired).
 3. JSON serialization round-trip is preserved for any modified `ModelingObject`.
 4. If JSON schema changes, a migration handler is added in `efootprint/api_utils/version_upgrade_handlers.py` and the schema version bumps.
-5. New `ModelingObject` classes are registered in `efootprint/all_classes_in_order.py` (both `ALL_EFOOTPRINT_CLASSES` and, for top-level core objects, `CANONICAL_COMPUTATION_ORDER`).
+5. New `ModelingObject` classes are registered in `efootprint/all_classes_in_order.py`: in `ALL_EFOOTPRINT_CLASSES` and, for top-level core objects, in the canonical-class registry, whose membership is the flattened `SANKEY_COLUMNS` plus `SANKEY_BREAKDOWN_ONLY_CLASSES` and the few non-Sankey canonical classes.
 6. `CHANGELOG.md` entry added.
 
 ## 3. Agent-facing rules
