@@ -6,27 +6,11 @@ For **modeling-method questions** — where modeling something *well* needs scie
 
 ## Active streams
 
-### Tutorial-and-documentation overhaul (cross-repo, in flight)
+None currently — the tutorial-and-documentation overhaul (cross-repo), SSOT metadata in classes, and the modeling templates public API all shipped and were archived. See `git log` for the shipped commits and the "Not yet wired" note below for one loose end.
 
-The interface holds the primary spec at `../../e-footprint-interface/specs/features/tutorial-and-documentation/`. Library-side deliverables drive several library workstreams below.
+### Not yet wired: `mkdocs build --strict` in CI
 
-Status: Step 1 (disabled-instead-of-error UX) shipped on the interface side. Library CI (`.github/workflows/ci.yml`, matrix on Python 3.12 + 3.13) shipped via the packaging-and-dx feature. SSOT metadata is the next library-side deliverable.
-
-### SSOT metadata in classes (planned, near-term)
-
-- `param_descriptions` dict, class docstrings, `update_<attr>` docstrings on every concrete class.
-- `tests/test_descriptions.py` enforcing completeness.
-- `generate_object_reference.py` upgraded to consume the new metadata.
-- Once this content is written, wire `mkdocs build --strict` into `.github/workflows/ci.yml`.
-- Source: tutorial-and-documentation Step 2.
-- Enforced by constitution §1.4 (doc-as-code SSOT).
-
-### Modeling templates public API (planned, mid-term)
-
-- `efootprint.modeling_templates` package shipped with PyPI release.
-- `how_to/` sub-package with serialized scenarios + Python registry.
-- Public API: `list_how_to_templates()`, `get_template()`.
-- Source: tutorial-and-documentation Step 4.
+SSOT metadata content (`param_descriptions`, docstrings, `tests/test_descriptions.py`) shipped, and `mkdocs build --strict` runs clean locally (verified 2026-07-01) — but the follow-up step, wiring it into `.github/workflows/ci.yml`, was never done. Just add the step; no doc fixes needed first.
 
 ## Mid-term horizon
 
