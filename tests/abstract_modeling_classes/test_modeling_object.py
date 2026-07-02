@@ -153,9 +153,11 @@ class TestModelingObject(unittest.TestCase):
 
     def test_list_attribute_update_works_with_list_condensed_addition_syntax__no_mocking(
             self):
-        val1 = MagicMock(spec=ModelingObject)
-        val2 = MagicMock(spec=ModelingObject)
-        val3 = MagicMock(spec=ModelingObject)
+        from tests.utils import create_mod_obj_mock
+        val1 = create_mod_obj_mock(ModelingObject, "val1")
+        val2 = create_mod_obj_mock(ModelingObject, "val2")
+        # The added member gets its guard slots pulled through a subtree walk reading mod_obj_attributes.
+        val3 = create_mod_obj_mock(ModelingObject, "val3", mod_obj_attributes=[])
 
         mod_obj = ModelingObjectForTesting("test mod obj", custom_list_input=ListLinkedToModelingObj([val1, val2]))
 

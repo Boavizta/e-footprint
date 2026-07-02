@@ -7,9 +7,9 @@ from efootprint.abstract_modeling_classes.object_linked_to_modeling_obj import (
     ObjectLinkedToModelingObj, ObjectLinkedToModelingObjBase)
 from efootprint.abstract_modeling_classes.empty_explainable_object import EmptyExplainableObject
 from efootprint.abstract_modeling_classes.modeling_object import (
-    ModelingObject, pull_guard_slots, pull_invalidated_slots)
+    ModelingObject, get_instance_attributes, pull_guard_slots, pull_invalidated_slots)
 from efootprint.abstract_modeling_classes.reactive_core import (
-    collect_invalidated_slots, invalidate, prune_stale_computed_dict_keys, slot_of_attached_value)
+    collect_invalidated_slots, computed_slots, invalidate, prune_stale_computed_dict_keys, slot_of_attached_value)
 from efootprint.logger import logger
 
 
@@ -36,6 +36,7 @@ class ModelingUpdate:
         self.eager_outputs = eager_outputs
         self.changes_list = changes_list
         self.parse_changes_list()
+        self.newly_linked_mod_objs = self.collect_newly_linked_mod_objs()
 
         self.changed_slots = [slot_of_attached_value(old_value) for old_value, new_value in self.changes_list]
 
@@ -125,14 +126,60 @@ class ModelingUpdate:
         for old_value, new_value in self.changes_list:
             old_value.replace_in_mod_obj_container_without_recomputation(new_value)
 
+    def collect_newly_linked_mod_objs(self) -> list:
+        """The ModelingObjects the changes link into the model — a replaced single link, added list
+        members, added dict keys — expanded with everything they point to, since a newly attached
+        object can bring a whole subtree whose slots have never been computed."""
+        from efootprint.abstract_modeling_classes.explainable_object_dict import ExplainableObjectDict
+
+        def unwrap(value):
+            return value._value if isinstance(value, ContextualModelingObjectAttribute) else value
+
+        directly_added = []
+        for old_value, new_value in self.changes_list:
+            if isinstance(new_value, ContextualModelingObjectAttribute):
+                directly_added.append(unwrap(new_value))
+            elif isinstance(new_value, list):
+                old_ids = {elt.id for elt in old_value} if isinstance(old_value, list) else set()
+                directly_added += [unwrap(elt) for elt in new_value if elt.id not in old_ids]
+            elif isinstance(new_value, ExplainableObjectDict):
+                old_ids = {key.id for key in dict.keys(old_value)
+                           if isinstance(key, ModelingObject)} if isinstance(old_value, dict) else set()
+                directly_added += [unwrap(key) for key in dict.keys(new_value)
+                                   if isinstance(key, ModelingObject) and key.id not in old_ids]
+
+        collected = {}
+        objects_to_visit = directly_added
+        while objects_to_visit:
+            mod_obj = objects_to_visit.pop()
+            if mod_obj.id in collected:
+                continue
+            collected[mod_obj.id] = mod_obj
+            objects_to_visit += [unwrap(linked_obj) for linked_obj in mod_obj.mod_obj_attributes]
+            for dict_attr in get_instance_attributes(mod_obj, ExplainableObjectDict).values():
+                objects_to_visit += [unwrap(key) for key in dict.keys(dict_attr) if isinstance(key, ModelingObject)]
+        return list(collected.values())
+
+    def pull_guard_slots_of_newly_linked_objects(self):
+        """Guard slots exist to reject invalid states, but a newly linked object's guards have never
+        been computed: they have no dependency edges yet, so no invalidation wave can reach them and
+        neither the wave-visited guard pull nor the footprint cone would run them. Pull them all
+        explicitly (already-cached ones return instantly), so an invalid new link fails at update
+        time exactly like an invalid input edit."""
+        for mod_obj in self.newly_linked_mod_objs:
+            for name, descriptor in computed_slots(mod_obj.efootprint_class).items():
+                if descriptor.guard or name.endswith("_validation"):
+                    getattr(mod_obj, name)
+
     def pull_eagerly(self, visited_slots) -> int:
-        """Recompute the invalidated validation slots, then the eager outputs: the configured
-        (object, attribute) pairs, or by default the affected system's total footprint. A change on
-        objects linked to no system falls back to recomputing the whole invalidated cone — there is
-        no footprint to pull errors through, and detached subgraphs are small. Returns the number of
-        slots voided by the wave."""
+        """Recompute the invalidated validation slots (plus every guard slot of newly linked
+        objects), then the eager outputs: the configured (object, attribute) pairs, or by default
+        the affected system's total footprint. A change on objects linked to no system falls back to
+        recomputing the whole invalidated cone — there is no footprint to pull errors through, and
+        detached subgraphs are small. Returns the number of slots voided by the wave."""
         prune_stale_computed_dict_keys(visited_slots)
         pull_guard_slots(visited_slots)
+        self.pull_guard_slots_of_newly_linked_objects()
         if self.eager_outputs is not None:
             for mod_obj, attr_name in self.eager_outputs:
                 getattr(mod_obj, attr_name)
@@ -145,6 +192,9 @@ class ModelingUpdate:
     def rollback(self):
         """Restore the inputs and relationships, invalidate again, and recompute the restored state so
         the model stays fully cached and consistent after a rejected update."""
+        # The rejected links are undone: their objects are detached again, so re-pulling their guard
+        # slots would re-raise the very error being rolled back.
+        self.newly_linked_mod_objs = []
         with collect_invalidated_slots() as visited_slots:
             for old_value, new_value in self.changes_list:
                 new_value.replace_in_mod_obj_container_without_recomputation(old_value)
