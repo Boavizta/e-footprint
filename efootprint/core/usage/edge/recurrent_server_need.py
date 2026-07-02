@@ -11,6 +11,7 @@ from efootprint.core.hardware.edge.edge_device import EdgeDevice
 from efootprint.abstract_modeling_classes.explainable_recurrent_quantities import ExplainableRecurrentQuantities
 from efootprint.core.usage.job import JobBase
 from efootprint.constants.units import u
+from efootprint.abstract_modeling_classes.reactive_core import computed_attribute, computed_dict
 
 if TYPE_CHECKING:
     from efootprint.core.usage.edge.edge_function import EdgeFunction
@@ -84,7 +85,8 @@ class RecurrentServerNeed(ModelingObject):
         ["recurrent_need_validation", "unitary_hourly_volume_per_usage_pattern"]
         + ModelingObject.calculated_attributes)
 
-    def update_recurrent_need_validation(self):
+    @computed_attribute
+    def recurrent_need_validation(self):
         """Validates that the recurrent volume is expressed in occurrences and is non-negative; raises a typed error otherwise."""
         assert self.recurrent_volume_per_edge_device.unit == u.occurrence, \
             (f"RecurrentServerNeed '{self.name}' has invalid unit '{self.recurrent_volume_per_edge_device.unit}', "
@@ -92,10 +94,12 @@ class RecurrentServerNeed(ModelingObject):
         min_value = np.min(self.recurrent_volume_per_edge_device.magnitude)
         if min_value < 0:
             raise NegativeServerNeedError(self.name, min_value)
-        self.recurrent_need_validation = self.recurrent_volume_per_edge_device.copy().set_label(
+        return self.recurrent_volume_per_edge_device.copy().set_label(
             "Validated recurrent need")
         
-    def update_dict_element_in_unitary_hourly_volume_per_usage_pattern(self, usage_pattern: "EdgeUsagePattern"):
+    @computed_dict(keys="edge_usage_patterns")
+    def unitary_hourly_volume_per_usage_pattern(self, usage_pattern: "EdgeUsagePattern"):
+        """Hourly job-trigger volume for one edge device in each usage pattern, derived by replaying the typical-week pattern in the country's timezone and scaling by how many times the need appears in the journey."""
         unitary_hourly_volume = self.recurrent_volume_per_edge_device.generate_hourly_quantities_over_timespan(
             usage_pattern.edge_usage_journey.nb_edge_usage_journeys_in_parallel_per_edge_usage_pattern[usage_pattern],
             usage_pattern.country.timezone)
@@ -110,11 +114,5 @@ class RecurrentServerNeed(ModelingObject):
 
         unitary_hourly_volume *= ExplainableQuantity(nb_of_occurrences_of_self_within_usage_pattern * u.dimensionless,
                                                    label=f"Occurrences within {usage_pattern.name}")
-        self.unitary_hourly_volume_per_usage_pattern[usage_pattern] = unitary_hourly_volume.set_label(
+        return unitary_hourly_volume.set_label(
             f"Unitary hourly need for {usage_pattern.name}")
-
-    def update_unitary_hourly_volume_per_usage_pattern(self):
-        """Hourly job-trigger volume for one edge device in each usage pattern, derived by replaying the typical-week pattern in the country's timezone and scaling by how many times the need appears in the journey."""
-        self.unitary_hourly_volume_per_usage_pattern = ExplainableObjectDict()
-        for usage_pattern in self.edge_usage_patterns:
-            self.update_dict_element_in_unitary_hourly_volume_per_usage_pattern(usage_pattern)

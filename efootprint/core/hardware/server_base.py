@@ -18,6 +18,7 @@ from efootprint.core.lifecycle_phases import LifeCyclePhases
 from efootprint.abstract_modeling_classes.source_objects import SOURCE_VALUE_DEFAULT_NAME, SourceObject
 from efootprint.constants.units import u
 from efootprint.core.hardware.storage import Storage
+from efootprint.abstract_modeling_classes.reactive_core import computed_attribute, ReverseCollection
 
 if TYPE_CHECKING:
     from efootprint.core.usage.job import JobBase, DirectServerJob
@@ -216,21 +217,12 @@ class ServerBase(InfraHardware):
     def resources_unit_dict(self):
         return {"ram": "GB_ram", "compute": self.compute_type}
 
+    direct_jobs = ReverseCollection("DirectServerJob")
+    installed_services = ReverseCollection("Service")
+
     @property
     def jobs(self) -> List["JobBase"]:
-        from efootprint.core.usage.job import DirectServerJob
-
-        return (
-            [modeling_obj for modeling_obj in self.modeling_obj_containers if isinstance(modeling_obj, DirectServerJob)]
-            + sum([service.jobs for service in self.installed_services], [])
-            )
-
-
-    @property
-    def installed_services(self) -> List["Service"]:
-        from efootprint.builders.services.service_base_class import Service
-
-        return [modeling_obj for modeling_obj in self.modeling_obj_containers if isinstance(modeling_obj, Service)]
+        return self.direct_jobs + sum([service.jobs for service in self.installed_services], [])
 
     def compute_hour_by_hour_resource_need(self, resource):
         resource_unit = u(self.resources_unit_dict[resource])
@@ -241,27 +233,32 @@ class ServerBase(InfraHardware):
 
         return hour_by_hour_resource_needs.to(resource_unit).set_label(f"Hour by hour {resource} need")
 
-    def update_hour_by_hour_ram_need(self):
+    @computed_attribute
+    def hour_by_hour_ram_need(self):
         """Hourly RAM demand placed on the server by all of its jobs combined."""
-        self.hour_by_hour_ram_need = self.compute_hour_by_hour_resource_need("ram")
+        return self.compute_hour_by_hour_resource_need("ram")
 
-    def update_hour_by_hour_compute_need(self):
+    @computed_attribute
+    def hour_by_hour_compute_need(self):
         """Hourly compute demand placed on the server by all of its jobs combined."""
-        self.hour_by_hour_compute_need = self.compute_hour_by_hour_resource_need("compute")
+        return self.compute_hour_by_hour_resource_need("compute")
 
-    def update_occupied_ram_per_instance(self):
+    @computed_attribute
+    def occupied_ram_per_instance(self):
         """RAM that is permanently occupied on each instance, summing the server's own base consumption with the base consumption of every installed service."""
-        self.occupied_ram_per_instance = (self.base_ram_consumption + sum(
+        return (self.base_ram_consumption + sum(
             [service.base_ram_consumption for service in self.installed_services])).to(u.GB_ram).set_label(
             f"Occupied RAM per instance including services")
 
-    def update_occupied_compute_per_instance(self):
+    @computed_attribute
+    def occupied_compute_per_instance(self):
         """Compute that is permanently occupied on each instance, summing the server's own base consumption with the base consumption of every installed service."""
-        self.occupied_compute_per_instance = (self.base_compute_consumption + sum(
+        return (self.base_compute_consumption + sum(
             [service.base_compute_consumption for service in self.installed_services])).set_label(
             f"Occupied CPU per instance including services")
 
-    def update_available_ram_per_instance(self):
+    @computed_attribute
+    def available_ram_per_instance(self):
         """RAM each instance has left for jobs after applying the utilization rate and subtracting RAM occupied by installed services."""
         available_ram_per_instance_before_services_installation = (self.ram * self.utilization_rate).to(u.GB_ram)
         available_ram_per_instance = (
@@ -270,10 +267,11 @@ class ServerBase(InfraHardware):
             raise InsufficientCapacityError(
                 self, "RAM", available_ram_per_instance_before_services_installation, self.occupied_ram_per_instance)
 
-        self.available_ram_per_instance = available_ram_per_instance.set_label(
+        return available_ram_per_instance.set_label(
             f"Available RAM per instance")
 
-    def update_available_compute_per_instance(self):
+    @computed_attribute
+    def available_compute_per_instance(self):
         """Compute each instance has left for jobs after applying the utilization rate and subtracting compute occupied by installed services."""
         available_compute_per_instance_before_services_installation = self.compute * self.utilization_rate
         available_compute_per_instance = (
@@ -283,10 +281,11 @@ class ServerBase(InfraHardware):
                 self, "compute", available_compute_per_instance_before_services_installation,
                 self.occupied_compute_per_instance)
 
-        self.available_compute_per_instance = available_compute_per_instance.set_label(
+        return available_compute_per_instance.set_label(
             f"Available CPU per instance")
 
-    def update_raw_nb_of_instances(self):
+    @computed_attribute
+    def raw_nb_of_instances(self):
         """Hourly number of instances strictly required to serve hourly demand, taking the maximum across the RAM and compute dimensions, before rounding to whole instances."""
         nb_of_servers_based_on_ram_alone = (
                 self.hour_by_hour_ram_need / self.available_ram_per_instance).to(u.concurrent).set_label(
@@ -300,7 +299,7 @@ class ServerBase(InfraHardware):
         hour_by_hour_raw_nb_of_instances = nb_of_servers_raw.set_label(
             f"Hourly raw number of instances")
 
-        self.raw_nb_of_instances = hour_by_hour_raw_nb_of_instances
+        return hour_by_hour_raw_nb_of_instances
 
     @property
     def energy_spent_by_one_idle_instance_over_one_hour(self):
@@ -311,48 +310,52 @@ class ServerBase(InfraHardware):
         return ((self.power - self.idle_power) * self.power_usage_effectiveness
                 * ExplainableQuantity(1 * u.hour, "one hour"))
 
-    def update_instances_energy(self):
+    @computed_attribute
+    def instances_energy(self):
         """Hourly energy consumed by all running instances, decomposed into idle baseline energy plus the extra energy drawn while serving load, with PUE applied."""
         server_energy = (
                 self.energy_spent_by_one_idle_instance_over_one_hour * self.nb_of_instances
                 + self.extra_energy_spent_by_one_fully_active_instance_over_one_hour * self.raw_nb_of_instances)
 
-        self.instances_energy = server_energy.to(u.kWh).set_label(f"Hourly energy consumed by instances")
+        return server_energy.to(u.kWh).set_label(f"Hourly energy consumed by instances")
 
-    def update_idle_energy_footprint(self):
+    @computed_attribute
+    def idle_energy_footprint(self):
         """Hourly carbon emissions of the idle baseline energy drawn by all provisioned instances (idle power times PUE times number of instances times grid carbon intensity) — the usage-phase component that rides the provisioned attribution stream."""
         idle_energy_footprint = (
                 self.energy_spent_by_one_idle_instance_over_one_hour * self.nb_of_instances
                 * self.average_carbon_intensity)
 
-        self.idle_energy_footprint = idle_energy_footprint.to(u.kg).set_label(f"Hourly idle energy footprint")
+        return idle_energy_footprint.to(u.kg).set_label(f"Hourly idle energy footprint")
 
-    def update_load_energy_footprint(self):
+    @computed_attribute
+    def load_energy_footprint(self):
         """Hourly carbon emissions of the extra energy drawn while serving load (power above idle times PUE times raw number of instances times grid carbon intensity) — the usage-phase component that rides the dynamic attribution stream."""
         load_energy_footprint = (
                 self.extra_energy_spent_by_one_fully_active_instance_over_one_hour * self.raw_nb_of_instances
                 * self.average_carbon_intensity)
 
-        self.load_energy_footprint = load_energy_footprint.to(u.kg).set_label(f"Hourly load energy footprint")
+        return load_energy_footprint.to(u.kg).set_label(f"Hourly load energy footprint")
 
-    def update_energy_footprint(self):
+    @computed_attribute
+    def energy_footprint(self):
         """Hourly carbon emissions caused by the electricity consumed by the server, equal to the sum of its idle and load energy footprints."""
-        self.energy_footprint = (self.idle_energy_footprint + self.load_energy_footprint).to(u.kg).set_label(
+        return (self.idle_energy_footprint + self.load_energy_footprint).to(u.kg).set_label(
             f"Hourly energy footprint")
 
-    def autoscaling_update_nb_of_instances(self):
+    def _autoscaling_nb_of_instances(self):
         hour_by_hour_nb_of_instances = self.raw_nb_of_instances.ceil()
 
-        self.nb_of_instances = hour_by_hour_nb_of_instances.generate_explainable_object_with_logical_dependency(
+        return hour_by_hour_nb_of_instances.generate_explainable_object_with_logical_dependency(
             self.server_type).set_label(f"Hourly number of instances")
 
-    def serverless_update_nb_of_instances(self):
+    def _serverless_nb_of_instances(self):
         hour_by_hour_nb_of_instances = self.raw_nb_of_instances.copy()
 
-        self.nb_of_instances = hour_by_hour_nb_of_instances.generate_explainable_object_with_logical_dependency(
+        return hour_by_hour_nb_of_instances.generate_explainable_object_with_logical_dependency(
             self.server_type).set_label(f"Hourly number of instances")
 
-    def on_premise_update_nb_of_instances(self):
+    def _on_premise_nb_of_instances(self):
         if isinstance(self.raw_nb_of_instances, EmptyExplainableObject):
             nb_of_instances = EmptyExplainableObject(left_parent=self.raw_nb_of_instances)
         else:
@@ -379,17 +382,18 @@ class ServerBase(InfraHardware):
                     left_parent=self.raw_nb_of_instances, right_parent=self.fixed_nb_of_instances,
                     operator="depending on not being empty")
 
-        self.nb_of_instances = nb_of_instances.generate_explainable_object_with_logical_dependency(
+        return nb_of_instances.generate_explainable_object_with_logical_dependency(
             self.server_type).set_label(f"Hourly number of instances")
 
-    def update_nb_of_instances(self):
+    @computed_attribute
+    def nb_of_instances(self):
         """Hourly number of instances actually billed, computed differently per server type: ceiled to whole instances for autoscaling, mirrored from raw demand for serverless, and held flat at peak (or the user-fixed count) for on-premise."""
         logic_mapping = {
-            ServerTypes.autoscaling(): self.autoscaling_update_nb_of_instances,
-            ServerTypes.on_premise(): self.on_premise_update_nb_of_instances,
-            ServerTypes.serverless(): self.serverless_update_nb_of_instances
+            ServerTypes.autoscaling(): self._autoscaling_nb_of_instances,
+            ServerTypes.on_premise(): self._on_premise_nb_of_instances,
+            ServerTypes.serverless(): self._serverless_nb_of_instances
         }
-        logic_mapping[self.server_type]()
+        return logic_mapping[self.server_type]()
 
     @cached_property
     def service_total_job_volumes(self) -> dict:

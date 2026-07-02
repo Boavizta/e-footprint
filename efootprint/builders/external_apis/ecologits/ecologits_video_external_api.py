@@ -14,7 +14,7 @@ from efootprint.abstract_modeling_classes.explainable_object_base_class import E
 from efootprint.abstract_modeling_classes.explainable_quantity import ExplainableQuantity
 from efootprint.abstract_modeling_classes.source_objects import SourceObject, SourceValue
 from efootprint.builders.external_apis.ecologits.ecologits_utils import (
-    ECOLOGITS_VIDEO_DEPENDENCY_GRAPH, create_update_method_for_ecologits_attribute, mean_value_or_range)
+    ECOLOGITS_VIDEO_DEPENDENCY_GRAPH, create_getter_for_ecologits_attribute, mean_value_or_range)
 from efootprint.builders.external_apis.ecologits.ecologits_external_api_server_base import (
     EcoLogitsExternalAPIServerBase)
 from efootprint.builders.external_apis.ecologits.ecologits_unit_mapping import ECOLOGITS_UNIT_MAPPING
@@ -22,6 +22,7 @@ from efootprint.builders.external_apis.external_api_base_class import ExternalAP
 from efootprint.builders.external_apis.external_api_job_base_class import ExternalAPIJob
 from efootprint.constants.sources import Sources
 from efootprint.constants.units import u
+from efootprint.abstract_modeling_classes.reactive_core import add_computed_attribute, computed_attribute
 
 
 ecologits_video_defaults_source = Source(
@@ -119,10 +120,11 @@ class EcoLogitsVideoGenExternalAPI(ExternalAPI):
     calculated_attributes: List[str] = ExternalAPI.calculated_attributes + [
         "datacenter_location", "data_center_pue", "average_carbon_intensity"]
 
-    def update_datacenter_location(self) -> None:
+    @computed_attribute
+    def datacenter_location(self):
         """Geographic zone where the provider's datacenter runs, looked up in the EcoLogits video provider config. Drives which electricity mix is applied."""
         datacenter_location = _PROVIDER_CONFIGURATIONS[self.provider.value]["datacenter_location"]
-        self.datacenter_location = ExplainableObject(
+        return ExplainableObject(
             datacenter_location,
             f"Datacenter location for {self.provider}",
             left_parent=self.provider,
@@ -130,11 +132,12 @@ class EcoLogitsVideoGenExternalAPI(ExternalAPI):
             source=ecologits_video_defaults_source,
         )
 
-    def update_data_center_pue(self) -> None:
+    @computed_attribute
+    def data_center_pue(self):
         """Power Usage Effectiveness of the provider's datacenter, looked up in the EcoLogits video provider config."""
         datacenter_pue = mean_value_or_range(
             parse_value_or_range(_PROVIDER_CONFIGURATIONS[self.provider.value]["datacenter_pue"]))
-        self.data_center_pue = ExplainableQuantity(
+        return ExplainableQuantity(
             datacenter_pue * u.dimensionless,
             f"Datacenter PUE for {self.provider}",
             left_parent=self.provider,
@@ -142,13 +145,14 @@ class EcoLogitsVideoGenExternalAPI(ExternalAPI):
             source=ecologits_video_defaults_source,
         )
 
-    def update_average_carbon_intensity(self) -> None:
+    @computed_attribute
+    def average_carbon_intensity(self):
         """Average grid carbon intensity at the datacenter location, looked up in the EcoLogits electricity mix repository."""
         electricity_mix_zone = self.datacenter_location.value
         if_electricity_mix = electricity_mixes.find_electricity_mix(zone=electricity_mix_zone)
         if if_electricity_mix is None:
             raise ValueError(f"Could not find electricity mix for `{electricity_mix_zone}` zone.")
-        self.average_carbon_intensity = ExplainableQuantity(
+        return ExplainableQuantity(
             if_electricity_mix.gwp * ECOLOGITS_UNIT_MAPPING["if_electricity_mix_gwp"],
             f"Average carbon intensity of electricity mix for {self.provider}",
             left_parent=self.datacenter_location,
@@ -212,7 +216,8 @@ class EcoLogitsVideoGenExternalAPIJob(ExternalAPIJob):
         + ExternalAPIJob.calculated_attributes
         + ["hourly_occurrences_across_usage_patterns"])
 
-    def update_data_transferred(self):
+    @computed_attribute
+    def data_transferred(self):
         """Data transferred per call, estimated as duration × bits_per_pixel × pixel_count × fps. The bits_per_pixel and fps values are local hypotheses constructed fresh inside this method so they don't become shared nodes across the calculation graph."""
         bits_per_pixel = ExplainableQuantity(0.1 * u.bit, "Bits per pixel", source=Sources.HYPOTHESIS)
         fps = ExplainableQuantity(24 / u.s, "Frames per second", source=Sources.HYPOTHESIS)
@@ -220,16 +225,18 @@ class EcoLogitsVideoGenExternalAPIJob(ExternalAPIJob):
         pixel_count = ExplainableQuantity(
             width * height * u.dimensionless, f"pixel count for resolution {self.resolution}",
             left_parent=self.resolution, operator="pixel count computation")
-        self.data_transferred = (self.duration * bits_per_pixel * pixel_count * fps).to(u.MB).set_label(
+        return (self.duration * bits_per_pixel * pixel_count * fps).to(u.MB).set_label(
             f"Data transferred for {self.external_api.model_name}")
 
-    def update_request_duration(self):
+    @computed_attribute
+    def request_duration(self):
         """Request duration of one call, equal to the generation latency derived from EcoLogits."""
-        self.request_duration = self.generation_latency.copy()
+        return self.generation_latency.copy()
 
-    def update_hourly_occurrences_across_usage_patterns(self):
+    @computed_attribute
+    def hourly_occurrences_across_usage_patterns(self):
         """Hourly count of occurrences of this job summed across all usage patterns that trigger it."""
-        self.hourly_occurrences_across_usage_patterns = self.sum_calculated_attribute_across_usage_patterns(
+        return self.sum_calculated_attribute_across_usage_patterns(
             "hourly_occurrences_per_usage_pattern", "occurrences")
 
     def _resolve_model_info(self) -> dict:
@@ -239,7 +246,8 @@ class EcoLogitsVideoGenExternalAPIJob(ExternalAPIJob):
             raise ValueError(f"Could not find video model `{slug}` in EcoLogits video catalog.")
         return info
 
-    def update_impacts(self) -> None:
+    @computed_attribute
+    def impacts(self):
         """Cached EcoLogits video impact dictionary for one call, computed by running the EcoLogits video DAG against the chosen model, resolution, duration, audio flag, and datacenter assumptions. Subsequent updates extract individual fields from this dictionary."""
         # Local datacenter_wue: feeds water only (out of GWP scope) and must not become a shared graph node.
         datacenter_wue = mean_value_or_range(
@@ -312,9 +320,9 @@ class EcoLogitsVideoGenExternalAPIJob(ExternalAPIJob):
             self.external_api.provider).generate_explainable_object_with_logical_dependency(
             self.external_api.model_name)
         impacts_dict.source = compute_video_impacts_dag_source
-        self.impacts = impacts_dict
+        return impacts_dict
 
 
 for attr_name in ecologits_video_calculated_attributes:
-    setattr(EcoLogitsVideoGenExternalAPIJob, f"update_{attr_name}", create_update_method_for_ecologits_attribute(
+    add_computed_attribute(EcoLogitsVideoGenExternalAPIJob, attr_name, create_getter_for_ecologits_attribute(
         attr_name, ECOLOGITS_VIDEO_DEPENDENCY_GRAPH, video_dag, compute_video_impacts_dag_source))

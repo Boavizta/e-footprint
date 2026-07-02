@@ -17,6 +17,7 @@ from efootprint.core.hardware.server import Server
 from efootprint.core.hardware.server_base import ServerTypes
 from efootprint.core.hardware.storage import Storage
 from efootprint.logger import logger
+from efootprint.abstract_modeling_classes.reactive_core import computed_attribute
 
 # Provider / instance-type enums are loaded from a bundled snapshot instead of the live Boavizta
 # API so that importing this module never makes a network call. Refresh the snapshot with
@@ -108,26 +109,29 @@ class BoaviztaCloudServer(Server):
     def attributes_that_shouldnt_trigger_update_logic(self):
         return super().attributes_that_shouldnt_trigger_update_logic + ["impact_url"]
 
-    def update_api_call_response(self):
+    @computed_attribute
+    def api_call_response(self):
         """Cached response from the Boavizta cloud-instance API for the chosen provider and instance type. Provides the impact and verbose hardware specification used by all subsequent updates."""
         params = {"provider": self.provider.value, "instance_type": self.instance_type.value}
         impact_source = Source(name="Boavizta API cloud instances",
                                link=f"{self.impact_url}?{'&'.join([key + '=' + params[key] for key in params])}")
 
         call_response = call_boaviztapi(url=self.impact_url, params=params)
-        self.api_call_response = ExplainableDict(
+        return ExplainableDict(
             call_response, "API call response",
             left_parent=self.provider, right_parent=self.instance_type, operator="combined in Boavizta API call with",
             source=impact_source)
 
-    def update_carbon_footprint_fabrication(self):
+    @computed_attribute
+    def carbon_footprint_fabrication(self):
         """Embodied carbon of one instance, taken from the Boavizta API response (embedded GWP impact)."""
-        self.carbon_footprint_fabrication = ExplainableQuantity(
+        return ExplainableQuantity(
             float(self.api_call_response.value["impacts"]["gwp"]["embedded"]["value"]) * u.kg,
             "Fabrication carbon footprint", left_parent=self.api_call_response,
             operator="data extraction from", source=self.api_call_response.source)
 
-    def update_power(self):
+    @computed_attribute
+    def power(self):
         """Average power drawn by one instance, taken from the Boavizta API response."""
         average_power_unit = self.api_call_response.value["verbose"]["avg_power"]["unit"]
         use_time_ratio = self.api_call_response.value["verbose"]["use_time_ratio"]["value"]
@@ -135,25 +139,27 @@ class BoaviztaCloudServer(Server):
         assert float(use_time_ratio) == 1, f"Unexpected use time ratio {use_time_ratio}"
         average_power_value = float(self.api_call_response.value["verbose"]["avg_power"]["value"])
 
-        self.power = ExplainableQuantity(
+        return ExplainableQuantity(
             average_power_value * u.W, "Power", left_parent=self.api_call_response,
             operator="data extraction from", source=self.api_call_response.source)
 
-    def update_ram(self):
+    @computed_attribute
+    def ram(self):
         """Memory of one instance, taken from the Boavizta API response."""
         assert self.api_call_response.value["verbose"]["memory"]["unit"] == "GB", \
             f"Unexpected RAM unit {self.api_call_response.value['verbose']['memory']['unit']}"
         ram_spec = float(self.api_call_response.value["verbose"]["memory"]["value"])
 
-        self.ram = ExplainableQuantity(
+        return ExplainableQuantity(
             ram_spec * u.GB_ram, "RAM",
             left_parent=self.api_call_response, operator="data extraction from", source=self.api_call_response.source)
 
-    def update_compute(self):
+    @computed_attribute
+    def compute(self):
         """Number of vCPU cores on one instance, taken from the Boavizta API response."""
         nb_vcpu = float(self.api_call_response.value["verbose"]["vcpu"]["value"])
 
-        self.compute = ExplainableQuantity(
+        return ExplainableQuantity(
             nb_vcpu * u.cpu_core, "Compute",
             left_parent=self.api_call_response, operator="data extraction from", source=self.api_call_response.source)
 

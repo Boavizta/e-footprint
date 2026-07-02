@@ -4,6 +4,7 @@ from efootprint.abstract_modeling_classes.source_objects import SourceValue
 from efootprint.constants.units import u
 from efootprint.core.hardware.edge.edge_device import EdgeDevice
 from efootprint.core.hardware.edge.edge_workload_component import EdgeWorkloadComponent
+from efootprint.abstract_modeling_classes.reactive_core import computed_attribute
 
 
 class EdgeApplianceComponent(EdgeWorkloadComponent):
@@ -23,29 +24,29 @@ class EdgeApplianceComponent(EdgeWorkloadComponent):
     calculated_attributes = (
         ["power_per_unit", "idle_power_per_unit", "lifespan"] + EdgeWorkloadComponent.calculated_attributes)
 
-    def update_power_per_unit(self):
+    @computed_attribute
+    def power_per_unit(self):
         """Power per unit, copied from the parent {class:EdgeAppliance}'s power."""
         edge_device = self.edge_device
         if edge_device:
-            self.power_per_unit = edge_device.power.copy().set_label(f"Power per unit")
-        else:
-            self.power_per_unit = EmptyExplainableObject()
+            return edge_device.power.copy().set_label(f"Power per unit")
+        return EmptyExplainableObject()
 
-    def update_idle_power_per_unit(self):
+    @computed_attribute
+    def idle_power_per_unit(self):
         """Idle power per unit, copied from the parent {class:EdgeAppliance}'s idle power."""
         edge_device = self.edge_device
         if edge_device:
-            self.idle_power_per_unit = edge_device.idle_power.copy().set_label(f"Idle power per unit")
-        else:
-            self.idle_power_per_unit = EmptyExplainableObject()
+            return edge_device.idle_power.copy().set_label(f"Idle power per unit")
+        return EmptyExplainableObject()
 
-    def update_lifespan(self):
+    @computed_attribute
+    def lifespan(self):
         """Lifespan, copied from the parent {class:EdgeAppliance}'s lifespan."""
         edge_device = self.edge_device
         if edge_device:
-            self.lifespan = edge_device.lifespan.copy().set_label(f"Lifespan")
-        else:
-            self.lifespan = EmptyExplainableObject()
+            return edge_device.lifespan.copy().set_label(f"Lifespan")
+        return EmptyExplainableObject()
 
 
 class EdgeAppliance(EdgeDevice):
@@ -87,9 +88,10 @@ class EdgeAppliance(EdgeDevice):
 
     calculated_attributes = ["structure_carbon_footprint_fabrication"] + EdgeDevice.calculated_attributes
 
-    def update_structure_carbon_footprint_fabrication(self):
+    @computed_attribute
+    def structure_carbon_footprint_fabrication(self):
         """Structure fabrication footprint of the appliance, copied from the appliance's own fabrication footprint since there are no separate component fabrication contributions."""
-        self.structure_carbon_footprint_fabrication = self.carbon_footprint_fabrication.copy().set_label(
+        return self.carbon_footprint_fabrication.copy().set_label(
             f"Structure fabrication carbon footprint")
 
     def after_init(self):

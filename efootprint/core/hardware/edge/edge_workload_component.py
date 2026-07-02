@@ -7,6 +7,7 @@ from efootprint.abstract_modeling_classes.source_objects import SourceValue
 from efootprint.constants.units import u
 from efootprint.core.hardware.edge.edge_component import EdgeComponent
 from efootprint.core.usage.edge.recurrent_edge_component_need import RecurrentEdgeComponentNeed
+from efootprint.abstract_modeling_classes.reactive_core import computed_dict
 
 if TYPE_CHECKING:
     from efootprint.core.usage.edge.edge_usage_pattern import EdgeUsagePattern
@@ -42,7 +43,9 @@ class EdgeWorkloadComponent(EdgeComponent):
 
     calculated_attributes = ["unitary_hourly_workload_per_usage_pattern"] + EdgeComponent.calculated_attributes
 
-    def update_dict_element_in_unitary_hourly_workload_per_usage_pattern(self, usage_pattern: "EdgeUsagePattern"):
+    @computed_dict(keys="edge_usage_patterns")
+    def unitary_hourly_workload_per_usage_pattern(self, usage_pattern: "EdgeUsagePattern"):
+        """Hourly workload (between 0 and 1) on one component, broken down by usage pattern. Raises error if aggregated workload exceeds 1."""
         unitary_hourly_workload = sum(
             [need.unitary_hourly_need_per_usage_pattern[usage_pattern]
              for need in self.recurrent_edge_component_needs if usage_pattern in need.edge_usage_patterns],
@@ -52,20 +55,16 @@ class EdgeWorkloadComponent(EdgeComponent):
             RecurrentEdgeComponentNeed.assert_recurrent_workload_is_between_0_and_1(
                 unitary_hourly_workload, f"Aggregated workload for {usage_pattern.name}")
 
-        self.unitary_hourly_workload_per_usage_pattern[usage_pattern] = unitary_hourly_workload.set_label(
+        return unitary_hourly_workload.set_label(
             f"Hourly workload for {usage_pattern.name}")
-
-    def update_unitary_hourly_workload_per_usage_pattern(self):
-        """Hourly workload (between 0 and 1) on one component, broken down by usage pattern. Raises error if aggregated workload exceeds 1."""
-        self.unitary_hourly_workload_per_usage_pattern = ExplainableObjectDict()
-        for usage_pattern in self.edge_usage_patterns:
-            self.update_dict_element_in_unitary_hourly_workload_per_usage_pattern(usage_pattern)
 
     @property
     def unitary_power_at_zero_recurrent_need(self) -> ExplainableQuantity:
         return self.idle_power
 
-    def update_dict_element_in_unitary_power_per_usage_pattern(self, usage_pattern: "EdgeUsagePattern"):
+    @computed_dict(keys="edge_usage_patterns")
+    def unitary_power_per_usage_pattern(self, usage_pattern: "EdgeUsagePattern"):
+        """Hourly power profile of the component for one device, linearly interpolated between idle and full power based on the workload."""
         if usage_pattern in self.unitary_hourly_workload_per_usage_pattern:
             workload = self.unitary_hourly_workload_per_usage_pattern[usage_pattern]
         else:
@@ -76,11 +75,5 @@ class EdgeWorkloadComponent(EdgeComponent):
         else:
             unitary_power = self.idle_power + (self.power - self.idle_power) * workload
 
-        self.unitary_power_per_usage_pattern[usage_pattern] = unitary_power.set_label(
+        return unitary_power.set_label(
             f"Unitary power for {usage_pattern.name}")
-
-    def update_unitary_power_per_usage_pattern(self):
-        """Hourly power profile of the component for one device, linearly interpolated between idle and full power based on the workload."""
-        self.unitary_power_per_usage_pattern = ExplainableObjectDict()
-        for usage_pattern in self.edge_usage_patterns:
-            self.update_dict_element_in_unitary_power_per_usage_pattern(usage_pattern)

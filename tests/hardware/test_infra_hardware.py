@@ -3,6 +3,7 @@ from unittest import TestCase
 import numpy as np
 
 from efootprint.abstract_modeling_classes.explainable_quantity import ExplainableQuantity
+from efootprint.abstract_modeling_classes.reactive_core import computed_attribute
 from efootprint.core.hardware.infra_hardware import InfraHardware
 from efootprint.constants.sources import Sources
 from efootprint.abstract_modeling_classes.source_objects import SourceValue
@@ -23,14 +24,17 @@ class TestInfraHardware(TestCase):
                          power: ExplainableQuantity, lifespan: ExplainableQuantity):
                 super().__init__(name, carbon_footprint_fabrication, power, lifespan)
 
-            def update_raw_nb_of_instances(self):
-                self.raw_nb_of_instances = create_source_hourly_values_from_list([1.5, 3])
+            @computed_attribute
+            def raw_nb_of_instances(self):
+                return create_source_hourly_values_from_list([1.5, 3])
 
-            def update_nb_of_instances(self):
-                self.nb_of_instances = create_source_hourly_values_from_list([2, 3])
+            @computed_attribute
+            def nb_of_instances(self):
+                return create_source_hourly_values_from_list([2, 3])
 
-            def update_instances_energy(self):
-                self.instances_energy = create_source_hourly_values_from_list([2, 4], pint_unit=u.kWh)
+            @computed_attribute
+            def instances_energy(self):
+                return create_source_hourly_values_from_list([2, 4], pint_unit=u.kWh)
 
             def after_init(self):
                 self.trigger_modeling_updates = False

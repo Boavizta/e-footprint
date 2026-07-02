@@ -17,6 +17,7 @@ from efootprint.core.hardware.gpu_server import GPUServer
 from efootprint.core.hardware.server import Server
 from efootprint.core.hardware.server_base import ServerBase
 from efootprint.core.usage.compute_nb_occurrences_in_parallel import compute_nb_avg_hourly_occurrences
+from efootprint.abstract_modeling_classes.reactive_core import computed_attribute, computed_dict, ReverseCollection
 
 if TYPE_CHECKING:
     from efootprint.core.usage.usage_pattern import UsagePattern
@@ -112,15 +113,8 @@ class JobBase(ModelingObject):
                 "Duration in full hours")
 
     # Job objects can be referenced by UsageJourneySteps or by RecurrentServerNeeds
-    @property
-    def usage_journey_steps(self) -> List["UsageJourneyStep"]:
-        from efootprint.core.usage.usage_journey_step import UsageJourneyStep
-        return [obj for obj in self.modeling_obj_containers if isinstance(obj, UsageJourneyStep)]
-
-    @property
-    def recurrent_server_needs(self) -> List["RecurrentServerNeed"]:
-        from efootprint.core.usage.edge.recurrent_server_need import RecurrentServerNeed
-        return [obj for obj in self.modeling_obj_containers if isinstance(obj, RecurrentServerNeed)]
+    usage_journey_steps = ReverseCollection("UsageJourneyStep")
+    recurrent_server_needs = ReverseCollection("RecurrentServerNeed")
 
     @property
     def edge_usage_patterns(self) -> List["EdgeUsagePattern"]:
@@ -146,8 +140,10 @@ class JobBase(ModelingObject):
     def networks(self) -> List["Network"]:
         return list(dict.fromkeys(up.network for up in self.usage_patterns))
 
-    def update_dict_element_in_hourly_occurrences_per_usage_pattern(
+    @computed_dict(keys="usage_patterns")
+    def hourly_occurrences_per_usage_pattern(
             self, usage_pattern: "UsagePattern | EdgeUsagePattern"):
+        """Hourly count of job invocations broken down by usage pattern, derived from when each usage pattern's journeys start and at what point in the journey this job is triggered."""
         from efootprint.core.usage.usage_pattern import UsagePattern
         if isinstance(usage_pattern, UsagePattern):
             job_occurrences = EmptyExplainableObject()
@@ -173,28 +169,18 @@ class JobBase(ModelingObject):
                         nb_edge_usage_journeys_in_parallel_per_edge_usage_pattern[usage_pattern]
                         * recurrent_server_need.jobs[self])
 
-        self.hourly_occurrences_per_usage_pattern[usage_pattern] = job_occurrences.to(u.occurrence).set_label(
+        return job_occurrences.to(u.occurrence).set_label(
             f"Hourly occurrences in {usage_pattern.name}")
 
-    def update_hourly_occurrences_per_usage_pattern(self):
-        """Hourly count of job invocations broken down by usage pattern, derived from when each usage pattern's journeys start and at what point in the journey this job is triggered."""
-        self.hourly_occurrences_per_usage_pattern = ExplainableObjectDict()
-        for up in self.usage_patterns:
-            self.update_dict_element_in_hourly_occurrences_per_usage_pattern(up)
-
-    def update_dict_element_in_hourly_avg_occurrences_per_usage_pattern(
+    @computed_dict(keys="usage_patterns")
+    def hourly_avg_occurrences_per_usage_pattern(
             self, usage_pattern: "UsagePattern | EdgeUsagePattern"):
+        """Hourly count of job invocations averaged with respect to job duration, so a job that runs longer than an hour contributes a fractional occurrence to several modeling buckets."""
         hourly_avg_job_occurrences = compute_nb_avg_hourly_occurrences(
             self.hourly_occurrences_per_usage_pattern[usage_pattern], self.request_duration)
 
-        self.hourly_avg_occurrences_per_usage_pattern[usage_pattern] = hourly_avg_job_occurrences.to(u.concurrent).set_label(
+        return hourly_avg_job_occurrences.to(u.concurrent).set_label(
             f"Average hourly occurrences in {usage_pattern.name}")
-
-    def update_hourly_avg_occurrences_per_usage_pattern(self):
-        """Hourly count of job invocations averaged with respect to job duration, so a job that runs longer than an hour contributes a fractional occurrence to several modeling buckets."""
-        self.hourly_avg_occurrences_per_usage_pattern = ExplainableObjectDict()
-        for up in self.usage_patterns:
-            self.update_dict_element_in_hourly_avg_occurrences_per_usage_pattern(up)
 
     def _hourly_data_exchange_rate(self, data_exchange_type: str):
         data_exchange_type_no_underscore = data_exchange_type.replace("_", " ")
@@ -210,27 +196,19 @@ class JobBase(ModelingObject):
         return hourly_data_exchange.set_label(
                 f"Hourly {data_exchange_type.replace('_', ' ')} in {usage_pattern.name}").to(target_unit)
 
-    def update_dict_element_in_hourly_data_transferred_per_usage_pattern(
+    @computed_dict(keys="usage_patterns")
+    def hourly_data_transferred_per_usage_pattern(
             self, usage_pattern: "UsagePattern | EdgeUsagePattern"):
-        self.hourly_data_transferred_per_usage_pattern[usage_pattern] = \
+        """Hourly volume of data transferred over the network by this job, broken down by usage pattern."""
+        return \
             self.compute_hourly_data_exchange_for_usage_pattern(usage_pattern, "data_transferred")
 
-    def update_hourly_data_transferred_per_usage_pattern(self):
-        """Hourly volume of data transferred over the network by this job, broken down by usage pattern."""
-        self.hourly_data_transferred_per_usage_pattern = ExplainableObjectDict()
-        for up in self.usage_patterns:
-            self.update_dict_element_in_hourly_data_transferred_per_usage_pattern(up)
-
-    def update_dict_element_in_hourly_data_stored_per_usage_pattern(
+    @computed_dict(keys="usage_patterns")
+    def hourly_data_stored_per_usage_pattern(
             self, usage_pattern: "UsagePattern | EdgeUsagePattern"):
-        self.hourly_data_stored_per_usage_pattern[usage_pattern] = \
-            self.compute_hourly_data_exchange_for_usage_pattern(usage_pattern, "data_stored")
-
-    def update_hourly_data_stored_per_usage_pattern(self):
         """Hourly net change in storage volume caused by this job, broken down by usage pattern."""
-        self.hourly_data_stored_per_usage_pattern = ExplainableObjectDict()
-        for up in self.usage_patterns:
-            self.update_dict_element_in_hourly_data_stored_per_usage_pattern(up)
+        return \
+            self.compute_hourly_data_exchange_for_usage_pattern(usage_pattern, "data_stored")
 
     def sum_calculated_attribute_across_usage_patterns(
             self, calculated_attribute_name: str, calculated_attribute_label: str):
@@ -241,19 +219,22 @@ class JobBase(ModelingObject):
         return hourly_calc_attr_summed_across_ups.set_label(
                 f"Hourly {calculated_attribute_label} across usage patterns")
 
-    def update_hourly_avg_occurrences_across_usage_patterns(self):
+    @computed_attribute
+    def hourly_avg_occurrences_across_usage_patterns(self):
         """Total hourly count of duration-averaged job invocations summed over every usage pattern."""
-        self.hourly_avg_occurrences_across_usage_patterns = self.sum_calculated_attribute_across_usage_patterns(
+        return self.sum_calculated_attribute_across_usage_patterns(
             "hourly_avg_occurrences_per_usage_pattern", "average occurrences").to(u.concurrent)
 
-    def update_hourly_data_transferred_across_usage_patterns(self):
+    @computed_attribute
+    def hourly_data_transferred_across_usage_patterns(self):
         """Total hourly volume of data transferred over the network by this job, summed over every usage pattern."""
-        self.hourly_data_transferred_across_usage_patterns = self.sum_calculated_attribute_across_usage_patterns(
+        return self.sum_calculated_attribute_across_usage_patterns(
             "hourly_data_transferred_per_usage_pattern", "data transferred")
 
-    def update_hourly_data_stored_across_usage_patterns(self):
+    @computed_attribute
+    def hourly_data_stored_across_usage_patterns(self):
         """Total hourly net change in storage volume caused by this job, summed over every usage pattern."""
-        self.hourly_data_stored_across_usage_patterns = self.sum_calculated_attribute_across_usage_patterns(
+        return self.sum_calculated_attribute_across_usage_patterns(
             "hourly_data_stored_per_usage_pattern", "data stored")
 
     # --- Attribution-only occurrence / data primitives (consumed by the attribution atom builders, never by the

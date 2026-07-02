@@ -13,6 +13,7 @@ from efootprint.core.usage.edge.recurrent_edge_device_need import RecurrentEdgeD
 from efootprint.core.usage.edge.recurrent_edge_component_need import RecurrentEdgeComponentNeed
 from efootprint.core.usage.edge.recurrent_edge_storage_need import RecurrentEdgeStorageNeed
 from efootprint.core.hardware.edge.edge_component import EdgeComponent
+from efootprint.abstract_modeling_classes.reactive_core import computed_attribute
 
 
 class RecurrentEdgeProcessNeed(RecurrentEdgeComponentNeed):
@@ -29,8 +30,9 @@ class RecurrentEdgeProcessNeed(RecurrentEdgeComponentNeed):
 
     calculated_attributes = ["recurrent_need"] + RecurrentEdgeComponentNeed.calculated_attributes
 
+    @computed_attribute
     @abstractmethod
-    def update_recurrent_need(self):
+    def recurrent_need(self):
         pass
 
 
@@ -42,13 +44,13 @@ class RecurrentEdgeProcessRAMNeed(RecurrentEdgeProcessNeed):
             "Component on the parent {class:EdgeComputer} that this need targets."),
     }
 
-    def update_recurrent_need(self):
+    @computed_attribute
+    def recurrent_need(self):
         """Recurrent RAM need, copied from the parent {class:RecurrentEdgeProcess}'s RAM profile."""
         if not self.recurrent_edge_device_needs:
-            self.recurrent_need = SourceRecurrentValues(Quantity(np.array([0] * 168, dtype=np.float32), u.GB_ram))
-            return
+            return SourceRecurrentValues(Quantity(np.array([0] * 168, dtype=np.float32), u.GB_ram))
         recurrent_edge_device_need = self.recurrent_edge_device_needs[0]
-        self.recurrent_need = recurrent_edge_device_need.recurrent_ram_needed.copy().set_label(
+        return recurrent_edge_device_need.recurrent_ram_needed.copy().set_label(
             "Recurrent need")
 
 
@@ -60,13 +62,13 @@ class RecurrentEdgeProcessCPUNeed(RecurrentEdgeProcessNeed):
             "Component on the parent {class:EdgeComputer} that this need targets."),
     }
 
-    def update_recurrent_need(self):
+    @computed_attribute
+    def recurrent_need(self):
         """Recurrent compute need, copied from the parent {class:RecurrentEdgeProcess}'s compute profile."""
         if not self.recurrent_edge_device_needs:
-            self.recurrent_need = SourceRecurrentValues(Quantity(np.array([0] * 168, dtype=np.float32), u.cpu_core))
-            return
+            return SourceRecurrentValues(Quantity(np.array([0] * 168, dtype=np.float32), u.cpu_core))
         recurrent_edge_device_need = self.recurrent_edge_device_needs[0]
-        self.recurrent_need = recurrent_edge_device_need.recurrent_compute_needed.copy().set_label(
+        return recurrent_edge_device_need.recurrent_compute_needed.copy().set_label(
             "Recurrent need")
 
 
@@ -82,14 +84,14 @@ class RecurrentEdgeProcessStorageNeed(RecurrentEdgeProcessNeed, RecurrentEdgeSto
     # entry is preserved alongside the "recurrent_need" prepended by RecurrentEdgeProcessNeed.
     calculated_attributes = ["recurrent_need"] + RecurrentEdgeStorageNeed.calculated_attributes
 
-    def update_recurrent_need(self):
+    @computed_attribute
+    def recurrent_need(self):
         """Recurrent storage need, copied from the parent {class:RecurrentEdgeProcess}'s storage profile."""
         if not self.recurrent_edge_device_needs:
-            self.recurrent_need = SourceRecurrentValues(
+            return SourceRecurrentValues(
                 Quantity(np.array([0] * 168, dtype=np.float32), u.GB_stored))
-            return
         recurrent_edge_device_need = self.recurrent_edge_device_needs[0]
-        self.recurrent_need = recurrent_edge_device_need.recurrent_storage_needed.copy().set_label(
+        return recurrent_edge_device_need.recurrent_storage_needed.copy().set_label(
             "Recurrent need")
 
 

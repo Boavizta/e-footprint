@@ -7,6 +7,7 @@ from efootprint.abstract_modeling_classes.source_objects import SourceValue
 from efootprint.constants.units import u
 from efootprint.core.hardware.edge.edge_component import EdgeComponent
 from efootprint.core.hardware.hardware_base import InsufficientCapacityError
+from efootprint.abstract_modeling_classes.reactive_core import computed_attribute, computed_dict
 
 if TYPE_CHECKING:
     from efootprint.core.usage.edge.edge_usage_pattern import EdgeUsagePattern
@@ -53,21 +54,25 @@ class EdgeCPUComponent(EdgeComponent):
         ["compute", "available_compute_per_instance", "unitary_hourly_compute_need_per_usage_pattern"]
         + EdgeComponent.calculated_attributes)
 
-    def update_compute(self):
+    @computed_attribute
+    def compute(self):
         """Total compute provided by the CPU component, equal to per-unit compute times the number of units."""
-        self.compute = (self.compute_per_unit * self.nb_of_units).set_label(f"Compute")
+        return (self.compute_per_unit * self.nb_of_units).set_label(f"Compute")
 
-    def update_available_compute_per_instance(self):
+    @computed_attribute
+    def available_compute_per_instance(self):
         """Compute available for recurring needs after subtracting the base consumption. Raises error if the component is over-subscribed at design time."""
         available_compute_per_instance = (self.compute - self.base_compute_consumption)
 
         if available_compute_per_instance < SourceValue(0 * u.cpu_core):
             raise InsufficientCapacityError(self, "compute", self.compute, self.base_compute_consumption)
 
-        self.available_compute_per_instance = available_compute_per_instance.set_label(
+        return available_compute_per_instance.set_label(
             f"Available compute per instance")
 
-    def update_dict_element_in_unitary_hourly_compute_need_per_usage_pattern(self, usage_pattern: "EdgeUsagePattern"):
+    @computed_dict(keys="edge_usage_patterns")
+    def unitary_hourly_compute_need_per_usage_pattern(self, usage_pattern: "EdgeUsagePattern"):
+        """Hourly compute demand on one component, broken down by usage pattern. Raises error if peak demand exceeds the component's available compute."""
         unitary_hourly_compute_need = sum(
             [need.unitary_hourly_need_per_usage_pattern[usage_pattern]
              for need in self.recurrent_edge_component_needs if usage_pattern in need.edge_usage_patterns],
@@ -78,22 +83,18 @@ class EdgeCPUComponent(EdgeComponent):
             if max_compute_need > self.available_compute_per_instance:
                 raise InsufficientCapacityError(self, "compute", self.available_compute_per_instance, max_compute_need)
 
-        self.unitary_hourly_compute_need_per_usage_pattern[usage_pattern] = unitary_hourly_compute_need.to(
+        return unitary_hourly_compute_need.to(
             u.cpu_core).set_label(f"Hourly compute need for {usage_pattern.name}").generate_explainable_object_with_logical_dependency(
             self.available_compute_per_instance)
-
-    def update_unitary_hourly_compute_need_per_usage_pattern(self):
-        """Hourly compute demand on one component, broken down by usage pattern. Raises error if peak demand exceeds the component's available compute."""
-        self.unitary_hourly_compute_need_per_usage_pattern = ExplainableObjectDict()
-        for usage_pattern in self.edge_usage_patterns:
-            self.update_dict_element_in_unitary_hourly_compute_need_per_usage_pattern(usage_pattern)
 
     @property
     def unitary_power_at_zero_recurrent_need(self) -> ExplainableQuantity:
         return (self.idle_power + (self.power - self.idle_power) * self.base_compute_consumption / self.compute
                 ).set_label("Idle and base power")
 
-    def update_dict_element_in_unitary_power_per_usage_pattern(self, usage_pattern: "EdgeUsagePattern"):
+    @computed_dict(keys="edge_usage_patterns")
+    def unitary_power_per_usage_pattern(self, usage_pattern: "EdgeUsagePattern"):
+        """Hourly power profile of the component for one device, derived from the compute workload (current need plus base consumption divided by total compute) by linearly interpolating between idle and full power."""
         if usage_pattern in self.unitary_hourly_compute_need_per_usage_pattern:
             compute_need = self.unitary_hourly_compute_need_per_usage_pattern[usage_pattern]
         else:
@@ -105,11 +106,5 @@ class EdgeCPUComponent(EdgeComponent):
             unitary_compute_workload = (compute_need + self.base_compute_consumption) / self.compute
             unitary_power = self.idle_power + (self.power - self.idle_power) * unitary_compute_workload
 
-        self.unitary_power_per_usage_pattern[usage_pattern] = unitary_power.set_label(
+        return unitary_power.set_label(
             f"Unitary power for {usage_pattern.name}")
-
-    def update_unitary_power_per_usage_pattern(self):
-        """Hourly power profile of the component for one device, derived from the compute workload (current need plus base consumption divided by total compute) by linearly interpolating between idle and full power."""
-        self.unitary_power_per_usage_pattern = ExplainableObjectDict()
-        for usage_pattern in self.edge_usage_patterns:
-            self.update_dict_element_in_unitary_power_per_usage_pattern(usage_pattern)

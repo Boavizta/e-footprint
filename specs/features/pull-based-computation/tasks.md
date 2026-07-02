@@ -133,6 +133,18 @@ mechanical edits, no codemod tooling; `@computed_dict(keys="attr_name")` string 
 
 **Depends on:** Task 2.
 
+**Status:** Done. Notes: the conversion also covers `efootprint/builders/**` (their update methods
+feed the same `calculated_attributes` machinery); the EcoLogits dynamically-generated update
+methods became getter factories attached via `add_computed_attribute`. Abstract update methods
+became abstract descriptors (`__isabstractmethod__` propagates), and an overriding getter without
+its own docstring inherits the parent slot's (preserving today's MRO docstring resolution for docs
+and interface readers). The registry/list consistency test carries one documented exemption:
+`EdgeStorage` deliberately drops inherited `power`/`idle_power`. Docs-content parity verified by
+normalized diff (uuid ids, numeric example values and the `list(set(...))`-ordered backwards-links
+section are nondeterministic run to run on unchanged code). Three test files adapted to the new
+declarations (abstract test subclasses now declare getters; the Storage two-servers test uses
+typed server mocks since `ReverseLink` filters containers by type).
+
 ---
 
 ## Task 4 — Constitution amendments §1.4 + §2.5 (own commit, via `update-constitution`)

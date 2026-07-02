@@ -39,10 +39,10 @@ def collapse_range(value):
 
 
 def extract_calculated_attribute_from_impacts_dict(
-        modeling_obj, attribute_name: str, dependency_graph: dict, dag, source: Source) -> None:
+        modeling_obj, attribute_name: str, dependency_graph: dict, dag, source: Source):
     """Read one field out of the cached EcoLogits impact dictionary on `modeling_obj`, attach the
     right unit, and wire its EcoLogits formula and ancestors for explainability. Used by every
-    auto-generated ``update_<attr>`` method on the LLM and video Job classes."""
+    auto-generated computed-attribute getter on the LLM and video Job classes."""
     if attribute_name not in modeling_obj.impacts.value:
         raise ValueError(f"Ecologits impacts has no attribute `{attribute_name}`.")
     ancestors = {}
@@ -55,23 +55,23 @@ def extract_calculated_attribute_from_impacts_dict(
         value = value.to(u.Wh)
     if ecologits_unit == u.kg and value.magnitude < 0.01:
         value = value.to(u.g)
-    setattr(modeling_obj, attribute_name, EcoLogitsExplainableQuantity(
+    return EcoLogitsExplainableQuantity(
         value,
         f"Ecologits {attribute_name} for {modeling_obj.external_api.model_name}",
         parent=modeling_obj.impacts, operator="extraction",
         ancestors=dict(sorted(ancestors.items())),
         formula=get_formula(dag, attribute_name),
-        source=source))
+        source=source)
 
 
-def create_update_method_for_ecologits_attribute(
+def create_getter_for_ecologits_attribute(
         attribute_name: str, dependency_graph: dict, dag, source: Source):
-    """Factory: returns an `update_<attr>` closure that extracts attribute_name from the modeling
+    """Factory: returns a computed-attribute getter that extracts attribute_name from the modeling
     object's impacts dict via extract_calculated_attribute_from_impacts_dict."""
-    def update_method(self):
-        extract_calculated_attribute_from_impacts_dict(self, attribute_name, dependency_graph, dag, source)
-    update_method.__name__ = f"update_{attribute_name}"
-    update_method.__doc__ = (
+    def getter(self):
+        return extract_calculated_attribute_from_impacts_dict(self, attribute_name, dependency_graph, dag, source)
+    getter.__name__ = attribute_name
+    getter.__doc__ = (
         f"Extracts the {attribute_name} field from the cached EcoLogits impact dictionary on this job, "
         f"converted into a typed e-footprint quantity.")
-    return update_method
+    return getter

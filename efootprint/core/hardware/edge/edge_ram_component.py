@@ -7,6 +7,7 @@ from efootprint.abstract_modeling_classes.source_objects import SourceValue
 from efootprint.constants.units import u
 from efootprint.core.hardware.edge.edge_component import EdgeComponent
 from efootprint.core.hardware.hardware_base import InsufficientCapacityError
+from efootprint.abstract_modeling_classes.reactive_core import computed_attribute, computed_dict
 
 if TYPE_CHECKING:
     from efootprint.core.usage.edge.edge_usage_pattern import EdgeUsagePattern
@@ -53,20 +54,24 @@ class EdgeRAMComponent(EdgeComponent):
         ["ram", "available_ram_per_instance", "unitary_hourly_ram_need_per_usage_pattern"]
         + EdgeComponent.calculated_attributes)
 
-    def update_ram(self):
+    @computed_attribute
+    def ram(self):
         """Total memory provided by the RAM component, equal to per-unit RAM times the number of units."""
-        self.ram = (self.ram_per_unit * self.nb_of_units).set_label(f"RAM")
+        return (self.ram_per_unit * self.nb_of_units).set_label(f"RAM")
 
-    def update_available_ram_per_instance(self):
+    @computed_attribute
+    def available_ram_per_instance(self):
         """Memory available for recurring needs after subtracting the base consumption. Raises error if the component is over-subscribed at design time."""
         available_ram_per_instance = self.ram.to(u.GB_ram) - self.base_ram_consumption.to(u.GB_ram)
 
         if available_ram_per_instance < SourceValue(0 * u.B_ram):
             raise InsufficientCapacityError(self, "RAM", self.ram.to(u.GB_ram), self.base_ram_consumption)
 
-        self.available_ram_per_instance = available_ram_per_instance.set_label(f"Available RAM per instance")
+        return available_ram_per_instance.set_label(f"Available RAM per instance")
 
-    def update_dict_element_in_unitary_hourly_ram_need_per_usage_pattern(self, usage_pattern: "EdgeUsagePattern"):
+    @computed_dict(keys="edge_usage_patterns")
+    def unitary_hourly_ram_need_per_usage_pattern(self, usage_pattern: "EdgeUsagePattern"):
+        """Hourly RAM demand on one component, broken down by usage pattern. Raises error if peak demand exceeds the component's available memory."""
         unitary_hourly_ram_need = sum(
             [need.unitary_hourly_need_per_usage_pattern[usage_pattern]
              for need in self.recurrent_edge_component_needs if usage_pattern in need.edge_usage_patterns],
@@ -77,22 +82,18 @@ class EdgeRAMComponent(EdgeComponent):
             if max_ram_need > self.available_ram_per_instance:
                 raise InsufficientCapacityError(self, "RAM", self.available_ram_per_instance, max_ram_need)
 
-        self.unitary_hourly_ram_need_per_usage_pattern[usage_pattern] = unitary_hourly_ram_need.to(u.GB_ram).set_label(
+        return unitary_hourly_ram_need.to(u.GB_ram).set_label(
             f"Hourly RAM need for {usage_pattern.name}").generate_explainable_object_with_logical_dependency(
             self.available_ram_per_instance)
-
-    def update_unitary_hourly_ram_need_per_usage_pattern(self):
-        """Hourly RAM demand on one component, broken down by usage pattern. Raises error if peak demand exceeds the component's available memory."""
-        self.unitary_hourly_ram_need_per_usage_pattern = ExplainableObjectDict()
-        for usage_pattern in self.edge_usage_patterns:
-            self.update_dict_element_in_unitary_hourly_ram_need_per_usage_pattern(usage_pattern)
 
     @property
     def unitary_power_at_zero_recurrent_need(self) -> ExplainableQuantity:
         return (self.idle_power + (self.power - self.idle_power) * self.base_ram_consumption / self.ram
                 ).set_label("Idle and base power")
 
-    def update_dict_element_in_unitary_power_per_usage_pattern(self, usage_pattern: "EdgeUsagePattern"):
+    @computed_dict(keys="edge_usage_patterns")
+    def unitary_power_per_usage_pattern(self, usage_pattern: "EdgeUsagePattern"):
+        """Hourly power profile of the component for one device, derived from the RAM workload (current need plus base consumption divided by total RAM) by linearly interpolating between idle and full power."""
         if usage_pattern in self.unitary_hourly_ram_need_per_usage_pattern:
             ram_need = self.unitary_hourly_ram_need_per_usage_pattern[usage_pattern]
         else:
@@ -104,11 +105,5 @@ class EdgeRAMComponent(EdgeComponent):
             ram_workload = (ram_need + self.base_ram_consumption) / self.ram
             unitary_power = self.idle_power + (self.power - self.idle_power) * ram_workload
 
-        self.unitary_power_per_usage_pattern[usage_pattern] = unitary_power.set_label(
+        return unitary_power.set_label(
             f"Unitary power for {usage_pattern.name}")
-
-    def update_unitary_power_per_usage_pattern(self):
-        """Hourly power profile of the component for one device, derived from the RAM workload (current need plus base consumption divided by total RAM) by linearly interpolating between idle and full power."""
-        self.unitary_power_per_usage_pattern = ExplainableObjectDict()
-        for usage_pattern in self.edge_usage_patterns:
-            self.update_dict_element_in_unitary_power_per_usage_pattern(usage_pattern)

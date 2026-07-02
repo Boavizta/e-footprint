@@ -8,6 +8,7 @@ from efootprint.abstract_modeling_classes.modeling_object import ModelingObject
 from efootprint.abstract_modeling_classes.modeling_update import ModelingUpdate
 from efootprint.constants.units import u
 from efootprint.core.hardware.edge.edge_device import EdgeDevice
+from efootprint.abstract_modeling_classes.reactive_core import computed_attribute
 
 
 class EdgeDeviceGroup(ModelingObject):
@@ -94,7 +95,8 @@ class EdgeDeviceGroup(ModelingObject):
                     ancestors.append(ancestor)
         return ancestors
 
-    def update_no_cycle_validation(self):
+    @computed_attribute
+    def no_cycle_validation(self):
         """Validates that the group does not contain itself transitively, and that no nested sub-group does either."""
         ancestors = self._find_all_ancestor_groups()
         if self in ancestors:
@@ -102,26 +104,26 @@ class EdgeDeviceGroup(ModelingObject):
         for sub_group in self.sub_group_counts:
             if sub_group in sub_group._find_all_ancestor_groups():
                 raise ValueError(f"Cycle detected: {sub_group.name} is its own ancestor via {self.name}.")
-        self.no_cycle_validation = EmptyExplainableObject()
+        return EmptyExplainableObject()
 
-    def update_effective_nb_of_units_within_root(self):
+    @computed_attribute
+    def effective_nb_of_units_within_root(self):
         """How many copies of this group exist when the hierarchy is unrolled from the root group: 1 for a root group, otherwise the sum across each parent of (parent's effective count) times (count of this group within that parent)."""
         parent_groups = self._find_parent_groups()
         if not parent_groups:
             # Root group: effective count is 1
-            self.effective_nb_of_units_within_root = ExplainableQuantity(
+            return ExplainableQuantity(
                 1 * u.dimensionless, f"root group count of 1")
-        else:
-            # Sum contributions from all parents. When a group appears in multiple
-            # parent hierarchies, its effective count is the sum of contributions from
-            # each parent, allowing shared sub-groups to be counted proportionally
-            # across the full hierarchy.
-            effective_nb = sum(
-                [parent.sub_group_counts[self] * parent.effective_nb_of_units_within_root
-                 for parent in parent_groups],
-                start=EmptyExplainableObject())
-            self.effective_nb_of_units_within_root = effective_nb.set_label(
-                f"Effective nb within root group")
+        # Sum contributions from all parents. When a group appears in multiple
+        # parent hierarchies, its effective count is the sum of contributions from
+        # each parent, allowing shared sub-groups to be counted proportionally
+        # across the full hierarchy.
+        effective_nb = sum(
+            [parent.sub_group_counts[self] * parent.effective_nb_of_units_within_root
+             for parent in parent_groups],
+            start=EmptyExplainableObject())
+        return effective_nb.set_label(
+            f"Effective nb within root group")
 
     @classmethod
     def sort_within_computation_chain(cls, instances):

@@ -9,6 +9,7 @@ from efootprint.constants.sources import Sources
 from efootprint.constants.units import u
 from efootprint.core.attribution import Atom
 from efootprint.core.lifecycle_phases import LifeCyclePhases
+from efootprint.abstract_modeling_classes.reactive_core import computed_attribute, computed_dict
 
 if TYPE_CHECKING:
     from efootprint.core.usage.usage_pattern import UsagePattern
@@ -83,26 +84,24 @@ class Network(ModelingObject):
         return self.energy_footprint_for_data_volume_and_usage_pattern(
             job.hourly_data_transferred_per_usage_pattern[usage_pattern], usage_pattern)
 
-    def update_instances_fabrication_footprint(self):
+    @computed_attribute
+    def instances_fabrication_footprint(self):
         """Network fabrication footprint, currently always empty: e-footprint does not account for the embodied carbon of network infrastructure since it is shared across countless services."""
-        self.instances_fabrication_footprint = EmptyExplainableObject()
+        return EmptyExplainableObject()
 
-    def update_dict_element_in_energy_footprint_per_job(self, job: "JobBase"):
+    @computed_dict(keys="jobs")
+    def energy_footprint_per_job(self, job: "JobBase"):
+        """Hourly carbon emissions caused by network traffic, broken down by job. Equal to data transferred times bandwidth energy intensity times the country's grid carbon intensity."""
         energy_footprint = EmptyExplainableObject()
         for usage_pattern in [up for up in job.usage_patterns if up in self.usage_patterns]:
             energy_footprint += self._compute_energy_footprint_for_job_and_usage_pattern(job, usage_pattern)
 
-        self.energy_footprint_per_job[job] = energy_footprint.to(u.kg).set_label(f"{job.name} network energy footprint")
+        return energy_footprint.to(u.kg).set_label(f"{job.name} network energy footprint")
 
-    def update_energy_footprint_per_job(self):
-        """Hourly carbon emissions caused by network traffic, broken down by job. Equal to data transferred times bandwidth energy intensity times the country's grid carbon intensity."""
-        self.energy_footprint_per_job = ExplainableObjectDict()
-        for job in self.jobs:
-            self.update_dict_element_in_energy_footprint_per_job(job)
-
-    def update_energy_footprint(self):
+    @computed_attribute
+    def energy_footprint(self):
         """Total hourly carbon emissions caused by network traffic, summed across all jobs that route through this network."""
-        self.energy_footprint = sum(self.energy_footprint_per_job.values(), start=EmptyExplainableObject()).set_label(
+        return sum(self.energy_footprint_per_job.values(), start=EmptyExplainableObject()).set_label(
             f"Hourly energy footprint"
         )
 

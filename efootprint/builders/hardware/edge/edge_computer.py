@@ -8,6 +8,7 @@ from efootprint.core.hardware.edge.edge_device import EdgeDevice
 from efootprint.core.hardware.edge.edge_ram_component import EdgeRAMComponent
 from efootprint.core.hardware.edge.edge_cpu_component import EdgeCPUComponent
 from efootprint.core.hardware.edge.edge_storage import EdgeStorage
+from efootprint.abstract_modeling_classes.reactive_core import computed_attribute
 
 
 class EdgeComputerRAMComponent(EdgeRAMComponent):
@@ -28,30 +29,30 @@ class EdgeComputerRAMComponent(EdgeRAMComponent):
 
     calculated_attributes = ["ram_per_unit", "base_ram_consumption", "lifespan"] + EdgeRAMComponent.calculated_attributes
 
-    def update_ram_per_unit(self):
+    @computed_attribute
+    def ram_per_unit(self):
         """RAM per unit, copied from the parent {class:EdgeComputer}'s memory."""
         edge_device = self.edge_device
         if edge_device:
-            self.ram_per_unit = self.edge_device.ram.copy().set_label(f"RAM per unit")
-        else:
-            self.ram_per_unit = EmptyExplainableObject()
+            return self.edge_device.ram.copy().set_label(f"RAM per unit")
+        return EmptyExplainableObject()
 
-    def update_base_ram_consumption(self):
+    @computed_attribute
+    def base_ram_consumption(self):
         """Base RAM consumption, copied from the parent {class:EdgeComputer}'s base RAM consumption."""
         edge_device = self.edge_device
         if edge_device:
-            self.base_ram_consumption = self.edge_device.base_ram_consumption.copy().set_label(
+            return self.edge_device.base_ram_consumption.copy().set_label(
                 f"Base RAM consumption")
-        else:
-            self.base_ram_consumption = EmptyExplainableObject()
+        return EmptyExplainableObject()
 
-    def update_lifespan(self):
+    @computed_attribute
+    def lifespan(self):
         """Lifespan, copied from the parent {class:EdgeComputer}'s lifespan."""
         edge_device = self.edge_device
         if edge_device:
-            self.lifespan = self.edge_device.lifespan.copy().set_label(f"Lifespan")
-        else:
-            self.lifespan = EmptyExplainableObject()
+            return self.edge_device.lifespan.copy().set_label(f"Lifespan")
+        return EmptyExplainableObject()
 
 
 class EdgeComputerCPUComponent(EdgeCPUComponent):
@@ -74,47 +75,47 @@ class EdgeComputerCPUComponent(EdgeCPUComponent):
         ["compute_per_unit", "base_compute_consumption", "lifespan", "power_per_unit", "idle_power_per_unit"]
         + EdgeCPUComponent.calculated_attributes)
 
-    def update_compute_per_unit(self):
+    @computed_attribute
+    def compute_per_unit(self):
         """Compute per unit, copied from the parent {class:EdgeComputer}'s compute."""
         edge_device = self.edge_device
         if edge_device:
-            self.compute_per_unit = edge_device.compute.copy().set_label(f"Compute per unit")
-        else:
-            self.compute_per_unit = EmptyExplainableObject()
+            return edge_device.compute.copy().set_label(f"Compute per unit")
+        return EmptyExplainableObject()
 
-    def update_base_compute_consumption(self):
+    @computed_attribute
+    def base_compute_consumption(self):
         """Base compute consumption, copied from the parent {class:EdgeComputer}'s base compute consumption."""
         edge_device = self.edge_device
         if edge_device:
-            self.base_compute_consumption = self.edge_device.base_compute_consumption.copy().set_label(
+            return self.edge_device.base_compute_consumption.copy().set_label(
                 f"Base compute consumption")
-        else:
-            self.base_compute_consumption = EmptyExplainableObject()
+        return EmptyExplainableObject()
 
-    def update_lifespan(self):
+    @computed_attribute
+    def lifespan(self):
         """Lifespan, copied from the parent {class:EdgeComputer}'s lifespan."""
         edge_device = self.edge_device
         if edge_device:
-            self.lifespan = self.edge_device.lifespan.copy().set_label(f"Lifespan")
-        else:
-            self.lifespan = EmptyExplainableObject()
+            return self.edge_device.lifespan.copy().set_label(f"Lifespan")
+        return EmptyExplainableObject()
 
-    def update_power_per_unit(self):
+    @computed_attribute
+    def power_per_unit(self):
         """Power per unit, copied from the parent {class:EdgeComputer}'s power."""
         edge_device = self.edge_device
         if edge_device:
-            self.power_per_unit = self.edge_device.power.copy().set_label(f"Power per unit")
-        else:
-            self.power_per_unit = EmptyExplainableObject()
+            return self.edge_device.power.copy().set_label(f"Power per unit")
+        return EmptyExplainableObject()
 
 
-    def update_idle_power_per_unit(self):
+    @computed_attribute
+    def idle_power_per_unit(self):
         """Idle power per unit, copied from the parent {class:EdgeComputer}'s idle power."""
         edge_device = self.edge_device
         if edge_device:
-            self.idle_power_per_unit = self.edge_device.idle_power.copy().set_label(f"Idle power per unit")
-        else:
-            self.idle_power_per_unit = EmptyExplainableObject()
+            return self.edge_device.idle_power.copy().set_label(f"Idle power per unit")
+        return EmptyExplainableObject()
 
 
 class EdgeComputer(EdgeDevice):
@@ -193,9 +194,10 @@ class EdgeComputer(EdgeDevice):
 
         return component_needs_changes
 
-    def update_structure_carbon_footprint_fabrication(self):
+    @computed_attribute
+    def structure_carbon_footprint_fabrication(self):
         """Structure fabrication footprint of the computer, copied from the computer's own fabrication footprint since the auto-created sub-components carry no separate fabrication contribution."""
-        self.structure_carbon_footprint_fabrication = self.carbon_footprint_fabrication.copy().set_label(
+        return self.carbon_footprint_fabrication.copy().set_label(
             f"Structure fabrication carbon footprint")
 
     def after_init(self):

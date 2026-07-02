@@ -8,6 +8,7 @@ from efootprint.constants.sources import Sources
 from efootprint.constants.units import u
 from efootprint.core.hardware.server_base import ServerTypes, ServerBase
 from efootprint.core.hardware.storage import Storage
+from efootprint.abstract_modeling_classes.reactive_core import computed_attribute
 
 
 class BoaviztaServerFromConfig(ServerBase):
@@ -76,36 +77,40 @@ class BoaviztaServerFromConfig(ServerBase):
         # TODO: uncomment line after fixing the API call structure
         # self.compute_calculated_attributes()
     
-    def update_cpu_config(self):
+    @computed_attribute
+    def cpu_config(self):
         cpu_config_dict = {"units": self.nb_of_cpu_units.to(u.dimensionless).magnitude,
                            "core_units": self.nb_of_cores_per_cpu_unit.to(u.dimensionless).magnitude}
 
-        self.cpu_config = ExplainableObject(
+        return ExplainableObject(
             cpu_config_dict, label="CPU config", left_parent=self.nb_of_cpu_units,
             right_parent=self.nb_of_cores_per_cpu_unit, operator="combined in Boavizta API with",
             source=Sources.USER_DATA)
 
-    def update_ram_config(self):
+    @computed_attribute
+    def ram_config(self):
         ram_config_dict = {"units": self.nb_of_ram_units.to(u.dimensionless).magnitude,
                            "capacity": self.ram_quantity_per_unit.to(u.GB_ram).magnitude}
 
-        self.ram_config = ExplainableObject(
+        return ExplainableObject(
             ram_config_dict, label="RAM config", left_parent=self.nb_of_ram_units,
             right_parent=self.ram_quantity_per_unit, operator="combined in Boavizta API with",
             source=Sources.USER_DATA)
 
-    def update_api_call_response(self):
+    @computed_attribute
+    def api_call_response(self):
         # TODO: fix api call structure
         api_call_data = {
             "model": {"type": "rack"},
             "configuration": {"cpu": self.cpu_config.value, "ram": self.ram_config.value}
         }
-        self.api_call_response = ExplainableDict(
+        return ExplainableDict(
             call_boaviztapi(url=self.impact_url, params=self.params, json=api_call_data, method="POST"),
             label="API call data", left_parent=self.cpu_config, right_parent=self.ram_config,
             operator="combined in Boavizta API data with", source=Sources.USER_DATA)
 
-    def update_carbon_footprint_fabrication(self):
+    @computed_attribute
+    def carbon_footprint_fabrication(self):
         total_fabrication_footprint_storage_included = ExplainableQuantity(
             self.api_call_response.value["impacts"]["gwp"]["embedded"]["value"] * u.kg,
             f"Total fabrication footprint storage included",
@@ -123,10 +128,11 @@ class BoaviztaServerFromConfig(ServerBase):
                 total_fabrication_footprint_storage_included - full_storage_carbon_footprint_fabrication)
 
         total_fabrication_footprint_storage_excluded.source = self.impact_source
-        self.carbon_footprint_fabrication = total_fabrication_footprint_storage_excluded.set_label(
+        return total_fabrication_footprint_storage_excluded.set_label(
             f"Fabrication footprint")
         
-    def update_power(self):
+    @computed_attribute
+    def power(self):
         average_power_value = self.api_call_response.value["verbose"]["avg_power"]["value"]
         average_power_unit = self.api_call_response.value["verbose"]["avg_power"]["unit"]
         use_time_ratio = self.api_call_response.value["verbose"]["use_time_ratio"]["value"]
@@ -134,21 +140,23 @@ class BoaviztaServerFromConfig(ServerBase):
         assert average_power_unit == "W", f"Unexpected power unit {average_power_unit}"
         assert float(use_time_ratio) == 1, f"Unexpected use time ratio {use_time_ratio}"
         
-        self.power = ExplainableQuantity(
+        return ExplainableQuantity(
             average_power_value * u.W, "Power", left_parent=self.api_call_response,
             operator="data extraction from", source=self.impact_source)
         
-    def update_ram(self):
+    @computed_attribute
+    def ram(self):
         ram_spec = self.api_call_response.value["verbose"]["RAM-1"]
 
-        self.ram = ExplainableQuantity(
+        return ExplainableQuantity(
             ram_spec["units"]["value"] * ram_spec["capacity"]["value"] * u.GB_ram, "RAM",
             left_parent=self.api_call_response, operator="data extraction from", source=self.impact_source)
         
-    def update_compute(self):
+    @computed_attribute
+    def compute(self):
         cpu_spec = self.api_call_response.value["verbose"]["CPU-1"]
 
-        self.compute = ExplainableQuantity(
+        return ExplainableQuantity(
             cpu_spec["units"]["value"] * cpu_spec["core_units"]["value"] * u.cpu_core, "Compute",
             left_parent=self.api_call_response, operator="data extraction from", source=self.impact_source)
         
@@ -178,7 +186,8 @@ class BoaviztaStorageFromConfig(Storage):
          "carbon_footprint_fabrication_per_storage_capacity",
          "power_per_storage_capacity", "lifespan"] + Storage.calculated_attributes)
 
-    def update_storage_type(self):
+    @computed_attribute
+    def storage_type(self):
         storage_type = None
         if ("SSD-1" in self.server.api_call_response.value["verbose"]
                 and "HDD-1" in self.server.api_call_response.value["verbose"]):
@@ -188,55 +197,60 @@ class BoaviztaStorageFromConfig(Storage):
         elif "HDD-1" in self.server.api_call_response.value["verbose"]:
             storage_type = "HDD"
 
-        self.storage_type = ExplainableObject(
+        return ExplainableObject(
             storage_type, label="Storage type", left_parent=self.server.api_call_response.value,
             operator="data extraction from", source=self.server.impact_source)
 
-    def update_storage_capacity(self):
+    @computed_attribute
+    def storage_capacity(self):
         storage_spec = self.server.api_call_response.value["verbose"][f"{self.storage_type.value}-1"]
         storage_unit = getattr(u, storage_spec["capacity"]["unit"])
         
-        self.storage_capacity = ExplainableQuantity(
+        return ExplainableQuantity(
             storage_spec["capacity"]["value"] * storage_unit, "Storage capacity", 
             left_parent=self.server.api_call_response, operator="data extraction", source=self.server.impact_source)
 
-    def update_fixed_nb_of_instances(self):
+    @computed_attribute
+    def fixed_nb_of_instances(self):
         storage_spec = self.server.api_call_response.value["verbose"][f"{self.storage_type.value}-1"]
         nb_units = ExplainableQuantity(
             storage_spec["units"]["value"] * u.dimensionless, label=f"Number storage instances",
             left_parent=self.server.api_call_response, operator="data extraction",
             source=self.server.impact_source)
 
-        self.fixed_nb_of_instances = nb_units.set_label(f"Fixed number of storage instances")
+        return nb_units.set_label(f"Fixed number of storage instances")
 
-    def update_carbon_footprint_fabrication_per_storage_capacity(self):
+    @computed_attribute
+    def carbon_footprint_fabrication_per_storage_capacity(self):
         storage_spec = self.server.api_call_response.value["verbose"][f"{self.storage_type.value}-1"]
         full_storage_carbon_footprint_fabrication = ExplainableQuantity(
             storage_spec["impacts"]["gwp"]["embedded"]["value"] * u.kg, left_parent=self.storage_type,
             source=self.server.impact_source,
             label=f"Total fabrication footprint")
         
-        self.carbon_footprint_fabrication_per_storage_capacity = (
+        return (
                 full_storage_carbon_footprint_fabrication / (self.fixed_nb_of_instances * self.storage_capacity)
         ).set_label(f"Fabrication footprint of one storage instance")
 
-    def update_power_per_storage_capacity(self):
+    @computed_attribute
+    def power_per_storage_capacity(self):
         power_per_storage_capacity = None
         if self.storage_type.value == "SSD":
             power_per_storage_capacity = SourceValue(1.3 * u.W / u.TB_stored, Sources.STORAGE_EMBODIED_CARBON_STUDY)
         elif self.storage_type.value == "HDD":
             power_per_storage_capacity = SourceValue(4.2 * u.W / u.TB_stored, Sources.STORAGE_EMBODIED_CARBON_STUDY)
 
-        self.power_per_storage_capacity = (
+        return (
             power_per_storage_capacity.generate_explainable_object_with_logical_dependency(
                 self.storage_type).set_label("Power per storage capacity"))
 
-    def update_lifespan(self):
+    @computed_attribute
+    def lifespan(self):
         lifespan = None
         if self.storage_type.value == "SSD":
             lifespan = SourceValue(6 * u.year)
         elif self.storage_type.value == "HDD":
             lifespan = SourceValue(4 * u.year)
 
-        self.lifespan = lifespan.generate_explainable_object_with_logical_dependency(self.storage_type).set_label(
+        return lifespan.generate_explainable_object_with_logical_dependency(self.storage_type).set_label(
             "Lifespan")

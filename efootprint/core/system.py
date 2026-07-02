@@ -26,6 +26,7 @@ from efootprint.abstract_modeling_classes.explainable_quantity import Explainabl
 from efootprint.abstract_modeling_classes.empty_explainable_object import EmptyExplainableObject
 from efootprint.logger import logger
 from efootprint.utils.display import human_readable_unit, display_quantity_as_str
+from efootprint.abstract_modeling_classes.reactive_core import computed_attribute
 
 
 class System(ModelingObject):
@@ -298,7 +299,8 @@ class System(ModelingObject):
 
         return ExplainableObjectDict(energy_footprints)
 
-    def update_total_footprint(self):
+    @computed_attribute
+    def total_footprint(self):
         """Total system carbon footprint as an hourly timeseries, summing fabrication and energy footprints across every category of object (servers, storages, devices, networks, edge components)."""
         # Snapshot the category breakdown once. Without this, `self.fabrication_footprints` and
         # `self.energy_footprints` each rebuild `_objects_by_category()` (which walks `all_linked_objects`
@@ -316,7 +318,7 @@ class System(ModelingObject):
             start=EmptyExplainableObject(),
         ).to(u.kg).set_label("Total carbon footprint")
 
-        self.total_footprint = round(total_footprint, 4)
+        return round(total_footprint, 4)
 
     def compare_to(self, other: "System"):
         """Return a {class:SystemComparison} of this system against ``other`` — the notebook entry point for the comparison capability (totals + deltas, per-(category, phase) decomposition, aligned/cumulative time-series, input diff)."""

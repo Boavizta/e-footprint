@@ -1,7 +1,7 @@
 import math
 from copy import copy
 from functools import cached_property
-from typing import List, TYPE_CHECKING, Optional
+from typing import List, TYPE_CHECKING
 
 import numpy as np
 from pint import Quantity
@@ -18,6 +18,7 @@ from efootprint.abstract_modeling_classes.empty_explainable_object import EmptyE
 from efootprint.abstract_modeling_classes.source_objects import SourceValue
 from efootprint.constants.units import u
 from efootprint.core.lifecycle_phases import LifeCyclePhases
+from efootprint.abstract_modeling_classes.reactive_core import computed_attribute, computed_dict, ReverseLink
 
 if TYPE_CHECKING:
     from efootprint.core.usage.job import JobBase
@@ -143,16 +144,7 @@ class Storage(InfraHardware):
         self.full_cumulative_storage_need = EmptyExplainableObject()
         self.full_cumulative_storage_need_per_job = ExplainableObjectDict()
 
-    @property
-    def server(self) -> Optional["ServerBase"]:
-        if self.modeling_obj_containers:
-            if len(self.modeling_obj_containers) > 1:
-                raise PermissionError(
-                    f"Storage object can only be associated with one server object but {self.name} is associated "
-                    f"with {[mod_obj.name for mod_obj in self.modeling_obj_containers]}")
-            return self.modeling_obj_containers[0]
-        else:
-            return None
+    server = ReverseLink("ServerBase")
 
     calculated_attributes = (
         ["carbon_footprint_fabrication", "full_cumulative_storage_need_per_job", "full_cumulative_storage_need"]
@@ -179,24 +171,22 @@ class Storage(InfraHardware):
         else:
             return EmptyExplainableObject()
 
-    def update_carbon_footprint_fabrication(self):
+    @computed_attribute
+    def carbon_footprint_fabrication(self):
         """Embodied carbon of one storage instance, equal to the per-capacity fabrication footprint times the instance's capacity."""
-        self.carbon_footprint_fabrication = (
+        return (
             self.carbon_footprint_fabrication_per_storage_capacity * self.storage_capacity).set_label(
             f"Carbon footprint")
 
-    def update_dict_element_in_full_cumulative_storage_need_per_job(self, job: "JobBase"):
+    @computed_dict(keys="jobs")
+    def full_cumulative_storage_need_per_job(self, job: "JobBase"):
+        """Per-job cumulative volume of stored data over time, applying the replication factor and dropping data older than {param:Storage.data_storage_duration}."""
         job_storage_rate = job.hourly_data_stored_across_usage_patterns * self.data_replication_factor
-        self.full_cumulative_storage_need_per_job[job] = cumulative_storage_need_with_dumps(
+        return cumulative_storage_need_with_dumps(
             job_storage_rate, self.data_storage_duration).set_label(f"Cumulative storage need for {job.name}")
 
-    def update_full_cumulative_storage_need_per_job(self):
-        """Per-job cumulative volume of stored data over time, applying the replication factor and dropping data older than {param:Storage.data_storage_duration}."""
-        self.full_cumulative_storage_need_per_job = ExplainableObjectDict()
-        for job in self.jobs:
-            self.update_dict_element_in_full_cumulative_storage_need_per_job(job)
-
-    def update_full_cumulative_storage_need(self):
+    @computed_attribute
+    def full_cumulative_storage_need(self):
         """Total cumulative storage volume held by this storage at each hour, summing per-job cumulative needs and adding the base storage need."""
         all_cumulatives = sum([val for val in self.full_cumulative_storage_need_per_job.values()],
                               start=EmptyExplainableObject())
@@ -205,18 +195,19 @@ class Storage(InfraHardware):
             # compute its impact at all. Adding the base storage need would turn the full_cumulative_storage_need into
             # an ExplainableQuantity, which would cause bugs down the line, for computations that don’t make sense
             # anyways (we don’t even know how long the Storage object will be used for).
-            self.full_cumulative_storage_need = all_cumulatives
-        else:
-            all_cumulatives += self.base_storage_need
-            self.full_cumulative_storage_need = all_cumulatives.set_label(
-                f"Full cumulative storage need")
+            return all_cumulatives
+        all_cumulatives += self.base_storage_need
+        return all_cumulatives.set_label(
+            f"Full cumulative storage need")
 
-    def update_raw_nb_of_instances(self):
+    @computed_attribute
+    def raw_nb_of_instances(self):
         """Hourly storage instances strictly required to hold the cumulative storage need, before rounding."""
         raw_nb_of_instances = (self.full_cumulative_storage_need / self.storage_capacity).to(u.concurrent)
-        self.raw_nb_of_instances = raw_nb_of_instances.set_label(f"Hourly raw number of instances")
+        return raw_nb_of_instances.set_label(f"Hourly raw number of instances")
 
-    def update_nb_of_instances(self):
+    @computed_attribute
+    def nb_of_instances(self):
         """Hourly storage instances actually attributed: fractional for serverless backends (only used capacity is billed), held to the user-fixed count if set, otherwise ceiled to whole instances."""
         from efootprint.core.hardware.server_base import ServerTypes
         if isinstance(self.raw_nb_of_instances, EmptyExplainableObject):
@@ -248,11 +239,12 @@ class Storage(InfraHardware):
         if self.server is not None:
             nb_of_instances = nb_of_instances.generate_explainable_object_with_logical_dependency(
                 self.server.server_type)
-        self.nb_of_instances = nb_of_instances
+        return nb_of_instances
 
-    def update_instances_energy(self):
+    @computed_attribute
+    def instances_energy(self):
         """Hourly energy consumed by storage instances. Currently always empty: storage operating energy is folded into the hosting server's energy footprint rather than tracked separately."""
-        self.instances_energy = EmptyExplainableObject()
+        return EmptyExplainableObject()
 
     # --- Attribution-only stream split and atom builder (lazy cached properties, consumed only by the
     # attribution layer, never by the eager calculated-attribute graph) ---

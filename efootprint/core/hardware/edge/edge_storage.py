@@ -10,6 +10,7 @@ from efootprint.abstract_modeling_classes.explainable_object_dict import Explain
 from efootprint.abstract_modeling_classes.empty_explainable_object import EmptyExplainableObject
 from efootprint.abstract_modeling_classes.source_objects import SourceValue
 from efootprint.constants.units import u
+from efootprint.abstract_modeling_classes.reactive_core import computed_attribute, computed_dict
 
 if TYPE_CHECKING:
     from efootprint.core.usage.edge.recurrent_edge_storage_need import RecurrentEdgeStorageNeed
@@ -125,9 +126,10 @@ class EdgeStorage(EdgeComponent):
         if attr not in ["power", "idle_power"]
     ]
 
-    def update_storage_capacity(self):
+    @computed_attribute
+    def storage_capacity(self):
         """Total storage capacity of the component, equal to per-unit capacity times the number of units."""
-        self.storage_capacity = (self.storage_capacity_per_unit * self.nb_of_units).set_label(
+        return (self.storage_capacity_per_unit * self.nb_of_units).set_label(
             f"Storage capacity")
 
     @property
@@ -137,14 +139,17 @@ class EdgeStorage(EdgeComponent):
         return (self.carbon_footprint_fabrication_per_storage_capacity * self.storage_capacity_per_unit
                 * self.nb_of_units).set_label(f"{self.name} carbon footprint fabrication from inputs")
 
-    def update_carbon_footprint_fabrication(self):
+    @computed_attribute
+    def carbon_footprint_fabrication(self):
         """Embodied carbon of the storage component, equal to per-capacity fabrication footprint times the total capacity."""
-        self.carbon_footprint_fabrication = (
+        return (
             self.carbon_footprint_fabrication_per_storage_capacity
             * self.storage_capacity
         ).set_label(f"Carbon footprint")
 
-    def update_dict_element_in_cumulative_unitary_storage_need_per_usage_pattern(self, usage_pattern):
+    @computed_dict(keys="edge_usage_patterns")
+    def cumulative_unitary_storage_need_per_usage_pattern(self, usage_pattern):
+        """Hourly cumulative storage held on one device, summing all storage needs that target this component plus the base need. Raises error if the cumulative goes negative or exceeds capacity."""
         total = sum(
             [
                 recurrent_need.cumulative_unitary_storage_need_per_usage_pattern[usage_pattern]
@@ -162,18 +167,11 @@ class EdgeStorage(EdgeComponent):
                 raise InsufficientCapacityError(
                     self, "storage capacity", self.storage_capacity,
                     ExplainableQuantity(total.value.max(), label="Cumulative storage need"))
-        self.cumulative_unitary_storage_need_per_usage_pattern[usage_pattern] = total.set_label(
+        return total.set_label(
             f"Cumulative storage need for {usage_pattern.name}"
         ).generate_explainable_object_with_logical_dependency(self.storage_capacity)
 
-    def update_cumulative_unitary_storage_need_per_usage_pattern(self):
-        """Hourly cumulative storage held on one device, summing all storage needs that target this component plus the base need. Raises error if the cumulative goes negative or exceeds capacity."""
-        self.cumulative_unitary_storage_need_per_usage_pattern = ExplainableObjectDict()
-        for usage_pattern in self.edge_usage_patterns:
-            self.update_dict_element_in_cumulative_unitary_storage_need_per_usage_pattern(usage_pattern)
-
-    def update_unitary_power_per_usage_pattern(self):
+    @computed_dict(keys="edge_usage_patterns")
+    def unitary_power_per_usage_pattern(self, usage_pattern):
         """Power profile of edge storage. Currently always empty: storage operating power is considered neglectable."""
-        self.unitary_power_per_usage_pattern = ExplainableObjectDict()
-        for usage_pattern in self.edge_usage_patterns:
-            self.unitary_power_per_usage_pattern[usage_pattern] = EmptyExplainableObject()
+        return EmptyExplainableObject()

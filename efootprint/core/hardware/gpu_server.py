@@ -5,6 +5,7 @@ from efootprint.abstract_modeling_classes.source_objects import SourceValue
 from efootprint.constants.units import u
 from efootprint.core.hardware.storage import Storage
 from efootprint.core.hardware.server_base import ServerBase, ServerTypes
+from efootprint.abstract_modeling_classes.reactive_core import computed_attribute
 
 BLOOM_PAPER_SOURCE = Source("Estimating the Carbon Footprint of BLOOM", "https://arxiv.org/abs/2211.05100")
 
@@ -89,20 +90,24 @@ class GPUServer(ServerBase):
 
     calculated_attributes = ["carbon_footprint_fabrication", "power", "idle_power", "ram"] + ServerBase.calculated_attributes
 
-    def update_carbon_footprint_fabrication(self):
+    @computed_attribute
+    def carbon_footprint_fabrication(self):
         """Embodied carbon of one server instance, equal to the chassis fabrication footprint plus the per-GPU fabrication footprint times the GPU count."""
-        self.carbon_footprint_fabrication = (self.carbon_footprint_fabrication_without_gpu
+        return (self.carbon_footprint_fabrication_without_gpu
                 + self.compute * self.carbon_footprint_fabrication_per_gpu
                 ).set_label("Carbon footprint fabrication")
 
-    def update_power(self):
+    @computed_attribute
+    def power(self):
         """Power drawn by one fully-loaded instance, equal to the per-GPU power times the GPU count."""
-        self.power = (self.gpu_power * self.compute).set_label("Power")
+        return (self.gpu_power * self.compute).set_label("Power")
 
-    def update_idle_power(self):
+    @computed_attribute
+    def idle_power(self):
         """Power drawn by one idle instance, equal to the per-GPU idle power times the GPU count."""
-        self.idle_power = (self.gpu_idle_power * self.compute).set_label("Idle power")
+        return (self.gpu_idle_power * self.compute).set_label("Idle power")
 
-    def update_ram(self):
+    @computed_attribute
+    def ram(self):
         """Total memory of one instance, equal to per-GPU memory times the GPU count."""
-        self.ram = (self.ram_per_gpu * self.compute).set_label("RAM").to(u.GB_ram)
+        return (self.ram_per_gpu * self.compute).set_label("RAM").to(u.GB_ram)

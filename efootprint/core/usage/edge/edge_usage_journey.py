@@ -7,6 +7,7 @@ from efootprint.abstract_modeling_classes.source_objects import SourceValue
 from efootprint.constants.units import u
 from efootprint.core.usage.compute_nb_occurrences_in_parallel import compute_nb_avg_hourly_occurrences
 from efootprint.core.usage.edge.edge_function import EdgeFunction
+from efootprint.abstract_modeling_classes.reactive_core import computed_dict
 
 if TYPE_CHECKING:
     from efootprint.core.usage.edge.edge_usage_pattern import EdgeUsagePattern
@@ -70,16 +71,12 @@ class EdgeUsageJourney(ModelingObject):
 
     calculated_attributes: List[str] = ["nb_edge_usage_journeys_in_parallel_per_edge_usage_pattern"]
 
-    def update_dict_element_in_nb_edge_usage_journeys_in_parallel_per_edge_usage_pattern(
+    @computed_dict(keys="edge_usage_patterns")
+    def nb_edge_usage_journeys_in_parallel_per_edge_usage_pattern(
             self, edge_usage_pattern: "EdgeUsagePattern"):
+        """Hourly count of edge usage journeys that are concurrently active in each pattern, derived from the journey-start timeseries and the journey usage span."""
         nb_of_edge_usage_journeys_in_parallel = compute_nb_avg_hourly_occurrences(
             edge_usage_pattern.utc_hourly_edge_usage_journey_starts, self.usage_span)
-        self.nb_edge_usage_journeys_in_parallel_per_edge_usage_pattern[edge_usage_pattern] = (
+        return (
             nb_of_edge_usage_journeys_in_parallel.to(u.concurrent)
             .set_label("Hourly nb of edge usage journeys in parallel"))
-
-    def update_nb_edge_usage_journeys_in_parallel_per_edge_usage_pattern(self):
-        """Hourly count of edge usage journeys that are concurrently active in each pattern, derived from the journey-start timeseries and the journey usage span."""
-        self.nb_edge_usage_journeys_in_parallel_per_edge_usage_pattern = ExplainableObjectDict()
-        for edge_usage_pattern in self.edge_usage_patterns:
-            self.update_dict_element_in_nb_edge_usage_journeys_in_parallel_per_edge_usage_pattern(edge_usage_pattern)

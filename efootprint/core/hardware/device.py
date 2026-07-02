@@ -9,6 +9,7 @@ from efootprint.constants.units import u
 from efootprint.core.attribution import Atom
 from efootprint.core.hardware.hardware_base import HardwareBase
 from efootprint.core.lifecycle_phases import LifeCyclePhases
+from efootprint.abstract_modeling_classes.reactive_core import computed_attribute, computed_dict
 
 if TYPE_CHECKING:
     from efootprint.core.usage.usage_pattern import UsagePattern
@@ -122,25 +123,22 @@ class Device(HardwareBase):
         "instances_fabrication_footprint",
     ] + HardwareBase.calculated_attributes
 
-    def update_dict_element_in_energy_footprint_per_usage_pattern(self, usage_pattern: "UsagePattern"):
+    @computed_dict(keys="usage_patterns")
+    def energy_footprint_per_usage_pattern(self, usage_pattern: "UsagePattern"):
+        """Hourly carbon emissions caused by the device's electricity use, broken down by usage pattern. Equal to the energy spent by concurrent journeys times the country's grid carbon intensity."""
         energy_spent_over_one_full_hour_by_one_device = self.power * ExplainableQuantity(1 * u.hour, "one full hour")
         instances_energy = (
             usage_pattern.usage_journey.nb_usage_journeys_in_parallel_per_usage_pattern[usage_pattern]
             * energy_spent_over_one_full_hour_by_one_device
         ).to(u.kWh)
-        self.energy_footprint_per_usage_pattern[usage_pattern] = (
+        return (
             instances_energy * usage_pattern.country.average_carbon_intensity
         ).to(u.kg).set_label(f"Usage footprint for {usage_pattern.name}")
 
-    def update_energy_footprint_per_usage_pattern(self):
-        """Hourly carbon emissions caused by the device's electricity use, broken down by usage pattern. Equal to the energy spent by concurrent journeys times the country's grid carbon intensity."""
-        self.energy_footprint_per_usage_pattern = ExplainableObjectDict()
-        for usage_pattern in self.usage_patterns:
-            self.update_dict_element_in_energy_footprint_per_usage_pattern(usage_pattern)
-
-    def update_energy_footprint(self):
+    @computed_attribute
+    def energy_footprint(self):
         """Total hourly carbon emissions caused by the device's electricity use, summed across all usage patterns that run on this device."""
-        self.energy_footprint = sum(
+        return sum(
             self.energy_footprint_per_usage_pattern.values(), start=EmptyExplainableObject()
         ).set_label(f"Devices energy footprint")
 
@@ -150,21 +148,18 @@ class Device(HardwareBase):
                 / (self.lifespan * self.fraction_of_usage_time)).to(u.g).set_label(
             "Fabrication footprint over one hour")
 
-    def update_dict_element_in_instances_fabrication_footprint_per_usage_pattern(self, usage_pattern: "UsagePattern"):
-        self.instances_fabrication_footprint_per_usage_pattern[usage_pattern] = (
+    @computed_dict(keys="usage_patterns")
+    def instances_fabrication_footprint_per_usage_pattern(self, usage_pattern: "UsagePattern"):
+        """Hourly fabrication-phase emissions of all devices in use, broken down by usage pattern. Equal to one device's hourly amortised embodied carbon (lifespan and usage-time-adjusted) multiplied by the number of journeys concurrently in progress."""
+        return (
             usage_pattern.usage_journey.nb_usage_journeys_in_parallel_per_usage_pattern[usage_pattern]
             * self.device_fabrication_footprint_over_one_hour).to(u.kg).set_label(
             f"Fabrication footprint for {usage_pattern.name}")
 
-    def update_instances_fabrication_footprint_per_usage_pattern(self):
-        """Hourly fabrication-phase emissions of all devices in use, broken down by usage pattern. Equal to one device's hourly amortised embodied carbon (lifespan and usage-time-adjusted) multiplied by the number of journeys concurrently in progress."""
-        self.instances_fabrication_footprint_per_usage_pattern = ExplainableObjectDict()
-        for usage_pattern in self.usage_patterns:
-            self.update_dict_element_in_instances_fabrication_footprint_per_usage_pattern(usage_pattern)
-
-    def update_instances_fabrication_footprint(self):
+    @computed_attribute
+    def instances_fabrication_footprint(self):
         """Total hourly fabrication-phase emissions of all devices in use, summed across all usage patterns that run on this device."""
-        self.instances_fabrication_footprint = sum(
+        return sum(
             self.instances_fabrication_footprint_per_usage_pattern.values(), start=EmptyExplainableObject()
         ).set_label(f"Devices fabrication footprint")
 

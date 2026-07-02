@@ -58,8 +58,8 @@ class TestStorage(TestCase):
     def test_storage_with_two_servers_raises_error(self):
         """Test that associating a Storage with two servers raises PermissionError."""
         storage = self.storage_base
-        server1 = MagicMock()
-        server2 = MagicMock()
+        server1 = create_mod_obj_mock(Server, "server 1")
+        server2 = create_mod_obj_mock(Server, "server 2")
         with (patch.object(Storage, "modeling_obj_containers", new_callable=PropertyMock)
               as modeling_obj_containers_mock):
             modeling_obj_containers_mock.return_value = [server1, server2]

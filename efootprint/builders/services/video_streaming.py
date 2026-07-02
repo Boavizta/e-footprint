@@ -9,6 +9,7 @@ from efootprint.builders.services.service_base_class import Service
 from efootprint.builders.services.service_job_base_class import ServiceJob
 from efootprint.constants.units import u
 from efootprint.core.hardware.server import Server
+from efootprint.abstract_modeling_classes.reactive_core import computed_attribute
 
 
 class VideoStreaming(Service):
@@ -96,11 +97,13 @@ class VideoStreamingJob(ServiceJob):
         ["request_duration", "dynamic_bitrate", "data_transferred", "compute_needed", "ram_needed"]
         + ServiceJob.calculated_attributes)
 
-    def update_request_duration(self):
+    @computed_attribute
+    def request_duration(self):
         """Request duration of one streaming session, equal to the chosen video duration."""
-        self.request_duration = self.video_duration.copy().set_label("Request duration")
+        return self.video_duration.copy().set_label("Request duration")
 
-    def update_dynamic_bitrate(self):
+    @computed_attribute
+    def dynamic_bitrate(self):
         """Estimated bitrate of the stream, equal to the pixel count parsed from the resolution times bits-per-pixel times refresh rate."""
         match = re.search(r"\((\d+)\s*x\s*(\d+)\)", self.resolution.value)
         if not match:
@@ -110,19 +113,22 @@ class VideoStreamingJob(ServiceJob):
             width * height * u.dimensionless, f"pixel count for resolution {self.resolution}",
             left_parent=self.resolution, operator="pixel count computation")
 
-        self.dynamic_bitrate = (pixel_count * self.service.bits_per_pixel * self.refresh_rate
+        return (pixel_count * self.service.bits_per_pixel * self.refresh_rate
                                 ).to(u.MB / u.s).set_label("Dynamic bitrate")
 
-    def update_data_transferred(self):
+    @computed_attribute
+    def data_transferred(self):
         """Data transferred per session, equal to the dynamic bitrate times the video duration."""
-        self.data_transferred = (self.request_duration * self.dynamic_bitrate).to(u.GB).set_label(
+        return (self.request_duration * self.dynamic_bitrate).to(u.GB).set_label(
             "Data transferred")
 
-    def update_compute_needed(self):
+    @computed_attribute
+    def compute_needed(self):
         """CPU consumed per session, equal to the service's per-bitrate CPU cost times the dynamic bitrate."""
-        self.compute_needed = (self.service.static_delivery_cpu_cost * self.dynamic_bitrate).to(u.cpu_core).set_label(
+        return (self.service.static_delivery_cpu_cost * self.dynamic_bitrate).to(u.cpu_core).set_label(
             "CPU needed")
 
-    def update_ram_needed(self):
+    @computed_attribute
+    def ram_needed(self):
         """RAM consumed per session, equal to the service's per-user RAM buffer."""
-        self.ram_needed = self.service.ram_buffer_per_user.copy().set_label("RAM needed")
+        return self.service.ram_buffer_per_user.copy().set_label("RAM needed")

@@ -12,6 +12,7 @@ from efootprint.abstract_modeling_classes.explainable_quantity import Explainabl
 from efootprint.abstract_modeling_classes.empty_explainable_object import EmptyExplainableObject
 from efootprint.abstract_modeling_classes.explainable_recurrent_quantities import ExplainableRecurrentQuantities
 from efootprint.abstract_modeling_classes.modeling_object import ModelingObject
+from efootprint.abstract_modeling_classes.reactive_core import computed_slots
 from docs_sources.doc_utils.doc_topic_registry import DOC_TOPICS
 from docs_sources.doc_utils.docs_case import (
     system, usage_pattern, usage_journey, network, streaming_step, autoscaling_server, storage,
@@ -136,8 +137,8 @@ def obj_to_md(owning_class, input_obj, attr_name, fixed_by_class=None):
 def calc_attr_to_md(owning_class, input_obj: ExplainableObject, attr_name):
     return_str = f"### {attr_name}"
 
-    method = getattr(owning_class, f"update_{attr_name}", None)
-    rendered_doc = _render(method.__doc__ if method is not None else None)
+    slot = computed_slots(owning_class).get(attr_name)
+    rendered_doc = _render(slot.__doc__ if slot is not None else None)
     if rendered_doc:
         return_str += f"\n\n{rendered_doc}"
 

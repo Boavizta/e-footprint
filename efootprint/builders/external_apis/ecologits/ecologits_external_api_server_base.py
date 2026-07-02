@@ -5,6 +5,7 @@ from efootprint.abstract_modeling_classes.explainable_quantity import Explainabl
 from efootprint.builders.external_apis.external_api_base_class import ExternalAPIServer
 from efootprint.constants.units import u
 from efootprint.core.lifecycle_phases import LifeCyclePhases
+from efootprint.abstract_modeling_classes.reactive_core import computed_attribute
 
 if TYPE_CHECKING:
     from efootprint.builders.external_apis.ecologits.ecologits_external_api import (
@@ -48,33 +49,36 @@ class EcoLogitsExternalAPIServerBase(ExternalAPIServer):
             return str(self.external_api.model_name)
         return "no external API"
 
-    def update_instances_fabrication_footprint(self) -> None:
+    @computed_attribute
+    def instances_fabrication_footprint(self):
         """Hourly fabrication-phase footprint of the model server: each job's per-request embodied GWP spread over its request_duration (per-request * 1h / request_duration * hourly average occurrences across usage patterns), summed over jobs."""
         instances_fabrication_footprint = EmptyExplainableObject()
 
         for job in self.jobs:
             instances_fabrication_footprint += self._spread_over_request_duration(job, job.request_embodied_gwp)
 
-        self.instances_fabrication_footprint = instances_fabrication_footprint.set_label(
+        return instances_fabrication_footprint.set_label(
             f"Instances fabrication footprint for {self.external_api_model_name}")
 
-    def update_instances_energy(self) -> None:
+    @computed_attribute
+    def instances_energy(self):
         """Hourly energy consumed by the model server: each job's per-request energy spread over its request_duration (per-request * 1h / request_duration * hourly average occurrences across usage patterns), summed over jobs."""
         instances_energy = EmptyExplainableObject()
 
         for job in self.jobs:
             instances_energy += self._spread_over_request_duration(job, job.request_energy)
 
-        self.instances_energy = instances_energy.set_label(f"Instances energy for {self.external_api_model_name}")
+        return instances_energy.set_label(f"Instances energy for {self.external_api_model_name}")
 
-    def update_energy_footprint(self) -> None:
+    @computed_attribute
+    def energy_footprint(self):
         """Hourly energy-use footprint of the model server: each job's per-request usage GWP spread over its request_duration (per-request * 1h / request_duration * hourly average occurrences across usage patterns), summed over jobs."""
         energy_footprint = EmptyExplainableObject()
 
         for job in self.jobs:
             energy_footprint += self._spread_over_request_duration(job, job.request_usage_gwp)
 
-        self.energy_footprint = energy_footprint.set_label(f"Energy footprint for {self.external_api_model_name}")
+        return energy_footprint.set_label(f"Energy footprint for {self.external_api_model_name}")
 
     def job_request_footprint(self, job: "EcoLogitsGenAIExternalAPIJob", phase: LifeCyclePhases):
         """The job's duration-aware request footprint for a life-cycle phase: per-request embodied (fabrication)

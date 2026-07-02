@@ -10,6 +10,7 @@ from efootprint.builders.hardware.edge.edge_appliance import EdgeAppliance
 from efootprint.core.hardware.edge.edge_component import EdgeComponent
 from efootprint.core.usage.edge.recurrent_edge_device_need import RecurrentEdgeDeviceNeed
 from efootprint.core.usage.edge.recurrent_edge_component_need import RecurrentEdgeComponentNeed
+from efootprint.abstract_modeling_classes.reactive_core import computed_attribute
 
 
 class RecurrentEdgeWorkloadNeed(RecurrentEdgeComponentNeed):
@@ -29,13 +30,13 @@ class RecurrentEdgeWorkloadNeed(RecurrentEdgeComponentNeed):
 
     calculated_attributes = ["recurrent_need"] + RecurrentEdgeComponentNeed.calculated_attributes
 
-    def update_recurrent_need(self):
+    @computed_attribute
+    def recurrent_need(self):
         """Recurrent workload, copied from the parent {class:RecurrentEdgeWorkload}'s workload profile."""
         if not self.recurrent_edge_device_needs:
-            self.recurrent_need = SourceRecurrentValues(Quantity(np.array([0] * 168, dtype=np.float32), u.concurrent))
-            return
+            return SourceRecurrentValues(Quantity(np.array([0] * 168, dtype=np.float32), u.concurrent))
         recurrent_edge_device_need = self.recurrent_edge_device_needs[0]
-        self.recurrent_need = recurrent_edge_device_need.recurrent_workload.copy().set_label(
+        return recurrent_edge_device_need.recurrent_workload.copy().set_label(
             "Recurrent need")
 
 

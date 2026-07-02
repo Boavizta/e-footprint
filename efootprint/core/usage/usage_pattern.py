@@ -10,6 +10,7 @@ from efootprint.abstract_modeling_classes.modeling_object import ModelingObject
 from efootprint.abstract_modeling_classes.explainable_hourly_quantities import (
     ExplainableHourlyQuantities)
 from efootprint.abstract_modeling_classes.empty_explainable_object import EmptyExplainableObject
+from efootprint.abstract_modeling_classes.reactive_core import computed_attribute
 
 
 class UsagePattern(ModelingObject):
@@ -58,11 +59,12 @@ class UsagePattern(ModelingObject):
     def jobs(self) -> List[Job]:
         return self.usage_journey.jobs
 
-    def update_utc_hourly_usage_journey_starts(self):
+    @computed_attribute
+    def utc_hourly_usage_journey_starts(self):
         """Hourly journey starts converted from the country's local timezone to UTC, so that downstream calculations can be combined across patterns in different timezones."""
         utc_hourly_usage_journey_starts = self.hourly_usage_journey_starts.convert_to_utc(
             local_timezone=self.country.timezone)
 
-        self.utc_hourly_usage_journey_starts = utc_hourly_usage_journey_starts.set_label(
+        return utc_hourly_usage_journey_starts.set_label(
             "Hourly nb of usage journey starts (UTC)")
 

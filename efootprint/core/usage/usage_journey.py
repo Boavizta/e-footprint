@@ -10,6 +10,7 @@ from efootprint.core.hardware.storage import Storage
 from efootprint.core.usage.compute_nb_occurrences_in_parallel import compute_nb_avg_hourly_occurrences
 from efootprint.core.usage.usage_journey_step import UsageJourneyStep
 from efootprint.core.usage.job import Job
+from efootprint.abstract_modeling_classes.reactive_core import computed_attribute, computed_dict
 
 if TYPE_CHECKING:
     from efootprint.core.usage.usage_pattern import UsagePattern
@@ -68,23 +69,20 @@ class UsageJourney(ModelingObject):
 
     calculated_attributes = ["duration", "nb_usage_journeys_in_parallel_per_usage_pattern"]
 
-    def update_duration(self):
+    @computed_attribute
+    def duration(self):
         """Total wall-clock time of one journey, equal to the sum of {param:UsageJourneyStep.user_time_spent} across all steps, each weighted by how many times the step occurs in the journey."""
         user_time_spent_sum = sum(
             [times_per_journey * uj_step.user_time_spent for uj_step, times_per_journey in self.uj_steps.items()],
             start=EmptyExplainableObject())
 
-        self.duration = user_time_spent_sum.set_label(f"Duration")
+        return user_time_spent_sum.set_label(f"Duration")
 
-    def update_dict_element_in_nb_usage_journeys_in_parallel_per_usage_pattern(self, usage_pattern: "UsagePattern"):
+    @computed_dict(keys="usage_patterns")
+    def nb_usage_journeys_in_parallel_per_usage_pattern(self, usage_pattern: "UsagePattern"):
+        """Hourly count of journeys that are concurrently in progress in each usage pattern, derived from journey starts and journey duration. Used to size devices that are occupied for the full journey duration."""
         nb_of_usage_journeys_in_parallel = compute_nb_avg_hourly_occurrences(
             usage_pattern.utc_hourly_usage_journey_starts, self.duration)
 
-        self.nb_usage_journeys_in_parallel_per_usage_pattern[usage_pattern] = nb_of_usage_journeys_in_parallel.to(
+        return nb_of_usage_journeys_in_parallel.to(
             u.concurrent).set_label(f"{usage_pattern.name} hourly nb of user journeys in parallel")
-
-    def update_nb_usage_journeys_in_parallel_per_usage_pattern(self):
-        """Hourly count of journeys that are concurrently in progress in each usage pattern, derived from journey starts and journey duration. Used to size devices that are occupied for the full journey duration."""
-        self.nb_usage_journeys_in_parallel_per_usage_pattern = ExplainableObjectDict()
-        for usage_pattern in self.usage_patterns:
-            self.update_dict_element_in_nb_usage_journeys_in_parallel_per_usage_pattern(usage_pattern)

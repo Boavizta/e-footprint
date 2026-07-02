@@ -6,6 +6,7 @@ from efootprint.abstract_modeling_classes.empty_explainable_object import EmptyE
 from efootprint.abstract_modeling_classes.source_objects import SourceValue
 from efootprint.constants.units import u
 from efootprint.core.hardware.hardware_base import HardwareBase
+from efootprint.abstract_modeling_classes.reactive_core import computed_attribute
 
 
 class InfraHardware(HardwareBase):
@@ -27,32 +28,37 @@ class InfraHardware(HardwareBase):
         "raw_nb_of_instances", "nb_of_instances", "instances_fabrication_footprint", "instances_energy",
         "energy_footprint"]
 
+    @computed_attribute
     @abstractmethod
-    def update_raw_nb_of_instances(self):
+    def raw_nb_of_instances(self):
         pass
 
+    @computed_attribute
     @abstractmethod
-    def update_nb_of_instances(self):
+    def nb_of_instances(self):
         pass
 
+    @computed_attribute
     @abstractmethod
-    def update_instances_energy(self):
+    def instances_energy(self):
         pass
 
     @property
     def systems(self) -> List:
         return list(dict.fromkeys(sum([job.systems for job in self.jobs], start=[])))
 
-    def update_instances_fabrication_footprint(self):
+    @computed_attribute
+    def instances_fabrication_footprint(self):
         """Hourly fabrication-phase emissions of all instances, equal to the embodied carbon of one instance amortised over its lifespan and multiplied by the number of instances active in each hour."""
         instances_fabrication_footprint = (
                 self.carbon_footprint_fabrication * self.nb_of_instances * ExplainableQuantity(1 * u.hour, "one hour")
                 / self.lifespan)
 
-        self.instances_fabrication_footprint = instances_fabrication_footprint.to(u.kg).set_label(
+        return instances_fabrication_footprint.to(u.kg).set_label(
                 f"Hourly instances fabrication footprint")
 
-    def update_energy_footprint(self):
+    @computed_attribute
+    def energy_footprint(self):
         """Hourly carbon emissions caused by the electricity consumed by this hardware, equal to its hourly energy use times the local grid carbon intensity."""
         if getattr(self, "average_carbon_intensity", None) is None:
             raise ValueError(
@@ -60,4 +66,4 @@ class InfraHardware(HardwareBase):
                 f" This shouldn’t happen as server objects have it as input parameter and Storage as property")
         energy_footprint = (self.instances_energy * self.average_carbon_intensity)
 
-        self.energy_footprint = energy_footprint.to(u.kg).set_label(f"Hourly energy footprint")
+        return energy_footprint.to(u.kg).set_label(f"Hourly energy footprint")

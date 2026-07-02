@@ -6,6 +6,10 @@ and this project adheres to [Semantic Versioning](http://semver.org/)
 
 ## [Unreleased]
 
+### Changed
+- Calculated attributes are now declared with `@computed_attribute` / `@computed_dict(keys="...")` descriptors (new module `efootprint/abstract_modeling_classes/reactive_core.py`): every former `update_<attr>` / `update_dict_element_in_<attr>` method body became the decorated getter (final assignment turned into a return, docstrings kept on the getters — the doc-as-code source the mkdocs object reference now reads). The descriptors run in an eager shim that synthesizes the `update_*` methods the existing push engine expects, so computation order, values and serialization are unchanged; `calculated_attributes` lists remain the authoritative eager ordering for now.
+- isinstance-filter reverse-lookup properties (a server's direct jobs and installed services, a storage's server, an edge component's device and needs, a job's steps and recurrent server needs, an edge device's needs) are now declarative `ReverseCollection` / `ReverseLink` class attributes whose member type resolves lazily by class name, replacing the circular-import-driven function-local imports.
+
 ### Added
 - Randomized mutation parity harness (`tests/integration_tests/test_randomized_mutation_parity.py`): seeded random mutation sequences (input edits, relinks, list add/remove, object add/delete) applied to a live system, with every calculated attribute compared against a from-scratch rebuild (inputs-only JSON round-trip + full recomputation) after each mutation. Passes trivially on the current eager engine; it is the safety gate for upcoming computation-engine changes.
 - Baseline benchmark suite (`tests/performance_tests/benchmark_baselines.py`) with committed reference numbers in `tests/performance_tests/baseline_results.json`: full eager build, peak RSS after build, single scalar/timeseries edit recompute, load-to-ready from the calculated-attributes fixture, deserialize-edit-reserialize round-trip, 1,000-iteration nudge-and-read loop, and serialized fixture weights. Engine changes are evaluated by re-running the script and diffing against the reference file.

@@ -7,6 +7,7 @@ from efootprint.abstract_modeling_classes.modeling_object import ModelingObject
 from efootprint.constants.units import u
 from efootprint.core.attribution import Atom
 from efootprint.core.lifecycle_phases import LifeCyclePhases
+from efootprint.abstract_modeling_classes.reactive_core import computed_attribute
 
 
 class ExternalAPIServer(ModelingObject):
@@ -30,16 +31,19 @@ class ExternalAPIServer(ModelingObject):
         ["instances_fabrication_footprint", "instances_energy", "energy_footprint"]
         + ModelingObject.calculated_attributes)
 
+    @computed_attribute
     @abstractmethod
-    def update_instances_fabrication_footprint(self) -> None:
+    def instances_fabrication_footprint(self):
         pass
 
+    @computed_attribute
     @abstractmethod
-    def update_instances_energy(self) -> None:
+    def instances_energy(self):
         pass
 
+    @computed_attribute
     @abstractmethod
-    def update_energy_footprint(self) -> None:
+    def energy_footprint(self):
         pass
 
     @abstractmethod

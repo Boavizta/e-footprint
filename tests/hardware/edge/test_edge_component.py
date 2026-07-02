@@ -5,7 +5,9 @@ from unittest.mock import MagicMock
 import numpy as np
 from pint import Quantity
 
+from efootprint.abstract_modeling_classes.empty_explainable_object import EmptyExplainableObject
 from efootprint.abstract_modeling_classes.explainable_object_dict import ExplainableObjectDict
+from efootprint.abstract_modeling_classes.reactive_core import computed_dict
 from efootprint.abstract_modeling_classes.source_objects import SourceValue, SourceRecurrentValues
 from efootprint.api_utils.json_to_system import json_to_system
 from efootprint.api_utils.system_to_json import system_to_json
@@ -37,8 +39,9 @@ class ConcreteEdgeComponent(EdgeComponent):
         "nb_of_units": SourceValue(1 * u.dimensionless),
     }
 
-    def update_unitary_power_per_usage_pattern(self):
-        pass
+    @computed_dict(keys="edge_usage_patterns")
+    def unitary_power_per_usage_pattern(self, usage_pattern):
+        return EmptyExplainableObject()
 
 
 class TestEdgeComponent(TestCase):
