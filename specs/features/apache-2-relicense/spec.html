@@ -1,0 +1,171 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Apache-2 relicense — Spec</title>
+<style>
+  body { font-family: system-ui, -apple-system, sans-serif; line-height: 1.6;
+         max-width: 52rem; margin: 2rem auto; padding: 0 1.2rem; color: #1a1a1a; }
+  h1 { border-bottom: 2px solid #e0e0e0; padding-bottom: .3rem; }
+  h2 { margin-top: 2rem; }
+  .status { color: #666; font-size: .9rem; }
+  table { border-collapse: collapse; width: 100%; margin: 1rem 0; }
+  th, td { border: 1px solid #ccc; padding: .4rem .6rem; text-align: left; vertical-align: top; }
+  th { background: #f5f5f5; }
+  code { background: #f4f4f4; padding: .1rem .35rem; border-radius: 3px; font-size: .9em; }
+  details { margin: .6rem 0; border: 1px solid #e0e0e0; border-radius: 6px; padding: .4rem .8rem; }
+  summary { cursor: pointer; font-weight: 600; }
+  .mockup { border: 1px dashed #999; border-radius: 8px; padding: 1rem; margin: 1rem 0; }
+  blockquote { border-left: 3px solid #ccc; margin: 1rem 0; padding: .2rem 1rem; color: #555; }
+</style>
+</head>
+<body>
+
+<h1>Apache-2 relicense</h1>
+<p class="status">Status: Spec — under review · 2026-07-03 · This is a licensing/governance
+feature with one packaging-level code change; it modifies no modeling logic.</p>
+
+<section>
+  <h2>1. Problem and audience</h2>
+  <ul>
+    <li><strong>Problem.</strong> e-footprint is AGPL-3.0. Enterprise open-source policies ban
+    AGPL mechanically: software-composition-analysis scanners flag it anywhere in a dependency
+    tree and corporate policy says no, regardless of the legal merits of any particular use
+    (observed signal: Schneider Electric-type policies; Google bans AGPL outright). The protection
+    AGPL was chosen for — deterring a proprietary "improved core" product — is largely symbolic in
+    practice: internal use is untouched by <em>any</em> license, violations at distribution/SaaS
+    level are hard to detect, and the project's real defense is maintainer velocity and
+    standard-setter status. Meanwhile the roadmap's calibration direction requires e-footprint to
+    be embedded inside enterprise data platforms — the most license-sensitive place software can
+    live. The cost side of the AGPL trade has grown; the benefit side was always thin.</li>
+    <li><strong>An incoherence today:</strong> e-footprint-interface is Apache-2.0 and imports the
+    AGPL library. For Publicis Sapient (copyright holder of both) this is fine; for any third
+    party deploying the interface, it inherits the contested combined-work question. The two
+    co-developed artifacts currently make a licensing statement that contradicts itself.</li>
+    <li><strong>A hidden blocker:</strong> relicensing the code alone would be cosmetic —
+    <code>efootprint</code> declares a <em>required</em> pip dependency on <code>boaviztapi</code>,
+    which is AGPL-3.0. Scanners evaluate the installed tree. The dependency is only an opt-in /
+    fallback execution path (the hosted HTTP API is already the primary path), so it can become
+    optional.</li>
+    <li><strong>Audience.</strong> Enterprise adopters and integrators (the calibration mission's
+    targets); Publicis Sapient as copyright holder; the Boavizta ecosystem; future contributors.</li>
+    <li><strong>Why now.</strong> The calibration feature is about to start and should be born
+    under the final license; the external-contributor surface is tiny today (a handful of people),
+    making consent cheap now and costlier every year; an active client context (Schneider) is
+    supplying direct evidence of the adoption cost.</li>
+  </ul>
+</section>
+
+<section>
+  <h2>2. Success criteria</h2>
+  <ul>
+    <li>The next release is published under <strong>Apache-2.0</strong>: LICENSE file, NOTICE
+    file, <code>[project]</code> license metadata and classifier, README license section,
+    CHANGELOG entry all consistent. Previously published versions remain AGPL (unavoidable and
+    acceptable).</li>
+    <li><strong>Default <code>pip install efootprint</code> contains zero AGPL code in its
+    dependency tree</strong>, verified by a license-audit step in CI. Boavizta impact data remains
+    available through the hosted HTTP API (primary path today), a configurable self-hosted API
+    URL, and the bundled data snapshot; the in-process <code>boaviztapi</code> package becomes an
+    optional extra with an actionable error message when absent.</li>
+    <li>The full test suite passes <em>without</em> the optional extra installed.</li>
+    <li>Written relicensing consent from every external contributor (or their contributions
+    rewritten), recorded publicly (e.g. a dedicated GitHub issue).</li>
+    <li>Publicis Sapient sign-off documented; Boavizta informed before the public announcement,
+    with the collaboration framing (their AGPL methodology core stays protected; e-footprint
+    extends its reach into enterprises that would never consume AGPL directly).</li>
+    <li>A DCO (Developer Certificate of Origin) requirement is adopted for future contributions,
+    keeping provenance clean and future licensing options open.</li>
+    <li>Attribution note added for the bundled Boavizta data snapshot, referencing Boavizta's data
+    terms.</li>
+    <li><code>specs/mission.md</code> license line and any docs mentions updated; a public
+    announcement explains the adoption-first rationale.</li>
+  </ul>
+</section>
+
+<section>
+  <h2>3. Scope</h2>
+  <blockquote>Capability-level only; file-level mechanics live in <a href="plan.html">plan.html</a>.</blockquote>
+  <details open><summary>In scope</summary>
+    <ul>
+      <li>License change of the e-footprint library for future versions.</li>
+      <li>Making the AGPL <code>boaviztapi</code> package an optional install extra, with hosted
+      HTTP API (existing primary path), self-hosted API URL, and bundled snapshot as the
+      supported default paths.</li>
+      <li>Contributor-consent process and its public record.</li>
+      <li>Governance follow-through: DCO adoption, NOTICE/attribution, comms.</li>
+    </ul>
+  </details>
+  <details><summary>Out of scope (this feature)</summary>
+    <ul>
+      <li>Relicensing already-published releases (legally moot; they stay AGPL).</li>
+      <li>Any change to e-footprint-interface (already Apache-2.0).</li>
+      <li>Asking Boavizta to relicense BoaviztAPI (their call; a separate conversation this
+      feature merely opens).</li>
+      <li>Changing other dependencies (EcoLogits is MPL-2.0, which composes cleanly inside an
+      Apache-2 project).</li>
+      <li>CLA infrastructure beyond a lightweight DCO.</li>
+    </ul>
+  </details>
+</section>
+
+<section>
+  <h2>4. UX / interface</h2>
+  <p>The user-visible surface is install behavior:</p>
+  <div class="mockup">
+    <table>
+      <thead><tr><th>Install</th><th>Boavizta data access</th><th>License profile of tree</th></tr></thead>
+      <tbody>
+        <tr><td><code>pip install efootprint</code></td><td>hosted HTTP API (cached) + bundled snapshot</td><td>permissive only</td></tr>
+        <tr><td><code>pip install efootprint</code> + self-hosted BoaviztAPI (Docker) + API URL setting</td><td>local HTTP, fully offline-capable</td><td>permissive only (AGPL runs server-side, user's choice)</td></tr>
+        <tr><td><code>pip install "efootprint[boaviztapi-local]"</code></td><td>in-process fallback, no server needed</td><td>user opts into AGPL in their own runtime</td></tr>
+      </tbody>
+    </table>
+  </div>
+</section>
+
+<section>
+  <h2>5. Constraints</h2>
+  <ul>
+    <li><strong>This is a Publicis Sapient decision</strong> (copyright holder); this spec is the
+    decision memo, not the decision. External contributions are few but real — consent or rewrite
+    is a hard gate before the license swap ships.</li>
+    <li><strong>Near-one-way door:</strong> future versions could be relicensed again, but
+    permissive→restrictive moves carry community fork risk (Elastic, HashiCorp precedents). The
+    decision should be made once, deliberately.</li>
+    <li><strong>Fallback position:</strong> if PS or Boavizta conversations require a reciprocity
+    gesture, MPL-2.0 (file-level copyleft: modifications to e-footprint files must be shared,
+    everything built around it unencumbered) is the named fallback — not AGPL.</li>
+    <li>Constitution: silent on licensing; no conflict. <code>specs/mission.md</code> documents
+    the license and must follow.</li>
+  </ul>
+</section>
+
+<section>
+  <h2>6. Open questions</h2>
+  <ul>
+    <li>Is julien.houbart_ext's contribution (16 commits) Publicis Sapient work-for-hire (i.e.
+    already PS copyright, no consent needed)? Verify internally.</li>
+    <li>Are "DE MERINGO Olivier" (2 commits) and "olivier" (1 commit) the same person?</li>
+    <li>Exact extra name (<code>boaviztapi-local</code>?) and API base-URL setting name.</li>
+    <li>Timing: land with the next regular release or as a dedicated release? (Recommendation:
+    dedicated minor release, so the license boundary is a clean version boundary.)</li>
+    <li>Should the announcement pair with the calibration-feature announcement (adoption story) or
+    precede it quietly?</li>
+  </ul>
+</section>
+
+<section>
+  <h2>7. Resuming from cold context</h2>
+  <ol>
+    <li>Read this file end to end.</li>
+    <li>Read <a href="plan.html"><code>plan.html</code></a> for file-level mechanics, the
+    contributor-consent list and template, and the CI license-gate.</li>
+    <li>Skim <code>efootprint/builders/hardware/boaviztapi_utils.py</code> — the HTTP-primary /
+    package-fallback structure this feature relies on.</li>
+  </ol>
+</section>
+
+</body>
+</html>

@@ -1,0 +1,160 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Apache-2 relicense — Implementation plan</title>
+<style>
+  body { font-family: system-ui, -apple-system, sans-serif; line-height: 1.6;
+         max-width: 52rem; margin: 2rem auto; padding: 0 1.2rem; color: #1a1a1a; }
+  h1 { border-bottom: 2px solid #e0e0e0; padding-bottom: .3rem; }
+  h2 { margin-top: 2rem; }
+  .status { color: #666; font-size: .9rem; }
+  table { border-collapse: collapse; width: 100%; margin: 1rem 0; }
+  th, td { border: 1px solid #ccc; padding: .4rem .6rem; text-align: left; vertical-align: top; }
+  th { background: #f5f5f5; }
+  code { background: #f4f4f4; padding: .1rem .35rem; border-radius: 3px; font-size: .9em; }
+  details { margin: .6rem 0; border: 1px solid #e0e0e0; border-radius: 6px; padding: .4rem .8rem; }
+  summary { cursor: pointer; font-weight: 600; }
+  pre { background: #f7f7f7; border: 1px solid #e0e0e0; border-radius: 6px; padding: .8rem; overflow-x: auto; }
+</style>
+</head>
+<body>
+
+<h1>Apache-2 relicense — Implementation plan</h1>
+<p class="status">Status: Plan — <strong>DRAFT</strong> (produced with the spec because the
+kickoff was design-rich; refine at spec-plan stage) · 2026-07-03 ·
+Spec: <a href="spec.html">spec.html</a></p>
+
+<section>
+  <h2>1. Approach</h2>
+  <p>Two workstreams. <strong>Workstream A (code, ships first):</strong> make the AGPL
+  <code>boaviztapi</code> package an optional extra — valuable regardless of the license decision
+  (lighter default install, cleaner tree, explicit self-hosting story). The code is already
+  structured for it: <code>call_boaviztapi()</code> uses the hosted HTTP API as primary path with
+  a 7-day cache, and touches the package only behind the <code>USE_BOAVIZTAPI_PACKAGE</code> env
+  var or as automatic fallback on web failure (<code>boaviztapi_utils.py:60-76</code>), with the
+  import already function-local (<code>:111-115</code>). <strong>Workstream B (governance):</strong>
+  contributor consents, PS sign-off, Boavizta conversation, license swap mechanics, DCO,
+  announcement. B gates on A being merged (a relicense with a required AGPL dependency would be
+  cosmetic).</p>
+</section>
+
+<section>
+  <h2>2. Affected modules / files</h2>
+  <table>
+    <thead><tr><th>File</th><th>Change</th><th>Note</th></tr></thead>
+    <tbody>
+      <tr><td><code>pyproject.toml</code></td><td>modified</td><td>remove <code>boaviztapi&gt;=2,&lt;3</code> from <code>dependencies</code>; add <code>[project.optional-dependencies] boaviztapi-local = ["boaviztapi&gt;=2,&lt;3"]</code>; add <code>license = "Apache-2.0"</code> and the corresponding classifier (workstream B)</td></tr>
+      <tr><td><code>efootprint/builders/hardware/boaviztapi_utils.py</code></td><td>modified</td><td>wrap the function-local <code>boaviztapi</code> imports in try/except → actionable <code>ImportError</code> ("hosted API unreachable — <code>pip install 'efootprint[boaviztapi-local]'</code> for an in-process fallback, or self-host BoaviztAPI and set the base URL"); introduce a module-level <code>BOAVIZTAPI_BASE_URL</code> (env-overridable, default <code>https://api.boavizta.org</code>) and derive all hardcoded URLs from it — including the keys of <code>url_method_mapping</code> (<code>:117-124</code>), which must be matched by route path rather than full URL once the base is configurable</td></tr>
+      <tr><td><code>efootprint/builders/hardware/boavizta_cloud_server.py</code></td><td>modified</td><td>use the base-URL constant in <code>api_call_response</code> and enum-fetch paths</td></tr>
+      <tr><td><code>LICENSE</code></td><td>replaced</td><td>Apache-2.0 text (workstream B, after consents)</td></tr>
+      <tr><td><code>NOTICE</code></td><td>new</td><td>Apache-2 convention: copyright line ("Copyright Publicis Sapient and e-footprint contributors"), pointer to Boavizta data attribution</td></tr>
+      <tr><td><code>README.md</code></td><td>modified</td><td>license section (<code>:89-91</code>), install matrix from spec §4, self-hosting note</td></tr>
+      <tr><td><code>specs/mission.md</code></td><td>modified</td><td><code>:53</code> license line</td></tr>
+      <tr><td><code>CHANGELOG.md</code></td><td>modified</td><td>entries for both workstreams; recommend a dedicated minor release so the license boundary is a version boundary</td></tr>
+      <tr><td>CI workflow</td><td>modified</td><td>add a test job running the suite <em>without</em> the extra installed; add a license-audit gate (e.g. <code>pip-licenses</code>) asserting no AGPL in the default tree; add DCO check for future PRs</td></tr>
+      <tr><td><code>efootprint/builders/hardware/boavizta_cloud_instances_snapshot.json</code></td><td>unchanged</td><td>data, not code — attribution added in NOTICE/README; verify Boavizta data terms</td></tr>
+    </tbody>
+  </table>
+</section>
+
+<section>
+  <h2>3. Contributor consent (workstream B gate)</h2>
+  <p>From <code>git shortlog -sn --no-merges</code>: ~813 of ~841 commits by the maintainer
+  (PS copyright). External surface:</p>
+  <table>
+    <thead><tr><th>Author</th><th>Commits</th><th>Handling</th></tr></thead>
+    <tbody>
+      <tr><td>julien.houbart_ext</td><td>16</td><td>verify PS work-for-hire status internally — if contractor-for-PS, already PS copyright, no consent needed</td></tr>
+      <tr><td>Bruno Thomas</td><td>6</td><td>consent request</td></tr>
+      <tr><td>DE MERINGO Olivier (+ "olivier", possibly same person)</td><td>2 (+1)</td><td>consent request</td></tr>
+      <tr><td>Dila Bellik</td><td>1</td><td>consent request</td></tr>
+      <tr><td>Nÿco</td><td>1</td><td>consent request</td></tr>
+      <tr><td>copilot-swe-agent[bot]</td><td>1</td><td>machine-generated under maintainer direction; no separate copyright holder</td></tr>
+    </tbody>
+  </table>
+  <p>Mechanism: a dedicated public GitHub issue ("Relicensing e-footprint from AGPL-3.0 to
+  Apache-2.0") where each contributor posts consent — public, permanent, auditable. Template
+  message:</p>
+  <pre>Hi — we plan to relicense e-footprint from AGPL-3.0 to Apache-2.0 for all future
+versions, to remove enterprise adoption barriers (rationale: [link to announcement
+draft]). You contributed N commits ([links]). Could you confirm in this issue that
+you consent to your past contributions being relicensed under Apache-2.0?
+If you have any concerns, we'd genuinely like to hear them. Thank you for having
+contributed!</pre>
+  <p>Fallback for unreachable/declining contributors: their hunks are small enough to rewrite
+  cleanly (verify each with <code>git log -p --author</code>).</p>
+</section>
+
+<section>
+  <h2>4. Cross-cutting concerns</h2>
+  <ul>
+    <li><strong>Tests:</strong> suite must pass with and without the extra; add explicit tests for
+    the guarded-import error message and the base-URL override; CI license-audit gate.</li>
+    <li><strong>Migrations:</strong> none (no JSON schema change).</li>
+    <li><strong>Docs:</strong> README, mission.md, mkdocs pages mentioning license or Boavizta
+    setup; announcement post (framing: "the license should never be the reason e-footprint isn't
+    embedded"; Boavizta paragraph: their AGPL methodology core stays protected while e-footprint
+    extends its reach over HTTP).</li>
+    <li><strong>Sequencing:</strong> A merges anytime; B ships only after (1) PS legal sign-off,
+    (2) consents complete, (3) Boavizta informed. The calibration feature can start under AGPL and
+    inherit the new license transparently — it should not wait.</li>
+  </ul>
+</section>
+
+<section>
+  <h2>5. Risks</h2>
+  <ul>
+    <li><strong>Contributor unreachable or declines</strong> — rewrite their hunks (small counts
+    make this feasible); worst case delays workstream B only.</li>
+    <li><strong>Boavizta discomfort</strong> (their projects lean AGPL) — mitigation: the
+    HTTP-consumption framing above, plus MPL-2.0 as the named fallback if reciprocity turns out to
+    matter politically.</li>
+    <li><strong>Hosted-API dependence becomes more visible</strong> once the package is optional —
+    mitigation: existing 7-day cache, bundled snapshot, documented self-hosting (Docker), and the
+    extra for those who want in-process fallback.</li>
+    <li><strong>Perception risk ≈ zero:</strong> permissive-ward relicenses are welcomed by users;
+    the Elastic/HashiCorp backlash pattern applies to the opposite direction.</li>
+  </ul>
+</section>
+
+<section>
+  <h2>6. Alternatives considered</h2>
+  <ul>
+    <li><strong>MIT / BSD-3</strong> — rejected: no explicit patent grant; Apache-2 is the
+    corporate-hygiene standard and matches the interface.</li>
+    <li><strong>MPL-2.0</strong> — the serious runner-up: file-level copyleft targets exactly the
+    "improved core sold proprietary" worry while freeing integrators. Rejected as primary because
+    most corporate policies still put MPL in a "reciprocal — review required" tier (friction at
+    exactly the target adopters), the protection is hard to enforce in practice, and the peer
+    ecosystem (Cloud Carbon Footprint, Kepler, Scaphandre, Impact Framework) is Apache-2/MIT.
+    Retained as the named fallback.</li>
+    <li><strong>Stay AGPL + case-by-case dual licensing</strong> — rejected: per-deal friction,
+    scales with PS effort, does nothing for organic adoption.</li>
+    <li><strong>BUSL / fair-source</strong> — rejected: contradicts the mission's collaboration
+    ethos and the consulting business model (missions, not licenses).</li>
+  </ul>
+</section>
+
+<section>
+  <h2>7. Constitutional notes</h2>
+  <p>The constitution is silent on licensing; no amendment needed. Constitution §1.2 ("no external
+  callers besides e-footprint-interface") is unaffected — a permissive license invites external
+  users but promises them nothing, which should be stated in the announcement ("no API stability
+  guarantees for third parties yet"). <code>specs/mission.md</code> is the downstream artifact
+  that must follow.</p>
+</section>
+
+<section>
+  <h2>8. Open questions (resolve before tasks)</h2>
+  <ul>
+    <li>Spec §6 items (work-for-hire status, identity dedup, extra/env names, release timing,
+    announcement pairing).</li>
+    <li>Who owns the PS-internal sign-off conversation and by when? (It gates workstream B
+    only.)</li>
+  </ul>
+</section>
+
+</body>
+</html>
