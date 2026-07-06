@@ -6,11 +6,6 @@
             "name": "Base ADEME_V19",
             "link": "https://data.ademe.fr/datasets/base-carbone(r)"
         },
-        "Boavizta-API-cloud-instances": {
-            "id": "Boavizta-API-cloud-instances",
-            "name": "Boavizta API cloud instances",
-            "link": "https://api.boavizta.org/v1/cloud/instance?provider=scaleway&instance_type=ent1-s"
-        },
         "DATA2eAI---STATE-OF-MOBILE": {
             "id": "DATA2eAI---STATE-OF-MOBILE",
             "name": "DATA.AI - STATE OF MOBILE",
@@ -20,16 +15,6 @@
             "id": "Dirty-secret-of-SSDs3a-embodied-carbon",
             "name": "Dirty secret of SSDs: embodied carbon",
             "link": "https://arxiv.org/pdf/2207.10793.pdf"
-        },
-        "Ecologits-compute_llm_impacts_dag-function": {
-            "id": "Ecologits-compute_llm_impacts_dag-function",
-            "name": "Ecologits compute_llm_impacts_dag function",
-            "link": "https://github.com/genai-impact/ecologits/blob/main/ecologits/impacts/llm.py"
-        },
-        "Ecologits-llm_impacts-function": {
-            "id": "Ecologits-llm_impacts-function",
-            "name": "Ecologits llm_impacts function",
-            "link": "https://github.com/genai-impact/ecologits/blob/main/ecologits/tracers/utils.py#L60"
         },
         "Estimating-the-Carbon-Footprint-of-BLOOM": {
             "id": "Estimating-the-Carbon-Footprint-of-BLOOM",

@@ -35,10 +35,13 @@ def recursively_write_json_dict(
                 deferred_linked_object_ids.add(candidate.id)
 
         # Computed values live in the reactive slots, not the instance dict: scan them too so their
-        # sources and dict keys are discovered (sources are collected for inputs-only files as well,
-        # matching the historical Sources block content). peek, never pull — only materialized values
-        # ever contributed, and saving a model must not compute it (dict entries are read through the
-        # raw dict for the same reason: facade iteration would pull).
+        # sources and dict keys are discovered. The sources gathered here are only *candidates* — the
+        # block is filtered down to those a serialized value actually references (see
+        # ``collect_referenced_source_ids``), so pure computed-attribute provenance, which no
+        # serialized value cites and which recompute re-attaches, is dropped rather than persisted as
+        # an orphan. peek, never pull — only materialized values ever contributed, and saving a model
+        # must not compute it (dict entries are read through the raw dict for the same reason: facade
+        # iteration would pull).
         # efootprint_class, not type(mod_obj): objects reached through relationships arrive wrapped in
         # ContextualModelingObjectAttribute, whose own class declares no computed slots.
         attributes_to_scan = list(mod_obj.__dict__.items()) + [
@@ -158,12 +161,35 @@ def _address_sort_key(address):
     return address[0], address[1], address[2] or ""
 
 
+def collect_referenced_source_ids(serialized_blocks) -> set:
+    """The set of source ids a serialized value actually cites — every ``"source"`` string reachable
+    in the written object payloads. Only these belong in the top-level ``Sources`` block: a source no
+    serialized value references is pure computed-attribute provenance (re-attached deterministically
+    whenever the value is recomputed), so persisting it would only leave an orphan block entry."""
+    referenced = set()
+
+    def walk(node):
+        if isinstance(node, dict):
+            for key, value in node.items():
+                if key == "source" and isinstance(value, str):
+                    referenced.add(value)
+                walk(value)
+        elif isinstance(node, list):
+            for item in node:
+                walk(item)
+
+    walk(serialized_blocks)
+    return referenced
+
+
 def system_to_json(input_system, output_filepath=None, indent=4, save_computed_state=True):
     """Serialize a system under the minimal persistence contract: every object's inputs, the cached
     values of serialize-flagged slots (with their formulas), and the values-free calculation graph.
     Anything absent recomputes on read after a load. ``save_computed_state=False`` writes a pure
     inputs-only file (no stored values, no calculation graph) — for lean committed files and
-    from-scratch rebuilds."""
+    from-scratch rebuilds. The top-level ``Sources`` block holds only sources a serialized value
+    references; pure computed-attribute provenance is re-attached on recompute, so it is not
+    persisted (see ``collect_referenced_source_ids``)."""
     output_dict = {"efootprint_version": efootprint.__version__}
     sources_by_id = {}
     collected_objects = []
@@ -172,10 +198,13 @@ def system_to_json(input_system, output_filepath=None, indent=4, save_computed_s
         collected_objects=collected_objects)
 
     if sources_by_id:
-        sources_block = {sid: src.to_json() for sid, src in sorted(sources_by_id.items())}
-        # Insert Sources block right after efootprint_version, before modeling-class blocks.
-        output_dict = {"efootprint_version": output_dict["efootprint_version"], "Sources": sources_block,
-                       **{k: v for k, v in output_dict.items() if k != "efootprint_version"}}
+        referenced_source_ids = collect_referenced_source_ids(output_dict)
+        sources_block = {
+            sid: src.to_json() for sid, src in sorted(sources_by_id.items()) if sid in referenced_source_ids}
+        if sources_block:
+            # Insert Sources block right after efootprint_version, before modeling-class blocks.
+            output_dict = {"efootprint_version": output_dict["efootprint_version"], "Sources": sources_block,
+                           **{k: v for k, v in output_dict.items() if k != "efootprint_version"}}
 
     if save_computed_state:
         output_dict[CALCULATION_GRAPH_KEY] = calculation_graph_section(collected_objects)

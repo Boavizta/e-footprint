@@ -19,8 +19,9 @@ from efootprint.abstract_modeling_classes.explainable_object_base_class import (
 from efootprint.abstract_modeling_classes.explainable_quantity import ExplainableQuantity
 from efootprint.abstract_modeling_classes.explainable_recurrent_quantities import ExplainableRecurrentQuantities
 from efootprint.abstract_modeling_classes.explainable_timezone import ExplainableTimezone
+from efootprint.abstract_modeling_classes.reactive_core import computed_slots, serialized_slots
 from efootprint.api_utils.json_to_system import build_sources_dict_from_system_dict, json_to_system
-from efootprint.api_utils.system_to_json import system_to_json
+from efootprint.api_utils.system_to_json import collect_referenced_source_ids, system_to_json
 from efootprint.builders.timeseries.explainable_hourly_quantities_from_form_inputs import (
     ExplainableHourlyQuantitiesFromFormInputs)
 from efootprint.builders.timeseries.explainable_recurrent_quantities_from_constant import (
@@ -182,6 +183,70 @@ class TestBuildSourcesDict(TestCase):
     def test_handles_missing_sources_block(self):
         sources_dict = build_sources_dict_from_system_dict({})
         self.assertEqual({}, sources_dict)
+
+
+class TestCollectReferencedSourceIds(TestCase):
+    def test_collects_nested_source_strings(self):
+        blocks = {
+            "Server": {"s1": {"power": {"label": "p", "source": "src-a"},
+                              "nested": {"x": {"source": "src-b"}}}},
+            "Storage": {"st1": {"cap": {"source": "src-a"}, "list_attr": [{"source": "src-c"}]}},
+        }
+        self.assertEqual({"src-a", "src-b", "src-c"}, collect_referenced_source_ids(blocks))
+
+    def test_ignores_non_string_source_values(self):
+        # A dict under a "source" key is not an id reference; nothing to collect.
+        self.assertEqual(set(), collect_referenced_source_ids({"a": {"source": {"id": "x"}}, "b": [1, "y"]}))
+
+
+class TestSourcesBlockHoldsOnlyReferencedSources(TestCase):
+    """The top-level Sources block holds only sources a serialized value references; pure
+    computed-attribute provenance (re-attached deterministically on recompute) is dropped rather than
+    persisted as an orphan block entry."""
+
+    def test_simple_system_block_has_no_unreferenced_sources(self):
+        system, _ = IntegrationTestSimpleSystemBaseClass.generate_simple_system()
+        system_dict = system_to_json(system, save_computed_state=False)
+        block_ids = set(system_dict.get("Sources", {}))
+        referenced = collect_referenced_source_ids(
+            {k: v for k, v in system_dict.items() if k not in ("efootprint_version", "Sources")})
+        self.assertTrue(block_ids)
+        self.assertEqual(block_ids, block_ids & referenced)
+
+    def test_source_on_a_computed_slot_is_not_hoisted(self):
+        # Stand in for real computed-attribute provenance (EcoLogits / Boavizta getters attach a
+        # source to a *computed* value): tag a materialized computed slot with a synthetic source no
+        # serialized value references. The old hoist-everything code peeked it into the block; the
+        # referenced-only filter must drop it.
+        system, _ = IntegrationTestSimpleSystemBaseClass.generate_simple_system()
+        _ = system.total_footprint  # local compute, materializes the computed slots
+        synthetic_source = Source("synthetic computed provenance", "https://example.com/computed")
+        tagged = None
+        for obj in system.all_linked_objects:
+            serialized = set(serialized_slots(obj.efootprint_class))
+            for attr_name, descriptor in computed_slots(obj.efootprint_class).items():
+                # A bare (non-serialize-flagged) computed slot: its value is never written, so its
+                # source is referenced by nothing — exactly the provenance the filter must drop.
+                if attr_name in serialized:
+                    continue
+                peeked = descriptor.peek(obj)
+                if isinstance(peeked, ExplainableObject):
+                    peeked.source = synthetic_source
+                    tagged = (obj, attr_name)
+                    break
+            if tagged is not None:
+                break
+        self.assertIsNotNone(tagged, "No materialized computed slot found to tag")
+
+        system_dict = system_to_json(system, save_computed_state=False)
+        block_ids = set(system_dict.get("Sources", {}))
+        referenced = collect_referenced_source_ids(
+            {k: v for k, v in system_dict.items() if k not in ("efootprint_version", "Sources")})
+        self.assertEqual(block_ids, block_ids & referenced)
+        self.assertNotIn(synthetic_source.id, referenced)
+        self.assertNotIn(
+            synthetic_source.id, block_ids,
+            "A source carried only by a computed slot must not be hoisted into the Sources block")
 
 
 class TestSystemToJsonOnNonSystemObject(TestCase):

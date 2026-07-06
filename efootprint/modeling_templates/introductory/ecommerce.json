@@ -6,11 +6,6 @@
             "name": "Base ADEME_V19",
             "link": "https://data.ademe.fr/datasets/base-carbone(r)"
         },
-        "Boavizta-API-cloud-instances": {
-            "id": "Boavizta-API-cloud-instances",
-            "name": "Boavizta API cloud instances",
-            "link": "https://api.boavizta.org/v1/cloud/instance?provider=scaleway&instance_type=ent1-s"
-        },
         "DATA2eAI---STATE-OF-MOBILE": {
             "id": "DATA2eAI---STATE-OF-MOBILE",
             "name": "DATA.AI - STATE OF MOBILE",
