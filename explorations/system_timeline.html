@@ -1,0 +1,473 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>SystemTimeline — exploration</title>
+<style>
+  body { font-family: system-ui, -apple-system, sans-serif; line-height: 1.6;
+         max-width: 56rem; margin: 2rem auto; padding: 0 1.2rem; color: #1a1a1a; }
+  h1 { border-bottom: 2px solid #e0e0e0; padding-bottom: .3rem; }
+  h2 { margin-top: 2.4rem; border-bottom: 1px solid #eee; padding-bottom: .2rem; }
+  h3 { margin-top: 1.4rem; }
+  .status { color: #666; font-size: .9rem; }
+  table { border-collapse: collapse; margin: 1rem 0; display: block;
+          width: max-content; max-width: 100%; overflow-x: auto; }
+  th, td { border: 1px solid #ccc; padding: .35rem .6rem; text-align: left; vertical-align: top; }
+  th { background: #f5f5f5; }
+  code { background: #f4f4f4; padding: .1rem .35rem; border-radius: 3px; font-size: .9em; }
+  pre { background: #f6f8fa; border: 1px solid #e0e0e0; border-radius: 8px;
+        padding: .8rem 1rem; overflow-x: auto; font-size: .85em; line-height: 1.45; }
+  pre code { background: none; padding: 0; }
+  .rule { border: 2px solid #1565c0; border-radius: 8px; padding: .7rem 1rem; margin: 1.2rem 0;
+          background: #f6f9fd; font-weight: 600; }
+  .note { border: 1px solid #e0e0e0; background: #fafafa; border-radius: 8px;
+          padding: .7rem 1rem; margin: 1rem 0; font-size: .93em; }
+  .chip { display: inline-block; border-radius: 999px; padding: 0 .55em; font-size: .82em;
+          font-weight: 600; white-space: nowrap; }
+  .obs { background: #e8f5e9; color: #2e7d32; }
+  .cal { background: #e3f2fd; color: #1565c0; }
+  .hyp { background: #fff3e0; color: #ef6c00; }
+  .plan { background: #f3e5f5; color: #7b1fa2; }
+  details { margin: .8rem 0 1rem; border: 1px solid #e0e0e0; border-radius: 6px;
+            padding: .25rem .8rem; background: #fcfcfc; }
+  summary { cursor: pointer; font-weight: 600; font-size: .9em; color: #555; }
+  .toc { background: #fafafa; border: 1px solid #e0e0e0; border-radius: 8px; padding: .6rem 1.2rem; }
+  .toc ol { margin: .4rem 0; columns: 2; }
+  figure { margin: 1.2rem 0; }
+  figcaption { font-size: .88em; color: #666; margin-top: .3rem; }
+</style>
+</head>
+<body>
+
+<h1>SystemTimeline — exploration</h1>
+<p class="status">Exploration — the record of a design discussion (July 2026), <strong>not a
+spec</strong>. Origin: preparing calibration missions raised the question of systems that evolve
+while being modeled. Parked here and referenced from <code>specs/roadmap.md</code>; to be
+revisited once calibration missions have produced real requirements. Written to be re-readable
+cold after six months: main text carries the ideas, collapsibles carry the details.</p>
+
+<div class="toc">
+<strong>Contents</strong>
+<ol>
+  <li>Why</li>
+  <li>The two time axes</li>
+  <li>Timeline entries</li>
+  <li>The file</li>
+  <li>Segments, evaluation, settlement frontier</li>
+  <li>Caching &amp; interface architecture</li>
+  <li>Propagating a change</li>
+  <li>Performance posture</li>
+  <li>What the library needs</li>
+  <li>Open questions</li>
+  <li>Path to adoption</li>
+</ol>
+</div>
+
+<table>
+  <tr><th colspan="2">Vocabulary at a glance</th></tr>
+  <tr><td><strong>entry</strong></td><td>one dated, statused record of change in the ledger — a
+      <em>change</em> (the system changed) or a <em>revision</em> (our knowledge changed)</td></tr>
+  <tr><td><strong>segment</strong></td><td>the validity window of one system version, between two
+      consecutive entry dates</td></tr>
+  <tr><td><strong>current segment</strong></td><td>the segment whose window contains today</td></tr>
+  <tr><td><strong>settlement frontier</strong></td><td>the modeled-time date up to which
+      <em>observed</em> usage has been ingested; beyond it, forecasts</td></tr>
+  <tr><td><strong>restatement</strong></td><td>a recorded correction of already-settled numbers
+      (caused by a revision or a library upgrade)</td></tr>
+  <tr><td><strong>branch</strong></td><td>an alternative future entry sequence from a common
+      prefix — a scenario / roadmap variant (open design, §10)</td></tr>
+</table>
+
+<h2>1. Why</h2>
+<p>Two capabilities e-footprint lacks today:</p>
+<ol>
+  <li><strong>Keeping a record as systems evolve.</strong> A modeled system changes constantly —
+  jobs get optimized, journeys appear, infra migrates. Today each change silently overwrites the
+  model; history is whatever JSON files someone happened to keep. Nothing connects "the footprint
+  dropped" to "because we shipped the caching release".</li>
+  <li><strong>Modeling systems that evolve into the future.</strong> A roadmap of planned
+  implementations, with assumptions about the world (grid carbon intensity, AI efficiency),
+  evaluated as a footprint trajectory — the what-if simulation capability, reintroduced in a more
+  flexible form than the deleted <code>simulation_date</code> API.</li>
+</ol>
+<p>The product frame that keeps this decision-tooling rather than compliance reporting:
+<strong>simulate → act → verify</strong>. Every planned change carries a <em>predicted</em>
+footprint effect; after shipping, calibration measures the <em>realized</em> effect. The tool
+closes the loop that "simulate before you act" opens.</p>
+<div class="note"><strong>Why <code>simulation_date</code> was deleted rather than fixed:</strong>
+it fused a change into the live system as a dated mutation — the change was never inspectable
+data, only one hybrid half-old-half-new system existed, and the calculation engine had to know
+about dates of change. Every design decision below is downstream of not repeating that.</div>
+
+<h2>2. The two time axes</h2>
+<p><strong>Modeled time</strong> is the hourly axis the engine computes over —
+<code>hourly_usage_journey_starts(t)</code>, footprint(t). <strong>System-version time</strong>
+is the axis on which the <em>description</em> of the system changes: a deploy, an optimization, a
+new journey. A <code>System</code> object is the physics of the service <em>at one version</em>;
+the two axes touch at exactly one join point — an entry's <code>effective_from</code> date says
+from which modeled-time hour its version applies.</p>
+
+<figure>
+<svg viewBox="0 0 780 260" xmlns="http://www.w3.org/2000/svg" font-family="system-ui" font-size="12">
+  <defs><marker id="ax" markerWidth="8" markerHeight="8" refX="7" refY="3" orient="auto">
+    <path d="M0,0 L7,3 L0,6" fill="none" stroke="#555"/></marker></defs>
+  <line x1="50" y1="210" x2="765" y2="210" stroke="#555" marker-end="url(#ax)"/>
+  <text x="700" y="232" fill="#555">modeled time</text>
+  <line x1="50" y1="210" x2="50" y2="28" stroke="#555" marker-end="url(#ax)"/>
+  <text x="58" y="40" fill="#555">system version</text>
+  <line x1="70" y1="180" x2="250" y2="180" stroke="#1565c0" stroke-width="3"/>
+  <text x="150" y="172" fill="#1565c0" font-weight="600">v1</text>
+  <line x1="250" y1="180" x2="250" y2="140" stroke="#1565c0" stroke-dasharray="3,3"/>
+  <line x1="250" y1="140" x2="430" y2="140" stroke="#1565c0" stroke-width="3"/>
+  <text x="330" y="132" fill="#1565c0" font-weight="600">v2</text>
+  <line x1="430" y1="140" x2="430" y2="100" stroke="#1565c0" stroke-dasharray="3,3"/>
+  <line x1="430" y1="100" x2="620" y2="100" stroke="#1565c0" stroke-width="3"/>
+  <text x="510" y="92" fill="#1565c0" font-weight="600">v3 (current)</text>
+  <line x1="620" y1="100" x2="620" y2="60" stroke="#7b1fa2" stroke-dasharray="3,3"/>
+  <line x1="620" y1="60" x2="745" y2="60" stroke="#7b1fa2" stroke-width="3" stroke-dasharray="7,4"/>
+  <text x="660" y="52" fill="#7b1fa2" font-weight="600">v4 (planned)</text>
+  <line x1="560" y1="210" x2="560" y2="70" stroke="#999" stroke-dasharray="4,3"/>
+  <text x="548" y="64" fill="#999">now</text>
+  <path d="M250,210 l-5,10 l10,0 z" fill="#1565c0"/>
+  <text x="200" y="238" fill="#444">E1 caching release</text>
+  <path d="M430,210 l-5,10 l10,0 z" fill="#1565c0"/>
+  <text x="392" y="238" fill="#444">E2 log purge</text>
+  <path d="M620,210 l-5,10 l10,0 z" fill="#7b1fa2"/>
+  <text x="580" y="238" fill="#7b1fa2">E3 AI step (planned)</text>
+</svg>
+<figcaption>The staircase: each entry steps the system version at its
+<code>effective_from</code> date. Past treads are calibrated reality; future treads are the
+roadmap.</figcaption>
+</figure>
+
+<p>Separating the axes turns every use case into a quadrant — the deleted feature could only
+express one diagonal of this table:</p>
+<table>
+  <tr><th></th><th>current / past system</th><th>changed system</th></tr>
+  <tr><th>past usage</th><td>historical reconstruction</td>
+      <td>counterfactual ("what would last year have cost with the optimization?")</td></tr>
+  <tr><th>future usage</th><td>business-as-usual projection</td><td>roadmap simulation</td></tr>
+</table>
+
+<div class="rule">Classification criterion: the version axis carries <em>your team’s
+decisions</em> (code, infra, journey structure, calibrated physics). Evolving <em>world
+context</em> — grid carbon intensity paths, provider-side AI efficiency — belongs on modeled
+time, as input series extending into the future. Test: would you put it in the team’s changelog
+and hold the roadmap accountable for it?</div>
+
+<details><summary>Why world context must not be version entries — and two parked ideas</summary>
+<p>Three reasons. (1) <em>Events vs trajectories</em>: version entries are discrete
+(before/after); grid intensity is a continuous path — encoding it as entries chops the timeline
+into artificial segments. (2) <em>Attribution</em>: the ledger is the team’s changelog; if the
+grid getting cleaner lands next to your caching release, "the system changed" becomes
+meaningless and predicted-vs-realized verification is impossible. (3) <em>Scenario
+orthogonality</em>: world trajectories arrive as wholesale pathways (ADEME/IEA scenarios) you
+want to swap under the <em>same</em> roadmap — a third independent dimension (system version ×
+usage scenario × world scenario).</p>
+<p><strong>Parked idea #1:</strong> country carbon intensities as modeled-time series (today they
+are constants on <code>Country</code>) — the library evolution this classification implies.
+Until then, piecewise version entries are a legitimate, labeled workaround.</p>
+<p><strong>Parked idea #2:</strong> a decay function reducing a given AI model’s impact if kept
+across time (provider-side efficiency drift). Boundary case by construction: the same parameter
+changes as world context (provider silently improves) or as a decision (team swaps models) —
+the changelog test decides which channel each occurrence uses.</p>
+</details>
+
+<h2>3. Timeline entries</h2>
+<p><strong>One entry = one cause</strong> — a release, a decision, a discovered correction —
+carrying 1..N atomic changes. Never one entry per changed value: verification targets "the
+caching release", not twelve scattered numbers.</p>
+<pre><code>{
+  "recorded_at":    "2026-03-14",          // when it entered the ledger
+  "effective_from": "2026-03-12",          // when it applies on modeled time
+  "kind":   "change",                      // or "revision" (knowledge changed, system didn't)
+  "label":  "Search results caching (release v2.31)",
+  "status": "calibrated",                  // observed | calibrated | planned | hypothesis | drift
+  "evidence": {"release": "v2.31.0", "fit": "calibration 2026-03 diagnostics"},
+  "changes": [
+    {"object": "job-search", "attr": "compute_needed", "op": "set", "old": "…", "new": "…"}
+  ],
+  "predicted_effect": null,                // filled for planned entries, at planning time
+  "realized_effect":  {"footprint_delta": "-11.8%", "measured": "2026-04 calibration"}
+}</code></pre>
+<p>A <em>future</em> entry is the same object with <code>status: planned</code>, a filled
+<code>predicted_effect</code> and an empty <code>realized_effect</code> — completed later by
+calibration. <strong>The simulate → act → verify loop is literally these two fields on the same
+record.</strong> Past and future differ only by status — the coverage-table discipline
+(<span class="chip obs">observed</span> / <span class="chip cal">calibrated</span> /
+<span class="chip hyp">hypothesis</span> / <span class="chip plan">planned</span>) extended in
+time.</p>
+
+<details><summary>Details — atomic change kinds, revisions, state-carrying parameters</summary>
+<p><strong>Three atomic change kinds</strong>, all expressed on the JSON representation
+(object id + attribute + value), which is why none of this needs engine surgery:
+<em>attribute</em> (old → new on an existing object), <em>add</em> (new object + its attachment
+point), <em>remove</em> (object retired).</p>
+<p><strong>Change vs revision.</strong> A recalibration can move a parameter with no deploy
+behind it — reality didn’t change, the estimate improved. Recording it as a change would put a
+phantom step in the footprint history. So <code>kind: revision</code> exists: appended to the
+same chain (never editing the file), with <code>effective_from</code> in the past. Replay orders
+by <code>effective_from</code> (ties by <code>recorded_at</code>), so revisions reshape the past
+while the ledger stays append-only. The deploy/change log is what distinguishes the two
+mechanically: a parameter jump <em>with</em> a matching release is a change; <em>without</em>
+one, a revision.</p>
+<p><strong>Bitemporality for free:</strong> because every entry has both dates and the chain is
+append-only, "what did we believe on date X about date Y" is answered by replaying only entries
+with <code>recorded_at ≤ X</code>. Delivered reports pin the ledger position they were computed
+from; later restatements are then detectable and explainable as a diff of beliefs.</p>
+<p><strong>State-carrying parameters.</strong> Inputs that represent <em>accumulated state</em> —
+today essentially <code>base_storage_need</code> (initial stored data) — obey special rules,
+flagged by class-level metadata (a <code>state_carrying</code> tag in the SSOT class metadata):
+their absolute level is owned by the accumulation dynamics (§5), so entries touching them use
+<code>op: "adjust"</code> for decisions ("purged 10 TB of logs": −10 TB composing with the
+handoff) and <code>op: "set"</code> only for revisions that re-anchor the state to a measurement
+("actual storage is 47 TB, model said 52" — and the 5 TB gap is itself a finding about the
+modeled growth rate).</p>
+</details>
+
+<h2>4. The file</h2>
+<p>Lean, single source of truth: the base system in full, then only entries. Later versions are
+<em>materialized by replay</em>, never stored — the calculation graph is derived by the engine
+from any materialized description, so nothing is lost. Computed results live in a separate,
+honestly-named cache section:</p>
+<pre><code>{
+  "base_system":  { …full description — the only one stored… },
+  "entries":      [ …the append-only ledger (§3)… ],
+  "version_hashes": { "v2": "…", "v3": "…" },     // integrity: replay must reproduce these
+  "cached_evaluations": [
+    {"segment": "v3", "window": "2026-03-12 → 2026-06-20",
+     "efootprint_version": "22.3.0", "ledger_position": "…",
+     "impact_sources": "…hourly series…", "end_state": {"storage-main": "47.2 TB"}}
+  ],
+  "restatements": [ …condensed corrections of settled numbers (§5)… ]
+}</code></pre>
+
+<div class="rule">Leanness rule: redundant <em>truth</em> is forbidden; redundant <em>caches</em>
+with an explicit invalidation rule are how performance is bought. Deltas are the truth; every
+materialized system and every computed series is a cache.</div>
+
+<details><summary>Details — event sourcing, integrity checks, the inverted git trade-off</summary>
+<p>This is the <strong>event-sourcing</strong> pattern: entries are the event log (truth), the
+materialized current system is a view (cache), cached evaluations are the read model. The
+pattern’s standard answers apply to replay determinism, view invalidation, and retroactive
+events (our revisions).</p>
+<p><strong>Integrity without stored snapshots:</strong> a hash of the materialized description
+per version (32 bytes instead of a full snapshot) — replay must reproduce it. And the
+<strong>undeclared-drift check</strong> is a process, not a storage layer: at each calibration
+ingestion, the freshly fitted description is diffed against the materialized current version;
+anything not explained by declared entries becomes a new entry labeled <code>drift</code>, cause
+unknown — a finding, not an error.</p>
+<p><strong>Git chose the opposite</strong> (store snapshots, compute diffs) because its diffs are
+semantically meaningless and random access must be fast. Here the situation inverts: entries are
+the semantically valuable artifact (dated, statused, verifiable decisions) and replay over tens
+of versions is instant — so diff-storage wins for reasons beyond leanness.</p>
+</details>
+
+<h2>5. Segments, evaluation, settlement frontier</h2>
+<p>Replaying the ledger yields a <strong>version series</strong> — one system description per
+segment. Evaluating the timeline = materialize each version, evaluate it over its own window
+with the usage inputs sliced to that window, concatenate. Each segment evaluation is a plain
+e-footprint run; <strong>piecewise concatenation is the only new machinery.</strong></p>
+
+<figure>
+<svg viewBox="0 0 820 215" xmlns="http://www.w3.org/2000/svg" font-family="system-ui" font-size="12">
+  <rect x="40" y="30" width="210" height="38" fill="#eef3fa" stroke="#8aa"/>
+  <text x="145" y="53" text-anchor="middle" fill="#345">v1</text>
+  <rect x="250" y="30" width="180" height="38" fill="#eef3fa" stroke="#8aa"/>
+  <text x="340" y="53" text-anchor="middle" fill="#345">v2</text>
+  <rect x="430" y="30" width="210" height="38" fill="#e3f2fd" stroke="#1565c0" stroke-width="2"/>
+  <text x="535" y="53" text-anchor="middle" fill="#1565c0" font-weight="600">v3 — current segment</text>
+  <rect x="640" y="30" width="150" height="38" fill="#faf5fc" stroke="#7b1fa2" stroke-dasharray="5,3"/>
+  <text x="715" y="53" text-anchor="middle" fill="#7b1fa2">v4 planned</text>
+  <rect x="40" y="95" width="470" height="26" fill="#e8f5e9"/>
+  <text x="60" y="112" fill="#2e7d32">settled — observed usage, calibrated physics</text>
+  <rect x="510" y="95" width="65" height="26" fill="#fff3e0"/>
+  <text x="514" y="112" fill="#ef6c00" font-size="10">awaiting ingestion</text>
+  <rect x="575" y="95" width="215" height="26" fill="#f3e5f5"/>
+  <text x="600" y="112" fill="#7b1fa2">projected — forecasts + planned entries</text>
+  <line x1="510" y1="22" x2="510" y2="200" stroke="#2e7d32" stroke-width="2"/>
+  <text x="380" y="18" fill="#2e7d32" font-weight="600">settlement frontier (advances at each ingestion)</text>
+  <line x1="575" y1="22" x2="575" y2="200" stroke="#999" stroke-dasharray="4,3"/>
+  <text x="583" y="18" fill="#999">now</text>
+  <polyline points="40,178 90,172 140,180 200,165 250,170 300,158 360,166 430,150 470,157 510,148"
+            fill="none" stroke="#1565c0" stroke-width="2"/>
+  <polyline points="510,148 545,152 575,144 620,148 660,128 715,133 790,120"
+            fill="none" stroke="#7b1fa2" stroke-width="2" stroke-dasharray="5,4"/>
+  <text x="44" y="196" fill="#666">footprint(t) — solid: settled · dashed: projected</text>
+</svg>
+<figcaption>Segment boundaries live on version time (entry dates); the settlement frontier lives
+on modeled time (how far observed usage runs). The two cuts are independent — the current
+segment is partly settled, partly projected.</figcaption>
+</figure>
+
+<p>Three consequences worth remembering cold:</p>
+<ul>
+  <li><strong>There is no frozen archive.</strong> A past footprint is a <em>model output about
+  the past</em> — revisable by a better calibration, a revision entry, or a library upgrade, like
+  any output. There is only the current best estimate of the whole timeline; when settled numbers
+  change, a condensed <strong>restatement</strong> record is appended (window, per-impact-source
+  old → new, cause) — the same contract as the planned upgrade-drift feature. Delivered reports
+  pin their own numbers; bitemporal replay reconstructs any past belief.</li>
+  <li><strong>The frontier is a provenance boundary, not a freeze line.</strong> It separates
+  observed-usage evaluation from forecast evaluation — driving <em>status</em>, hence trust, not
+  immutability. It advances at ingestion time, which is the single operational moment where
+  everything settles at once: observed usage replaces forecast for the new slice, its footprints
+  are computed and cached, the fitted description is drift-checked, boundary state advances.</li>
+  <li><strong>Segments hand off boundary state.</strong> e-footprint is stateless across hours
+  except storage accumulation: segment k’s end cumulative storage initializes k+1, injected into
+  the existing <code>base_storage_need</code> input by the materializer (per the
+  <code>state_carrying</code> tag, §3). Each cached evaluation stores its <code>end_state</code>
+  so any segment can be evaluated without replaying history.</li>
+</ul>
+
+<h2>6. Caching &amp; interface architecture</h2>
+<table>
+  <tr><th>Layer</th><th>Contains</th><th>Invalidation</th></tr>
+  <tr><td><strong>Truth</strong></td><td>base system + entries + hashes (kilobytes)</td>
+      <td>never — append-only</td></tr>
+  <tr><td><strong>Cached evaluations</strong></td><td>per-(segment, window): footprints,
+      version stamps, end_state; plus the current segment materialized in full with calculated
+      attributes</td>
+      <td>settled windows: rarely (revision, upgrade, late data) · future windows: constantly
+      (any edited assumption) — same mechanism, different churn</td></tr>
+</table>
+<p><strong>No resident workers.</strong> Incremental recomputation does not require long-lived
+Python objects — it requires <em>the computation cache to survive between edits</em>, and the
+interface’s existing paradigm already provides that: each segment persists as a JSON blob with
+calculated attributes; deserialize → the calculated values return as trusted caches → an edit
+recomputes only descendants → reserialize. Editing the current segment while viewing the current
+segment costs exactly what the interface costs today. The N-segment cost appears only when a
+timeline view is displayed — where the pull engine’s pay-on-view semantics apply. In notebooks,
+the same invariant is held differently: systems stay alive in the process, and
+<code>System.fork()</code>-style structural sharing addresses RAM.</p>
+
+<h2>7. Propagating a change</h2>
+<p>There is no cross-segment dependency graph to invent — <strong>the ledger is the
+cross-segment dependency structure</strong>. Two layers:</p>
+<ol>
+  <li><strong>Shadowing (ledger level, kilobytes, no systems loaded):</strong> a later segment
+  receives an edit iff no intervening entry re-sets the same (object, attribute). Output: a patch
+  set per segment, often empty.</li>
+  <li><strong>Within-segment (engine level, existing machinery):</strong> for each affected
+  segment, load its blob, apply the whole patch in one batched <code>ModelingUpdate</code>, let
+  the dependency graph recompute descendants only, reserialize.</li>
+</ol>
+
+<figure>
+<svg viewBox="0 0 780 160" xmlns="http://www.w3.org/2000/svg" font-family="system-ui" font-size="12">
+  <defs><marker id="pr" markerWidth="8" markerHeight="8" refX="7" refY="3" orient="auto">
+    <path d="M0,0 L7,3 L0,6" fill="none" stroke="#1565c0"/></marker></defs>
+  <rect x="30" y="45" width="150" height="40" fill="#e3f2fd" stroke="#1565c0" stroke-width="2"/>
+  <text x="105" y="70" text-anchor="middle" fill="#1565c0" font-weight="600">v2 — edited</text>
+  <text x="30" y="32" fill="#c62828">✎ θ_search 0.20 → 0.05</text>
+  <rect x="240" y="45" width="130" height="40" fill="#fff" stroke="#888"/>
+  <text x="305" y="70" text-anchor="middle">v3</text>
+  <rect x="430" y="45" width="130" height="40" fill="#fff" stroke="#888"/>
+  <text x="495" y="70" text-anchor="middle">v4</text>
+  <rect x="620" y="45" width="130" height="40" fill="#f5f5f5" stroke="#bbb"/>
+  <text x="685" y="70" text-anchor="middle" fill="#999">v5 — untouched</text>
+  <line x1="180" y1="65" x2="236" y2="65" stroke="#1565c0" stroke-width="2" marker-end="url(#pr)"/>
+  <text x="182" y="58" fill="#1565c0" font-size="10">inherits</text>
+  <line x1="370" y1="65" x2="426" y2="65" stroke="#1565c0" stroke-width="2" marker-end="url(#pr)"/>
+  <text x="372" y="58" fill="#1565c0" font-size="10">inherits</text>
+  <line x1="560" y1="65" x2="590" y2="65" stroke="#c62828" stroke-width="2"/>
+  <text x="568" y="58" fill="#c62828" font-weight="700">✂</text>
+  <text x="330" y="115" fill="#c62828">shadowed: the v5 entry re-sets compute_needed for that job</text>
+  <text x="30" y="145" fill="#666" font-size="11">+ after each recompute: end-state compared to stored handoff — unchanged → boundary chain stops (typical case)</text>
+</svg>
+<figcaption>Shadowing truncates propagation; the boundary-state chain is the only channel through
+otherwise-untouched segments, and it self-extinguishes when storage flows are unaffected.</figcaption>
+</figure>
+
+<details><summary>Details — the axis asymmetry and the chronological loop</summary>
+<p><strong>The propagation rule depends on which axis the edit lives on.</strong> Version-axis
+edits (entry changes) propagate by <em>shadowing</em>. Modeled-time input edits (a revised usage
+forecast, a world trajectory) are not entries at all — they patch every segment whose window
+<em>overlaps</em> the changed part of the series.</p>
+<p><strong>The loop runs chronologically only for boundary state:</strong> after recomputing
+segment k, its end-state is compared to the stored handoff; if moved, "initial storage state" is
+added to k+1’s patch even if k+1 was fully shadowed. Most edits don’t touch storage flows, so the
+chain stops immediately.</p>
+</details>
+
+<h2>8. Performance posture</h2>
+<p>The interactive path never relies on cold rebuilds: shadowing bounds <em>which</em> segments
+recompute, incremental recomputation bounds <em>what</em> recomputes inside each, and the pull
+engine defers everything unviewed. The honest cost model for the cold path:</p>
+<ul>
+  <li>A numpy element-wise op costs <em>fixed per-call overhead + n × per-element</em>. An hourly
+  year (8,760 elements) sits near the crossover — and e-footprint ops add Pint and
+  ExplainableObject bookkeeping to the fixed part, so evaluation is plausibly
+  <strong>overhead-dominated</strong> at our sizes. Consequence: splitting a horizon into k
+  segments costs closer to <strong>k× one run</strong> than 1× (the element math is the same; the
+  per-op overhead multiplies). With k ≈ 5–10 and single runs in seconds: cold full-timeline
+  rebuild is seconds-to-tens-of-seconds — an explicit action, not a keystroke.</li>
+  <li><strong>Open measurement before asserting more:</strong> time the same system evaluated
+  over 1 week vs 1 year. Barely moves → overhead-dominated (segmentation ≈ k×); scales with
+  hours → element-dominated (segmentation ≈ free).</li>
+  <li><strong>The real cost is RAM, not CPU</strong> (N live systems in notebooks; N blobs in
+  Redis) — and adjacent versions differ by a handful of objects. Copy-on-write forking
+  (<code>System.fork()</code>) is the answer, and it is <em>already</em> wanted by calibration
+  fit loops: two independent use cases converging on one primitive — the strongest
+  prioritization signal this exploration produced.</li>
+</ul>
+
+<h2>9. What the library needs</h2>
+<table>
+  <tr><th>Prerequisite</th><th>Status</th></tr>
+  <tr><td>Stable object ids across save/load cycles (entries address objects by id)</td>
+      <td>believed true — <strong>verify before building anything</strong></td></tr>
+  <tr><td>Initial-state input for storage accumulation</td>
+      <td>exists: <code>base_storage_need</code></td></tr>
+  <tr><td><code>state_carrying</code> flag in class metadata (drives materializer override +
+      adjust/set entry semantics); audit for cumulative state beyond storage</td>
+      <td>to add (small)</td></tr>
+  <tr><td><code>System.fork()</code> with structural sharing</td>
+      <td>identified (calibration feature request #2) — reinforced here</td></tr>
+  <tr><td>Pull-based computation (pay-on-view for future segments)</td>
+      <td>in progress</td></tr>
+  <tr><td>Upgrade-drift visualization (restatements reuse its condensed-diff contract; ledger
+      entries record <code>efootprint_version</code> for three-way attribution)</td>
+      <td>on roadmap — compose, don’t duplicate</td></tr>
+  <tr><td>"Calibrated" source status; uncertainty ranges + sensitivity</td>
+      <td>calibration feature requests #8, #9 — same status discipline</td></tr>
+</table>
+
+<h2>10. Open questions</h2>
+<ol>
+  <li><strong>Attribution methodology.</strong> The causes stay separable by design (usage /
+  system / methodology / world), but decomposing a footprint change into their <em>contributions</em>
+  is undesigned: sequential substitution has an ordering problem, interaction terms exist. The
+  calibration reconciliation-bridge style is the candidate. Meatiest open point.</li>
+  <li><strong>Branches and scenarios.</strong> "A simulation = an alternative entry sequence from
+  a common prefix" is asserted, not designed: representation in the file, lifecycle (ephemeral
+  what-if vs saved roadmap variant), and what <code>compare_to</code> between two
+  <em>timelines</em> outputs.</li>
+  <li><strong>The authoring workflow.</strong> Who writes entries in practice — calibration
+  tooling proposing them from diffs + the deploy log, a human curating labels and causes? The
+  minimal-friction loop matters more than the format for adoption.</li>
+  <li><strong>Freezing <code>predicted_effect</code>.</strong> Computed by evaluating a branch at
+  planning time — but under which usage assumptions, and is it re-baselined when upstream
+  assumptions change before shipping?</li>
+  <li><strong>The edge paradigm.</strong> All of the above assumes the web/demand-driven side.
+  Whether fleet models need the same ledger — and whether fleet growth is a version entry or a
+  modeled-time input — is unexplored.</li>
+</ol>
+
+<h2>11. Path to adoption</h2>
+<ol>
+  <li><strong>Incubate through calibration missions.</strong> Recurring calibrations already
+  produce dated results; a small diff tool over consecutive results + the client’s deploy log
+  yields proto-entries by hand. Two missions of that are the requirements probe — the same
+  pattern that gates <code>System.fork()</code>.</li>
+  <li><strong>Run the §8 measurement</strong> (1 week vs 1 year evaluation) before committing to
+  a performance posture.</li>
+  <li><strong>Land the prerequisites that are wanted anyway</strong> (fork, pull engine,
+  calibrated status) — the timeline then becomes a thin layer over them.</li>
+  <li><strong>Only then spec it</strong>, as a library feature or a package on the JSON seam —
+  the exploration deliberately does not decide which.</li>
+</ol>
+
+</body>
+</html>

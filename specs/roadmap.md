@@ -42,6 +42,14 @@ Prerequisites: measure the actual RAM win before committing; introduce the optio
 
 ## Far horizon (no commitment)
 
+- **SystemTimeline — modeling systems that evolve across time.** Append-only ledger of dated,
+  statused change entries over a base system; piecewise evaluation into a version series;
+  settlement frontier between observed and forecast usage; what-if simulation reintroduced as
+  timeline branches (replacing the deleted `simulation_date` in a more flexible form). Design
+  record: [`explorations/system_timeline.html`](../explorations/system_timeline.html)
+  (2026-07). Converges with `System.fork()` (calibration fit loops want the same primitive) and
+  the pull engine; composes with upgrade-time drift visualization for change attribution.
+  Incubate through calibration missions before any spec.
 - Transportation and end-of-life lifecycle phases. Currently considered negligible; reopen if Boavizta data appears.
 - Other non-CO₂ environmental impacts beyond water and rare earth.
 
