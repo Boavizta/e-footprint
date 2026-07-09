@@ -1,0 +1,38 @@
+Hi! I'd like your help estimating the environmental footprint of an AI workflow,
+using an open-source tool called e-footprint
+(https://github.com/Boavizta/e-footprint, documentation at
+https://boavizta.github.io/e-footprint/).
+
+I have never done this before and I don't have a technical background, so
+please go step by step and ask me questions along the way - I'd rather answer a
+few simple questions one at a time than fill in a form by myself.
+
+Here is roughly what my workflow does, in plain words:
+
+[DESCRIBE YOUR WORKFLOW IN 1-3 SENTENCES. For example: "A user asks a question,
+an AI chatbot answers it, then we turn the answer into a short video."]
+
+I probably won't know exact numbers for things like token counts or server
+details - please ask me simple questions instead (which tools or models I use,
+roughly how long or big the output is, how many times this runs and how often)
+and use sensible approximations where I'm unsure. I'd rather you ask than
+assume.
+
+Once you have enough information, could you please:
+
+1. Build a working e-footprint Python model of this workflow.
+2. Set up how often it runs the same way the e-footprint web interface does
+   it: a start date, a modeling duration, an initial number of runs, and a
+   growth rate - not a manual list of hourly numbers.
+3. Export the model as a downloadable JSON file.
+4. Give me a short, plain-language summary of the result, including which step
+   drives most of the footprint.
+
+I understand I can later open that JSON file in e-footprint's own web interface
+(https://e-footprint.boavizta.org/) if I want to explore it visually.
+
+By default this kind of estimate covers only the AI calls themselves (running
+the models), not things like training, storage, or human work - that's fine
+for now, no need to change anything there.
+
+Thanks for your patience - this is all new to me!

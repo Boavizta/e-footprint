@@ -1,0 +1,495 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Estimating your GenAI video workflow's footprint — a beginner's guide</title>
+<style>
+  :root {
+    --bg: #F3F6F1;
+    --surface: #FFFFFF;
+    --ink: #1B2B22;
+    --muted: #5B6B60;
+    --moss: #4C7A5E;
+    --moss-dark: #345544;
+    --moss-pale: #E3EEE6;
+    --amber: #C97A2B;
+    --amber-pale: #FBEEDD;
+    --line: #DCE5DD;
+    --radius: 14px;
+  }
+  * { box-sizing: border-box; }
+  html { scroll-behavior: smooth; }
+  body {
+    margin: 0;
+    background: var(--bg);
+    color: var(--ink);
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+    line-height: 1.55;
+    font-size: 16px;
+  }
+  .wrap {
+    max-width: 780px;
+    margin: 0 auto;
+    padding: 48px 24px 96px;
+  }
+  header.hero {
+    margin-bottom: 40px;
+  }
+  .eyebrow {
+    display: inline-block;
+    font-size: 13px;
+    font-weight: 700;
+    letter-spacing: 0.03em;
+    color: var(--moss-dark);
+    background: var(--moss-pale);
+    padding: 5px 12px;
+    border-radius: 999px;
+    margin-bottom: 18px;
+  }
+  h1 {
+    font-size: 34px;
+    line-height: 1.15;
+    letter-spacing: -0.01em;
+    margin: 0 0 16px;
+    font-weight: 800;
+    color: var(--ink);
+  }
+  .lede {
+    font-size: 18px;
+    color: var(--muted);
+    margin: 0 0 8px;
+    max-width: 60ch;
+  }
+  h2 {
+    font-size: 22px;
+    font-weight: 800;
+    margin: 56px 0 8px;
+    letter-spacing: -0.005em;
+  }
+  h2 .num {
+    color: var(--moss);
+    margin-right: 8px;
+  }
+  h3 {
+    font-size: 16px;
+    font-weight: 700;
+    margin: 20px 0 8px;
+  }
+  p { margin: 0 0 14px; }
+  a { color: var(--moss-dark); text-decoration-color: var(--moss); text-underline-offset: 2px; }
+  a:hover { color: var(--amber); }
+  code {
+    background: var(--moss-pale);
+    color: var(--moss-dark);
+    padding: 1px 6px;
+    border-radius: 5px;
+    font-size: 0.92em;
+    font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
+  }
+  .section-intro { color: var(--muted); margin-bottom: 20px; }
+
+  /* step flow */
+  .flow {
+    display: flex;
+    align-items: stretch;
+    gap: 0;
+    margin: 28px 0 8px;
+    background: var(--surface);
+    border: 1px solid var(--line);
+    border-radius: var(--radius);
+    overflow: hidden;
+  }
+  .flow-step {
+    flex: 1;
+    padding: 20px 16px;
+    position: relative;
+    text-align: center;
+  }
+  .flow-step:not(:last-child)::after {
+    content: "→";
+    position: absolute;
+    right: -2px;
+    top: 50%;
+    transform: translateY(-50%);
+    color: var(--muted);
+    font-size: 18px;
+    z-index: 2;
+  }
+  .flow-step + .flow-step { border-left: 1px solid var(--line); }
+  .flow-num {
+    width: 28px; height: 28px;
+    border-radius: 50%;
+    background: var(--moss);
+    color: white;
+    font-weight: 700;
+    font-size: 13px;
+    display: flex; align-items: center; justify-content: center;
+    margin: 0 auto 10px;
+  }
+  .flow-label { font-size: 13.5px; font-weight: 600; color: var(--ink); }
+  .flow-sub { font-size: 12px; color: var(--muted); margin-top: 2px; }
+
+  /* cards */
+  .card {
+    background: var(--surface);
+    border: 1px solid var(--line);
+    border-radius: var(--radius);
+    padding: 20px 22px;
+    margin: 14px 0;
+  }
+  .card.you-first {
+    border-color: var(--moss);
+    background: var(--moss-pale);
+  }
+  .card-title {
+    font-weight: 700;
+    font-size: 15.5px;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    margin-bottom: 4px;
+  }
+  .badge {
+    font-size: 11px;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.04em;
+    background: var(--moss);
+    color: white;
+    padding: 2px 9px;
+    border-radius: 999px;
+  }
+  .card-title a { font-weight: 700; }
+  .card p { margin: 6px 0 0; color: var(--muted); font-size: 14.5px; }
+
+  .grid-2 {
+    display: flex;
+    gap: 14px;
+  }
+  .grid-2 > * { flex: 1 1 0; min-width: 0; }
+  @media (max-width: 620px) {
+    .grid-2 { flex-direction: column; }
+    .flow { flex-direction: column; }
+    .flow-step:not(:last-child)::after { content: "↓"; right: 50%; top: auto; bottom: -14px; transform: translateX(50%); }
+    .flow-step + .flow-step { border-left: none; border-top: 1px solid var(--line); }
+    h1 { font-size: 28px; }
+  }
+
+  .route-card {
+    background: var(--surface);
+    border: 1px solid var(--line);
+    border-radius: var(--radius);
+    padding: 22px;
+  }
+  .route-tag {
+    display: inline-block;
+    font-weight: 800;
+    font-size: 13px;
+    color: var(--moss-dark);
+    margin-bottom: 6px;
+  }
+  .route-card h3 { margin-top: 0; }
+  .route-card ul { margin: 10px 0 12px; padding-left: 20px; font-size: 14.5px; color: var(--muted); }
+
+  /* scope note */
+  .scope {
+    display: flex;
+    border: 1px solid var(--line);
+    border-radius: var(--radius);
+    overflow: hidden;
+  }
+  .scope > div { padding: 18px 20px; flex: 1 1 0; min-width: 0; }
+  .scope .in { background: var(--moss-pale); }
+  .scope .out { background: #F2F2F0; }
+  .scope h4 { margin: 0 0 8px; font-size: 13px; text-transform: uppercase; letter-spacing: 0.04em; }
+  .scope .in h4 { color: var(--moss-dark); }
+  .scope .out h4 { color: var(--muted); }
+  .scope ul { margin: 0; padding-left: 18px; font-size: 14.5px; }
+  .scope li { margin-bottom: 4px; }
+  @media (max-width: 620px) { .scope { flex-direction: column; } }
+
+  /* collapsible */
+  details {
+    background: var(--surface);
+    border: 1px solid var(--line);
+    border-radius: var(--radius);
+    padding: 4px 20px;
+    margin: 12px 0;
+  }
+  summary {
+    cursor: pointer;
+    font-weight: 700;
+    padding: 14px 0;
+    list-style: none;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+  }
+  summary::-webkit-details-marker { display: none; }
+  summary::after {
+    content: "+";
+    font-size: 20px;
+    color: var(--moss);
+    font-weight: 400;
+  }
+  details[open] summary::after { content: "–"; }
+  details .content { padding-bottom: 16px; }
+
+  table { width: 100%; border-collapse: collapse; font-size: 14px; margin: 8px 0; }
+  th, td { text-align: left; padding: 8px 10px; border-bottom: 1px solid var(--line); }
+  th { color: var(--muted); font-weight: 700; font-size: 12.5px; text-transform: uppercase; letter-spacing: 0.03em; }
+
+  .tip-list { padding-left: 0; list-style: none; margin: 0; }
+  .tip-list li {
+    padding: 10px 0 10px 30px;
+    position: relative;
+    border-bottom: 1px solid var(--line);
+    font-size: 14.5px;
+  }
+  .tip-list li:last-child { border-bottom: none; }
+  .tip-list li::before {
+    content: "✓";
+    position: absolute;
+    left: 0;
+    top: 10px;
+    color: var(--moss);
+    font-weight: 800;
+  }
+
+  .callout {
+    background: var(--amber-pale);
+    border: 1px solid #EBD2AC;
+    border-radius: var(--radius);
+    padding: 14px 18px;
+    font-size: 14.5px;
+    margin: 14px 0;
+  }
+  .callout b { color: #8A5A1E; }
+
+  footer {
+    margin-top: 60px;
+    padding-top: 20px;
+    border-top: 1px solid var(--line);
+    color: var(--muted);
+    font-size: 13px;
+  }
+</style>
+</head>
+<body>
+<div class="wrap">
+
+  <header class="hero">
+    <span class="eyebrow">e-footprint · beginner's guide</span>
+    <h1>Estimating your GenAI video workflow's footprint</h1>
+    <p class="lede">A step-by-step guide for doing this for the first time — no coding
+    or environmental-science background required.</p>
+  </header>
+
+  <h2><span class="num">01</span>What we're trying to do together</h2>
+  <p>You have a GenAI video workflow — maybe an AI drafts the prompt and a video
+  model generates the clip, or something similar — and you'd like a rough sense of
+  its environmental footprint: how much energy it uses and what that translates to
+  in emissions.</p>
+  <p>We'll use <a href="https://github.com/Boavizta/e-footprint" target="_blank">e-footprint</a>,
+  an open-source modeling tool built for exactly this. You won't be writing any code
+  yourself: you describe your workflow in plain language (or fill in a short
+  spreadsheet), and an AI assistant does the technical work — building the model,
+  running the numbers, and explaining the result back to you in plain language.</p>
+
+  <div class="flow">
+    <div class="flow-step">
+      <div class="flow-num">1</div>
+      <div class="flow-label">You describe your workflow</div>
+      <div class="flow-sub">spreadsheet or chat</div>
+    </div>
+    <div class="flow-step">
+      <div class="flow-num">2</div>
+      <div class="flow-label">The assistant asks questions &amp; builds the model</div>
+      <div class="flow-sub">using e-footprint</div>
+    </div>
+    <div class="flow-step">
+      <div class="flow-num">3</div>
+      <div class="flow-label">You get a script, a JSON file &amp; a summary</div>
+      <div class="flow-sub">plain-language result</div>
+    </div>
+    <div class="flow-step">
+      <div class="flow-num">4</div>
+      <div class="flow-label">Optional: explore it visually</div>
+      <div class="flow-sub">in e-footprint's web interface</div>
+    </div>
+  </div>
+
+  <h2><span class="num">02</span>Where to go</h2>
+  <p class="section-intro">You need an AI assistant that can write and run Python code.
+  Here's where to start.</p>
+
+  <div class="card you-first">
+    <div class="card-title"><span class="badge">Start here</span> Whichever assistant you're reading this in</div>
+    <p>If you received this guide from an AI assistant, that same assistant can very
+    likely do the whole thing for you — just go to one of the two routes below. No
+    need to go anywhere else.</p>
+  </div>
+
+  <p style="margin-top:18px; color:var(--muted); font-size:14.5px;">If you'd rather use something else, any assistant with code-writing and code-running
+  ability will generally work, for example:</p>
+  <div class="grid-2">
+    <div class="card">
+      <div class="card-title"><a href="https://claude.ai" target="_blank">Claude</a> (Anthropic)</div>
+      <p>Has a built-in ability to write and run Python, and to hand you back files.</p>
+    </div>
+    <div class="card">
+      <div class="card-title"><a href="https://chatgpt.com" target="_blank">ChatGPT</a> (OpenAI)</div>
+      <p>Use a plan/mode with code execution enabled (sometimes called "Code Interpreter"
+      or "Advanced Data Analysis").</p>
+    </div>
+  </div>
+
+  <div class="callout">
+    <b>One setting worth knowing about:</b> if your assistant lets you pick a
+    "thinking" or reasoning mode, or a more capable model tier, turn it on for this
+    task. Building a multi-step model like this benefits from more careful,
+    deliberate reasoning than a quick one-line answer — it's worth the extra moment.
+  </div>
+
+  <details>
+    <summary>Requirements, if you want to use a different assistant</summary>
+    <div class="content">
+      <p>Whatever you use needs to be able to:</p>
+      <ul>
+        <li>Write <strong>and run</strong> Python code (not just talk about it) — this
+        is how it will actually build the e-footprint model.</li>
+        <li>Install a Python package (<code>efootprint</code>) or otherwise access it.</li>
+        <li>Produce a file you can download (the JSON export).</li>
+        <li>Accept a file upload, if you're using Route A with the spreadsheet.</li>
+      </ul>
+      <p>Assistants that are chat-only, with no code execution, won't be able to
+      complete this on their own.</p>
+      <p style="margin-top:14px; padding-top:12px; border-top:1px solid var(--line);">
+      <strong>What about a European, open-weight option, like Mistral's Le Chat?</strong>
+      Not for now. Le Chat does have a Code Interpreter that runs Python, but that
+      sandbox has no internet access and doesn't come with <code>efootprint</code>
+      preinstalled — so it can't install the library, and would either fail outright
+      or improvise something that looks like a result but isn't really using
+      e-footprint. We're not aware of another European or open-weight assistant that
+      currently clears this bar either. Worth revisiting as these tools evolve.</p>
+    </div>
+  </details>
+
+  <h2><span class="num">03</span>Two ways to get started</h2>
+  <p class="section-intro">Both routes end up at the same place: a working model, a
+  downloadable JSON file, and a plain-language summary. Pick whichever feels easier.
+  You should have received three files alongside this guide - keep them in the same
+  place:</p>
+  <div class="card">
+    <p style="margin:0;"><code>e-footprint_video _input_template.xlsx</code> — the spreadsheet (Route A)<br>
+    <code>prompt_A_with_spreadsheet.txt</code> — the message to send for Route A<br>
+    <code>prompt_B_chat_only.txt</code> — the message to send for Route B</p>
+  </div>
+
+  <div class="grid-2">
+    <div class="route-card">
+      <span class="route-tag">Route A</span>
+      <h3>Fill in the spreadsheet</h3>
+      <p style="margin:0 0 10px; color:var(--muted); font-size:14.5px;">Best if you
+      already know roughly which models you're using and how often things run.</p>
+      <ol style="padding-left:20px; font-size:14.5px; color:var(--muted); margin:0;">
+        <li>Open <code>e-footprint_video _input_template.xlsx</code> and fill it in as
+        best you can - it doesn't need to be perfect.</li>
+        <li>Open <code>prompt_A_with_spreadsheet.txt</code> and copy everything inside
+        it.</li>
+        <li>Paste it as your first message to the assistant, and attach your
+        filled-in spreadsheet to that same message.</li>
+      </ol>
+    </div>
+    <div class="route-card">
+      <span class="route-tag">Route B</span>
+      <h3>Just chat about it</h3>
+      <p style="margin:0 0 10px; color:var(--muted); font-size:14.5px;">Best if you'd
+      rather explain things in your own words and be asked questions.</p>
+      <ol style="padding-left:20px; font-size:14.5px; color:var(--muted); margin:0;">
+        <li>Open <code>prompt_B_chat_only.txt</code> and copy everything inside it.</li>
+        <li>Fill in the bracketed part with a short description of your workflow.</li>
+        <li>Paste it as your first message, and answer the assistant's follow-up
+        questions as you go.</li>
+      </ol>
+    </div>
+  </div>
+
+  <h2><span class="num">04</span>What's included in the estimate</h2>
+  <div class="scope">
+    <div class="in">
+      <h4>Included</h4>
+      <ul>
+        <li>Running the AI models themselves (the actual generation calls)</li>
+        <li>The minimal device &amp; network footprint of triggering those calls</li>
+      </ul>
+    </div>
+    <div class="out">
+      <h4>Not included</h4>
+      <ul>
+        <li>Training the AI models</li>
+        <li>Human work or review</li>
+        <li>Storage of the outputs beyond generation</li>
+        <li>Distribution or viewing of the final result</li>
+      </ul>
+    </div>
+  </div>
+
+  <h2><span class="num">05</span>Examples of models you might mention</h2>
+  <p class="section-intro">Don't know the exact name? Just say the tool you're
+  thinking of ("ChatGPT", "Midjourney") — the assistant will pick the closest
+  available match and tell you which one it used.</p>
+
+  <details>
+    <summary>Text generation (LLMs)</summary>
+    <div class="content">
+      <table>
+        <tr><th>Provider</th><th>Example models</th></tr>
+        <tr><td>OpenAI</td><td>GPT-4o, GPT-4.1, GPT-5</td></tr>
+        <tr><td>Anthropic</td><td>Claude Sonnet, Claude Opus, Claude Haiku</td></tr>
+        <tr><td>Google</td><td>Gemini 2.5 Flash, Gemini 2.5 Pro</td></tr>
+        <tr><td>Mistral AI</td><td>Mistral Large, Mistral Small</td></tr>
+        <tr><td>Cohere</td><td>Command A</td></tr>
+        <tr><td>Open-source (via Hugging Face)</td><td>Llama 3.1, Mixtral</td></tr>
+      </table>
+    </div>
+  </details>
+  <details>
+    <summary>Video generation</summary>
+    <div class="content">
+      <table>
+        <tr><th>Provider</th><th>Example models</th></tr>
+        <tr><td>KlingAI</td><td>Kling 2.6</td></tr>
+        <tr><td>OpenAI</td><td>Sora 2 Pro</td></tr>
+        <tr><td>Google</td><td>Veo 3.1</td></tr>
+        <tr><td>ByteDance</td><td>Seedance 1.5 Pro</td></tr>
+        <tr><td>Runway</td><td>Gen-4.5</td></tr>
+        <tr><td>Tencent</td><td>Hunyuan Video</td></tr>
+        <tr><td>Alibaba</td><td>Wan 2.2</td></tr>
+        <tr><td>Lightricks</td><td>LTX-2</td></tr>
+      </table>
+    </div>
+  </details>
+
+  <h2><span class="num">06</span>If this is your first time</h2>
+  <ul class="tip-list">
+    <li>You don't need exact numbers. Rough, order-of-magnitude answers are enough
+    for a useful first estimate.</li>
+    <li>You don't need to know any technical terms — describe things the way you'd
+    explain them to a friend, and let the assistant translate.</li>
+    <li>It's normal for this to take a few back-and-forth messages, especially with
+    Route B. That's expected, not a sign something's going wrong.</li>
+    <li>If a question confuses you, just say so — ask the assistant to rephrase it.</li>
+  </ul>
+
+  <footer>
+    e-footprint is an open-source project by <a href="https://boavizta.org" target="_blank">Boavizta</a>.
+    Source: <a href="https://github.com/Boavizta/e-footprint" target="_blank">github.com/Boavizta/e-footprint</a> ·
+    Docs: <a href="https://boavizta.github.io/e-footprint/" target="_blank">boavizta.github.io/e-footprint</a> ·
+    Web interface: <a href="https://e-footprint.boavizta.org/" target="_blank">e-footprint.boavizta.org</a>
+  </footer>
+
+</div>
+</body>
+</html>

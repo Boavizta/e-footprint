@@ -20,3 +20,4 @@ litellm-config.yaml
 litellm-commands.md
 .slingshot
 *.lprof
+!ai_skills/**
