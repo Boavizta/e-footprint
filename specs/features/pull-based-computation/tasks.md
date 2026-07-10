@@ -467,6 +467,31 @@ recomputes flagged footprint slots), and after a render, save when a serialize-f
 `descriptor.peek` went from absent to filled (the first Sankey materialization of the matrix /
 breakdown summaries).
 
+**Status:** Done (in `e-footprint-interface`, version 1.9.2 → 1.10.0). Notes: bumped `efootprint` to
+`23.0.0` in `pyproject.toml` (PyPI form; `poetry.lock` left at 22.3.0 — 23.0.0 is unpublished, a
+release-time follow-up; local tests run against the editable install). Contract adaptations: dropped
+`launch_system_computations` (load never computes) and `compute_previous_system_footprints`; renamed
+`save_calculated_attributes` → `save_computed_state`; `CANONICAL_COMPUTATION_ORDER` → `CANONICAL_CLASSES`.
+`ModelWeb.to_json` now emits the `calculation_graph` section (via the library `calculation_graph_section`)
+so an exact-version reload attaches stored values as trusted caches — the core "no recompute on load"
+win; a session persists **one** canonical payload written to both Redis and Postgres (the with/without-calc
+two-copy split is gone). Save-on-change: mutating requests already persist; the Sankey view's existing
+persist stores the first-materialised repartition matrix / breakdown summaries (the only lazy-fill render).
+The Sankey folds the stored matrix entirely library-side (`ImpactRepartitionSankey`), so `sankey_views.py`
+needed no folding change. Source hoisting + the source-table export now scan peeked computed slots (computed
+values moved out of `__dict__` into reactive slots); the export pulls them (it materialises every sourced
+value). `progressive_import_service` lost its `compute_calculated_attributes` monkey-patch (deleted upstream)
+— it now loads, `after_init()`-computes system + orphans, serializes with one rebuilt calc graph, and
+size-checks once. `emissions_calculation_service` needed no change (reads slots, which pull lazily).
+Reference JSONs regenerated (`default_system_data.json`, `ai_chatbot`, `iot_industrial`). Gates: 647
+unit+integration pass (stable ×2), jest 182 pass, `test_no_dev_dependency` + `test_version_is_up_to_date`
+pass, CHANGELOG added, `specs/architecture.md` persistence section updated. E2E not run (needs a live
+server; adapter→domain integration covers load/save/sankey/results). **Surfaced:** Task 6's aliasing-avoidance
+`.copy()` makes `EdgeComputer.structure_carbon_footprint_fabrication` a source-less derived value, so it no
+longer appears in the source table (a standalone edge computer's table is now empty of it) — a documented
+library consequence; the affected test was re-pointed to assert the (non-trivial) exclusion of a sourced
+fixed component spec.
+
 ---
 
 ## Ordering rationale
