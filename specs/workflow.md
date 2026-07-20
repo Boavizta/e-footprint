@@ -81,7 +81,7 @@ For each task in `tasks.md`:
 
 Each task ships independently. The feature is complete when all tasks are done.
 
-Skills: `task-implement` picks up a task and executes it. `task-review` reviews the resulting commit. Or run `feature-implement` to orchestrate the whole `tasks.md` end to end — it loops over tasks, spawning the implement and review sub-agents and pausing once per task for your decisions.
+Skills: `task-implement` picks up a task and executes it. `task-review` reviews the resulting commit. Or run `feature-implement` to orchestrate the whole `tasks.md` end to end — it loops over tasks, spawning the implement and review sub-agents and pausing once per task for your decisions. When `feature-implement` drives the loop, it defers the CHANGELOG gate: each task skips it, and the supervisor writes one consolidated `## [Unreleased]` entry once every task is done, rather than one fragment per task.
 
 ### 5. Archive
 
@@ -91,7 +91,7 @@ When all tasks have shipped:
 
 1. **Promote durable insight into the live reference docs first — and keep them up to date.** Any decision, convention, or constraint that a future contributor or agent would need to make a sound call belongs in the live reference specs (`architecture.md` / `conventions.md` / `testing.md`), never in an archive nobody reads. Most of this should already have happened during implementation; this step is the final check that the reference docs reflect reality. This is the whole point of archiving: once the durable parts live where they belong, the spec folder is disposable.
 2. **Delete `specs/features/<feature-name>/`** (including any untracked `spec.html` / `plan.html` — a tracked-files delete leaves those behind). Git history preserves everything.
-3. **Update `CHANGELOG.md`** if not already done.
+3. **Confirm `CHANGELOG.md` has an `## [Unreleased]` entry** for the feature. `feature-implement` normally already wrote it at the end of the loop; add one now only if it's missing.
 
 For cross-repo features, this happens in the driving repo (same rule as the feature folder).
 

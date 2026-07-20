@@ -18,6 +18,7 @@ You are about to implement one task from an approved tasks list.
 4. **Run quality gates** from `specs/constitution.md` §2:
    - Tests pass.
    - Any other repo-specific gates (mkdocs build, JSON round-trip, schema migration, CHANGELOG entry).
+   - **CHANGELOG entry:** add it now if you are running standalone. If you were briefed by `feature-implement` to skip it, don't — the supervisor writes one consolidated `## [Unreleased]` entry for the whole feature once every task is done.
 
 5. **Update `tasks.md`** to mark the task done (e.g. add a `**Status:** Done` line under it).
 

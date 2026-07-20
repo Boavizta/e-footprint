@@ -21,7 +21,7 @@ For each uncompleted task, in order:
 
 ### 1. Implement (sub-agent)
 
-Spawn a sub-agent (Agent tool, `general-purpose`) to implement **exactly one task**. Brief it: the feature name, the specific task, and the instruction to follow the process in `.claude/skills/task-implement/SKILL.md`. Tell it explicitly: **do not chain into the next task.**
+Spawn a sub-agent (Agent tool, `general-purpose`) to implement **exactly one task**. Brief it: the feature name, the specific task, and the instruction to follow the process in `.claude/skills/task-implement/SKILL.md`. Tell it explicitly: **do not chain into the next task**, and **skip the CHANGELOG.md gate** — you (the supervisor) write one consolidated `## [Unreleased]` entry for the whole feature once every task is done, so a per-task entry would just fragment it.
 
 Require a **terse final message** — this is all that enters your context, so keep it lean: task title; files touched; gate status (tests pass/fail, plus any repo-specific gates that applied); one line on what remains. No diffs, no narration.
 
@@ -81,7 +81,16 @@ Briefly tell the user what this task produced — a **terse, non-blocking** note
 
 ## When the loop ends
 
-When every task is done, give the user a short summary: tasks completed, total commits, what was auto-approved versus escalated, anything deferred/rejected during reviews (so nothing is silently dropped), and the suggested next step. **Do not archive the feature yourself** — stage 5 archiving (per `specs/workflow.md` §5) involves a promotion check that reads the reference specs, which belongs in a fresh context, not yours, and is normally deferred until the work has merged. Instead, suggest the user run the `feature-archive` skill when they are ready, alongside opening PRs.
+**First, write the CHANGELOG entry.** Spawn one final sub-agent (Agent tool, `general-purpose`) briefed with: the feature name, and the list of completed tasks — title, one-line summary, and commit(s) for each, from what you've tracked across the loop. Instruct it to:
+
+1. Read the top of `CHANGELOG.md` to match its current format and voice (grouped `### Added` / `### Changed` / `### Fixed` / etc. subsections; user-facing prose that names the mechanism and the *why*, not a mechanical task-title dump).
+2. Find the `## [Unreleased]` section (create it, positioned directly above the first version-numbered section, if it doesn't exist yet).
+3. Add a **consolidated** entry synthesizing what this feature shipped as a whole — grouped by category, written as coherent user-facing bullets. Multiple tasks that form one user-visible change become one bullet, not one line per task or per commit.
+4. Commit with `[UPDATE]` prefix, body `<feature-name>: changelog entry`.
+
+This is the **only** point in the loop that touches `CHANGELOG.md` — implement sub-agents were told to skip that gate per task (step 1) specifically so this one write stays coherent.
+
+**Then** give the user a short summary: tasks completed, total commits, what was auto-approved versus escalated, anything deferred/rejected during reviews (so nothing is silently dropped), the CHANGELOG entry, and the suggested next step. **Do not archive the feature yourself** — stage 5 archiving (per `specs/workflow.md` §5) involves a promotion check that reads the reference specs, which belongs in a fresh context, not yours, and is normally deferred until the work has merged. Instead, suggest the user run the `feature-archive` skill when they are ready, alongside opening PRs.
 
 ## Context discipline (why this stays lean)
 

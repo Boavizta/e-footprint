@@ -1,6 +1,11 @@
 # Release process
 
-## Update e-footprint version in [pyproject.toml](pyproject.toml) and [version.py](efootprint/version.py)
+## Rename the `## [Unreleased]` section in [CHANGELOG.md](CHANGELOG.md) to the new version
+
+`feature-implement` writes each feature's entry into `## [Unreleased]` as it ships, so by release time the section should already hold everything notable. Rename it to `## [Vx.y.z] - <today's date>` and start a fresh empty `## [Unreleased]` above it. Only author new entries from scratch if something shipped without going through `feature-implement` (e.g. a standalone `task-implement` run whose CHANGELOG entry is missing) — check the merged commits since the last release tag to be sure nothing is missing.
+
+## Update e-footprint version in [pyproject.toml](pyproject.toml) and [version.py](efootprint/version.py) to match
+
 You might need to update the version in the reference integration test json files as well.
 
 ## Refresh the bundled Boavizta cloud-instance snapshot
@@ -40,8 +45,6 @@ poetry export -f requirements.txt --without-hashes --only dev -o requirements-de
 export PYTHONPATH="./:$PYTHONPATH"
 python -m pytest --cov=tests
 ```
-
-## Update [CHANGELOG.md](CHANGELOG.md)
 
 ## Update [README.md](README.md) if needed
 
