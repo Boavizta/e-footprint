@@ -272,6 +272,26 @@ class TestModelingObject(unittest.TestCase):
 
         self.assertEqual([attr1, attr2], mod_obj.mod_obj_attributes)
 
+    def test_mod_obj_attributes_includes_structural_dict_keys(self):
+        attr1 = MagicMock(spec=ModelingObject)
+        dict_key = ModelingObjectForTesting("dict key")
+        mod_obj = ModelingObjectForTesting(
+            "test mod obj", mod_obj_input1=attr1,
+            custom_dict_input={dict_key: SourceValue(2 * u.dimensionless)})
+
+        self.assertEqual([attr1, dict_key], mod_obj.mod_obj_attributes)
+        # Dicts sever their keys’ backward links as a whole, so self_delete’s unlink loop must not see them.
+        self.assertEqual([attr1], mod_obj.contextual_mod_obj_attributes)
+
+    def test_mod_obj_attributes_excludes_keys_of_dicts_that_arent_init_attributes(self):
+        dict_key = ModelingObjectForTesting("dict key")
+        mod_obj = ModelingObjectForTesting("test mod obj")
+        mod_obj.trigger_modeling_updates = False
+        mod_obj.dict_that_isnt_an_init_attribute = ExplainableObjectDict(
+            {dict_key: SourceValue(2 * u.dimensionless)})
+
+        self.assertEqual([], mod_obj.mod_obj_attributes)
+
     def test_to_json_correct_export_with_child(self):
         custom_input = MagicMock(spec=ExplainableObject)
         child_obj = ModelingObjectForTesting(name="child_object", custom_input=custom_input)

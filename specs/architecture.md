@@ -91,6 +91,8 @@ There are three relationship types between modeling objects:
 
 All three populate `contextual_modeling_obj_containers` on the child objects so they can discover their parents. Dict-based relationships can also be discovered via `explainable_object_dicts_containers`.
 
+Downwards, `mod_obj_attributes` is the SSOT: it returns every referenced object across all three relationship types, and is what consumers walking the object graph (the relationship graph builder, the interface's cascade deletion) must call. Direct and list references are wrapped in `ContextualModelingObjectAttribute`s while structural dict keys are the `ModelingObject`s themselves, so `contextual_mod_obj_attributes` exposes the wrapped subset for the one caller that needs it — `self_delete`, which severs those links one by one and leaves dict-held children to the dict, which unlinks its keys as a whole. Only **structural input** dicts count as references: calculated dicts keyed by modeling objects (`Job.hourly_occurrences_per_usage_pattern`, `Storage.full_cumulative_storage_need_per_job`, …) are results, and treating their keys as references would make every result-holder look like a container of its keys.
+
 ## Attribution layer (the atom model)
 
 Attribution lives entirely in `efootprint/core/attribution/` and is lazy, read-time-only — calculated

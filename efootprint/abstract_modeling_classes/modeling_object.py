@@ -650,13 +650,33 @@ class ModelingObject(metaclass=ABCAfterInitMeta):
             optimize_chain=optimize_chain)
 
     @property
-    def mod_obj_attributes(self) -> List[Type["ContextualModelingObjectAttribute"]]:
+    def contextual_mod_obj_attributes(self) -> List["ContextualModelingObjectAttribute"]:
+        """The ContextualModelingObjectAttributes this object owns, directly or inside a list.
+
+        These are the links self_delete severs one by one. Dict-held children are absent by design: an
+        ExplainableObjectDict owns its keys’ backward links and severs them all at once when unlinked.
+        """
         from efootprint.abstract_modeling_classes.list_linked_to_modeling_obj import ListLinkedToModelingObj
-        output_list = []
-        for attr_name, attr_value in get_instance_attributes(self, ModelingObject).items():
-            output_list.append(attr_value)
+        output_list = list(get_instance_attributes(self, ModelingObject).values())
         for attr_value in get_instance_attributes(self, ListLinkedToModelingObj).values():
             output_list += list(attr_value)
+
+        return output_list
+
+    @property
+    def mod_obj_attributes(self) -> List["ModelingObject"]:
+        """Every ModelingObject this object references: direct attributes, list items and structural dict keys.
+
+        Structural dict keys (a UsageJourneyStep’s jobs, a UsageJourney’s uj_steps) are the ModelingObjects
+        themselves rather than their ContextualModelingObjectDictKeys, so that consumers walking the object
+        graph see one object per child. Calculated dicts keyed by modeling objects (e.g. a Job’s
+        hourly_occurrences_per_usage_pattern) are results, not references, and are left out.
+        """
+        from efootprint.abstract_modeling_classes.explainable_object_dict import ExplainableObjectDict
+        output_list = self.contextual_mod_obj_attributes
+        for attr_value in get_instance_attributes(self, ExplainableObjectDict).values():
+            if attr_value.is_structural_input_dict:
+                output_list += [key for key in attr_value if isinstance(key, ModelingObject)]
 
         return output_list
 
@@ -686,7 +706,7 @@ class ModelingObject(metaclass=ABCAfterInitMeta):
 
         mod_objs_computation_chain = [elt for elt in self.mod_objs_computation_chain if elt != self]
 
-        for contextual_attr in self.mod_obj_attributes:
+        for contextual_attr in self.contextual_mod_obj_attributes:
             contextual_attr.set_modeling_obj_container(None, None)
         # ObjectLinkedToModelingObjBase also covers ExplainableObjectDicts, whose unlinking removes the
         # backward links their keys hold to self (e.g. a deleted UsageJourneyStep's jobs).

@@ -9,7 +9,7 @@
 # EFOOTPRINT_VERSION is required (no default): the image pins the exact PyPI
 # version so the pushed tag can never silently diverge from the code inside it —
 # a wrong/unpublished version fails the build loudly. Build locally with e.g.
-# `docker build --build-arg EFOOTPRINT_VERSION=22.3.0 .`; the release workflow
+# `docker build --build-arg EFOOTPRINT_VERSION=22.3.1 .`; the release workflow
 # passes the release tag (with any leading `v` stripped).
 #
 # No ENTRYPOINT/CMD is set: the full command (here, `python /work/build_model.py`)

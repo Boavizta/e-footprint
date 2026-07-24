@@ -105,6 +105,14 @@ class IntegrationTestSimpleSystemBaseClass(IntegrationTestBaseClass):
         object_relationships_graph.show(
             os.path.join(os.path.abspath(os.path.dirname(__file__)), "object_relationships_graph.html"), notebook=False)
 
+        # The graph walks mod_obj_attributes, so it only sees dict-held children (uj_steps, jobs) if those
+        # count as references. When they didn’t, every edge below the usage journey silently disappeared.
+        full_graph = build_object_relationships_graph(self.system, classes_to_ignore=[])
+        edges = {(edge["from"], edge["to"]) for edge in full_graph.edges}
+        self.assertIn((self.uj.id, self.uj_step_1.id), edges)
+        self.assertIn((self.uj_step_1.id, self.job_1.id), edges)
+        self.assertIn((self.job_1.id, self.server.id), edges)
+
     # INPUT VARIATION TESTING
 
     def _run_test_variations_on_inputs_from_object_list(

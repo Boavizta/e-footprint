@@ -4,6 +4,11 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](http://keepachangelog.com/)
 and this project adheres to [Semantic Versioning](http://semver.org/)
 
+## [V22.3.1]
+
+### Fixed
+- `mod_obj_attributes` now walks structural dict keys (`UsageJourney.uj_steps`, `UsageJourneyStep.jobs`), not just direct and list references. It had missed them since dict relationships landed in V22, so `build_object_relationships_graph` lost every edge below the usage journey, and consumers cascading deletion through it left a deleted step's jobs behind as orphans. Calculated dicts keyed by modeling objects stay out — they are results, not references.
+
 ## [V22.3.0]
 
 ### Added

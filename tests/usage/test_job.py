@@ -53,7 +53,7 @@ class TestJob(TestCase):
         server.set_modeling_obj_container = MagicMock()
         job = Job.from_defaults("test job", server=server)
         server.contextual_modeling_obj_containers = [ContextualModelingObjectAttribute(server, job, "server")]
-        with patch.object(Job, "mod_obj_attributes", new_callable=PropertyMock) as mock_mod_obj_attributes, \
+        with patch.object(Job, "contextual_mod_obj_attributes", new_callable=PropertyMock) as mock_mod_obj_attributes, \
                 patch.object(Job, "networks", new_callable=PropertyMock) as mock_networks:
             mock_mod_obj_attributes.return_value = [server]
             mock_networks.return_value = [network]
@@ -74,7 +74,7 @@ class TestJob(TestCase):
         server.set_modeling_obj_container = MagicMock()
         job = Job.from_defaults("test job", server=server)
         server.contextual_modeling_obj_containers = [ContextualModelingObjectAttribute(server, job, "server")]
-        with patch.object(Job, "mod_obj_attributes", new_callable=PropertyMock) as mock_mod_obj_attributes:
+        with patch.object(Job, "contextual_mod_obj_attributes", new_callable=PropertyMock) as mock_mod_obj_attributes:
             mock_mod_obj_attributes.return_value = [server]
             job.trigger_modeling_updates = False
             job.self_delete()
