@@ -14,7 +14,7 @@ You are about to amend the constitution. Constitution changes are deliberate and
 2. **Confirm the proposed change** with the user. Ask:
    - What rule is being added, removed, or modified?
    - **Why now?** What past pain or future risk justifies amending the constitution?
-   - What downstream artifacts (`architecture.md`, `conventions.md`, CI tests, mkdocs pages) need to follow?
+   - What downstream artifacts (`architecture/`, `conventions.md`, CI tests, mkdocs pages) need to follow?
 
 3. **Apply the change** to `specs/constitution.md`. Keep it short — the constitution is supposed to grow slowly. If a rule is more conditional than absolute, suggest moving it to `conventions.md` instead.
 

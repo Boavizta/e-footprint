@@ -1,0 +1,104 @@
+<!doctype html>
+<html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>e-footprint recomputation — block: @computed_attribute</title>
+<script>if(new URLSearchParams(location.search).has("embed")){document.documentElement.classList.add("embed");addEventListener("DOMContentLoaded",()=>document.querySelectorAll('a[href*=".html"]').forEach(a=>a.target="_top"));}</script>
+<style>
+:root{--ink:#172033;--muted:#64748b;--faint:#94a3b8;--line:#dbe3ee;--bg:#f7f9fc;--card:#fff;--accent:#047857;--soft:#ecfdf5;--slot:#7c3aed;--slot-bg:#f5f3ff;--value:#0369a1;--value-bg:#f0f9ff;--python:#b45309;--python-bg:#fffbeb}*{box-sizing:border-box}body{font-family:system-ui,-apple-system,sans-serif;line-height:1.58;color:var(--ink);background:var(--bg);max-width:64rem;margin:auto;padding:2.2rem 1.2rem 4rem}.embed body{max-width:none;padding:1.2rem 1.1rem 2.5rem}.embed .crumb,.embed footer{display:none}a{color:var(--accent);text-decoration:none}a:hover{text-decoration:underline}.crumb{color:var(--faint);font-size:.85rem;margin-bottom:1rem}h1{font-size:1.75rem;margin:0 0 .25rem}.chip{display:inline-block;font-size:.64rem;text-transform:uppercase;letter-spacing:.05em;padding:.15rem .45rem;border-radius:99px;background:var(--slot-bg);color:var(--slot);vertical-align:middle}.lede{color:var(--muted);font-size:1rem}h2{font-size:1.2rem;margin:2.1rem 0 .55rem}h3{font-size:1rem;margin:1.35rem 0 .4rem}code{background:#eef2f7;padding:.08rem .3rem;border-radius:4px;font-size:.86em}pre{background:#f8fafc;color:#1e293b;border:1px solid #dbe3ee;border-left:4px solid #94a3b8;border-radius:11px;padding:.9rem 1rem;overflow:auto;font: .82rem/1.6 ui-monospace,SFMono-Regular,Menlo,Consolas,monospace;tab-size:4}pre code{background:none;color:inherit;padding:0}.rule{border-left:3px solid var(--slot);background:var(--slot-bg);padding:.65rem .9rem;border-radius:0 10px 10px 0}.diagram{border:1px solid var(--line);border-radius:14px;background:#fff;padding:1rem;margin:1rem 0}.dtitle{font-size:.72rem;font-weight:700;text-transform:uppercase;letter-spacing:.05em;color:var(--faint);margin-bottom:.7rem}.cols{display:grid;grid-template-columns:1fr 1fr;gap:.65rem}.n{border:1px solid;border-radius:10px;padding:.58rem .72rem;font-size:.84rem}.n span{color:var(--muted)}.python{border-color:var(--python);background:var(--python-bg)}.slot{border-color:var(--slot);background:var(--slot-bg)}.value{border-color:var(--value);background:var(--value-bg)}.ar{text-align:center;color:var(--faint);font-size:.78rem;padding:.22rem}.tablewrap{overflow:auto}table{border-collapse:collapse;width:100%;min-width:40rem;font-size:.85rem}th,td{border:1px solid var(--line);padding:.47rem .6rem;text-align:left;vertical-align:top;background:#fff}th{background:#eef2f7;color:var(--muted)}details{border:1px solid var(--line);border-radius:10px;background:#fff;margin:.65rem 0}summary{cursor:pointer;padding:.58rem .82rem;font-weight:650;font-size:.9rem}details[open] summary{border-bottom:1px solid var(--line)}.fbody{padding:.4rem .95rem .75rem;font-size:.91rem}li{margin:.3rem 0}footer{margin-top:3rem;border-top:1px solid var(--line);padding-top:1rem;color:var(--faint);font-size:.8rem}@media(max-width:48rem){.cols{grid-template-columns:1fr}}
+</style></head><body>
+<p class="crumb"><a href="../../index.html">Architecture</a> / <a href="../../recomputation.html#decorator">Recomputation</a> / block: <code>@computed_attribute</code></p>
+<h1><code>@computed_attribute</code> <span class="chip">technical building block</span></h1>
+<p class="lede">One declaration plays two Python roles: <a class="term" href="../../glossary.html#decorator">decorator</a> syntax replaces the <a class="term" href="../../glossary.html#getter">getter</a> with a <a class="term" href="../../glossary.html#descriptor">descriptor</a> on the class; the descriptor later routes every instance read to that instance's <a class="term" href="../../glossary.html#reactive-slot"><code>ReactiveSlot</code></a>.</p>
+<div class="rule"><b>Keep the levels separate:</b> one descriptor per declared class attribute; one computed slot and cached value per modeling-object instance.</div>
+
+<h2 id="terms">Three objects, three jobs</h2>
+<div class="tablewrap"><table><tr><th>Object</th><th>Created when</th><th>Responsibility</th></tr>
+<tr><td>Getter function</td><td>Python executes the <code>def</code> statement inside the class body.</td><td>The domain formula. It takes <code>self</code> and returns a fresh computed value.</td></tr>
+<tr><td><code>computed_attribute</code> descriptor</td><td>Python applies the decorator while building the <a class="term" href="../../glossary.html#class-namespace">class namespace</a>.</td><td>Retains the getter, documentation, <code>serialize</code>/<code>guard</code> flags, and controls attribute access through <code>__get__</code>.</td></tr>
+<tr><td><code>ReactiveSlot</code></td><td>The descriptor is first read for a particular instance.</td><td>Stores that instance's cached/void state, <a class="term" href="../../glossary.html#getter-closure">getter closure</a>, dependency edges, dependents, and wave marker.</td></tr></table></div>
+
+<h2 id="decoration">How decorator syntax installs the descriptor</h2>
+<div class="cols"><div><h3>Written</h3><pre><code>class UsagePattern(ModelingObject):
+    @computed_attribute
+    def utc_hourly_usage_journey_starts(self):
+        return ...</code></pre></div><div><h3>Conceptual expansion</h3><pre><code>class UsagePattern(ModelingObject):
+    def utc_hourly_usage_journey_starts(self):
+        return ...
+
+    utc_hourly_usage_journey_starts = computed_attribute(
+        utc_hourly_usage_journey_starts
+    )</code></pre></div></div>
+<div class="diagram"><div class="dtitle">Class-body execution order</div>
+<div class="n python"><b>1 · <code>def</code> creates a function</b><br><span>The function is temporarily bound to <code>utc_hourly_usage_journey_starts</code> in the class namespace under construction.</span></div><div class="ar">↓ Python evaluates and applies the decorator</div>
+<div class="n slot"><b>2 · <code>computed_attribute(function)</code> returns a descriptor</b><br><span><code>__init__</code> calls <code>_bind_getter</code>, retaining the original function and its docstring.</span></div><div class="ar">↓ Python rebinds the same class-namespace name to the returned object</div>
+<div class="n value"><b>3 · <code>type</code> creates <code>UsagePattern</code></b><br><span>The finished class dictionary contains the descriptor, not the original bare function.</span></div><div class="ar">↓ Python's descriptor setup hook</div>
+<div class="n slot"><b>4 · <code>descriptor.__set_name__(UsagePattern, "utc_hourly_usage_journey_starts")</code></b><br><span>It verifies the getter/name match and registers the declaration in <code>_declared_computed_slots</code>.</span></div></div>
+<p>The decorator does not explicitly call <code>setattr(UsagePattern, ...)</code>. Python stores whatever the decorator returns under the function's name while it is still assembling the class namespace.</p>
+
+<h2 id="parameterized">Parameterized decorator form</h2>
+<p><code>@computed_attribute(serialize=True, guard=True)</code> has one extra call <b>because the parentheses make Python evaluate the decorator expression before it applies the decorator to the function</b>. The first call receives configuration options—not the getter—so it creates a configured but getter-less descriptor. Python must then make a second call to pass the newly created getter function to that descriptor; <code>computed_attribute.__call__</code> binds it.</p>
+<div class="cols"><div><h3>Without options · one call</h3><pre><code>@computed_attribute
+def value(self): ...
+
+# Conceptually:
+value = computed_attribute(value)</code></pre><p>The getter is supplied directly to the descriptor constructor.</p></div><div><h3>With options · two calls</h3><pre><code>@computed_attribute(serialize=True, guard=True)
+def value(self): ...
+
+# Conceptually:
+decorator = computed_attribute(
+    serialize=True, guard=True
+)
+value = decorator(value)</code></pre><p>The first call supplies options; the second supplies the getter.</p></div></div>
+<pre><code># Conceptual expansion of @computed_attribute(serialize=True)
+decorator = computed_attribute(serialize=True)  # getter is not bound yet
+descriptor = decorator(utc_hourly_usage_journey_starts)
+# descriptor.__call__ binds the getter and returns descriptor itself
+
+utc_hourly_usage_journey_starts = descriptor</code></pre>
+
+<h2 id="access">How the installed descriptor handles reads</h2>
+<div class="cols"><div class="n python"><b>Class read</b><br><span><code>UsagePattern.utc_hourly_usage_journey_starts</code><br>Python calls <code>__get__(None, UsagePattern)</code>; the descriptor returns itself. Documentation and registry code inspect this form.</span></div><div class="n value"><b>Instance read</b><br><span><code>pattern.utc_hourly_usage_journey_starts</code><br>Python calls <code>__get__(pattern, UsagePattern)</code>; the descriptor resolves and pulls the instance slot.</span></div></div>
+<div class="diagram"><div class="dtitle">First instance read</div>
+<div class="n slot"><b><code>computed_attribute.__get__</code></b><br><span>Calls <code>self.slot(pattern)</code>.</span></div><div class="ar">↓</div>
+<div class="n slot"><b><code>slot(pattern)</code></b><br><span>Looks in <code>pattern.__dict__["_reactive_slots"]</code>. If absent, creates a <code>ReactiveSlot</code> and gives it a <a class="term" href="../../glossary.html#closure">closure</a> around <code>self.getter(pattern)</code>.</span></div><div class="ar">↓</div>
+<div class="n value"><b><code>slot.pull()</code></b><br><span>Returns the cached value or runs the closure, records dependencies, and caches the fresh result.</span></div></div>
+
+<h2 id="closure-bridge">The getter closure closes the loop</h2>
+<p><code>ReactiveSlot._compute()</code> first pushes that slot's compute frame, then calls the zero-argument closure stored in <code>slot.getter</code>. The closure runs the domain getter and explicitly bridges its returned <code>ExplainableObject</code> ancestry into the active frame:</p>
+<pre><code>def compute():
+    # 1. Run the original decorated domain getter for this instance.
+    #    Relationship wrappers record structural reads while it runs.
+    value = self.getter(instance)
+
+    # 2. Attach the result to this modeling-object attribute and slot.
+    self._attach_to_owner(instance, value, slot)
+
+    # 3. Map the result's explainable ancestors back to their slots.
+    #    record_calculus_dependency(...) adds each slot to the active
+    #    frame's calculus_reads set through the compute stack.
+    record_calculus_edges_from_ancestry(value)
+
+    return value</code></pre>
+<div class="rule"><b>This is the handoff:</b> the domain getter creates the value and its formula ancestry; the closure turns that ancestry into slot-level calculus dependencies; <code>ReactiveSlot._compute()</code> then commits the frame's calculus and structural sets. See <a href="reactive-slot.html#read-hook-recording">ReactiveSlot § how read hooks mutate the active frame</a>.</div>
+<p><code>record_calculus_edges_from_value_structure(value)</code> is the corresponding bridge for <code>@lazy_attribute</code>, whose result may be a nested raw dict/list/dataclass containing explainables. A normal <code>@computed_attribute</code> uses <code>record_calculus_edges_from_ancestry(value)</code>.</p>
+
+<h2 id="storage">What is stored where</h2>
+<div class="tablewrap"><table><tr><th>Location</th><th>Contents</th><th>Shared?</th></tr>
+<tr><td><code>UsagePattern.__dict__["utc_hourly_usage_journey_starts"]</code></td><td>The <code>computed_attribute</code> descriptor and original getter.</td><td>One declaration shared by all instances.</td></tr>
+<tr><td><code>pattern_a.__dict__["_reactive_slots"]["utc_hourly_usage_journey_starts"]</code></td><td>Pattern A's slot, cached result, and edges.</td><td>No.</td></tr>
+<tr><td><code>pattern_b.__dict__["_reactive_slots"]["utc_hourly_usage_journey_starts"]</code></td><td>Pattern B's independent slot, cached result, and edges.</td><td>No.</td></tr>
+<tr><td>The computed explainable value</td><td>A <a class="term" href="../../glossary.html#backpointer">backpointer</a> in <code>value._reactive_slot</code> to its owning instance slot.</td><td>Belongs to one slot; getters must return fresh values.</td></tr></table></div>
+<div class="rule"><b>“Class-level descriptor” does not mean “class-level cache.”</b> The class shares computation behavior; instances never share computed slot state.</div>
+
+<h2 id="writes">Writes and deletes</h2>
+<ul><li>A normal assignment to a computed attribute is rejected by <code>ModelingObject.__setattr__</code>; callers must change its inputs.</li><li>The trusted JSON load path uses the descriptor's explicit <code>attach_cached_value(instance, value)</code> hook.</li><li>Deleting the computed attribute calls <code>__delete__</code>, drops the slot's cached value, and lets the next read recompute it.</li></ul>
+
+<details class="fold" open><summary>Read the implementation in this order</summary><div class="fbody"><ol>
+<li><a href="../../../../efootprint/abstract_modeling_classes/reactive_core.py"><code>computed_attribute.__init__</code>, <code>_bind_getter</code>, and <code>__call__</code></a> — decorator construction.</li>
+<li><a href="../../../../efootprint/abstract_modeling_classes/reactive_core.py"><code>computed_attribute.__set_name__</code></a> — class registration.</li>
+<li><a href="../../../../efootprint/abstract_modeling_classes/reactive_core.py"><code>computed_attribute.__get__</code>, <code>slot</code>, and <code>_make_compute_closure</code></a> — instance dispatch.</li>
+<li><a href="../../../../efootprint/abstract_modeling_classes/reactive_core.py"><code>ReactiveSlot.pull</code> and <code>_compute</code></a> — runtime computation and caching.</li>
+<li><a href="../../../../efootprint/abstract_modeling_classes/modeling_object.py"><code>ModelingObject.__setattr__</code></a> — the public assignment guard.</li>
+</ol><p>Return to the <a href="../../recomputation.html#walkthrough">complete lifecycle walkthrough</a> to follow the slot through dependency capture, invalidation, and recomputation.</p></div></details>
+
+<footer>e-footprint architecture · <a href="../../recomputation.html#decorator">recomputation engine</a> · canonical technical zoom for <code>@computed_attribute</code> decoration, descriptor installation, and per-instance slot dispatch.</footer>
+<script src="../../source-links.js"></script></body></html>

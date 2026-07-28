@@ -12,7 +12,7 @@ This skill orchestrates the per-task skills `task-implement` and `task-review`. 
 ## Setup
 
 1. **Confirm the feature.** Ask the user which feature, or take the one they named. Read `specs/features/<feature-name>/tasks.md`. For cross-repo features, the single `tasks.md` lives in the driving repo.
-2. **Read the loop's standing inputs once**, so you can brief sub-agents tersely: `specs/features/<feature-name>/spec.html` and `plan.html` (skim for intent), `specs/constitution.md` (gates), `specs/conventions.md`, `specs/architecture.md`.
+2. **Read the loop's standing inputs once**, so you can brief sub-agents tersely: `specs/features/<feature-name>/spec.html` and `plan.html` (skim for intent), `specs/constitution.md` (gates), `specs/conventions.md`, and `specs/architecture/index.html` plus the owning architecture pages it routes to.
 3. **Identify the uncompleted tasks**, in order. These are the iterations of your loop.
 
 ## Per-task loop

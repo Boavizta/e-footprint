@@ -118,7 +118,7 @@ The spec is a **single self-contained `.html` file** — openable offline, share
   <h2>5. Constraints</h2>
   <ul>
     <li>Performance, compatibility, dependencies, regulatory, etc.</li>
-    <li>References to <code>constitution.md</code> or <code>architecture.md</code> if applicable.</li>
+    <li>References to <code>constitution.md</code> or the owning page under <code>architecture/</code> if applicable.</li>
   </ul>
 </section>
 
@@ -132,7 +132,7 @@ The spec is a **single self-contained `.html` file** — openable offline, share
   <ol>
     <li>Read this file end to end.</li>
     <li>Read <code>plan.html</code> (when written) for ordered steps and test gates.</li>
-    <li>Re-read the relevant spec files (<code>specs/architecture.md</code>,
+    <li>Re-read the relevant spec files (start at <code>specs/architecture/index.html</code> and follow it to the owning page,
     <code>specs/conventions.md</code>) for code-style and architectural constraints.</li>
   </ol>
 </section>

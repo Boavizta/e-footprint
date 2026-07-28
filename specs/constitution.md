@@ -41,6 +41,6 @@ Other coding-style and testing rules live in `conventions.md` and `testing.md`.
 A change to this file requires:
 
 1. A short justification ("why now") proposed alongside.
-2. An explicit acknowledgment of which downstream artifacts (`architecture.md`, `conventions.md`, mkdocs pages, CI tests) need to follow.
+2. An explicit acknowledgment of which downstream artifacts (`architecture/`, `conventions.md`, mkdocs pages, CI tests) need to follow.
 
 Use the `update-constitution` skill, or just edit deliberately with a separate commit — never blend constitutional changes into a feature commit.

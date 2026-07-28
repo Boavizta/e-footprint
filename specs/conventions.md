@@ -42,7 +42,7 @@ These are project-specific patterns worth keeping in mind when extending modelin
 ## Documentation upkeep
 
 - If you notice that the AGENTS.md or specs/ files are missing important information that would allow for less context gathering in developments, propose improvements so that fewer tokens are used in the future with same or better performance.
-- Whenever you implement or change a non-trivial pattern (new relationship type, new infrastructure convention, new calculated-attribute pattern, serialization change), proactively check whether `architecture.md`, `conventions.md`, or `testing.md` should be updated and propose the changes. The goal is to keep specs accurate so that future agents don't have to rediscover patterns from code.
+- Whenever you implement or change a non-trivial pattern (new relationship type, new infrastructure convention, new calculated-attribute pattern, serialization change), proactively check whether the owning page under `architecture/`, `conventions.md`, or `testing.md` should be updated and propose the changes. The goal is to keep specs accurate so that future agents don't have to rediscover patterns from code.
 
 ## Test conventions
 

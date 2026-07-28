@@ -48,7 +48,7 @@ A plan answers:
 - Risks and alternatives considered.
 - Cross-cutting concerns (tests, migrations, docs).
 
-The plan respects `specs/architecture.md`. If it requires deviating from architecture, the deviation is called out and resolved before the plan ships.
+The plan respects the owning pages under `specs/architecture/` (start at `specs/architecture/index.html`). If it requires deviating from architecture, the deviation is called out and resolved before the plan ships.
 
 Skill: `spec-plan` walks you through a template.
 
@@ -89,7 +89,7 @@ Skills: `task-implement` picks up a task and executes it. `task-review` reviews 
 
 When all tasks have shipped:
 
-1. **Promote durable insight into the live reference docs first — and keep them up to date.** Any decision, convention, or constraint that a future contributor or agent would need to make a sound call belongs in the live reference specs (`architecture.md` / `conventions.md` / `testing.md`), never in an archive nobody reads. Most of this should already have happened during implementation; this step is the final check that the reference docs reflect reality. This is the whole point of archiving: once the durable parts live where they belong, the spec folder is disposable.
+1. **Promote durable insight into the live reference docs first — and keep them up to date.** Any decision, convention, or constraint that a future contributor or agent would need to make a sound call belongs in the live reference specs (`architecture/` / `conventions.md` / `testing.md`), never in an archive nobody reads. Most of this should already have happened during implementation; this step is the final check that the reference docs reflect reality. This is the whole point of archiving: once the durable parts live where they belong, the spec folder is disposable.
 2. **Delete `specs/features/<feature-name>/`** (including any untracked `spec.html` / `plan.html` — a tracked-files delete leaves those behind). Git history preserves everything.
 3. **Confirm `CHANGELOG.md` has an `## [Unreleased]` entry** for the feature. `feature-implement` normally already wrote it at the end of the loop; add one now only if it's missing.
 

@@ -485,7 +485,7 @@ value). `progressive_import_service` lost its `compute_calculated_attributes` mo
 size-checks once. `emissions_calculation_service` needed no change (reads slots, which pull lazily).
 Reference JSONs regenerated (`default_system_data.json`, `ai_chatbot`, `iot_industrial`). Gates: 647
 unit+integration pass (stable ×2), jest 182 pass, `test_no_dev_dependency` + `test_version_is_up_to_date`
-pass, CHANGELOG added, `specs/architecture.md` persistence section updated. E2E not run (needs a live
+pass, CHANGELOG added, `specs/architecture/persistence.html` updated. E2E not run (needs a live
 server; adapter→domain integration covers load/save/sankey/results). **Surfaced:** Task 6's aliasing-avoidance
 `.copy()` makes `EdgeComputer.structure_carbon_footprint_fabrication` a source-less derived value, so it no
 longer appears in the source table (a standalone edge computer's table is now empty of it) — a documented

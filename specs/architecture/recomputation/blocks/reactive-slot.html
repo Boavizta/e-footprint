@@ -1,0 +1,164 @@
+<!doctype html>
+<html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>e-footprint recomputation — block: ReactiveSlot</title>
+<script>if(new URLSearchParams(location.search).has("embed")){document.documentElement.classList.add("embed");addEventListener("DOMContentLoaded",()=>document.querySelectorAll('a[href*=".html"]').forEach(a=>a.target="_top"));}</script>
+<style>
+:root{--ink:#172033;--muted:#64748b;--faint:#94a3b8;--line:#dbe3ee;--bg:#f7f9fc;--card:#fff;--accent:#047857;--slot:#7c3aed;--slot-bg:#f5f3ff;--value:#0369a1;--value-bg:#f0f9ff;--input:#b45309;--input-bg:#fffbeb;--guard:#be123c;--guard-bg:#fff1f2}*{box-sizing:border-box}body{font-family:system-ui,-apple-system,sans-serif;line-height:1.58;color:var(--ink);background:var(--bg);max-width:64rem;margin:auto;padding:2.2rem 1.2rem 4rem}.embed body{max-width:none;padding:1.2rem 1.1rem 2.5rem}.embed .crumb,.embed footer{display:none}a{color:var(--accent);text-decoration:none}a:hover{text-decoration:underline}.crumb{color:var(--faint);font-size:.85rem;margin-bottom:1rem}h1{font-size:1.75rem;margin:0 0 .25rem}.chip{display:inline-block;font-size:.64rem;text-transform:uppercase;letter-spacing:.05em;padding:.15rem .45rem;border-radius:99px;background:var(--slot-bg);color:var(--slot);vertical-align:middle}.lede{color:var(--muted);font-size:1rem}h2{font-size:1.2rem;margin:2.1rem 0 .55rem}h3{font-size:1rem;margin:1.35rem 0 .4rem}code{background:#eef2f7;padding:.08rem .3rem;border-radius:4px;font-size:.86em}pre{background:#f8fafc;color:#1e293b;border:1px solid #dbe3ee;border-left:4px solid #94a3b8;border-radius:11px;padding:.9rem 1rem;overflow:auto;font: .82rem/1.6 ui-monospace,SFMono-Regular,Menlo,Consolas,monospace;tab-size:4}pre code{background:none;color:inherit;padding:0}.rule{border-left:3px solid var(--slot);background:var(--slot-bg);padding:.65rem .9rem;border-radius:0 10px 10px 0}.diagram{border:1px solid var(--line);border-radius:14px;background:#fff;padding:1rem;margin:1rem 0}.dtitle{font-size:.72rem;font-weight:700;text-transform:uppercase;letter-spacing:.05em;color:var(--faint);margin-bottom:.7rem}.cols{display:grid;grid-template-columns:1fr 1fr;gap:.65rem}.three{display:grid;grid-template-columns:repeat(3,1fr);gap:.65rem}.n{border:1px solid;border-radius:10px;padding:.58rem .72rem;font-size:.84rem}.n span{color:var(--muted)}.input{border-color:var(--input);background:var(--input-bg)}.slot{border-color:var(--slot);background:var(--slot-bg)}.value{border-color:var(--value);background:var(--value-bg)}.guard{border-color:var(--guard);background:var(--guard-bg)}.ar{text-align:center;color:var(--faint);font-size:.78rem;padding:.22rem}.tablewrap{overflow:auto}table{border-collapse:collapse;width:100%;min-width:40rem;font-size:.85rem}th,td{border:1px solid var(--line);padding:.47rem .6rem;text-align:left;vertical-align:top;background:#fff}th{background:#eef2f7;color:var(--muted)}details{border:1px solid var(--line);border-radius:10px;background:#fff;margin:.65rem 0}summary{cursor:pointer;padding:.58rem .82rem;font-weight:650;font-size:.9rem}details[open] summary{border-bottom:1px solid var(--line)}.fbody{padding:.4rem .95rem .75rem;font-size:.91rem}li{margin:.3rem 0}footer{margin-top:3rem;border-top:1px solid var(--line);padding-top:1rem;color:var(--faint);font-size:.8rem}@media(max-width:48rem){.cols,.three{grid-template-columns:1fr}}
+</style></head><body>
+<p class="crumb"><a href="../../index.html">Architecture</a> / <a href="../../recomputation.html#slot">Recomputation</a> / block: <code>ReactiveSlot</code></p>
+<h1><code>ReactiveSlot</code> <span class="chip">technical building block</span></h1>
+<p class="lede">One slot is the runtime identity of one attribute address in the recomputation graph. Depending on the address, it either caches a computed value or acts as a getter-less change signal for an input or relationship.</p>
+<div class="rule"><b>Shortest useful model:</b> a slot is simultaneously a cache cell and a graph node. It knows what it read, who reads it, whether its value is current, and how to compute that value—if it computes one at all.</div>
+
+<h2 id="address">The slot represents an address, not the current value</h2>
+<div class="diagram"><div class="dtitle">Stable address, replaceable values</div><div class="n slot"><b><code>(pattern, "hourly_usage_journey_starts")</code></b><br><span>Stable slot in <code>pattern._reactive_slots</code></span></div><div class="ar">↙ old value is detached &nbsp;&nbsp; write occurs &nbsp;&nbsp; new value is attached ↘</div><div class="cols"><div class="n input"><b><code>old_starts</code></b><br><span>Its slot backpointer is cleared.</span></div><div class="n value"><b><code>revised_starts</code></b><br><span>Its slot backpointer becomes the same stable slot.</span></div></div></div>
+<p>The value may change repeatedly while the slot remains the graph's identity for that modeling-object attribute. Dependency edges therefore survive replacement long enough to invalidate everything that used the old value.</p>
+
+<h2 id="storage">Where slots live</h2>
+<pre><code>pattern.__dict__["_reactive_slots"] == {
+    "hourly_usage_journey_starts": S_starts,
+    "country": S_country_link,
+    "utc_hourly_usage_journey_starts": S_utc,
+}
+
+country.__dict__["_reactive_slots"] == {
+    "timezone": S_timezone,
+}</code></pre>
+<p>Every modeling-object instance owns its registry. Two <code>UsagePattern</code> instances therefore have different slots even though their class shares the same <code>computed_attribute</code> descriptor. Dict-backed addresses use an internal composite registry key containing the attribute name and dict key.</p>
+
+<h2 id="roles">Two roles, one node type</h2>
+<div class="cols"><div class="n value"><b>Computing slot · getter present</b><br><span><code>S_utc.getter</code> is a zero-argument <a class="term" href="../../glossary.html#getter-closure">getter closure</a>. <code>pull()</code> can run it and cache its result in <code>_value</code>.</span></div><div class="n input"><b>Input or membership node · no getter</b><br><span><code>S_starts</code> and <code>S_country_link</code> compute nothing. A write passes them to <code>invalidate()</code>, which follows their dependents.</span></div></div>
+
+<h2 id="anatomy">What one slot remembers</h2>
+<div class="tablewrap"><table><tr><th>Field</th><th>Meaning</th></tr>
+<tr><td><code>name</code></td><td>Human-readable address label used in diagnostics and cycle chains.</td></tr>
+<tr><td><code>getter</code></td><td>Zero-argument computation closure, or <code>None</code> for an input/membership node.</td></tr>
+<tr><td><code>_value</code></td><td>The cached result or the private <code>_VOID</code> sentinel.</td></tr>
+<tr><td><code>_calculus_dependencies</code></td><td>Input-value slots consumed through <a class="term" href="../../glossary.html#calculus-dependency">calculus dependencies</a>.</td></tr>
+<tr><td><code>_structural_dependencies</code></td><td>Relationship or membership slots traversed through <a class="term" href="../../glossary.html#structural-dependency">structural dependencies</a>.</td></tr>
+<tr><td><code>_dependents</code></td><td>Reverse index: slots whose computations depend on this slot.</td></tr>
+<tr><td><code>_wave_passed</code></td><td>Whether an invalidation wave has already crossed this node and all its current dependents.</td></tr>
+<tr><td><code>guard</code>, <code>lazy</code>, <code>discarded</code>, <code>pull_precedence</code></td><td>Update-policy flags: validate eagerly, never warm eagerly, skip stale dict slots, and order key-set pulls before element pulls.</td></tr>
+</table></div>
+
+<h2 id="pull">What happens when a computing slot is pulled</h2>
+<div class="diagram"><div class="dtitle"><code>S_utc.pull()</code></div><div class="three"><div class="n value"><b>1 · Cache check</b><br><span>Return <code>_value</code> immediately when cached.</span></div><div class="n slot"><b>2 · Compute if void</b><br><span>Create a temporary <code>_ComputeFrame</code>, push it on the context-local stack, and call <code>getter()</code>. See <a href="#compute-stack">Compute stack and <code>ContextVar</code></a> below.</span></div><div class="n value"><b>3 · Commit success</b><br><span>Replace dependency sets with this run's actual reads, update reverse indexes, and cache the result.</span></div></div></div>
+<p>The <code>_ComputeFrame</code> is only a passive temporary notebook for one active getter. It contains the slot and two mutable sets; read-hook functions find the top frame and add slots to those sets. The frame does not observe or collect anything by itself, and it is not stored beside the slot after computation.</p>
+<details><summary>Failure and cycle behavior</summary><div class="fbody"><ul><li>If the getter raises, the slot stays void and its previous dependency edges remain. This safely over-invalidates until a later successful pull refreshes them.</li><li>If the active stack already contains the same slot, <code>_compute()</code> raises <code>CircularDependencyError</code> with the recursive slot chain.</li><li>The context-local stack is reset in <code>finally</code>, so a failed getter cannot leak its compute frame into later work.</li></ul></div></details>
+
+<h2 id="compute-stack">Compute stack and <code>ContextVar</code></h2>
+<p>Read hooks can run many calls below the getter that caused them. They need a way to ask “which slot is computing right now?” without passing a frame argument through every domain method. <a class="term" href="../../glossary.html#contextvar"><code>contextvars.ContextVar</code></a> provides that context-local value: code deep in the call tree can read it, while another thread or asynchronous task gets its own independent value. The exact set-mutation path is explained in <a href="#read-hook-recording">How read hooks mutate the active frame</a> immediately after the annotated excerpt.</p>
+<h3 id="ancestry-mapping">Before the stack: what B computes and what “mapping ancestors” means</h3>
+<div class="diagram"><div class="dtitle">B is the slot for this original decorated method—the domain getter</div><pre><code>@computed_attribute
+def utc_hourly_usage_journey_starts(self):
+    converted = self.hourly_usage_journey_starts.convert_to_utc(
+        local_timezone=self.country.timezone
+    )
+    return converted.set_label("Hourly journey starts (UTC)")</code></pre>
+<div class="three"><div class="n input"><b>1 · Domain getter returns <code>result</code></b><br><span>“Domain getter” means the method above: the domain formula originally passed to <code>@computed_attribute</code>. Its operations created an <code>ExplainableObject</code> result carrying formula ancestry.</span></div><div class="n value"><b>2 · Result identifies nearest attached ancestors</b><br><span><code>result.direct_ancestors_with_id</code> contains the attached input objects <code>pattern.hourly_usage_journey_starts</code> and <code>country.timezone</code>. Both are explainable inputs; the timezone is an <code>ExplainableTimezone</code>, not a number.</span></div><div class="n slot"><b>3 · Closure maps values to stable slots</b><br><span><code>slot_of_attached_value(starts)</code> → <code>S_starts</code><br><code>slot_of_attached_value(timezone)</code> → <code>S_timezone</code><br>Each slot is then added to <code>frame_B.calculus_reads</code>.</span></div></div></div>
+<p>The mapping occurs inside B's getter closure: <code>record_calculus_edges_from_ancestry(result)</code> loops over those two ancestor objects, calls <code>slot_of_attached_value(ancestor)</code>, then calls <code>record_calculus_dependency(mapped_slot)</code>. The ancestor values themselves remain formula/provenance objects; the mapped slots become recomputation dependencies.</p>
+<div class="diagram"><div class="dtitle">First, a concrete stack: downstream slot A pulls B = <code>utc_hourly_usage_journey_starts</code></div>
+<div class="n input"><b>What B's domain getter reads</b><br><span><code>self.hourly_usage_journey_starts</code> is an explainable timeseries input. Evaluating <code>self.country.timezone</code> first traverses the <code>country</code> relationship, then consumes the linked country's explainable <code>timezone</code> value.</span></div><div class="ar">A starts computing, then reads void B</div>
+<div class="n slot"><b>1 · A starts · stack contains one frame</b><br><span><code>( frame_A, )</code><br><code>frame_A = {slot: A, calculus_reads: set(), structural_reads: set()}</code><br>The last—and therefore active—frame is <code>frame_A</code>.</span></div><div class="ar">A reads void B → <code>B.pull()</code> pushes another frame</div>
+<div class="cols"><div class="n slot"><b>Tuple position 0 · <code>frame_A</code></b><br><span><code>slot = A</code><br><code>calculus_reads = set()</code><br><code>structural_reads = set()</code><br>Still empty in this minimal example: A's direct dependency on B is recorded later, after B's closure returns and A builds its own result.</span></div><div class="n value"><b>Tuple position 1 · <code>frame_B</code> · TOP</b><br><span><code>slot = B</code><br><code>calculus_reads = {S_starts, S_timezone}</code><br><code>structural_reads = {S_country}</code><br>While Python evaluates <code>self.country.timezone</code>, the <code>country</code> wrapper adds getter-less slot <code>S_country</code> structurally. After the domain getter returns its result to the still-active closure, the <a href="#ancestry-mapping">ancestry mapping shown above</a> adds <code>S_starts</code> and <code>S_timezone</code> as calculus reads.</span></div></div><div class="ar">B's closure returns → reset B's token → commit B's recorded sets</div>
+<div class="n slot"><b>2 · A resumes · stack is <code>( frame_A, )</code> again</b><br><span>A consumes B's returned explainable value and creates A's result. A's domain getter returns that result to A's still-active closure; its ancestry bridge maps the consumed value back to slot B and adds <code>B</code> to <code>frame_A.calculus_reads</code>.</span></div><div class="ar">A's closure returns → reset A's token → commit A's recorded sets</div>
+<div class="n input"><b>3 · Computation is finished · stack is <code>()</code></b><br><span>The frames were temporary and are gone. Their recorded contents have been copied into the dependency sets on slots B and A.</span></div></div>
+<p>The stack therefore describes only the getters active <em>right now</em>. At the deepest point above it is the tuple <code>(frame_A, frame_B)</code>; after the whole chain completes it is empty again.</p>
+<div class="rule"><b>There are two returns to distinguish.</b> First, the domain getter returns its value to the getter closure while the frame is still active; this is when the closure records calculus ancestry. Second, the closure returns to <code>ReactiveSlot._compute()</code>; its <code>finally</code> resets the stack, then <code>_compute()</code> commits the populated frame sets.</div>
+<div class="rule"><b>This preserves direct edges:</b> B records the inputs and relationships B itself consumed; A records B. B's internal dependencies are not copied into A's frame. Invalidation can then travel <code>S_starts → B → A</code> or <code>S_country → B → A</code> through the graph.</div>
+<p>This does not depend on B reading only non-computed inputs. If B pulls another computed slot C, the stack temporarily becomes <code>(frame_A, frame_B, frame_C)</code>: C records its own inputs, then B records C after C returns, and A records B after B returns. The direct chain remains <code>input → C → B → A</code>.</p>
+<pre><code># Defined once at module level. Each execution context sees its own tuple
+# of active computation frames. An empty tuple means “no getter is running”.
+_compute_stack = ContextVar(
+    "reactive_compute_stack",
+    default=(),
+)
+
+# The following code runs inside ReactiveSlot._compute(self).
+# Here, `self` is the slot whose value is about to be computed.
+# If A pulled B, B enters with previous_stack == (frame_for_A,).
+previous_stack = _compute_stack.get()
+
+# This passive data container provides two initially empty mutable sets:
+# frame.calculus_reads and frame.structural_reads. Read-hook functions
+# will find this frame through _compute_stack and add slots to those sets.
+# See “How read hooks mutate the active frame” immediately below.
+frame = _ComputeFrame(slot=self)
+
+# Tuples are immutable: this creates a new tuple ending in our frame.
+# ContextVar.set() makes it current and returns a token that remembers
+# the previous value. For B, the current stack is now [A, B].
+reset_token = _compute_stack.set(previous_stack + (frame,))
+
+try:
+    # The stored zero-argument getter closure now runs. Read hooks deep
+    # inside it use _compute_stack.get()[-1] to find this frame; before
+    # returning, the closure also invokes the calculus-ancestry bridge.
+    # See “How read hooks mutate the active frame” immediately below.
+    value = self.getter()
+finally:
+    # Always restore the exact prior stack—even if the getter raises.
+    # After B, this restores [A]; after A, it restores [].
+    _compute_stack.reset(reset_token)</code></pre>
+<h3 id="read-hook-recording">How read hooks mutate the active frame</h3>
+<p>The mutation happens elsewhere, when a value or relationship read reaches a recording hook:</p>
+<pre><code>def _record_dependency(dependency_slot, read_kind):
+    stack = _compute_stack.get()
+    if not stack:
+        return                         # no computed getter is active
+
+    active_frame = stack[-1]           # the getter currently running
+    target_set = getattr(active_frame, read_kind)
+    target_set.add(dependency_slot)     # this is what records the read
+
+# Called conceptually as either:
+_record_dependency(S_starts, "calculus_reads")
+_record_dependency(S_country_link, "structural_reads")</code></pre>
+<div class="diagram"><div class="dtitle">Who actually does what</div><div class="three"><div class="n input"><b>Read hook</b><br><span>Notices that a value or relationship was consumed and calls the recording function.</span></div><div class="n slot"><b><code>_record_dependency</code></b><br><span>Looks up <code>stack[-1]</code> and adds the dependency slot to the appropriate set.</span></div><div class="n value"><b><code>ReactiveSlot._compute</code></b><br><span>After the getter succeeds, reads the frame's sets and passes them to <code>replace_dependencies()</code>.</span></div></div></div>
+<div class="cols"><div><h3>Structural read: explicit wrapper hook</h3><pre><code># self.country.timezone reaches the link wrapper:
+ContextualModelingObjectAttribute.__getattr__
+  → record_read_of_node(pattern, "country")
+  → _node_slot(pattern, "country")
+  → record_structural_dependency(S_country)
+  → _record_dependency(
+        S_country, "structural_reads"
+    )
+  → active_frame.structural_reads.add(
+        S_country
+    )</code></pre></div><div><h3>Calculus read: formula-ancestry bridge</h3><pre><code># After the domain getter returns its value:
+computed_attribute compute closure
+  → record_calculus_edges_from_ancestry(result)
+  → slot_of_attached_value(ancestor)
+  → record_calculus_dependency(S_input)
+  → _record_dependency(
+        S_input, "calculus_reads"
+    )
+  → active_frame.calculus_reads.add(
+        S_input
+    )</code></pre></div></div>
+<p>For a normal <code>@computed_attribute</code>, the getter closure triggers the calculus side by calling <code>record_calculus_edges_from_ancestry(result)</code> after the domain getter returns and before the closure returns to <code>ReactiveSlot._compute()</code>. For <code>@lazy_attribute</code>, the parallel closure calls <code>record_calculus_edges_from_value_structure(result)</code> because explainables may be nested inside raw containers.</p>
+<p>The final mutation is ordinary Python set mutation. <code>getattr(stack[-1], read_kind)</code> returns the actual set stored on the frame—not a copy—and <code>.add(dependency_slot)</code> changes that set in place. The local <code>frame</code> variable in <code>_compute()</code> still refers to the same object, so it sees those additions after the getter returns.</p>
+<p><code>ContextVar</code> itself is not a stack. The engine stores an immutable tuple in it and implements push/pop by setting a longer tuple and then resetting the returned token. The token remembers the exact previous context value, which makes restoration correct after nested calls and exceptions.</p>
+<div class="rule"><b>The same stack has two jobs.</b> Its top frame receives dependency reads; searching the whole stack before a push detects <code>A → B → A</code> and reports that chain as a circular dependency.</div>
+
+<h2 id="edges">Why edges exist in both directions</h2>
+<div class="diagram"><div class="dtitle">Forward reads explain the computation; reverse edges drive invalidation</div><div class="cols"><div><div class="n input"><b><code>S_starts</code></b></div><div class="ar">↓ calculus dependency</div></div><div><div class="n input"><b><code>S_country_link</code></b></div><div class="ar">↓ structural dependency</div></div></div><div class="n slot"><b><code>S_utc</code></b><br><span>Forward sets contain both dependencies. Each dependency's reverse <code>_dependents</code> set contains <code>S_utc</code>.</span></div></div>
+<p><code>replace_dependencies()</code> updates the forward sets and reverse indexes together. A relationship switch can therefore remove the old country's timezone edge and install the new country's timezone edge atomically after a successful recomputation.</p>
+
+<h2 id="invalidate">What invalidation changes—and preserves</h2>
+<div class="cols"><div class="n guard"><b>Changes</b><br><span><code>_value</code> becomes <code>_VOID</code>; <code>on_value_dropped</code> detaches obsolete computed values; the wave follows <code>_dependents</code>.</span></div><div class="n slot"><b>Preserves</b><br><span>The dependency sets and reverse indexes remain, allowing later waves to cross void intermediates and reach cached descendants.</span></div></div>
+<p><code>_wave_passed</code> prevents repeated <a class="term" href="../../glossary.html#invalidation">invalidation</a> traversal; voidness cannot. Pulling and caching through a slot clears relevant markers so the next change can reach the fresh cache.</p>
+
+<h2 id="persistence">What is persisted</h2>
+<p>The <code>ReactiveSlot</code> Python object, getter closure, cached/void sentinel, and wave marker are runtime-only. Persistence stores slot <em>addresses</em> and dependency edges in the values-free <code>calculation_graph</code>. The load path materializes slots for those addresses and calls <code>replace_dependencies()</code> to rebuild both directions without running getters.</p>
+
+<details open><summary>Read the implementation in this order</summary><div class="fbody"><ol>
+<li><a href="../../../../efootprint/abstract_modeling_classes/reactive_core.py"><code>ReactiveSlot.__init__</code>, <code>pull</code>, and <code>_compute</code></a> — state and pull lifecycle.</li>
+<li><a href="../../../../efootprint/abstract_modeling_classes/reactive_core.py"><code>replace_dependencies</code> and <code>attach_cached_value</code></a> — atomic edge and cache commit.</li>
+<li><a href="../../../../efootprint/abstract_modeling_classes/reactive_core.py"><code>invalidate</code></a> — deletion-wave traversal.</li>
+<li><a href="../../../../efootprint/abstract_modeling_classes/reactive_core.py"><code>instance_slot_registry</code> and <code>_node_slot</code></a> — storage and getter-less nodes.</li>
+<li><a href="../../../../efootprint/abstract_modeling_classes/reactive_core.py"><code>computed_attribute.slot</code> and <code>_make_compute_closure</code></a> — how a descriptor creates a computing slot.</li>
+</ol><p>Return to the <a href="../../recomputation.html#walkthrough">complete lifecycle walkthrough</a> to see these fields change in the real <code>UsagePattern</code> example.</p></div></details>
+
+<footer>e-footprint architecture · <a href="../../recomputation.html#slot">recomputation engine</a> · canonical technical zoom for slot identity, storage, state, dependency edges, pull, invalidation, and persistence.</footer>
+<script src="../../source-links.js"></script></body></html>

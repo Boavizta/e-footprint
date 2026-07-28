@@ -11,7 +11,7 @@ You are about to implement one task from an approved tasks list.
 
 1. **Confirm which feature and which task.** Read `specs/features/<feature-name>/tasks.md`. The user must name a specific task or pick the first uncompleted one.
 
-2. **Read the spec, plan, and tasks** for this feature in full. Read `specs/architecture.md` and `specs/conventions.md`. Read `specs/constitution.md` for the quality gates.
+2. **Read the spec, plan, and tasks** for this feature in full. Start at `specs/architecture/index.html`, follow its task routing to the owning architecture pages, and read `specs/conventions.md`. Read `specs/constitution.md` for the quality gates.
 
 3. **Implement the task.** Touch only the files listed in the task. If you need to touch more, stop and surface it.
 

@@ -1,0 +1,77 @@
+<!doctype html>
+<html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>e-footprint — Architecture hub</title>
+<style>
+:root{--ink:#172033;--muted:#64748b;--faint:#94a3b8;--line:#dbe3ee;--bg:#f7f9fc;--card:#fff;--accent:#047857;--soft:#ecfdf5;--framework:#7c3aed;--framework-bg:#f5f3ff;--core:#0369a1;--core-bg:#f0f9ff;--api:#b45309;--api-bg:#fffbeb;--projection:#be185d;--projection-bg:#fdf2f8}
+*{box-sizing:border-box}body{font-family:system-ui,-apple-system,sans-serif;line-height:1.55;color:var(--ink);background:var(--bg);max-width:64rem;margin:auto;padding:2.4rem 1.2rem 4rem}h1{font-size:2rem;margin:0 0 .25rem}.tagline{color:var(--muted);font-size:1.02rem;margin:0 0 1.5rem}.tagline b{color:var(--ink)}h2{font-size:1.05rem;text-transform:uppercase;letter-spacing:.06em;color:var(--faint);margin:2.4rem 0 .8rem}a{color:var(--accent);text-decoration:none}a:hover{text-decoration:underline}code{background:#eef2f7;padding:.08rem .3rem;border-radius:4px;font-size:.86em}pre{background:#f8fafc;color:#1e293b;border:1px solid #dbe3ee;border-left:4px solid #94a3b8;border-radius:11px;padding:.9rem 1rem;overflow:auto;font: .82rem/1.6 ui-monospace,SFMono-Regular,Menlo,Consolas,monospace;tab-size:4;margin:.6rem 0}pre code{background:none;color:inherit;padding:0}.note{border-left:3px solid var(--accent);background:var(--soft);padding:.65rem 1rem;border-radius:0 10px 10px 0;font-size:.9rem}.diagram{border:1px solid var(--line);border-radius:14px;background:#fff;padding:1rem 1.1rem;margin:1rem 0}.dtitle{font-size:.72rem;font-weight:700;letter-spacing:.05em;text-transform:uppercase;color:var(--faint);margin-bottom:.7rem}.n{border:1px solid;border-radius:10px;padding:.55rem .75rem;font-size:.85rem}.n b{font-size:.82rem}.n span{color:var(--muted)}.framework{border-color:var(--framework);background:var(--framework-bg)}.core{border-color:var(--core);background:var(--core-bg)}.api{border-color:var(--api);background:var(--api-bg)}.projection{border-color:var(--projection);background:var(--projection-bg)}.ar{text-align:center;color:var(--faint);font-size:.8rem;padding:.25rem}.cols{display:grid;grid-template-columns:1fr 1fr;gap:.7rem}.grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(16rem,1fr));gap:.7rem}.card{display:block;border:1px solid var(--line);border-radius:12px;padding:.9rem 1rem;background:#fff;color:var(--ink)}a.card:hover{border-color:var(--accent);text-decoration:none;transform:translateY(-1px)}.name{font-weight:700}.desc{color:var(--muted);font-size:.85rem;margin-top:.25rem}.pill{float:right;font-size:.63rem;text-transform:uppercase;letter-spacing:.05em;padding:.12rem .42rem;border-radius:99px;background:var(--soft);color:var(--accent)}ol.flow{counter-reset:s;list-style:none;padding:0}ol.flow li{counter-increment:s;position:relative;padding:.22rem 0 .22rem 2rem;color:var(--muted)}ol.flow li:before{content:counter(s);position:absolute;left:0;top:.25rem;width:1.35rem;height:1.35rem;border-radius:50%;display:grid;place-items:center;background:var(--soft);color:var(--accent);font-size:.72rem;font-weight:700}ol.flow b{color:var(--ink)}.tablewrap{overflow:auto}table{border-collapse:collapse;width:100%;min-width:40rem;font-size:.87rem}th,td{border:1px solid var(--line);padding:.48rem .62rem;text-align:left;vertical-align:top;background:#fff}th{background:#eef2f7;color:var(--muted);font-size:.75rem;text-transform:uppercase}footer{margin-top:3rem;border-top:1px solid var(--line);padding-top:1rem;color:var(--faint);font-size:.8rem}@media(max-width:44rem){.cols{grid-template-columns:1fr}}
+</style></head><body>
+<h1>e-footprint — Architecture hub</h1>
+<p class="tagline">A visual route through the modeling framework, the environmental domain, and the data around them. <b>These pages are the complete architecture SSOT:</b> visible summaries build intuition; folded sections retain implementation detail for reviewers and agents.</p>
+<div class="note"><b>Start with the shape, zoom only when needed.</b> Read the system map below, then follow the curated route. The <a href="../constitution.md">constitution</a> contains immutable rules; architecture explains how the code realizes them.</div>
+
+<h2>System map</h2>
+<div class="diagram"><div class="dtitle">Dependency direction and the two downstream views</div>
+  <div class="n api"><b><code>efootprint/api_utils/</code> — persistence</b><br><span>Stores inputs, selected cached slots, and dependency topology; imports the layers below.</span></div>
+  <div class="ar">↓ depends on</div>
+  <div class="n core"><b><code>efootprint/core/</code> — environmental model</b><br><span>Usage, jobs, hardware, edge fleets, systems, and the formulas that turn demand into footprint.</span></div>
+  <div class="ar">↓ depends on</div>
+  <div class="n framework"><b><code>efootprint/abstract_modeling_classes/</code> — reactive framework</b><br><span>Explainable values, object relationships, reactive slots, dependency edges, invalidation, and transactional updates.</span></div>
+  <div class="ar">↓ computed footprint is consumed without feeding back</div>
+  <div class="cols">
+    <div class="n projection"><b><code>core/attribution/</code> — explain</b><br><span>Lazy atoms and folds project totals into Sankey-ready views.</span></div>
+    <div class="n core"><b><code>comparison/</code> — compare</b><br><span>Pure reads align totals, phases, timelines, and inputs across systems.</span></div>
+  </div>
+</div>
+
+<h2>A typical modeling object</h2>
+<p class="tagline" style="font-size:.92rem;margin-bottom:.5rem">Most domain classes assign their inputs in <code>__init__</code>, then declare each derived value as a decorated getter. This abridged example is the real shape of <code>UsagePattern</code>.</p>
+<div class="diagram"><div class="dtitle">Inputs are stored; the formula reads like ordinary Python</div>
+<pre><code>class UsagePattern(ModelingObject):
+    def __init__(self, name, country, hourly_usage_journey_starts, ...):
+        super().__init__(name)
+        self.country = country
+        self.hourly_usage_journey_starts = hourly_usage_journey_starts
+
+    @computed_attribute
+    def utc_hourly_usage_journey_starts(self):
+        converted = self.hourly_usage_journey_starts.convert_to_utc(
+            local_timezone=self.country.timezone
+        )
+        return converted.set_label("Hourly journey starts (UTC)")</code></pre>
+<div class="cols"><div class="n core"><b>Value dependencies</b><br><span>The result uses <code>hourly_usage_journey_starts</code> and the linked country's <code>timezone</code>.</span></div><div class="n framework"><b>Relationship dependency</b><br><span>The result also depends on which <code>Country</code> the <code>country</code> link points to.</span></div></div>
+<p style="font-size:.88rem;color:var(--muted);margin-bottom:0">The reactive framework observes those ordinary reads while the getter runs. Continue with the <a href="recomputation.html#walkthrough">complete recomputation walkthrough</a> for the exact runtime state, code paths, invalidation, and persistence behavior.</p></div>
+
+<h2>First time here? Curated understanding path</h2>
+<p class="tagline" style="font-size:.92rem;margin-bottom:.4rem">A newcomer can stop after step 3 and navigate most domain changes. Read all seven before changing framework, serialization, or attribution behavior.</p>
+<ol class="flow">
+  <li><b>Purpose and guardrails</b> — read <a href="../mission.md">mission.md</a>, then <a href="../constitution.md">constitution.md</a>.</li>
+  <li><b><a href="layers-and-modeling.html">Layers &amp; modeling</a></b> — learn where code belongs and what a modeling object declares.</li>
+  <li><b><a href="recomputation.html">Recomputation engine</a></b> — follow one input edit through nodes, deletion wave, pull, guards, and rollback.</li>
+  <li><b><a href="relationships.html">Relationships</a></b> — understand how object links create structural dependency edges and support traversal.</li>
+  <li><b><a href="persistence.html">Persistence</a></b> — see why cached values and graph topology can reload without eagerly computing.</li>
+  <li><b><a href="attribution.html">Attribution</a></b> — learn the downstream atom model and its conservation rules.</li>
+  <li><b><a href="comparison-and-display.html">Comparison &amp; display</a></b> — finish at the read-only boundaries presented to humans.</li>
+</ol>
+
+<h2>If you're about to…</h2>
+<div class="tablewrap"><table><tr><th>Task</th><th>Read first</th></tr>
+<tr><td>Review or change computed-attribute behavior</td><td><a href="recomputation.html#walkthrough">Recomputation § complete walkthrough</a> → <a href="recomputation.html#correctness">correctness invariants</a></td></tr>
+<tr><td>Add a modeling object or computed attribute</td><td><a href="layers-and-modeling.html#object-shape">Layers § modeling-object shape</a> and <a href="layers-and-modeling.html#registration">registration</a></td></tr>
+<tr><td>Add or change an object relationship</td><td><a href="relationships.html#relationship-types">Relationships § types</a> and <a href="relationships.html#traversal">traversal SSOT</a></td></tr>
+<tr><td>Change JSON or calculated-state loading</td><td><a href="persistence.html#contract">Persistence § minimal contract</a> and <a href="persistence.html#load">version-aware load</a></td></tr>
+<tr><td>Change a Sankey, repartition, or edge breakdown</td><td><a href="attribution.html#atoms">Attribution § atom model</a> and <a href="attribution.html#cache">reactive projection cache</a></td></tr>
+<tr><td>Change a comparison or human-readable quantity</td><td><a href="comparison-and-display.html">Comparison &amp; display</a></td></tr>
+<tr><td>Debug an invalid edit or stale value</td><td><a href="recomputation.html#debugging">Recomputation § debugging map</a></td></tr>
+</table></div>
+
+<h2>Pages</h2><div class="grid">
+<a class="card" href="layers-and-modeling.html"><div class="name">Layers &amp; modeling <span class="pill">start here</span></div><div class="desc">The dependency rule, domain map, modeling-object contract, registries, builders, templates, units, and doc-as-code.</div></a>
+<a class="card" href="recomputation.html"><div class="name">Recomputation engine <span class="pill">core review</span></div><div class="desc">The pull-based slot graph, read and write paths, invalidation waves, eager boundaries, guards, rollback, and correctness rules.</div></a>
+<a class="card" href="relationships.html"><div class="name">Relationships</div><div class="desc">Direct, list, and dict links; reverse relationships; graph traversal; input and calculated dict behavior.</div></a>
+<a class="card" href="persistence.html"><div class="name">Persistence</div><div class="desc">The v23 minimal contract, partial cached state, serialized topology, upgrade baselines, reference resolution, and Sources.</div></a>
+<a class="card" href="attribution.html"><div class="name">Attribution <span class="pill">visual</span></div><div class="desc">Footprint atoms, folds, relay weights, conservation, two-level reactive caches, and edge-device booking.</div></a>
+<a class="card" href="comparison-and-display.html"><div class="name">Comparison &amp; display</div><div class="desc">Domain-truth comparison, temporal alignment, input diffs, duplication, Pint boundaries, and metadata.</div></a>
+<a class="card" href="glossary.html"><div class="name">Technical glossary</div><div class="desc">Canonical definitions for advanced Python and recomputation terms. Dotted term links open entries in a bottom drawer without closing a technical zoom.</div></a>
+</div>
+<footer>e-footprint architecture hub · successor to <code>specs/architecture.md</code> · details folded, never dropped.</footer>
+<script src="source-links.js"></script></body></html>

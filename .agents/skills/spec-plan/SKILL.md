@@ -1,6 +1,6 @@
 ---
 name: spec-plan
-description: Use after the user approves a spec.html to write or refine the corresponding plan.html. Second stage of the four-stage spec-driven workflow. Plan answers HOW the spec becomes code; respects architecture.md. Still no code execution.
+description: Use after the user approves a spec.html to write or refine the corresponding plan.html. Second stage of the four-stage spec-driven workflow. Plan answers HOW the spec becomes code; respects the architecture hub. Still no code execution.
 ---
 
 # spec-plan
@@ -12,10 +12,10 @@ You are about to write or refine a plan for a feature whose spec is approved. Do
 1. **Confirm which feature** with the user. The corresponding `specs/features/<feature-name>/spec.html` must exist and be approved.
 
 2. **Check whether `plan.html` already exists.**
-   - **If yes:** treat it as a draft to refine, **not** replace. Read it alongside the spec. Identify (a) gaps the spec implies but the plan doesn't cover, (b) plan content that's stale relative to the spec (e.g. capabilities the spec dropped), (c) anything that violates `architecture.md` or `constitution.md`, (d) implementation-level content that drifted into the spec and should move down to the plan. Surface this delta as a punch list to the user *before* editing. Apply changes via `Edit`, preserving the existing structure. Use AskUserQuestion for any material decision the existing plan doesn't settle.
+   - **If yes:** treat it as a draft to refine, **not** replace. Read it alongside the spec. Identify (a) gaps the spec implies but the plan doesn't cover, (b) plan content that's stale relative to the spec (e.g. capabilities the spec dropped), (c) anything that violates the owning pages under `architecture/` or `constitution.md`, (d) implementation-level content that drifted into the spec and should move down to the plan. Surface this delta as a punch list to the user *before* editing. Apply changes via `Edit`, preserving the existing structure. Use AskUserQuestion for any material decision the existing plan doesn't settle.
    - **If no:** draft fresh, following the template below. Use AskUserQuestion for material decisions (which approach, where to put a new module, etc.).
 
-3. **Read `specs/architecture.md` and `specs/constitution.md`.** The plan must respect both. If the plan requires deviating from architecture, the deviation is called out explicitly with rationale.
+3. **Read `specs/architecture/index.html`, the owning architecture pages it routes to, and `specs/constitution.md`.** The plan must respect them. If it requires deviating from architecture, the deviation is called out explicitly with rationale.
 
 4. **Save the file** at `specs/features/<feature-name>/plan.html`.
 
@@ -81,7 +81,7 @@ When refining an existing draft (Process step 2), preserve this structure and ed
   <ul>
     <li><strong>Tests:</strong> what test layers (unit / integration / e2e) are affected, and what the new coverage looks like at a glance.</li>
     <li><strong>Migrations:</strong> if JSON schema or DB schema change, identify the migration path.</li>
-    <li><strong>Docs:</strong> what spec files (<code>architecture.md</code>, <code>conventions.md</code>) need to follow.</li>
+    <li><strong>Docs:</strong> what owning architecture pages or other spec files (<code>conventions.md</code>, etc.) need to follow.</li>
   </ul>
 </section>
 

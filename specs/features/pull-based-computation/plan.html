@@ -263,7 +263,7 @@ inherited from the kickoff discussion (7-point decision log).</p>
         computed values dropped); both performance fixtures regenerated in stage 1 (currently
         drifted: stale property keys, missing newer attributes); interface session stores migrate
         trivially (old sessions reload as inputs-only and recompute on pull).</li>
-    <li><strong>Docs:</strong> <code>architecture.md</code> dependency-graph and
+    <li><strong>Docs:</strong> <code>architecture/recomputation.html</code> dependency-graph and
         calculated-attribute sections rewritten at archive time (reactive core pattern, slot model,
         serialization contract); <code>conventions.md</code> drops the <code>update_*</code> naming
         rules; mkdocs doc-as-code generation re-pointed from <code>update_&lt;attr&gt;</code>
@@ -337,7 +337,7 @@ inherited from the kickoff discussion (7-point decision log).</p>
   <ul>
     <li><strong>§1.1 (layer separation)</strong> — respected; the one documented back-edge (the
         function-local <code>System</code> import in the computation-chain optimizer) is deleted
-        with the optimizer. <code>architecture.md</code>'s note follows at archive time.</li>
+        with the optimizer. <code>architecture/recomputation.html</code>'s note follows at archive time.</li>
     <li><strong>§1.4 (doc-as-code SSOT)</strong> — names <code>update_&lt;attr&gt;</code> method
         docstrings as authoritative. Bodies and docstrings survive as getters, but the rule's
         wording and the mkdocs/interface readers must follow. <strong>Amendment required</strong> —

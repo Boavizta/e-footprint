@@ -1,0 +1,216 @@
+<!doctype html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>e-footprint architecture — Recomputation engine</title>
+<style>
+:root{--ink:#172033;--muted:#64748b;--faint:#94a3b8;--line:#dbe3ee;--bg:#f7f9fc;--card:#fff;--accent:#047857;--soft:#ecfdf5;--input:#b45309;--input-bg:#fffbeb;--slot:#7c3aed;--slot-bg:#f5f3ff;--value:#0369a1;--value-bg:#f0f9ff;--guard:#be123c;--guard-bg:#fff1f2}*{box-sizing:border-box}body{font-family:system-ui,-apple-system,sans-serif;line-height:1.58;color:var(--ink);background:var(--bg);max-width:66rem;margin:auto;padding:2.2rem 1.2rem 4rem}a{color:var(--accent);text-decoration:none}a:hover{text-decoration:underline}.crumb{color:var(--faint);font-size:.85rem}h1{font-size:1.9rem;margin:.9rem 0 .25rem}.lede{color:var(--muted);font-size:1.02rem}h2{font-size:1.28rem;margin:2.3rem 0 .6rem}h3{font-size:1.02rem}code{background:#eef2f7;padding:.08rem .3rem;border-radius:4px;font-size:.86em}pre{background:#f8fafc;color:#1e293b;border:1px solid #dbe3ee;border-left:4px solid #94a3b8;border-radius:11px;padding:.9rem 1rem;overflow:auto;font: .82rem/1.6 ui-monospace,SFMono-Regular,Menlo,Consolas,monospace;tab-size:4;margin:.6rem 0}pre code{background:none;color:inherit;padding:0}.rule{border-left:3px solid var(--accent);background:var(--soft);padding:.65rem .9rem;border-radius:0 10px 10px 0}.diagram{border:1px solid var(--line);border-radius:14px;background:#fff;padding:1rem 1.1rem;margin:1rem 0}.dtitle{font-size:.72rem;font-weight:700;letter-spacing:.05em;text-transform:uppercase;color:var(--faint);margin-bottom:.7rem}.n{border:1px solid;border-radius:10px;padding:.52rem .72rem;font-size:.84rem}.n b{font-size:.81rem}.n span{color:var(--muted)}.input{border-color:var(--input);background:var(--input-bg)}.slot{border-color:var(--slot);background:var(--slot-bg)}.value{border-color:var(--value);background:var(--value-bg)}.guard{border-color:var(--guard);background:var(--guard-bg)}.ar{text-align:center;color:var(--faint);font-size:.78rem;padding:.22rem}.cols{display:grid;grid-template-columns:1fr 1fr;gap:.65rem}.flow{display:grid;grid-template-columns:repeat(5,1fr);gap:.45rem;align-items:stretch}.flow .n{position:relative}.flow .n:not(:last-child):after{content:'→';position:absolute;right:-.42rem;top:38%;z-index:2;color:var(--faint);font-weight:700}.legend{display:flex;flex-wrap:wrap;gap:.6rem;font-size:.72rem;color:var(--muted);margin-top:.7rem}.sw{display:inline-block;width:.7rem;height:.7rem;border:1px solid;border-radius:2px;margin-right:.25rem}details.fold{border:1px solid var(--line);border-radius:10px;background:#fff;margin:.65rem 0}summary{cursor:pointer;padding:.6rem .85rem;font-weight:650;font-size:.92rem}details[open] summary{border-bottom:1px solid var(--line)}.fbody{padding:.4rem 1rem .8rem;font-size:.92rem}.tablewrap{overflow:auto}table{border-collapse:collapse;width:100%;min-width:42rem;font-size:.86rem}th,td{border:1px solid var(--line);padding:.48rem .62rem;text-align:left;vertical-align:top;background:#fff}th{background:#eef2f7;color:var(--muted)}li{margin:.3rem 0}footer{margin-top:3rem;border-top:1px solid var(--line);padding-top:1rem;color:var(--faint);font-size:.8rem}@media(max-width:52rem){.flow{grid-template-columns:1fr}.flow .n:not(:last-child):after{content:'↓';right:50%;top:auto;bottom:-.6rem}.cols{grid-template-columns:1fr}}
+</style><style>
+.zoom-card{display:block;border:1px solid var(--slot);background:var(--slot-bg);border-radius:12px;padding:.8rem 1rem;color:var(--ink);text-decoration:none;margin:.75rem 0}.zoom-card:hover{text-decoration:none;box-shadow:0 4px 14px rgba(15,23,42,.1)}.zoom-card .zt{font-weight:750}.zoom-card .zd{display:block;color:var(--muted);font-size:.86rem;margin-top:.2rem}
+</style></head><body><div class="crumb"><a href="index.html">Architecture</a> / Recomputation engine</div>
+<h1>Pull-based recomputation engine</h1><p class="lede">A computed value is a cached node, not a step in a global schedule. Reads recursively pull what is missing. Writes delete only the affected cache cone, then deliberately pull the outputs that must fail fast.</p>
+<div class="rule"><b>The central mental model:</b> formulas define nodes; successful reads discover edges; edits send a deletion wave forward through those edges; the next pull rebuilds exactly what is needed.</div>
+
+<h2 id="map">One real getter, two edge kinds</h2>
+<p>The distinction is about <b>what the formula depends on</b>: values create <a class="term" href="glossary.html#calculus-dependency">calculus edges</a>; object links and collection memberships create <a class="term" href="glossary.html#structural-dependency">structural edges</a>. The same getter commonly creates both.</p>
+<div class="diagram"><div class="dtitle">Abridged from <code>UsagePattern.utc_hourly_usage_journey_starts</code></div>
+<pre><code>@computed_attribute
+def utc_hourly_usage_journey_starts(self):
+    converted = self.hourly_usage_journey_starts.convert_to_utc(
+        local_timezone=self.country.timezone
+    )
+    return converted.set_label("Hourly journey starts (UTC)")</code></pre>
+<div class="cols"><div><div class="n value"><b>Calculus edges — values used</b><br><span><code>hourly_usage_journey_starts</code> → result<br><code>country.timezone</code> → result</span></div><div class="ar">Changing either value invalidates the result.</div></div>
+<div><div class="n slot"><b>Structural edge — relationship used</b><br><span><code>self.country</code> link → result</span></div><div class="ar">Replacing France with Japan invalidates the result, even before considering their timezone values.</div></div></div></div>
+<div class="rule"><b>Why reading <code>self.country.timezone</code> creates both kinds:</b> the computation depends on <em>which country</em> the link points to (structural), and on <em>that country's timezone value</em> (calculus). Both edges point to the computed <code>utc_hourly_usage_journey_starts</code> slot and both trigger the same invalidation behavior.</div>
+<details class="fold"><summary>Implementation detail: what “getter-less node” or “bump node” means</summary><div class="fbody"><p>The graph needs a stable internal identity for each input value and relationship membership so computed slots can list it as a dependency. That identity is represented by a <a class="term" href="glossary.html#reactive-slot"><code>ReactiveSlot</code></a> with no getter: it computes nothing and holds no derived value. A write “bumps” it by launching <a class="term" href="glossary.html#invalidation">invalidation</a> into its dependents.</p><p>This is storage machinery, not a third conceptual dependency kind. At the modeling level, think only in terms of <b>value/calculus</b> dependencies and <b>relationship/structural</b> dependencies.</p></div></details>
+
+<h2 id="decorator">Building block: <code>@computed_attribute</code></h2>
+<p>The <a class="term" href="glossary.html#decorator">decorator</a> turns a getter function into a class-level <a class="term" href="glossary.html#descriptor">descriptor</a>; instance reads then route through that descriptor to a per-instance reactive slot. It declares the computation without running it during construction.</p>
+<a class="zoom-card zoom" href="recomputation/blocks/computed-attribute.html" data-title="@computed_attribute — decorator + descriptor">
+  <span class="zt"><code>@computed_attribute</code> — decorator, descriptor, and slot factory 🔍</span>
+  <span class="zd">How Python rewrites decorator syntax, installs the returned descriptor in the class namespace, calls <code>__set_name__</code>, and later dispatches instance reads through <code>__get__</code>. Opens as a right-side technical zoom on wide screens.</span>
+</a>
+
+<h2 id="slot">Building block: <code>ReactiveSlot</code></h2>
+<p>A slot is the per-instance runtime identity of one attribute address. It combines cache state with dependency-graph bookkeeping; computed slots have getter closures, while input and relationship nodes are getter-less change signals.</p>
+<a class="zoom-card zoom" href="recomputation/blocks/reactive-slot.html" data-title="ReactiveSlot — cache cell + graph node">
+  <span class="zt"><code>ReactiveSlot</code> — address, cache, edges, and invalidation 🔍</span>
+  <span class="zd">Where slots live, why some have no getter, what every field means, and how pull, dependency capture, invalidation waves, and persisted topology fit together. Opens as a right-side technical zoom on wide screens.</span>
+</a>
+
+<h2 id="walkthrough">Complete walkthrough: first read → edit → invalidation → recomputation</h2>
+<p>This follows the real <a href="../../efootprint/core/usage/usage_pattern.py"><code>UsagePattern.utc_hourly_usage_journey_starts</code></a> getter. Private field names are shown deliberately: this is the bridge from the domain code to the engine implementation.</p>
+
+<h3>0 · Construction: inputs exist, computed state does not</h3>
+<pre><code># UsagePattern.__init__ (abridged)
+self.hourly_usage_journey_starts = hourly_usage_journey_starts.to(
+    u.occurrence
+).set_label("Hourly nb of usage journey starts")
+self.country = country</code></pre>
+<div class="tablewrap"><table><tr><th>Data</th><th>Where it lives after construction</th><th>Why</th></tr>
+<tr><td>Hourly-start input value</td><td><code>pattern.__dict__["hourly_usage_journey_starts"]</code></td><td>The actual <code>ExplainableHourlyQuantities</code>, attached to that object/attribute address.</td></tr>
+<tr><td>Country relationship</td><td><code>pattern.__dict__["country"]</code></td><td>A <code>ContextualModelingObjectAttribute</code> wrapper around the Country. The wrapper knows its owner is <code>pattern</code> and its field is <code>country</code>.</td></tr>
+<tr><td>Computed getter</td><td><code>UsagePattern.__dict__["utc_hourly_usage_journey_starts"]</code></td><td>A class-level <code>computed_attribute</code> descriptor. The computed value is <em>not</em> stored in <code>pattern.__dict__</code>.</td></tr>
+<tr><td>Runtime slots</td><td><code>pattern.__dict__["_reactive_slots"]</code>, created lazily</td><td>No dependency node is required until a computation reads it or a write needs to invalidate it.</td></tr></table></div>
+<p>Input wrapping and construction-time attachment happen in <a href="../../efootprint/abstract_modeling_classes/modeling_object.py"><code>ModelingObject.__setattr__</code></a>. The common container/backpointer fields live in <a href="../../efootprint/abstract_modeling_classes/object_linked_to_modeling_obj.py"><code>ObjectLinkedToModelingObjBase</code></a>.</p>
+
+<h3>1 · First access creates and computes the output slot</h3>
+<pre><code>starts_utc = pattern.utc_hourly_usage_journey_starts</code></pre>
+<ol>
+<li><a href="../../efootprint/abstract_modeling_classes/reactive_core.py"><code>computed_attribute.__get__</code></a> calls <code>slot(pattern)</code>. It creates a computing <code>ReactiveSlot</code> under <code>pattern._reactive_slots["utc_hourly_usage_journey_starts"]</code>, installs a closure around the domain getter, then calls <code>pull()</code>.</li>
+<li>The slot is void, so <code>ReactiveSlot._compute()</code> pushes a temporary compute frame onto the context-local stack. That frame has two initially empty sets: <code>calculus_reads</code> and <code>structural_reads</code>.</li>
+<li>The getter reads <code>self.country.timezone</code>. Access passes through <a href="../../efootprint/abstract_modeling_classes/contextual_modeling_object_attribute.py"><code>ContextualModelingObjectAttribute.__getattr__</code></a>, which calls <code>record_read_of_node(pattern, "country")</code>. This lazily creates the getter-less <code>pattern._reactive_slots["country"]</code> node and puts it in the frame's <code>structural_reads</code>.</li>
+<li><code>convert_to_utc()</code> returns a new explainable value whose direct arithmetic ancestors are the hourly-start input and the Country's timezone value.</li>
+<li>The descriptor's compute <a class="term" href="glossary.html#closure">closure</a> attaches that result to <code>(pattern, "utc_hourly_usage_journey_starts")</code> and sets the result's <code>_reactive_slot</code> <a class="term" href="glossary.html#backpointer">backpointer</a> to the computing slot.</li>
+<li><code>record_calculus_edges_from_ancestry(result)</code> maps the two explainable ancestors to stable attribute-address nodes through <code>slot_of_attached_value()</code>: <code>pattern._reactive_slots["hourly_usage_journey_starts"]</code> and <code>country._reactive_slots["timezone"]</code>. Both getter-less nodes enter <code>calculus_reads</code>.</li>
+<li>On successful return, <code>ReactiveSlot.replace_dependencies()</code> replaces the computing slot's old dependency sets and adds the computing slot to each input node's reverse <code>_dependents</code> set. <code>attach_cached_value()</code> then stores the result in the computing slot's <code>_value</code>.</li>
+</ol>
+
+<h3>2 · Concrete in-memory state after the first read</h3>
+<p>This is schematic Python using the real private field names; <code>S_*</code> names below are explanatory labels, not additional objects created by the engine.</p>
+<pre><code>pattern.__dict__["_reactive_slots"] == {
+    "hourly_usage_journey_starts": S_starts,       # getter=None
+    "country": S_country_link,                     # getter=None
+    "utc_hourly_usage_journey_starts": S_utc,      # getter=&lt;closure&gt;
+}
+
+country.__dict__["_reactive_slots"] == {
+    "timezone": S_timezone,                        # getter=None
+}
+
+S_utc._value is starts_utc                          # cached result
+S_utc._calculus_dependencies == {S_starts, S_timezone}
+S_utc._structural_dependencies == {S_country_link}
+
+S_starts._dependents      == {S_utc}                # reverse indexes
+S_timezone._dependents    == {S_utc}
+S_country_link._dependents == {S_utc}
+
+starts_utc.modeling_obj_container is pattern
+starts_utc.attr_name_in_mod_obj_container == "utc_hourly_usage_journey_starts"
+starts_utc._reactive_slot is S_utc</code></pre>
+<div class="rule"><b>Two graphs coexist.</b> The computed explainable value still stores its formula ancestry for explanation. The slot stores attribute-address dependencies and reverse dependents for cache invalidation. The descriptor's compute closure is the bridge between them.</div>
+
+<h3>3 · Numerical input change follows the calculus edge</h3>
+<pre><code>pattern.hourly_usage_journey_starts = revised_starts</code></pre>
+<ol>
+<li>Because live updates are enabled, <a href="../../efootprint/abstract_modeling_classes/modeling_object.py"><code>ModelingObject.__setattr__</code></a> creates a <a href="../../efootprint/abstract_modeling_classes/modeling_update.py"><code>ModelingUpdate</code></a> containing the old attached input and the new value.</li>
+<li>Before replacing anything, <code>slot_of_attached_value(old_starts)</code> follows the old value's backpointer and captures <code>S_starts</code> as the changed node.</li>
+<li><code>apply_changes()</code> detaches the old input and attaches <code>revised_starts</code> at the same <code>(pattern, attribute)</code> address. Detaching clears the old value's backpointer; the stable <code>S_starts</code> node itself remains in <code>pattern._reactive_slots</code>.</li>
+<li><code>invalidate(S_starts)</code> marks <code>S_starts</code>, follows <code>S_starts._dependents</code> to <code>S_utc</code>, and drops <code>S_utc._value</code>. The drop callback unlinks the obsolete computed explainable from <code>pattern</code>. Dependency sets remain in place so later waves can still cross void slots.</li>
+</ol>
+<pre><code># State at the end of the deletion wave, before any eager pull
+S_starts._wave_passed is True
+S_utc._wave_passed is True
+S_utc.has_cached_value is False
+S_utc._calculus_dependencies == {S_starts, S_timezone}  # topology retained</code></pre>
+<ol start="5">
+<li><code>ModelingUpdate.pull_eagerly()</code> pulls guards and then the requested boundary: normally <code>System.total_footprint</code>; an explicit <code>eager_outputs=()</code> leaves <code>S_utc</code> void until a later read.</li>
+<li>When <code>S_utc</code> is pulled again, the getter uses <code>revised_starts</code>. <code>slot_of_attached_value(revised_starts)</code> resolves its attribute address back to the existing <code>S_starts</code> node and writes that backpointer onto the new value.</li>
+<li>The successful computation atomically refreshes both edge sets, caches a fresh result, and clears wave markers on the dependencies and output. Nothing retains the old computed value.</li>
+</ol>
+
+<h3>4 · Relationship change follows the structural edge—and rewires calculus</h3>
+<pre><code>pattern.country = japan</code></pre>
+<ol>
+<li><code>ModelingUpdate.parse_changes_list()</code> wraps Japan in a new <code>ContextualModelingObjectAttribute</code>. The old Country wrapper resolves to the stable <code>S_country_link</code> node for <code>(pattern, "country")</code>.</li>
+<li><code>apply_changes()</code> detaches the France wrapper and attaches the Japan wrapper. The wrapper's container transition also bumps affected reverse-relationship nodes; the explicit changed node here is still <code>S_country_link</code>.</li>
+<li><code>invalidate(S_country_link)</code> follows its structural dependent to <code>S_utc</code> and drops the cached UTC series exactly as in the numerical-input case.</li>
+<li>On recomputation, reading <code>self.country.timezone</code> records the same stable structural dependency on <code>S_country_link</code>, but the returned timezone now belongs to Japan.</li>
+<li><code>replace_dependencies()</code> removes <code>S_utc</code> from France's timezone node, adds it to Japan's timezone node, and replaces the calculus set with <code>{S_starts, S_japan_timezone}</code>. Future edits to France no longer invalidate this pattern; edits to Japan do.</li>
+</ol>
+<p>If the relationship stays unchanged and only <code>country.timezone</code> changes, the calculus edge from that Country's timezone node invalidates <code>S_utc</code> directly. This is why <code>self.country.timezone</code> creates both edge kinds.</p>
+
+<h3>5 · What persists to JSON versus what is runtime-only</h3>
+<div class="tablewrap"><table><tr><th>State</th><th>In memory</th><th>Canonical JSON with <code>save_computed_state=True</code></th></tr>
+<tr><td>Input values and country reference</td><td>Instance attributes/wrappers in the participating objects.</td><td>Always serialized as object inputs; the Country link is its object id.</td></tr>
+<tr><td><code>S_utc._value</code></td><td>Cached in the computed slot.</td><td>Not serialized in this example because the descriptor is not <code>serialize=True</code>. A serialize-flagged cached value would be stored with its formula.</td></tr>
+<tr><td>Slot objects, getter closures, dependents, wave markers</td><td>Runtime objects under each owner's <code>_reactive_slots</code>.</td><td>Never serialized as Python objects.</td></tr>
+<tr><td>Dependency topology</td><td><code>_calculus_dependencies</code>, <code>_structural_dependencies</code>, and reverse <code>_dependents</code>.</td><td>Stored by address in the values-free <code>calculation_graph</code>: object id + attribute name + optional dict key, with calculus and structural edge lists kept separate.</td></tr></table></div>
+<p><a href="../../efootprint/api_utils/system_to_json.py"><code>calculation_graph_section()</code></a> serializes the addresses and forward edges, not the runtime slot objects. On an exact-version load, <a href="../../efootprint/api_utils/json_to_system.py"><code>rebuild_dependency_graph()</code></a> materializes the addressed nodes and reinstalls both edge sets; <code>replace_dependencies()</code> reconstructs the reverse <code>_dependents</code> indexes. In this example <code>S_utc</code> reloads void because its value was not serialize-flagged, then computes on its next pull. With <code>save_computed_state=False</code>, neither cached values nor dependency topology is written; everything is discovered from scratch on later reads. See <a href="persistence.html">Persistence</a> for the full contract.</p>
+
+<details class="fold"><summary>Code-reading route for this walkthrough</summary><div class="fbody"><ol>
+<li><a href="../../efootprint/core/usage/usage_pattern.py"><code>usage_pattern.py</code></a> — domain constructor and getter.</li>
+<li><a href="../../efootprint/abstract_modeling_classes/reactive_core.py"><code>reactive_core.py</code></a> — <code>computed_attribute</code>, <code>ReactiveSlot</code>, <code>_node_slot</code>, calculus/structural recording, and <code>invalidate</code>.</li>
+<li><a href="../../efootprint/abstract_modeling_classes/contextual_modeling_object_attribute.py"><code>contextual_modeling_object_attribute.py</code></a> — forward-link read hook and reverse-node bumps.</li>
+<li><a href="../../efootprint/abstract_modeling_classes/modeling_object.py"><code>modeling_object.py</code></a> — assignment boundary and input wrapping.</li>
+<li><a href="../../efootprint/abstract_modeling_classes/modeling_update.py"><code>modeling_update.py</code></a> — transactional apply, changed-slot capture, deletion wave, eager pull, and rollback.</li>
+<li><a href="../../efootprint/api_utils/system_to_json.py"><code>system_to_json.py</code></a> and <a href="../../efootprint/api_utils/json_to_system.py"><code>json_to_system.py</code></a> — topology persistence and reconstruction.</li>
+</ol></div></details>
+
+<h2 id="read">Read path: pull, discover, cache</h2>
+<div class="diagram"><div class="dtitle">Reading a decorated attribute</div><div class="flow">
+<div class="n input"><b>1 · Attribute read</b><br><span>A descriptor resolves its per-instance slot.</span></div>
+<div class="n slot"><b>2 · Cache check</b><br><span>Cached returns immediately; void enters compute.</span></div>
+<div class="n value"><b>3 · Getter runs</b><br><span>Nested computed reads pull recursively.</span></div>
+<div class="n slot"><b>4 · Edges commit</b><br><span>Actual calculus and structural reads replace old dependencies on success.</span></div>
+<div class="n value"><b>5 · Value caches</b><br><span>Bookkeeping attaches the value to the slot; later reads are warm.</span></div>
+</div></div>
+<p><code>@computed_attribute</code> and <code>@computed_dict</code> are the SSOT for a computed value: the getter body is its calculation and the getter docstring is its doc-as-code meaning. Each attribute resolves to a per-instance <code>ReactiveSlot</code> stored in the object's <code>_reactive_slots</code> registry.</p>
+<details class="fold"><summary>Slot state, dependency refresh, failure, cycle, and context behavior</summary><div class="fbody"><ul>
+<li>A slot is <b>cached</b> or <b>void</b>. <code>pull()</code> returns the cache or calls the getter; void ancestors are pulled recursively.</li>
+<li>Each successful computation replaces the slot's old edge set with what this run actually read. Conditional dependencies therefore disappear when a stale branch is no longer taken.</li>
+<li>A failed computation stays void and keeps its previous dependencies as a safe over-approximation. The next read retries; over-invalidation is safe, a missed edge is not.</li>
+<li>The immutable-tuple compute stack lives in a <a class="term" href="glossary.html#contextvar"><code>ContextVar</code></a> and is reset in <code>finally</code>. Pulling a slot already on that stack raises <code>CircularDependencyError</code> with the offending chain.</li>
+<li>Invalidation during a getter raises: slot getters may read, never write inputs or relationships.</li>
+</ul></div></details>
+
+<h2 id="slot-kinds">Three computed-slot surfaces</h2>
+<div class="tablewrap"><table><tr><th>Surface</th><th>Shape and behavior</th><th>Eager?</th><th>Persistence</th></tr>
+<tr><td><code>@computed_attribute</code></td><td>One scalar or explainable value per instance. Container bookkeeping attaches the result.</td><td>Reachable from configured eager outputs; guard option available.</td><td>Only when <code>serialize=True</code>.</td></tr>
+<tr><td><code>@computed_dict(keys="…")</code></td><td>A live dict facade over a key-set slot and one sub-slot per key. Key-set nodes pull before sub-slots; removed keys discard stale slots.</td><td>Same rules as computed attributes.</td><td>Only when <code>serialize=True</code>.</td></tr>
+<tr><td><code>@lazy_attribute</code></td><td>Read-time projection in the same graph, holding raw JSON-native containers outside modeling-container bookkeeping. Explainables found anywhere in the returned structure contribute calculus edges. It is excluded from <code>calculated_attributes</code> and computed-attribute documentation.</td><td><b>Never.</b> It stays void after invalidation until explicitly read.</td><td>Excluded unless <code>serialize=True</code>; current examples include attribution matrix/breakdowns.</td></tr>
+</table></div>
+
+<h2 id="write">Write path: apply, invalidate, pull, or roll back</h2>
+<div class="diagram"><div class="dtitle">One live input edit through <code>ModelingUpdate</code></div><div class="flow">
+<div class="n input"><b>1 · Parse &amp; validate shape</b><br><span>Normalize list/dict/model links; skip equal changes.</span></div>
+<div class="n input"><b>2 · Apply changes</b><br><span>Relationship bookkeeping runs without recursive recomputation.</span></div>
+<div class="n slot"><b>3 · Deletion wave</b><br><span>Changed nodes and transitive dependents become void.</span></div>
+<div class="n guard"><b>4 · Pull boundaries</b><br><span>Guards first, then configured outputs; default is system total.</span></div>
+<div class="n value"><b>5 · Commit or rollback</b><br><span>Success keeps the new state; failure restores inputs, invalidates again, and recomputes the restored boundary.</span></div>
+</div></div>
+<p><code>ModelingObject.__setattr__</code> routes live writes through <code>ModelingUpdate</code>. Computation is still pull-based: the “eager” phase names only which <a class="term" href="glossary.html#eager-output">observable boundaries</a> are intentionally read after invalidation.</p>
+<div class="diagram"><div class="dtitle">The worked example over time</div><pre><code># First read: run the getter, discover both edge kinds, cache the result.
+starts_utc = pattern.utc_hourly_usage_journey_starts
+
+# Value edit: follow the calculus edge and invalidate the cached result.
+pattern.hourly_usage_journey_starts = revised_starts
+
+# Relationship edit: follow the structural edge and invalidate it too.
+pattern.country = japan</code></pre>
+<p style="font-size:.88rem;color:var(--muted);margin-bottom:0">Each assignment is transactional. If the pattern belongs to a System, the default update then pulls <code>System.total_footprint</code>; that recursively pulls this value again if the total needs it. With <code>eager_outputs=()</code>, it remains void until the next explicit read.</p></div>
+<details class="fold"><summary>Eager outputs, detached graphs, and lazy projections</summary><div class="fbody"><p><code>eager_outputs</code> is a collection of <code>(modeling object, attribute name)</code> pairs. With the default <code>None</code>, the affected system's <code>total_footprint</code> is pulled, so errors in the change's footprint cone surface at update time. Tight loops pass <code>eager_outputs=()</code> and let values compute at the next read. If changed objects belong to no system, the update pulls the invalidated cone because there is no system-total boundary through which errors could surface and detached subgraphs are small.</p><p>Lazy slots are never part of eager sweeps. Attribution projections therefore remain void until a render or explicit read asks for them.</p></div></details>
+
+<h2 id="invalidation">Deletion wave and partial state</h2>
+<div class="diagram"><div class="dtitle">Why voidness cannot stop a wave</div><div class="cols"><div><div class="n input"><b>Changed input</b></div><div class="ar">↓ wave</div><div class="n slot"><b>Void intermediate</b><br><span>May already have no cached value after a minimal reload.</span></div><div class="ar">↓ wave must continue</div><div class="n value"><b>Cached serialized output</b><br><span>Must be dropped or it becomes stale.</span></div></div><div><div class="n guard"><b>Wave marker, not voidness</b><br><span>A marked slot means its dependents have already been marked by this or an earlier sound wave. A fresh dependent cache can only arise after pulling through the dependency, which clears the marker.</span></div></div></div></div>
+<p><code>invalidate(*slots)</code> deletes cached values from changed slots and every transitive dependent. Its one-bit <code>wave_passed</code> marker prunes repeated traversal. A void slot cannot prune: the normal persisted shape can have cached outputs below valueless intermediates. This is why the serialized dependency topology matters; see <a href="persistence.html">Persistence</a>.</p>
+
+<h2 id="guards">Guards: constraints that must fail at edit time</h2>
+<p>A slot is a <a class="term" href="glossary.html#guard">guard</a> when its name ends in <code>_validation</code> or its descriptor declares <code>guard=True</code>. Guards cover user-facing constraints that may sit outside the system-total footprint cone, such as edge-capacity checks. Every invalidated guard is pulled regardless of <code>eager_outputs</code>.</p>
+<div class="rule"><b>New-link edge case:</b> a never-computed guard has no recorded dependency edge, so a deletion wave cannot reach it. <code>ModelingUpdate</code> explicitly finds every newly linked object and its linked subtree and pulls all of their guards. Invalid new links are therefore rejected immediately.</div>
+
+<h2 id="dependencies">Where dependency edges come from</h2>
+<div class="tablewrap"><table><tr><th>Kind</th><th>Recorded when</th><th>Source</th></tr>
+<tr><td>Calculus</td><td>A computed value's arithmetic ancestry contains an attached explainable value—or a lazy projection returns a structure containing one.</td><td><code>ExplainableObject</code> ancestry → <code>record_calculus_dependency</code>.</td></tr>
+<tr><td>Structural</td><td>A getter reads an input node, direct/list/dict membership, reverse relationship, or modeling-container relationship.</td><td>Relationship/input read hooks → <code>record_structural_dependency</code>.</td></tr>
+</table></div>
+<p>Membership writes also bump affected reverse-relationship nodes at the container-field transition. All dependencies live in this one slot-addressed graph; there is no global computation order and no wholesale cache flush.</p>
+
+<h2 id="correctness">Correctness invariants</h2><ul>
+<li><b>Edges describe real reads.</b> Wave pruning is sound only because recorded edges come from values or relationships the computation actually consumed.</li>
+<li><b>Edges refresh atomically on success.</b> A changed conditional branch cannot retain an obsolete dependency forever.</li>
+<li><b>Failure favors over-invalidation.</b> Previous edges survive a failed getter; its value does not.</li>
+<li><b>Marked implies dependents marked.</b> This—not cached/void state—is the deletion-wave pruning invariant.</li>
+<li><b>Getters are read-only.</b> Writes during computation are rejected.</li>
+<li><b>Framework stays domain-blind.</b> Eager behavior is configured structurally through outputs and guards, never by naming core classes.</li>
+<li><b>Rollback is transactional.</b> A rejected update restores original inputs/links, invalidates the failed state, and pulls the restored eager boundary.</li>
+</ul>
+
+<h2 id="debugging">Debugging map</h2>
+<div class="tablewrap"><table><tr><th>Symptom</th><th>Inspect</th></tr>
+<tr><td>A value stays stale after an input edit</td><td>Was the input/relationship read hooked? Did the computed result's ancestry include the consumed value? Does serialized topology restore that edge?</td></tr>
+<tr><td>Too much recomputes</td><td>Look for broad relationship reads, stale conditional edges that never successfully refreshed, or a caller explicitly pulling a broad eager output.</td></tr>
+<tr><td>An invalid edit fails only later</td><td>The validating getter should be a <code>guard=True</code> slot (or <code>_validation</code>), and new-link traversal must include its object.</td></tr>
+<tr><td>A cycle error appears</td><td>Read the reported slot chain; it is the active recursive pull path, not a guessed class-level order.</td></tr>
+<tr><td>A loaded cached result survives the wrong edit</td><td>Check the values-free <code>calculation_graph</code>, especially structural edges through valueless intermediates.</td></tr>
+<tr><td>Attribution/Sankey is slow after an edit</td><td>Lazy projections intentionally remain void until render; inspect which source row slots the edit invalidated rather than expecting eager warming.</td></tr>
+</table></div>
+<footer>e-footprint architecture · <a href="index.html">hub</a> · canonical for the pull-based engine, reactive-slot lifecycle, dependency recording, deletion waves, eager outputs, guards, new-link validation, and update rollback.</footer><script src="source-links.js"></script></body></html>
