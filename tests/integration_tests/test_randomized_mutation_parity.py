@@ -219,9 +219,12 @@ class TestRandomizedMutationParity(TestCase):
             for key, live_item in live_items.items():
                 self.assert_explainable_equal(f"{location}[{key}]", live_item, rebuilt_items[key])
         else:
-            self.assertTrue(
-                live_value == rebuilt_value or self._within_quantization_tolerance(live_value, rebuilt_value),
-                f"{location} differs between live and rebuilt system: {live_value} != {rebuilt_value}")
+            values_match = (
+                live_value == rebuilt_value
+                or self._within_quantization_tolerance(live_value, rebuilt_value))
+            if not values_match:
+                self.fail(
+                    f"{location} differs between live and rebuilt system: {live_value} != {rebuilt_value}")
 
     @staticmethod
     def _within_quantization_tolerance(live_value, rebuilt_value):
@@ -275,15 +278,15 @@ class TestRandomizedMutationParity(TestCase):
         snapshotted_magnitude = getattr(snapshotted_value, "magnitude", None)
         recomputed_magnitude = getattr(recomputed_value, "magnitude", None)
         if snapshotted_magnitude is None or recomputed_magnitude is None:
-            self.assertEqual(
-                recomputed_value, snapshotted_value,
-                f"{location} differs between incremental and full recompute: "
-                f"{snapshotted_value} != {recomputed_value}")
+            if recomputed_value != snapshotted_value:
+                self.fail(
+                    f"{location} differs between incremental and full recompute: "
+                    f"{snapshotted_value} != {recomputed_value}")
             return
-        self.assertTrue(
-            np.array_equal(np.asarray(snapshotted_magnitude), np.asarray(recomputed_magnitude)),
-            f"{location} differs bitwise between incremental and full recompute: "
-            f"{snapshotted_value} != {recomputed_value}")
+        if not np.array_equal(np.asarray(snapshotted_magnitude), np.asarray(recomputed_magnitude)):
+            self.fail(
+                f"{location} differs bitwise between incremental and full recompute: "
+                f"{snapshotted_value} != {recomputed_value}")
 
     def assert_no_stale_slot_after_full_recompute(self, system):
         """The strict staleness gate: voiding every slot and recomputing in place must reproduce the
