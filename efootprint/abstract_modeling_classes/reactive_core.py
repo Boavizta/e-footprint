@@ -580,7 +580,7 @@ class computed_attribute:
         return self.getter(instance, *args)
 
 
-class _ComputedDictAttribute(computed_attribute):
+class computed_dict(computed_attribute):
     """Descriptor declaring a computed ExplainableObjectDict attribute.
 
     The getter takes self plus one key object and returns the value for that key; the key set is the
@@ -589,12 +589,21 @@ class _ComputedDictAttribute(computed_attribute):
     ExplainableObjectDict facade (readers of the whole dict depend on it, so key-set changes reach
     them), and one sub-slot per key holding that key's value (per-key granularity: a value change
     invalidates only its own readers). The facade's read methods pull the slots, so it is always a
-    live view."""
+    live view.
+
+    Declared as ``@computed_dict(keys="usage_patterns")``. ``guard=True`` marks a dict whose element
+    getters enforce user-facing constraints outside the footprint cone (see ``computed_attribute``):
+    its key-set node and sub-slots eagerly recompute when invalidated. ``serialize=True`` persists the
+    materialized entries under the minimal serialization contract.
+    """
 
     _on_value_dropped = None
 
-    def __init__(self, getter, keys: str, guard=False, serialize=False):
-        super().__init__(getter, guard=guard, serialize=serialize)
+    def __init__(self, keys: str, guard=False, serialize=False):
+        # Like parametrized computed_attribute, decorator construction precedes getter binding:
+        # @computed_dict(keys="jobs") builds this descriptor, then inherited __call__ receives the
+        # decorated getter and returns the now-bound descriptor for installation on the class.
+        super().__init__(guard=guard, serialize=serialize)
         self.keys = keys
 
     def slot(self, instance) -> ReactiveSlot:
@@ -716,17 +725,6 @@ class _ComputedDictAttribute(computed_attribute):
             # Whole-dict reads depend on the key set: key membership is structural.
             record_structural_dependency(slot)
         return slot.pull()
-
-
-def computed_dict(keys: str, guard=False, serialize=False):
-    """Decorator declaring a computed dict attribute keyed by the objects listed by the ``keys``
-    attribute name, e.g. ``@computed_dict(keys="usage_patterns")``. ``guard=True`` marks a dict whose
-    element getters enforce user-facing constraints outside the footprint cone (see
-    ``computed_attribute``): its key-set node and sub-slots eagerly recompute when invalidated.
-    ``serialize=True`` persists the materialized entries under the minimal serialization contract."""
-    def decorator(getter):
-        return _ComputedDictAttribute(getter, keys, guard=guard, serialize=serialize)
-    return decorator
 
 
 def prune_stale_computed_dict_keys(invalidated_slots):

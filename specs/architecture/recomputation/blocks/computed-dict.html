@@ -14,14 +14,14 @@
 <pre><code>@computed_dict(keys="jobs")
 def energy_footprint_per_job(self, job):
     return self.compute_energy_for(job)</code></pre>
-<div class="diagram"><div class="dtitle">Decorator application</div><div class="n input"><b><code>computed_dict(keys="jobs")</code></b><br><span>Returns a decorator configured with the key-collection attribute name.</span></div><div class="ar">↓ receives the domain getter</div><div class="n slot"><b><code>_ComputedDictAttribute(getter, "jobs")</code></b><br><span>The descriptor installed on the class; it registers itself as a computed slot surface through <code>__set_name__</code>.</span></div></div>
+<div class="diagram"><div class="dtitle">Decorator application</div><div class="n input"><b><code>computed_dict(keys="jobs")</code></b><br><span>Constructs an initially unbound descriptor carrying the key-collection attribute name.</span></div><div class="ar">↓ inherited <code>__call__</code> binds the domain getter</div><div class="n slot"><b><code>computed_dict</code> descriptor</b><br><span>The same object is installed on the class and registers itself as a computed slot surface through <code>__set_name__</code>.</span></div></div>
 <p>The domain getter takes one key in addition to <code>self</code>. The descriptor—not the resulting dict—is stored in the class namespace.</p>
-<details open><summary>Why is <code>computed_attribute</code> a class but <code>computed_dict</code> a function?</summary><div class="fbody"><p>The difference is only in the <b>public decorator entry point</b>, not in the descriptor model. <code>computed_attribute</code> is itself the descriptor class. <code>computed_dict(...)</code> is a small decorator-factory function whose returned closure creates an <code>_ComputedDictAttribute</code> descriptor; that internal class subclasses <code>computed_attribute</code>.</p><pre><code># Bare computed attribute:
-f = computed_attribute(f)  # constructor receives the getter directly
+<details open><summary>Why are both decorator surfaces classes?</summary><div class="fbody"><p><code>computed_attribute</code> and <code>computed_dict</code> are both descriptor classes. That gives declarations the same mental model: construct a descriptor, bind its getter, then install that descriptor in the class namespace.</p><pre><code># Bare computed attribute: constructor receives the getter directly
+f = computed_attribute(f)
 
-# Computed dict, whose keys argument is mandatory:
-decorate = computed_dict(keys="jobs")
-f = decorate(f)            # creates _ComputedDictAttribute(f, "jobs")</code></pre><p><code>computed_attribute</code> also supports a parameterized form by constructing an initially unbound descriptor and using its <code>__call__</code> to bind the getter. <code>computed_dict</code> could technically use the same class-based pattern; the current function keeps its mandatory configuration step simple and hides the private implementation class. This is an implementation/API-shape choice, not a behavioral distinction between the two reactive surfaces.</p></div></details>
+# Computed dict: configuration constructs an unbound descriptor first
+descriptor = computed_dict(keys="jobs")
+f = descriptor(f)  # inherited __call__ binds the getter and returns descriptor</code></pre><p><code>computed_dict</code> subclasses <code>computed_attribute</code>, reusing getter binding, class registration, descriptor calls, flags, and the common slot behavior while specializing the runtime topology for a key set and its element slots.</p></div></details>
 
 <h2 id="topology">Runtime topology</h2>
 <div class="diagram"><div class="dtitle">One owner with two current jobs</div><div class="n slot"><b>Key-set slot · <code>energy_footprint_per_job</code></b><br><span>Registry key: <code>"energy_footprint_per_job"</code><br>Getter reads <code>self.jobs</code>, synchronizes membership, and pulls every current element slot.</span></div><div class="ar">↓ coordinates</div><div class="three"><div class="n value"><b>Element slot A</b><br><span>Registry key: <code>("energy_footprint_per_job", job_A)</code><br>Runs <code>getter(self, job_A)</code>.</span></div><div class="n value"><b>Element slot B</b><br><span>Registry key: <code>("energy_footprint_per_job", job_B)</code><br>Runs <code>getter(self, job_B)</code>.</span></div><div class="n input"><b>Persistent facade</b><br><span>Stored in <code>self._computed_dict_facades</code>; the same <code>ExplainableObjectDict</code> instance survives recomputation.</span></div></div></div>
@@ -29,7 +29,7 @@ f = decorate(f)            # creates _ComputedDictAttribute(f, "jobs")</code></p
 
 <h2 id="read">What happens on a whole-dict read</h2>
 <ol>
-<li><code>_ComputedDictAttribute.__get__</code> resolves the owner's key-set slot.</li>
+<li><code>computed_dict.__get__</code> resolves the owner's key-set slot.</li>
 <li>If another computation is active, reading the whole dict records a structural dependency on that key-set slot: the consumer depends on which keys exist.</li>
 <li><code>slot.pull()</code> returns the cached facade or invokes the key-set closure.</li>
 <li>The closure reads <code>getattr(instance, keys)</code>, drops stale keys, pulls one sub-slot per current key, restores collection order, and returns the same facade.</li>
@@ -67,7 +67,7 @@ device.energy_footprint_per_usage_pattern
 <h2 id="flags">Guards and persistence</h2>
 <p><code>guard=True</code> marks the key-set node and every element slot as validation guards. <code>serialize=True</code> persists materialized entries under the minimal calculated-state contract. <code>peek()</code> returns the facade only when the key-set slot and every current element slot are cached; it never exposes stale facade entries as current state.</p>
 <details open><summary>Read the implementation in this order</summary><div class="fbody"><ol>
-<li><a href="../../../../efootprint/abstract_modeling_classes/reactive_core.py"><code>_ComputedDictAttribute.slot</code>, <code>facade</code>, and <code>__get__</code></a> — key-set access and stable facade.</li>
+<li><a href="../../../../efootprint/abstract_modeling_classes/reactive_core.py"><code>computed_dict.slot</code>, <code>facade</code>, and <code>__get__</code></a> — key-set access and stable facade.</li>
 <li><a href="../../../../efootprint/abstract_modeling_classes/reactive_core.py"><code>sub_slot</code> and <code>_make_element_compute_closure</code></a> — per-key calculation.</li>
 <li><a href="../../../../efootprint/abstract_modeling_classes/reactive_core.py"><code>discard_stale_keys</code> and <code>prune_stale_computed_dict_keys</code></a> — safe membership removal.</li>
 </ol><p>Return to <a href="../computed-surfaces.html#comparison">the three-surface comparison</a> or follow the <a href="../lifecycle.html#walkthrough">complete lifecycle</a>.</p></div></details>

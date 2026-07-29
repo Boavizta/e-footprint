@@ -166,6 +166,12 @@ class TestComputedDict(TestCase):
         self.leaf_2 = ReactiveCoreLeaf("dict leaf 2", SourceValue(2 * u.W))
         self.holder = ReactiveCoreHolder("test holder", [self.leaf_1, self.leaf_2])
 
+    def test_class_level_access_returns_computed_dict_descriptor(self):
+        """Test that the public decorator class is the descriptor installed on the model class."""
+        self.assertIsInstance(ReactiveCoreHolder.value_per_leaf, computed_dict)
+        self.assertIsInstance(ReactiveCoreHolder.value_per_leaf, computed_attribute)
+        self.assertEqual("leaves", ReactiveCoreHolder.value_per_leaf.keys)
+
     def test_whole_dict_read_populates_one_entry_per_key(self):
         """Test that reading a computed dict populates one entry per key object with the owner wired."""
         self.assertEqual([self.leaf_1, self.leaf_2], list(self.holder.value_per_leaf.keys()))
