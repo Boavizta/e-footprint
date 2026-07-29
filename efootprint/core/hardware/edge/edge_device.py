@@ -68,6 +68,7 @@ class EdgeDevice(ModelingObject, AttributionSource):
 
     recurrent_edge_device_needs = ReverseCollection("RecurrentEdgeDeviceNeed")
     recurrent_server_needs = ReverseCollection("RecurrentServerNeed")
+    parent_groups = ReverseCollection("EdgeDeviceGroup")
 
     @property
     def recurrent_needs(self) -> List["RecurrentEdgeDeviceNeed | RecurrentServerNeed"]:
@@ -132,22 +133,8 @@ class EdgeDevice(ModelingObject, AttributionSource):
 
         return EmptyExplainableObject()
 
-    def _find_parent_groups(self):
-        from efootprint.core.hardware.edge.edge_device_group import EdgeDeviceGroup
-        from efootprint.abstract_modeling_classes.contextual_modeling_object_attribute import (
-            ContextualModelingObjectDictKey)
-
-        return list(dict.fromkeys([
-            contextual_container.modeling_obj_container
-            for contextual_container in self.contextual_modeling_obj_containers
-            if (
-                isinstance(contextual_container, ContextualModelingObjectDictKey)
-                and isinstance(contextual_container.modeling_obj_container, EdgeDeviceGroup)
-            )
-        ]))
-
     def _find_root_groups(self):
-        parent_groups = self._find_parent_groups()
+        parent_groups = self.parent_groups
         root_groups = []
         for group in parent_groups:
             root_groups += group._find_root_groups()
@@ -156,7 +143,7 @@ class EdgeDevice(ModelingObject, AttributionSource):
     @computed_attribute
     def total_nb_of_units(self):
         """How many copies of the device are deployed in total once group hierarchies are unrolled. Defaults to 1 if the device is not in any {class:EdgeDeviceGroup}."""
-        parent_groups = self._find_parent_groups()
+        parent_groups = self.parent_groups
         if not parent_groups:
             return ExplainableQuantity(
                 1 * u.dimensionless, f"no group (default count = 1)")
@@ -172,7 +159,7 @@ class EdgeDevice(ModelingObject, AttributionSource):
         return total.set_label(f"Total nb per ensemble")
 
     def self_delete(self):
-        parent_groups = self._find_parent_groups()
+        parent_groups = self.parent_groups
         if parent_groups:
             raise PermissionError(
                 f"You can’t delete {self.name} because it is referenced in edge_device_counts of "

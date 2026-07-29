@@ -44,17 +44,17 @@ class TestEdgeDeviceGroupInit(TestCase):
 
 
 
-class TestEdgeDeviceGroupFindParentGroups(TestCase):
+class TestEdgeDeviceGroupParentGroups(TestCase):
 
     def test_standalone_group_has_no_parents(self):
         group = make_group("Standalone")
-        self.assertEqual([], group._find_parent_groups())
+        self.assertEqual([], group.parent_groups)
 
     def test_single_parent_group(self):
         parent = make_group("Parent")
         child = make_group("Child")
         parent.sub_group_counts[child] = SourceValue(2 * u.dimensionless)
-        result = child._find_parent_groups()
+        result = child.parent_groups
         self.assertEqual([parent], result)
 
     def test_two_parent_groups(self):
@@ -63,7 +63,7 @@ class TestEdgeDeviceGroupFindParentGroups(TestCase):
         child = make_group("Child")
         parent_a.sub_group_counts[child] = SourceValue(2 * u.dimensionless)
         parent_b.sub_group_counts[child] = SourceValue(3 * u.dimensionless)
-        result = child._find_parent_groups()
+        result = child.parent_groups
         self.assertIn(parent_a, result)
         self.assertIn(parent_b, result)
         self.assertEqual(2, len(result))
@@ -334,7 +334,7 @@ class TestEdgeDeviceGroupSelfDelete(TestCase):
         root.self_delete()
 
         self.assertEqual({}, root.sub_group_counts)
-        self.assertEqual([], child._find_parent_groups())
+        self.assertEqual([], child.parent_groups)
         self.assertAlmostEqual(1.0, child.effective_nb_of_units_within_root.value.magnitude)
 
     def test_self_delete_recomputes_edge_devices_when_clearing_edge_device_counts(self):
@@ -347,7 +347,7 @@ class TestEdgeDeviceGroupSelfDelete(TestCase):
         group.self_delete()
 
         self.assertEqual({}, group.edge_device_counts)
-        self.assertEqual([], edge_device._find_parent_groups())
+        self.assertEqual([], edge_device.parent_groups)
         self.assertAlmostEqual(1.0, edge_device.total_nb_of_units.value.magnitude)
 
 

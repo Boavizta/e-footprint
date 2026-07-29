@@ -583,21 +583,21 @@ class TestEdgeDeviceFindGroupMethods(TestCase):
         )
         self.device.trigger_modeling_updates = False
 
-    def test_find_parent_groups_returns_empty_when_no_groups(self):
-        self.assertEqual([], self.device._find_parent_groups())
+    def test_parent_groups_returns_empty_when_no_groups(self):
+        self.assertEqual([], self.device.parent_groups)
 
-    def test_find_parent_groups_returns_group_when_device_is_in_it(self):
+    def test_parent_groups_returns_group_when_device_is_in_it(self):
         group = _make_edge_device_group("Group")
         group.edge_device_counts[self.device] = SourceValue(4 * u.dimensionless)
-        result = self.device._find_parent_groups()
+        result = self.device.parent_groups
         self.assertEqual([group], result)
 
-    def test_find_parent_groups_returns_multiple_groups(self):
+    def test_parent_groups_returns_multiple_groups(self):
         group_a = _make_edge_device_group("Group A")
         group_b = _make_edge_device_group("Group B")
         group_a.edge_device_counts[self.device] = SourceValue(2 * u.dimensionless)
         group_b.edge_device_counts[self.device] = SourceValue(3 * u.dimensionless)
-        result = self.device._find_parent_groups()
+        result = self.device.parent_groups
         self.assertIn(group_a, result)
         self.assertIn(group_b, result)
         self.assertEqual(2, len(result))

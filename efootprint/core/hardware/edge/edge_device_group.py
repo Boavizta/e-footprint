@@ -8,7 +8,7 @@ from efootprint.abstract_modeling_classes.modeling_object import ModelingObject
 from efootprint.abstract_modeling_classes.modeling_update import ModelingUpdate
 from efootprint.constants.units import u
 from efootprint.core.hardware.edge.edge_device import EdgeDevice
-from efootprint.abstract_modeling_classes.reactive_core import computed_attribute
+from efootprint.abstract_modeling_classes.reactive_core import ReverseCollection, computed_attribute
 
 
 class EdgeDeviceGroup(ModelingObject):
@@ -30,6 +30,8 @@ class EdgeDeviceGroup(ModelingObject):
 
     weight_labels = {"sub_group_counts": "Count in group", "edge_device_counts": "Count in group"}
 
+    parent_groups = ReverseCollection("EdgeDeviceGroup")
+
     def __init__(self, name: str,
                  sub_group_counts: WeightedExplainableObjectDict["EdgeDeviceGroup"] = None,
                  edge_device_counts: WeightedExplainableObjectDict["EdgeDevice"] = None):
@@ -41,23 +43,8 @@ class EdgeDeviceGroup(ModelingObject):
 
 
 
-    def _find_parent_groups(self) -> List["EdgeDeviceGroup"]:
-        from efootprint.abstract_modeling_classes.contextual_modeling_object_attribute import (
-            ContextualModelingObjectDictKey)
-        from efootprint.abstract_modeling_classes.reactive_core import CONTAINERS_NODE_NAME, record_read_of_node
-
-        record_read_of_node(self, CONTAINERS_NODE_NAME)
-        return list(dict.fromkeys([
-            contextual_container.modeling_obj_container
-            for contextual_container in self.contextual_modeling_obj_containers
-            if (
-                isinstance(contextual_container, ContextualModelingObjectDictKey)
-                and isinstance(contextual_container.modeling_obj_container, EdgeDeviceGroup)
-            )
-        ]))
-
     def _find_root_groups(self) -> List["EdgeDeviceGroup"]:
-        parent_groups = self._find_parent_groups()
+        parent_groups = self.parent_groups
         if not parent_groups:
             return [self]  # I am a root group
         root_groups = []
@@ -73,7 +60,7 @@ class EdgeDeviceGroup(ModelingObject):
         if _visited is None:
             _visited = set()
         ancestors = []
-        for parent in self._find_parent_groups():
+        for parent in self.parent_groups:
             if parent in _visited:
                 continue
             _visited.add(parent)
@@ -98,7 +85,7 @@ class EdgeDeviceGroup(ModelingObject):
     @computed_attribute
     def effective_nb_of_units_within_root(self):
         """How many copies of this group exist when the hierarchy is unrolled from the root group: 1 for a root group, otherwise the sum across each parent of (parent's effective count) times (count of this group within that parent)."""
-        parent_groups = self._find_parent_groups()
+        parent_groups = self.parent_groups
         if not parent_groups:
             # Root group: effective count is 1
             return ExplainableQuantity(
@@ -115,7 +102,7 @@ class EdgeDeviceGroup(ModelingObject):
             f"Effective nb within root group")
 
     def self_delete(self):
-        parent_groups = self._find_parent_groups()
+        parent_groups = self.parent_groups
         if parent_groups:
             raise PermissionError(
                 f"You can’t delete {self.name} because it is referenced in sub_group_counts of "

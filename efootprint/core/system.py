@@ -106,7 +106,7 @@ class System(ModelingObject):
         edge_devices_components = list(dict.fromkeys(sum([ed.components for ed in edge_devices], start=[])))
         edge_device_groups = []
         for ed in edge_devices:
-            for group in ed._find_parent_groups():
+            for group in ed.parent_groups:
                 if group not in edge_device_groups:
                     edge_device_groups.append(group)
                     for ancestor in group._find_all_ancestor_groups():
