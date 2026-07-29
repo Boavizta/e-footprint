@@ -39,14 +39,14 @@
         )
         return converted.set_label("Hourly journey starts (UTC)")</code></pre>
 <div class="cols"><div class="n core"><b>Value dependencies</b><br><span>The result uses <code>hourly_usage_journey_starts</code> and the linked country's <code>timezone</code>.</span></div><div class="n framework"><b>Relationship dependency</b><br><span>The result also depends on which <code>Country</code> the <code>country</code> link points to.</span></div></div>
-<p style="font-size:.88rem;color:var(--muted);margin-bottom:0">The reactive framework observes those ordinary reads while the getter runs. Continue with the <a href="recomputation.html#walkthrough">complete recomputation walkthrough</a> for the exact runtime state, code paths, invalidation, and persistence behavior.</p></div>
+<p style="font-size:.88rem;color:var(--muted);margin-bottom:0">The reactive framework observes those ordinary reads while the getter runs. First compare the <a href="recomputation/computed-surfaces.html">three computed surfaces</a>; then use the <a href="recomputation/lifecycle.html#walkthrough">complete lifecycle walkthrough</a> for exact runtime state and code paths.</p></div>
 
 <h2>First time here? Curated understanding path</h2>
 <p class="tagline" style="font-size:.92rem;margin-bottom:.4rem">A newcomer can stop after step 3 and navigate most domain changes. Read all seven before changing framework, serialization, or attribution behavior.</p>
 <ol class="flow">
   <li><b>Purpose and guardrails</b> — read <a href="../mission.md">mission.md</a>, then <a href="../constitution.md">constitution.md</a>.</li>
   <li><b><a href="layers-and-modeling.html">Layers &amp; modeling</a></b> — learn where code belongs and what a modeling object declares.</li>
-  <li><b><a href="recomputation.html">Recomputation engine</a></b> — follow one input edit through nodes, deletion wave, pull, guards, and rollback.</li>
+  <li><b><a href="recomputation.html">Recomputation engine</a></b> — choose a computed surface, then follow reads and edits through slots, deletion waves, guards, and rollback.</li>
   <li><b><a href="relationships.html">Relationships</a></b> — understand how object links create structural dependency edges and support traversal.</li>
   <li><b><a href="persistence.html">Persistence</a></b> — see why cached values and graph topology can reload without eagerly computing.</li>
   <li><b><a href="attribution.html">Attribution</a></b> — learn the downstream atom model and its conservation rules.</li>
@@ -55,18 +55,18 @@
 
 <h2>If you're about to…</h2>
 <div class="tablewrap"><table><tr><th>Task</th><th>Read first</th></tr>
-<tr><td>Review or change computed-attribute behavior</td><td><a href="recomputation.html#walkthrough">Recomputation § complete walkthrough</a> → <a href="recomputation.html#correctness">correctness invariants</a></td></tr>
+<tr><td>Review or change computed-attribute behavior</td><td><a href="recomputation/computed-surfaces.html">Computed surfaces</a> → <a href="recomputation/lifecycle.html#walkthrough">complete lifecycle</a> → <a href="recomputation/lifecycle.html#correctness">correctness invariants</a></td></tr>
 <tr><td>Add a modeling object or computed attribute</td><td><a href="layers-and-modeling.html#object-shape">Layers § modeling-object shape</a> and <a href="layers-and-modeling.html#registration">registration</a></td></tr>
 <tr><td>Add or change an object relationship</td><td><a href="relationships.html#relationship-types">Relationships § types</a> and <a href="relationships.html#traversal">traversal SSOT</a></td></tr>
 <tr><td>Change JSON or calculated-state loading</td><td><a href="persistence.html#contract">Persistence § minimal contract</a> and <a href="persistence.html#load">version-aware load</a></td></tr>
 <tr><td>Change a Sankey, repartition, or edge breakdown</td><td><a href="attribution.html#atoms">Attribution § atom model</a> and <a href="attribution.html#cache">reactive projection cache</a></td></tr>
 <tr><td>Change a comparison or human-readable quantity</td><td><a href="comparison-and-display.html">Comparison &amp; display</a></td></tr>
-<tr><td>Debug an invalid edit or stale value</td><td><a href="recomputation.html#debugging">Recomputation § debugging map</a></td></tr>
+<tr><td>Debug an invalid edit or stale value</td><td><a href="recomputation/lifecycle.html#debugging">Recomputation lifecycle § debugging map</a></td></tr>
 </table></div>
 
 <h2>Pages</h2><div class="grid">
 <a class="card" href="layers-and-modeling.html"><div class="name">Layers &amp; modeling <span class="pill">start here</span></div><div class="desc">The dependency rule, domain map, modeling-object contract, registries, builders, templates, units, and doc-as-code.</div></a>
-<a class="card" href="recomputation.html"><div class="name">Recomputation engine <span class="pill">core review</span></div><div class="desc">The pull-based slot graph, read and write paths, invalidation waves, eager boundaries, guards, rollback, and correctness rules.</div></a>
+<a class="card" href="recomputation.html"><div class="name">Recomputation engine <span class="pill">layered guide</span></div><div class="desc">The three computed surfaces first; shared pull/cache/invalidation mechanics second; complete lifecycle and technical zooms only when needed.</div></a>
 <a class="card" href="relationships.html"><div class="name">Relationships</div><div class="desc">Direct, list, and dict links; reverse relationships; graph traversal; input and calculated dict behavior.</div></a>
 <a class="card" href="persistence.html"><div class="name">Persistence</div><div class="desc">The v23 minimal contract, partial cached state, serialized topology, upgrade baselines, reference resolution, and Sources.</div></a>
 <a class="card" href="attribution.html"><div class="name">Attribution <span class="pill">visual</span></div><div class="desc">Footprint atoms, folds, relay weights, conservation, two-level reactive caches, and edge-device booking.</div></a>

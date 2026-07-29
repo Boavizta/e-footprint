@@ -1,0 +1,72 @@
+<!doctype html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>e-footprint recomputation — Computed surfaces</title>
+<style>
+:root{--ink:#172033;--muted:#64748b;--faint:#94a3b8;--line:#dbe3ee;--bg:#f7f9fc;--accent:#047857;--soft:#ecfdf5;--computed:#0369a1;--computed-bg:#f0f9ff;--dict:#7c3aed;--dict-bg:#f5f3ff;--lazy:#be185d;--lazy-bg:#fdf2f8}*{box-sizing:border-box}body{font-family:system-ui,-apple-system,sans-serif;line-height:1.58;color:var(--ink);background:var(--bg);max-width:66rem;margin:auto;padding:2.2rem 1.2rem 4rem}a{color:var(--accent);text-decoration:none}a:hover{text-decoration:underline}.crumb{color:var(--faint);font-size:.85rem}h1{font-size:1.9rem;margin:.9rem 0 .25rem}.lede{color:var(--muted);font-size:1.02rem}h2{font-size:1.28rem;margin:2.3rem 0 .6rem}h3{font-size:1.02rem}code{background:#eef2f7;padding:.08rem .3rem;border-radius:4px;font-size:.86em}pre{background:#f8fafc;color:#1e293b;border:1px solid #dbe3ee;border-left:4px solid #94a3b8;border-radius:11px;padding:.9rem 1rem;overflow:auto;font:.82rem/1.6 ui-monospace,SFMono-Regular,Menlo,Consolas,monospace;tab-size:4;margin:.6rem 0}pre code{background:none;color:inherit;padding:0}.rule{border-left:3px solid var(--accent);background:var(--soft);padding:.65rem .9rem;border-radius:0 10px 10px 0}.diagram{border:1px solid var(--line);border-radius:14px;background:#fff;padding:1rem 1.1rem;margin:1rem 0}.dtitle{font-size:.72rem;font-weight:700;letter-spacing:.05em;text-transform:uppercase;color:var(--faint);margin-bottom:.7rem}.three{display:grid;grid-template-columns:repeat(3,1fr);gap:.65rem}.cols{display:grid;grid-template-columns:1fr 1fr;gap:.65rem}.n{border:1px solid;border-radius:10px;padding:.6rem .75rem;font-size:.84rem}.n span{color:var(--muted)}.computed{border-color:var(--computed);background:var(--computed-bg)}.dict{border-color:var(--dict);background:var(--dict-bg)}.lazy{border-color:var(--lazy);background:var(--lazy-bg)}.ar{text-align:center;color:var(--faint);font-size:.78rem;padding:.22rem}.tablewrap{overflow:auto}table{border-collapse:collapse;width:100%;min-width:50rem;font-size:.84rem}th,td{border:1px solid var(--line);padding:.48rem .62rem;text-align:left;vertical-align:top;background:#fff}th{background:#eef2f7;color:var(--muted)}details{border:1px solid var(--line);border-radius:10px;background:#fff;margin:.65rem 0}summary{cursor:pointer;padding:.6rem .85rem;font-weight:650;font-size:.92rem}details[open] summary{border-bottom:1px solid var(--line)}.fbody{padding:.4rem 1rem .8rem;font-size:.92rem}.zoom-card{display:block;border:1px solid var(--dict);background:var(--dict-bg);border-radius:12px;padding:.8rem 1rem;color:var(--ink);text-decoration:none;margin:.75rem 0}.zoom-card:hover{text-decoration:none;box-shadow:0 4px 14px rgba(15,23,42,.1)}.zt{font-weight:750}.zd{display:block;color:var(--muted);font-size:.86rem;margin-top:.2rem}li{margin:.3rem 0}footer{margin-top:3rem;border-top:1px solid var(--line);padding-top:1rem;color:var(--faint);font-size:.8rem}@media(max-width:52rem){.three,.cols{grid-template-columns:1fr}}
+</style></head><body>
+<div class="crumb"><a href="../index.html">Architecture</a> / <a href="../recomputation.html">Recomputation</a> / Computed surfaces</div>
+<h1>Three ways to declare derived state</h1>
+<p class="lede">Modeling authors meet the engine through three class-level descriptors. They share one reactive runtime, but expose different result shapes and update policies.</p>
+<div class="rule"><b>Choose from the meaning of the result:</b> one modeled result → <code>@computed_attribute</code>; one modeled result per member → <code>@computed_dict</code>; a read-time projection that should not warm eagerly → <code>@lazy_attribute</code>.</div>
+
+<h2 id="examples">Start from the code you write</h2>
+<div class="three">
+<div class="n computed"><b><code>@computed_attribute</code></b><pre><code>@computed_attribute
+def utc_starts(self):
+    return self.starts.convert_to_utc(
+        self.country.timezone
+    )</code></pre><span>One attached explainable result for one object.</span></div>
+<div class="n dict"><b><code>@computed_dict(keys="jobs")</code></b><pre><code>@computed_dict(keys="jobs")
+def energy_per_job(self, job):
+    return self.energy_for(job)</code></pre><span>One independently cached attached result for every current key.</span></div>
+<div class="n lazy"><b><code>@lazy_attribute</code></b><pre><code>@lazy_attribute
+def impact_rows(self):
+    return tuple(
+        self.build_rows()
+    )</code></pre><span>A cached projection, computed only when a consumer asks for it.</span></div>
+</div>
+
+<h2 id="shared">What all three share</h2>
+<div class="diagram"><div class="dtitle">One declaration model, one runtime graph</div><div class="three"><div class="n computed"><b>1 · Class declaration</b><br><span>Decorator syntax installs a descriptor holding the original domain getter.</span></div><div class="n dict"><b>2 · Per-instance slot</b><br><span>An instance read resolves one or more <a class="term" href="../glossary.html#reactive-slot"><code>ReactiveSlot</code></a>s, each cached or void.</span></div><div class="n lazy"><b>3 · Same dependency graph</b><br><span>Successful computation records dependencies; edits invalidate the affected cache cone.</span></div></div></div>
+<ul>
+<li>The getter body is the calculation SSOT. For documented computed values, its docstring is the doc-as-code meaning.</li>
+<li>Each slot pulls recursively, caches a successful result, detects recursive pull cycles, and keeps previous edges after failure as a safe over-approximation.</li>
+<li>All three participate in the same calculus and structural dependency graph and are invalidated through the same reverse edges.</li>
+<li>All three may use bare decorator syntax or a parameterized form where supported; the resulting class attribute is a descriptor, not the computed value itself.</li>
+</ul>
+
+<h2 id="comparison">What differs</h2>
+<div class="tablewrap"><table><tr><th>Concern</th><th><code>@computed_attribute</code></th><th><code>@computed_dict</code></th><th><code>@lazy_attribute</code></th></tr>
+<tr><td>Use when</td><td>The object owns one derived modeled value.</td><td>The object owns the same derived value shape for each object in a named key collection.</td><td>The result is an attribution, display, or other projection that should exist only when consumed.</td></tr>
+<tr><td>Runtime topology</td><td>One computing slot.</td><td>One key-set slot plus one independently cached element slot per current key.</td><td>One projection slot.</td></tr>
+<tr><td>Getter signature</td><td><code>getter(self)</code></td><td><code>getter(self, key)</code>; <code>keys="attribute_name"</code> names the collection.</td><td><code>getter(self)</code></td></tr>
+<tr><td>Returned value</td><td>A fresh explainable value attached to the owning attribute.</td><td>A fresh explainable value per key, attached into a persistent <code>ExplainableObjectDict</code> facade.</td><td>A raw value held by the slot; plain dicts, tuples, and dataclasses containing explainables are allowed.</td></tr>
+<tr><td>Calculus discovery</td><td>Formula ancestry of the returned value.</td><td>Formula ancestry of each returned element.</td><td>Every explainable found recursively in the returned value structure.</td></tr>
+<tr><td>Eager behavior</td><td>May be pulled through configured eager outputs; <code>guard=True</code> forces validation pulls.</td><td>Same, with key-set pulls ordered before element pulls.</td><td>Never eagerly warmed; after invalidation it remains void until explicitly read.</td></tr>
+<tr><td><code>calculated_attributes</code> and generated reference</td><td>Included.</td><td>Included as a computed dict surface.</td><td>Excluded: it is a projection, not part of the eager calculated-attribute model.</td></tr>
+<tr><td>Persistence</td><td>Cached value only when <code>serialize=True</code>.</td><td>Materialized entries only when <code>serialize=True</code>.</td><td>Raw JSON-native cached value only when <code>serialize=True</code>; an unread slot is omitted.</td></tr>
+</table></div>
+
+<h2 id="computed-attribute"><code>@computed_attribute</code>: one modeled value</h2>
+<p>The descriptor creates one slot per instance and attaches a successful result to the modeling-object attribute address. The returned value must be fresh: returning another attached attribute directly would alias one object into two addresses, so direct reuse requires <code>.copy()</code>.</p>
+<div class="cols"><div class="n computed"><b>Normal computed output</b><br><span>Reachable outputs recompute when the transaction pulls its configured boundary.</span></div><div class="n computed"><b>Guard output</b><br><span><code>guard=True</code>, or a name ending in <code>_validation</code>, marks a constraint that must fail during the edit transaction even outside the footprint-total cone.</span></div></div>
+<a class="zoom-card zoom" href="blocks/computed-attribute.html" data-title="@computed_attribute — decorator + descriptor"><span class="zt"><code>@computed_attribute</code> technical zoom 🔍</span><span class="zd">Decorator rewriting, descriptor installation, getter closure creation, per-instance dispatch, and storage boundaries.</span></a>
+
+<h2 id="computed-dict"><code>@computed_dict</code>: one modeled value per current key</h2>
+<div class="diagram"><div class="dtitle"><code>@computed_dict(keys="jobs")</code> slot topology</div><div class="n dict"><b>Key-set slot · <code>energy_per_job</code></b><br><span>Reads the current <code>jobs</code> membership, discards departed keys, pulls current element slots, and maintains facade ordering.</span></div><div class="ar">↓ owns and synchronizes</div><div class="three"><div class="n dict"><b><code>energy_per_job[job_A]</code></b><br><span>Independent getter, dependencies, cache, and invalidation.</span></div><div class="n dict"><b><code>energy_per_job[job_B]</code></b><br><span>Only this element need recompute when only B's inputs change.</span></div><div class="n dict"><b>Persistent facade</b><br><span>The same <code>ExplainableObjectDict</code> object survives key-set recomputations.</span></div></div></div>
+<p>A whole-dict read structurally depends on the key-set slot. If a key leaves the collection, its sub-slot is marked discarded and the facade entry is removed; stale dependents may still pull the orphaned slot, but it cannot reinsert the departed key.</p>
+<a class="zoom-card zoom" href="blocks/computed-dict.html" data-title="@computed_dict — key set + element slots"><span class="zt"><code>@computed_dict</code> technical zoom 🔍</span><span class="zd">Key-set slot, stable facade, composite-key element slots, fine-grained invalidation, stale-key pruning, guards, and persistence.</span></a>
+
+<h2 id="lazy"><code>@lazy_attribute</code>: a projection on demand</h2>
+<p>A lazy attribute is still reactive and cached—it is not a plain property and not <code>functools.cached_property</code>. The difference is policy and ownership: it stays outside <code>calculated_attributes</code>, never participates in eager warming, and keeps its result raw rather than attaching it into modeling-container bookkeeping.</p>
+<div class="cols"><div class="n lazy"><b>Why value-structure discovery?</b><br><span>A projection may return nested dicts, tuples, sets, or dataclasses. The closure walks that structure and records calculus edges for every contained explainable.</span></div><div class="n lazy"><b>Why lazy?</b><br><span>Attribution matrices and display breakdowns may be expensive and are irrelevant to the main footprint total. They compute only for consumers that need them.</span></div></div>
+<a class="zoom-card zoom" href="blocks/lazy-attribute.html" data-title="@lazy_attribute — reactive projection"><span class="zt"><code>@lazy_attribute</code> technical zoom 🔍</span><span class="zd">Bare and parameterized forms, raw slot caching, recursive value-structure dependency discovery, composition, eager policy, and optional persistence.</span></a>
+
+<h2 id="choice">Decision guide</h2>
+<div class="diagram"><div class="dtitle">Choose the narrowest semantic surface</div><div class="n computed"><b>Does this derived value belong to the model's calculated footprint graph?</b><br><span>Yes → continue with a computed surface. No, it is attribution/display/supporting projection → <code>@lazy_attribute</code>.</span></div><div class="ar">↓ if computed</div><div class="n dict"><b>Is there one independently recomputable result per member of a modeled collection?</b><br><span>Yes → <code>@computed_dict(keys="…")</code>. No → <code>@computed_attribute</code>.</span></div></div>
+<div class="rule"><b>Flags refine a surface; they do not create another one.</b> <code>guard=True</code> changes failure timing. <code>serialize=True</code> opts a materialized cache into persistence. Neither changes the underlying dependency mechanism.</div>
+
+<details><summary>Implementation reading route</summary><div class="fbody"><ol>
+<li><a href="../../../efootprint/abstract_modeling_classes/reactive_core.py"><code>computed_attribute</code></a> — single-value descriptor and getter closure.</li>
+<li><a href="../../../efootprint/abstract_modeling_classes/reactive_core.py"><code>_ComputedDictAttribute</code> and <code>computed_dict</code></a> — key-set slot, element slots, facade, and stale-key pruning.</li>
+<li><a href="../../../efootprint/abstract_modeling_classes/reactive_core.py"><code>lazy_attribute</code></a> — raw projection slot and recursive value-structure dependency discovery.</li>
+</ol></div></details>
+<footer>e-footprint architecture · <a href="../recomputation.html">recomputation overview</a> · next: <a href="lifecycle.html">complete runtime lifecycle</a>.</footer><script src="../source-links.js"></script></body></html>

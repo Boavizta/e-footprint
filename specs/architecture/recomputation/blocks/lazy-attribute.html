@@ -1,0 +1,65 @@
+<!doctype html>
+<html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>e-footprint recomputation — block: @lazy_attribute</title>
+<script>if(new URLSearchParams(location.search).has("embed")){document.documentElement.classList.add("embed");addEventListener("DOMContentLoaded",()=>document.querySelectorAll('a[href*=".html"]').forEach(a=>a.target="_top"));}</script>
+<style>
+:root{--ink:#172033;--muted:#64748b;--faint:#94a3b8;--line:#dbe3ee;--bg:#f7f9fc;--accent:#047857;--lazy:#be185d;--lazy-bg:#fdf2f8;--slot:#7c3aed;--slot-bg:#f5f3ff;--value:#0369a1;--value-bg:#f0f9ff;--input:#b45309;--input-bg:#fffbeb}*{box-sizing:border-box}body{font-family:system-ui,-apple-system,sans-serif;line-height:1.58;color:var(--ink);background:var(--bg);max-width:64rem;margin:auto;padding:2.2rem 1.2rem 4rem}.embed body{max-width:none;padding:1.2rem 1.1rem 2.5rem}.embed .crumb,.embed footer{display:none}a{color:var(--accent);text-decoration:none}a:hover{text-decoration:underline}.crumb{color:var(--faint);font-size:.85rem;margin-bottom:1rem}h1{font-size:1.75rem;margin:0 0 .25rem}.chip{display:inline-block;font-size:.64rem;text-transform:uppercase;letter-spacing:.05em;padding:.15rem .45rem;border-radius:99px;background:var(--lazy-bg);color:var(--lazy);vertical-align:middle}.lede{color:var(--muted);font-size:1rem}h2{font-size:1.2rem;margin:2.1rem 0 .55rem}h3{font-size:1rem;margin:1.35rem 0 .4rem}code{background:#eef2f7;padding:.08rem .3rem;border-radius:4px;font-size:.86em}pre{background:#f8fafc;color:#1e293b;border:1px solid #dbe3ee;border-left:4px solid #94a3b8;border-radius:11px;padding:.9rem 1rem;overflow:auto;font:.82rem/1.6 ui-monospace,SFMono-Regular,Menlo,Consolas,monospace;tab-size:4}pre code{background:none;color:inherit;padding:0}.rule{border-left:3px solid var(--lazy);background:var(--lazy-bg);padding:.65rem .9rem;border-radius:0 10px 10px 0}.diagram{border:1px solid var(--line);border-radius:14px;background:#fff;padding:1rem;margin:1rem 0}.dtitle{font-size:.72rem;font-weight:700;text-transform:uppercase;letter-spacing:.05em;color:var(--faint);margin-bottom:.7rem}.cols{display:grid;grid-template-columns:1fr 1fr;gap:.65rem}.three{display:grid;grid-template-columns:repeat(3,1fr);gap:.65rem}.n{border:1px solid;border-radius:10px;padding:.58rem .72rem;font-size:.84rem}.n span{color:var(--muted)}.input{border-color:var(--input);background:var(--input-bg)}.slot{border-color:var(--slot);background:var(--slot-bg)}.value{border-color:var(--value);background:var(--value-bg)}.lazy{border-color:var(--lazy);background:var(--lazy-bg)}.ar{text-align:center;color:var(--faint);font-size:.78rem;padding:.22rem}.tablewrap{overflow:auto}table{border-collapse:collapse;width:100%;min-width:40rem;font-size:.85rem}th,td{border:1px solid var(--line);padding:.47rem .6rem;text-align:left;vertical-align:top;background:#fff}th{background:#eef2f7;color:var(--muted)}details{border:1px solid var(--line);border-radius:10px;background:#fff;margin:.65rem 0}summary{cursor:pointer;padding:.58rem .82rem;font-weight:650;font-size:.9rem}details[open] summary{border-bottom:1px solid var(--line)}.fbody{padding:.4rem .95rem .75rem;font-size:.91rem}li{margin:.3rem 0}footer{margin-top:3rem;border-top:1px solid var(--line);padding-top:1rem;color:var(--faint);font-size:.8rem}@media(max-width:48rem){.cols,.three{grid-template-columns:1fr}}
+</style></head><body>
+<p class="crumb"><a href="../../index.html">Architecture</a> / <a href="../computed-surfaces.html#lazy">Computed surfaces</a> / block: <code>@lazy_attribute</code></p>
+<h1><code>@lazy_attribute</code> <span class="chip">technical building block</span></h1>
+<p class="lede">A lazy attribute is a cached reactive projection: it uses the same slot graph as core calculations but stays outside eager calculated state and keeps its result raw.</p>
+<div class="rule"><b>“Lazy” changes pull policy, not correctness.</b> The slot still discovers dependencies, caches success, becomes void after relevant edits, and recomputes on its next explicit read.</div>
+
+<h2 id="declaration">Bare and parameterized forms</h2>
+<div class="cols"><div><pre><code>@lazy_attribute
+def impact_repartition_rows(self):
+    return tuple(self.build_rows())</code></pre><p>A bare descriptor receives and binds the getter immediately.</p></div><div><pre><code>@lazy_attribute(serialize=True)
+def impact_repartition_matrix(self):
+    return tuple(self.build_matrix())</code></pre><p>The first call creates an unbound descriptor carrying configuration; decorator application then calls that descriptor with the getter.</p></div></div>
+<p>In both forms, <code>__set_name__</code> registers the descriptor in the class's lazy-slot registry. Lazy slots are deliberately excluded from <code>calculated_attributes</code> and computed-attribute reference documentation.</p>
+
+<h2 id="slot">One projection slot per instance</h2>
+<div class="diagram"><div class="dtitle">First instance read</div><div class="n input"><b><code>source.impact_repartition_rows</code></b><br><span><code>lazy_attribute.__get__</code> resolves the descriptor for this instance.</span></div><div class="ar">↓</div><div class="n slot"><b><code>source._reactive_slots["impact_repartition_rows"]</code></b><br><span>A <code>ReactiveSlot</code> with <code>lazy=True</code> and a zero-argument closure around <code>getter(source)</code>.</span></div><div class="ar">↓ pull if void</div><div class="n lazy"><b>Raw cached projection</b><br><span>Stored in the slot's <code>_value</code>; not installed as a normal instance attribute and not attached to modeling-container bookkeeping.</span></div></div>
+
+<h2 id="raw">What “raw” means</h2>
+<div class="cols"><div class="n value"><b>Computed attributes</b><br><span>Return a fresh explainable value. The closure attaches it to the owner/address and writes the slot backpointer.</span></div><div class="n lazy"><b>Lazy attributes</b><br><span>May return a plain dict, tuple, list, set, dataclass, scalar, explainable, or a nested combination. The slot owns the cache directly.</span></div></div>
+<p>Raw does not mean dependency-free. It means the projection is not part of the modeling object's explainable-container ownership structure.</p>
+
+<h2 id="discovery">How a nested result records dependencies</h2>
+<pre><code>def compute():
+    value = self.getter(instance)
+    record_calculus_edges_from_value_structure(value)
+    return value</code></pre>
+<div class="diagram"><div class="dtitle">Recursive value-structure walk</div><div class="three"><div class="n input"><b>Attached explainable</b><br><span>Record its own <code>_reactive_slot</code>.</span></div><div class="n value"><b>Unattached explainable</b><br><span>Record the slots of its nearest attached formula ancestors.</span></div><div class="n lazy"><b>Container/dataclass</b><br><span>Visit dict values, sequence/set items, or dataclass fields recursively.</span></div></div></div>
+<p>This extra walk matters because projection code often reduces explainables into raw rows or containers. Without it, dependencies carried only by arithmetic ancestry could disappear when the return value is no longer one attached explainable object.</p>
+<details><summary>When projection code reduces to plain scalars early</summary><div class="fbody"><p>If a getter extracts a magnitude or otherwise destroys an explainable's ancestry before placing the result in its return structure, it must call <code>record_calculus_edges_from_ancestry(explainable)</code> before that reduction. <code>impact_repartition_rows</code> does this for each atom's hourly value before converting it to a period-total scalar.</p></div></details>
+
+<h2 id="composition">When another computation reads a lazy slot</h2>
+<p>If a computation is already active, <code>lazy_attribute.__get__</code> calls <code>record_calculus_dependency(lazy_slot)</code> before pulling it. The outer slot therefore depends directly on the projection slot; the projection keeps its own internal dependencies.</p>
+<pre><code>input slots → lazy projection slot → consuming slot
+
+# Direct edges are preserved; the projection's internal inputs
+# are not copied into the consuming slot's dependency set.</code></pre>
+
+<h2 id="eager">Why it never warms eagerly</h2>
+<div class="cols"><div class="n lazy"><b>After invalidation</b><br><span>The cached raw value is dropped and the slot remains void. System-total pulls and ordinary eager sweeps skip it.</span></div><div class="n input"><b>At consumption time</b><br><span>A renderer, attribution fold, or other explicit attribute reader pulls it only if that consumer actually needs it. Serialization only peeks and never pulls.</span></div></div>
+<p>This keeps attribution and presentation work out of the main footprint update path while preserving exact invalidation when their inputs change.</p>
+
+<h2 id="persistence">Optional persistence</h2>
+<p>By default, lazy projections are runtime-only. <code>serialize=True</code> opts a materialized cache into the minimal persistence contract:</p>
+<ul>
+<li><code>peek()</code> returns the cached raw value without computing; an unread or invalidated slot is simply omitted on save.</li>
+<li>The value must be JSON-native because it bypasses explainable serialization machinery.</li>
+<li>Loading calls <code>attach_cached_value()</code> to seed the slot without running the getter.</li>
+<li>Serialized dependency topology still determines which edits invalidate that loaded cache.</li>
+</ul>
+
+<h2 id="writes">Writes are rejected</h2>
+<p>The descriptor defines <code>__set__</code> and raises <code>AttributeError</code>. A lazy projection is derived state; callers change its inputs and let invalidation/recomputation update it.</p>
+<details open><summary>Read the implementation in this order</summary><div class="fbody"><ol>
+<li><a href="../../../../efootprint/abstract_modeling_classes/reactive_core.py"><code>lazy_attribute.__init__</code>, <code>__call__</code>, and <code>__set_name__</code></a> — both decorator forms and registration.</li>
+<li><a href="../../../../efootprint/abstract_modeling_classes/reactive_core.py"><code>slot</code>, <code>__get__</code>, and <code>_make_compute_closure</code></a> — per-instance dispatch and caching.</li>
+<li><a href="../../../../efootprint/abstract_modeling_classes/reactive_core.py"><code>record_calculus_edges_from_value_structure</code></a> — recursive dependency discovery.</li>
+</ol><p>Return to <a href="../computed-surfaces.html#comparison">the three-surface comparison</a> or follow the <a href="../lifecycle.html#walkthrough">complete lifecycle</a>.</p></div></details>
+<footer>e-footprint architecture · <a href="../computed-surfaces.html#lazy">computed surfaces</a> · canonical technical zoom for lazy projection slots, raw caching, dependency discovery, and eager policy.</footer>
+<script src="../../source-links.js"></script></body></html>

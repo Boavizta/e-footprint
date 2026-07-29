@@ -1,0 +1,75 @@
+<!doctype html>
+<html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>e-footprint recomputation — block: @computed_dict</title>
+<script>if(new URLSearchParams(location.search).has("embed")){document.documentElement.classList.add("embed");addEventListener("DOMContentLoaded",()=>document.querySelectorAll('a[href*=".html"]').forEach(a=>a.target="_top"));}</script>
+<style>
+:root{--ink:#172033;--muted:#64748b;--faint:#94a3b8;--line:#dbe3ee;--bg:#f7f9fc;--accent:#047857;--slot:#7c3aed;--slot-bg:#f5f3ff;--value:#0369a1;--value-bg:#f0f9ff;--input:#b45309;--input-bg:#fffbeb}*{box-sizing:border-box}body{font-family:system-ui,-apple-system,sans-serif;line-height:1.58;color:var(--ink);background:var(--bg);max-width:64rem;margin:auto;padding:2.2rem 1.2rem 4rem}.embed body{max-width:none;padding:1.2rem 1.1rem 2.5rem}.embed .crumb,.embed footer{display:none}a{color:var(--accent);text-decoration:none}a:hover{text-decoration:underline}.crumb{color:var(--faint);font-size:.85rem;margin-bottom:1rem}h1{font-size:1.75rem;margin:0 0 .25rem}.chip{display:inline-block;font-size:.64rem;text-transform:uppercase;letter-spacing:.05em;padding:.15rem .45rem;border-radius:99px;background:var(--slot-bg);color:var(--slot);vertical-align:middle}.lede{color:var(--muted);font-size:1rem}h2{font-size:1.2rem;margin:2.1rem 0 .55rem}h3{font-size:1rem;margin:1.35rem 0 .4rem}code{background:#eef2f7;padding:.08rem .3rem;border-radius:4px;font-size:.86em}pre{background:#f8fafc;color:#1e293b;border:1px solid #dbe3ee;border-left:4px solid #94a3b8;border-radius:11px;padding:.9rem 1rem;overflow:auto;font:.82rem/1.6 ui-monospace,SFMono-Regular,Menlo,Consolas,monospace;tab-size:4}pre code{background:none;color:inherit;padding:0}.rule{border-left:3px solid var(--slot);background:var(--slot-bg);padding:.65rem .9rem;border-radius:0 10px 10px 0}.diagram{border:1px solid var(--line);border-radius:14px;background:#fff;padding:1rem;margin:1rem 0}.dtitle{font-size:.72rem;font-weight:700;text-transform:uppercase;letter-spacing:.05em;color:var(--faint);margin-bottom:.7rem}.cols{display:grid;grid-template-columns:1fr 1fr;gap:.65rem}.three{display:grid;grid-template-columns:repeat(3,1fr);gap:.65rem}.n{border:1px solid;border-radius:10px;padding:.58rem .72rem;font-size:.84rem}.n span{color:var(--muted)}.input{border-color:var(--input);background:var(--input-bg)}.slot{border-color:var(--slot);background:var(--slot-bg)}.value{border-color:var(--value);background:var(--value-bg)}.ar{text-align:center;color:var(--faint);font-size:.78rem;padding:.22rem}.tablewrap{overflow:auto}table{border-collapse:collapse;width:100%;min-width:40rem;font-size:.85rem}th,td{border:1px solid var(--line);padding:.47rem .6rem;text-align:left;vertical-align:top;background:#fff}th{background:#eef2f7;color:var(--muted)}details{border:1px solid var(--line);border-radius:10px;background:#fff;margin:.65rem 0}summary{cursor:pointer;padding:.58rem .82rem;font-weight:650;font-size:.9rem}details[open] summary{border-bottom:1px solid var(--line)}.fbody{padding:.4rem .95rem .75rem;font-size:.91rem}li{margin:.3rem 0}footer{margin-top:3rem;border-top:1px solid var(--line);padding-top:1rem;color:var(--faint);font-size:.8rem}@media(max-width:48rem){.cols,.three{grid-template-columns:1fr}}
+</style></head><body>
+<p class="crumb"><a href="../../index.html">Architecture</a> / <a href="../computed-surfaces.html#computed-dict">Computed surfaces</a> / block: <code>@computed_dict</code></p>
+<h1><code>@computed_dict</code> <span class="chip">technical building block</span></h1>
+<p class="lede">A computed dict is not one cached dictionary calculation. It is a stable facade over a key-set slot and one independently reactive calculation per current key.</p>
+<div class="rule"><b>Shortest useful model:</b> the key-set slot owns membership and synchronization; each element slot owns one value, getter execution, dependency set, and cache.</div>
+
+<h2 id="declaration">What the declaration creates</h2>
+<pre><code>@computed_dict(keys="jobs")
+def energy_footprint_per_job(self, job):
+    return self.compute_energy_for(job)</code></pre>
+<div class="diagram"><div class="dtitle">Decorator application</div><div class="n input"><b><code>computed_dict(keys="jobs")</code></b><br><span>Returns a decorator configured with the key-collection attribute name.</span></div><div class="ar">↓ receives the domain getter</div><div class="n slot"><b><code>_ComputedDictAttribute(getter, "jobs")</code></b><br><span>The descriptor installed on the class; it registers itself as a computed slot surface through <code>__set_name__</code>.</span></div></div>
+<p>The domain getter takes one key in addition to <code>self</code>. The descriptor—not the resulting dict—is stored in the class namespace.</p>
+<details open><summary>Why is <code>computed_attribute</code> a class but <code>computed_dict</code> a function?</summary><div class="fbody"><p>The difference is only in the <b>public decorator entry point</b>, not in the descriptor model. <code>computed_attribute</code> is itself the descriptor class. <code>computed_dict(...)</code> is a small decorator-factory function whose returned closure creates an <code>_ComputedDictAttribute</code> descriptor; that internal class subclasses <code>computed_attribute</code>.</p><pre><code># Bare computed attribute:
+f = computed_attribute(f)  # constructor receives the getter directly
+
+# Computed dict, whose keys argument is mandatory:
+decorate = computed_dict(keys="jobs")
+f = decorate(f)            # creates _ComputedDictAttribute(f, "jobs")</code></pre><p><code>computed_attribute</code> also supports a parameterized form by constructing an initially unbound descriptor and using its <code>__call__</code> to bind the getter. <code>computed_dict</code> could technically use the same class-based pattern; the current function keeps its mandatory configuration step simple and hides the private implementation class. This is an implementation/API-shape choice, not a behavioral distinction between the two reactive surfaces.</p></div></details>
+
+<h2 id="topology">Runtime topology</h2>
+<div class="diagram"><div class="dtitle">One owner with two current jobs</div><div class="n slot"><b>Key-set slot · <code>energy_footprint_per_job</code></b><br><span>Registry key: <code>"energy_footprint_per_job"</code><br>Getter reads <code>self.jobs</code>, synchronizes membership, and pulls every current element slot.</span></div><div class="ar">↓ coordinates</div><div class="three"><div class="n value"><b>Element slot A</b><br><span>Registry key: <code>("energy_footprint_per_job", job_A)</code><br>Runs <code>getter(self, job_A)</code>.</span></div><div class="n value"><b>Element slot B</b><br><span>Registry key: <code>("energy_footprint_per_job", job_B)</code><br>Runs <code>getter(self, job_B)</code>.</span></div><div class="n input"><b>Persistent facade</b><br><span>Stored in <code>self._computed_dict_facades</code>; the same <code>ExplainableObjectDict</code> instance survives recomputation.</span></div></div></div>
+<div class="rule"><b>Why the facade persists:</b> downstream code may keep a reference to the returned mapping. Recomputing replaces element caches and synchronizes entries without replacing the facade object itself.</div>
+
+<h2 id="read">What happens on a whole-dict read</h2>
+<ol>
+<li><code>_ComputedDictAttribute.__get__</code> resolves the owner's key-set slot.</li>
+<li>If another computation is active, reading the whole dict records a structural dependency on that key-set slot: the consumer depends on which keys exist.</li>
+<li><code>slot.pull()</code> returns the cached facade or invokes the key-set closure.</li>
+<li>The closure reads <code>getattr(instance, keys)</code>, drops stale keys, pulls one sub-slot per current key, restores collection order, and returns the same facade.</li>
+<li>Each element closure calls <code>getter(instance, key)</code>, attaches the fresh value into the facade, and records calculus dependencies from that value's formula ancestry.</li>
+</ol>
+<pre><code># Conceptual access chain
+device.energy_footprint_per_usage_pattern
+  → key_set_slot.pull()
+  → current_keys = list(device.usage_patterns)
+  → sub_slot(device, pattern_A).pull()
+  → getter(device, pattern_A)
+  → facade[pattern_A] = fresh_value</code></pre>
+
+<h2 id="granularity">Why element slots matter</h2>
+<div class="cols"><div class="n value"><b>Fine-grained invalidation</b><br><span>If only job B's consumed inputs change, B's element slot becomes void while A's cached value remains reusable.</span></div><div class="n slot"><b>Whole-dict dependency</b><br><span>A consumer that reads the facade as a collection also depends structurally on the key-set node, so membership changes invalidate that consumer.</span></div></div>
+<p>The key-set slot has <code>pull_precedence = -1</code>. Eager sweeps therefore synchronize membership and discard departed sub-slots before attempting to pull remaining elements.</p>
+
+<h2 id="stale-keys">When a key leaves</h2>
+<ol>
+<li><code>discard_stale_keys()</code> removes the composite-key sub-slot from the owner's registry and marks it <code>discarded=True</code>.</li>
+<li>The corresponding facade entry is dropped passively, without starting another modeling update.</li>
+<li>A stale dependent may still hold the orphaned slot and pull it. The slot can recompute for that reader, but <code>_attach_element()</code> checks the registry identity and refuses to reinsert the departed key into the facade.</li>
+<li><code>prune_stale_computed_dict_keys()</code> performs membership cleanup after invalidation even when nobody reads the facade, preventing detached objects from remaining reachable through stale container bookkeeping.</li>
+</ol>
+
+<h2 id="storage">What is stored where</h2>
+<div class="tablewrap"><table><tr><th>State</th><th>Location</th></tr>
+<tr><td>Descriptor and original getter</td><td>Class namespace under the declared attribute name.</td></tr>
+<tr><td>Key-set slot and element slots</td><td>Owner's <code>_reactive_slots</code> registry.</td></tr>
+<tr><td>Stable returned mapping</td><td>Owner's <code>_computed_dict_facades</code> registry.</td></tr>
+<tr><td>Current element values</td><td>Each element slot's cache and the facade entry; values are attached to the owner/address with the element slot as backpointer.</td></tr>
+<tr><td>Dependencies</td><td>Independently on the key-set and each element slot, with reverse indexes on their dependency slots.</td></tr>
+</table></div>
+
+<h2 id="flags">Guards and persistence</h2>
+<p><code>guard=True</code> marks the key-set node and every element slot as validation guards. <code>serialize=True</code> persists materialized entries under the minimal calculated-state contract. <code>peek()</code> returns the facade only when the key-set slot and every current element slot are cached; it never exposes stale facade entries as current state.</p>
+<details open><summary>Read the implementation in this order</summary><div class="fbody"><ol>
+<li><a href="../../../../efootprint/abstract_modeling_classes/reactive_core.py"><code>_ComputedDictAttribute.slot</code>, <code>facade</code>, and <code>__get__</code></a> — key-set access and stable facade.</li>
+<li><a href="../../../../efootprint/abstract_modeling_classes/reactive_core.py"><code>sub_slot</code> and <code>_make_element_compute_closure</code></a> — per-key calculation.</li>
+<li><a href="../../../../efootprint/abstract_modeling_classes/reactive_core.py"><code>discard_stale_keys</code> and <code>prune_stale_computed_dict_keys</code></a> — safe membership removal.</li>
+</ol><p>Return to <a href="../computed-surfaces.html#comparison">the three-surface comparison</a> or follow the <a href="../lifecycle.html#walkthrough">complete lifecycle</a>.</p></div></details>
+<footer>e-footprint architecture · <a href="../computed-surfaces.html#computed-dict">computed surfaces</a> · canonical technical zoom for computed-dict topology, facades, element slots, and key synchronization.</footer>
+<script src="../../source-links.js"></script></body></html>
