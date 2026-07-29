@@ -135,57 +135,23 @@ S_utc._calculus_dependencies == {S_starts, S_timezone}  # topology retained</cod
 <li><a href="../../efootprint/api_utils/system_to_json.py"><code>system_to_json.py</code></a> and <a href="../../efootprint/api_utils/json_to_system.py"><code>json_to_system.py</code></a> — topology persistence and reconstruction.</li>
 </ol></div></details>
 
-<h2 id="read">Read path: pull, discover, cache</h2>
-<div class="diagram"><div class="dtitle">Reading a decorated attribute</div><div class="flow">
-<div class="n input"><b>1 · Attribute read</b><br><span>A descriptor resolves its per-instance slot.</span></div>
-<div class="n slot"><b>2 · Cache check</b><br><span>Cached returns immediately; void enters compute.</span></div>
-<div class="n value"><b>3 · Getter runs</b><br><span>Nested computed reads pull recursively.</span></div>
-<div class="n slot"><b>4 · Edges commit</b><br><span>Actual calculus and structural reads replace old dependencies on success.</span></div>
-<div class="n value"><b>5 · Value caches</b><br><span>Bookkeeping attaches the value to the slot; later reads are warm.</span></div>
-</div></div>
-<p><code>@computed_attribute</code> and <code>@computed_dict</code> are the SSOT for a computed value: the getter body is its calculation and the getter docstring is its doc-as-code meaning. Each attribute resolves to a per-instance <code>ReactiveSlot</code> stored in the object's <code>_reactive_slots</code> registry.</p>
-<details class="fold"><summary>Slot state, dependency refresh, failure, cycle, and context behavior</summary><div class="fbody"><ul>
-<li>A slot is <b>cached</b> or <b>void</b>. <code>pull()</code> returns the cache or calls the getter; void ancestors are pulled recursively.</li>
-<li>Each successful computation replaces the slot's old edge set with what this run actually read. Conditional dependencies therefore disappear when a stale branch is no longer taken.</li>
-<li>A failed computation stays void and keeps its previous dependencies as a safe over-approximation. The next read retries; over-invalidation is safe, a missed edge is not.</li>
-<li>The immutable-tuple compute stack lives in a <a class="term" href="glossary.html#contextvar"><code>ContextVar</code></a> and is reset in <code>finally</code>. Pulling a slot already on that stack raises <code>CircularDependencyError</code> with the offending chain.</li>
-<li>Invalidation during a getter raises: slot getters may read, never write inputs or relationships.</li>
-</ul></div></details>
-
 <h2 id="slot-kinds">Three computed-slot surfaces</h2>
+<p>Across these surfaces, the decorated getter remains the SSOT for a computed value: its body defines the calculation and its docstring defines the doc-as-code meaning. Each attribute resolves to a per-instance <code>ReactiveSlot</code> stored in the object's <code>_reactive_slots</code> registry.</p>
 <div class="tablewrap"><table><tr><th>Surface</th><th>Shape and behavior</th><th>Eager?</th><th>Persistence</th></tr>
 <tr><td><code>@computed_attribute</code></td><td>One scalar or explainable value per instance. Container bookkeeping attaches the result.</td><td>Reachable from configured eager outputs; guard option available.</td><td>Only when <code>serialize=True</code>.</td></tr>
 <tr><td><code>@computed_dict(keys="…")</code></td><td>A live dict facade over a key-set slot and one sub-slot per key. Key-set nodes pull before sub-slots; removed keys discard stale slots.</td><td>Same rules as computed attributes.</td><td>Only when <code>serialize=True</code>.</td></tr>
 <tr><td><code>@lazy_attribute</code></td><td>Read-time projection in the same graph, holding raw JSON-native containers outside modeling-container bookkeeping. Explainables found anywhere in the returned structure contribute calculus edges. It is excluded from <code>calculated_attributes</code> and computed-attribute documentation.</td><td><b>Never.</b> It stays void after invalidation until explicitly read.</td><td>Excluded unless <code>serialize=True</code>; current examples include attribution matrix/breakdowns.</td></tr>
 </table></div>
 
-<h2 id="write">Write path: apply, invalidate, pull, or roll back</h2>
-<div class="diagram"><div class="dtitle">One live input edit through <code>ModelingUpdate</code></div><div class="flow">
-<div class="n input"><b>1 · Parse &amp; validate shape</b><br><span>Normalize list/dict/model links; skip equal changes.</span></div>
-<div class="n input"><b>2 · Apply changes</b><br><span>Relationship bookkeeping runs without recursive recomputation.</span></div>
-<div class="n slot"><b>3 · Deletion wave</b><br><span>Changed nodes and transitive dependents become void.</span></div>
-<div class="n guard"><b>4 · Pull boundaries</b><br><span>Guards first, then configured outputs; default is system total.</span></div>
-<div class="n value"><b>5 · Commit or rollback</b><br><span>Success keeps the new state; failure restores inputs, invalidates again, and recomputes the restored boundary.</span></div>
-</div></div>
-<p><code>ModelingObject.__setattr__</code> routes live writes through <code>ModelingUpdate</code>. Computation is still pull-based: the “eager” phase names only which <a class="term" href="glossary.html#eager-output">observable boundaries</a> are intentionally read after invalidation.</p>
-<div class="diagram"><div class="dtitle">The worked example over time</div><pre><code># First read: run the getter, discover both edge kinds, cache the result.
-starts_utc = pattern.utc_hourly_usage_journey_starts
-
-# Value edit: follow the calculus edge and invalidate the cached result.
-pattern.hourly_usage_journey_starts = revised_starts
-
-# Relationship edit: follow the structural edge and invalidate it too.
-pattern.country = japan</code></pre>
-<p style="font-size:.88rem;color:var(--muted);margin-bottom:0">Each assignment is transactional. If the pattern belongs to a System, the default update then pulls <code>System.total_footprint</code>; that recursively pulls this value again if the total needs it. With <code>eager_outputs=()</code>, it remains void until the next explicit read.</p></div>
-<details class="fold"><summary>Eager outputs, detached graphs, and lazy projections</summary><div class="fbody"><p><code>eager_outputs</code> is a collection of <code>(modeling object, attribute name)</code> pairs. With the default <code>None</code>, the affected system's <code>total_footprint</code> is pulled, so errors in the change's footprint cone surface at update time. Tight loops pass <code>eager_outputs=()</code> and let values compute at the next read. If changed objects belong to no system, the update pulls the invalidated cone because there is no system-total boundary through which errors could surface and detached subgraphs are small.</p><p>Lazy slots are never part of eager sweeps. Attribution projections therefore remain void until a render or explicit read asks for them.</p></div></details>
-
 <h2 id="invalidation">Deletion wave and partial state</h2>
+<p><code>ModelingObject.__setattr__</code> routes live writes through <code>ModelingUpdate</code>, which normalizes list, dict, and modeling-object links and skips equal changes before applying relationship bookkeeping. The <a href="#walkthrough">walkthrough above</a> follows both a numerical edit and a relationship edit through that transaction.</p>
 <div class="diagram"><div class="dtitle">Why voidness cannot stop a wave</div><div class="cols"><div><div class="n input"><b>Changed input</b></div><div class="ar">↓ wave</div><div class="n slot"><b>Void intermediate</b><br><span>May already have no cached value after a minimal reload.</span></div><div class="ar">↓ wave must continue</div><div class="n value"><b>Cached serialized output</b><br><span>Must be dropped or it becomes stale.</span></div></div><div><div class="n guard"><b>Wave marker, not voidness</b><br><span>A marked slot means its dependents have already been marked by this or an earlier sound wave. A fresh dependent cache can only arise after pulling through the dependency, which clears the marker.</span></div></div></div></div>
 <p><code>invalidate(*slots)</code> deletes cached values from changed slots and every transitive dependent. Its one-bit <code>wave_passed</code> marker prunes repeated traversal. A void slot cannot prune: the normal persisted shape can have cached outputs below valueless intermediates. This is why the serialized dependency topology matters; see <a href="persistence.html">Persistence</a>.</p>
 
 <h2 id="guards">Guards: constraints that must fail at edit time</h2>
 <p>A slot is a <a class="term" href="glossary.html#guard">guard</a> when its name ends in <code>_validation</code> or its descriptor declares <code>guard=True</code>. Guards cover user-facing constraints that may sit outside the system-total footprint cone, such as edge-capacity checks. Every invalidated guard is pulled regardless of <code>eager_outputs</code>.</p>
 <div class="rule"><b>New-link edge case:</b> a never-computed guard has no recorded dependency edge, so a deletion wave cannot reach it. <code>ModelingUpdate</code> explicitly finds every newly linked object and its linked subtree and pulls all of their guards. Invalid new links are therefore rejected immediately.</div>
+<details class="fold"><summary>Which values are pulled after invalidation?</summary><div class="fbody"><p>Computation remains pull-based: the “eager” phase only chooses which <a class="term" href="glossary.html#eager-output">observable boundaries</a> are deliberately read after invalidation. <code>eager_outputs</code> is a collection of <code>(modeling object, attribute name)</code> pairs. With the default <code>None</code>, the affected system's <code>total_footprint</code> is pulled so errors in the changed footprint cone surface during the transaction. Tight loops pass <code>eager_outputs=()</code> and leave ordinary invalidated values void until their next read.</p><p>If changed objects belong to no system, the update pulls the invalidated cone because there is no system-total boundary through which errors could surface and detached subgraphs are small. Lazy slots are never part of eager sweeps: attribution projections remain void until a render or explicit read asks for them.</p></div></details>
 
 <h2 id="dependencies">Where dependency edges come from</h2>
 <div class="tablewrap"><table><tr><th>Kind</th><th>Recorded when</th><th>Source</th></tr>

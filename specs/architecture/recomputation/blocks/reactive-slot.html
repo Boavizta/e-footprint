@@ -43,11 +43,11 @@ country.__dict__["_reactive_slots"] == {
 
 <h2 id="pull">What happens when a computing slot is pulled</h2>
 <div class="diagram"><div class="dtitle"><code>S_utc.pull()</code></div><div class="three"><div class="n value"><b>1 · Cache check</b><br><span>Return <code>_value</code> immediately when cached.</span></div><div class="n slot"><b>2 · Compute if void</b><br><span>Create a temporary <code>_ComputeFrame</code>, push it on the context-local stack, and call <code>getter()</code>. See <a href="#compute-stack">Compute stack and <code>ContextVar</code></a> below.</span></div><div class="n value"><b>3 · Commit success</b><br><span>Replace dependency sets with this run's actual reads, update reverse indexes, and cache the result.</span></div></div></div>
-<p>The <code>_ComputeFrame</code> is only a passive temporary notebook for one active getter. It contains the slot and two mutable sets; read-hook functions find the top frame and add slots to those sets. The frame does not observe or collect anything by itself, and it is not stored beside the slot after computation.</p>
-<details><summary>Failure and cycle behavior</summary><div class="fbody"><ul><li>If the getter raises, the slot stays void and its previous dependency edges remain. This safely over-invalidates until a later successful pull refreshes them.</li><li>If the active stack already contains the same slot, <code>_compute()</code> raises <code>CircularDependencyError</code> with the recursive slot chain.</li><li>The context-local stack is reset in <code>finally</code>, so a failed getter cannot leak its compute frame into later work.</li></ul></div></details>
+<p>The <code>_ComputeFrame</code> is only a passive temporary notebook for one active getter. It contains the slot and two mutable sets; structural <a class="term" href="../../glossary.html#read-hook">read hooks</a> and calculus ancestry recorders find the top frame and add slots to those sets. The frame does not observe or collect anything by itself, and it is not stored beside the slot after computation.</p>
+<details><summary>Failure and cycle behavior</summary><div class="fbody"><ul><li>If the getter raises, the slot stays void and its previous dependency edges remain. This safely over-invalidates until a later successful pull refreshes them.</li><li>If the active stack already contains the same slot, <code>_compute()</code> raises <code>CircularDependencyError</code> with the recursive slot chain.</li><li>The context-local stack is reset in <code>finally</code>, so a failed getter cannot leak its compute frame into later work.</li><li>A getter may read inputs and relationships but may not change them. Attempting invalidation while a computation is active raises instead of mutating the graph midway through dependency discovery.</li></ul></div></details>
 
 <h2 id="compute-stack">Compute stack and <code>ContextVar</code></h2>
-<p>Read hooks can run many calls below the getter that caused them. They need a way to ask “which slot is computing right now?” without passing a frame argument through every domain method. <a class="term" href="../../glossary.html#contextvar"><code>contextvars.ContextVar</code></a> provides that context-local value: code deep in the call tree can read it, while another thread or asynchronous task gets its own independent value. The exact set-mutation path is explained in <a href="#read-hook-recording">How read hooks mutate the active frame</a> immediately after the annotated excerpt.</p>
+<p>Dependency recorders can run many calls below the getter that caused them. They need a way to ask “which slot is computing right now?” without passing a frame argument through every domain method. <a class="term" href="../../glossary.html#contextvar"><code>contextvars.ContextVar</code></a> provides that context-local value: code deep in the call tree can read it, while another thread or asynchronous task gets its own independent value. The exact set-mutation path is explained in <a href="#read-hook-recording">How dependency recording mutates the active frame</a> immediately after the annotated excerpt.</p>
 <h3 id="ancestry-mapping">Before the stack: what B computes and what “mapping ancestors” means</h3>
 <div class="diagram"><div class="dtitle">B is the slot for this original decorated method—the domain getter</div><pre><code>@computed_attribute
 def utc_hourly_usage_journey_starts(self):
@@ -61,7 +61,7 @@ def utc_hourly_usage_journey_starts(self):
 <div class="n input"><b>What B's domain getter reads</b><br><span><code>self.hourly_usage_journey_starts</code> is an explainable timeseries input. Evaluating <code>self.country.timezone</code> first traverses the <code>country</code> relationship, then consumes the linked country's explainable <code>timezone</code> value.</span></div><div class="ar">A starts computing, then reads void B</div>
 <div class="n slot"><b>1 · A starts · stack contains one frame</b><br><span><code>( frame_A, )</code><br><code>frame_A = {slot: A, calculus_reads: set(), structural_reads: set()}</code><br>The last—and therefore active—frame is <code>frame_A</code>.</span></div><div class="ar">A reads void B → <code>B.pull()</code> pushes another frame</div>
 <div class="cols"><div class="n slot"><b>Tuple position 0 · <code>frame_A</code></b><br><span><code>slot = A</code><br><code>calculus_reads = set()</code><br><code>structural_reads = set()</code><br>Still empty in this minimal example: A's direct dependency on B is recorded later, after B's closure returns and A builds its own result.</span></div><div class="n value"><b>Tuple position 1 · <code>frame_B</code> · TOP</b><br><span><code>slot = B</code><br><code>calculus_reads = {S_starts, S_timezone}</code><br><code>structural_reads = {S_country}</code><br>While Python evaluates <code>self.country.timezone</code>, the <code>country</code> wrapper adds getter-less slot <code>S_country</code> structurally. After the domain getter returns its result to the still-active closure, the <a href="#ancestry-mapping">ancestry mapping shown above</a> adds <code>S_starts</code> and <code>S_timezone</code> as calculus reads.</span></div></div><div class="ar">B's closure returns → reset B's token → commit B's recorded sets</div>
-<div class="n slot"><b>2 · A resumes · stack is <code>( frame_A, )</code> again</b><br><span>A consumes B's returned explainable value and creates A's result. A's domain getter returns that result to A's still-active closure; its ancestry bridge maps the consumed value back to slot B and adds <code>B</code> to <code>frame_A.calculus_reads</code>.</span></div><div class="ar">A's closure returns → reset A's token → commit A's recorded sets</div>
+<div class="n slot"><b>2 · A resumes, then finishes its result · stack is <code>( frame_A, )</code></b><br><span>A consumes B's returned explainable value and creates A's result. A's domain getter returns that result to A's still-active closure; its ancestry bridge maps the consumed value back to slot B.<br><br><code>frame_A.slot = A</code><br><code>frame_A.calculus_reads = {B}</code><br><code>frame_A.structural_reads = set()</code><br><br>This snapshot is taken just before A's closure returns. The structural set is empty only because the minimal A getter in this example made no relationship read of its own.</span></div><div class="ar">A's closure returns → reset A's token → commit A's recorded sets</div>
 <div class="n input"><b>3 · Computation is finished · stack is <code>()</code></b><br><span>The frames were temporary and are gone. Their recorded contents have been copied into the dependency sets on slots B and A.</span></div></div>
 <p>The stack therefore describes only the getters active <em>right now</em>. At the deepest point above it is the tuple <code>(frame_A, frame_B)</code>; after the whole chain completes it is empty again.</p>
 <div class="rule"><b>There are two returns to distinguish.</b> First, the domain getter returns its value to the getter closure while the frame is still active; this is when the closure records calculus ancestry. Second, the closure returns to <code>ReactiveSlot._compute()</code>; its <code>finally</code> resets the stack, then <code>_compute()</code> commits the populated frame sets.</div>
@@ -80,28 +80,32 @@ _compute_stack = ContextVar(
 previous_stack = _compute_stack.get()
 
 # This passive data container provides two initially empty mutable sets:
-# frame.calculus_reads and frame.structural_reads. Read-hook functions
-# will find this frame through _compute_stack and add slots to those sets.
-# See “How read hooks mutate the active frame” immediately below.
+# frame.calculus_reads and frame.structural_reads. Dependency-recording
+# functions find this frame through _compute_stack and mutate those sets.
+# See “How dependency recording mutates the active frame” below.
 frame = _ComputeFrame(slot=self)
 
 # Tuples are immutable: this creates a new tuple ending in our frame.
 # ContextVar.set() makes it current and returns a token that remembers
 # the previous value. For B, the current stack is now [A, B].
+# The token itself is NOT inserted into that tuple.
 reset_token = _compute_stack.set(previous_stack + (frame,))
 
 try:
-    # The stored zero-argument getter closure now runs. Read hooks deep
-    # inside it use _compute_stack.get()[-1] to find this frame; before
-    # returning, the closure also invokes the calculus-ancestry bridge.
-    # See “How read hooks mutate the active frame” immediately below.
+    # The stored zero-argument getter closure now runs. Structural read
+    # hooks inside it use _compute_stack.get()[-1] to find this frame;
+    # before returning, the closure invokes the calculus-ancestry recorder.
+    # See “How dependency recording mutates the active frame” below.
     value = self.getter()
 finally:
-    # Always restore the exact prior stack—even if the getter raises.
-    # After B, this restores [A]; after A, it restores [].
+    # reset_token is not removed from the stack: it tells ContextVar to
+    # restore the exact value from before set(). The effect is pop-like
+    # here: after B it restores [A]; after A it restores [].
     _compute_stack.reset(reset_token)</code></pre>
-<h3 id="read-hook-recording">How read hooks mutate the active frame</h3>
-<p>The mutation happens elsewhere, when a value or relationship read reaches a recording hook:</p>
+<h3 id="read-hook-recording">How dependency recording mutates the active frame</h3>
+<p>A <a class="term" href="../../glossary.html#read-hook">read hook</a> is a small bookkeeping call embedded in a normal access path. It lets ordinary domain code remain natural while making a structural read visible to the recomputation engine. Two concrete examples are:</p>
+<div class="cols"><div class="n input"><b>Forward-link read</b><br><span>Evaluating <code>pattern.country.timezone</code> traverses the contextual wrapper for <code>pattern.country</code>. Its <code>__getattr__</code> calls <code>record_read_of_node(pattern, "country")</code>.</span></div><div class="n input"><b>Reverse-membership read</b><br><span>Evaluating <code>device.parent_groups</code> invokes <code>ReverseCollection.__get__</code>. It calls <code>record_read_of_node(device, "parent_groups")</code> before deriving the current groups.</span></div></div>
+<p>The calculus path is slightly different: no hook intercepts each numerical Python read. Explainable arithmetic leaves ancestry on the returned value, and the computed-attribute closure inspects that ancestry after the domain getter returns. It is therefore more precise to call it a <b>calculus ancestry recorder</b> or <b>bridge</b>. Both mechanisms ultimately call <code>_record_dependency(...)</code> and mutate the active frame:</p>
 <pre><code>def _record_dependency(dependency_slot, read_kind):
     stack = _compute_stack.get()
     if not stack:
@@ -114,8 +118,8 @@ finally:
 # Called conceptually as either:
 _record_dependency(S_starts, "calculus_reads")
 _record_dependency(S_country_link, "structural_reads")</code></pre>
-<div class="diagram"><div class="dtitle">Who actually does what</div><div class="three"><div class="n input"><b>Read hook</b><br><span>Notices that a value or relationship was consumed and calls the recording function.</span></div><div class="n slot"><b><code>_record_dependency</code></b><br><span>Looks up <code>stack[-1]</code> and adds the dependency slot to the appropriate set.</span></div><div class="n value"><b><code>ReactiveSlot._compute</code></b><br><span>After the getter succeeds, reads the frame's sets and passes them to <code>replace_dependencies()</code>.</span></div></div></div>
-<div class="cols"><div><h3>Structural read: explicit wrapper hook</h3><pre><code># self.country.timezone reaches the link wrapper:
+<div class="diagram"><div class="dtitle">Who actually does what</div><div class="three"><div class="n input"><b>Structural hook or calculus recorder</b><br><span>Identifies a consumed dependency and calls the appropriate recording function.</span></div><div class="n slot"><b><code>_record_dependency</code></b><br><span>Looks up <code>stack[-1]</code> and adds the dependency slot to the appropriate set.</span></div><div class="n value"><b><code>ReactiveSlot._compute</code></b><br><span>After the getter succeeds, reads the frame's sets and passes them to <code>replace_dependencies()</code>.</span></div></div></div>
+<div class="cols"><div><h3>Structural read: literal read hook</h3><pre><code># self.country.timezone reaches the link wrapper:
 ContextualModelingObjectAttribute.__getattr__
   → record_read_of_node(pattern, "country")
   → _node_slot(pattern, "country")
@@ -125,7 +129,7 @@ ContextualModelingObjectAttribute.__getattr__
     )
   → active_frame.structural_reads.add(
         S_country
-    )</code></pre></div><div><h3>Calculus read: formula-ancestry bridge</h3><pre><code># After the domain getter returns its value:
+    )</code></pre></div><div><h3>Calculus dependency: ancestry recorder</h3><pre><code># After the domain getter returns its value:
 computed_attribute compute closure
   → record_calculus_edges_from_ancestry(result)
   → slot_of_attached_value(ancestor)
@@ -138,12 +142,12 @@ computed_attribute compute closure
     )</code></pre></div></div>
 <p>For a normal <code>@computed_attribute</code>, the getter closure triggers the calculus side by calling <code>record_calculus_edges_from_ancestry(result)</code> after the domain getter returns and before the closure returns to <code>ReactiveSlot._compute()</code>. For <code>@lazy_attribute</code>, the parallel closure calls <code>record_calculus_edges_from_value_structure(result)</code> because explainables may be nested inside raw containers.</p>
 <p>The final mutation is ordinary Python set mutation. <code>getattr(stack[-1], read_kind)</code> returns the actual set stored on the frame—not a copy—and <code>.add(dependency_slot)</code> changes that set in place. The local <code>frame</code> variable in <code>_compute()</code> still refers to the same object, so it sees those additions after the getter returns.</p>
-<p><code>ContextVar</code> itself is not a stack. The engine stores an immutable tuple in it and implements push/pop by setting a longer tuple and then resetting the returned token. The token remembers the exact previous context value, which makes restoration correct after nested calls and exceptions.</p>
+<p><code>ContextVar</code> itself is not a stack. The engine stores an immutable tuple in it and implements push/pop behavior by setting a longer tuple and then resetting the returned token. The token is separate bookkeeping created by <code>ContextVar.set()</code>; it is never inside the tuple. <code>reset(token)</code> means “restore the value that was current before this particular <code>set()</code>,” which makes restoration correct after nested calls and exceptions.</p>
 <div class="rule"><b>The same stack has two jobs.</b> Its top frame receives dependency reads; searching the whole stack before a push detects <code>A → B → A</code> and reports that chain as a circular dependency.</div>
 
 <h2 id="edges">Why edges exist in both directions</h2>
 <div class="diagram"><div class="dtitle">Forward reads explain the computation; reverse edges drive invalidation</div><div class="cols"><div><div class="n input"><b><code>S_starts</code></b></div><div class="ar">↓ calculus dependency</div></div><div><div class="n input"><b><code>S_country_link</code></b></div><div class="ar">↓ structural dependency</div></div></div><div class="n slot"><b><code>S_utc</code></b><br><span>Forward sets contain both dependencies. Each dependency's reverse <code>_dependents</code> set contains <code>S_utc</code>.</span></div></div>
-<p><code>replace_dependencies()</code> updates the forward sets and reverse indexes together. A relationship switch can therefore remove the old country's timezone edge and install the new country's timezone edge atomically after a successful recomputation.</p>
+<p><code>replace_dependencies()</code> updates the forward sets and reverse indexes together. A relationship switch can therefore remove the old country's timezone edge and install the new country's timezone edge atomically after a successful recomputation. More generally, every successful run replaces the old edges with what that run actually read, so a dependency from a conditional branch disappears once that branch is no longer taken.</p>
 
 <h2 id="invalidate">What invalidation changes—and preserves</h2>
 <div class="cols"><div class="n guard"><b>Changes</b><br><span><code>_value</code> becomes <code>_VOID</code>; <code>on_value_dropped</code> detaches obsolete computed values; the wave follows <code>_dependents</code>.</span></div><div class="n slot"><b>Preserves</b><br><span>The dependency sets and reverse indexes remain, allowing later waves to cross void intermediates and reach cached descendants.</span></div></div>
