@@ -101,7 +101,7 @@ class BoaviztaServerFromConfig(ServerBase):
             label="API call data", left_parent=self.cpu_config, right_parent=self.ram_config,
             operator="combined in Boavizta API data with", source=Sources.USER_DATA)
 
-    @computed_attribute
+    @computed_attribute(guard=True)
     def carbon_footprint_fabrication(self):
         total_fabrication_footprint_storage_included = ExplainableQuantity(
             self.api_call_response.value["impacts"]["gwp"]["embedded"]["value"] * u.kg,
@@ -123,7 +123,7 @@ class BoaviztaServerFromConfig(ServerBase):
         return total_fabrication_footprint_storage_excluded.set_label(
             f"Fabrication footprint")
         
-    @computed_attribute
+    @computed_attribute(guard=True)
     def power(self):
         average_power_value = self.api_call_response.value["verbose"]["avg_power"]["value"]
         average_power_unit = self.api_call_response.value["verbose"]["avg_power"]["unit"]
@@ -173,7 +173,7 @@ class BoaviztaStorageFromConfig(Storage):
         
 
 
-    @computed_attribute
+    @computed_attribute(guard=True)
     def storage_type(self):
         storage_type = None
         if ("SSD-1" in self.server.api_call_response.value["verbose"]

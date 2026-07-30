@@ -124,7 +124,7 @@ class BoaviztaCloudServer(Server):
             "Fabrication carbon footprint", left_parent=self.api_call_response,
             operator="data extraction from", source=self.api_call_response.source)
 
-    @computed_attribute
+    @computed_attribute(guard=True)
     def power(self):
         """Average power drawn by one instance, taken from the Boavizta API response."""
         average_power_unit = self.api_call_response.value["verbose"]["avg_power"]["unit"]
@@ -137,7 +137,7 @@ class BoaviztaCloudServer(Server):
             average_power_value * u.W, "Power", left_parent=self.api_call_response,
             operator="data extraction from", source=self.api_call_response.source)
 
-    @computed_attribute
+    @computed_attribute(guard=True)
     def ram(self):
         """Memory of one instance, taken from the Boavizta API response."""
         assert self.api_call_response.value["verbose"]["memory"]["unit"] == "GB", \

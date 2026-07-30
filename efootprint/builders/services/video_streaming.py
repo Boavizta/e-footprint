@@ -96,7 +96,7 @@ class VideoStreamingJob(ServiceJob):
         """Request duration of one streaming session, equal to the chosen video duration."""
         return self.video_duration.copy().set_label("Request duration")
 
-    @computed_attribute
+    @computed_attribute(guard=True)
     def dynamic_bitrate(self):
         """Estimated bitrate of the stream, equal to the pixel count parsed from the resolution times bits-per-pixel times refresh rate."""
         match = re.search(r"\((\d+)\s*x\s*(\d+)\)", self.resolution.value)

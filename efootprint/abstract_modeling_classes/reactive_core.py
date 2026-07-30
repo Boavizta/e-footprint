@@ -473,9 +473,9 @@ class computed_attribute:
     Declared bare (``@computed_attribute``) or parametrized (``@computed_attribute(serialize=True)``):
     the ``serialize`` flag marks the slot's cached value for persistence under the minimal
     serialization contract (the single source of truth for "what serializes"), and ``guard=True``
-    marks a slot whose getter enforces a user-facing constraint (raising on invalid states) without
-    feeding the footprint totals: guard slots eagerly recompute whenever an update invalidates them,
-    so invalid edits are rejected at update time. ``<name>_validation`` slots are guards implicitly.
+    marks a slot whose getter can intentionally reject an invalid state: guard slots eagerly recompute
+    whenever an update invalidates them, so invalid edits are rejected at update time even when that
+    slot lies outside the selected eager-output cone. ``<name>_validation`` slots are guards implicitly.
     """
 
     def __init__(self, getter=None, *, serialize=False, guard=False):
@@ -592,9 +592,9 @@ class computed_dict(computed_attribute):
     live view.
 
     Declared as ``@computed_dict(keys="usage_patterns")``. ``guard=True`` marks a dict whose element
-    getters enforce user-facing constraints outside the footprint cone (see ``computed_attribute``):
-    its key-set node and sub-slots eagerly recompute when invalidated. ``serialize=True`` persists the
-    materialized entries under the minimal serialization contract.
+    getters can intentionally reject an invalid state (see ``computed_attribute``): its key-set node
+    and sub-slots eagerly recompute when invalidated. ``serialize=True`` persists the materialized
+    entries under the minimal serialization contract.
     """
 
     _on_value_dropped = None

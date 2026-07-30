@@ -116,9 +116,6 @@ class RecurrentEdgeComponentNeed(ModelingObject):
             for recurrent_device_need in edge_function.recurrent_edge_device_needs:
                 nb_of_occurrences_of_self_within_usage_pattern += (
                     recurrent_device_need.recurrent_edge_component_needs.count(self))
-        assert nb_of_occurrences_of_self_within_usage_pattern > 0, (
-            f"{self.name} is not linked to any edge usage journey in {usage_pattern.name}, but it should be "
-            f"since {usage_pattern.name} is in {self.edge_usage_patterns}.")
 
         unitary_hourly_need *= ExplainableQuantity(nb_of_occurrences_of_self_within_usage_pattern * u.dimensionless,
                                                    label=f"Occurrences within {usage_pattern.name}")

@@ -67,7 +67,7 @@ class EdgeRAMComponent(EdgeComponent):
 
         return available_ram_per_instance.set_label(f"Available RAM per instance")
 
-    @computed_dict(keys="edge_usage_patterns")
+    @computed_dict(keys="edge_usage_patterns", guard=True)
     def unitary_hourly_ram_need_per_usage_pattern(self, usage_pattern: "EdgeUsagePattern"):
         """Hourly RAM demand on one component, broken down by usage pattern. Raises error if peak demand exceeds the component's available memory."""
         unitary_hourly_ram_need = sum(

@@ -47,7 +47,7 @@ def impact_rows(self):
 
 <h2 id="computed-attribute"><code>@computed_attribute</code>: one modeled value</h2>
 <p>The descriptor creates one slot per instance and attaches a successful result to the modeling-object attribute address. The returned value must be fresh: returning another attached attribute directly would alias one object into two addresses, so direct reuse requires <code>.copy()</code>.</p>
-<div class="cols"><div class="n computed"><b>Normal computed output</b><br><span>Reachable outputs recompute when the transaction pulls its configured boundary.</span></div><div class="n computed"><b>Guard output</b><br><span><code>guard=True</code>, or a name ending in <code>_validation</code>, marks a constraint that must fail during the edit transaction even outside the footprint-total cone.</span></div></div>
+<div class="cols"><div class="n computed"><b>Normal computed output</b><br><span>Reachable outputs recompute when the transaction pulls its configured boundary.</span></div><div class="n computed"><b>Guard output</b><br><span>A computed output may also be a guard. <code>guard=True</code>, or a name ending in <code>_validation</code>, makes its intentional failures surface during the edit transaction even outside the selected eager-output cone.</span></div></div>
 <a class="zoom-card zoom" href="blocks/computed-attribute.html" data-title="@computed_attribute — decorator + descriptor"><span class="zt"><code>@computed_attribute</code> technical zoom 🔍</span><span class="zd">Decorator rewriting, descriptor installation, getter closure creation, per-instance dispatch, and storage boundaries.</span></a>
 
 <h2 id="computed-dict"><code>@computed_dict</code>: one modeled value per current key</h2>

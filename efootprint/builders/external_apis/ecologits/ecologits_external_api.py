@@ -194,7 +194,7 @@ class EcoLogitsGenAIExternalAPI(ExternalAPI):
             source=llm_impacts_function_source,
         )
 
-    @computed_attribute
+    @computed_attribute(guard=True)
     def average_carbon_intensity(self):
         """Average grid carbon intensity at the datacenter location, looked up in the EcoLogits electricity mix repository."""
         electricity_mix_zone = self.datacenter_location.value

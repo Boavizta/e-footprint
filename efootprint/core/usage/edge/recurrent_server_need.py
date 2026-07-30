@@ -100,9 +100,6 @@ class RecurrentServerNeed(ModelingObject):
             for recurrent_server_need in edge_function.recurrent_server_needs:
                 if recurrent_server_need == self:
                     nb_of_occurrences_of_self_within_usage_pattern += 1
-        assert nb_of_occurrences_of_self_within_usage_pattern > 0, (
-            f"{self.name} is not linked to any edge usage journey in {usage_pattern.name}, but it should be "
-            f"since {usage_pattern.name} is in {self.edge_usage_patterns}.")
 
         unitary_hourly_volume *= ExplainableQuantity(nb_of_occurrences_of_self_within_usage_pattern * u.dimensionless,
                                                    label=f"Occurrences within {usage_pattern.name}")

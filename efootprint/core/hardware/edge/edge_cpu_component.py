@@ -68,7 +68,7 @@ class EdgeCPUComponent(EdgeComponent):
         return available_compute_per_instance.set_label(
             f"Available compute per instance")
 
-    @computed_dict(keys="edge_usage_patterns")
+    @computed_dict(keys="edge_usage_patterns", guard=True)
     def unitary_hourly_compute_need_per_usage_pattern(self, usage_pattern: "EdgeUsagePattern"):
         """Hourly compute demand on one component, broken down by usage pattern. Raises error if peak demand exceeds the component's available compute."""
         unitary_hourly_compute_need = sum(

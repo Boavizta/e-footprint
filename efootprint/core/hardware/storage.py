@@ -200,7 +200,7 @@ class Storage(InfraHardware, AttributionSource):
         raw_nb_of_instances = (self.full_cumulative_storage_need / self.storage_capacity).to(u.concurrent)
         return raw_nb_of_instances.set_label(f"Hourly raw number of instances")
 
-    @computed_attribute
+    @computed_attribute(guard=True)
     def nb_of_instances(self):
         """Hourly storage instances actually attributed: fractional for serverless backends (only used capacity is billed), held to the user-fixed count if set, otherwise ceiled to whole instances."""
         from efootprint.core.hardware.server_base import ServerTypes

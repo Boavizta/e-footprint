@@ -31,6 +31,11 @@ When logic is shared by several subclasses via a base class, test it once in its
 2. **Validation logic.**
 3. **Custom business logic** not covered by integration tests.
 
+The architecture contract in `tests/abstract_modeling_classes/test_computed_getter_guard_contract.py`
+requires every computed getter containing a direct `raise` or `assert` to use `guard=True` or a name
+ending in `_validation`. It deliberately detects only explicit failures in the getter body; Python
+exceptions raised transitively by arithmetic, conversions, helpers, or libraries are not statically enumerable.
+
 ## Standard test file structure
 
 ```python

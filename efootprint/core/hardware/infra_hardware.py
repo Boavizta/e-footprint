@@ -52,10 +52,6 @@ class InfraHardware(HardwareBase):
     @computed_attribute(serialize=True)
     def energy_footprint(self):
         """Hourly carbon emissions caused by the electricity consumed by this hardware, equal to its hourly energy use times the local grid carbon intensity."""
-        if getattr(self, "average_carbon_intensity", None) is None:
-            raise ValueError(
-                f"Variable 'average_carbon_intensity' is not defined in object {self.name}."
-                f" This shouldn’t happen as server objects have it as input parameter and Storage as property")
         energy_footprint = (self.instances_energy * self.average_carbon_intensity)
 
         return energy_footprint.to(u.kg).set_label(f"Hourly energy footprint")

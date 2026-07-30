@@ -45,7 +45,7 @@ device.energy_footprint_per_usage_pattern
 
 <h2 id="granularity">Why element slots matter</h2>
 <div class="cols"><div class="n value"><b>Fine-grained invalidation</b><br><span>If only job B's consumed inputs change, B's element slot becomes void while A's cached value remains reusable.</span></div><div class="n slot"><b>Whole-dict dependency</b><br><span>A consumer that reads the facade as a collection also depends structurally on the key-set node, so membership changes invalidate that consumer.</span></div></div>
-<p>The key-set slot has <code>pull_precedence = -1</code>. Eager sweeps therefore synchronize membership and discard departed sub-slots before attempting to pull remaining elements.</p>
+<p>The key-set slot has <code>pull_precedence = -1</code>. During the no-System <a class="term" href="../../glossary.html#eager-sweep">fallback eager sweep</a>, it therefore runs before ordinary element slots: it synchronizes current membership and marks departed sub-slots as discarded, so their obsolete getters are skipped. See <a href="../lifecycle.html#recomputation-root">how an update chooses its recomputation root</a>.</p>
 
 <h2 id="stale-keys">When a key leaves</h2>
 <ol>

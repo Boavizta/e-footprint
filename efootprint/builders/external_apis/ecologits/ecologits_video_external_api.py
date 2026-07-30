@@ -139,7 +139,7 @@ class EcoLogitsVideoGenExternalAPI(ExternalAPI):
             source=ecologits_video_defaults_source,
         )
 
-    @computed_attribute
+    @computed_attribute(guard=True)
     def average_carbon_intensity(self):
         """Average grid carbon intensity at the datacenter location, looked up in the EcoLogits electricity mix repository."""
         electricity_mix_zone = self.datacenter_location.value
@@ -229,7 +229,7 @@ class EcoLogitsVideoGenExternalAPIJob(ExternalAPIJob):
             raise ValueError(f"Could not find video model `{slug}` in EcoLogits video catalog.")
         return info
 
-    @computed_attribute
+    @computed_attribute(guard=True)
     def impacts(self):
         """Cached EcoLogits video impact dictionary for one call, computed by running the EcoLogits video DAG against the chosen model, resolution, duration, audio flag, and datacenter assumptions. Subsequent updates extract individual fields from this dictionary."""
         # Local datacenter_wue: feeds water only (out of GWP scope) and must not become a shared graph node.
