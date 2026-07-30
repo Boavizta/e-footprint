@@ -93,10 +93,10 @@ utc_hourly_usage_journey_starts = descriptor</code></pre>
 <ul><li>A normal assignment to a computed attribute is rejected by <code>ModelingObject.__setattr__</code>; callers must change its inputs.</li><li>The trusted JSON load path uses the descriptor's explicit <code>attach_cached_value(instance, value)</code> hook.</li><li>Deleting the computed attribute calls <code>__delete__</code>, drops the slot's cached value, and lets the next read recompute it.</li></ul>
 
 <details class="fold" open><summary>Read the implementation in this order</summary><div class="fbody"><ol>
-<li><a href="../../../../efootprint/abstract_modeling_classes/reactive_core.py"><code>computed_attribute.__init__</code>, <code>_bind_getter</code>, and <code>__call__</code></a> — decorator construction.</li>
-<li><a href="../../../../efootprint/abstract_modeling_classes/reactive_core.py"><code>computed_attribute.__set_name__</code></a> — class registration.</li>
-<li><a href="../../../../efootprint/abstract_modeling_classes/reactive_core.py"><code>computed_attribute.__get__</code>, <code>slot</code>, and <code>_make_compute_closure</code></a> — instance dispatch.</li>
-<li><a href="../../../../efootprint/abstract_modeling_classes/reactive_core.py"><code>ReactiveSlot.pull</code> and <code>_compute</code></a> — runtime computation and caching.</li>
+<li><a href="../../../../efootprint/abstract_modeling_classes/reactive_core/computed_slots.py"><code>computed_attribute.__init__</code>, <code>_bind_getter</code>, and <code>__call__</code></a> — decorator construction.</li>
+<li><a href="../../../../efootprint/abstract_modeling_classes/reactive_core/computed_slots.py"><code>computed_attribute.__set_name__</code></a> — class registration.</li>
+<li><a href="../../../../efootprint/abstract_modeling_classes/reactive_core/computed_slots.py"><code>computed_attribute.__get__</code>, <code>slot</code>, and <code>_make_compute_closure</code></a> — instance dispatch.</li>
+<li><a href="../../../../efootprint/abstract_modeling_classes/reactive_core/graph.py"><code>ReactiveSlot.pull</code> and <code>_compute</code></a> — runtime computation and caching.</li>
 <li><a href="../../../../efootprint/abstract_modeling_classes/modeling_object.py"><code>ModelingObject.__setattr__</code></a> — the public assignment guard.</li>
 </ol><p>Return to the <a href="../lifecycle.html#walkthrough">complete lifecycle walkthrough</a> to follow the slot through dependency capture, invalidation, and recomputation.</p></div></details>
 

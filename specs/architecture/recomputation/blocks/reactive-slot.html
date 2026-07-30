@@ -157,11 +157,11 @@ computed_attribute compute closure
 <p>The <code>ReactiveSlot</code> Python object, getter closure, cached/void sentinel, and wave marker are runtime-only. Persistence stores slot <em>addresses</em> and dependency edges in the values-free <code>calculation_graph</code>. The load path materializes slots for those addresses and calls <code>replace_dependencies()</code> to rebuild both directions without running getters.</p>
 
 <details open><summary>Read the implementation in this order</summary><div class="fbody"><ol>
-<li><a href="../../../../efootprint/abstract_modeling_classes/reactive_core.py"><code>ReactiveSlot.__init__</code>, <code>pull</code>, and <code>_compute</code></a> — state and pull lifecycle.</li>
-<li><a href="../../../../efootprint/abstract_modeling_classes/reactive_core.py"><code>replace_dependencies</code> and <code>attach_cached_value</code></a> — atomic edge and cache commit.</li>
-<li><a href="../../../../efootprint/abstract_modeling_classes/reactive_core.py"><code>invalidate</code></a> — deletion-wave traversal.</li>
-<li><a href="../../../../efootprint/abstract_modeling_classes/reactive_core.py"><code>instance_slot_registry</code> and <code>_node_slot</code></a> — storage and getter-less nodes.</li>
-<li><a href="../../../../efootprint/abstract_modeling_classes/reactive_core.py"><code>computed_attribute.slot</code> and <code>_make_compute_closure</code></a> — how a descriptor creates a computing slot.</li>
+<li><a href="../../../../efootprint/abstract_modeling_classes/reactive_core/graph.py"><code>ReactiveSlot.__init__</code>, <code>pull</code>, and <code>_compute</code></a> — state and pull lifecycle.</li>
+<li><a href="../../../../efootprint/abstract_modeling_classes/reactive_core/graph.py"><code>replace_dependencies</code> and <code>attach_cached_value</code></a> — atomic edge and cache commit.</li>
+<li><a href="../../../../efootprint/abstract_modeling_classes/reactive_core/graph.py"><code>invalidate</code></a> — deletion-wave traversal.</li>
+<li><a href="../../../../efootprint/abstract_modeling_classes/reactive_core/graph.py"><code>instance_slot_registry</code> and <code>_node_slot</code></a> — storage and getter-less nodes.</li>
+<li><a href="../../../../efootprint/abstract_modeling_classes/reactive_core/computed_slots.py"><code>computed_attribute.slot</code> and <code>_make_compute_closure</code></a> — how a descriptor creates a computing slot.</li>
 </ol><p>Return to the <a href="../lifecycle.html#walkthrough">complete lifecycle walkthrough</a> to see these fields change in the real <code>UsagePattern</code> example.</p></div></details>
 
 <footer>e-footprint architecture · <a href="../../recomputation.html#slot">recomputation engine</a> · canonical technical zoom for slot identity, storage, state, dependency edges, pull, invalidation, and persistence.</footer>

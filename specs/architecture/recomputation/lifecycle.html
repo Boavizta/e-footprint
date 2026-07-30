@@ -36,7 +36,7 @@ self.country = country</code></pre>
 <h2 id="first-read">1 · First access creates and computes the output slot</h2>
 <pre><code>starts_utc = pattern.utc_hourly_usage_journey_starts</code></pre>
 <ol>
-<li><a href="../../../efootprint/abstract_modeling_classes/reactive_core.py"><code>computed_attribute.__get__</code></a> calls <code>slot(pattern)</code>. It creates a computing <code>ReactiveSlot</code> under <code>pattern._reactive_slots["utc_hourly_usage_journey_starts"]</code>, installs a closure around the domain getter, then calls <code>pull()</code>.</li>
+<li><a href="../../../efootprint/abstract_modeling_classes/reactive_core/computed_slots.py"><code>computed_attribute.__get__</code></a> calls <code>slot(pattern)</code>. It creates a computing <code>ReactiveSlot</code> under <code>pattern._reactive_slots["utc_hourly_usage_journey_starts"]</code>, installs a closure around the domain getter, then calls <code>pull()</code>.</li>
 <li>The slot is void, so <code>ReactiveSlot._compute()</code> pushes a temporary compute frame onto the context-local stack. That frame has two initially empty sets: <code>calculus_reads</code> and <code>structural_reads</code>.</li>
 <li>The getter reads <code>self.country.timezone</code>. Access passes through <a href="../../../efootprint/abstract_modeling_classes/contextual_modeling_object_attribute.py"><code>ContextualModelingObjectAttribute.__getattr__</code></a>, which calls <code>record_read_of_node(pattern, "country")</code>. This lazily creates the getter-less <code>pattern._reactive_slots["country"]</code> node and puts it in the frame's <code>structural_reads</code>.</li>
 <li><code>convert_to_utc()</code> returns a new explainable value whose direct arithmetic ancestors are the hourly-start input and the Country's timezone value.</li>
@@ -110,7 +110,8 @@ S_utc._calculus_dependencies == {S_starts, S_timezone}  # topology retained</cod
 
 <details><summary>Code-reading route for the walkthrough</summary><div class="fbody"><ol>
 <li><a href="../../../efootprint/core/usage/usage_pattern.py"><code>usage_pattern.py</code></a> — domain constructor and getter.</li>
-<li><a href="../../../efootprint/abstract_modeling_classes/reactive_core.py"><code>reactive_core.py</code></a> — descriptors, <code>ReactiveSlot</code>, node creation, dependency recording, and invalidation.</li>
+<li><a href="../../../efootprint/abstract_modeling_classes/reactive_core/graph.py"><code>reactive_core/graph.py</code></a> — <code>ReactiveSlot</code>, node creation, dependency recording, and invalidation.</li>
+<li><a href="../../../efootprint/abstract_modeling_classes/reactive_core/computed_slots.py"><code>reactive_core/computed_slots.py</code></a> — computed/lazy descriptors, getter closures, and class-level declaration registries.</li>
 <li><a href="../../../efootprint/abstract_modeling_classes/contextual_modeling_object_attribute.py"><code>contextual_modeling_object_attribute.py</code></a> — forward-link read hook and reverse-node bumps.</li>
 <li><a href="../../../efootprint/abstract_modeling_classes/modeling_object.py"><code>modeling_object.py</code></a> — assignment boundary and input wrapping.</li>
 <li><a href="../../../efootprint/abstract_modeling_classes/modeling_update.py"><code>modeling_update.py</code></a> — transactional apply, changed-slot capture, deletion wave, eager pull, and rollback.</li>

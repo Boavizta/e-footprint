@@ -30,16 +30,16 @@ def impact_repartition_matrix(self):
     value = self.getter(instance)
     record_calculus_edges_from_value_structure(value)
     return value</code></pre>
-<div class="diagram"><div class="dtitle">Recursive value-structure walk</div><div class="three"><div class="n input"><b>Attached explainable</b><br><span>Record its own <code>_reactive_slot</code>.</span></div><div class="n value"><b>Unattached explainable</b><br><span>Record the slots of its nearest attached formula ancestors.</span></div><div class="n lazy"><b>Container/dataclass</b><br><span>Visit dict values, sequence/set items, or dataclass fields recursively.</span></div></div></div>
+<div class="diagram"><div class="dtitle">Recursive value-structure walk</div><div class="three"><div class="n input"><b>Existing modeled explainable</b><br><span>Record the slot of the modeled attribute it belongs to.</span></div><div class="n value"><b>Fresh derived explainable</b><br><span>It has no slot of its own; record the slots of its nearest modeled formula ancestors.</span></div><div class="n lazy"><b>Container/dataclass</b><br><span>Visit dict values, sequence/set items, or dataclass fields recursively.</span></div></div></div>
 <p>This extra walk matters because projection code often reduces explainables into raw rows or containers. Without it, dependencies carried only by arithmetic ancestry could disappear when the return value is no longer one attached explainable object.</p>
 <details><summary>When projection code reduces to plain scalars early</summary><div class="fbody"><p>If a getter extracts a magnitude or otherwise destroys an explainable's ancestry before placing the result in its return structure, it must call <code>record_calculus_edges_from_ancestry(explainable)</code> before that reduction. <code>impact_repartition_rows</code> does this for each atom's hourly value before converting it to a period-total scalar.</p></div></details>
 
-<h2 id="composition">When another computation reads a lazy slot</h2>
-<p>If a computation is already active, <code>lazy_attribute.__get__</code> calls <code>record_calculus_dependency(lazy_slot)</code> before pulling it. The outer slot therefore depends directly on the projection slot; the projection keeps its own internal dependencies.</p>
-<pre><code>input slots → lazy projection slot → consuming slot
+<h2 id="composition">When one lazy projection reads another</h2>
+<p>When an outer lazy getter reads an inner lazy attribute, <code>lazy_attribute.__get__</code> records a dependency on the inner slot before pulling it. The outer lazy slot therefore depends directly on the inner projection; the inner projection keeps its own internal dependencies. Core computed attributes do not depend on lazy projections—if a value is required by core computation, it belongs on a computed surface.</p>
+<pre><code>core input/computed slots → inner lazy slot → outer lazy slot
 
 # Direct edges are preserved; the projection's internal inputs
-# are not copied into the consuming slot's dependency set.</code></pre>
+# are not copied into the outer slot's dependency set.</code></pre>
 
 <h2 id="eager">Why it never warms eagerly</h2>
 <div class="cols"><div class="n lazy"><b>After invalidation</b><br><span>The cached raw value is dropped and the update transaction never selects it for warming as an ordinary output.</span></div><div class="n input"><b>At consumption time</b><br><span>A renderer, attribution fold, or other explicit attribute reader pulls it only if that consumer actually needs it. Serialization only peeks and never pulls.</span></div></div>
@@ -57,9 +57,9 @@ def impact_repartition_matrix(self):
 <h2 id="writes">Writes are rejected</h2>
 <p>The descriptor defines <code>__set__</code> and raises <code>AttributeError</code>. A lazy projection is derived state; callers change its inputs and let invalidation/recomputation update it.</p>
 <details open><summary>Read the implementation in this order</summary><div class="fbody"><ol>
-<li><a href="../../../../efootprint/abstract_modeling_classes/reactive_core.py"><code>lazy_attribute.__init__</code>, <code>__call__</code>, and <code>__set_name__</code></a> — both decorator forms and registration.</li>
-<li><a href="../../../../efootprint/abstract_modeling_classes/reactive_core.py"><code>slot</code>, <code>__get__</code>, and <code>_make_compute_closure</code></a> — per-instance dispatch and caching.</li>
-<li><a href="../../../../efootprint/abstract_modeling_classes/reactive_core.py"><code>record_calculus_edges_from_value_structure</code></a> — recursive dependency discovery.</li>
+<li><a href="../../../../efootprint/abstract_modeling_classes/reactive_core/computed_slots.py"><code>lazy_attribute.__init__</code>, <code>__call__</code>, and <code>__set_name__</code></a> — both decorator forms and registration.</li>
+<li><a href="../../../../efootprint/abstract_modeling_classes/reactive_core/computed_slots.py"><code>slot</code>, <code>__get__</code>, and <code>_make_compute_closure</code></a> — per-instance dispatch and caching.</li>
+<li><a href="../../../../efootprint/abstract_modeling_classes/reactive_core/graph.py"><code>record_calculus_edges_from_value_structure</code></a> — recursive dependency discovery.</li>
 </ol><p>Return to <a href="../computed-surfaces.html#comparison">the three-surface comparison</a> or follow the <a href="../lifecycle.html#walkthrough">complete lifecycle</a>.</p></div></details>
 <footer>e-footprint architecture · <a href="../computed-surfaces.html#lazy">computed surfaces</a> · canonical technical zoom for lazy projection slots, raw caching, dependency discovery, and eager policy.</footer>
 <script src="../../source-links.js"></script></body></html>

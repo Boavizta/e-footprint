@@ -60,9 +60,9 @@ device.energy_footprint_per_usage_pattern
 <h2 id="flags">Guards and persistence</h2>
 <p><code>guard=True</code> marks the key-set node and every element slot as validation guards. <code>serialize=True</code> persists materialized entries under the minimal calculated-state contract. <code>peek()</code> returns the facade only when the key-set slot and every current element slot are cached; it never exposes stale facade entries as current state.</p>
 <details open><summary>Read the implementation in this order</summary><div class="fbody"><ol>
-<li><a href="../../../../efootprint/abstract_modeling_classes/reactive_core.py"><code>computed_dict.slot</code>, <code>facade</code>, and <code>__get__</code></a> — key-set access and stable facade.</li>
-<li><a href="../../../../efootprint/abstract_modeling_classes/reactive_core.py"><code>sub_slot</code> and <code>_make_element_compute_closure</code></a> — per-key calculation.</li>
-<li><a href="../../../../efootprint/abstract_modeling_classes/reactive_core.py"><code>discard_stale_keys</code> and <code>prune_stale_computed_dict_keys</code></a> — safe membership removal.</li>
+<li><a href="../../../../efootprint/abstract_modeling_classes/reactive_core/computed_slots.py"><code>computed_dict.slot</code>, <code>facade</code>, and <code>__get__</code></a> — key-set access and stable facade.</li>
+<li><a href="../../../../efootprint/abstract_modeling_classes/reactive_core/computed_slots.py"><code>sub_slot</code> and <code>_make_element_compute_closure</code></a> — per-key calculation.</li>
+<li><a href="../../../../efootprint/abstract_modeling_classes/reactive_core/computed_slots.py"><code>discard_stale_keys</code> and <code>prune_stale_computed_dict_keys</code></a> — safe membership removal.</li>
 </ol><p>Return to <a href="../computed-surfaces.html#comparison">the three-surface comparison</a> or follow the <a href="../lifecycle.html#walkthrough">complete lifecycle</a>.</p></div></details>
 <footer>e-footprint architecture · <a href="../computed-surfaces.html#computed-dict">computed surfaces</a> · canonical technical zoom for computed-dict topology, facades, element slots, and key synchronization.</footer>
 <script src="../../source-links.js"></script></body></html>
