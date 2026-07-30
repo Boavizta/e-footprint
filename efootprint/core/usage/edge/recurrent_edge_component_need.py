@@ -89,7 +89,7 @@ class RecurrentEdgeComponentNeed(ModelingObject):
         if min_value < 0 or max_value > 1:
             raise WorkloadOutOfBoundsError(workload_name, min_value, max_value)
 
-    @computed_attribute
+    @computed_attribute(guard=True)
     def recurrent_need_validation(self):
         """Validates that the recurrent need uses a unit compatible with its target component, and (for workload-style needs) that values stay between 0 and 1."""
         root_need_unit = self.recurrent_need.value.to_root_units().units

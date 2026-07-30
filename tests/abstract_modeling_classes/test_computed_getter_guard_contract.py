@@ -17,8 +17,6 @@ def _computed_decorator(function: ast.FunctionDef):
 
 
 def _is_guard(function: ast.FunctionDef, decorator) -> bool:
-    if function.name.endswith("_validation"):
-        return True
     if not isinstance(decorator, ast.Call):
         return False
     return any(
@@ -82,8 +80,8 @@ class TestComputedGetterGuardContract(TestCase):
         self.assertEqual(
             [],
             violations,
-            "Computed getters with intentional direct failures must use guard=True or have a "
-            "name ending in _validation. This static contract detects direct raise/assert "
+            "Computed getters with intentional direct failures must use guard=True. "
+            "This static contract detects direct raise/assert "
             "statements only; it cannot detect exceptions raised transitively by called code.\n"
             + "\n".join(violations),
         )

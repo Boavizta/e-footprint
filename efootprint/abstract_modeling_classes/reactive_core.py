@@ -469,7 +469,7 @@ class computed_attribute:
     serialization contract (the single source of truth for "what serializes"), and ``guard=True``
     marks a slot whose getter can intentionally reject an invalid state: guard slots eagerly recompute
     whenever an update invalidates them, so invalid edits are rejected at update time even when that
-    slot lies outside the selected eager-output cone. ``<name>_validation`` slots are guards implicitly.
+    slot lies outside the selected eager-output cone.
     """
 
     def __init__(self, getter=None, *, serialize=False, guard=False):
@@ -505,7 +505,7 @@ class computed_attribute:
             slot = ReactiveSlot(
                 f"{self.attr_name} of {getattr(instance, 'id', instance)}", on_value_dropped=self._on_value_dropped)
             slot.getter = self._make_compute_closure(instance, slot)
-            slot.guard = self.guard or self.attr_name.endswith("_validation")
+            slot.guard = self.guard
             registry[self.attr_name] = slot
         return slot
 
@@ -654,7 +654,7 @@ class computed_dict(computed_attribute):
                 f"{self.attr_name}[{getattr(key, 'id', key)}] of {getattr(instance, 'id', instance)}",
                 on_value_dropped=_release_value)
             slot.getter = self._make_element_compute_closure(instance, key, slot)
-            slot.guard = self.guard or self.attr_name.endswith("_validation")
+            slot.guard = self.guard
             registry[registry_key] = slot
         return slot
 

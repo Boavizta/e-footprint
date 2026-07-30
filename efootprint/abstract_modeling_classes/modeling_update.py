@@ -168,7 +168,7 @@ class ModelingUpdate:
         time exactly like an invalid input edit."""
         for mod_obj in self.newly_linked_mod_objs:
             for name, descriptor in computed_slots(mod_obj.efootprint_class).items():
-                if descriptor.guard or name.endswith("_validation"):
+                if descriptor.guard:
                     getattr(mod_obj, name)
 
     def pull_eagerly(self, visited_slots) -> int:

@@ -71,7 +71,7 @@ class EdgeDeviceGroup(ModelingObject):
                     ancestors.append(ancestor)
         return ancestors
 
-    @computed_attribute
+    @computed_attribute(guard=True)
     def no_cycle_validation(self):
         """Validates that the group does not contain itself transitively, and that no nested sub-group does either."""
         ancestors = self._find_all_ancestor_groups()

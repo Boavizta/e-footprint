@@ -123,7 +123,7 @@ S_utc._calculus_dependencies == {S_starts, S_timezone}  # topology retained</cod
 <p><code>invalidate(*slots)</code> deletes cached values from changed slots and every transitive dependent. Its one-bit <code>wave_passed</code> marker prunes repeated traversal. A void slot cannot prune: the normal persisted shape can have cached outputs below valueless intermediates. This is why serialized dependency topology matters; see <a href="../persistence.html">Persistence</a>.</p>
 
 <h2 id="guards">Guards: constraints that must fail at edit time</h2>
-<p>A slot is a <a class="term" href="../glossary.html#guard">guard</a> when its name ends in <code>_validation</code> or its descriptor declares <code>guard=True</code>. Guards cover user-facing constraints that may sit outside the system-total footprint cone, such as edge-capacity checks. Every invalidated guard is pulled regardless of <code>eager_outputs</code>.</p>
+<p>A slot is a <a class="term" href="../glossary.html#guard">guard</a> when its descriptor explicitly declares <code>guard=True</code>. Guards cover user-facing constraints that may sit outside the system-total footprint cone, such as edge-capacity checks. Every invalidated guard is pulled regardless of <code>eager_outputs</code>. A <code>_validation</code> name separately tells the interface that the attribute is pure validation and should not be displayed as a modeled output.</p>
 <div class="rule"><b>New-link edge case:</b> a never-computed guard has no recorded dependency edge, so a deletion wave cannot reach it. <code>ModelingUpdate</code> explicitly finds every newly linked object and its linked subtree and pulls all of their guards. Invalid new links are therefore rejected immediately.</div>
 
 <h2 id="recomputation-root">How an update chooses what to recompute</h2>
@@ -156,7 +156,7 @@ S_utc._calculus_dependencies == {S_starts, S_timezone}  # topology retained</cod
 <div class="tablewrap"><table><tr><th>Symptom</th><th>Inspect</th></tr>
 <tr><td>A value stays stale after an input edit</td><td>Was the input/relationship read hooked? Did the computed result's ancestry include the consumed value? Does serialized topology restore that edge?</td></tr>
 <tr><td>Too much recomputes</td><td>Look for broad relationship reads, stale conditional edges that never successfully refreshed, or a caller explicitly pulling a broad eager output.</td></tr>
-<tr><td>An invalid edit fails only later</td><td>The validating getter should be a <code>guard=True</code> slot (or <code>_validation</code>), and new-link traversal must include its object.</td></tr>
+<tr><td>An invalid edit fails only later</td><td>The validating getter should explicitly declare <code>guard=True</code>, and new-link traversal must include its object.</td></tr>
 <tr><td>A cycle error appears</td><td>Read the reported slot chain; it is the active recursive pull path, not a guessed class-level order.</td></tr>
 <tr><td>A loaded cached result survives the wrong edit</td><td>Check the values-free <code>calculation_graph</code>, especially structural edges through valueless intermediates.</td></tr>
 <tr><td>Attribution/Sankey is slow after an edit</td><td>Lazy projections intentionally remain void until render; inspect which source row slots the edit invalidated rather than expecting eager warming.</td></tr>

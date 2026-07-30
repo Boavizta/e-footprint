@@ -77,7 +77,7 @@ class RecurrentServerNeed(ModelingObject):
         return list(dict.fromkeys(sum([euj.edge_usage_patterns for euj in self.edge_usage_journeys], start=[])))
 
 
-    @computed_attribute
+    @computed_attribute(guard=True)
     def recurrent_need_validation(self):
         """Validates that the recurrent volume is expressed in occurrences and is non-negative; raises a typed error otherwise."""
         assert self.recurrent_volume_per_edge_device.unit == u.occurrence, \

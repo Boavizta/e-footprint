@@ -109,7 +109,7 @@ class EdgeDevice(ModelingObject, AttributionSource):
         from efootprint.core.hardware.edge.edge_cpu_component import EdgeCPUComponent
         return self._filter_component_by_type(EdgeCPUComponent)
 
-    @computed_attribute
+    @computed_attribute(guard=True)
     def lifespan_validation(self):
         """Validates that the device lifespan is at least as long as every {class:EdgeUsageJourney} that uses it; raises otherwise."""
         result = EmptyExplainableObject().generate_explainable_object_with_logical_dependency(self.lifespan)
@@ -119,7 +119,7 @@ class EdgeDevice(ModelingObject, AttributionSource):
             result = result.generate_explainable_object_with_logical_dependency(edge_usage_journey.usage_span)
         return result
 
-    @computed_attribute
+    @computed_attribute(guard=True)
     def component_needs_edge_device_validation(self):
         """Validates that every {class:RecurrentEdgeComponentNeed} loaded onto this device targets a component that actually belongs to it."""
         for component_need in self.recurrent_edge_component_needs:

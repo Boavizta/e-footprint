@@ -26,7 +26,7 @@ def energy_footprint_per_job(self, job):
 <li><code>computed_dict.__get__</code> resolves the owner's key-set slot.</li>
 <li>If another computation is active, reading the whole dict records a structural dependency on that key-set slot: the consumer depends on which keys exist.</li>
 <li><code>slot.pull()</code> returns the cached facade or invokes the key-set closure.</li>
-<li>The closure reads <code>getattr(instance, keys)</code>, drops stale keys, pulls one sub-slot per current key, restores collection order, and returns the same facade.</li>
+<li>The closure reads <code>getattr(instance, keys)</code>, drops stale keys, pulls one sub-slot per current key, reorders the persistent facade to match the current key collection, and returns that same facade.</li>
 <li>Each element closure calls <code>getter(instance, key)</code>, attaches the fresh value into the facade, and records calculus dependencies from that value's formula ancestry.</li>
 </ol>
 <pre><code># Conceptual access chain
@@ -39,15 +39,14 @@ device.energy_footprint_per_usage_pattern
 
 <h2 id="granularity">Why element slots matter</h2>
 <div class="cols"><div class="n value"><b>Fine-grained invalidation</b><br><span>If only job B's consumed inputs change, B's element slot becomes void while A's cached value remains reusable.</span></div><div class="n slot"><b>Whole-dict dependency</b><br><span>A consumer that reads the facade as a collection also depends structurally on the key-set node, so membership changes invalidate that consumer.</span></div></div>
-<p>After invalidation, <code>prune_stale_computed_dict_keys()</code> synchronizes membership before the transaction pulls guards or an ordinary output. It clears the guard flag on departed sub-slots so the guard pass, which still holds the pre-pruning invalidation set, skips them. See <a href="../lifecycle.html#recomputation-root">how an update chooses its recomputation root</a>.</p>
 
 <h2 id="stale-keys">When a key leaves</h2>
-<ol>
-<li><code>discard_stale_keys()</code> removes the composite-key sub-slot from the owner's registry and clears its guard policy.</li>
-<li>The corresponding facade entry is dropped passively, without starting another modeling update.</li>
-<li>Previously computed dependents retain their old dependency edge to the removed sub-slot until they successfully recompute. That edge remains available to invalidation traversal but never pulls the removed sub-slot.</li>
-<li><code>prune_stale_computed_dict_keys()</code> performs membership cleanup after invalidation even when nobody reads the facade, preventing detached objects from remaining reachable through stale container bookkeeping.</li>
-</ol>
+<p>A membership edit first invalidates the computed dict's key-set slot and its dependents. Before the transaction pulls guards or its ordinary output, it synchronizes every invalidated computed dict with the now-current key collection:</p>
+<div class="diagram"><div class="dtitle">Departure cleanup happens between invalidation and recomputation</div><div class="n input"><b>1 · Membership changes</b><br><span>The invalidation wave voids the key-set slot and collects every slot it reaches.</span></div><div class="ar">↓</div><div class="n dict"><b>2 · <code>prune_stale_computed_dict_keys()</code></b><br><span>Reads the current key collection and asks the descriptor to discard facade keys that are no longer present.</span></div><div class="ar">↓</div><div class="n computed"><b>3 · Pull current work</b><br><span>Guards and the selected ordinary output recompute only after membership is clean.</span></div></div>
+<p>For each departed key, <code>discard_stale_keys()</code> removes its element slot from the owner's registry, clears that slot's guard policy, and drops the facade entry without starting another modeling update. Clearing the guard matters because the guard pass still receives the invalidation set collected before pruning; a calculation for a key that no longer belongs to the model must not validate the new state.</p>
+<div class="rule"><b>Why clean up before anybody reads the facade?</b> Dropping the entry also removes its value's container bookkeeping. Doing this inside the write transaction prevents a detached object from remaining reachable—and potentially being serialized—when no later consumer happens to read the computed dict.</div>
+<details><summary>What happens to old dependency edges?</summary><div class="fbody"><p>Removing an element slot from the registry does not erase edges immediately. Previously computed dependents can still reference that slot until they successfully recompute and replace their dependency sets. Those retained edges let later invalidation waves reach the dependents; they never pull the removed element slot.</p></div></details>
+<p>See <a href="../lifecycle.html#recomputation-root">how the transaction chooses guards and its ordinary recomputation root</a> after this cleanup.</p>
 
 <h2 id="storage">What is stored where</h2>
 <div class="tablewrap"><table><tr><th>State</th><th>Location</th></tr>
