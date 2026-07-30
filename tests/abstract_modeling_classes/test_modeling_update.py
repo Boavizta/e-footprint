@@ -5,9 +5,28 @@ from efootprint.abstract_modeling_classes.contextual_modeling_object_attribute i
 from efootprint.abstract_modeling_classes.list_linked_to_modeling_obj import ListLinkedToModelingObj
 from efootprint.abstract_modeling_classes.modeling_update import ModelingUpdate
 from efootprint.abstract_modeling_classes.object_linked_to_modeling_obj import ObjectLinkedToModelingObj
+from efootprint.abstract_modeling_classes.reactive_core import ReactiveSlot
 
 
 class TestModelingUpdate(unittest.TestCase):
+    def test_no_system_pulls_guards_but_leaves_ordinary_invalidated_slots_void(self):
+        """Test a standalone update validates guards without eagerly sweeping ordinary computations."""
+        pulls = []
+        ordinary_slot = ReactiveSlot("ordinary", lambda: pulls.append("ordinary"))
+        guard_slot = ReactiveSlot("guard", lambda: pulls.append("guard"))
+        guard_slot.guard = True
+        modeling_update = ModelingUpdate.__new__(ModelingUpdate)
+        modeling_update.system = None
+        modeling_update.eager_outputs = None
+        modeling_update.newly_linked_mod_objs = []
+
+        invalidated_count = modeling_update.pull_eagerly({ordinary_slot, guard_slot})
+
+        self.assertEqual(2, invalidated_count)
+        self.assertEqual(["guard"], pulls)
+        self.assertTrue(guard_slot.has_cached_value)
+        self.assertFalse(ordinary_slot.has_cached_value)
+
     def test_parse_changes_list_wrong_input_types_raises_value_error(self):
         modeling_update = ModelingUpdate.__new__(ModelingUpdate)  # Bypass __init__
         old_value = MagicMock(spec=ObjectLinkedToModelingObj)

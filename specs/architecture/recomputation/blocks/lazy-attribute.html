@@ -42,7 +42,7 @@ def impact_repartition_matrix(self):
 # are not copied into the consuming slot's dependency set.</code></pre>
 
 <h2 id="eager">Why it never warms eagerly</h2>
-<div class="cols"><div class="n lazy"><b>After invalidation</b><br><span>The cached raw value is dropped and the slot remains void. System-total pulls and ordinary eager sweeps skip it.</span></div><div class="n input"><b>At consumption time</b><br><span>A renderer, attribution fold, or other explicit attribute reader pulls it only if that consumer actually needs it. Serialization only peeks and never pulls.</span></div></div>
+<div class="cols"><div class="n lazy"><b>After invalidation</b><br><span>The cached raw value is dropped and the update transaction never selects it for warming as an ordinary output.</span></div><div class="n input"><b>At consumption time</b><br><span>A renderer, attribution fold, or other explicit attribute reader pulls it only if that consumer actually needs it. Serialization only peeks and never pulls.</span></div></div>
 <p>This keeps attribution and presentation work out of the main footprint update path while preserving exact invalidation when their inputs change.</p>
 
 <h2 id="persistence">Optional persistence</h2>

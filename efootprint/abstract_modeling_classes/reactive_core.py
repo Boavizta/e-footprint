@@ -98,7 +98,7 @@ class ReactiveSlot:
         self.getter = getter
         self.on_value_dropped = on_value_dropped
         # Set when the slot leaves its owner's registry (a dict key left the key set): stale
-        # dependents may still pull it, but eager sweeps must not.
+        # dependents may still pull it, but transactional guard pulls must not.
         self.discarded = False
         # Lazy slots (read-time projections) are invalidated like any slot but never eagerly
         # recomputed: they stay void until the next read pulls them.
@@ -107,9 +107,6 @@ class ReactiveSlot:
         # re-pulled after every invalidation that voids them, so bad edits fail at update time even
         # when nothing else reads them.
         self.guard = False
-        # Eager sweeps pull lower precedence first: key-set nodes before their sub-slots, so stale
-        # sub-slots are discarded before the sweep reaches them.
-        self.pull_precedence = 0
         # (descriptor, instance) backreference set on computed-dict key-set slots, so the write path
         # can prune stale facade keys after an invalidation wave without recomputing any value.
         self.key_set_binding = None
@@ -608,9 +605,6 @@ class computed_dict(computed_attribute):
 
     def slot(self, instance) -> ReactiveSlot:
         slot = super().slot(instance)
-        # Eager sweeps must sync the key set before touching sub-slots, so stale sub-slots are
-        # discarded before being pulled.
-        slot.pull_precedence = -1
         slot.key_set_binding = (self, instance)
         return slot
 
@@ -743,9 +737,9 @@ def prune_stale_computed_dict_keys(invalidated_slots):
 class lazy_attribute:
     """Descriptor declaring a lazy projection slot: computed on first read, cached in the reactive
     graph and invalidated through it like any slot, but excluded from ``calculated_attributes`` (so
-    eager sweeps, the current serialization contract and the docs reference never touch it) and never
-    eagerly recomputed — after an invalidation it stays void until the next read. Its value is held
-    raw, not attached to the owner's explainability bookkeeping, so getters may return plain dicts,
+    update-time output enumeration, the current serialization contract and the docs reference never
+    touch it) and never eagerly recomputed — after an invalidation it stays void until the next read.
+    Its value is held raw, not attached to the owner's explainability bookkeeping, so getters may return plain dicts,
     tuples or dataclass instances of explainable values; the engine records calculus edges from every
     explainable found in the returned structure, on top of the reads recorded while the getter ran.
 

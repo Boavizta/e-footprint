@@ -7,7 +7,7 @@ from efootprint.abstract_modeling_classes.object_linked_to_modeling_obj import (
     ObjectLinkedToModelingObj, ObjectLinkedToModelingObjBase)
 from efootprint.abstract_modeling_classes.empty_explainable_object import EmptyExplainableObject
 from efootprint.abstract_modeling_classes.modeling_object import (
-    ModelingObject, get_instance_attributes, pull_guard_slots, pull_invalidated_slots)
+    ModelingObject, get_instance_attributes, pull_guard_slots)
 from efootprint.abstract_modeling_classes.reactive_core import (
     collect_invalidated_slots, computed_slots, invalidate, prune_stale_computed_dict_keys, slot_of_attached_value)
 from efootprint.logger import logger
@@ -174,9 +174,9 @@ class ModelingUpdate:
     def pull_eagerly(self, visited_slots) -> int:
         """Recompute the invalidated validation slots (plus every guard slot of newly linked
         objects), then the eager outputs: the configured (object, attribute) pairs, or by default
-        the affected system's total footprint. A change on objects linked to no system falls back to
-        recomputing the whole invalidated cone — there is no footprint to pull errors through, and
-        detached subgraphs are small. Returns the number of slots voided by the wave."""
+        the affected system's total footprint. With neither an explicit output nor an affected
+        system, ordinary computed slots remain void until read. Returns the number of slots voided
+        by the wave."""
         prune_stale_computed_dict_keys(visited_slots)
         pull_guard_slots(visited_slots)
         self.pull_guard_slots_of_newly_linked_objects()
@@ -185,8 +185,6 @@ class ModelingUpdate:
                 getattr(mod_obj, attr_name)
         elif self.system is not None:
             self.system.total_footprint
-        else:
-            pull_invalidated_slots(visited_slots)
         return len(visited_slots)
 
     def rollback(self):

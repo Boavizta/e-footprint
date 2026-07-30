@@ -36,15 +36,6 @@ def pull_slots_system_wide(systems: list):
         mod_obj.pull_computed_attributes()
 
 
-def pull_invalidated_slots(invalidated_slots):
-    """Recompute the slots a write invalidated, key-set nodes first: their sync discards the
-    sub-slots of keys that left the key set, which must not be recomputed (their getters may
-    legitimately no longer apply). Lazy projection slots stay void: they recompute on next read."""
-    for slot in sorted(invalidated_slots, key=lambda slot: (slot.pull_precedence, slot.name)):
-        if slot.getter is not None and not slot.discarded and not slot.lazy:
-            slot.pull()
-
-
 def pull_guard_slots(invalidated_slots):
     """Recompute the validation slots a write invalidated: guard slots exist to reject invalid
     states, so they must run at update time even though nothing downstream reads them."""
