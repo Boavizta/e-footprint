@@ -16,12 +16,6 @@ def energy_footprint_per_job(self, job):
     return self.compute_energy_for(job)</code></pre>
 <div class="diagram"><div class="dtitle">Decorator application</div><div class="n input"><b><code>computed_dict(keys="jobs")</code></b><br><span>Constructs an initially unbound descriptor carrying the key-collection attribute name.</span></div><div class="ar">↓ inherited <code>__call__</code> binds the domain getter</div><div class="n slot"><b><code>computed_dict</code> descriptor</b><br><span>The same object is installed on the class and registers itself as a computed slot surface through <code>__set_name__</code>.</span></div></div>
 <p>The domain getter takes one key in addition to <code>self</code>. The descriptor—not the resulting dict—is stored in the class namespace.</p>
-<details open><summary>Why are both decorator surfaces classes?</summary><div class="fbody"><p><code>computed_attribute</code> and <code>computed_dict</code> are both descriptor classes. That gives declarations the same mental model: construct a descriptor, bind its getter, then install that descriptor in the class namespace.</p><pre><code># Bare computed attribute: constructor receives the getter directly
-f = computed_attribute(f)
-
-# Computed dict: configuration constructs an unbound descriptor first
-descriptor = computed_dict(keys="jobs")
-f = descriptor(f)  # inherited __call__ binds the getter and returns descriptor</code></pre><p><code>computed_dict</code> subclasses <code>computed_attribute</code>, reusing getter binding, class registration, descriptor calls, flags, and the common slot behavior while specializing the runtime topology for a key set and its element slots.</p></div></details>
 
 <h2 id="topology">Runtime topology</h2>
 <div class="diagram"><div class="dtitle">One owner with two current jobs</div><div class="n slot"><b>Key-set slot · <code>energy_footprint_per_job</code></b><br><span>Registry key: <code>"energy_footprint_per_job"</code><br>Getter reads <code>self.jobs</code>, synchronizes membership, and pulls every current element slot.</span></div><div class="ar">↓ coordinates</div><div class="three"><div class="n value"><b>Element slot A</b><br><span>Registry key: <code>("energy_footprint_per_job", job_A)</code><br>Runs <code>getter(self, job_A)</code>.</span></div><div class="n value"><b>Element slot B</b><br><span>Registry key: <code>("energy_footprint_per_job", job_B)</code><br>Runs <code>getter(self, job_B)</code>.</span></div><div class="n input"><b>Persistent facade</b><br><span>Stored in <code>self._computed_dict_facades</code>; the same <code>ExplainableObjectDict</code> instance survives recomputation.</span></div></div></div>
@@ -45,13 +39,13 @@ device.energy_footprint_per_usage_pattern
 
 <h2 id="granularity">Why element slots matter</h2>
 <div class="cols"><div class="n value"><b>Fine-grained invalidation</b><br><span>If only job B's consumed inputs change, B's element slot becomes void while A's cached value remains reusable.</span></div><div class="n slot"><b>Whole-dict dependency</b><br><span>A consumer that reads the facade as a collection also depends structurally on the key-set node, so membership changes invalidate that consumer.</span></div></div>
-<p>After invalidation, <code>prune_stale_computed_dict_keys()</code> synchronizes membership before the transaction pulls guards or an ordinary output. It marks departed sub-slots as discarded, so obsolete element getters cannot be selected by guard processing or reinsert themselves into the facade. See <a href="../lifecycle.html#recomputation-root">how an update chooses its recomputation root</a>.</p>
+<p>After invalidation, <code>prune_stale_computed_dict_keys()</code> synchronizes membership before the transaction pulls guards or an ordinary output. It marks departed sub-slots as discarded so the guard pass, which still holds the pre-pruning invalidation set, skips them. See <a href="../lifecycle.html#recomputation-root">how an update chooses its recomputation root</a>.</p>
 
 <h2 id="stale-keys">When a key leaves</h2>
 <ol>
 <li><code>discard_stale_keys()</code> removes the composite-key sub-slot from the owner's registry and marks it <code>discarded=True</code>.</li>
 <li>The corresponding facade entry is dropped passively, without starting another modeling update.</li>
-<li>A stale dependent may still hold the orphaned slot and pull it. The slot can recompute for that reader, but <code>_attach_element()</code> checks the registry identity and refuses to reinsert the departed key into the facade.</li>
+<li>Previously computed dependents retain their old dependency edge to the removed sub-slot until they successfully recompute. That edge remains available to invalidation traversal but never pulls the removed sub-slot.</li>
 <li><code>prune_stale_computed_dict_keys()</code> performs membership cleanup after invalidation even when nobody reads the facade, preventing detached objects from remaining reachable through stale container bookkeeping.</li>
 </ol>
 

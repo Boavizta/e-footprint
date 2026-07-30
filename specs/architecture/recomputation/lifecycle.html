@@ -135,11 +135,6 @@ S_utc._calculus_dependencies == {S_starts, S_timezone}  # topology retained</cod
 <div class="ar">otherwise · default <code>None</code> and no System</div>
 <div class="n slot"><b>No ordinary recomputation root</b><br><span>Leave non-guard computed slots void. Their next explicit read pulls only what that consumer needs.</span></div></div>
 
-<h3 id="standalone-fragments">Why standalone fragments need no fallback sweep</h3>
-<p>Intentional failures belong to guards, not to a blanket recomputation policy. Every computed getter containing a direct <code>raise</code> or <code>assert</code> is required to declare <code>guard=True</code> or use the <code>_validation</code> suffix; an AST contract test enforces that visible boundary. Consequently, a standalone fragment can validate its invalidated guards immediately while leaving ordinary calculations lazy.</p>
-<div class="cols"><div class="n guard"><b>Intentional invalid state</b><br><span>The responsible guard is pulled inside the transaction, so its exception still triggers rollback.</span></div><div class="n value"><b>Ordinary derived value</b><br><span>Remains void without an explicit output or System total. Unexpected programming or library errors surface when a consumer actually reads it.</span></div></div>
-<p>A getter can still fail transitively through arithmetic, conversions, helpers, or libraries; Python cannot statically enumerate every possible exception. The contract distinguishes deliberate validation failures from unexpected computation failures. An edit that removes an object from a System also remains covered: <code>ModelingUpdate</code> captures the affected System before applying the change and pulls that System's total for the transaction.</p>
-
 <h2 id="dependencies">Where dependency edges come from</h2>
 <div class="tablewrap"><table><tr><th>Kind</th><th>Recorded when</th><th>Source</th></tr>
 <tr><td>Calculus</td><td>A computed value's arithmetic ancestry contains an attached explainable value—or a lazy projection returns a structure containing one.</td><td><code>ExplainableObject</code> ancestry → <code>record_calculus_dependency</code>.</td></tr>

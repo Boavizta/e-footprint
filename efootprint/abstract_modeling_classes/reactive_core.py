@@ -97,8 +97,8 @@ class ReactiveSlot:
         self.name = name
         self.getter = getter
         self.on_value_dropped = on_value_dropped
-        # Set when the slot leaves its owner's registry (a dict key left the key set): stale
-        # dependents may still pull it, but transactional guard pulls must not.
+        # Set when a computed-dict element leaves its owner's registry, so guard processing skips
+        # the departed element even though the invalidation set still contains its slot.
         self.discarded = False
         # Lazy slots (read-time projections) are invalidated like any slot but never eagerly
         # recomputed: they stay void until the next read pulls them.
@@ -498,16 +498,13 @@ class computed_attribute:
             self.__doc__ = _inherited_slot_doc(owner, name)
         _register_slot("_declared_computed_slots", owner, name, self)
 
-    # The facade of a computed dict survives invalidation (only the key-set sync is redone), so the
-    # dict subclass declares no drop-time release.
+    # Ordinary computed values are detached from their owner when their cached slot value is dropped.
     _on_value_dropped = staticmethod(_release_value)
 
     def slot(self, instance) -> ReactiveSlot:
         registry = instance_slot_registry(instance)
         slot = registry.get(self.attr_name)
-        if slot is None or slot.getter is None:
-            # A bump node may pre-exist under this name if the attribute was read as an input before
-            # the descriptor materialized its computing slot (never in practice); computing wins.
+        if slot is None:
             slot = ReactiveSlot(
                 f"{self.attr_name} of {getattr(instance, 'id', instance)}", on_value_dropped=self._on_value_dropped)
             slot.getter = self._make_compute_closure(instance, slot)
@@ -594,6 +591,7 @@ class computed_dict(computed_attribute):
     entries under the minimal serialization contract.
     """
 
+    # The persistent dict facade remains attached to its owner across key-set invalidations.
     _on_value_dropped = None
 
     def __init__(self, keys: str, guard=False, serialize=False):
@@ -627,9 +625,8 @@ class computed_dict(computed_attribute):
         facade = self.facade(instance)
         registry = instance_slot_registry(instance)
         for stale_key in [key for key in list(dict.keys(facade)) if key not in current_keys]:
-            stale_slot = registry.pop((self.attr_name, stale_key), None)
-            if stale_slot is not None:
-                stale_slot.discarded = True
+            stale_slot = registry.pop((self.attr_name, stale_key))
+            stale_slot.discarded = True
             facade._drop_entry_passively(stale_key)
 
     def _make_compute_closure(self, instance, slot):
@@ -672,10 +669,7 @@ class computed_dict(computed_attribute):
 
     def _attach_element(self, instance, key, value, slot):
         _assert_not_attached_elsewhere(value, instance, self.attr_name)
-        if instance_slot_registry(instance).get((self.attr_name, key)) is slot:
-            self.facade(instance)._set_entry_passively(key, value)
-        # An orphaned sub-slot (its key left the key set) can still be pulled by a stale dependent:
-        # it recomputes for that reader but must not reintroduce its key into the facade.
+        self.facade(instance)._set_entry_passively(key, value)
         value._reactive_slot = slot
 
     def attach_element_cached_value(self, instance, key, value):
@@ -728,7 +722,7 @@ def prune_stale_computed_dict_keys(invalidated_slots):
     keeping the detached object reachable (e.g. serialized back into the model). Values are not
     recomputed: only the key collection is read."""
     for slot in invalidated_slots:
-        if slot.key_set_binding is None or slot.discarded:
+        if slot.key_set_binding is None:
             continue
         descriptor, instance = slot.key_set_binding
         descriptor.discard_stale_keys(instance, list(getattr(instance, descriptor.keys)))
@@ -774,7 +768,7 @@ class lazy_attribute:
     def slot(self, instance) -> ReactiveSlot:
         registry = instance_slot_registry(instance)
         slot = registry.get(self.attr_name)
-        if slot is None or slot.getter is None:
+        if slot is None:
             slot = ReactiveSlot(f"{self.attr_name} of {getattr(instance, 'id', instance)}")
             slot.lazy = True
             slot.getter = self._make_compute_closure(instance)
