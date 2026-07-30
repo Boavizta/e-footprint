@@ -261,12 +261,12 @@ if __name__ == "__main__":
     Source._use_name_as_id = True
 
     system = generate_big_system(**BIG_SYSTEM_STANDARD_PARAMS)
-    # Fill every serialize-flagged lazy slot (the repartition matrix and the edge devices' breakdown
+    # Fill every serialize-flagged computed structure (the repartition matrix and the edge devices' breakdown
     # summaries) so the fixture matches an interface session saved after its first Sankey render.
-    from efootprint.abstract_modeling_classes.reactive_core import lazy_slots
+    from efootprint.abstract_modeling_classes.reactive_core import computed_structures
     for obj in [system] + system.all_linked_objects:
-        for lazy_name, lazy_descriptor in lazy_slots(obj.efootprint_class).items():
-            if lazy_descriptor.serialize:
-                getattr(obj, lazy_name)
+        for structure_name, structure_descriptor in computed_structures(obj.efootprint_class).items():
+            if structure_descriptor.serialize:
+                getattr(obj, structure_name)
     system_to_json(system, output_filepath=BIG_SYSTEM_FIXTURE)
     logger.info("Regenerated big_system.json")

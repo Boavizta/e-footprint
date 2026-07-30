@@ -16,7 +16,7 @@ from efootprint.core.hardware.server import Server
 from efootprint.core.hardware.server_base import ServerBase
 from efootprint.core.usage.compute_nb_occurrences_in_parallel import compute_nb_avg_hourly_occurrences
 from efootprint.abstract_modeling_classes.reactive_core import (
-    computed_attribute, computed_dict, lazy_attribute, ReverseCollection)
+    computed_attribute, computed_dict, computed_structure, ReverseCollection)
 
 if TYPE_CHECKING:
     from efootprint.core.usage.usage_pattern import UsagePattern
@@ -226,7 +226,7 @@ class JobBase(ModelingObject):
             "hourly_data_stored_per_usage_pattern", "data stored")
 
     # --- Attribution-only occurrence / data primitives (consumed by the attribution atom builders, never by the
-    # eager calculated-attribute graph; get_*/compute_* are plain methods, the rest lazy projection slots) ---
+    # footprint graph; get_*/compute_* are plain methods and attribution_cells is one computed structure) ---
 
     def get_hourly_avg_occurrences_per_usage_pattern_per_step(
             self, usage_pattern: "UsagePattern", uj_step: "UsageJourneyStep"):
@@ -280,72 +280,7 @@ class JobBase(ModelingObject):
                 * self._hourly_data_exchange_rate("data_transferred")).to(u.MB).set_label(
             f"Hourly data transferred by {self.name} in {recurrent_server_need.name} for {edge_usage_pattern.name}")
 
-    @lazy_attribute
-    def hourly_avg_occurrences_per_usage_journey_step(self):
-        """Hourly occurrences of this job keyed by the steps triggering it, each summed over the step's usage
-        patterns. Together with hourly_avg_occurrences_per_recurrent_server_need it partitions
-        hourly_avg_occurrences_across_usage_patterns."""
-        return {
-            uj_step: sum(
-                (self.get_hourly_avg_occurrences_per_usage_pattern_per_step(up, uj_step)
-                 for up in uj_step.usage_patterns), start=EmptyExplainableObject()
-            ).set_label(f"Average hourly occurrences of {self.name} in {uj_step.name}")
-            for uj_step in self.usage_journey_steps}
-
-    @lazy_attribute
-    def hourly_avg_occurrences_per_usage_journey(self):
-        """Hourly occurrences of this job keyed by its usage journeys — the by-journey regroup of
-        hourly_avg_occurrences_per_usage_pattern over the job's web usage patterns."""
-        return {
-            usage_journey: sum(
-                (self.hourly_avg_occurrences_per_usage_pattern[up] for up in self.web_usage_patterns
-                 if up.usage_journey == usage_journey), start=EmptyExplainableObject()
-            ).set_label(f"Average hourly occurrences of {self.name} in {usage_journey.name}")
-            for usage_journey in self.usage_journeys}
-
-    @lazy_attribute
-    def hourly_avg_occurrences_per_recurrent_server_need(self):
-        """Hourly occurrences of this job keyed by the recurrent server needs triggering it, each summed over the
-        need's edge usage patterns — the edge analogue of hourly_avg_occurrences_per_usage_journey_step."""
-        return {
-            rsn: sum(
-                (self.get_hourly_avg_occurrences_per_usage_pattern_per_recurrent_server_need(edge_up, rsn)
-                 for edge_up in rsn.edge_usage_patterns), start=EmptyExplainableObject()
-            ).set_label(f"Average hourly occurrences of {self.name} in {rsn.name}")
-            for rsn in self.recurrent_server_needs}
-
-    @lazy_attribute
-    def hourly_avg_occurrences_per_edge_usage_journey(self):
-        """Hourly occurrences of this job keyed by its edge usage journeys — the by-edge-journey regroup of
-        hourly_avg_occurrences_per_usage_pattern over the job's edge usage patterns."""
-        return {
-            edge_usage_journey: sum(
-                (self.hourly_avg_occurrences_per_usage_pattern[edge_up] for edge_up in self.edge_usage_patterns
-                 if edge_up.edge_usage_journey == edge_usage_journey), start=EmptyExplainableObject()
-            ).set_label(f"Average hourly occurrences of {self.name} in {edge_usage_journey.name}")
-            for edge_usage_journey in self.edge_usage_journeys}
-
-    @lazy_attribute
-    def hourly_data_stored_per_step(self):
-        """Hourly net change in storage volume caused by this job keyed by the steps triggering it. Together with
-        hourly_data_stored_per_recurrent_server_need it partitions hourly_data_stored_across_usage_patterns."""
-        data_stored_per_hour = self._hourly_data_exchange_rate("data_stored")
-        return {
-            uj_step: (occurrences * data_stored_per_hour).to(u.MB_stored).set_label(
-                f"Hourly data stored by {self.name} in {uj_step.name}")
-            for uj_step, occurrences in self.hourly_avg_occurrences_per_usage_journey_step.items()}
-
-    @lazy_attribute
-    def hourly_data_stored_per_recurrent_server_need(self):
-        """Hourly net change in storage volume caused by this job keyed by the recurrent server needs triggering it
-        — the edge analogue of hourly_data_stored_per_step."""
-        data_stored_per_hour = self._hourly_data_exchange_rate("data_stored")
-        return {
-            rsn: (occurrences * data_stored_per_hour).to(u.MB_stored).set_label(
-                f"Hourly data stored by {self.name} in {rsn.name}")
-            for rsn, occurrences in self.hourly_avg_occurrences_per_recurrent_server_need.items()}
-
-    @lazy_attribute
+    @computed_structure
     def attribution_cells(self):
         """Flat enumeration of the job's containment cells — one JobAttributionCell per (step, up) the job runs in
         web-side and per (rsn, ef, up) edge-side, each carrying its hourly and flat occurrence shares of the job's

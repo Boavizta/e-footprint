@@ -13,7 +13,8 @@ from efootprint.logger import logger
 from efootprint.abstract_modeling_classes.object_linked_to_modeling_obj import ObjectLinkedToModelingObjBase
 from efootprint.abstract_modeling_classes.reactive_core import (
     CONTAINERS_NODE_NAME, collect_invalidated_slots, computed_attribute, computed_slots, instance_slot_registry,
-    invalidate, lazy_attribute, lazy_slots, prune_stale_computed_dict_keys, record_read_of_node, serialized_slots)
+    computed_structure, computed_structures, invalidate, prune_stale_computed_dict_keys, record_read_of_node,
+    serialized_slots)
 from efootprint.utils.graph_tools import WIDTH, HEIGHT, add_unique_id_to_mynetwork
 from efootprint.utils.object_relationships_graphs import build_object_relationships_graph, \
     USAGE_PATTERN_VIEW_CLASSES_TO_IGNORE
@@ -105,15 +106,15 @@ class ModelingObject(metaclass=ABCAfterInitMeta):
         new_obj.trigger_modeling_updates = False
         explainable_object_dicts_to_create_after_objects_creation = {}
         declared_computed_slots = computed_slots(cls)
-        declared_lazy_slots = lazy_slots(cls)
+        declared_computed_structures = computed_structures(cls)
         for attr_key, attr_value in object_json_dict.items():
-            if attr_key in declared_lazy_slots:
-                # Serialize-flagged lazy slots hold raw JSON-native values (list rows like the
+            if attr_key in declared_computed_structures:
+                # Serialize-flagged computed structures hold raw JSON-native values (list rows like the
                 # impact-repartition matrix, plain dicts like the edge-device breakdown summary),
                 # attached as-is when trusted. Checked before the generic dict branches: a dict-valued
-                # lazy slot is neither an explainable value nor a deferred input ExplainableObjectDict.
+                # structure is neither an explainable value nor a deferred input ExplainableObjectDict.
                 if attach_stored_computed_values:
-                    declared_lazy_slots[attr_key].attach_cached_value(
+                    declared_computed_structures[attr_key].attach_cached_value(
                         new_obj, tuple(attr_value) if isinstance(attr_value, list) else attr_value)
             elif isinstance(attr_value, dict) and "label" in attr_value:
                 if attr_key in declared_computed_slots and not attach_stored_computed_values:
@@ -457,7 +458,7 @@ class ModelingObject(metaclass=ABCAfterInitMeta):
         if name in self.attributes_that_shouldnt_trigger_update_logic:
             super().__setattr__(name, input_value)
             return
-        if isinstance(getattr(type(self), name, None), (computed_attribute, lazy_attribute)):
+        if isinstance(getattr(type(self), name, None), (computed_attribute, computed_structure)):
             # Computed values only enter their slot by computation or by the descriptor's explicit
             # attach_cached_value (the load path and the test pinning path): a plain assignment would
             # either silently vanish or leave dependents cached against the unpinned value.
@@ -599,7 +600,7 @@ class ModelingObject(metaclass=ABCAfterInitMeta):
         if save_computed_state:
             # Serialize-flagged slots persist their cached value (peek, never pull: saving a model
             # must not compute it — a void flagged slot is simply absent and recomputes on read).
-            # Explainable values carry their formula; raw lazy values (e.g. the impact-repartition
+            # Explainable values carry their formula; raw computed structures (e.g. the impact-repartition
             # matrix rows) must be JSON-native.
             for attr_name, descriptor in serialized_slots(type(self)).items():
                 value = descriptor.peek(self)

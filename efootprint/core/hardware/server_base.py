@@ -18,7 +18,7 @@ from efootprint.abstract_modeling_classes.source_objects import SOURCE_VALUE_DEF
 from efootprint.constants.units import u
 from efootprint.core.hardware.storage import Storage
 from efootprint.abstract_modeling_classes.reactive_core import (
-    ComputationPurpose, computed_attribute, lazy_attribute, ReverseCollection)
+    ComputationPurpose, computed_attribute, computed_dict, computed_structure, ReverseCollection)
 
 if TYPE_CHECKING:
     from efootprint.core.usage.job import JobBase, DirectServerJob
@@ -394,25 +394,22 @@ class ServerBase(InfraHardware, AttributionSource):
         }
         return logic_mapping[self.server_type]()
 
-    @lazy_attribute
-    def service_total_job_volumes(self) -> dict:
+    @computed_dict(keys="installed_services")
+    def service_total_job_volumes(self, service):
         """Total hourly volume of jobs going through each installed service, used to attribute each service's
-        standing base consumption to its own jobs proportionally to their volumes (attribution-only, lazy)."""
-        return {
-            service: sum(
-                (job.hourly_avg_occurrences_across_usage_patterns for job in service.jobs),
-                start=EmptyExplainableObject()
-            ).set_label(f"Total job volume for {service.name}")
-            for service in self.installed_services}
+        standing base consumption to its own jobs proportionally to their volumes."""
+        return sum(
+            (job.hourly_avg_occurrences_across_usage_patterns for job in service.jobs),
+            start=EmptyExplainableObject()
+        ).set_label(f"Total job volume for {service.name}")
 
-    # --- Attribution-only binding-resource physics and atom builder (lazy projection slots, consumed only by
-    # the attribution layer, never by the eager calculated-attribute graph) ---
+    # --- Attribution-only binding-resource physics and atom builder ---
 
     @property
     def is_on_premise(self) -> bool:
         return self.server_type == ServerTypes.on_premise()
 
-    @lazy_attribute
+    @computed_structure
     def binding_demand_per_job(self) -> dict:
         """Each job's hourly demand on the server's binding resource, the resource picked per hour by
         raw[h] = max(compute_need[h] / available_compute_per_instance, ram_need[h] / available_ram_per_instance)
@@ -458,7 +455,7 @@ class ServerBase(InfraHardware, AttributionSource):
 
         return binding_demand_per_job
 
-    @lazy_attribute
+    @computed_structure
     def dynamic_share_per_job(self) -> dict:
         """Each job's hourly share of the total binding-resource demand, divide_or_fallback(fallback=0) —
         exact for the demand streams: zero demand at an hour means zero dynamic footprint at that hour."""
@@ -469,7 +466,7 @@ class ServerBase(InfraHardware, AttributionSource):
                   else divide_or_fallback(demand, total_demand, fallback=0))
             for job, demand in self.binding_demand_per_job.items()}
 
-    @lazy_attribute
+    @computed_structure
     def provisioned_share_per_job(self) -> dict:
         """Per-job weights for the provisioned stream (fabrication + idle energy, both proportional to
         nb_of_instances). On-premise provisions once for the whole period, so the weights are flat scalars from

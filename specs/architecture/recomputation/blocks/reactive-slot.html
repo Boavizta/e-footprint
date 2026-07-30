@@ -38,7 +38,7 @@ country.__dict__["_reactive_slots"] == {
 <tr><td><code>_structural_dependencies</code></td><td>Relationship or membership slots traversed through <a class="term" href="../../glossary.html#structural-dependency">structural dependencies</a>.</td></tr>
 <tr><td><code>_dependents</code></td><td>Reverse index: slots whose computations depend on this slot.</td></tr>
 <tr><td><code>_wave_passed</code></td><td>Whether an invalidation wave has already crossed this node and all its current dependents.</td></tr>
-<tr><td><code>guard</code>, <code>lazy</code></td><td>Update-policy flags: validate inside the transaction, or never warm as an ordinary output.</td></tr>
+<tr><td><code>guard</code></td><td>Validation policy: re-pull the slot inside the transaction when an edit invalidates it.</td></tr>
 </table></div>
 
 <h2 id="pull">What happens when a computing slot is pulled</h2>
@@ -140,7 +140,7 @@ computed_attribute compute closure
   → active_frame.calculus_reads.add(
         S_input
     )</code></pre></div></div>
-<p>For a normal <code>@computed_attribute</code>, the getter closure triggers the calculus side by calling <code>record_calculus_edges_from_ancestry(result)</code> after the domain getter returns and before the closure returns to <code>ReactiveSlot._compute()</code>. For <code>@lazy_attribute</code>, the parallel closure calls <code>record_calculus_edges_from_value_structure(result)</code> because explainables may be nested inside raw containers.</p>
+<p>For a normal <code>@computed_attribute</code>, the getter closure triggers the calculus side by calling <code>record_calculus_edges_from_ancestry(result)</code> after the domain getter returns and before the closure returns to <code>ReactiveSlot._compute()</code>. For <code>@computed_structure</code>, the parallel closure calls <code>record_calculus_edges_from_value_structure(result)</code> because explainables may be nested inside raw containers.</p>
 <p>The final mutation is ordinary Python set mutation. <code>getattr(stack[-1], read_kind)</code> returns the actual set stored on the frame—not a copy—and <code>.add(dependency_slot)</code> changes that set in place. The local <code>frame</code> variable in <code>_compute()</code> still refers to the same object, so it sees those additions after the getter returns.</p>
 <p><code>ContextVar</code> itself is not a stack. The engine stores an immutable tuple in it and implements push/pop behavior by setting a longer tuple and then resetting the returned token. The token is separate bookkeeping created by <code>ContextVar.set()</code>; it is never inside the tuple. <code>reset(token)</code> means “restore the value that was current before this particular <code>set()</code>,” which makes restoration correct after nested calls and exceptions.</p>
 <div class="rule"><b>The same stack has two jobs.</b> Its top frame receives dependency reads; searching the whole stack before a push detects <code>A → B → A</code> and reports that chain as a circular dependency.</div>

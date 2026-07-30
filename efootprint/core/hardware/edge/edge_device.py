@@ -14,7 +14,8 @@ from efootprint.core.hardware.edge.edge_component import EdgeComponent
 from efootprint.abstract_modeling_classes.source_objects import SourceValue
 from efootprint.core.hardware.hardware_base import InsufficientCapacityError
 from efootprint.abstract_modeling_classes.reactive_core import (
-    ComputationPurpose, computed_attribute, computed_dict, lazy_attribute, record_calculus_edges_from_ancestry,
+    ComputationPurpose, computed_attribute, computed_dict, computed_structure,
+    record_calculus_edges_from_ancestry,
     ReverseCollection)
 
 if TYPE_CHECKING:
@@ -295,7 +296,7 @@ class EdgeDevice(ModelingObject, AttributionSource):
             LifeCyclePhases.USAGE: self.energy_footprint_breakdown_by_source,
         }
 
-    @lazy_attribute(serialize=True)
+    @computed_structure(serialize=True)
     def footprint_breakdown_summary(self) -> dict:
         """The condensed per-component breakdown the Sankey decoration reads: each component's
         attributed footprint reduced to its period sum in kg, by life-cycle phase —
@@ -312,10 +313,10 @@ class EdgeDevice(ModelingObject, AttributionSource):
             summary[phase.value] = phase_summary
         return summary
 
-    # --- Attribution-only atom physics and builder (lazy projection slots / methods, consumed only by the
+    # --- Attribution-only atom physics and builder (computed structures / methods, consumed only by the
     # attribution layer, never by the eager calculated-attribute graph) ---
 
-    @lazy_attribute
+    @computed_structure
     def demand_share_per_need_and_pattern(self) -> dict:
         """Each component need's hourly share of the capacity-occupying demand on its component in a pattern —
         CPU / RAM / workload by the hourly resource need, EdgeStorage by the need's own cumulative HELD volume
@@ -347,7 +348,7 @@ class EdgeDevice(ModelingObject, AttributionSource):
 
         return shares
 
-    @lazy_attribute
+    @computed_structure
     def fabrication_pool_share_per_carrier_and_pattern(self) -> dict:
         """Chassis-pool rule: components unused at a pattern are part of the chassis. The
         pool at a pattern — every unused component's deployment-booked fabrication plus its equal chassis
@@ -394,7 +395,7 @@ class EdgeDevice(ModelingObject, AttributionSource):
 
         return shares
 
-    @lazy_attribute
+    @computed_structure
     def fabrication_atom_value_per_need_and_pattern(self) -> dict:
         """Fabrication atom value: (component fabrication + an equal 1/nb_components chassis share,
         matching the breakdown-by-source axis) × the need's demand share, plus the need's equal carrier share
@@ -415,7 +416,7 @@ class EdgeDevice(ModelingObject, AttributionSource):
 
         return values
 
-    @lazy_attribute
+    @computed_structure
     def energy_atom_value_per_need_and_pattern(self) -> dict:
         """Energy atom value: the idle/base floor of the component's affine power curve — which no
         need's demand changes — split equally across the component's needs at every hour, plus the need's own

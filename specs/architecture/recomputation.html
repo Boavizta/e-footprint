@@ -4,7 +4,7 @@
 </style></head><body>
 <div class="crumb"><a href="index.html">Architecture</a> / Recomputation</div>
 <h1>Reactive computation, from modeling code outward</h1>
-<p class="lede">Modeling authors declare derived state with three decorators. The engine gives all three the same pull, cache, dependency, and invalidation mechanics, then varies result shape and recomputation policy by surface.</p>
+<p class="lede">Modeling authors declare derived state with three decorators. The engine gives all three the same pull, cache, dependency, and invalidation mechanics, then varies caching and result shape by surface.</p>
 <div class="rule"><b>Shortest useful model:</b> declare a getter; the first read computes and caches it while discovering what it used; an edit drops only affected caches; a later pull rebuilds what is needed.</div>
 
 <h2 id="surfaces">Start here: the three computed surfaces</h2>
@@ -16,14 +16,14 @@ def utc_starts(self):
 <div class="n dict"><b><code>@computed_dict(keys="jobs")</code></b><pre><code>@computed_dict(keys="jobs")
 def energy_per_job(self, job):
     return self.energy_for(job)</code></pre><span>One independently cached result per current member.</span></div>
-<div class="n lazy"><b><code>@lazy_attribute</code></b><pre><code>@lazy_attribute
+<div class="n lazy"><b><code>@computed_structure</code></b><pre><code>@computed_structure
 def impact_rows(self):
-    return tuple(self.build_rows())</code></pre><span>A projection computed only when consumed.</span></div>
+    return tuple(self.build_rows())</code></pre><span>One arbitrary structure cached as a unit.</span></div>
 </div>
-<div class="tablewrap"><table><tr><th>Question</th><th>Computed attribute</th><th>Computed dict</th><th>Lazy attribute</th></tr>
+<div class="tablewrap"><table><tr><th>Question</th><th>Computed attribute</th><th>Computed dict</th><th>Computed structure</th></tr>
 <tr><td>Result shape</td><td>One attached value</td><td>Key-set plus attached element values</td><td>One raw value or nested structure</td></tr>
-<tr><td>Normal eager warming</td><td>Reachable from configured outputs</td><td>Reachable, per element</td><td>Never</td></tr>
-<tr><td>Primary purpose</td><td>Core modeled calculation</td><td>Core calculation broken down by modeled members</td><td>Attribution, display, or supporting projection</td></tr>
+<tr><td>Caching unit</td><td>The explainable result</td><td>Each independently computed element</td><td>The entire raw or nested result</td></tr>
+<tr><td>Selection rule</td><td>One fresh explainable</td><td>One fresh explainable per member of a declared collection</td><td>Composite, coupled, or otherwise arbitrary result</td></tr>
 </table></div>
 <p><a href="recomputation/computed-surfaces.html"><b>Compare the three surfaces in detail →</b></a> Getter signatures, slot topology, dependency discovery, guards, persistence, examples, and a decision guide.</p>
 
@@ -38,11 +38,11 @@ def impact_rows(self):
 <a class="zoom-card zoom" href="recomputation/blocks/computed-attribute.html" data-title="@computed_attribute — decorator + descriptor"><span class="zt"><code>@computed_attribute</code> technical zoom 🔍</span><span class="zd">How decorator syntax installs a descriptor and creates per-instance getter closures.</span></a>
 <a class="zoom-card zoom" href="recomputation/blocks/reactive-slot.html" data-title="ReactiveSlot — cache cell + graph node"><span class="zt"><code>ReactiveSlot</code> technical zoom 🔍</span><span class="zd">Address identity, storage, compute frames, read recording, cache state, and invalidation.</span></a>
 </div>
-<p>The <a href="recomputation/computed-surfaces.html">computed-surfaces guide</a> adds focused technical zooms for <code>@computed_dict</code> and <code>@lazy_attribute</code> beside their explanations.</p>
+<p>The <a href="recomputation/computed-surfaces.html">computed-surfaces guide</a> adds focused technical zooms for <code>@computed_dict</code> and <code>@computed_structure</code> beside their explanations.</p>
 
 <h2 id="reading-path">Choose your depth</h2>
 <div class="grid">
-<a class="card" href="recomputation/computed-surfaces.html"><div class="name">1 · Computed surfaces <span class="pill">author first</span></div><div class="desc">Choose between <code>@computed_attribute</code>, <code>@computed_dict</code>, and <code>@lazy_attribute</code>; compare what is shared and what differs.</div></a>
+<a class="card" href="recomputation/computed-surfaces.html"><div class="name">1 · Computed surfaces <span class="pill">author first</span></div><div class="desc">Choose between <code>@computed_attribute</code>, <code>@computed_dict</code>, and <code>@computed_structure</code>; compare what is shared and what differs.</div></a>
 <a class="card" href="recomputation/lifecycle.html"><div class="name">2 · Complete lifecycle <span class="pill">core review</span></div><div class="desc">Follow one real getter from construction through first computation, both input types, invalidation, guard pulls, optional output pulls, rollback, and debugging.</div></a>
 <a class="card" href="persistence.html"><div class="name">3 · Persistence</div><div class="desc">See which caches and graph edges survive JSON, why topology is values-free, and how partial state reloads safely.</div></a>
 </div>

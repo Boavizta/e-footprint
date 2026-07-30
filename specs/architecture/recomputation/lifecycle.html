@@ -111,7 +111,7 @@ S_utc._calculus_dependencies == {S_starts, S_timezone}  # topology retained</cod
 <details><summary>Code-reading route for the walkthrough</summary><div class="fbody"><ol>
 <li><a href="../../../efootprint/core/usage/usage_pattern.py"><code>usage_pattern.py</code></a> — domain constructor and getter.</li>
 <li><a href="../../../efootprint/abstract_modeling_classes/reactive_core/graph.py"><code>reactive_core/graph.py</code></a> — <code>ReactiveSlot</code>, node creation, dependency recording, and invalidation.</li>
-<li><a href="../../../efootprint/abstract_modeling_classes/reactive_core/computed_slots.py"><code>reactive_core/computed_slots.py</code></a> — computed/lazy descriptors, getter closures, and class-level declaration registries.</li>
+<li><a href="../../../efootprint/abstract_modeling_classes/reactive_core/computed_slots.py"><code>reactive_core/computed_slots.py</code></a> — computed descriptors, getter closures, and class-level declaration registries.</li>
 <li><a href="../../../efootprint/abstract_modeling_classes/contextual_modeling_object_attribute.py"><code>contextual_modeling_object_attribute.py</code></a> — forward-link read hook and reverse-node bumps.</li>
 <li><a href="../../../efootprint/abstract_modeling_classes/modeling_object.py"><code>modeling_object.py</code></a> — assignment boundary and input wrapping.</li>
 <li><a href="../../../efootprint/abstract_modeling_classes/modeling_update.py"><code>modeling_update.py</code></a> — transactional apply, changed-slot capture, deletion wave, guard/output pulls, and rollback.</li>
@@ -141,7 +141,7 @@ S_utc._calculus_dependencies == {S_starts, S_timezone}  # topology retained</cod
 
 <h2 id="dependencies">Where dependency edges come from</h2>
 <div class="tablewrap"><table><tr><th>Kind</th><th>Recorded when</th><th>Source</th></tr>
-<tr><td>Calculus</td><td>A computed value's arithmetic ancestry contains an attached explainable value—or a lazy projection returns a structure containing one.</td><td><code>ExplainableObject</code> ancestry → <code>record_calculus_dependency</code>.</td></tr>
+<tr><td>Calculus</td><td>A computed value's arithmetic ancestry contains an attached explainable value—or a computed structure contains one.</td><td><code>ExplainableObject</code> ancestry → <code>record_calculus_dependency</code>.</td></tr>
 <tr><td>Structural</td><td>A getter reads an input node, direct/list/dict membership, reverse relationship, or modeling-container relationship.</td><td>Relationship/input read hooks → <code>record_structural_dependency</code>.</td></tr>
 </table></div>
 <p>Membership writes also bump affected reverse-relationship nodes at the container-field transition. All dependencies live in this one slot-addressed graph; there is no global computation order and no wholesale cache flush.</p>
@@ -163,6 +163,6 @@ S_utc._calculus_dependencies == {S_starts, S_timezone}  # topology retained</cod
 <tr><td>An invalid edit fails only later</td><td>The validating getter should explicitly declare <code>guard=True</code>, and new-link traversal must include its object.</td></tr>
 <tr><td>A cycle error appears</td><td>Read the reported slot chain; it is the active recursive pull path, not a guessed class-level order.</td></tr>
 <tr><td>A loaded cached result survives the wrong edit</td><td>Check the values-free <code>calculation_graph</code>, especially structural edges through valueless intermediates.</td></tr>
-<tr><td>Attribution/Sankey is slow after an edit</td><td>Lazy projections intentionally remain void until render; inspect which source row slots the edit invalidated rather than expecting eager warming.</td></tr>
+<tr><td>Attribution/Sankey is slow after an edit</td><td>Its computed structures remain void until read; inspect which source row slots the edit invalidated.</td></tr>
 </table></div>
 <footer>e-footprint architecture · <a href="../recomputation.html">recomputation overview</a> · technical depth: <a href="blocks/reactive-slot.html">ReactiveSlot</a> · persistence: <a href="../persistence.html">JSON contract</a>.</footer><script src="../source-links.js"></script></body></html>

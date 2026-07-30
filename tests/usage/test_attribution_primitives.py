@@ -96,23 +96,6 @@ class TestAttributionPrimitives(TestCase):
         scale = max(expected.abs().max().magnitude, 1e-9)
         self.assertAlmostEqual(0, max_abs_diff.magnitude / scale, places=4)
 
-    def test_per_step_and_per_rsn_occurrences_partition_across_usage_patterns_total(self):
-        """Test that per-step plus per-RSN occurrences sum to the job's across-patterns total, with step and job
-        reuse within the journey and an RSN shared across edge functions."""
-        for job in (self.dual_job, self.web_only_job):
-            partition_sum = (
-                sum(job.hourly_avg_occurrences_per_usage_journey_step.values())
-                + sum(job.hourly_avg_occurrences_per_recurrent_server_need.values()))
-            self.assert_hourly_quantities_equal(job.hourly_avg_occurrences_across_usage_patterns, partition_sum)
-
-    def test_per_step_and_per_rsn_data_stored_partition_across_usage_patterns_total(self):
-        """Test that per-step plus per-RSN data-stored rates sum to the job's across-patterns data-stored rate."""
-        for job in (self.dual_job, self.web_only_job):
-            partition_sum = (
-                sum(job.hourly_data_stored_per_step.values())
-                + sum(job.hourly_data_stored_per_recurrent_server_need.values()))
-            self.assert_hourly_quantities_equal(job.hourly_data_stored_across_usage_patterns, partition_sum)
-
     def test_per_cell_data_transferred_partition_across_usage_patterns_total(self):
         """Test that per-(step, up) plus per-(rsn, edge_up) data transferred sum to the job's across-patterns
         data-transferred rate."""
@@ -124,16 +107,6 @@ class TestAttributionPrimitives(TestCase):
             job.compute_hourly_data_transferred_per_usage_pattern_per_recurrent_server_need(edge_up, rsn)
             for rsn in job.recurrent_server_needs for edge_up in rsn.edge_usage_patterns)
         self.assert_hourly_quantities_equal(job.hourly_data_transferred_across_usage_patterns, partition_sum)
-
-    def test_per_usage_journey_regroups_match_per_usage_pattern_partitions(self):
-        """Test that the per-journey and per-edge-journey regroups recover the web and edge per-pattern sums."""
-        job = self.dual_job
-        web_total = (job.hourly_avg_occurrences_per_usage_pattern[self.up1]
-                     + job.hourly_avg_occurrences_per_usage_pattern[self.up2])
-        self.assert_hourly_quantities_equal(web_total, job.hourly_avg_occurrences_per_usage_journey[self.journey])
-        self.assert_hourly_quantities_equal(
-            job.hourly_avg_occurrences_per_usage_pattern[self.edge_up],
-            job.hourly_avg_occurrences_per_edge_usage_journey[self.edge_journey])
 
     def test_step_occupancy_tiles_nb_usage_journeys_in_parallel(self):
         """Test that step occupancies summed over a journey's distinct steps tile the journey's parallel count,

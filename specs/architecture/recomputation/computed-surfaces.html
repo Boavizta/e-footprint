@@ -4,8 +4,8 @@
 </style></head><body>
 <div class="crumb"><a href="../index.html">Architecture</a> / <a href="../recomputation.html">Recomputation</a> / Computed surfaces</div>
 <h1>Three ways to declare derived state</h1>
-<p class="lede">Modeling authors meet the engine through three class-level descriptors. They share one reactive runtime, but expose different result shapes and update policies.</p>
-<div class="rule"><b>Choose from the meaning of the result:</b> one modeled result → <code>@computed_attribute</code>; one modeled result per member → <code>@computed_dict</code>; a read-time projection that should not warm eagerly → <code>@lazy_attribute</code>.</div>
+<p class="lede">Modeling authors meet the engine through three class-level descriptors. They share one pull-based reactive runtime and differ by caching and result shape.</p>
+<div class="rule"><b>Choose from computation shape:</b> one fresh explainable result → <code>@computed_attribute</code>; one independently computable fresh explainable per member → <code>@computed_dict</code>; one arbitrary raw or nested result cached as a unit → <code>@computed_structure</code>.</div>
 
 <h2 id="examples">Start from the code you write</h2>
 <div class="three">
@@ -17,11 +17,11 @@ def utc_starts(self):
 <div class="n dict"><b><code>@computed_dict(keys="jobs")</code></b><pre><code>@computed_dict(keys="jobs")
 def energy_per_job(self, job):
     return self.energy_for(job)</code></pre><span>One independently cached attached result for every current key.</span></div>
-<div class="n lazy"><b><code>@lazy_attribute</code></b><pre><code>@lazy_attribute
+<div class="n lazy"><b><code>@computed_structure</code></b><pre><code>@computed_structure
 def impact_rows(self):
     return tuple(
         self.build_rows()
-    )</code></pre><span>A cached projection, computed only when a consumer asks for it.</span></div>
+    )</code></pre><span>One arbitrary structure cached and invalidated as a unit.</span></div>
 </div>
 
 <h2 id="shared">What all three share</h2>
@@ -34,14 +34,14 @@ def impact_rows(self):
 </ul>
 
 <h2 id="comparison">What differs</h2>
-<div class="tablewrap"><table><tr><th>Concern</th><th><code>@computed_attribute</code></th><th><code>@computed_dict</code></th><th><code>@lazy_attribute</code></th></tr>
-<tr><td>Use when</td><td>The object owns one derived modeled value.</td><td>The object owns the same derived value shape for each object in a named key collection.</td><td>The result is an attribution, display, or other projection that should exist only when consumed.</td></tr>
-<tr><td>Runtime topology</td><td>One computing slot.</td><td>One key-set slot plus one independently cached element slot per current key.</td><td>One projection slot.</td></tr>
+<div class="tablewrap"><table><tr><th>Concern</th><th><code>@computed_attribute</code></th><th><code>@computed_dict</code></th><th><code>@computed_structure</code></th></tr>
+<tr><td>Use when</td><td>The object owns one fresh explainable result.</td><td>Each member of a named collection has an independently computable fresh explainable result.</td><td>The getter returns one raw, composite, or nested result whose parts compute and invalidate together.</td></tr>
+<tr><td>Runtime topology</td><td>One computing slot.</td><td>One key-set slot plus one independently cached element slot per current key.</td><td>One structure slot.</td></tr>
 <tr><td>Getter signature</td><td><code>getter(self)</code></td><td><code>getter(self, key)</code>; <code>keys="attribute_name"</code> names the collection.</td><td><code>getter(self)</code></td></tr>
 <tr><td>Returned value</td><td>A fresh explainable value attached to the owning attribute.</td><td>A fresh explainable value per key, attached into a persistent <code>ExplainableObjectDict</code> facade.</td><td>A raw value held by the slot; plain dicts, tuples, and dataclasses containing explainables are allowed.</td></tr>
 <tr><td>Calculus discovery</td><td>Formula ancestry of the returned value.</td><td>Formula ancestry of each returned element.</td><td>Every explainable found recursively in the returned value structure.</td></tr>
-<tr><td>Eager behavior</td><td>Void until read unless explicitly requested through <code>eager_outputs</code>; <code>guard=True</code> forces validation pulls.</td><td>Same guard/output policy, with independent per-key caching.</td><td>Void until explicitly read.</td></tr>
-<tr><td><code>calculated_attributes</code> and generated reference</td><td>Included.</td><td>Included as a computed dict surface.</td><td>Excluded: it is a projection, not part of the eager calculated-attribute model.</td></tr>
+<tr><td>Pull behavior</td><td>Void until read; <code>guard=True</code> adds eager validation pulls.</td><td>Same policy, with independent per-key caches.</td><td>Void until read, like ordinary non-guard computed slots.</td></tr>
+<tr><td><code>calculated_attributes</code> and generated reference</td><td>Included.</td><td>Included as a computed dict surface.</td><td>Excluded because its raw result does not belong to explainable-attribute bookkeeping.</td></tr>
 <tr><td>Persistence</td><td>Cached value only when <code>serialize=True</code>.</td><td>Materialized entries only when <code>serialize=True</code>.</td><td>Raw JSON-native cached value only when <code>serialize=True</code>; an unread slot is omitted.</td></tr>
 </table></div>
 
@@ -56,18 +56,18 @@ def impact_rows(self):
 <p>A whole-dict read structurally depends on the key-set slot. If a key leaves the collection, its sub-slot is removed from the registry and ceases to be a guard; the corresponding facade entry is removed. Previous dependents retain their old edge to that sub-slot only until they successfully recompute.</p>
 <a class="zoom-card zoom" href="blocks/computed-dict.html" data-title="@computed_dict — key set + element slots"><span class="zt"><code>@computed_dict</code> technical zoom 🔍</span><span class="zd">Key-set slot, stable facade, composite-key element slots, fine-grained invalidation, stale-key pruning, guards, and persistence.</span></a>
 
-<h2 id="lazy"><code>@lazy_attribute</code>: a projection on demand</h2>
-<p>A lazy attribute is still reactive and cached—it is not a plain property and not <code>functools.cached_property</code>. The difference is policy and ownership: it stays outside <code>calculated_attributes</code>, never participates in eager warming, and keeps its result raw rather than attaching it into modeling-container bookkeeping.</p>
-<div class="cols"><div class="n lazy"><b>Why value-structure discovery?</b><br><span>A projection may return nested dicts, tuples, sets, or dataclasses. The closure walks that structure and records calculus edges for every contained explainable.</span></div><div class="n lazy"><b>Why lazy?</b><br><span>Attribution matrices and display breakdowns may be expensive and are irrelevant to the main footprint total. They compute only for consumers that need them.</span></div></div>
-<a class="zoom-card zoom" href="blocks/lazy-attribute.html" data-title="@lazy_attribute — reactive projection"><span class="zt"><code>@lazy_attribute</code> technical zoom 🔍</span><span class="zd">Bare and parameterized forms, raw slot caching, recursive value-structure dependency discovery, composition, eager policy, and optional persistence.</span></a>
+<h2 id="computed-structure"><code>@computed_structure</code>: one arbitrary result</h2>
+<p>A computed structure is reactive and cached—it is not a plain property and not <code>functools.cached_property</code>. Its result stays raw rather than being attached to modeling-container bookkeeping. The whole result occupies one slot and therefore invalidates and recomputes as one unit.</p>
+<div class="cols"><div class="n lazy"><b>Why value-structure discovery?</b><br><span>A structure may return nested dicts, tuples, sets, or dataclasses. The closure walks that structure and records calculus edges for every contained explainable.</span></div><div class="n lazy"><b>Why one slot?</b><br><span>Composite coordinates, coupled normalization, matrices, and presentation rows often cannot be recomputed independently by one declared modeled key.</span></div></div>
+<a class="zoom-card zoom" href="blocks/computed-structure.html" data-title="@computed_structure — arbitrary reactive result"><span class="zt"><code>@computed_structure</code> technical zoom 🔍</span><span class="zd">Bare and parameterized forms, raw slot caching, recursive value-structure dependency discovery, composition, and optional persistence.</span></a>
 
 <h2 id="choice">Decision guide</h2>
-<div class="diagram"><div class="dtitle">Choose the narrowest semantic surface</div><div class="n computed"><b>Does this derived value belong to the model's calculated footprint graph?</b><br><span>Yes → continue with a computed surface. No, it is attribution/display/supporting projection → <code>@lazy_attribute</code>.</span></div><div class="ar">↓ if computed</div><div class="n dict"><b>Is there one independently recomputable result per member of a modeled collection?</b><br><span>Yes → <code>@computed_dict(keys="…")</code>. No → <code>@computed_attribute</code>.</span></div></div>
+<div class="diagram"><div class="dtitle">Choose by result and caching shape</div><div class="n computed"><b>Does the getter return one fresh explainable value?</b><br><span>Yes → <code>@computed_attribute</code>. No → continue.</span></div><div class="ar">↓</div><div class="n dict"><b>Is there one independently computable fresh explainable per member of one declared collection?</b><br><span>Yes → <code>@computed_dict(keys="…")</code>. No, or the keys/results are coupled → <code>@computed_structure</code>.</span></div></div>
 <div class="rule"><b>Flags refine a surface; they do not create another one.</b> <code>guard=True</code> changes failure timing. <code>serialize=True</code> opts a materialized cache into persistence. Neither changes the underlying dependency mechanism.</div>
 
 <details><summary>Implementation reading route</summary><div class="fbody"><ol>
 <li><a href="../../../efootprint/abstract_modeling_classes/reactive_core/computed_slots.py"><code>computed_attribute</code></a> — single-value descriptor and getter closure.</li>
 <li><a href="../../../efootprint/abstract_modeling_classes/reactive_core/computed_slots.py"><code>computed_dict</code></a> — descriptor class, key-set slot, element slots, facade, and stale-key pruning.</li>
-<li><a href="../../../efootprint/abstract_modeling_classes/reactive_core/computed_slots.py"><code>lazy_attribute</code></a> — raw projection slot; recursive value-structure discovery lives in <a href="../../../efootprint/abstract_modeling_classes/reactive_core/graph.py"><code>reactive_core/graph.py</code></a>.</li>
+<li><a href="../../../efootprint/abstract_modeling_classes/reactive_core/computed_slots.py"><code>computed_structure</code></a> — raw structure slot; recursive value-structure discovery lives in <a href="../../../efootprint/abstract_modeling_classes/reactive_core/graph.py"><code>reactive_core/graph.py</code></a>.</li>
 </ol></div></details>
 <footer>e-footprint architecture · <a href="../recomputation.html">recomputation overview</a> · next: <a href="lifecycle.html">complete runtime lifecycle</a>.</footer><script src="../source-links.js"></script></body></html>

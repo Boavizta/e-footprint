@@ -371,7 +371,7 @@ class TestRandomizedMutationParity(TestCase):
             with self.subTest(seed=seed):
                 rng = random.Random(seed)
                 built_system = self.build_system()
-                # Fill the lazy serialize-flagged slots, like a session after its first Sankey render.
+                # Fill serialize-flagged computed structures, like a session after its first Sankey render.
                 built_system.impact_repartition_matrix
                 canonical_dict = json.loads(json.dumps(system_to_json(built_system)))
                 _, flat_obj_dict, _ = json_to_system(canonical_dict)

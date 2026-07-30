@@ -322,7 +322,7 @@ folds the matrix's summed scalars (no memoization needed).
 
 **Depends on:** Task 6.
 
-**Status:** Done. Notes: the engine gained a `@lazy_attribute` descriptor (own class registry, so lazy
+**Status:** Done. Notes: the engine gained a `@computed_structure` descriptor (own class registry, so structure
 slots never enter `calculated_attributes` — no eager pull, no serialization, no docs entry; values held
 raw, with calculus edges recorded from every explainable found in the returned structure so
 ancestry-only input reads still invalidate) — the framework-level replacement for the cached-property
@@ -399,7 +399,7 @@ encode 1.1 ms / decode 0.9 ms, zero extra code) over columnar (271 kB compact bu
 (2) **breakdown-by-source**: serializing the hourly breakdown dicts would have
 added 8.4 MB (+66% of the file) for 5 edge devices, and they are not derivable from the device-level
 pairs, so the Sankey decoration now reads a new condensed `EdgeDevice.footprint_breakdown_summary`
-(`@lazy_attribute(serialize=True)`, period sums keyed by phase and component id, ~2 kB, matrix-style);
+(`@computed_structure(serialize=True)`, period sums keyed by phase and component id, ~2 kB, matrix-style);
 (3) **nudge-loop gate target — accepted as gated**: the ≥10× criterion is met on the finest
 calibration read (22.4×, the roadmap's traffic-calibration target); coarser targets recompute wider
 genuine aggregation cones (job's network energy 6.7×, network total 4.3×) because a hub slot re-sums

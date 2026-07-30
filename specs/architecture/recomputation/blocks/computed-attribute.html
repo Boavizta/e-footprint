@@ -80,7 +80,7 @@ utc_hourly_usage_journey_starts = descriptor</code></pre>
 
     return value</code></pre>
 <div class="rule"><b>This is the handoff:</b> the domain getter creates the value and its formula ancestry; the closure turns that ancestry into slot-level calculus dependencies; <code>ReactiveSlot._compute()</code> then commits the frame's calculus and structural sets. See <a href="reactive-slot.html#read-hook-recording">ReactiveSlot § how read hooks mutate the active frame</a>.</div>
-<p><code>record_calculus_edges_from_value_structure(value)</code> is the corresponding bridge for <code>@lazy_attribute</code>, whose result may be a nested raw dict/list/dataclass containing explainables. A normal <code>@computed_attribute</code> uses <code>record_calculus_edges_from_ancestry(value)</code>.</p>
+<p><code>record_calculus_edges_from_value_structure(value)</code> is the corresponding bridge for <code>@computed_structure</code>, whose result may be a nested raw dict/list/dataclass containing explainables. A normal <code>@computed_attribute</code> uses <code>record_calculus_edges_from_ancestry(value)</code>.</p>
 
 <h2 id="storage">What is stored where</h2>
 <div class="tablewrap"><table><tr><th>Location</th><th>Contents</th><th>Shared?</th></tr>

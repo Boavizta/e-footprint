@@ -9,7 +9,7 @@ from efootprint.abstract_modeling_classes.source_objects import SourceValue
 from efootprint.constants.units import u
 from efootprint.core.usage.compute_nb_occurrences_in_parallel import compute_nb_avg_hourly_occurrences
 from efootprint.core.usage.job import JobBase
-from efootprint.abstract_modeling_classes.reactive_core import lazy_attribute
+from efootprint.abstract_modeling_classes.reactive_core import computed_dict
 
 if TYPE_CHECKING:
     from efootprint.core.usage.usage_journey import UsageJourney
@@ -51,31 +51,25 @@ class UsageJourneyStep(ModelingObject):
     def networks(self) -> List["Network"]:
         return list(dict.fromkeys([up.network for up in self.usage_patterns]))
 
-    @lazy_attribute
-    def hourly_avg_occurrences_per_usage_pattern(self):
+    @computed_dict(keys="usage_patterns")
+    def hourly_avg_occurrences_per_usage_pattern(self, up):
         """The step's concurrent occupancy per usage pattern — the journeys concurrently inside the step's
         [delay, delay + times_per_journey × user_time_spent] window, computed as the difference of
         journey-parallel counts at the window's end vs start offsets (exact for fractional offsets).
         Consecutive windows telescope, so summing over a journey's steps tiles
-        nb_usage_journeys_in_parallel_per_usage_pattern. Attribution-only primitive (the Device occupancy weight),
-        lazy by design."""
-        occurrences_per_usage_pattern = {}
-        for up in self.usage_patterns:
-            journey_starts = up.utc_hourly_usage_journey_starts
-            occupancy = EmptyExplainableObject()
-            delay_between_uj_start_and_step_start = EmptyExplainableObject()
-            for journey_step, times_per_journey in up.usage_journey.uj_steps.items():
-                delay_at_step_end = (delay_between_uj_start_and_step_start
-                                     + times_per_journey * journey_step.user_time_spent)
-                if journey_step == self:
-                    occupancy += (
-                        compute_nb_avg_hourly_occurrences(journey_starts, delay_at_step_end)
-                        - compute_nb_avg_hourly_occurrences(journey_starts, delay_between_uj_start_and_step_start))
-                delay_between_uj_start_and_step_start = delay_at_step_end
-            # The difference of two FFT convolutions can leave ~-1e-6 noise at mathematically-zero hours;
-            # clip to >= 0 like compute_nb_avg_hourly_occurrences does internally for the single-convolution case.
-            occupancy = occupancy.np_compared_with(EmptyExplainableObject(), "max")
-            occurrences_per_usage_pattern[up] = occupancy.to(u.concurrent).set_label(
-                f"{self.name} hourly occupancy in {up.name}")
-
-        return occurrences_per_usage_pattern
+        nb_usage_journeys_in_parallel_per_usage_pattern. Attribution-only primitive (the Device occupancy weight)."""
+        journey_starts = up.utc_hourly_usage_journey_starts
+        occupancy = EmptyExplainableObject()
+        delay_between_uj_start_and_step_start = EmptyExplainableObject()
+        for journey_step, times_per_journey in up.usage_journey.uj_steps.items():
+            delay_at_step_end = (delay_between_uj_start_and_step_start
+                                 + times_per_journey * journey_step.user_time_spent)
+            if journey_step == self:
+                occupancy += (
+                    compute_nb_avg_hourly_occurrences(journey_starts, delay_at_step_end)
+                    - compute_nb_avg_hourly_occurrences(journey_starts, delay_between_uj_start_and_step_start))
+            delay_between_uj_start_and_step_start = delay_at_step_end
+        # The difference of two FFT convolutions can leave ~-1e-6 noise at mathematically-zero hours;
+        # clip to >= 0 like compute_nb_avg_hourly_occurrences does internally for the single-convolution case.
+        occupancy = occupancy.np_compared_with(EmptyExplainableObject(), "max")
+        return occupancy.to(u.concurrent).set_label(f"{self.name} hourly occupancy in {up.name}")

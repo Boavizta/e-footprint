@@ -640,8 +640,8 @@ class TestServerAttributionAtoms(TestCase):
 
 
 class TestAttributionCachesAfterModelingUpdate(TestCase):
-    def test_modeling_update_recomputes_lazy_attribution_caches_after_a_query(self):
-        """Test the render-then-update sequence on a service model: materializing the lazy attribution caches
+    def test_modeling_update_invalidates_attribution_caches_after_a_query(self):
+        """Test the render-then-update sequence on a service model: materializing attribution caches
         then changing an input must neither crash the ModelingUpdate nor leave stale binding demands in the
         attribution layer."""
         server = Server.from_defaults(
@@ -660,7 +660,7 @@ class TestAttributionCachesAfterModelingUpdate(TestCase):
             create_source_hourly_values_from_list([10, 20], datetime(2026, 1, 1)))
         System("stale weights system", [up], edge_usage_patterns=[])
 
-        _ = server.binding_demand_per_job  # a render materializes the lazy attribution slots
+        _ = server.binding_demand_per_job  # a render materializes the attribution structures
 
         up.hourly_usage_journey_starts = create_source_hourly_values_from_list([100, 200], datetime(2026, 1, 1))
 

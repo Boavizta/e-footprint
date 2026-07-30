@@ -74,9 +74,7 @@ class ReactiveSlot:
         self.name = name
         self.getter = getter
         self.on_value_dropped = on_value_dropped
-        # Lazy slots (read-time projections) are invalidated like any slot but never eagerly
-        # recomputed: they stay void until the next read pulls them.
-        self.lazy = False
+        # Ordinary computed slots stay void after invalidation until the next read pulls them.
         # Guard slots (validation attributes) exist to reject invalid states: they are eagerly
         # re-pulled after every invalidation that voids them, so bad edits fail at update time even
         # when nothing else reads them.
@@ -308,7 +306,7 @@ def record_calculus_edges_from_ancestry(value):
 def record_calculus_edges_from_value_structure(value):
     """Record calculus edges for every explainable found in a raw projection value — a bare explainable,
     or dicts / lists / tuples / dataclass instances containing them. An attached explainable contributes
-    its own slot; an unattached one the slots of its nearest attached ancestors. This is how lazy slots
+    its own slot; an unattached one the slots of its nearest attached ancestors. This is how computed structures
     holding plain containers capture the input reads that only surface through arithmetic ancestry."""
     if hasattr(value, "direct_ancestors_with_id"):
         if value.modeling_obj_container is not None:

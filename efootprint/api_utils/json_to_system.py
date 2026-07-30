@@ -256,7 +256,7 @@ def json_to_system(system_dict, efootprint_classes_dict=None):
 def invert_children_links_of_stored_values(flat_obj_dict):
     """Serialized values carry only their direct-ancestor addresses; the reciprocal children links
     are derived here by inversion, once every object is loaded (ancestors resolving to void slots are
-    filtered by the lazy hydration — a stored total's ancestors are themselves stored, by
+    filtered by computed-structure hydration — a stored total's ancestors are themselves stored, by
     construction of the serialize set)."""
     from efootprint.abstract_modeling_classes.reactive_core import instance_slot_registry
 
@@ -273,10 +273,10 @@ def invert_children_links_of_stored_values(flat_obj_dict):
 
 def rebuild_dependency_graph(calculation_graph, flat_obj_dict):
     """Reinstall the serialized slot-level dependency edges (calculus and structural): materialize
-    each node's slot — computed, lazy, dict sub-slot or getter-less bump node — then wire the edges,
+    each node's slot — computed attribute, computed structure, dict sub-slot or getter-less bump node — then wire the edges,
     so later writes invalidate through the graph exactly as on the model that was saved."""
     from efootprint.abstract_modeling_classes.reactive_core import (
-        _node_slot, computed_slots, lazy_slots)
+        _node_slot, computed_slots, computed_structures)
 
     slots = []
     for container_id, attr_name, key_id in calculation_graph["nodes"]:
@@ -288,12 +288,12 @@ def rebuild_dependency_graph(calculation_graph, flat_obj_dict):
         key = flat_obj_dict[key_id] if key_id is not None else None
         container_class = container.efootprint_class
         declared_computed_slots = computed_slots(container_class)
-        declared_lazy_slots = lazy_slots(container_class)
+        declared_computed_structures = computed_structures(container_class)
         if attr_name in declared_computed_slots:
             descriptor = declared_computed_slots[attr_name]
             slots.append(descriptor.sub_slot(container, key) if key is not None else descriptor.slot(container))
-        elif attr_name in declared_lazy_slots:
-            slots.append(declared_lazy_slots[attr_name].slot(container))
+        elif attr_name in declared_computed_structures:
+            slots.append(declared_computed_structures[attr_name].slot(container))
         else:
             slots.append(_node_slot(container, attr_name, key))
 

@@ -111,7 +111,7 @@ class TestMinimalSerializationContract(TestCase):
 
         self.assertNotEqual(initial_total, loaded_system.total_footprint)
 
-    def test_lazy_auditability_after_load(self):
+    def test_on_demand_auditability_after_load(self):
         """Test that after a trusted load, an intermediate value and its formula are available on
         demand by recomputing only its own ancestor cone, not the whole model."""
         loaded_system = self.load_canonical()
@@ -234,7 +234,7 @@ class TestMinimalSerializationContract(TestCase):
 
 class TestEdgeSystemSerializationContract(TestCase):
     """The simple system carries no edge device: the dict-valued footprint_breakdown_summary
-    (a serialize-flagged lazy slot holding a plain dict, not explainable values or matrix-style
+    (a serialize-flagged computed structure holding a plain dict, not explainable values or matrix-style
     list rows) only exists on edge systems, so its persistence is pinned here."""
 
     @classmethod
@@ -244,14 +244,14 @@ class TestEdgeSystemSerializationContract(TestCase):
         cls.system, _ = IntegrationTestSimpleEdgeSystemBaseClass.generate_simple_edge_system()
         cls.edge_device = next(
             obj for obj in cls.system.all_linked_objects if obj.class_as_simple_str == "EdgeDevice")
-        # Materialize footprint outputs and every serialize-flagged lazy slot (matrix + every device's summary),
+        # Materialize footprint outputs and every serialize-flagged computed structure (matrix + summaries),
         # like a session after its first Sankey render.
         cls.system.total_footprint
-        from efootprint.abstract_modeling_classes.reactive_core import lazy_slots
+        from efootprint.abstract_modeling_classes.reactive_core import computed_structures
         for obj in [cls.system] + cls.system.all_linked_objects:
-            for lazy_name, lazy_descriptor in lazy_slots(obj.efootprint_class).items():
-                if lazy_descriptor.serialize:
-                    getattr(obj, lazy_name)
+            for structure_name, structure_descriptor in computed_structures(obj.efootprint_class).items():
+                if structure_descriptor.serialize:
+                    getattr(obj, structure_name)
         cls.live_summary = cls.edge_device.footprint_breakdown_summary
         cls.canonical_dict = system_to_json(cls.system)
 
@@ -262,13 +262,14 @@ class TestEdgeSystemSerializationContract(TestCase):
     def test_breakdown_summary_round_trips_as_dict(self):
         """Test that the dict-valued breakdown summary serializes with its per-component values and
         attaches unchanged on a trusted load."""
-        from efootprint.abstract_modeling_classes.reactive_core import lazy_slots
+        from efootprint.abstract_modeling_classes.reactive_core import computed_structures
 
         serialized_summary = self.canonical_dict["EdgeDevice"][self.edge_device.id]["footprint_breakdown_summary"]
         self.assertEqual(json.loads(json.dumps(self.live_summary)), serialized_summary)
 
         _, loaded_device = self.load_canonical()
-        loaded_summary = lazy_slots(loaded_device.efootprint_class)["footprint_breakdown_summary"].peek(loaded_device)
+        loaded_summary = computed_structures(loaded_device.efootprint_class)["footprint_breakdown_summary"].peek(
+            loaded_device)
         self.assertEqual(json.loads(json.dumps(self.live_summary)), loaded_summary)
 
     def test_canonical_round_trip_is_identity(self):

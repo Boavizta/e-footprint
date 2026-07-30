@@ -1,4 +1,4 @@
-"""Descriptors and declaration registries for computed and lazy modeling attributes."""
+"""Descriptors and declaration registries for reactive computed modeling attributes."""
 
 from enum import StrEnum
 
@@ -374,19 +374,18 @@ def prune_stale_computed_dict_keys(invalidated_slots):
         descriptor.discard_stale_keys(instance, list(getattr(instance, descriptor.keys)))
 
 
-class lazy_attribute:
-    """Descriptor declaring a lazy projection slot: computed on first read, cached in the reactive
-    graph and invalidated through it like any slot, but excluded from ``calculated_attributes`` (so
-    update-time output enumeration, the current serialization contract and the docs reference never
-    touch it) and never eagerly recomputed — after an invalidation it stays void until the next read.
-    Its value is held raw, not attached to the owner's explainability bookkeeping, so getters may return plain dicts,
-    tuples or dataclass instances of explainable values; the engine records calculus edges from every
-    explainable found in the returned structure, on top of the reads recorded while the getter ran.
+class computed_structure:
+    """Descriptor declaring one reactively cached arbitrary structure.
 
-    Declared bare (``@lazy_attribute``) or parametrized (``@lazy_attribute(serialize=True)``): a
-    serialize-flagged lazy slot persists its cached value when materialized (it fills lazily, so a
-    save before the first read simply omits it) — the value must then be JSON-native, since raw lazy
-    values bypass the explainable serialization machinery."""
+    The result is held raw in one slot rather than attached to the owner's explainability bookkeeping,
+    so getters may return dicts, tuples, dataclass instances, scalars, or nested combinations. The
+    engine recursively records calculus edges from explainables within the returned structure, in
+    addition to reads recorded while the getter ran.
+
+    Declared bare (``@computed_structure``) or parametrized
+    (``@computed_structure(serialize=True)``). A serialize-flagged structure persists its cached value
+    when materialized; a save before its first read simply omits it. Serialized structures must be
+    JSON-native because they bypass explainable serialization."""
 
     def __init__(self, getter=None, *, serialize=False):
         self.serialize = serialize
@@ -401,22 +400,21 @@ class lazy_attribute:
 
     def __call__(self, getter):
         if self.getter is not None:
-            raise TypeError(f"Lazy attribute {self.attr_name} is not callable")
+            raise TypeError(f"Computed structure {self.attr_name} is not callable")
         self._bind_getter(getter)
         return self
 
     def __set_name__(self, owner, name):
         if name != self.getter.__name__:
             raise ValueError(
-                f"Lazy attribute declared as {name} but its getter is named {self.getter.__name__}")
-        _register_slot("_declared_lazy_slots", owner, name, self)
+                f"Computed structure declared as {name} but its getter is named {self.getter.__name__}")
+        _register_slot("_declared_computed_structures", owner, name, self)
 
     def slot(self, instance) -> ReactiveSlot:
         registry = instance_slot_registry(instance)
         slot = registry.get(self.attr_name)
         if slot is None:
             slot = ReactiveSlot(f"{self.attr_name} of {getattr(instance, 'id', instance)}")
-            slot.lazy = True
             slot.getter = self._make_compute_closure(instance)
             registry[self.attr_name] = slot
         return slot
@@ -429,8 +427,7 @@ class lazy_attribute:
         return compute
 
     def attach_cached_value(self, instance, value):
-        """Store a value in the slot without computing — the load path for serialize-flagged lazy
-        slots and the pinning path tests use."""
+        """Store a value without computing — used by loading and test pinning."""
         self.slot(instance).attach_cached_value(value)
 
     def peek(self, instance):
@@ -450,15 +447,14 @@ class lazy_attribute:
 
     def __set__(self, instance, value):
         raise AttributeError(
-            f"{self.attr_name} is a lazy projection of {type(instance).__name__} and cannot be assigned: "
+            f"{self.attr_name} is a computed structure of {type(instance).__name__} and cannot be assigned: "
             f"change the inputs it derives from instead, or pin it in tests with "
             f"tests.utils.patch_attribute / the descriptor's attach_cached_value.")
 
 
-def lazy_slots(cls: type) -> dict:
-    """All lazy-projection descriptors visible on cls (name -> descriptor), the most derived
-    declaration winning."""
-    return _collect_slots("_declared_lazy_slots", cls)
+def computed_structures(cls: type) -> dict:
+    """All computed-structure descriptors visible on cls, with the most-derived declaration winning."""
+    return _collect_slots("_declared_computed_structures", cls)
 
 
 def computation_slots_for_purpose(instance, purpose: ComputationPurpose) -> frozenset[ReactiveSlot]:
@@ -497,9 +493,9 @@ def computation_slots_for_purpose(instance, purpose: ComputationPurpose) -> froz
 
 
 def serialized_slots(cls: type) -> dict:
-    """All serialize-flagged slot descriptors visible on cls (computed and lazy), name -> descriptor —
+    """All serialize-flagged slot descriptors visible on cls, name -> descriptor —
     the single source of truth for which slots persist under the minimal serialization contract."""
-    return {name: descriptor for name, descriptor in {**computed_slots(cls), **lazy_slots(cls)}.items()
+    return {name: descriptor for name, descriptor in {**computed_slots(cls), **computed_structures(cls)}.items()
             if descriptor.serialize}
 
 

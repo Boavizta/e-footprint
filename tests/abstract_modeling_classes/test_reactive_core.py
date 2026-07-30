@@ -10,7 +10,8 @@ from efootprint.abstract_modeling_classes.modeling_object import ModelingObject
 from efootprint.abstract_modeling_classes.reactive_core import (
     CircularDependencyError, ComputationPurpose, ReactiveSlot, ReverseCollection, ReverseLink,
     add_computed_attribute, computation_slots_for_purpose, computed_attribute, computed_dict, computed_slots,
-    invalidate, lazy_attribute, lazy_slots, record_calculus_dependency, record_structural_dependency, reverse_slots)
+    computed_structure, computed_structures, invalidate, record_calculus_dependency,
+    record_structural_dependency, reverse_slots)
 from efootprint.abstract_modeling_classes.source_objects import SourceValue
 from efootprint.constants.units import u
 
@@ -809,29 +810,29 @@ class ReactiveCoreProjectionHolder(ModelingObject):
         if leaf is not None:
             self.leaf = leaf
 
-    @lazy_attribute
+    @computed_structure
     def raw_projection(self):
         """Raw dict projection over the leaf's power input."""
         type(self).compute_log.append("raw_projection")
         return {"tripled": self.leaf.power * ExplainableQuantity(3 * u.dimensionless, "three")}
 
-    @lazy_attribute
+    @computed_structure
     def projection_total(self):
-        """Plain scalar derived from another lazy projection."""
+        """Plain scalar derived from another computed structure."""
         type(self).compute_log.append("projection_total")
         return self.raw_projection["tripled"].magnitude
 
 
-class TestLazyAttribute(TestCase):
+class TestComputedStructure(TestCase):
     def setUp(self):
         ReactiveCoreProjectionHolder.compute_log = []
-        self.leaf = ReactiveCoreLeaf("lazy leaf", SourceValue(1 * u.W))
-        self.holder = ReactiveCoreProjectionHolder("lazy holder", leaf=self.leaf)
+        self.leaf = ReactiveCoreLeaf("structure leaf", SourceValue(1 * u.W))
+        self.holder = ReactiveCoreProjectionHolder("structure holder", leaf=self.leaf)
 
-    def test_lazy_slot_registers_outside_computed_slots(self):
-        """Test that lazy projections live in their own registry: never in computed_slots, hence never in
-        calculated_attributes (no eager pull, no serialization, no docs entry)."""
-        self.assertIn("raw_projection", lazy_slots(ReactiveCoreProjectionHolder))
+    def test_computed_structure_registers_outside_computed_slots(self):
+        """Test that computed structures live in their own registry: never in computed_slots, hence never in
+        calculated_attributes (no explainable-attribute ownership or docs entry)."""
+        self.assertIn("raw_projection", computed_structures(ReactiveCoreProjectionHolder))
         self.assertNotIn("raw_projection", computed_slots(ReactiveCoreProjectionHolder))
         self.assertNotIn("raw_projection", self.holder.calculated_attributes)
 
@@ -846,7 +847,7 @@ class TestLazyAttribute(TestCase):
 
     def test_input_write_invalidates_through_value_ancestry_without_eager_recompute(self):
         """Test that an input read only through the returned structure's arithmetic ancestry still
-        invalidates the lazy slot (and its lazy dependents), and that the update does not eagerly
+        invalidates the computed structure (and its structure dependents), and that the update does not eagerly
         recompute them — they recompute on the next read."""
         self.assertEqual(3, self.holder.projection_total)
         self.assertEqual(["projection_total", "raw_projection"], ReactiveCoreProjectionHolder.compute_log)
@@ -855,21 +856,21 @@ class TestLazyAttribute(TestCase):
 
         self.assertEqual(
             ["projection_total", "raw_projection"], ReactiveCoreProjectionHolder.compute_log,
-            "lazy slots must not be eagerly recomputed by an update")
+            "computed structures must not be eagerly recomputed by an update")
         self.assertEqual(6, self.holder.projection_total)
         self.assertEqual(
             ["projection_total", "raw_projection", "projection_total", "raw_projection"],
             ReactiveCoreProjectionHolder.compute_log)
 
     def test_assignment_raises(self):
-        """Test that assigning a lazy projection raises like assigning a computed attribute."""
+        """Test that assigning a computed structure raises like assigning a computed attribute."""
         with self.assertRaises(AttributeError):
             self.holder.raw_projection = {}
 
     def test_attach_cached_value_pins_without_computing(self):
         """Test the descriptor's pinning path: the attached value is served without running the getter."""
         pinned = {"tripled": ExplainableQuantity(9 * u.W, "pinned")}
-        lazy_slots(ReactiveCoreProjectionHolder)["raw_projection"].attach_cached_value(self.holder, pinned)
+        computed_structures(ReactiveCoreProjectionHolder)["raw_projection"].attach_cached_value(self.holder, pinned)
 
         self.assertIs(pinned, self.holder.raw_projection)
         self.assertEqual([], ReactiveCoreProjectionHolder.compute_log)

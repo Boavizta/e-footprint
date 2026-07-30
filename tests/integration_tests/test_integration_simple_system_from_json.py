@@ -42,5 +42,5 @@ class IntegrationTestSimpleSystemFromJson(IntegrationTestSimpleSystemBaseClass, 
             content = f.read()
         # Under the minimal persistence contract the stored graph is condensed: the total's
         # ancestors are the per-source footprint pairs, and deeper intermediates render on
-        # demand once pulled (lazy auditability).
+        # demand once pulled (on-demand auditability).
         self.assertGreater(len(content), 5000)

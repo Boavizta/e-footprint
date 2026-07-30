@@ -25,7 +25,8 @@ from efootprint.abstract_modeling_classes.explainable_hourly_quantities import E
 from efootprint.abstract_modeling_classes.explainable_quantity import ExplainableQuantity
 from efootprint.abstract_modeling_classes.empty_explainable_object import EmptyExplainableObject
 from efootprint.utils.display import human_readable_unit, display_quantity_as_str
-from efootprint.abstract_modeling_classes.reactive_core import ComputationPurpose, computed_attribute, lazy_attribute
+from efootprint.abstract_modeling_classes.reactive_core import (
+    ComputationPurpose, computed_attribute, computed_structure)
 from efootprint.core.attribution import attribution_sources
 
 
@@ -297,7 +298,7 @@ class System(ModelingObject):
 
         return round(total_footprint, 4)
 
-    @lazy_attribute(serialize=True)
+    @computed_structure(serialize=True)
     def impact_repartition_matrix(self) -> tuple:
         """The condensed impact-repartition summary: one dict-encoded row per attribution atom of the
         system's impact sources — (source, stream, cell coordinate ids, usage pattern, phase) with the
@@ -332,7 +333,7 @@ class System(ModelingObject):
                 f"{self.name} carries no version baseline: baselines only exist on systems loaded from a "
                 f"file saved by a different library version that stored computed values.")
         from copy import copy as copy_value
-        from efootprint.abstract_modeling_classes.reactive_core import computed_slots, lazy_slots
+        from efootprint.abstract_modeling_classes.reactive_core import computed_slots, computed_structures
         from efootprint.api_utils.json_to_system import json_to_system
         from efootprint.api_utils.system_to_json import system_to_json
         from efootprint.comparison.duplication import assign_fresh_system_id
@@ -351,7 +352,7 @@ class System(ModelingObject):
                 # values have no current counterpart to compare against.
                 continue
             declared_computed_slots = computed_slots(container.efootprint_class)
-            declared_lazy_slots = lazy_slots(container.efootprint_class)
+            declared_computed_structures = computed_structures(container.efootprint_class)
             if attr_name in declared_computed_slots:
                 descriptor = declared_computed_slots[attr_name]
                 if key_id is not None:
@@ -359,8 +360,8 @@ class System(ModelingObject):
                         descriptor.attach_element_cached_value(container, flat_obj_dict[key_id], copy_value(value))
                 else:
                     descriptor.attach_cached_value(container, copy_value(value))
-            elif attr_name in declared_lazy_slots:
-                declared_lazy_slots[attr_name].attach_cached_value(
+            elif attr_name in declared_computed_structures:
+                declared_computed_structures[attr_name].attach_cached_value(
                     container, tuple(value) if isinstance(value, list) else value)
 
         return SystemComparison(baseline_system, self)

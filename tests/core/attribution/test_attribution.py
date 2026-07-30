@@ -6,7 +6,7 @@ import pytz
 
 from efootprint.abstract_modeling_classes.empty_explainable_object import EmptyExplainableObject
 from efootprint.abstract_modeling_classes.explainable_timezone import ExplainableTimezone
-from efootprint.abstract_modeling_classes.reactive_core import lazy_slots
+from efootprint.abstract_modeling_classes.reactive_core import computed_structures
 from efootprint.abstract_modeling_classes.source_objects import SourceValue
 from efootprint.builders.time_builders import create_source_hourly_values_from_list
 from efootprint.constants.units import u
@@ -32,9 +32,9 @@ class TrackedDevice(Device):
 ALL_LEVELS = (Device, UsageJourneyStep, UsageJourney, UsagePattern, Country)
 
 
-def lazy_slot(mod_obj, attr_name):
-    """The reactive slot behind a lazy projection attribute."""
-    return lazy_slots(mod_obj.efootprint_class)[attr_name].slot(mod_obj)
+def structure_slot(mod_obj, attr_name):
+    """The reactive slot behind a computed structure."""
+    return computed_structures(mod_obj.efootprint_class)[attr_name].slot(mod_obj)
 
 
 class TestAttributionFold(TestCase):
@@ -209,7 +209,7 @@ class TestAttributionFold(TestCase):
         self.assertIs(self.device.impact_repartition_rows, self.device.impact_repartition_rows)
 
     def test_input_change_invalidates_attribution_through_the_graph(self):
-        """Test that an input change voids the affected lazy attribution slots through the dependency graph
+        """Test that an input change voids the affected attribution structures through the dependency graph
         — no wholesale wipe — so the next query rebuilds atoms and matrix rows that conserve the new eager
         totals."""
         phase = LifeCyclePhases.USAGE
@@ -219,8 +219,8 @@ class TestAttributionFold(TestCase):
         initial_power = self.device.power
         try:
             self.device.power = SourceValue(100 * u.W)
-            self.assertFalse(lazy_slot(self.device, "impact_repartition_rows").has_cached_value)
-            self.assertFalse(lazy_slot(self.system, "impact_repartition_matrix").has_cached_value)
+            self.assertFalse(structure_slot(self.device, "impact_repartition_rows").has_cached_value)
+            self.assertFalse(structure_slot(self.system, "impact_repartition_matrix").has_cached_value)
             fresh_atoms = atoms_of(self.device, phase)
             self.assertIsNot(stale_atoms, fresh_atoms)
             assert_hourly_quantities_equal(self, self.device.energy_footprint, sum_atom_values(fresh_atoms))
@@ -238,13 +238,13 @@ class TestAttributionFold(TestCase):
         """Test cone-scoped matrix invalidation: a step-duration edit voids the row slots of the sources it
         feeds (devices, via step occupancy) but leaves an untouched source's cached rows intact."""
         _ = self.system.impact_repartition_matrix
-        network_rows = lazy_slot(self.up1.network, "impact_repartition_rows")
+        network_rows = structure_slot(self.up1.network, "impact_repartition_rows")
         self.assertTrue(network_rows.has_cached_value)
         initial_time_spent = self.step_a.user_time_spent
         try:
             self.step_a.user_time_spent = SourceValue(25 * u.min)
-            self.assertFalse(lazy_slot(self.device, "impact_repartition_rows").has_cached_value)
-            self.assertFalse(lazy_slot(self.system, "impact_repartition_matrix").has_cached_value)
+            self.assertFalse(structure_slot(self.device, "impact_repartition_rows").has_cached_value)
+            self.assertFalse(structure_slot(self.system, "impact_repartition_matrix").has_cached_value)
             # The network has no jobs in this model, so its (empty) rows depend on no step input.
             self.assertTrue(network_rows.has_cached_value)
         finally:
@@ -277,8 +277,8 @@ class TestAttributionFold(TestCase):
         finally:
             self.device.power = initial_power
 
-    def test_lazy_projection_materialized_before_system_creation_is_invalidated_by_linking(self):
-        """Test that a lazy projection materialized on a not-yet-linked object is invalidated by the linking
+    def test_computed_structure_materialized_before_system_creation_is_invalidated_by_linking(self):
+        """Test that a computed structure materialized on a not-yet-linked object is invalidated by the linking
         writes through the dependency graph, so post-build reads see the full graph."""
         step = UsageJourneyStep("prebuild step", SourceValue(10 * u.min), [])
         self.assertEqual({}, step.hourly_avg_occurrences_per_usage_pattern)

@@ -473,18 +473,18 @@ class IntegrationTestBaseClass(TestCase):
         """Test that all calculated attributes use correct semantic units (occurrence, concurrent, byte_ram)."""
         self.check_semantic_units_in_calculated_attributes(self.system)
 
-    def run_test_materialize_all_lazy_projections(self):
-        """Force every lazy projection slot on every linked modeling object (and the system, including
+    def run_test_materialize_all_computed_structures(self):
+        """Force every computed structure on every linked modeling object (and the system, including
         the impact-repartition matrix) to compute.
 
-        Defends against bugs that only surface through lazy attribution paths (e.g. Sankey)
+        Defends against bugs that only surface through on-demand attribution paths (e.g. Sankey)
         and never run during plain total_footprint computation.
         """
-        from efootprint.abstract_modeling_classes.reactive_core import lazy_slots
+        from efootprint.abstract_modeling_classes.reactive_core import computed_structures
 
         failures = []
         for obj in [self.system] + self.system.all_linked_objects:
-            for name in lazy_slots(obj.efootprint_class):
+            for name in computed_structures(obj.efootprint_class):
                 try:
                     getattr(obj, name)
                 except Exception as e:
@@ -492,7 +492,7 @@ class IntegrationTestBaseClass(TestCase):
                         f"{type(obj).__name__}({getattr(obj, 'name', '?')!r}).{name} "
                         f"raised {type(e).__name__}: {e}")
         if failures:
-            self.fail("Lazy projection materialization failures:\n" + "\n".join(failures))
+            self.fail("Computed-structure materialization failures:\n" + "\n".join(failures))
 
     def run_test_attribution_atoms_conserve(self):
         """Test that every attribution source's atoms conserve its eager phase totals (Σ atoms == footprint).

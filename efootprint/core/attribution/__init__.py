@@ -12,7 +12,7 @@ operation — group atoms by a key and sum:
 - conservation              = Σ(atoms of a stream) == that stream's footprint   (structural)
 
 Caching follows the one paradigm of the reactive graph: each source's ``impact_repartition_rows``
-lazy slot holds its atoms reduced to period-sum matrix rows, and ``System.impact_repartition_matrix``
+computed structure holds its atoms reduced to period-sum matrix rows, and ``System.impact_repartition_matrix``
 concatenates them — computed on first read, cached, and invalidated precisely through recorded
 dependency edges like any other slot (no wholesale wipes). The Sankey fold
 (``node_totals_and_links``) runs over the matrix's summed scalars and needs no memoization; the
@@ -23,7 +23,8 @@ from dataclasses import dataclass
 
 from efootprint.abstract_modeling_classes.empty_explainable_object import EmptyExplainableObject
 from efootprint.abstract_modeling_classes.modeling_object import ModelingObject
-from efootprint.abstract_modeling_classes.reactive_core import lazy_attribute, record_calculus_edges_from_ancestry
+from efootprint.abstract_modeling_classes.reactive_core import (
+    computed_structure, record_calculus_edges_from_ancestry)
 from efootprint.constants.units import u
 from efootprint.core.lifecycle_phases import LifeCyclePhases
 
@@ -92,14 +93,14 @@ def _atom_row(atom: Atom, phase: LifeCyclePhases) -> dict:
 
 class AttributionSource:
     """Mixin for impact sources implementing the atom contract: an ``attribution_atoms(phase)``
-    generator, and the lazy ``impact_repartition_rows`` slot summarizing those atoms for the
+    generator, and the ``impact_repartition_rows`` computed structure summarizing those atoms for the
     system-level repartition matrix."""
 
     @abstractmethod
     def attribution_atoms(self, phase: LifeCyclePhases):
         pass
 
-    @lazy_attribute
+    @computed_structure
     def impact_repartition_rows(self) -> tuple:
         """One dict-encoded matrix row per attribution atom of this source, across both life-cycle
         phases, each value reduced to its period sum in kg. Calculus edges are recorded from each

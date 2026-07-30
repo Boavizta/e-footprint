@@ -3,7 +3,7 @@
 Implementation lives in three package modules with one-way dependencies:
 
 - graph: slots, compute frames, dependency recording, and invalidation;
-- computed_slots: computed/lazy descriptors and their class registries;
+- computed_slots: computed descriptors and their class registries;
 - reverse_relationships: declarative reverse links and their reactive hooks.
 
 Existing callers continue to import from this package so the split does not leak through the model.
@@ -34,9 +34,9 @@ from .computed_slots import (
     computation_slots_for_purpose,
     computed_attribute,
     computed_dict,
+    computed_structure,
+    computed_structures,
     computed_slots,
-    lazy_attribute,
-    lazy_slots,
     prune_stale_computed_dict_keys,
     removed_computed_attribute,
     serialized_slots,
