@@ -251,8 +251,8 @@ class TestAttributionFold(TestCase):
             self.step_a.user_time_spent = initial_time_spent
 
     def test_attributed_footprint_equals_footprint_per_node_entry(self):
-        """Test that the attributed_footprint convenience read is an exact delegation: each object's value
-        equals its node entry in footprint_per_node at its own class level, for each phase."""
+        """Test that the targeted attributed read exactly matches the corresponding batch entry for
+        representative node classes and both phases."""
         for obj, level in ((self.device, Device), (self.step_a, UsageJourneyStep), (self.journey, UsageJourney),
                            (self.up1, UsagePattern), (self.low_ci_country, Country)):
             assert_hourly_quantities_equal(
@@ -262,6 +262,16 @@ class TestAttributionFold(TestCase):
                 self, footprint_per_node(self.system, level, LifeCyclePhases.MANUFACTURING)[obj],
                 attributed_footprint(obj, LifeCyclePhases.MANUFACTURING),
                 msg=f"{obj.name} fabrication delegation mismatch")
+
+    def test_attributed_footprint_is_empty_for_systemless_object(self):
+        """Test that a system-less object returns a labeled Empty value for both phases."""
+        orphan = Device.from_defaults("system-less attribution device")
+
+        for phase, label in ((LifeCyclePhases.USAGE, "Attributed energy footprint"),
+                             (LifeCyclePhases.MANUFACTURING, "Attributed fabrication footprint")):
+            result = attributed_footprint(orphan, phase)
+            self.assertIsInstance(result, EmptyExplainableObject)
+            self.assertEqual(label, result.label)
 
     def test_attributed_footprint_reflects_modeling_update(self):
         """Test that attributed_footprint reads fresh atoms after a ModelingUpdate and stays consistent with

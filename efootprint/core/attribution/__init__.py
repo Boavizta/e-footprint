@@ -198,12 +198,19 @@ def footprint_per_node_per_source(system, level, phase, exclude: tuple = ()):
 
 
 def attributed_footprint(obj: ModelingObject, phase: LifeCyclePhases):
-    """The object's total attributed footprint for a life-cycle phase: its node entry in
-    ``footprint_per_node`` at the object's own class level, summed over the object's systems
-    (Empty when system-less)."""
+    """The object's total attributed footprint for a life-cycle phase, summed over its systems.
+
+    This targeted on-demand read streams live atoms and accumulates only atoms whose first chain
+    node at the object's own class level is the requested object. Use ``footprint_per_node`` when
+    totals for every node at a level are needed. Returns Empty when the object is system-less.
+    """
     total = EmptyExplainableObject()
+    level = type(obj)
     for system in obj.systems:
-        total += footprint_per_node(system, type(obj), phase).get(obj, EmptyExplainableObject())
+        for atom in atoms(system, phase):
+            node = next((node for node in atom.chain() if isinstance(node, level)), None)
+            if node == obj:
+                total += atom.value
     label = ("Attributed fabrication footprint" if phase is LifeCyclePhases.MANUFACTURING
              else "Attributed energy footprint")
     return total.to(u.kg).set_label(label)
