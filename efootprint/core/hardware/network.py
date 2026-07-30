@@ -107,12 +107,9 @@ class Network(ModelingObject, AttributionSource):
             for cell in job.attribution_cells:
                 if cell.up.network != self:
                     continue
-                if cell.step is not None:
-                    data_volume = job.compute_hourly_data_transferred_per_usage_pattern_per_step(
-                        cell.up, cell.step)
-                else:
-                    data_volume = job.compute_hourly_data_transferred_per_usage_pattern_per_recurrent_server_need(
-                        cell.up, cell.rsn) * ExplainableQuantity(
+                data_volume = job.hourly_data_transferred_per_coordinate[cell.occurrence_coordinate]
+                if cell.rsn is not None:
+                    data_volume = data_volume * ExplainableQuantity(
                         cell.slot_multiplicity * u.dimensionless,
                         f"{cell.rsn.name} slot multiplicity via {cell.ef.name}")
                 yield Atom(

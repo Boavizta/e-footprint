@@ -222,7 +222,8 @@ class computed_dict(computed_attribute):
     """Descriptor declaring a computed ExplainableObjectDict attribute.
 
     The getter takes self plus one key object and returns the value for that key; the key set is the
-    collection read from the ``keys`` attribute of the owning object. The attribute resolves to two
+    collection read from the ``keys`` attribute of the owning object. Keys are normally ModelingObjects,
+    but may be stable frozen value coordinates with a derived ``id``. The attribute resolves to two
     slot layers: a key-set node whose getter reads the key collection and syncs a persistent
     ExplainableObjectDict facade (readers of the whole dict depend on it, so key-set changes reach
     them), and one sub-slot per key holding that key's value (per-key granularity: a value change

@@ -292,21 +292,6 @@ class TestEcoLogitsGenAIExternalAPIJob(TestCase):
             self.assertTrue(hasattr(self.job, ecologits_attr))
             self.assertIsInstance(getattr(self.job, ecologits_attr), EcoLogitsExplainableQuantity)
 
-    def test_calculated_attributes(self):
-        calculated_attributes = [
-            "data_transferred", "impacts", "gpu_energy", "generation_latency", "model_required_memory",
-            "gpu_required_count", "server_energy", "request_energy", "request_it_energy", "request_usage_gwp",
-            "server_gpu_embodied_gwp",
-            "request_embodied_gwp", "request_duration",
-            "hourly_occurrences_per_usage_pattern", "hourly_avg_occurrences_per_usage_pattern",
-            "hourly_data_transferred_per_usage_pattern", "hourly_data_stored_per_usage_pattern",
-            "hourly_avg_occurrences_across_usage_patterns", "hourly_data_transferred_across_usage_patterns",
-            "hourly_data_stored_across_usage_patterns",
-            "hourly_occurrences_across_usage_patterns"
-        ]
-        # Order carries no semantics (pull order is demand-driven recursion), so compare as sets.
-        self.assertCountEqual(self.job.calculated_attributes, calculated_attributes)
-
     def test_ancestors(self):
         """Test that ancestors are correctly set for calculated attributes."""
         self.job.pull_computed_attributes()

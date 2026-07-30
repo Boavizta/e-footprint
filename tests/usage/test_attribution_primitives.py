@@ -7,6 +7,7 @@ import pytz
 from pint import Quantity
 
 from efootprint.abstract_modeling_classes.explainable_timezone import ExplainableTimezone
+from efootprint.abstract_modeling_classes.reactive_core import instance_slot_registry
 from efootprint.abstract_modeling_classes.source_objects import SourceRecurrentValues, SourceValue
 from efootprint.builders.time_builders import create_source_hourly_values_from_list
 from efootprint.constants.units import u
@@ -24,7 +25,7 @@ from efootprint.core.usage.edge.edge_usage_pattern import EdgeUsagePattern
 from efootprint.core.usage.edge.recurrent_edge_component_need import RecurrentEdgeComponentNeed
 from efootprint.core.usage.edge.recurrent_edge_device_need import RecurrentEdgeDeviceNeed
 from efootprint.core.usage.edge.recurrent_server_need import RecurrentServerNeed
-from efootprint.core.usage.job import Job
+from efootprint.core.usage.job import Job, JobOccurrenceCoordinate
 from efootprint.core.usage.usage_journey import UsageJourney
 from efootprint.core.usage.usage_journey_step import UsageJourneyStep
 from efootprint.core.usage.usage_pattern import UsagePattern
@@ -101,10 +102,11 @@ class TestAttributionPrimitives(TestCase):
         data-transferred rate."""
         job = self.dual_job
         partition_sum = sum(
-            job.compute_hourly_data_transferred_per_usage_pattern_per_step(up, uj_step)
+            job.hourly_data_transferred_per_coordinate[JobOccurrenceCoordinate(up, step=uj_step)]
             for uj_step in job.usage_journey_steps for up in uj_step.usage_patterns)
         partition_sum += sum(
-            job.compute_hourly_data_transferred_per_usage_pattern_per_recurrent_server_need(edge_up, rsn)
+            job.hourly_data_transferred_per_coordinate[
+                JobOccurrenceCoordinate(edge_up, recurrent_server_need=rsn)]
             for rsn in job.recurrent_server_needs for edge_up in rsn.edge_usage_patterns)
         self.assert_hourly_quantities_equal(job.hourly_data_transferred_across_usage_patterns, partition_sum)
 
@@ -178,6 +180,80 @@ class TestAttributionPrimitives(TestCase):
             self.assertIsNone(cell.rsn)
             self.assertIsNone(cell.ef)
             self.assertEqual(1, cell.slot_multiplicity)
+
+    def test_occurrence_coordinates_are_stable_computed_dict_keys(self):
+        """Test recreated coordinates select the same cached per-key slots."""
+        first_coordinates = self.dual_job.occurrence_coordinates
+        second_coordinates = self.dual_job.occurrence_coordinates
+
+        self.assertEqual(first_coordinates, second_coordinates)
+        self.assertTrue(all(first is not second for first, second in zip(first_coordinates, second_coordinates)))
+        descriptor = Job.hourly_avg_occurrences_per_coordinate
+        for first, second in zip(first_coordinates, second_coordinates):
+            self.assertIs(descriptor.sub_slot(self.dual_job, first), descriptor.sub_slot(self.dual_job, second))
+
+    def test_edge_functions_share_the_recurrent_need_base_slot(self):
+        """Test two edge-function cells for one need reuse one occurrence and transfer coordinate slot."""
+        shared_cells = [cell for cell in self.dual_job.attribution_cells if cell.rsn == self.shared_rsn]
+        coordinates = [cell.occurrence_coordinate for cell in shared_cells]
+
+        self.assertEqual(2, len(shared_cells))
+        self.assertEqual(coordinates[0], coordinates[1])
+        self.assertIs(
+            Job.hourly_avg_occurrences_per_coordinate.sub_slot(self.dual_job, coordinates[0]),
+            Job.hourly_avg_occurrences_per_coordinate.sub_slot(self.dual_job, coordinates[1]))
+        self.assertIs(
+            Job.hourly_data_transferred_per_coordinate.sub_slot(self.dual_job, coordinates[0]),
+            Job.hourly_data_transferred_per_coordinate.sub_slot(self.dual_job, coordinates[1]))
+
+    def test_usage_pattern_change_invalidates_only_its_coordinate_values(self):
+        """Test a pattern's traffic invalidates its web coordinates without dropping sibling or edge caches."""
+        job = self.dual_job
+        tuple(job.hourly_data_transferred_per_coordinate.values())
+        coordinates = job.occurrence_coordinates
+        registry = instance_slot_registry(job)
+        start_date = datetime(2026, 1, 1)
+
+        try:
+            self.up1.hourly_usage_journey_starts = create_source_hourly_values_from_list(
+                [11, 0, 5, 0, 8], start_date)
+            for coordinate in coordinates:
+                occurrence_slot = registry[("hourly_avg_occurrences_per_coordinate", coordinate)]
+                transfer_slot = registry[("hourly_data_transferred_per_coordinate", coordinate)]
+                if coordinate.usage_pattern == self.up1:
+                    self.assertFalse(occurrence_slot.has_cached_value)
+                    self.assertFalse(transfer_slot.has_cached_value)
+                else:
+                    self.assertTrue(occurrence_slot.has_cached_value)
+                    self.assertTrue(transfer_slot.has_cached_value)
+        finally:
+            self.up1.hourly_usage_journey_starts = create_source_hourly_values_from_list(
+                [10, 0, 5, 0, 8], start_date)
+
+    def test_departed_trigger_prunes_both_coordinate_mappings(self):
+        """Test removing a step/job relationship drops its coordinate and both cached sub-slots."""
+        job = self.dual_job
+        tuple(job.hourly_data_transferred_per_coordinate.values())
+        departed_coordinate = JobOccurrenceCoordinate(self.up1, step=self.step_b)
+
+        try:
+            del self.step_b.jobs[job]
+            self.assertNotIn(departed_coordinate, job.occurrence_coordinates)
+            registry = instance_slot_registry(job)
+            self.assertNotIn(("hourly_avg_occurrences_per_coordinate", departed_coordinate), registry)
+            self.assertNotIn(("hourly_data_transferred_per_coordinate", departed_coordinate), registry)
+        finally:
+            self.step_b.jobs[job] = SourceValue(1 * u.dimensionless)
+
+
+class TestJobOccurrenceCoordinate(TestCase):
+    def test_requires_exactly_one_trigger(self):
+        """Test coordinates reject both a missing trigger and simultaneous web and edge triggers."""
+        usage_pattern = object()
+        with self.assertRaises(ValueError):
+            JobOccurrenceCoordinate(usage_pattern)
+        with self.assertRaises(ValueError):
+            JobOccurrenceCoordinate(usage_pattern, step=object(), recurrent_server_need=object())
 
 
 class TestFractionalWeightOccupancyTiling(TestCase):

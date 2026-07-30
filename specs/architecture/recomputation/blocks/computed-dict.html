@@ -40,6 +40,19 @@ device.energy_footprint_per_usage_pattern
 <h2 id="granularity">Why element slots matter</h2>
 <div class="cols"><div class="n value"><b>Fine-grained invalidation</b><br><span>If only job B's consumed inputs change, B's element slot becomes void while A's cached value remains reusable.</span></div><div class="n slot"><b>Whole-dict dependency</b><br><span>A consumer that reads the facade as a collection also depends structurally on the key-set node, so membership changes invalidate that consumer.</span></div></div>
 
+<h3 id="coordinate-keys">Derived coordinate keys</h3>
+<pre><code>@dataclass(frozen=True)
+class JobOccurrenceCoordinate:
+    usage_pattern: ModelingObject
+    step: ModelingObject | None = None
+    recurrent_server_need: ModelingObject | None = None
+
+@computed_dict(keys="occurrence_coordinates")
+def hourly_avg_occurrences_per_coordinate(self, coordinate):
+    ...</code></pre>
+<p>A key need not itself be a <code>ModelingObject</code>. A frozen coordinate is appropriate when several modeled identities jointly select one independently computable result. Equality and hashing flow through the contained objects' stable ids, while the coordinate's own derived <code>id</code> gives attached explainables a deterministic address. The key collection is rebuilt in structural order; equal recreated keys resolve the existing registry sub-slots.</p>
+<div class="rule"><b>Cache the reusable base coordinate.</b> A Job coordinate contains one usage pattern and exactly one trigger: <code>UsageJourneyStep</code> or <code>RecurrentServerNeed</code>. It excludes <code>EdgeFunction</code> because edge-function multiplicity is applied after the shared need calculation. Two functions reaching the same need therefore read one base slot.</div>
+
 <h2 id="stale-keys">When a key leaves</h2>
 <p>A membership edit first invalidates the computed dict's key-set slot and its dependents. Before the transaction pulls guards or its ordinary output, it synchronizes every invalidated computed dict with the now-current key collection:</p>
 <div class="diagram"><div class="dtitle">Departure cleanup happens between invalidation and recomputation</div><div class="n input"><b>1 · Membership changes</b><br><span>The invalidation wave voids the key-set slot and collects every slot it reaches.</span></div><div class="ar">↓</div><div class="n dict"><b>2 · <code>prune_stale_computed_dict_keys()</code></b><br><span>Reads the current key collection and asks the descriptor to discard facade keys that are no longer present.</span></div><div class="ar">↓</div><div class="n computed"><b>3 · Pull current work</b><br><span>Guards and the selected ordinary output recompute only after membership is clean.</span></div></div>
@@ -63,6 +76,7 @@ device.energy_footprint_per_usage_pattern
 <li><a href="../../../../efootprint/abstract_modeling_classes/reactive_core/computed_slots.py"><code>computed_dict.slot</code>, <code>facade</code>, and <code>__get__</code></a> — key-set access and stable facade.</li>
 <li><a href="../../../../efootprint/abstract_modeling_classes/reactive_core/computed_slots.py"><code>sub_slot</code> and <code>_make_element_compute_closure</code></a> — per-key calculation.</li>
 <li><a href="../../../../efootprint/abstract_modeling_classes/reactive_core/computed_slots.py"><code>discard_stale_keys</code> and <code>prune_stale_computed_dict_keys</code></a> — safe membership removal.</li>
+<li><a href="../../../../efootprint/core/usage/job.py"><code>JobOccurrenceCoordinate</code> and its two computed mappings</a> — stable multi-object coordinate keys in domain code.</li>
 </ol><p>Return to <a href="../computed-surfaces.html#comparison">the three-surface comparison</a> or follow the <a href="../lifecycle.html#walkthrough">complete lifecycle</a>.</p></div></details>
 <footer>e-footprint architecture · <a href="../computed-surfaces.html#computed-dict">computed surfaces</a> · canonical technical zoom for computed-dict topology, facades, element slots, and key synchronization.</footer>
 <script src="../../source-links.js"></script></body></html>

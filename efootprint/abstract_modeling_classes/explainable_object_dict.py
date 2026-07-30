@@ -378,7 +378,7 @@ class ExplainableObjectDict(ObjectLinkedToModelingObjBase, dict):
             elif isinstance(key, str):
                 return_str += f"{key}: {value}, \n"
             else:
-                raise ValueError(f"Key {key} is not a ModelingObject or a string")
+                return_str += f"{key}: {value}, \n"
 
         return_str = return_str + "}"
 

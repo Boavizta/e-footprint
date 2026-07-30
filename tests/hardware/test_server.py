@@ -34,7 +34,7 @@ from efootprint.core.usage.edge.edge_usage_pattern import EdgeUsagePattern
 from efootprint.core.usage.edge.recurrent_edge_component_need import RecurrentEdgeComponentNeed
 from efootprint.core.usage.edge.recurrent_edge_device_need import RecurrentEdgeDeviceNeed
 from efootprint.core.usage.edge.recurrent_server_need import RecurrentServerNeed
-from efootprint.core.usage.job import DirectServerJob, Job
+from efootprint.core.usage.job import DirectServerJob, Job, JobOccurrenceCoordinate
 from efootprint.core.usage.usage_journey import UsageJourney
 from efootprint.core.usage.usage_journey_step import UsageJourneyStep
 from efootprint.core.usage.usage_pattern import UsagePattern
@@ -598,8 +598,8 @@ class TestServerAttributionAtoms(TestCase):
         server is provisioned, the cell's dynamic atom is zero while its provisioned atom stays nonzero (flat
         share of the idle footprint)."""
         zero_occurrence_hour = 4  # up2 journey starts are [3, 7] and the job runs 10 min, so hour 4 is idle
-        cell_occurrences = self.web_only_job.get_hourly_avg_occurrences_per_usage_pattern_per_step(
-            self.up2, self.step_a)
+        cell_occurrences = self.web_only_job.hourly_avg_occurrences_per_coordinate[
+            JobOccurrenceCoordinate(self.up2, step=self.step_a)]
         self.assertEqual(
             0, np.append(cell_occurrences.magnitude, np.zeros(5))[zero_occurrence_hour])
 
