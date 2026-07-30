@@ -15,24 +15,16 @@ from efootprint.logger import logger
 
 class ModelingUpdate:
     """Transactional model update: apply the changes, invalidate the slots they touch (the deletion
-    wave voids every dependent), then eagerly pull the configured outputs so computation errors
-    surface now — and on error, restore the inputs, re-invalidate, and recompute the restored state.
+    wave voids every dependent), then pull guards and any explicitly configured outputs — and on
+    error, restore the inputs, re-invalidate, and recompute the restored state.
 
     ``eager_outputs`` configures what recomputes at update time, as (modeling object, attribute name)
-    pairs. The default (None) reads the affected system's total footprint — the whole footprint cone
-    of the change recomputes and anything outside it stays void until read. Tight loops pass an empty
-    collection to skip eager recomputation entirely (values compute on the next read). Validation
-    slots the change invalidated always recompute, whatever the eager set."""
+    pairs. By default, ordinary computations remain void until read. Validation slots the change
+    invalidated always recompute, whatever the eager set."""
 
     def __init__(self, changes_list: List[List[ObjectLinkedToModelingObj | list | dict]],
                  eager_outputs: list | tuple | None = None):
         start = perf_counter()
-        self.system = None
-        for change in changes_list:
-            changed_val = change[0]
-            if isinstance(changed_val, ObjectLinkedToModelingObjBase) and changed_val.modeling_obj_container.systems:
-                self.system = changed_val.modeling_obj_container.systems[0]
-                break
         self.eager_outputs = eager_outputs
         self.changes_list = changes_list
         self.parse_changes_list()
@@ -172,10 +164,8 @@ class ModelingUpdate:
                     getattr(mod_obj, name)
 
     def pull_eagerly(self, visited_slots) -> int:
-        """Recompute the invalidated validation slots (plus every guard slot of newly linked
-        objects), then the eager outputs: the configured (object, attribute) pairs, or by default
-        the affected system's total footprint. With neither an explicit output nor an affected
-        system, ordinary computed slots remain void until read. Returns the number of slots voided
+        """Recompute invalidated guards, every guard of newly linked objects, and any explicit eager
+        outputs. Ordinary computed slots remain void until read. Returns the number of slots voided
         by the wave."""
         prune_stale_computed_dict_keys(visited_slots)
         pull_guard_slots(visited_slots)
@@ -183,8 +173,6 @@ class ModelingUpdate:
         if self.eager_outputs is not None:
             for mod_obj, attr_name in self.eager_outputs:
                 getattr(mod_obj, attr_name)
-        elif self.system is not None:
-            self.system.total_footprint
         return len(visited_slots)
 
     def rollback(self):

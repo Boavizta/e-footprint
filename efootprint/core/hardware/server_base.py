@@ -17,7 +17,8 @@ from efootprint.core.lifecycle_phases import LifeCyclePhases
 from efootprint.abstract_modeling_classes.source_objects import SOURCE_VALUE_DEFAULT_NAME, SourceObject
 from efootprint.constants.units import u
 from efootprint.core.hardware.storage import Storage
-from efootprint.abstract_modeling_classes.reactive_core import computed_attribute, lazy_attribute, ReverseCollection
+from efootprint.abstract_modeling_classes.reactive_core import (
+    ComputationPurpose, computed_attribute, lazy_attribute, ReverseCollection)
 
 if TYPE_CHECKING:
     from efootprint.core.usage.job import JobBase, DirectServerJob
@@ -321,7 +322,7 @@ class ServerBase(InfraHardware, AttributionSource):
 
         return load_energy_footprint.to(u.kg).set_label(f"Hourly load energy footprint")
 
-    @computed_attribute(serialize=True)
+    @computed_attribute(serialize=True, purposes={ComputationPurpose.FOOTPRINT})
     def energy_footprint(self):
         """Hourly carbon emissions caused by the electricity consumed by the server, equal to the sum of its idle and load energy footprints."""
         return (self.idle_energy_footprint + self.load_energy_footprint).to(u.kg).set_label(
@@ -340,22 +341,19 @@ class ServerBase(InfraHardware, AttributionSource):
             self.server_type).set_label(f"Hourly number of instances")
 
     def _on_premise_nb_of_instances(self):
+        _ = self.fixed_nb_of_instances_validation
         if isinstance(self.raw_nb_of_instances, EmptyExplainableObject):
             nb_of_instances = EmptyExplainableObject(left_parent=self.raw_nb_of_instances)
         else:
             max_nb_of_instances = self.raw_nb_of_instances.max().ceil().to(u.concurrent)
 
             if not isinstance(self.fixed_nb_of_instances, EmptyExplainableObject):
-                if max_nb_of_instances > self.fixed_nb_of_instances:
-                    raise InsufficientCapacityError(
-                        self, "number of instances", self.fixed_nb_of_instances, max_nb_of_instances)
-                else:
-                    fixed_nb_of_instances_np = Quantity(
-                        np.full(len(self.raw_nb_of_instances), np.float32(self.fixed_nb_of_instances.magnitude)),
-                        u.concurrent)
-                    nb_of_instances = ExplainableHourlyQuantities(
-                        fixed_nb_of_instances_np, self.raw_nb_of_instances.start_date, "Nb of instances",
-                        left_parent=self.raw_nb_of_instances, right_parent=self.fixed_nb_of_instances)
+                fixed_nb_of_instances_np = Quantity(
+                    np.full(len(self.raw_nb_of_instances), np.float32(self.fixed_nb_of_instances.magnitude)),
+                    u.concurrent)
+                nb_of_instances = ExplainableHourlyQuantities(
+                    fixed_nb_of_instances_np, self.raw_nb_of_instances.start_date, "Nb of instances",
+                    left_parent=self.raw_nb_of_instances, right_parent=self.fixed_nb_of_instances)
             else:
                 nb_of_instances_np = Quantity(
                     np.float32(max_nb_of_instances.magnitude) * np.ones(len(self.raw_nb_of_instances), dtype=np.float32),
@@ -368,6 +366,23 @@ class ServerBase(InfraHardware, AttributionSource):
 
         return nb_of_instances.generate_explainable_object_with_logical_dependency(
             self.server_type).set_label(f"Hourly number of instances")
+
+    @computed_attribute(guard=True)
+    def fixed_nb_of_instances_validation(self):
+        """Validate that a fixed on-premise server fleet can accommodate its peak required instances."""
+        validation = EmptyExplainableObject(
+            left_parent=self.fixed_nb_of_instances, right_parent=self.server_type,
+            operator="fixed-instance capacity applies to on-premise servers")
+        if self.server_type != ServerTypes.on_premise() or isinstance(
+                self.fixed_nb_of_instances, EmptyExplainableObject):
+            return validation
+
+        max_nb_of_instances = self.raw_nb_of_instances.max().ceil().to(u.concurrent)
+        if max_nb_of_instances > self.fixed_nb_of_instances:
+            raise InsufficientCapacityError(
+                self, "number of instances", self.fixed_nb_of_instances, max_nb_of_instances)
+        return EmptyExplainableObject(
+            left_parent=max_nb_of_instances, right_parent=validation, operator="within fixed-instance capacity")
 
     @computed_attribute
     def nb_of_instances(self):

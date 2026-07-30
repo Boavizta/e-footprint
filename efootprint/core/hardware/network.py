@@ -9,7 +9,7 @@ from efootprint.constants.sources import Sources
 from efootprint.constants.units import u
 from efootprint.core.attribution import Atom, AttributionSource
 from efootprint.core.lifecycle_phases import LifeCyclePhases
-from efootprint.abstract_modeling_classes.reactive_core import computed_attribute, computed_dict
+from efootprint.abstract_modeling_classes.reactive_core import ComputationPurpose, computed_attribute, computed_dict
 
 if TYPE_CHECKING:
     from efootprint.core.usage.usage_pattern import UsagePattern
@@ -73,7 +73,7 @@ class Network(ModelingObject, AttributionSource):
         return self.energy_footprint_for_data_volume_and_usage_pattern(
             job.hourly_data_transferred_per_usage_pattern[usage_pattern], usage_pattern)
 
-    @computed_attribute(serialize=True)
+    @computed_attribute(serialize=True, purposes={ComputationPurpose.FOOTPRINT})
     def instances_fabrication_footprint(self):
         """Network fabrication footprint, currently always empty: e-footprint does not account for the embodied carbon of network infrastructure since it is shared across countless services."""
         return EmptyExplainableObject()
@@ -87,7 +87,7 @@ class Network(ModelingObject, AttributionSource):
 
         return energy_footprint.to(u.kg).set_label(f"{job.name} network energy footprint")
 
-    @computed_attribute(serialize=True)
+    @computed_attribute(serialize=True, purposes={ComputationPurpose.FOOTPRINT})
     def energy_footprint(self):
         """Total hourly carbon emissions caused by network traffic, summed across all jobs that route through this network."""
         return sum(self.energy_footprint_per_job.values(), start=EmptyExplainableObject()).set_label(

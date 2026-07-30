@@ -8,9 +8,9 @@ from efootprint.abstract_modeling_classes.explainable_object_dict import Explain
 from efootprint.abstract_modeling_classes.explainable_quantity import ExplainableQuantity
 from efootprint.abstract_modeling_classes.modeling_object import ModelingObject
 from efootprint.abstract_modeling_classes.reactive_core import (
-    CircularDependencyError, ReactiveSlot, ReverseCollection, ReverseLink, add_computed_attribute,
-    computed_attribute, computed_dict, computed_slots, invalidate, lazy_attribute, lazy_slots,
-    record_calculus_dependency, record_structural_dependency, reverse_slots)
+    CircularDependencyError, ComputationPurpose, ReactiveSlot, ReverseCollection, ReverseLink,
+    add_computed_attribute, computation_slots_for_purpose, computed_attribute, computed_dict, computed_slots,
+    invalidate, lazy_attribute, lazy_slots, record_calculus_dependency, record_structural_dependency, reverse_slots)
 from efootprint.abstract_modeling_classes.source_objects import SourceValue
 from efootprint.constants.units import u
 
@@ -77,6 +77,26 @@ class ReactiveCoreConcreteChild(ReactiveCoreAbstractBase):
     @computed_attribute
     def derived(self):
         return ExplainableQuantity(1 * u.dimensionless, "one")
+
+
+class ReactiveCorePurposeHolder(ModelingObject):
+    default_values = {"power": SourceValue(1 * u.W)}
+
+    def __init__(self, name, power: ExplainableQuantity):
+        super().__init__(name)
+        self.power = power
+
+    @computed_attribute
+    def doubled_power(self):
+        return (self.power * ExplainableQuantity(2 * u.dimensionless, "two")).set_label("Doubled power")
+
+    @computed_attribute(purposes={ComputationPurpose.FOOTPRINT})
+    def energy_footprint(self):
+        return self.doubled_power.copy().set_label("Energy footprint")
+
+    @computed_attribute(purposes={ComputationPurpose.FOOTPRINT})
+    def unmaterialized_footprint(self):
+        return self.power.copy().set_label("Unmaterialized footprint")
 
 
 class TestComputedAttribute(TestCase):
@@ -164,6 +184,50 @@ class TestComputedAttribute(TestCase):
         obj = DynamicTarget("dynamic leaf", SourceValue(2 * u.W))
         self.assertEqual(6, obj.tripled_power.magnitude)
         self.assertEqual("Thrice the power.", computed_slots(DynamicTarget)["tripled_power"].__doc__)
+
+    def test_purpose_query_derives_membership_from_materialized_output_ancestors(self):
+        """Test purpose membership follows the realized graph without classifying inputs or an
+        unmaterialized tagged output."""
+        holder = ReactiveCorePurposeHolder("purpose holder", SourceValue(3 * u.W))
+
+        _ = holder.energy_footprint
+
+        footprint_slots = computation_slots_for_purpose(holder, ComputationPurpose.FOOTPRINT)
+        self.assertEqual(
+            {holder._reactive_slots["doubled_power"], holder._reactive_slots["energy_footprint"]},
+            footprint_slots,
+        )
+
+    def test_purpose_query_keeps_invalidated_materialized_topology(self):
+        """Test a materialized output remains classified while void because invalidation retains its
+        dependency topology for the next pull."""
+        holder = ReactiveCorePurposeHolder("invalidated holder", SourceValue(3 * u.W))
+        _ = holder.energy_footprint
+
+        holder.power = SourceValue(4 * u.W)
+
+        footprint_slots = computation_slots_for_purpose(holder, ComputationPurpose.FOOTPRINT)
+        self.assertEqual(
+            {holder._reactive_slots["doubled_power"], holder._reactive_slots["energy_footprint"]},
+            footprint_slots,
+        )
+
+    def test_declared_physical_footprint_outputs_are_tagged(self):
+        """Test every computed physical-footprint output declaration exposes a footprint root tag."""
+        from efootprint.all_classes_in_order import ALL_EFOOTPRINT_CLASSES
+
+        tagged_outputs = []
+        for efootprint_class in ALL_EFOOTPRINT_CLASSES:
+            for attr_name in ("energy_footprint", "instances_fabrication_footprint", "total_footprint"):
+                descriptor = computed_slots(efootprint_class).get(attr_name)
+                if descriptor is not None:
+                    tagged_outputs.append((efootprint_class, attr_name))
+                    self.assertIn(
+                        ComputationPurpose.FOOTPRINT,
+                        descriptor.purposes,
+                        f"{efootprint_class.__name__}.{attr_name}",
+                    )
+        self.assertGreater(len(tagged_outputs), 0)
 
 
 class TestComputedDict(TestCase):

@@ -61,17 +61,24 @@ class TestRecomputeCounter(TestCase):
         dependency cone: unrelated usage patterns, the edge side of the model, and devices serving
         only other patterns stay cached."""
         system = self.build_system()
+        _ = system.total_footprint
         edited_pattern = system.usage_patterns[0]
         other_patterns = list(system.usage_patterns[1:]) + list(system.edge_usage_patterns)
 
-        with RecomputeRecorder() as recorder:
+        with RecomputeRecorder() as update_recorder:
             edited_pattern.hourly_usage_journey_starts = form_inputs_hourly_starts(NB_YEARS, initial_volume=1234.5)
 
-        recomputed = set(recorder.computed_slot_names)
+        self.assertNotIn(f"total_footprint of {system.id}", update_recorder.computed_slot_names)
+        with RecomputeRecorder() as recorder:
+            _ = system.total_footprint
+
+        # Guards may pull part of the affected cone during the update; the footprint read completes
+        # whatever remains. Granularity applies to their union, while total_footprint itself stays lazy.
+        recomputed = set(update_recorder.computed_slot_names) | set(recorder.computed_slot_names)
         self.assertGreater(len(recomputed), 0)
 
         self.assertIn(f"utc_hourly_usage_journey_starts of {edited_pattern.id}", recomputed)
-        self.assertIn(f"total_footprint of {system.id}", recomputed)
+        self.assertIn(f"total_footprint of {system.id}", recorder.computed_slot_names)
 
         # Slots that only depend on other patterns' traffic must not recompute.
         for pattern in other_patterns:
@@ -103,7 +110,11 @@ class TestRecomputeCounter(TestCase):
         with RecomputeRecorder() as recorder:
             _ = system.impact_repartition_matrix
         self.assertEqual(
-            {f"impact_repartition_rows of {edited_server.id}", f"impact_repartition_matrix of {system.id}"},
+            {
+                f"instances_fabrication_footprint of {edited_server.id}",
+                f"impact_repartition_rows of {edited_server.id}",
+                f"impact_repartition_matrix of {system.id}",
+            },
             set(recorder.computed_slot_names))
         for source_id, rows in untouched_rows_before.items():
             source = next(obj for obj in system.all_linked_objects if obj.id == source_id)

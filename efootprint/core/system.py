@@ -2,7 +2,7 @@ from datetime import timedelta
 from typing import Dict, List, Optional
 
 from efootprint.abstract_modeling_classes.explainable_object_dict import ExplainableObjectDict
-from efootprint.abstract_modeling_classes.modeling_object import ModelingObject, pull_slots_system_wide
+from efootprint.abstract_modeling_classes.modeling_object import ModelingObject
 from efootprint.builders.external_apis.external_api_base_class import ExternalAPI, ExternalAPIServer
 from efootprint.builders.external_apis.external_api_job_base_class import ExternalAPIJob
 from efootprint.builders.services.service_base_class import Service
@@ -24,9 +24,8 @@ from efootprint.core.usage.usage_journey import UsageJourney
 from efootprint.abstract_modeling_classes.explainable_hourly_quantities import ExplainableHourlyQuantities
 from efootprint.abstract_modeling_classes.explainable_quantity import ExplainableQuantity
 from efootprint.abstract_modeling_classes.empty_explainable_object import EmptyExplainableObject
-from efootprint.logger import logger
 from efootprint.utils.display import human_readable_unit, display_quantity_as_str
-from efootprint.abstract_modeling_classes.reactive_core import computed_attribute, lazy_attribute
+from efootprint.abstract_modeling_classes.reactive_core import ComputationPurpose, computed_attribute, lazy_attribute
 from efootprint.core.attribution import attribution_sources
 
 
@@ -67,19 +66,9 @@ class System(ModelingObject):
         return [self]
 
     def after_init(self):
-        from time import perf_counter
-        start = perf_counter()
-        logger.info(f"Starting computing {self.name} modeling")
-        pull_slots_system_wide([self])
-        all_objects = self.all_linked_objects
-        nb_of_calculated_attributes = sum([len(obj.calculated_attributes) for obj in all_objects])
-        if nb_of_calculated_attributes > 0:
-            compute_duration = round((perf_counter() - start), 3)
-            logger.info(
-                f"Computed {nb_of_calculated_attributes} calculated attributes over {len(all_objects)} objects in "
-                f"{compute_duration} seconds or {round(1000 * compute_duration / nb_of_calculated_attributes, 2)} "
-                f"ms per computation")
-        self.trigger_modeling_updates = True
+        for mod_obj in dict.fromkeys([self] + self.all_linked_objects):
+            mod_obj.pull_guard_attributes()
+        self.enable_modeling_updates()
 
     def get_objects_linked_to_usage_patterns(
             self, usage_patterns: List[UsagePattern]) -> List[ModelingObject]:
@@ -285,10 +274,10 @@ class System(ModelingObject):
 
         return ExplainableObjectDict(energy_footprints)
 
-    @computed_attribute(serialize=True)
+    @computed_attribute(serialize=True, purposes={ComputationPurpose.FOOTPRINT})
     def total_footprint(self):
         """Total system carbon footprint as an hourly timeseries, summing fabrication and energy footprints across every category of object (servers, storages, devices, networks, edge components)."""
-        # Re-checked on every recompute, mirroring the former per-update check of the eager engine.
+        # Relationship edits can change containment after construction, so validate again at the footprint boundary.
         self.check_no_object_to_link_is_already_linked_to_another_system()
         # Snapshot the category breakdown once. Without this, `self.fabrication_footprints` and
         # `self.energy_footprints` each rebuild `_objects_by_category()` (which walks `all_linked_objects`

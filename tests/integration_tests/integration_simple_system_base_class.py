@@ -232,8 +232,9 @@ class IntegrationTestSimpleSystemBaseClass(IntegrationTestBaseClass):
             create_source_hourly_values_from_list(
                 [elt * 1000 for elt in [1, 2, 4, 5, 8, 12, 2, 2, 3]], start_date))
         system = System("System", [usage_pattern], edge_usage_patterns=[])
-        # Building the system computes the round-tripped job's dependents, so its data transferred
-        # input must carry live children links in the calculus graph.
+        # Explicitly reading the footprint computes the round-tripped job's dependents, so its data
+        # transferred input must carry live children links in the calculus graph.
+        _ = system.total_footprint
         self.assertGreater(len(job_from_json.data_transferred.direct_children_with_id), 0)
         self.assertIsNotNone(system.total_footprint)
 

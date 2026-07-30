@@ -5,7 +5,7 @@ from efootprint.abstract_modeling_classes.explainable_quantity import Explainabl
 from efootprint.builders.external_apis.external_api_base_class import ExternalAPIServer
 from efootprint.constants.units import u
 from efootprint.core.lifecycle_phases import LifeCyclePhases
-from efootprint.abstract_modeling_classes.reactive_core import computed_attribute
+from efootprint.abstract_modeling_classes.reactive_core import ComputationPurpose, computed_attribute
 
 if TYPE_CHECKING:
     from efootprint.builders.external_apis.ecologits.ecologits_external_api import (
@@ -49,7 +49,7 @@ class EcoLogitsExternalAPIServerBase(ExternalAPIServer):
             return str(self.external_api.model_name)
         return "no external API"
 
-    @computed_attribute(serialize=True)
+    @computed_attribute(serialize=True, purposes={ComputationPurpose.FOOTPRINT})
     def instances_fabrication_footprint(self):
         """Hourly fabrication-phase footprint of the model server: each job's per-request embodied GWP spread over its request_duration (per-request * 1h / request_duration * hourly average occurrences across usage patterns), summed over jobs."""
         instances_fabrication_footprint = EmptyExplainableObject()
@@ -70,7 +70,7 @@ class EcoLogitsExternalAPIServerBase(ExternalAPIServer):
 
         return instances_energy.set_label(f"Instances energy for {self.external_api_model_name}")
 
-    @computed_attribute(serialize=True)
+    @computed_attribute(serialize=True, purposes={ComputationPurpose.FOOTPRINT})
     def energy_footprint(self):
         """Hourly energy-use footprint of the model server: each job's per-request usage GWP spread over its request_duration (per-request * 1h / request_duration * hourly average occurrences across usage patterns), summed over jobs."""
         energy_footprint = EmptyExplainableObject()

@@ -58,12 +58,8 @@ class Service(ModelingObject):
 
     def after_init(self):
         super().after_init()
-        self.pull_computed_attributes()
-        # Compute server calculated attributes so that it raises an error if not enough resources
-        self.server.pull_computed_attributes()
-        for system in self.systems:
-            # Systems need to be recomputed because they depend on the server’s recomputed attributes
-            system.pull_computed_attributes()
+        self.pull_guard_attributes()
+        self.server.pull_guard_attributes()
 
 
     @property
@@ -73,4 +69,3 @@ class Service(ModelingObject):
     @property
     def jobs(self) -> List[ModelingObject]:
         return self.modeling_obj_containers
-

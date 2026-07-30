@@ -44,7 +44,9 @@ class TestMinimalSerializationContract(TestCase):
     @classmethod
     def setUpClass(cls):
         cls.system, cls.start_date = IntegrationTestSimpleSystemBaseClass.generate_simple_system()
-        # Materialize the lazy serialize-flagged summary, like a session after its first Sankey render.
+        # Materialize the stored output roots explicitly, like a session after its first footprint and
+        # Sankey reads. Saving only peeks: it must not turn persistence into an implicit computation trigger.
+        cls.system.total_footprint
         cls.system.impact_repartition_matrix
         cls.canonical_dict = system_to_json(cls.system)
 
@@ -242,8 +244,9 @@ class TestEdgeSystemSerializationContract(TestCase):
         cls.system, _ = IntegrationTestSimpleEdgeSystemBaseClass.generate_simple_edge_system()
         cls.edge_device = next(
             obj for obj in cls.system.all_linked_objects if obj.class_as_simple_str == "EdgeDevice")
-        # Materialize every serialize-flagged lazy slot (matrix + every device's breakdown summary),
+        # Materialize footprint outputs and every serialize-flagged lazy slot (matrix + every device's summary),
         # like a session after its first Sankey render.
+        cls.system.total_footprint
         from efootprint.abstract_modeling_classes.reactive_core import lazy_slots
         for obj in [cls.system] + cls.system.all_linked_objects:
             for lazy_name, lazy_descriptor in lazy_slots(obj.efootprint_class).items():

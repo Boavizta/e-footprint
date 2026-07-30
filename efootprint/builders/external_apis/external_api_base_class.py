@@ -7,7 +7,7 @@ from efootprint.abstract_modeling_classes.modeling_object import ModelingObject
 from efootprint.constants.units import u
 from efootprint.core.attribution import Atom, AttributionSource
 from efootprint.core.lifecycle_phases import LifeCyclePhases
-from efootprint.abstract_modeling_classes.reactive_core import computed_attribute
+from efootprint.abstract_modeling_classes.reactive_core import ComputationPurpose, computed_attribute
 
 
 class ExternalAPIServer(ModelingObject, AttributionSource):
@@ -22,7 +22,7 @@ class ExternalAPIServer(ModelingObject, AttributionSource):
         return self.modeling_obj_containers[0]
 
 
-    @computed_attribute(serialize=True)
+    @computed_attribute(serialize=True, purposes={ComputationPurpose.FOOTPRINT})
     @abstractmethod
     def instances_fabrication_footprint(self):
         pass
@@ -32,7 +32,7 @@ class ExternalAPIServer(ModelingObject, AttributionSource):
     def instances_energy(self):
         pass
 
-    @computed_attribute(serialize=True)
+    @computed_attribute(serialize=True, purposes={ComputationPurpose.FOOTPRINT})
     @abstractmethod
     def energy_footprint(self):
         pass
@@ -80,7 +80,7 @@ class ExternalAPI(ModelingObject):
         if not hasattr(self, "server") or self.server is None:
             self.server = self.server_class(name=f"{self.name} server")
         super().after_init()
-        self.pull_computed_attributes()
+        self.pull_guard_attributes()
 
     @classmethod
     def compatible_jobs(cls) -> List:
@@ -111,4 +111,3 @@ class ExternalAPI(ModelingObject):
     def self_delete(self):
         super().self_delete()
         self.server.self_delete()
-

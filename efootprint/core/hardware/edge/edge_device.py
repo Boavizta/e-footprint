@@ -14,7 +14,8 @@ from efootprint.core.hardware.edge.edge_component import EdgeComponent
 from efootprint.abstract_modeling_classes.source_objects import SourceValue
 from efootprint.core.hardware.hardware_base import InsufficientCapacityError
 from efootprint.abstract_modeling_classes.reactive_core import (
-    computed_attribute, computed_dict, lazy_attribute, record_calculus_edges_from_ancestry, ReverseCollection)
+    ComputationPurpose, computed_attribute, computed_dict, lazy_attribute, record_calculus_edges_from_ancestry,
+    ReverseCollection)
 
 if TYPE_CHECKING:
     from efootprint.core.usage.edge.recurrent_edge_device_need import RecurrentEdgeDeviceNeed
@@ -246,7 +247,7 @@ class EdgeDevice(ModelingObject, AttributionSource):
         return instances_energy.set_label(
             "Total energy consumed across usage patterns")
 
-    @computed_attribute(serialize=True)
+    @computed_attribute(serialize=True, purposes={ComputationPurpose.FOOTPRINT})
     def energy_footprint(self):
         """Total hourly energy-use carbon footprint, summed across every usage pattern."""
         energy_footprint = sum(
@@ -254,7 +255,7 @@ class EdgeDevice(ModelingObject, AttributionSource):
         return energy_footprint.set_label(
             "Total energy footprint across usage patterns")
 
-    @computed_attribute(serialize=True)
+    @computed_attribute(serialize=True, purposes={ComputationPurpose.FOOTPRINT})
     def instances_fabrication_footprint(self):
         """Total hourly fabrication-phase carbon footprint, summed across every usage pattern."""
         instances_fabrication_footprint = sum(

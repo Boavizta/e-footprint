@@ -54,6 +54,7 @@ descriptor = decorator(utc_hourly_usage_journey_starts)
 # descriptor.__call__ binds the getter and returns descriptor itself
 
 utc_hourly_usage_journey_starts = descriptor</code></pre>
+<div class="tablewrap"><table><tr><th>Option</th><th>Independent responsibility</th></tr><tr><td><code>serialize=True</code></td><td>Persist the cached value when materialized.</td></tr><tr><td><code>guard=True</code></td><td>Pull after invalidation so intentional validation failures reject the update.</td></tr><tr><td><code>purposes={ComputationPurpose.FOOTPRINT}</code></td><td>Mark a meaningful footprint output root. Intermediate footprint membership is derived from the materialized dependency graph, not copied onto each descriptor.</td></tr></table></div>
 
 <h2 id="access">How the installed descriptor handles reads</h2>
 <div class="cols"><div class="n python"><b>Class read</b><br><span><code>UsagePattern.utc_hourly_usage_journey_starts</code><br>Python calls <code>__get__(None, UsagePattern)</code>; the descriptor returns itself. Documentation and registry code inspect this form.</span></div><div class="n value"><b>Instance read</b><br><span><code>pattern.utc_hourly_usage_journey_starts</code><br>Python calls <code>__get__(pattern, UsagePattern)</code>; the descriptor resolves and pulls the instance slot.</span></div></div>

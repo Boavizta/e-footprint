@@ -189,6 +189,10 @@ class TestSystem(TestCase):
     def test_servers(self):
         self.assertEqual([self.server], self.system.servers)
 
+    def test_construction_does_not_materialize_total_footprint(self):
+        """Test constructing a system validates guards without eagerly pulling its footprint root."""
+        self.assertNotIn("total_footprint", self.system.__dict__.get("_reactive_slots", {}))
+
     def test_storages(self):
         self.assertEqual([self.storage], self.system.storages)
 

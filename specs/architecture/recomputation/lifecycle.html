@@ -78,13 +78,13 @@ starts_utc._reactive_slot is S_utc</code></pre>
 <li><code>apply_changes()</code> detaches the old input and attaches <code>revised_starts</code> at the same <code>(pattern, attribute)</code> address. Detaching clears the old value's backpointer; the stable <code>S_starts</code> node remains in <code>pattern._reactive_slots</code>.</li>
 <li><code>invalidate(S_starts)</code> marks <code>S_starts</code>, follows <code>S_starts._dependents</code> to <code>S_utc</code>, and drops <code>S_utc._value</code>. The drop callback unlinks the obsolete computed explainable from <code>pattern</code>. Dependency sets remain in place so later waves can still cross void slots.</li>
 </ol>
-<pre><code># State after the deletion wave, before any eager pull
+<pre><code># State after the deletion wave, before any post-update pull
 S_starts._wave_passed is True
 S_utc._wave_passed is True
 S_utc.has_cached_value is False
 S_utc._calculus_dependencies == {S_starts, S_timezone}  # topology retained</code></pre>
 <ol start="5">
-<li><code>ModelingUpdate.pull_eagerly()</code> pulls guards and then the requested boundary: normally <code>System.total_footprint</code>; explicit <code>eager_outputs=()</code> leaves <code>S_utc</code> void until a later read.</li>
+<li><code>ModelingUpdate.pull_eagerly()</code> pulls invalidated guards. Ordinary outputs stay void by default; a caller may explicitly request selected <code>(object, attribute)</code> pairs through <code>eager_outputs</code>.</li>
 <li>When <code>S_utc</code> is pulled again, the getter uses <code>revised_starts</code>. <code>slot_of_attached_value(revised_starts)</code> resolves its address back to the existing <code>S_starts</code> node and writes that backpointer onto the new value.</li>
 <li>The successful computation atomically refreshes both edge sets, caches a fresh result, and clears wave markers on the dependencies and output. Nothing retains the old computed value.</li>
 </ol>
@@ -114,7 +114,7 @@ S_utc._calculus_dependencies == {S_starts, S_timezone}  # topology retained</cod
 <li><a href="../../../efootprint/abstract_modeling_classes/reactive_core/computed_slots.py"><code>reactive_core/computed_slots.py</code></a> — computed/lazy descriptors, getter closures, and class-level declaration registries.</li>
 <li><a href="../../../efootprint/abstract_modeling_classes/contextual_modeling_object_attribute.py"><code>contextual_modeling_object_attribute.py</code></a> — forward-link read hook and reverse-node bumps.</li>
 <li><a href="../../../efootprint/abstract_modeling_classes/modeling_object.py"><code>modeling_object.py</code></a> — assignment boundary and input wrapping.</li>
-<li><a href="../../../efootprint/abstract_modeling_classes/modeling_update.py"><code>modeling_update.py</code></a> — transactional apply, changed-slot capture, deletion wave, eager pull, and rollback.</li>
+<li><a href="../../../efootprint/abstract_modeling_classes/modeling_update.py"><code>modeling_update.py</code></a> — transactional apply, changed-slot capture, deletion wave, guard/output pulls, and rollback.</li>
 <li><a href="../../../efootprint/api_utils/system_to_json.py"><code>system_to_json.py</code></a> and <a href="../../../efootprint/api_utils/json_to_system.py"><code>json_to_system.py</code></a> — topology persistence and reconstruction.</li>
 </ol></div></details>
 
@@ -128,13 +128,16 @@ S_utc._calculus_dependencies == {S_starts, S_timezone}  # topology retained</cod
 <div class="rule"><b>New-link edge case:</b> a never-computed guard has no recorded dependency edge, so a deletion wave cannot reach it. <code>ModelingUpdate</code> explicitly finds every newly linked object and its linked subtree and pulls all of their guards. Invalid new links are therefore rejected immediately.</div>
 
 <h2 id="recomputation-root">How an update chooses what to recompute</h2>
-<p>After invalidation and the mandatory guard pulls, <code>ModelingUpdate</code> may select an ordinary computation boundary. This does not make the engine push-based: the transaction deliberately reads at most one configured boundary, and normal recursive <code>pull()</code> calls compute only the void dependencies needed beneath it.</p>
+<p>After invalidation and the mandatory guard pulls, <code>ModelingUpdate</code> leaves ordinary computations void unless its caller explicitly selects output boundaries. Normal recursive <code>pull()</code> calls then compute only the void dependencies needed beneath each requested output.</p>
 <div class="diagram"><div class="dtitle">Recomputation-root decision in <code>ModelingUpdate.pull_eagerly()</code></div>
 <div class="n guard"><b>Always first · guards</b><br><span>Pull invalidated guards and every guard on newly linked objects, regardless of the ordinary-output policy.</span></div>
-<div class="ar">↓ then choose exactly one ordinary-output branch</div>
-<div class="cols"><div class="n input"><b><code>eager_outputs</code> was supplied</b><br><span>Pull exactly those <code>(object, attribute)</code> pairs. An empty tuple deliberately pulls none.</span></div><div class="n value"><b>Default <code>None</code> + affected System</b><br><span>Pull <code>System.total_footprint</code>; its dependency cone recomputes.</span></div></div>
-<div class="ar">otherwise · default <code>None</code> and no System</div>
-<div class="n slot"><b>No ordinary recomputation root</b><br><span>Leave non-guard computed slots void. Their next explicit read pulls only what that consumer needs.</span></div></div>
+<div class="ar">↓ optional caller choice</div>
+<div class="cols"><div class="n input"><b>Explicit <code>eager_outputs</code></b><br><span>Pull exactly those <code>(object, attribute)</code> pairs.</span></div><div class="n slot"><b>Default</b><br><span>Leave non-guard computed slots void. Their next read pulls only what that consumer needs.</span></div></div></div>
+
+<h2 id="computation-purpose">Footprint roots and derived graph membership</h2>
+<p>Purpose metadata marks meaningful output boundaries, not every formula. <code>System.total_footprint</code> and each physical object's <code>energy_footprint</code> and <code>instances_fabrication_footprint</code> declare <code>purposes={ComputationPurpose.FOOTPRINT}</code>. Guard and serialization flags remain independent.</p>
+<div class="diagram"><div class="dtitle">Runtime classification follows the realized instance graph</div><div class="n value"><b>Tagged footprint output</b><br><span>A materialized output slot on this specific object instance.</span></div><div class="ar">↑ actual calculus and structural dependencies</div><div class="n slot"><b>Derived footprint computations</b><br><span>Every getter-backed upstream slot reached by <code>computation_slots_for_purpose(instance, FOOTPRINT)</code>, including the materialized per-key shape of computed dicts.</span></div></div>
+<div class="rule"><b>Unmaterialized is unclassified.</b> A declaration alone does not prove that a slot participates in a given instance's current calculation. Conditional dependencies differ by instance and refresh after successful recomputation; an unreachable or never-read descriptor is not silently treated as presentation.</div>
 
 <h2 id="dependencies">Where dependency edges come from</h2>
 <div class="tablewrap"><table><tr><th>Kind</th><th>Recorded when</th><th>Source</th></tr>

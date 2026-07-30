@@ -36,7 +36,7 @@ def suppress_dependency_recording():
 def collect_invalidated_slots():
     """Collect every slot visited by any deletion wave triggered inside the block — the write path
     fires waves from several places (explicit invalidations plus the container-transition bumps riding
-    along relationship bookkeeping), and the eager recompute needs their union."""
+    along relationship bookkeeping), and post-write guard/output pulls need their union."""
     collected = set()
     token = _invalidation_collector.set(collected)
     try:

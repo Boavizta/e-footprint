@@ -26,9 +26,7 @@ if TYPE_CHECKING:
 
 
 def pull_slots_system_wide(systems: list):
-    """Pull every computed slot of every object linked to the given systems (plus the systems
-    themselves). This is the transitional eager set: after every update, every slot is cached, keeping
-    serialization and error-surfacing behavior identical to the eager engine's."""
+    """Explicitly materialize every computed slot of every object linked to the given systems."""
     objs_to_pull = []
     for system in dict.fromkeys(systems):
         objs_to_pull += [system] + system.all_linked_objects
@@ -415,13 +413,19 @@ class ModelingObject(metaclass=ABCAfterInitMeta):
         for attr_name in self.calculated_attributes:
             getattr(self, attr_name)
 
+    def pull_guard_attributes(self):
+        """Materialize every declared guard on this object, without warming ordinary outputs."""
+        for attr_name, descriptor in computed_slots(type(self)).items():
+            if descriptor.guard:
+                getattr(self, attr_name)
+
     def after_init(self):
         self.enable_modeling_updates()
 
     def enable_modeling_updates(self):
         """Turn on live-update triggers on the object and its input dicts. The loader calls this
         instead of after_init: subclass after_init overrides carry construction-time side effects
-        (eager pulls surfacing configuration errors, default sub-object creation) and loading a
+        (guard pulls surfacing configuration errors, default sub-object creation) and loading a
         saved model must never compute nor mutate the deserialized structure."""
         from efootprint.abstract_modeling_classes.explainable_object_dict import ExplainableObjectDict
         self.trigger_modeling_updates = True
