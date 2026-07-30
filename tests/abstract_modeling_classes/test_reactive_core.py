@@ -54,6 +54,12 @@ class ReactiveCoreSubHolder(ReactiveCoreHolder):
         return (base * ExplainableQuantity(10 * u.dimensionless, "ten")).set_label(f"Boosted {leaf.name}")
 
 
+class ReactiveCoreGuardedHolder(ReactiveCoreHolder):
+    @computed_dict(keys="leaves", guard=True)
+    def value_per_leaf(self, leaf):
+        return (leaf.power * ExplainableQuantity(2 * u.dimensionless, "two")).set_label(f"Double {leaf.name}")
+
+
 class ReactiveCoreAbstractBase(ModelingObject):
     default_values = {}
 
@@ -198,6 +204,20 @@ class TestComputedDict(TestCase):
         self.assertEqual([self.leaf_1, leaf_3], list(self.holder.value_per_leaf.keys()))
         self.assertEqual(6, self.holder.value_per_leaf[leaf_3].magnitude)
         self.assertIsNone(dropped_value.modeling_obj_container)
+
+    def test_departed_element_slot_ceases_to_be_a_guard(self):
+        """A computed-dict element removed from the key set no longer validates model state, even
+        when the descriptor marks current elements as guards."""
+        holder = ReactiveCoreGuardedHolder("guarded holder", [self.leaf_1, self.leaf_2])
+        _ = holder.value_per_leaf
+        descriptor = ReactiveCoreGuardedHolder.value_per_leaf
+        departed_slot = descriptor.sub_slot(holder, self.leaf_2)
+        self.assertTrue(departed_slot.guard)
+
+        descriptor.discard_stale_keys(holder, [self.leaf_1])
+
+        self.assertFalse(departed_slot.guard)
+        self.assertNotIn(("value_per_leaf", self.leaf_2), holder._reactive_slots)
 
     def test_subclass_overriding_element_getter_is_dispatched_to(self):
         """Test that a subclass overriding only the per-key getter is honored, including through the

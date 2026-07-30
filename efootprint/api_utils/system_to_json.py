@@ -105,8 +105,6 @@ def calculation_graph_section(objects) -> dict:
     for obj in objects:
         registry = peek_instance_slot_registry(obj)
         for registry_key, slot in registry.items():
-            if slot.discarded:
-                continue
             if (isinstance(registry_key, tuple)
                     and getattr(registry_key[1], "id", None) not in serialized_object_ids):
                 # A slot keyed by an object outside the serialized set (e.g. a deleted dict member

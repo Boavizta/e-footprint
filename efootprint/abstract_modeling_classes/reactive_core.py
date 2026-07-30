@@ -97,9 +97,6 @@ class ReactiveSlot:
         self.name = name
         self.getter = getter
         self.on_value_dropped = on_value_dropped
-        # Set when a computed-dict element leaves its owner's registry, so guard processing skips
-        # the departed element even though the invalidation set still contains its slot.
-        self.discarded = False
         # Lazy slots (read-time projections) are invalidated like any slot but never eagerly
         # recomputed: they stay void until the next read pulls them.
         self.lazy = False
@@ -626,7 +623,9 @@ class computed_dict(computed_attribute):
         registry = instance_slot_registry(instance)
         for stale_key in [key for key in list(dict.keys(facade)) if key not in current_keys]:
             stale_slot = registry.pop((self.attr_name, stale_key))
-            stale_slot.discarded = True
+            # This element no longer belongs to the model's validation boundary. Clearing the
+            # existing policy flag also keeps a pre-pruning invalidation set from pulling it.
+            stale_slot.guard = False
             facade._drop_entry_passively(stale_key)
 
     def _make_compute_closure(self, instance, slot):

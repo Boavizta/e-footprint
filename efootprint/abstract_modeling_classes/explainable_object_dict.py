@@ -197,9 +197,8 @@ class ExplainableObjectDict(ObjectLinkedToModelingObjBase, dict):
         if binding is not None:
             owner, descriptor = binding
             from efootprint.abstract_modeling_classes.reactive_core import instance_slot_registry
-            popped_slot = instance_slot_registry(owner).pop((descriptor.attr_name, key), None)
-            if popped_slot is not None:
-                popped_slot.discarded = True
+            popped_slot = instance_slot_registry(owner).pop((descriptor.attr_name, key))
+            popped_slot.guard = False
             self._drop_entry_passively(key)
             return
 

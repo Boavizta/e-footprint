@@ -39,11 +39,11 @@ device.energy_footprint_per_usage_pattern
 
 <h2 id="granularity">Why element slots matter</h2>
 <div class="cols"><div class="n value"><b>Fine-grained invalidation</b><br><span>If only job B's consumed inputs change, B's element slot becomes void while A's cached value remains reusable.</span></div><div class="n slot"><b>Whole-dict dependency</b><br><span>A consumer that reads the facade as a collection also depends structurally on the key-set node, so membership changes invalidate that consumer.</span></div></div>
-<p>After invalidation, <code>prune_stale_computed_dict_keys()</code> synchronizes membership before the transaction pulls guards or an ordinary output. It marks departed sub-slots as discarded so the guard pass, which still holds the pre-pruning invalidation set, skips them. See <a href="../lifecycle.html#recomputation-root">how an update chooses its recomputation root</a>.</p>
+<p>After invalidation, <code>prune_stale_computed_dict_keys()</code> synchronizes membership before the transaction pulls guards or an ordinary output. It clears the guard flag on departed sub-slots so the guard pass, which still holds the pre-pruning invalidation set, skips them. See <a href="../lifecycle.html#recomputation-root">how an update chooses its recomputation root</a>.</p>
 
 <h2 id="stale-keys">When a key leaves</h2>
 <ol>
-<li><code>discard_stale_keys()</code> removes the composite-key sub-slot from the owner's registry and marks it <code>discarded=True</code>.</li>
+<li><code>discard_stale_keys()</code> removes the composite-key sub-slot from the owner's registry and clears its guard policy.</li>
 <li>The corresponding facade entry is dropped passively, without starting another modeling update.</li>
 <li>Previously computed dependents retain their old dependency edge to the removed sub-slot until they successfully recompute. That edge remains available to invalidation traversal but never pulls the removed sub-slot.</li>
 <li><code>prune_stale_computed_dict_keys()</code> performs membership cleanup after invalidation even when nobody reads the facade, preventing detached objects from remaining reachable through stale container bookkeeping.</li>

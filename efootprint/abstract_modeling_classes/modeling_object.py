@@ -39,8 +39,7 @@ def pull_slots_system_wide(systems: list):
 def pull_guard_slots(invalidated_slots):
     """Recompute the validation slots a write invalidated: guard slots exist to reject invalid
     states, so they must run at update time even though nothing downstream reads them."""
-    guard_slots = [slot for slot in invalidated_slots
-                   if slot.guard and slot.getter is not None and not slot.discarded]
+    guard_slots = [slot for slot in invalidated_slots if slot.guard and slot.getter is not None]
     for slot in sorted(guard_slots, key=lambda slot: slot.name):
         slot.pull()
 

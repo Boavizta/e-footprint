@@ -38,7 +38,7 @@ country.__dict__["_reactive_slots"] == {
 <tr><td><code>_structural_dependencies</code></td><td>Relationship or membership slots traversed through <a class="term" href="../../glossary.html#structural-dependency">structural dependencies</a>.</td></tr>
 <tr><td><code>_dependents</code></td><td>Reverse index: slots whose computations depend on this slot.</td></tr>
 <tr><td><code>_wave_passed</code></td><td>Whether an invalidation wave has already crossed this node and all its current dependents.</td></tr>
-<tr><td><code>guard</code>, <code>lazy</code>, <code>discarded</code></td><td>Update-policy flags: validate inside the transaction, never warm as an ordinary output, and skip stale computed-dict slots.</td></tr>
+<tr><td><code>guard</code>, <code>lazy</code></td><td>Update-policy flags: validate inside the transaction, or never warm as an ordinary output.</td></tr>
 </table></div>
 
 <h2 id="pull">What happens when a computing slot is pulled</h2>
