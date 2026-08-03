@@ -4,9 +4,25 @@ import efootprint
 from efootprint.abstract_modeling_classes.explainable_object_base_class import ExplainableObject
 from efootprint.abstract_modeling_classes.explainable_object_dict import ExplainableObjectDict
 from efootprint.abstract_modeling_classes.modeling_object import ModelingObject
-from efootprint.abstract_modeling_classes.reactive_core import computed_slots, peek_instance_slot_registry
+from efootprint.abstract_modeling_classes.reactive_core import (
+    computed_slots, peek_instance_slot_registry, serialized_slots)
 
 CALCULATION_GRAPH_KEY = "calculation_graph"
+
+
+def materialize_serialized_state(modeling_objects):
+    """Explicitly compute every ``serialize=True`` slot on the supplied modeling objects.
+
+    Serialization itself remains passive and only peeks at cached values. Call this operation at a
+    boundary that requires a complete snapshot, such as a user-triggered export, before serializing
+    and building the calculation graph.
+    """
+    if isinstance(modeling_objects, ModelingObject):
+        modeling_objects = [modeling_objects] + getattr(modeling_objects, "all_linked_objects", [])
+
+    for modeling_object in dict.fromkeys(modeling_objects):
+        for attr_name in serialized_slots(modeling_object.efootprint_class):
+            getattr(modeling_object, attr_name)
 
 
 def recursively_write_json_dict(

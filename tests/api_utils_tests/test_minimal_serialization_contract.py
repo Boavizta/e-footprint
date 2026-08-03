@@ -13,7 +13,7 @@ import efootprint
 from efootprint.abstract_modeling_classes.reactive_core import ReactiveSlot, computed_slots, serialized_slots
 from efootprint.abstract_modeling_classes.source_objects import SourceValue
 from efootprint.api_utils.json_to_system import json_to_system, upgrade_system_dict_to_current_version
-from efootprint.api_utils.system_to_json import system_to_json
+from efootprint.api_utils.system_to_json import materialize_serialized_state, system_to_json
 from efootprint.api_utils.version_upgrade_handlers import upgrade_version_22_to_23
 from efootprint.constants.units import u
 from tests.integration_tests.integration_simple_system_base_class import IntegrationTestSimpleSystemBaseClass
@@ -87,6 +87,34 @@ class TestMinimalSerializationContract(TestCase):
 
         self.assertIsNone(computed_slots(type(loaded_system))["total_footprint"].peek(loaded_system))
         self.assertEqual(self.system.total_footprint, loaded_system.total_footprint)
+
+    def test_materialize_serialized_state_produces_a_complete_snapshot(self):
+        """Test explicit snapshot preparation fills every serialize-flagged slot before the passive
+        serializer captures their values and dependency topology."""
+        fresh_system, _ = IntegrationTestSimpleSystemBaseClass.generate_simple_system()
+        objects = [fresh_system] + fresh_system.all_linked_objects
+
+        materialize_serialized_state(fresh_system)
+        snapshot = system_to_json(fresh_system)
+
+        self.assertIn("calculation_graph", snapshot)
+        self.assertIn([fresh_system.id, "total_footprint", None], snapshot["calculation_graph"]["nodes"])
+        self.assertTrue(snapshot["calculation_graph"]["edges"])
+        for obj in objects:
+            for attr_name, descriptor in serialized_slots(obj.efootprint_class).items():
+                self.assertIsNotNone(descriptor.peek(obj), f"{obj.name}.{attr_name} was not materialized")
+                self.assertIn(attr_name, snapshot[obj.class_as_simple_str][obj.id])
+
+    def test_system_to_json_remains_peek_only(self):
+        """Test ordinary serialization does not materialize serialize-flagged slots."""
+        fresh_system, _ = IntegrationTestSimpleSystemBaseClass.generate_simple_system()
+        total_descriptor = serialized_slots(type(fresh_system))["total_footprint"]
+        self.assertIsNone(total_descriptor.peek(fresh_system))
+
+        snapshot = system_to_json(fresh_system)
+
+        self.assertIsNone(total_descriptor.peek(fresh_system))
+        self.assertNotIn("total_footprint", snapshot["System"][fresh_system.id])
 
     def test_edit_after_trusted_load_invalidates_through_serialized_graph(self):
         """Test the partial-reload state: editing an input below valueless intermediates voids the
