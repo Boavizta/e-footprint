@@ -552,9 +552,6 @@ class ModelingObject(metaclass=ABCAfterInitMeta):
                 f"You can’t delete {self.name} because "
                 f"{','.join([mod_obj.name for mod_obj in self.modeling_obj_containers])} have it as attribute.")
 
-        # Capture the systems the neighbours belong to before unlinking makes them unreachable.
-        systems = list(dict.fromkeys(sum([mod_obj.systems for mod_obj in self.mod_obj_attributes], start=[])))
-
         # Drop this object's computed values so ancestor children links and container bookkeeping on
         # surviving objects don't accumulate dead values.
         for slot in list(instance_slot_registry(self).values()):
@@ -572,11 +569,9 @@ class ModelingObject(metaclass=ABCAfterInitMeta):
             for attr_value in get_instance_attributes(self, ObjectLinkedToModelingObjBase).values():
                     attr_value.set_modeling_obj_container(None, None)
 
-        if self.trigger_modeling_updates and systems:
+        if self.trigger_modeling_updates:
             prune_stale_computed_dict_keys(invalidated_slots)
             pull_guard_slots(invalidated_slots)
-            for system in systems:
-                system.total_footprint
 
         del self
 

@@ -416,6 +416,7 @@ class IntegrationTestSimpleSystemBaseClass(IntegrationTestBaseClass):
             self.uj_step_2.jobs = to_weighted_explainable_object_dict({})
             logger.info("Deleting upload job")
             self.job_2.self_delete()
+            self.assertIsNone(type(self.system).total_footprint.peek(self.system))
 
     def run_test_dict_container_integrity(self):
         """Test bidirectional consistency of explainable_object_dicts_containers tracking."""
