@@ -1,3 +1,4 @@
+import operator
 import unittest
 from unittest.mock import MagicMock, patch
 
@@ -391,35 +392,92 @@ class TestExplainableObjectDictStructuralContext(unittest.TestCase):
         self.assertEqual(owner, owner.input_dict[existing_child].modeling_obj_container)
         self.assertEqual("input_dict", owner.input_dict[existing_child].attr_name_in_mod_obj_container)
 
-    def test_public_update_and_clear_each_launch_one_modeling_update(self):
-        """Test active public update and clear each launch exactly one modeling update."""
-        first_child = ModelingObjectForContainerTest("dict transaction first child")
-        second_child = ModelingObjectForContainerTest("dict transaction second child")
+    @staticmethod
+    def _public_mutation_case(prefix, operation):
+        first_key = ModelingObjectForContainerTest(f"{prefix} first key")
+        second_key = ModelingObjectForContainerTest(f"{prefix} second key")
+        third_key = ModelingObjectForContainerTest(f"{prefix} third key")
+        first_value = SourceValue(1 * u.dimensionless, label=f"{prefix} first value")
+        second_value = SourceValue(2 * u.dimensionless, label=f"{prefix} second value")
+        third_value = SourceValue(3 * u.dimensionless, label=f"{prefix} third value")
+        cases = {
+            "set_new": (
+                lambda values: operator.setitem(values, third_key, third_value),
+                [(first_key, first_value), (second_key, second_value), (third_key, third_value)], 1),
+            "set_existing": (
+                lambda values: operator.setitem(values, first_key, third_value),
+                [(first_key, third_value), (second_key, second_value)], 1),
+            "update": (
+                lambda values: values.update({first_key: third_value, third_key: first_value}),
+                [(first_key, third_value), (second_key, second_value), (third_key, first_value)], 1),
+            "delitem": (
+                lambda values: operator.delitem(values, second_key), [(first_key, first_value)], 1),
+            "pop": (lambda values: values.pop(second_key), [(first_key, first_value)], 1),
+            "popitem": (lambda values: values.popitem(), [(first_key, first_value)], 1),
+            "clear": (lambda values: values.clear(), [], 1),
+            "setdefault_new": (
+                lambda values: values.setdefault(third_key, third_value),
+                [(first_key, first_value), (second_key, second_value), (third_key, third_value)], 1),
+            "setdefault_existing": (
+                lambda values: values.setdefault(first_key, third_value),
+                [(first_key, first_value), (second_key, second_value)], 0),
+            "ior": (
+                lambda values: operator.ior(values, {third_key: third_value}),
+                [(first_key, first_value), (second_key, second_value), (third_key, third_value)], 1),
+        }
+        mutate, expected, live_update_count = cases[operation]
+        initial = [(first_key, first_value), (second_key, second_value)]
+        return (
+            initial, mutate, expected, live_update_count,
+            [first_key, second_key, third_key], [first_value, second_value, third_value])
+
+    def test_every_public_mutator_is_passive_unattached_and_transactional_when_live(self):
+        """Test every public dict mutator across the passive and live lifecycle states."""
+        operations = (
+            "set_new", "set_existing", "update", "delitem", "pop", "popitem", "clear", "setdefault_new",
+            "setdefault_existing", "ior")
+        for live in (False, True):
+            for operation in operations:
+                with self.subTest(live=live, operation=operation):
+                    prefix = f"{'live' if live else 'passive'} {operation}"
+                    initial, mutate, expected, live_updates, all_keys, all_values = self._public_mutation_case(
+                        prefix, operation)
+                    owner = ModelingObjectWithInputDictForContainerTest(
+                        f"{prefix} owner", ExplainableObjectDict(dict(initial))) if live else None
+                    input_dict = owner.input_dict if live else ExplainableObjectDict(dict(initial))
+
+                    with patch(
+                            "efootprint.abstract_modeling_classes.modeling_update.ModelingUpdate",
+                            wraps=ModelingUpdate) as update_spy:
+                        mutate(input_dict)
+
+                    current = owner.input_dict if live else input_dict
+                    self.assertEqual(live_updates if live else 0, update_spy.call_count)
+                    self.assertEqual(expected, list(dict.items(current)))
+                    expected_keys = [key for key, _ in expected]
+                    expected_values = [value for _, value in expected]
+                    for key in all_keys:
+                        is_retained = any(key is expected_key for expected_key in expected_keys)
+                        self.assertEqual([owner] if live and is_retained else [], key.modeling_obj_containers)
+                    for value in all_values:
+                        is_retained = any(value is expected_value for expected_value in expected_values)
+                        self.assertIs(
+                            owner if live and is_retained else None, value.modeling_obj_container)
+
+    def test_live_ior_attribute_syntax_launches_only_the_container_update(self):
+        """Test live dict augmented assignment does not launch a second attribute update."""
+        first_key = ModelingObjectForContainerTest("dict ior first key")
+        second_key = ModelingObjectForContainerTest("dict ior second key")
         owner = ModelingObjectWithInputDictForContainerTest(
-            "dict transaction owner",
-            input_dict={first_child: SourceValue(1 * u.dimensionless, label="first count")},
-        )
+            "dict ior owner", {first_key: SourceValue(1 * u.dimensionless, label="first count")})
 
         with patch(
                 "efootprint.abstract_modeling_classes.modeling_update.ModelingUpdate",
                 wraps=ModelingUpdate) as update_spy:
-            owner.input_dict.update({
-                first_child: SourceValue(2 * u.dimensionless, label="updated first count"),
-                second_child: SourceValue(3 * u.dimensionless, label="second count"),
-            })
+            owner.input_dict |= {second_key: SourceValue(2 * u.dimensionless, label="second count")}
 
         self.assertEqual(1, update_spy.call_count)
-        self.assertEqual([first_child, second_child], list(owner.input_dict))
-
-        with patch(
-                "efootprint.abstract_modeling_classes.modeling_update.ModelingUpdate",
-                wraps=ModelingUpdate) as update_spy:
-            owner.input_dict.clear()
-
-        self.assertEqual(1, update_spy.call_count)
-        self.assertEqual({}, owner.input_dict)
-        self.assertEqual([], first_child.modeling_obj_containers)
-        self.assertEqual([], second_child.modeling_obj_containers)
+        self.assertEqual([first_key, second_key], list(owner.input_dict))
 
     def test_passive_entry_mutation_launches_no_update_and_keeps_relationships_in_sync(self):
         """Test passive dict entry mutation launches no update and preserves relationship links."""
@@ -435,25 +493,6 @@ class TestExplainableObjectDictStructuralContext(unittest.TestCase):
         self.assertEqual({}, owner.input_dict)
         self.assertEqual([], child.modeling_obj_containers)
         self.assertIsNone(weight.modeling_obj_container)
-
-    def test_public_ior_launches_one_modeling_update_and_keeps_merged_state(self):
-        """Test active dict union assignment launches one update and keeps the merged mapping."""
-        first_child = ModelingObjectForContainerTest("dict ior first child")
-        second_child = ModelingObjectForContainerTest("dict ior second child")
-        owner = ModelingObjectWithInputDictForContainerTest(
-            "dict ior owner",
-            input_dict={first_child: SourceValue(1 * u.dimensionless, label="first count")},
-        )
-
-        with patch(
-                "efootprint.abstract_modeling_classes.modeling_update.ModelingUpdate",
-                wraps=ModelingUpdate) as update_spy:
-            owner.input_dict |= {second_child: SourceValue(2 * u.dimensionless, label="second count")}
-
-        self.assertEqual(1, update_spy.call_count)
-        self.assertEqual([first_child, second_child], list(owner.input_dict))
-        self.assertEqual([owner], first_child.modeling_obj_containers)
-        self.assertEqual([owner], second_child.modeling_obj_containers)
 
     def test_value_only_update_preserves_untouched_key_cache(self):
         """Test value-only update invalidates the changed key without replacing the input dict."""

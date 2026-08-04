@@ -1,3 +1,4 @@
+import operator
 import unittest
 from unittest.mock import Mock, patch
 from copy import copy
@@ -167,46 +168,60 @@ class TestListLinkedToModelingObjTransactions(unittest.TestCase):
         attribute_update_spy.assert_not_called()
         self.assertEqual([child, child], owner.children)
 
-    def test_public_extend_launches_one_update_while_passive_mutation_launches_none(self):
-        """Test public extension launches one update while passive insertion launches none."""
-        first_child = ModelingObject("list transaction first child")
-        second_child = ModelingObject("list transaction second child")
-        third_child = ModelingObject("list transaction third child")
-        owner = ModelingObjectWithListForContainerTest("list transaction owner", [first_child])
+    @staticmethod
+    def _public_mutation_case(prefix, operation):
+        first = ModelingObject(f"{prefix} first")
+        second = ModelingObject(f"{prefix} second")
+        third = ModelingObject(f"{prefix} third")
+        fourth = ModelingObject(f"{prefix} fourth")
+        cases = {
+            "append": ([first, second], lambda values: values.append(third), [first, second, third]),
+            "insert": ([first, second], lambda values: values.insert(1, third), [first, third, second]),
+            "setitem": ([first, second], lambda values: operator.setitem(values, 0, third), [third, second]),
+            "set_slice": (
+                [first, second], lambda values: operator.setitem(values, slice(0, 1), [third, fourth]),
+                [third, fourth, second]),
+            "extend": ([first], lambda values: values.extend([second, third]), [first, second, third]),
+            "pop": ([first, second], lambda values: values.pop(), [first]),
+            "remove": ([first, second], lambda values: values.remove(first), [second]),
+            "clear": ([first, second], lambda values: values.clear(), []),
+            "reverse": ([first, second], lambda values: values.reverse(), [second, first]),
+            "sort": ([second, first], lambda values: values.sort(key=lambda child: child.name), [first, second]),
+            "delitem": ([first, second], lambda values: operator.delitem(values, 0), [second]),
+            "del_slice": (
+                [first, second, third], lambda values: operator.delitem(values, slice(1, None)), [first]),
+            "iadd": ([first], lambda values: operator.iadd(values, [second, third]), [first, second, third]),
+            "imul": ([first, second], lambda values: operator.imul(values, 2), [first, second, first, second]),
+        }
+        initial, mutate, expected = cases[operation]
+        return initial, mutate, expected, [first, second, third, fourth]
 
-        with patch(
-                "efootprint.abstract_modeling_classes.list_linked_to_modeling_obj.ModelingUpdate",
-                wraps=ModelingUpdate) as update_spy:
-            owner.children.extend([second_child, third_child])
+    def test_every_public_mutator_is_passive_unattached_and_transactional_when_live(self):
+        """Test every public list mutator across the passive and live lifecycle states."""
+        operations = (
+            "append", "insert", "setitem", "set_slice", "extend", "pop", "remove", "clear", "reverse",
+            "sort", "delitem", "del_slice", "iadd", "imul")
+        for live in (False, True):
+            for operation in operations:
+                with self.subTest(live=live, operation=operation):
+                    prefix = f"{'live' if live else 'passive'} {operation}"
+                    initial, mutate, expected, all_children = self._public_mutation_case(prefix, operation)
+                    owner = ModelingObjectWithListForContainerTest(f"{prefix} owner", initial) if live else None
+                    children = owner.children if live else ListLinkedToModelingObj(initial)
 
-        self.assertEqual(1, update_spy.call_count)
-        self.assertEqual([first_child, second_child, third_child], owner.children)
+                    with patch(
+                            "efootprint.abstract_modeling_classes.list_linked_to_modeling_obj.ModelingUpdate",
+                            wraps=ModelingUpdate) as update_spy:
+                        mutate(children)
 
-        fourth_child = ModelingObject("list transaction fourth child")
-        with patch(
-                "efootprint.abstract_modeling_classes.list_linked_to_modeling_obj.ModelingUpdate",
-                wraps=ModelingUpdate) as update_spy:
-            owner.children._insert_passively(1, fourth_child)
-
-        update_spy.assert_not_called()
-        self.assertEqual([first_child, fourth_child, second_child, third_child], owner.children)
-        self.assertEqual([owner], fourth_child.modeling_obj_containers)
-
-    def test_public_reverse_launches_one_update_and_preserves_relationships(self):
-        """Test public reversal launches one update and preserves relationship links."""
-        first_child = ModelingObject("list reverse first child")
-        second_child = ModelingObject("list reverse second child")
-        owner = ModelingObjectWithListForContainerTest("list reverse owner", [first_child, second_child])
-
-        with patch(
-                "efootprint.abstract_modeling_classes.list_linked_to_modeling_obj.ModelingUpdate",
-                wraps=ModelingUpdate) as update_spy:
-            owner.children.reverse()
-
-        self.assertEqual(1, update_spy.call_count)
-        self.assertEqual([second_child, first_child], owner.children)
-        self.assertEqual([owner], first_child.modeling_obj_containers)
-        self.assertEqual([owner], second_child.modeling_obj_containers)
+                    current = owner.children if live else children
+                    self.assertEqual(int(live), update_spy.call_count)
+                    self.assertEqual(expected, current)
+                    for child in all_children:
+                        self.assertEqual([owner] if live and child in expected else [], child.modeling_obj_containers)
+                    for link in list.__iter__(current):
+                        self.assertIs(owner, link.modeling_obj_container)
+                        self.assertEqual("children" if live else None, link.attr_name_in_mod_obj_container)
 
     def test_passive_slice_set_and_drop_preserve_order_and_relationship_bookkeeping(self):
         """Test passive slice replacement and deletion preserve ordering and relationship links."""
