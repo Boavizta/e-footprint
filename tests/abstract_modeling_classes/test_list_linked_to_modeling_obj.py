@@ -79,17 +79,6 @@ class TestListLinkedToModelingObj(unittest.TestCase):
         self.assertEqual(self.linked_list[0], self.mock_modeling_obj_3)
         self.mock_modeling_obj_3.set_modeling_obj_container.assert_called_with(self.mock_modeling_obj_1, "attr_name")
 
-    def test_passive_slice_set_and_drop_preserve_order_and_bookkeeping(self):
-        self.linked_list.set_modeling_obj_container(self.mock_modeling_obj_1, "attr_name")
-        self.linked_list._extend_passively([self.mock_modeling_obj_2, self.mock_modeling_obj_3])
-
-        self.linked_list._set_entry_passively(slice(0, 1), [self.mock_modeling_obj_3, self.mock_modeling_obj_2])
-        removed = self.linked_list._drop_entry_passively(slice(1, 2))
-
-        self.assertEqual([self.mock_modeling_obj_3, self.mock_modeling_obj_3], self.linked_list)
-        self.assertEqual([self.mock_modeling_obj_2], removed)
-        removed[0].set_modeling_obj_container.assert_called_with(None, None)
-
     def test_remove(self):
         self.linked_list.set_modeling_obj_container(self.mock_modeling_obj_1, "attr_name")
         self.linked_list.append(self.mock_modeling_obj_2)
@@ -180,6 +169,7 @@ class TestListLinkedToModelingObjTransactions(unittest.TestCase):
         self.assertEqual([child, child], owner.children)
 
     def test_public_extend_launches_one_update_while_passive_mutation_launches_none(self):
+        """Test public extension launches one update while passive insertion launches none."""
         first_child = ModelingObject("list transaction first child")
         second_child = ModelingObject("list transaction second child")
         third_child = ModelingObject("list transaction third child")
@@ -204,6 +194,7 @@ class TestListLinkedToModelingObjTransactions(unittest.TestCase):
         self.assertEqual([owner], fourth_child.modeling_obj_containers)
 
     def test_public_reverse_launches_one_update_and_preserves_relationships(self):
+        """Test public reversal launches one update and preserves relationship links."""
         first_child = ModelingObject("list reverse first child")
         second_child = ModelingObject("list reverse second child")
         owner = ModelingObjectWithListForContainerTest("list reverse owner", [first_child, second_child])
@@ -217,6 +208,32 @@ class TestListLinkedToModelingObjTransactions(unittest.TestCase):
         self.assertEqual([second_child, first_child], owner.children)
         self.assertEqual([owner], first_child.modeling_obj_containers)
         self.assertEqual([owner], second_child.modeling_obj_containers)
+
+    def test_passive_slice_set_and_drop_preserve_order_and_relationship_bookkeeping(self):
+        """Test passive slice replacement and deletion preserve ordering and relationship links."""
+        first_child = ModelingObject("passive slice first child")
+        second_child = ModelingObject("passive slice second child")
+        third_child = ModelingObject("passive slice third child")
+        owner = ModelingObjectWithListForContainerTest(
+            "passive slice owner", [first_child, second_child])
+
+        with patch(
+                "efootprint.abstract_modeling_classes.list_linked_to_modeling_obj.ModelingUpdate",
+                wraps=ModelingUpdate) as update_spy:
+            owner.children._set_entry_passively(slice(0, 1), [third_child, first_child])
+            removed = owner.children._drop_entry_passively(slice(1, 2))
+
+        update_spy.assert_not_called()
+        self.assertEqual([third_child, second_child], owner.children)
+        self.assertEqual([first_child], removed)
+        self.assertIsNone(removed[0].modeling_obj_container)
+        self.assertIsNone(removed[0].attr_name_in_mod_obj_container)
+        self.assertEqual([], first_child.modeling_obj_containers)
+        self.assertEqual([owner], second_child.modeling_obj_containers)
+        self.assertEqual([owner], third_child.modeling_obj_containers)
+        for child_link in owner.children:
+            self.assertIs(owner, child_link.modeling_obj_container)
+            self.assertEqual("children", child_link.attr_name_in_mod_obj_container)
 
 
 if __name__ == '__main__':

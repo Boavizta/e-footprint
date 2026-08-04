@@ -365,6 +365,7 @@ class TestExplainableObjectDictStructuralContext(unittest.TestCase):
         self.assertEqual("input_dict", owner.input_dict[existing_child].attr_name_in_mod_obj_container)
 
     def test_public_update_and_clear_each_launch_one_modeling_update(self):
+        """Test active public update and clear each launch exactly one modeling update."""
         first_child = ModelingObjectForContainerTest("dict transaction first child")
         second_child = ModelingObjectForContainerTest("dict transaction second child")
         owner = ModelingObjectWithInputDictForContainerTest(
@@ -394,6 +395,7 @@ class TestExplainableObjectDictStructuralContext(unittest.TestCase):
         self.assertEqual([], second_child.modeling_obj_containers)
 
     def test_passive_entry_mutation_launches_no_update_and_keeps_relationships_in_sync(self):
+        """Test passive dict entry mutation launches no update and preserves relationship links."""
         child = ModelingObjectForContainerTest("passive dict child")
         owner = ModelingObjectWithInputDictForContainerTest("passive dict owner", input_dict={})
         weight = SourceValue(4 * u.dimensionless, label="passive count")
@@ -569,6 +571,7 @@ class TestWeightedExplainableObjectDict(unittest.TestCase):
         self.assertEqual(5, self.weighted_dict[self.key].value.magnitude)
 
     def test_passive_set_validates_weights_and_copy_preserves_concrete_type(self):
+        """Test passive weighted sets validate values and copying preserves the concrete type."""
         with self.assertRaises(ValueError):
             self.weighted_dict._set_entry_passively(self.key, SourceValue(-1 * u.dimensionless))
 
