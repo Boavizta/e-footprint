@@ -10,7 +10,7 @@ from efootprint.abstract_modeling_classes.source_objects import SourceValue
 from efootprint.abstract_modeling_classes.empty_explainable_object import EmptyExplainableObject
 from efootprint.abstract_modeling_classes.modeling_object import ModelingObject
 from efootprint.abstract_modeling_classes.modeling_update import ModelingUpdate
-from efootprint.abstract_modeling_classes.reactive_core import computed_attribute
+from efootprint.abstract_modeling_classes.reactive_core import computed_attribute, computed_dict
 from efootprint.constants.sources import Sources
 from efootprint.constants.units import u
 from tests.utils import attach_input, create_mod_obj_mock
@@ -63,6 +63,22 @@ class ModelingObjectWithKeyLocalInputDictForContainerTest(ModelingObject):
     @computed_attribute
     def second_weight(self):
         return self.input_dict[self.second_child].copy().set_label("Second weight")
+
+    @property
+    def systems(self):
+        return []
+
+
+class ModelingObjectWithComputedDictForContainerTest(ModelingObject):
+    default_values = {}
+
+    def __init__(self, name, keys: list[ModelingObject]):
+        super().__init__(name)
+        self.keys = keys
+
+    @computed_dict(keys="keys")
+    def computed_values(self, key):
+        return SourceValue(1 * u.dimensionless, label=f"{key.name} computed value")
 
     @property
     def systems(self):
@@ -242,6 +258,20 @@ class TestExplainableObjectDictLifecycle(unittest.TestCase):
         d = ExplainableObjectDict()
         d.set_modeling_obj_container(real_obj, "attr_name")
         self.assertTrue(d._mutations_are_transactional)
+
+    def test_computed_facade_ior_accepts_augmented_attribute_writeback(self):
+        """Test computed-facade union assignment writes through its descriptor without raising."""
+        key = ModelingObjectForContainerTest("computed facade key")
+        owner = ModelingObjectWithComputedDictForContainerTest("computed facade owner", [key])
+        facade = owner.computed_values
+        replacement = SourceValue(2 * u.dimensionless, label="replacement computed value")
+
+        with patch("efootprint.abstract_modeling_classes.modeling_update.ModelingUpdate") as update_spy:
+            owner.computed_values |= {key: replacement}
+
+        update_spy.assert_not_called()
+        self.assertIs(facade, owner.computed_values)
+        self.assertIs(replacement, owner.computed_values[key])
 
 
 class TestExplainableObjectDictStructuralContext(unittest.TestCase):

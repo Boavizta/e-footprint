@@ -494,7 +494,11 @@ class ModelingObject(metaclass=ABCAfterInitMeta):
         if name in self.attributes_that_shouldnt_trigger_update_logic:
             super().__setattr__(name, input_value)
             return
-        if isinstance(getattr(type(self), name, None), (computed_attribute, computed_structure)):
+        computed_descriptor = getattr(type(self), name, None)
+        if isinstance(computed_descriptor, (computed_attribute, computed_structure)):
+            facade_binding = getattr(input_value, "__dict__", {}).get("_computed_facade_of")
+            if facade_binding is not None and facade_binding[0] is self and facade_binding[1] is computed_descriptor:
+                return
             # Computed values only enter their slot by computation or by the descriptor's explicit
             # attach_cached_value (the load path and the test pinning path): a plain assignment would
             # either silently vanish or leave dependents cached against the unpinned value.
