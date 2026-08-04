@@ -493,9 +493,12 @@ class ModelingObject(metaclass=ABCAfterInitMeta):
             # with calculated attributes from json, the calculation graph must be loaded before the attribute setting.
             super().__setattr__(name, value_to_set)
         else:
+            current_attr = getattr(self, name, None)
+            if input_value is current_attr:
+                return
             from efootprint.abstract_modeling_classes.modeling_update import ModelingUpdate
             logger.debug(f"Updating {name} in {self.name}")
-            ModelingUpdate([[getattr(self, name, None), input_value]])
+            ModelingUpdate([[current_attr, input_value]])
 
     @property
     def contextual_mod_obj_attributes(self) -> List["ContextualModelingObjectAttribute"]:

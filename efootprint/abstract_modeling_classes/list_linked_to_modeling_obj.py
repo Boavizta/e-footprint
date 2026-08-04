@@ -242,19 +242,22 @@ class ListLinkedToModelingObj(ObjectLinkedToModelingObjBase, list, metaclass=Aft
 
     def __iadd__(self, values):
         values = list(values)
-        updates_were_enabled = self.trigger_modeling_updates
-        self.extend(values)
-        if updates_were_enabled:
-            # Augmented assignment writes the returned object back through ModelingObject.__setattr__.
-            # Keep this now-detached receiver equal to the installed replacement so that write-back is a no-op.
-            self._extend_passively(values)
+        if self.trigger_modeling_updates:
+            modeling_obj_container = self.modeling_obj_container
+            attr_name = self.attr_name_in_mod_obj_container
+            self.extend(values)
+            return modeling_obj_container.__dict__[attr_name]
+        self._extend_passively(values)
         return self
 
     def __imul__(self, n: int):
         if self.trigger_modeling_updates:
+            modeling_obj_container = self.modeling_obj_container
+            attr_name = self.attr_name_in_mod_obj_container
             copied_list = list(list.__iter__(self))
             copied_list *= n
             ModelingUpdate([[self, copied_list]])
+            return modeling_obj_container.__dict__[attr_name]
 
         if n <= 0:
             self._clear_passively()

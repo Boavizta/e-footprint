@@ -146,6 +146,39 @@ class TestListLinkedToModelingObj(unittest.TestCase):
 
 
 class TestListLinkedToModelingObjTransactions(unittest.TestCase):
+    def test_public_iadd_launches_one_modeling_update(self):
+        """Test active list augmented addition launches exactly one modeling update."""
+        first_child = ModelingObject("list iadd first child")
+        second_child = ModelingObject("list iadd second child")
+        owner = ModelingObjectWithListForContainerTest("list iadd owner", [first_child])
+
+        with patch(
+                "efootprint.abstract_modeling_classes.list_linked_to_modeling_obj.ModelingUpdate",
+                wraps=ModelingUpdate) as container_update_spy, patch(
+                "efootprint.abstract_modeling_classes.modeling_update.ModelingUpdate",
+                wraps=ModelingUpdate) as attribute_update_spy:
+            owner.children += [second_child]
+
+        self.assertEqual(1, container_update_spy.call_count)
+        attribute_update_spy.assert_not_called()
+        self.assertEqual([first_child, second_child], owner.children)
+
+    def test_public_imul_launches_one_modeling_update(self):
+        """Test active list augmented multiplication launches exactly one modeling update."""
+        child = ModelingObject("list imul child")
+        owner = ModelingObjectWithListForContainerTest("list imul owner", [child])
+
+        with patch(
+                "efootprint.abstract_modeling_classes.list_linked_to_modeling_obj.ModelingUpdate",
+                wraps=ModelingUpdate) as container_update_spy, patch(
+                "efootprint.abstract_modeling_classes.modeling_update.ModelingUpdate",
+                wraps=ModelingUpdate) as attribute_update_spy:
+            owner.children *= 2
+
+        self.assertEqual(1, container_update_spy.call_count)
+        attribute_update_spy.assert_not_called()
+        self.assertEqual([child, child], owner.children)
+
     def test_public_extend_launches_one_update_while_passive_mutation_launches_none(self):
         first_child = ModelingObject("list transaction first child")
         second_child = ModelingObject("list transaction second child")

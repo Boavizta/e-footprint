@@ -382,6 +382,25 @@ class TestExplainableObjectDictStructuralContext(unittest.TestCase):
         self.assertEqual([], child.modeling_obj_containers)
         self.assertIsNone(weight.modeling_obj_container)
 
+    def test_public_ior_launches_one_modeling_update_and_keeps_merged_state(self):
+        """Test active dict union assignment launches one update and keeps the merged mapping."""
+        first_child = ModelingObjectForContainerTest("dict ior first child")
+        second_child = ModelingObjectForContainerTest("dict ior second child")
+        owner = ModelingObjectWithInputDictForContainerTest(
+            "dict ior owner",
+            input_dict={first_child: SourceValue(1 * u.dimensionless, label="first count")},
+        )
+
+        with patch(
+                "efootprint.abstract_modeling_classes.modeling_update.ModelingUpdate",
+                wraps=ModelingUpdate) as update_spy:
+            owner.input_dict |= {second_child: SourceValue(2 * u.dimensionless, label="second count")}
+
+        self.assertEqual(1, update_spy.call_count)
+        self.assertEqual([first_child, second_child], list(owner.input_dict))
+        self.assertEqual([owner], first_child.modeling_obj_containers)
+        self.assertEqual([owner], second_child.modeling_obj_containers)
+
 
 class TestToWeightedExplainableObjectDict(unittest.TestCase):
 

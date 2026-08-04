@@ -346,7 +346,11 @@ class ExplainableObjectDict(ObjectLinkedToModelingObjBase, dict):
         return self._copy_passively()
 
     def __ior__(self, other):
+        modeling_obj_container = self.modeling_obj_container
+        attr_name = self.attr_name_in_mod_obj_container
         self.update(other)
+        if modeling_obj_container is not None and self.trigger_modeling_updates:
+            return modeling_obj_container.__dict__[attr_name]
         return self
 
     def _add_self_to_key_containers(self, key):
