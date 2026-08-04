@@ -20,9 +20,9 @@ class TestModelingUpdate(unittest.TestCase):
         modeling_update.eager_outputs = None
         modeling_update.newly_linked_mod_objs = []
 
-        invalidated_count = modeling_update.pull_eagerly({ordinary_slot, guard_slot})
+        affected_count = modeling_update.pull_eagerly({ordinary_slot, guard_slot})
 
-        self.assertEqual(2, invalidated_count)
+        self.assertEqual(2, affected_count)
         self.assertEqual(["guard"], pulls)
         self.assertTrue(guard_slot.has_cached_value)
         self.assertFalse(ordinary_slot.has_cached_value)

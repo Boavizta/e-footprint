@@ -43,7 +43,7 @@ class ModelingUpdate:
                     new_sourcevalue.attr_name_in_mod_obj_container, new_sourcevalue,
                     mod_obj_container.attributes_with_depending_values())
 
-            recomputed_slots_count = self.pull_eagerly(visited_slots)
+            self.pull_eagerly(visited_slots)
         except Exception as e:
             logger.error("An error occurred during attribute recomputation. Resetting to previous values.")
             self.rollback()
@@ -51,9 +51,11 @@ class ModelingUpdate:
                       f"\nOriginal error:\n {e}",) + e.args[1:]
             raise e
 
-        compute_time_ms = round(1000 * (perf_counter() - start), 1)
-        logger.info("%s changes invalidated %s slots, recomputed in %s ms.",
-                    len(self.changes_list), recomputed_slots_count, compute_time_ms)
+        elapsed_ms = round(1000 * (perf_counter() - start), 1)
+        logger.info(
+            "%s changes affected %s reactive slots in %s ms.",
+            len(self.changes_list), len(visited_slots), elapsed_ms,
+        )
 
     def parse_changes_list(self):
         indexes_to_skip = []
@@ -165,7 +167,7 @@ class ModelingUpdate:
 
     def pull_eagerly(self, visited_slots) -> int:
         """Recompute invalidated guards, every guard of newly linked objects, and any explicit eager
-        outputs. Ordinary computed slots remain void until read. Returns the number of slots voided
+        outputs. Ordinary computed slots remain void until read. Returns the number of slots affected
         by the wave."""
         prune_stale_computed_dict_keys(visited_slots)
         pull_guard_slots(visited_slots)
