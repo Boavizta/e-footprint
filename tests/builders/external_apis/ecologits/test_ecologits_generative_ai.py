@@ -32,7 +32,6 @@ class TestEcoLogitsGenAIExternalAPI(TestCase):
         self.model_name = SourceObject("open-mistral-7b")
         self.external_api = EcoLogitsGenAIExternalAPI(
             name="Test EcoLogits API", provider=self.provider, model_name=self.model_name)
-        self.external_api.server.trigger_modeling_updates = False
 
     def test_initialization_sets_provider_and_model_name(self):
         """Test that initialization correctly sets provider and model_name."""
@@ -262,7 +261,6 @@ class TestEcoLogitsGenAIExternalAPIJob(TestCase):
         self.output_token_count = SourceValue(1000 * u.dimensionless)
         self.job = EcoLogitsGenAIExternalAPIJob(
             name="Test Job", external_api=self.external_api, output_token_count=self.output_token_count)
-        self.job.trigger_modeling_updates = False
 
 
     def test_compatible_external_apis(self):

@@ -18,7 +18,6 @@ class TestUsageJourneyStep(TestCase):
         user_time_spent = SourceValue(10 * u.s)
         user_time_spent.value.check = lambda x: x == "[time]"
         uj_step = UsageJourneyStep("test uj step", user_time_spent=user_time_spent, jobs=[])
-        uj_step.trigger_modeling_updates = False
         uj = MagicMock(spec=UsageJourney)
         uj.name = "uj"
         uj_step.contextual_modeling_obj_containers = [ContextualModelingObjectAttribute(uj_step, uj, "uj_steps")]

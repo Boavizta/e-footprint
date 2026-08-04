@@ -24,7 +24,6 @@ class TestEdgeRAMComponent(TestCase):
             ram_per_unit=SourceValue(16 * u.GB_ram),
             base_ram_consumption=SourceValue(2 * u.GB_ram)
         )
-        self.ram_component.trigger_modeling_updates = False
         recompute_attribute(self.ram_component, "carbon_footprint_fabrication")
         recompute_attribute(self.ram_component, "power")
         recompute_attribute(self.ram_component, "idle_power")

@@ -110,17 +110,10 @@ class EdgeDeviceGroup(ModelingObject):
 
         if self.sub_group_counts or self.edge_device_counts:
             new_sub_group_counts = ExplainableObjectDict()
-            new_sub_group_counts.trigger_modeling_updates = self.sub_group_counts.trigger_modeling_updates
             new_edge_device_counts = ExplainableObjectDict()
-            new_edge_device_counts.trigger_modeling_updates = self.edge_device_counts.trigger_modeling_updates
-
-            if self.trigger_modeling_updates:
-                ModelingUpdate([
-                    [self.sub_group_counts, new_sub_group_counts],
-                    [self.edge_device_counts, new_edge_device_counts],
-                ])
-            else:
-                self.sub_group_counts = new_sub_group_counts
-                self.edge_device_counts = new_edge_device_counts
+            ModelingUpdate([
+                [self.sub_group_counts, new_sub_group_counts],
+                [self.edge_device_counts, new_edge_device_counts],
+            ])
 
         super().self_delete()

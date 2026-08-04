@@ -13,12 +13,8 @@ from tests.utils import recompute_attribute
 
 
 def make_group(name):
-    """Create an EdgeDeviceGroup with trigger disabled."""
-    g = EdgeDeviceGroup(name)
-    g.trigger_modeling_updates = False
-    g.sub_group_counts.trigger_modeling_updates = False
-    g.edge_device_counts.trigger_modeling_updates = False
-    return g
+    """Create an empty edge-device group."""
+    return EdgeDeviceGroup(name)
 
 
 class TestEdgeDeviceGroupInit(TestCase):
@@ -35,7 +31,6 @@ class TestEdgeDeviceGroupInit(TestCase):
         sub_groups = ExplainableObjectDict()
         devices = ExplainableObjectDict()
         group = EdgeDeviceGroup("G", sub_group_counts=sub_groups, edge_device_counts=devices)
-        group.trigger_modeling_updates = False
         self.assertIsInstance(group.sub_group_counts, ExplainableObjectDict)
         self.assertIsInstance(group.edge_device_counts, ExplainableObjectDict)
         self.assertEqual({}, group.sub_group_counts)
@@ -163,18 +158,18 @@ class TestEdgeDeviceGroupNoCycleValidation(TestCase):
 
     def test_direct_self_reference_raises(self):
         group = make_group("Group")
-        group.sub_group_counts[group] = SourceValue(1 * u.dimensionless)
         with self.assertRaises(ValueError) as ctx:
-            recompute_attribute(group, "no_cycle_validation")
+            group.sub_group_counts[group] = SourceValue(1 * u.dimensionless)
         self.assertIn("Cycle detected", str(ctx.exception))
+        self.assertEqual({}, group.sub_group_counts)
 
     def test_two_node_cycle_raises(self):
         a = make_group("A")
         b = make_group("B")
         a.sub_group_counts[b] = SourceValue(1 * u.dimensionless)
-        b.sub_group_counts[a] = SourceValue(1 * u.dimensionless)
         with self.assertRaises(ValueError):
-            recompute_attribute(a, "no_cycle_validation")
+            b.sub_group_counts[a] = SourceValue(1 * u.dimensionless)
+        self.assertEqual({}, b.sub_group_counts)
 
     def test_three_node_cycle_raises(self):
         a = make_group("A")
@@ -182,9 +177,9 @@ class TestEdgeDeviceGroupNoCycleValidation(TestCase):
         c = make_group("C")
         a.sub_group_counts[b] = SourceValue(1 * u.dimensionless)
         b.sub_group_counts[c] = SourceValue(1 * u.dimensionless)
-        c.sub_group_counts[a] = SourceValue(1 * u.dimensionless)
         with self.assertRaises(ValueError):
-            recompute_attribute(a, "no_cycle_validation")
+            c.sub_group_counts[a] = SourceValue(1 * u.dimensionless)
+        self.assertEqual({}, c.sub_group_counts)
 
     def test_diamond_without_cycle_passes(self):
         root = make_group("Root")

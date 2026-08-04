@@ -194,14 +194,11 @@ def json_to_system(system_dict, efootprint_classes_dict=None):
         current_class_dict = {}
         for class_instance_key in system_dict[class_key]:
             new_obj, new_obj_expl_obj_dicts_to_create_after_objects_creation = current_class.from_json_dict(
-                system_dict[class_key][class_instance_key], flat_obj_dict, set_trigger_modeling_updates_to_true=False,
+                system_dict[class_key][class_instance_key], flat_obj_dict,
                 attach_stored_computed_values=trust_stored_values, sources_dict=sources_dict)
 
             explainable_object_dicts_to_create_after_objects_creation.update(
                 new_obj_expl_obj_dicts_to_create_after_objects_creation)
-
-            if class_key != "System":
-                new_obj.enable_modeling_updates()
 
             current_class_dict[class_instance_key] = new_obj
             flat_obj_dict[class_instance_key] = new_obj
@@ -230,8 +227,6 @@ def json_to_system(system_dict, efootprint_classes_dict=None):
             current_dict.replace_in_mod_obj_container_without_recomputation(explainable_object_dict)
         else:
             modeling_obj.__setattr__(attr_key, explainable_object_dict, check_input_validity=False)
-        explainable_object_dict.trigger_modeling_updates = True
-
         for explainable_object_item, explainable_object_json \
                 in zip(new_dict_items.values(), attr_value.values()):
             explainable_object_item.initialize_calculus_graph_data_from_json(
@@ -249,7 +244,8 @@ def json_to_system(system_dict, efootprint_classes_dict=None):
         if baseline_values:
             system.__dict__["_version_baseline"] = {
                 "efootprint_version": file_version, "values": baseline_values}
-        system.trigger_modeling_updates = True
+    for modeling_obj in flat_obj_dict.values():
+        modeling_obj._mark_live()
 
     return class_obj_dict, flat_obj_dict, system_dict
 

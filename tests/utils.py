@@ -20,6 +20,14 @@ def patch_attribute(target, attr_name: str, new_value):
         if isinstance(target_class, type):
             descriptor = computed_slots(target_class).get(attr_name) or computed_structures(target_class).get(attr_name)
     if not isinstance(descriptor, (computed_attribute, computed_structure)):
+        if isinstance(target, ModelingObject):
+            original_value = getattr(target, attr_name, None)
+            target._set_input_passively(attr_name, new_value, check_input_validity=False)
+            try:
+                yield new_value
+            finally:
+                target._set_input_passively(attr_name, original_value, check_input_validity=False)
+            return
         with mock_patch.object(target, attr_name, new_value):
             yield new_value
         return
@@ -55,6 +63,11 @@ def attach_attribute(mod_obj, attr_name: str, value, key=None):
     else:
         descriptor.attach_cached_value(mod_obj, value)
     return value
+
+
+def attach_input(mod_obj, attr_name: str, value, check_input_validity=True):
+    """Pin one input without launching a transaction, for focused computed-getter test setup."""
+    return mod_obj._set_input_passively(attr_name, value, check_input_validity=check_input_validity)
 
 
 def recompute_attribute(mod_obj, attr_name: str, key=None):

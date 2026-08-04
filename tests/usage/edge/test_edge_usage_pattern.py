@@ -39,7 +39,6 @@ class TestEdgeUsagePattern(TestCase):
         self.edge_usage_pattern = EdgeUsagePattern("test edge usage pattern", edge_usage_journey=self.mock_edge_usage_journey,
                                                    network=self.mock_network, country=self.mock_country,
                                                    hourly_edge_usage_journey_starts=self.real_hourly_starts)
-        self.edge_usage_pattern.trigger_modeling_updates = False
 
     def test_init(self):
         """Test EdgeUsagePattern initialization."""

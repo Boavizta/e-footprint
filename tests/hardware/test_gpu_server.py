@@ -12,7 +12,6 @@ class TestGPUServer(unittest.TestCase):
     def setUp(self):
         self.gpu_server = GPUServer.from_defaults(
             "Test GPU Server Builder", storage=Storage.from_defaults("default storage"))
-        self.gpu_server.trigger_modeling_updates = False
 
     def test_installable_services(self):
         self.assertEqual(GPUServer.installable_services(), [])

@@ -62,6 +62,8 @@ existing object activation flag in place until Task 2.
 
 ## Task 2 — Replace the public flag with a private object-lifecycle boundary
 
+**Status:** Done
+
 **Goal:** Remove `trigger_modeling_updates` from modeling objects and relationship containers. Framework-owned
 construction/hydration writes remain passive; once an object graph is live, ordinary assignments and container
 mutations always use `ModelingUpdate`.

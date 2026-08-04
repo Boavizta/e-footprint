@@ -32,7 +32,6 @@ class TestRecurrentEdgeStorageNeed(TestCase):
 
         self.storage_need = RecurrentEdgeStorageNeed(name="Test Storage Need", edge_component=self.mock_storage,
                                                      recurrent_need=self.recurrent_storage_needed)
-        self.storage_need.trigger_modeling_updates = False
 
     def test_init(self):
         """Test initialization of RecurrentEdgeStorageNeed."""

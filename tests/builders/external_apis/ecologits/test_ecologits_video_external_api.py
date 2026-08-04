@@ -40,7 +40,6 @@ def _make_job(api: EcoLogitsVideoGenExternalAPI, **overrides) -> EcoLogitsVideoG
 class TestEcoLogitsVideoGenExternalAPI(TestCase):
     def setUp(self):
         self.api = _make_api()
-        self.api.server.trigger_modeling_updates = False
 
     def test_initialization_sets_all_inputs(self):
         self.assertEqual("openai", self.api.provider.value)
@@ -91,7 +90,6 @@ class TestEcoLogitsVideoGenExternalAPIJob(TestCase):
     def setUp(self):
         self.api = _make_api()
         self.job = _make_job(self.api)
-        self.job.trigger_modeling_updates = False
 
     def test_compatible_external_apis(self):
         self.assertEqual([EcoLogitsVideoGenExternalAPI], EcoLogitsVideoGenExternalAPIJob.compatible_external_apis())
@@ -140,8 +138,6 @@ class TestEcoLogitsVideoGenExternalAPIJob(TestCase):
         # for the same scalar — i.e. the constants are constructed fresh per call, not shared.
         job_a = _make_job(self.api, name="Job A")
         job_b = _make_job(self.api, name="Job B")
-        job_a.trigger_modeling_updates = False
-        job_b.trigger_modeling_updates = False
         recompute_attribute(job_a, "data_transferred")
         recompute_attribute(job_b, "data_transferred")
         self.assertEqual(job_a.data_transferred.value, job_b.data_transferred.value)
@@ -153,12 +149,10 @@ class TestEcoLogitsVideoGenExternalAPIJob(TestCase):
         baseline = self.job.data_transferred.value.to(u.MB).magnitude
 
         longer = _make_job(self.api, name="Longer", duration=SourceValue(16 * u.s))
-        longer.trigger_modeling_updates = False
         recompute_attribute(longer, "data_transferred")
         self.assertAlmostEqual(2 * baseline, longer.data_transferred.value.to(u.MB).magnitude, places=4)
 
         bigger = _make_job(self.api, name="Bigger", resolution=SourceObject("1080p (1920 x 1080)"))
-        bigger.trigger_modeling_updates = False
         recompute_attribute(bigger, "data_transferred")
         # Pixel count scales (1920 * 1080) / (1280 * 720) = 2.25
         self.assertAlmostEqual(2.25 * baseline, bigger.data_transferred.value.to(u.MB).magnitude, places=4)
@@ -213,7 +207,6 @@ class TestEcoLogitsVideoGenExternalAPIJob(TestCase):
     def test_unknown_model_for_provider_raises(self):
         # Patch model_name on a valid API to ask for a model not in the catalog; update_impacts must raise.
         job = _make_job(self.api)
-        job.trigger_modeling_updates = False
         with patch_attribute(self.api.model_name, "value", "nope-2"):
             with self.assertRaises(ValueError):
                 recompute_attribute(job, "impacts")

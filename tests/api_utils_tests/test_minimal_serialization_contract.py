@@ -11,6 +11,7 @@ from unittest.mock import patch
 
 import efootprint
 from efootprint.abstract_modeling_classes.reactive_core import ReactiveSlot, computed_slots, serialized_slots
+from efootprint.abstract_modeling_classes.modeling_update import ModelingUpdate
 from efootprint.abstract_modeling_classes.source_objects import SourceValue
 from efootprint.api_utils.json_to_system import json_to_system, upgrade_system_dict_to_current_version
 from efootprint.api_utils.system_to_json import materialize_serialized_state, system_to_json
@@ -68,6 +69,23 @@ class TestMinimalSerializationContract(TestCase):
             for attr_name, descriptor in serialized_slots(obj.efootprint_class).items():
                 self.assertIsNotNone(
                     descriptor.peek(obj), f"{obj.name}.{attr_name} was not attached from the stored file")
+
+    def test_hydration_launches_no_update_and_returns_a_live_graph(self):
+        """Test hydration is wholly passive and its returned graph immediately enforces live transactions."""
+        with ComputeCounter() as counter, patch(
+                "efootprint.abstract_modeling_classes.modeling_update.ModelingUpdate",
+                wraps=ModelingUpdate) as update_spy:
+            loaded_system = self.load_canonical()
+
+            self.assertEqual([], counter.computed_slot_names)
+            update_spy.assert_not_called()
+            self.assertTrue(all(obj._is_live for obj in [loaded_system] + loaded_system.all_linked_objects))
+
+            job = next(obj for obj in loaded_system.all_linked_objects if obj.class_as_simple_str == "Job")
+            job.data_transferred = SourceValue(2 * job.data_transferred.value)
+
+        update_spy.assert_called_once()
+        self.assertIsNone(computed_slots(type(loaded_system))["total_footprint"].peek(loaded_system))
 
     def test_canonical_round_trip_is_identity(self):
         """Test that loading a canonical file and re-serializing it reproduces the same dict —

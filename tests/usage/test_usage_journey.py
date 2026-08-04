@@ -18,7 +18,6 @@ class TestUsageJourney(TestCase):
         self.mock_check_value_type = patcher.start()
         self.addCleanup(patcher.stop)
         self.usage_journey = UsageJourney("test user journey", uj_steps=[])
-        self.usage_journey.trigger_modeling_updates = False
 
     def test_servers(self):
         server_1 = MagicMock()

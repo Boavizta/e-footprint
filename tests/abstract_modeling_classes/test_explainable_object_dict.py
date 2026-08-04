@@ -13,7 +13,7 @@ from efootprint.abstract_modeling_classes.modeling_update import ModelingUpdate
 from efootprint.abstract_modeling_classes.reactive_core import computed_attribute
 from efootprint.constants.sources import Sources
 from efootprint.constants.units import u
-from tests.utils import create_mod_obj_mock
+from tests.utils import attach_input, create_mod_obj_mock
 
 
 class ModelingObjectForContainerTest(ModelingObject):
@@ -198,16 +198,17 @@ class TestExplainableObjectDict(unittest.TestCase):
         self.assertTrue("mock_modeling_obj" in str_output)
         self.assertTrue("ModelingObject" in str_output)
 
-class TestExplainableObjectDictTriggerFlag(unittest.TestCase):
+class TestExplainableObjectDictLifecycle(unittest.TestCase):
 
-    def test_trigger_defaults_false(self):
+    def test_unattached_dict_is_passive(self):
         d = ExplainableObjectDict()
-        self.assertFalse(d.trigger_modeling_updates)
+        self.assertFalse(d._mutations_are_transactional)
 
-    def test_trigger_can_be_set_to_true(self):
+    def test_dict_attached_to_live_owner_is_transactional(self):
+        owner = ModelingObjectWithInputDictForContainerTest("live dict owner")
         d = ExplainableObjectDict()
-        d.trigger_modeling_updates = True
-        self.assertTrue(d.trigger_modeling_updates)
+        d.set_modeling_obj_container(owner, "input_dict")
+        self.assertTrue(d._mutations_are_transactional)
 
     def test_no_trigger_setitem_stores_value(self):
         d = ExplainableObjectDict()
@@ -230,18 +231,17 @@ class TestExplainableObjectDictTriggerFlag(unittest.TestCase):
         del d["key"]
         self.assertNotIn("key", d)
 
-    def test_init_with_input_dict_respects_no_trigger(self):
+    def test_init_with_input_dict_is_passive_while_unattached(self):
         val = SourceValue(5 * u.dimensionless)
         d = ExplainableObjectDict({"k": val})
         self.assertIs(d["k"], val)
-        self.assertFalse(d.trigger_modeling_updates)
+        self.assertFalse(d._mutations_are_transactional)
 
-    def test_trigger_flag_on_dict_with_modeling_obj_container(self):
-        """Even when linked to a modeling object, trigger defaults to False."""
+    def test_dict_linked_to_live_modeling_object_is_transactional(self):
         real_obj = ModelingObjectForContainerTest("test_obj")
         d = ExplainableObjectDict()
         d.set_modeling_obj_container(real_obj, "attr_name")
-        self.assertFalse(d.trigger_modeling_updates)
+        self.assertTrue(d._mutations_are_transactional)
 
 
 class TestExplainableObjectDictStructuralContext(unittest.TestCase):
@@ -285,10 +285,8 @@ class TestExplainableObjectDictStructuralContext(unittest.TestCase):
             input_dict={old_child: SourceValue(1 * u.dimensionless, label="old child count")},
         )
 
-        owner.trigger_modeling_updates = False
-        owner.input_dict = ExplainableObjectDict({
-            new_child: SourceValue(2 * u.dimensionless, label="new child count")})
-        owner.trigger_modeling_updates = True
+        attach_input(owner, "input_dict", ExplainableObjectDict({
+            new_child: SourceValue(2 * u.dimensionless, label="new child count")}))
 
         self.assertEqual([], old_child.modeling_obj_containers)
         self.assertEqual([owner], new_child.modeling_obj_containers)
@@ -301,11 +299,11 @@ class TestExplainableObjectDictStructuralContext(unittest.TestCase):
             input_dict={existing_child: SourceValue(1 * u.dimensionless, label="existing child count")},
         )
 
-        owner.input_dict.trigger_modeling_updates = False
-        owner.input_dict[inserted_child] = SourceValue(3 * u.dimensionless, label="inserted child count")
+        owner.input_dict._set_entry_passively(
+            inserted_child, SourceValue(3 * u.dimensionless, label="inserted child count"))
         self.assertEqual([owner], inserted_child.modeling_obj_containers)
 
-        del owner.input_dict[inserted_child]
+        owner.input_dict._drop_entry_passively(inserted_child)
         self.assertEqual([], inserted_child.modeling_obj_containers)
 
     def test_detaching_structural_dict_removes_key_contextual_containers(self):
@@ -357,7 +355,6 @@ class TestExplainableObjectDictStructuralContext(unittest.TestCase):
             input_dict={existing_child: SourceValue(1 * u.dimensionless, label="initial child count")},
         )
 
-        owner.input_dict.trigger_modeling_updates = True
         owner.input_dict[existing_child] = SourceValue(3 * u.dimensionless, label="updated child count")
 
         self.assertEqual(3, owner.input_dict[existing_child].value.magnitude)
@@ -575,11 +572,10 @@ class TestWeightedExplainableObjectDict(unittest.TestCase):
         with self.assertRaises(ValueError):
             self.weighted_dict._set_entry_passively(self.key, SourceValue(-1 * u.dimensionless))
 
-        self.weighted_dict.trigger_modeling_updates = True
         copied = self.weighted_dict.copy()
 
         self.assertIsInstance(copied, WeightedExplainableObjectDict)
-        self.assertTrue(copied.trigger_modeling_updates)
+        self.assertFalse(copied._mutations_are_transactional)
         self.assertEqual(list(self.weighted_dict.items()), list(copied.items()))
 
 

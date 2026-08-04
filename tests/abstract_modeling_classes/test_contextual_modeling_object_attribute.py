@@ -4,6 +4,7 @@ from unittest.mock import MagicMock
 from efootprint.abstract_modeling_classes.contextual_modeling_object_attribute import ContextualModelingObjectAttribute
 from efootprint.abstract_modeling_classes.object_linked_to_modeling_obj import ObjectLinkedToModelingObjBase
 from efootprint.abstract_modeling_classes.modeling_object import ModelingObject
+from tests.utils import create_mod_obj_mock
 
 
 class ModelingObjectForTesting(ModelingObject):
@@ -15,10 +16,6 @@ class ModelingObjectForTesting(ModelingObject):
             self.custom_input = custom_input
         if mod_obj_input is not None:
             self.mod_obj_input = mod_obj_input
-
-    def after_init(self):
-        self.trigger_modeling_updates = False
-
 
     @property
     def systems(self):
@@ -46,7 +43,7 @@ class TestContextualModObjAttribute(unittest.TestCase):
         self.assertEqual([], contextual_attribute.systems)
 
     def test_works_when_setting_attr_to_variable(self):
-        custom_input = MagicMock(name="mod obj input", spec=ModelingObject)
+        custom_input = create_mod_obj_mock(ModelingObject, "mod obj input")
         modeling_obj = ModelingObjectForTesting(name="test", mod_obj_input=custom_input)
         other_modeling_obj = ModelingObjectForTesting(name="other")
 

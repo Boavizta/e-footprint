@@ -54,7 +54,6 @@ class TestStorage(TestCase):
             data_storage_duration=SourceValue(0 * u.years),
             base_storage_need=SourceValue(0 * u.TB_stored)
         )
-        self.storage_base.trigger_modeling_updates = False
 
     def test_storage_with_two_servers_raises_error(self):
         """Test that associating a Storage with two servers raises PermissionError."""

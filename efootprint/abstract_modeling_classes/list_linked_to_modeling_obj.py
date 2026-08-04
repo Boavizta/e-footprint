@@ -1,21 +1,21 @@
 from efootprint.abstract_modeling_classes.contextual_modeling_object_attribute import ContextualModelingObjectAttribute
 from efootprint.abstract_modeling_classes.object_linked_to_modeling_obj import ObjectLinkedToModelingObjBase
-from efootprint.abstract_modeling_classes.modeling_object import ModelingObject, AfterInitMeta
+from efootprint.abstract_modeling_classes.modeling_object import ModelingObject
 from efootprint.abstract_modeling_classes.modeling_update import ModelingUpdate
 from efootprint.abstract_modeling_classes.reactive_core import record_read_of_node
 
 
-class ListLinkedToModelingObj(ObjectLinkedToModelingObjBase, list, metaclass=AfterInitMeta):
+class ListLinkedToModelingObj(ObjectLinkedToModelingObjBase, list):
     """List that can be linked to a ModelingObject. Uses ObjectLinkedToModelingObjBase (not slotted)."""
 
     def __init__(self, values=None):
         super().__init__()
-        self.trigger_modeling_updates = False
         if values is not None:
             self.extend(values)
 
-    def after_init(self):
-        self.trigger_modeling_updates = True
+    @property
+    def _mutations_are_transactional(self):
+        return self.modeling_obj_container is not None and self.modeling_obj_container._is_live is True
 
     @staticmethod
     def check_value_type(value):
@@ -137,7 +137,7 @@ class ListLinkedToModelingObj(ObjectLinkedToModelingObjBase, list, metaclass=Aft
                 self.check_value_type(item)
         else:
             self.check_value_type(value)
-        if self.trigger_modeling_updates:
+        if self._mutations_are_transactional:
             copied_list = list(list.__iter__(self))
             copied_list[index] = value
             ModelingUpdate([[self, copied_list]])
@@ -147,7 +147,7 @@ class ListLinkedToModelingObj(ObjectLinkedToModelingObjBase, list, metaclass=Aft
 
     def append(self, value: ModelingObject):
         self.check_value_type(value)
-        if self.trigger_modeling_updates:
+        if self._mutations_are_transactional:
             copied_list = list(list.__iter__(self))
             copied_list.append(value)
             ModelingUpdate([[self, copied_list]])
@@ -173,7 +173,7 @@ class ListLinkedToModelingObj(ObjectLinkedToModelingObjBase, list, metaclass=Aft
 
     def insert(self, index: int, value: ModelingObject):
         self.check_value_type(value)
-        if self.trigger_modeling_updates:
+        if self._mutations_are_transactional:
             copied_list = list(list.__iter__(self))
             copied_list.insert(index, value)
             ModelingUpdate([[self, copied_list]])
@@ -183,7 +183,7 @@ class ListLinkedToModelingObj(ObjectLinkedToModelingObjBase, list, metaclass=Aft
 
     def extend(self, values) -> None:
         values = list(values)
-        if self.trigger_modeling_updates:
+        if self._mutations_are_transactional:
             copied_list = list(list.__iter__(self))
             copied_list.extend(values)
             ModelingUpdate([[self, copied_list]])
@@ -192,7 +192,7 @@ class ListLinkedToModelingObj(ObjectLinkedToModelingObjBase, list, metaclass=Aft
         self._extend_passively(values)
 
     def pop(self, index: int = -1):
-        if self.trigger_modeling_updates:
+        if self._mutations_are_transactional:
             copied_list = list(list.__iter__(self))
             value = copied_list.pop(index)
             ModelingUpdate([[self, copied_list]])
@@ -201,7 +201,7 @@ class ListLinkedToModelingObj(ObjectLinkedToModelingObjBase, list, metaclass=Aft
         return self._drop_entry_passively(index)
 
     def remove(self, value: ContextualModelingObjectAttribute):
-        if self.trigger_modeling_updates:
+        if self._mutations_are_transactional:
             copied_list = list(list.__iter__(self))
             copied_list.remove(value)
             ModelingUpdate([[self, copied_list]])
@@ -210,7 +210,7 @@ class ListLinkedToModelingObj(ObjectLinkedToModelingObjBase, list, metaclass=Aft
         self._drop_entry_passively(list.index(self, value))
 
     def clear(self):
-        if self.trigger_modeling_updates:
+        if self._mutations_are_transactional:
             ModelingUpdate([[self, []]])
             return
 
@@ -218,7 +218,7 @@ class ListLinkedToModelingObj(ObjectLinkedToModelingObjBase, list, metaclass=Aft
 
     def reverse(self):
         reversed_values = list(reversed(list(list.__iter__(self))))
-        if self.trigger_modeling_updates:
+        if self._mutations_are_transactional:
             ModelingUpdate([[self, reversed_values]])
             return
         list.__setitem__(self, slice(None), reversed_values)
@@ -226,13 +226,13 @@ class ListLinkedToModelingObj(ObjectLinkedToModelingObjBase, list, metaclass=Aft
     def sort(self, *args, **kwargs):
         sorted_values = list(list.__iter__(self))
         sorted_values.sort(*args, **kwargs)
-        if self.trigger_modeling_updates:
+        if self._mutations_are_transactional:
             ModelingUpdate([[self, sorted_values]])
             return
         list.__setitem__(self, slice(None), sorted_values)
 
     def __delitem__(self, index: int):
-        if self.trigger_modeling_updates:
+        if self._mutations_are_transactional:
             copied_list = list(list.__iter__(self))
             del copied_list[index]
             ModelingUpdate([[self, copied_list]])
@@ -242,7 +242,7 @@ class ListLinkedToModelingObj(ObjectLinkedToModelingObjBase, list, metaclass=Aft
 
     def __iadd__(self, values):
         values = list(values)
-        if self.trigger_modeling_updates:
+        if self._mutations_are_transactional:
             modeling_obj_container = self.modeling_obj_container
             attr_name = self.attr_name_in_mod_obj_container
             self.extend(values)
@@ -251,7 +251,7 @@ class ListLinkedToModelingObj(ObjectLinkedToModelingObjBase, list, metaclass=Aft
         return self
 
     def __imul__(self, n: int):
-        if self.trigger_modeling_updates:
+        if self._mutations_are_transactional:
             modeling_obj_container = self.modeling_obj_container
             attr_name = self.attr_name_in_mod_obj_container
             copied_list = list(list.__iter__(self))
@@ -269,6 +269,4 @@ class ListLinkedToModelingObj(ObjectLinkedToModelingObjBase, list, metaclass=Aft
         return self
 
     def __copy__(self):
-        copied_list = type(self)(list(list.__iter__(self)))
-        copied_list.trigger_modeling_updates = self.trigger_modeling_updates
-        return copied_list
+        return type(self)(list(list.__iter__(self)))

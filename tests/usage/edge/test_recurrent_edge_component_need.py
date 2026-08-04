@@ -35,7 +35,6 @@ class TestRecurrentEdgeComponentNeed(TestCase):
             edge_component=self.mock_edge_component,
             recurrent_need=self.recurrent_need
         )
-        self.component_need.trigger_modeling_updates = False
 
     def test_init(self):
         """Test RecurrentEdgeComponentNeed initialization."""

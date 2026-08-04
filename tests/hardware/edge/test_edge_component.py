@@ -54,7 +54,6 @@ class TestEdgeComponent(TestCase):
             lifespan=SourceValue(5 * u.year),
             idle_power_per_unit=SourceValue(10 * u.W)
         )
-        self.component.trigger_modeling_updates = False
         recompute_attribute(self.component, "carbon_footprint_fabrication")
         recompute_attribute(self.component, "power")
         recompute_attribute(self.component, "idle_power")
@@ -253,4 +252,3 @@ class TestEdgeComponentJsonRoundTrip(TestCase):
 
 if __name__ == "__main__":
     unittest.main()
-

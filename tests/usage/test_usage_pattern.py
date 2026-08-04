@@ -37,7 +37,6 @@ class TestUsagePattern(unittest.TestCase):
             hourly_usage_journey_starts=create_source_hourly_values_from_list([1, 2, 3]),
         )
 
-        self.usage_pattern.trigger_modeling_updates = False
 
     def test_jobs(self):
         self.assertEqual([self.job1, self.job2], self.usage_pattern.jobs)

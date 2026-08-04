@@ -31,7 +31,6 @@ class TestListLinkedToModelingObj(unittest.TestCase):
         self.mock_modeling_obj_3.set_modeling_obj_container = Mock()
         self.mock_modeling_obj_3.to_json = Mock(return_value={"mock2": "object2"})
         self.linked_list = ListLinkedToModelingObj()
-        self.linked_list.trigger_modeling_updates = False
 
         self.mock_check_value_type = patch.object(ListLinkedToModelingObj, "check_value_type").start()
         self.mock_contextual_modeling_object_attribute = patch(
@@ -50,7 +49,7 @@ class TestListLinkedToModelingObj(unittest.TestCase):
         self.mock_modeling_obj_2.set_modeling_obj_container.assert_called_with(None, None)
         self.assertIn(self.mock_modeling_obj_3, linked_list)
         self.mock_modeling_obj_3.set_modeling_obj_container.assert_called_with(None, None)
-        self.assertTrue(linked_list.trigger_modeling_updates)
+        self.assertFalse(linked_list._mutations_are_transactional)
 
     def test_set_modeling_obj_container(self):
         linked_list = ListLinkedToModelingObj([self.mock_modeling_obj_2, self.mock_modeling_obj_3])

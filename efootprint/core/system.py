@@ -69,7 +69,6 @@ class System(ModelingObject):
     def after_init(self):
         for mod_obj in dict.fromkeys([self] + self.all_linked_objects):
             mod_obj.pull_guard_attributes()
-        self.enable_modeling_updates()
 
     def get_objects_linked_to_usage_patterns(
             self, usage_patterns: List[UsagePattern]) -> List[ModelingObject]:

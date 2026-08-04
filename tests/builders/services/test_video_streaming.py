@@ -18,7 +18,6 @@ class TestVideoStreamingJob(unittest.TestCase):
         self.service.static_delivery_cpu_cost = EmptyExplainableObject()
         self.service.ram_buffer_per_user = EmptyExplainableObject()
         self.job = VideoStreamingJob.from_defaults("Test Job", service=self.service)
-        self.job.trigger_modeling_updates = False
 
     def test_installable_on(self):
         self.assertEqual(VideoStreaming.installable_on(), [Server])

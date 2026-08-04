@@ -35,7 +35,6 @@ class TestBoaviztaServerFromConfig(unittest.TestCase):
             storage=Storage.ssd(storage_capacity=SourceValue(32 * u.GB_stored)),
             fixed_nb_of_instances=EmptyExplainableObject()
         )
-        self.test_server.trigger_modeling_updates = False
 
     def test_update_cpu_config(self):
         """

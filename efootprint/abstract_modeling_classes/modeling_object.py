@@ -26,6 +26,11 @@ if TYPE_CHECKING:
     from efootprint.abstract_modeling_classes.explainable_object_dict import ExplainableObjectDict
 
 
+_CONSTRUCTING = object()
+_HYDRATING = object()
+_LIVE = object()
+
+
 def pull_slots_system_wide(systems: list):
     """Explicitly materialize every computed slot of every object linked to the given systems."""
     objs_to_pull = []
@@ -72,6 +77,7 @@ class AfterInitMeta(type):
     def __call__(cls, *args, **kwargs):
         instance = super(AfterInitMeta, cls).__call__(*args, **kwargs)
         instance.after_init()
+        instance._mark_live()
 
         return instance
 
@@ -96,14 +102,14 @@ class ModelingObject(metaclass=ABCAfterInitMeta):
     _use_name_as_id: bool = False
 
     @classmethod
-    def from_json_dict(cls, object_json_dict: dict, flat_obj_dict: dict, set_trigger_modeling_updates_to_true=False,
-                       attach_stored_computed_values=True, sources_dict: dict | None = None):
+    def from_json_dict(cls, object_json_dict: dict, flat_obj_dict: dict, attach_stored_computed_values=True,
+                       sources_dict: dict | None = None):
         from efootprint.abstract_modeling_classes.explainable_object_dict import ExplainableObjectDict
         from efootprint.abstract_modeling_classes.explainable_object_base_class import explainable_object_from_json
         new_obj = cls.__new__(cls)
+        new_obj.__dict__["_lifecycle_state"] = _HYDRATING
         new_obj.__dict__["contextual_modeling_obj_containers"] = []
         new_obj.__dict__["explainable_object_dicts_containers"] = []
-        new_obj.trigger_modeling_updates = False
         explainable_object_dicts_to_create_after_objects_creation = {}
         declared_computed_slots = computed_slots(cls)
         declared_computed_structures = computed_structures(cls)
@@ -148,9 +154,6 @@ class ModelingObject(metaclass=ABCAfterInitMeta):
             if obj is new_obj and attr_key not in new_obj.calculated_attributes:
                 if getattr(new_obj, attr_key, None) is None:
                     new_obj.__setattr__(attr_key, ExplainableObjectDict(), check_input_validity=False)
-
-        if set_trigger_modeling_updates_to_true:
-            new_obj.trigger_modeling_updates = True
 
         return new_obj, explainable_object_dicts_to_create_after_objects_creation
 
@@ -268,7 +271,7 @@ class ModelingObject(metaclass=ABCAfterInitMeta):
         return []
 
     def __init__(self, name):
-        self.trigger_modeling_updates = False
+        self.__dict__["_lifecycle_state"] = _CONSTRUCTING
         self.name = name
         self.id = css_escape(name) if ModelingObject._use_name_as_id else str(uuid.uuid4())[:12]
         self.contextual_modeling_obj_containers = []
@@ -421,19 +424,20 @@ class ModelingObject(metaclass=ABCAfterInitMeta):
                 getattr(self, attr_name)
 
     def after_init(self):
-        self.enable_modeling_updates()
+        """Run subclass construction hooks before the metaclass makes the instance live."""
 
-    def enable_modeling_updates(self):
-        """Turn on live-update triggers on the object and its input dicts. The loader calls this
-        instead of after_init: subclass after_init overrides carry construction-time side effects
-        (guard pulls surfacing configuration errors, default sub-object creation) and loading a
-        saved model must never compute nor mutate the deserialized structure."""
-        from efootprint.abstract_modeling_classes.explainable_object_dict import ExplainableObjectDict
-        self.trigger_modeling_updates = True
-        for attr_name, attr_value in self.__dict__.items():
-            if (isinstance(attr_value, ExplainableObjectDict)
-                    and attr_name not in self.calculated_attributes):
-                attr_value.trigger_modeling_updates = True
+    @property
+    def _is_live(self):
+        return self.__dict__.get("_lifecycle_state") is _LIVE
+
+    def _mark_live(self):
+        """Finish construction or hydration exactly once; live instances cannot return to passive mode."""
+        lifecycle_state = self.__dict__.get("_lifecycle_state")
+        if lifecycle_state is _LIVE:
+            return
+        if lifecycle_state not in (_CONSTRUCTING, _HYDRATING):
+            raise RuntimeError(f"Cannot make an uninitialized {type(self).__name__} live.")
+        self.__dict__["_lifecycle_state"] = _LIVE
 
     def __hash__(self):
         return hash(self.id)
@@ -451,8 +455,40 @@ class ModelingObject(metaclass=ABCAfterInitMeta):
 
     @property
     def attributes_that_shouldnt_trigger_update_logic(self):
-        return ["name", "id", "trigger_modeling_updates", "contextual_modeling_obj_containers",
+        return ["name", "id", "contextual_modeling_obj_containers",
                 "explainable_object_dicts_containers"]
+
+    def _set_input_passively(self, name, input_value, check_input_validity=True):
+        """Attach one framework-owned input without starting a transaction.
+
+        Construction, hydration, and focused test pinning use this boundary. Ordinary writes to a
+        live object always go through ``ModelingUpdate``.
+        """
+        if isinstance(getattr(type(self), name, None), (computed_attribute, computed_structure)):
+            raise AttributeError(f"{name} is a computed attribute and cannot be attached as an input.")
+        current_attr = getattr(self, name, None)
+        if check_input_validity:
+            self.check_input_value_type_positivity_and_unit(name, input_value)
+            self.check_belonging_to_authorized_values(name, input_value, self.attributes_with_depending_values())
+        value_to_set = input_value
+        if isinstance(value_to_set, ModelingObject):
+            from efootprint.abstract_modeling_classes.contextual_modeling_object_attribute import \
+                ContextualModelingObjectAttribute
+            value_to_set = ContextualModelingObjectAttribute(value_to_set)
+        elif type(value_to_set) == list:
+            from efootprint.abstract_modeling_classes.list_linked_to_modeling_obj import ListLinkedToModelingObj
+            value_to_set = ListLinkedToModelingObj(value_to_set)
+        elif type(value_to_set) == dict:
+            value_to_set = current_attr.__class__(value_to_set)
+        assert isinstance(value_to_set, ObjectLinkedToModelingObjBase) or value_to_set is None, (
+            f"input {name} of value {value_to_set} should be an ObjectLinkedToModelingObjBase or None but is of "
+            f"type {type(value_to_set)}")
+        if isinstance(current_attr, ObjectLinkedToModelingObjBase):
+            current_attr.set_modeling_obj_container(None, None)
+        if isinstance(value_to_set, ObjectLinkedToModelingObjBase):
+            value_to_set.set_modeling_obj_container(self, name)
+        super().__setattr__(name, value_to_set)
+        return value_to_set
 
     def __setattr__(self, name, input_value, check_input_validity=True):
         if name in self.attributes_that_shouldnt_trigger_update_logic:
@@ -466,32 +502,8 @@ class ModelingObject(metaclass=ABCAfterInitMeta):
                 f"{name} is a computed attribute of {type(self).__name__} and cannot be assigned: change the "
                 f"inputs it derives from instead. Tests can pin a value with tests.utils.patch_attribute / "
                 f"attach_attribute or the descriptor's attach_cached_value.")
-        if not self.trigger_modeling_updates:
-            current_attr = getattr(self, name, None)
-            if check_input_validity:
-                self.check_input_value_type_positivity_and_unit(name, input_value)
-                self.check_belonging_to_authorized_values(name, input_value, self.attributes_with_depending_values())
-            value_to_set = input_value
-            if isinstance(value_to_set, ModelingObject):
-                from efootprint.abstract_modeling_classes.contextual_modeling_object_attribute import \
-                    ContextualModelingObjectAttribute
-                # The container is set below through set_modeling_obj_container so the reverse-node
-                # bump of the container-field transition fires.
-                value_to_set = ContextualModelingObjectAttribute(value_to_set)
-            elif type(value_to_set) == list:
-                from efootprint.abstract_modeling_classes.list_linked_to_modeling_obj import ListLinkedToModelingObj
-                value_to_set = ListLinkedToModelingObj(value_to_set)
-            elif type(value_to_set) == dict:
-                value_to_set = current_attr.__class__(value_to_set)
-            assert isinstance(value_to_set, ObjectLinkedToModelingObjBase) or value_to_set is None, \
-                    f"input {name} of value {value_to_set} should be an ObjectLinkedToModelingObjBase or None but is of type {type(value_to_set)}"
-            if isinstance(current_attr, ObjectLinkedToModelingObjBase):
-                current_attr.set_modeling_obj_container(None, None)
-            if isinstance(value_to_set, ObjectLinkedToModelingObjBase):
-                value_to_set.set_modeling_obj_container(self, name)
-            # attribute setting must be done after setting modeling_obj_container because if system has been loaded
-            # with calculated attributes from json, the calculation graph must be loaded before the attribute setting.
-            super().__setattr__(name, value_to_set)
+        if not self._is_live:
+            self._set_input_passively(name, input_value, check_input_validity=check_input_validity)
         else:
             current_attr = getattr(self, name, None)
             if input_value is current_attr:
@@ -572,7 +584,7 @@ class ModelingObject(metaclass=ABCAfterInitMeta):
             for attr_value in get_instance_attributes(self, ObjectLinkedToModelingObjBase).values():
                     attr_value.set_modeling_obj_container(None, None)
 
-        if self.trigger_modeling_updates:
+        if self._is_live:
             prune_stale_computed_dict_keys(invalidated_slots)
             pull_guard_slots(invalidated_slots)
 

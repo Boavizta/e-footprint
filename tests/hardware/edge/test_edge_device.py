@@ -55,7 +55,6 @@ class TestEdgeDevice(TestCase):
             components=[self.mock_component_1, self.mock_component_2],
             lifespan=SourceValue(5 * u.year)
         )
-        self.edge_device.trigger_modeling_updates = False
         attach_attribute(self.edge_device, "total_nb_of_units", ExplainableQuantity(1 * u.dimensionless, "one device"))
 
     def test_init(self):
@@ -355,7 +354,6 @@ class TestEdgeDevice(TestCase):
             components=[],
             lifespan=SourceValue(5 * u.year)
         )
-        edge_device.trigger_modeling_updates = False
         attach_attribute(edge_device, "instances_fabrication_footprint", SourceValue(20 * u.kg))
 
         recompute_attribute(edge_device, "fabrication_footprint_breakdown_by_source")
@@ -565,11 +563,9 @@ class TestEdgeDevice(TestCase):
 
 
 def _make_edge_device_group(name):
-    """Module-level helper: create an EdgeDeviceGroup with trigger disabled."""
+    """Create an empty edge-device group."""
     from efootprint.core.hardware.edge.edge_device_group import EdgeDeviceGroup
-    g = EdgeDeviceGroup(name)
-    g.trigger_modeling_updates = False
-    return g
+    return EdgeDeviceGroup(name)
 
 
 class TestEdgeDeviceFindGroupMethods(TestCase):
@@ -581,7 +577,6 @@ class TestEdgeDeviceFindGroupMethods(TestCase):
             components=[],
             lifespan=SourceValue(5 * u.year),
         )
-        self.device.trigger_modeling_updates = False
 
     def test_parent_groups_returns_empty_when_no_groups(self):
         self.assertEqual([], self.device.parent_groups)
@@ -640,7 +635,6 @@ class TestEdgeDeviceUpdateTotalNbOfUnits(TestCase):
             components=[],
             lifespan=SourceValue(5 * u.year),
         )
-        self.device.trigger_modeling_updates = False
 
     def test_no_groups_gives_total_of_one(self):
         recompute_attribute(self.device, "total_nb_of_units")

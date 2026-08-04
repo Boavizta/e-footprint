@@ -61,11 +61,10 @@ class ExplainableObjectDict(ObjectLinkedToModelingObjBase, dict):
 
     Doubles as the live facade of a computed dict attribute: reads pull the per-key sub-slots (and the
     key-set node for whole-dict reads) so the view is always fresh, and writes route through the slot
-    attach path. Input dicts keep their trigger-based update flow."""
+    attach path. Attached input dicts use transactions whenever their owner is live."""
 
     def __init__(self, input_dict=None):
         super().__init__()
-        self.trigger_modeling_updates = False
         if input_dict is not None:
             for key, value in input_dict.items():
                 self._set_entry_passively(key, value)
@@ -73,6 +72,14 @@ class ExplainableObjectDict(ObjectLinkedToModelingObjBase, dict):
     def _computed_binding(self):
         """(owner, descriptor) when this dict is the facade of a computed dict attribute, else None."""
         return self.__dict__.get("_computed_facade_of")
+
+    @property
+    def _mutations_are_transactional(self):
+        return (
+            self._computed_binding() is None
+            and self.modeling_obj_container is not None
+            and self.modeling_obj_container._is_live is True
+        )
 
     def _record_read(self):
         binding = self._computed_binding()
@@ -143,7 +150,7 @@ class ExplainableObjectDict(ObjectLinkedToModelingObjBase, dict):
             return
 
         binding = self._computed_binding()
-        if binding is not None or not self.trigger_modeling_updates:
+        if binding is not None or not self._mutations_are_transactional:
             for key, value in entries:
                 self[key] = value
             return
@@ -170,7 +177,6 @@ class ExplainableObjectDict(ObjectLinkedToModelingObjBase, dict):
         copied_dict = type(self)()
         for key, value in (dict.items(self) if entries is None else entries):
             copied_dict._set_entry_passively(key, value)
-        copied_dict.trigger_modeling_updates = self.trigger_modeling_updates
         return copied_dict
 
     def _set_entry_passively(self, key, value):
@@ -212,7 +218,7 @@ class ExplainableObjectDict(ObjectLinkedToModelingObjBase, dict):
             descriptor.attach_element_cached_value(owner, key, value)
             return
 
-        if self.trigger_modeling_updates:
+        if self._mutations_are_transactional:
             from efootprint.abstract_modeling_classes.modeling_update import ModelingUpdate
             if key in self:
                 # Value update on existing key: the value node's dependents trace downstream
@@ -236,7 +242,7 @@ class ExplainableObjectDict(ObjectLinkedToModelingObjBase, dict):
             self._drop_entry_passively(key)
             return
 
-        if self.trigger_modeling_updates:
+        if self._mutations_are_transactional:
             from efootprint.abstract_modeling_classes.modeling_update import ModelingUpdate
             new_dict = self._copy_passively(
                 (k, v) for k, v in dict.items(self) if k != key)
@@ -332,7 +338,7 @@ class ExplainableObjectDict(ObjectLinkedToModelingObjBase, dict):
             for key in list(dict.keys(self)):
                 self.__delitem__(key)
             return
-        if self.trigger_modeling_updates:
+        if self._mutations_are_transactional:
             from efootprint.abstract_modeling_classes.modeling_update import ModelingUpdate
             ModelingUpdate([[self, self._copy_passively(())]])
             return
@@ -354,8 +360,9 @@ class ExplainableObjectDict(ObjectLinkedToModelingObjBase, dict):
     def __ior__(self, other):
         modeling_obj_container = self.modeling_obj_container
         attr_name = self.attr_name_in_mod_obj_container
+        transactional = self._mutations_are_transactional
         self.update(other)
-        if modeling_obj_container is not None and self.trigger_modeling_updates:
+        if transactional:
             return modeling_obj_container.__dict__[attr_name]
         return self
 

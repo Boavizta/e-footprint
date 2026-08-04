@@ -26,6 +26,7 @@ self.hourly_usage_journey_starts = hourly_usage_journey_starts.to(
     u.occurrence
 ).set_label("Hourly nb of usage journey starts")
 self.country = country</code></pre>
+<p><code>AfterInitMeta</code> keeps the complete constructor and the subclass's <code>after_init()</code> hook passive. Input assignment and relationship-container mutation use explicit attachment/storage paths during this phase, so builder defaults can be created or replaced without invalidation, guards, or update transactions. The metaclass makes the finished instance live exactly once; there is no caller-controlled bypass for later writes.</p>
 <div class="tablewrap"><table><tr><th>Data</th><th>Where it lives after construction</th><th>Why</th></tr>
 <tr><td>Hourly-start input value</td><td><code>pattern.__dict__["hourly_usage_journey_starts"]</code></td><td>The actual <code>ExplainableHourlyQuantities</code>, attached to that object/attribute address.</td></tr>
 <tr><td>Country relationship</td><td><code>pattern.__dict__["country"]</code></td><td>A <code>ContextualModelingObjectAttribute</code> wrapper around the Country. The wrapper knows its owner is <code>pattern</code> and its field is <code>country</code>.</td></tr>
@@ -73,7 +74,7 @@ starts_utc._reactive_slot is S_utc</code></pre>
 <h2 id="value-edit">3 · Numerical input change follows the calculus edge</h2>
 <pre><code>pattern.hourly_usage_journey_starts = revised_starts</code></pre>
 <ol>
-<li>Because live updates are enabled, <a href="../../../efootprint/abstract_modeling_classes/modeling_object.py"><code>ModelingObject.__setattr__</code></a> creates a <a href="../../../efootprint/abstract_modeling_classes/modeling_update.py"><code>ModelingUpdate</code></a> containing the old attached input and the new value.</li>
+<li>Because construction has finished and the instance is live, <a href="../../../efootprint/abstract_modeling_classes/modeling_object.py"><code>ModelingObject.__setattr__</code></a> creates a <a href="../../../efootprint/abstract_modeling_classes/modeling_update.py"><code>ModelingUpdate</code></a> containing the old attached input and the new value.</li>
 <li>Before replacing anything, <code>slot_of_attached_value(old_starts)</code> follows the old value's backpointer and captures <code>S_starts</code> as the changed node.</li>
 <li><code>apply_changes()</code> detaches the old input and attaches <code>revised_starts</code> at the same <code>(pattern, attribute)</code> address. Detaching clears the old value's backpointer; the stable <code>S_starts</code> node remains in <code>pattern._reactive_slots</code>.</li>
 <li><code>invalidate(S_starts)</code> marks <code>S_starts</code>, follows <code>S_starts._dependents</code> to <code>S_utc</code>, and drops <code>S_utc._value</code>. The drop callback unlinks the obsolete computed explainable from <code>pattern</code>. Dependency sets remain in place so later waves can still cross void slots.</li>
@@ -107,6 +108,7 @@ S_utc._calculus_dependencies == {S_starts, S_timezone}  # topology retained</cod
 <tr><td>Slot objects, getter closures, dependents, wave markers</td><td>Runtime objects under each owner's <code>_reactive_slots</code>.</td><td>Never serialized as Python objects.</td></tr>
 <tr><td>Dependency topology</td><td><code>_calculus_dependencies</code>, <code>_structural_dependencies</code>, and reverse <code>_dependents</code>.</td><td>Stored by address in the values-free <code>calculation_graph</code>: object id + attribute name + optional dict key, with calculus and structural edge lists kept separate.</td></tr></table></div>
 <p><a href="../../../efootprint/api_utils/system_to_json.py"><code>calculation_graph_section()</code></a> serializes addresses and forward edges, not runtime slot objects. On exact-version load, <a href="../../../efootprint/api_utils/json_to_system.py"><code>rebuild_dependency_graph()</code></a> materializes addressed nodes and reinstalls both edge sets; <code>replace_dependencies()</code> reconstructs reverse <code>_dependents</code>. Here <code>S_utc</code> reloads void because its value was not serialize-flagged, then computes on its next pull. With <code>save_computed_state=False</code>, neither cached values nor dependency topology is written; everything is discovered from scratch on later reads. See <a href="../persistence.html">Persistence</a> for the full contract.</p>
+<p>Hydration has its own passive lifecycle state. All objects, deferred input dictionaries, stored values, ancestry links, and dependency edges are rebuilt without computation or update transactions; only then does the loader make the whole returned graph live. Its first ordinary mutation therefore uses the same transactional path as a freshly constructed model.</p>
 
 <details><summary>Code-reading route for the walkthrough</summary><div class="fbody"><ol>
 <li><a href="../../../efootprint/core/usage/usage_pattern.py"><code>usage_pattern.py</code></a> — domain constructor and getter.</li>

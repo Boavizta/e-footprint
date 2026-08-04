@@ -184,7 +184,6 @@ class TestSystem(TestCase):
             usage_patterns=[self.usage_pattern],
             edge_usage_patterns=[]
         )
-        self.system.trigger_modeling_updates = False
 
     def test_servers(self):
         self.assertEqual([self.server], self.system.servers)
@@ -422,7 +421,6 @@ class TestSystem(TestCase):
                                        instances_fabrication_footprint=SourceValue(1 * u.kg))
 
         system2 = System.__new__(System)
-        system2.trigger_modeling_updates = False
         system2.usage_patterns = []
         system2.edge_usage_patterns = []
 
@@ -446,7 +444,6 @@ class TestSystem(TestCase):
             Network, name="network2", id="network2 id", energy_footprint=SourceValue(1 * u.kg))
 
         system2 = System.__new__(System)
-        system2.trigger_modeling_updates = False
         system2.usage_patterns = []
         system2.edge_usage_patterns = []
 
@@ -495,7 +492,6 @@ class TestSystem(TestCase):
         edge_usage_journey = edge_setup["edge_usage_journey"]
 
         system = System("Test system with edge patterns", usage_patterns=[], edge_usage_patterns=[edge_usage_pattern])
-        system.trigger_modeling_updates = False
 
         self.assertEqual([edge_usage_pattern], system.edge_usage_patterns)
         self.assertEqual([edge_computer], system.edge_computers)
@@ -633,7 +629,6 @@ class TestSystem(TestCase):
         system = System("Test system with both patterns",
                        usage_patterns=[self.usage_pattern],
                        edge_usage_patterns=[edge_usage_pattern])
-        system.trigger_modeling_updates = False
 
         # Test that both regular and edge components are included
         self.assertEqual([self.usage_pattern], system.usage_patterns)
@@ -670,7 +665,6 @@ class TestSystem(TestCase):
         server_need = edge_setup["server_need"]
 
         system = System.__new__(System)
-        system.trigger_modeling_updates = False
         system.usage_patterns = []
         system.edge_usage_patterns = [edge_usage_pattern]
 

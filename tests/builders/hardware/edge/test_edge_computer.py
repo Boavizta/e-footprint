@@ -29,7 +29,6 @@ class TestEdgeComputer(TestCase):
             base_compute_consumption=SourceValue(0.1 * u.cpu_core),
             storage=self.mock_storage
         )
-        self.edge_computer.trigger_modeling_updates = False
 
     def test_init(self):
         """Test EdgeComputer initialization and property delegation."""
@@ -86,7 +85,6 @@ class TestEdgeComputer(TestCase):
     def test_lifespan_propagates_to_components(self):
         """Test that updating lifespan propagates copies to RAM and CPU components."""
         new_lifespan = SourceValue(10 * u.year)
-        self.edge_computer.trigger_modeling_updates = True
         recompute_attribute(self.edge_computer.ram_component, "lifespan")
         recompute_attribute(self.edge_computer.cpu_component, "lifespan")
         self.edge_computer.lifespan = new_lifespan
@@ -102,7 +100,6 @@ class TestEdgeComputer(TestCase):
         self.assertIsNot(self.edge_computer.lifespan, self.edge_computer.ram_component.lifespan)
         self.assertIsNot(self.edge_computer.lifespan, self.edge_computer.cpu_component.lifespan)
 
-        self.edge_computer.trigger_modeling_updates = False
 
     def test_delete_edge_computer(self):
         edge_computer = EdgeComputer.from_defaults(

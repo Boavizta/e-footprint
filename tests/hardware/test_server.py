@@ -62,7 +62,6 @@ class TestServer(TestCase):
             base_compute_consumption=SourceValue(0 * u.cpu_core),
             storage=MagicMock(spec=Storage)
         )
-        self.server_base.trigger_modeling_updates = False
 
     def test_installable_services(self):
         self.assertEqual(set(Server.installable_services()), {VideoStreaming})

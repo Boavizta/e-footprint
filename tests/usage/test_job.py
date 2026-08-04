@@ -16,7 +16,7 @@ from efootprint.core.usage.edge.recurrent_server_need import RecurrentServerNeed
 from efootprint.core.usage.edge.edge_usage_pattern import EdgeUsagePattern
 from efootprint.constants.units import u
 from efootprint.core.usage.usage_pattern import UsagePattern
-from tests.utils import attach_attribute, create_mod_obj_mock, set_modeling_obj_containers
+from tests.utils import attach_attribute, attach_input, create_mod_obj_mock, set_modeling_obj_containers
 from tests.utils import patch_attribute, recompute_attribute
 
 
@@ -30,7 +30,6 @@ class TestJob(TestCase):
             "test job", server=self.server, data_transferred=SourceValue(300 * u.MB),
              data_stored=SourceValue(300 * u.MB_stored), ram_needed=SourceValue(400 * u.MB_ram),
               compute_needed=SourceValue(2 * u.cpu_core), request_duration=SourceValue(2 * u.min))
-        self.job.trigger_modeling_updates = False
 
     def test_data_transferred_raises_error_if_negative_value(self):
         with self.assertRaises(ValueError):
@@ -58,7 +57,6 @@ class TestJob(TestCase):
                 patch.object(Job, "networks", new_callable=PropertyMock) as mock_networks:
             mock_mod_obj_attributes.return_value = [server]
             mock_networks.return_value = [network]
-            job.trigger_modeling_updates = True
             job.self_delete()
             server.set_modeling_obj_container.assert_called_once_with(None, None)
 
@@ -267,7 +265,7 @@ class TestJob(TestCase):
         hourly_calc_attr_per_up = ExplainableObjectDict({
             usage_pattern1: create_source_hourly_values_from_list([1, 2, 5]),
             usage_pattern2: create_source_hourly_values_from_list([3, 2, 4])})
-        self.job.hourly_calc_attr_per_up = hourly_calc_attr_per_up
+        attach_input(self.job, "hourly_calc_attr_per_up", hourly_calc_attr_per_up)
 
         with patch.object(Job, "usage_patterns", new_callable=PropertyMock) as mock_ups:
             mock_ups.return_value = [usage_pattern1, usage_pattern2]

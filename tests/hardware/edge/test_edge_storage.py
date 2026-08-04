@@ -27,7 +27,6 @@ class TestEdgeStorage(TestCase):
             base_storage_need=SourceValue(0 * u.TB_stored),
             lifespan=SourceValue(6 * u.years)
         )
-        self.edge_storage.trigger_modeling_updates = False
         recompute_attribute(self.edge_storage, "storage_capacity")
         recompute_attribute(self.edge_storage, "carbon_footprint_fabrication")
 

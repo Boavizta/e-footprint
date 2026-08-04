@@ -27,7 +27,6 @@ class TestEdgeWorkloadComponent(TestCase):
             lifespan=SourceValue(5 * u.year),
             idle_power_per_unit=SourceValue(5 * u.W)
         )
-        self.appliance_component.trigger_modeling_updates = False
         recompute_attribute(self.appliance_component, "carbon_footprint_fabrication")
         recompute_attribute(self.appliance_component, "power")
         recompute_attribute(self.appliance_component, "idle_power")

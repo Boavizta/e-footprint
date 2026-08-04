@@ -12,6 +12,7 @@ from efootprint.abstract_modeling_classes.source_objects import SourceObject, So
 from efootprint.abstract_modeling_classes.reactive_core import computed_dict
 from efootprint.builders.time_builders import create_source_hourly_values_from_list
 from efootprint.constants.units import u
+from tests.utils import attach_input
 
 MODELING_OBJ_CLASS_PATH = "efootprint.abstract_modeling_classes.modeling_object"
 
@@ -70,6 +71,15 @@ class CanonicalChildModelingObject(CanonicalParentModelingObject):
     pass
 
 
+class LifecycleModelingObject(ModelingObject):
+    def __init__(self, name, value: ExplainableObject):
+        super().__init__(name)
+        self.value = value
+
+    def after_init(self):
+        self.value = SourceValue(2 * u.dimensionless, label="after init value")
+
+
 class TestModelingObject(unittest.TestCase):
     def setUp(self):
         patcher = patch.object(ListLinkedToModelingObj, "check_value_type", return_value=True)
@@ -106,13 +116,28 @@ class TestModelingObject(unittest.TestCase):
 
         mock_modeling_update.assert_called_once_with([[old_value, value]])
 
+    @patch("efootprint.abstract_modeling_classes.modeling_update.ModelingUpdate")
+    def test_construction_and_after_init_are_passive_then_later_assignment_is_transactional(
+            self, mock_modeling_update):
+        initial_value = SourceValue(1 * u.dimensionless, label="initial value")
+
+        mod_obj = LifecycleModelingObject("lifecycle object", initial_value)
+
+        mock_modeling_update.assert_not_called()
+        after_init_value = mod_obj.value
+        self.assertEqual(2, after_init_value.magnitude)
+
+        replacement = SourceValue(3 * u.dimensionless, label="replacement value")
+        mod_obj.value = replacement
+
+        mock_modeling_update.assert_called_once_with([[after_init_value, replacement]])
+
     def test_input_change_sets_modeling_obj_containers(self):
         custom_input = MagicMock(spec=ExplainableObject)
         parent_obj = ModelingObjectForTesting(name="parent_object", custom_input=custom_input)
-        parent_obj.trigger_modeling_updates = False
         new_input = MagicMock(spec=ExplainableObject)
 
-        parent_obj.custom_input = new_input
+        attach_input(parent_obj, "custom_input", new_input)
 
         new_input.set_modeling_obj_container.assert_called_once_with(parent_obj, "custom_input")
         custom_input.set_modeling_obj_container.assert_has_calls([call(parent_obj, "custom_input"), call(None, None)])
@@ -191,9 +216,8 @@ class TestModelingObject(unittest.TestCase):
     def test_mod_obj_attributes_excludes_keys_of_dicts_that_arent_init_attributes(self):
         dict_key = ModelingObjectForTesting("dict key")
         mod_obj = ModelingObjectForTesting("test mod obj")
-        mod_obj.trigger_modeling_updates = False
-        mod_obj.dict_that_isnt_an_init_attribute = ExplainableObjectDict(
-            {dict_key: SourceValue(2 * u.dimensionless)})
+        attach_input(mod_obj, "dict_that_isnt_an_init_attribute", ExplainableObjectDict(
+            {dict_key: SourceValue(2 * u.dimensionless)}))
 
         self.assertEqual([], mod_obj.mod_obj_attributes)
 
@@ -201,11 +225,10 @@ class TestModelingObject(unittest.TestCase):
         custom_input = MagicMock(spec=ExplainableObject)
         child_obj = ModelingObjectForTesting(name="child_object", custom_input=custom_input)
         parent_obj = ModelingObjectForTesting(name="parent_object",mod_obj_input1=child_obj)
-        parent_obj.trigger_modeling_updates = False
 
-        parent_obj.none_attr = None
-        parent_obj.empty_list_attr = ListLinkedToModelingObj([])
-        parent_obj.source_value_attr = SourceValue(1* u.dimensionless, source=None)
+        attach_input(parent_obj, "none_attr", None)
+        attach_input(parent_obj, "empty_list_attr", ListLinkedToModelingObj([]))
+        attach_input(parent_obj, "source_value_attr", SourceValue(1* u.dimensionless, source=None))
 
         expected_json = {'name': 'parent_object',
              'id': parent_obj.id,
@@ -223,10 +246,9 @@ class TestModelingObject(unittest.TestCase):
     def test_invalid_input_type_error(self):
         custom_input = MagicMock(spec=ExplainableObject)
         parent_obj = ModelingObjectForTesting(name="parent_object", custom_input=custom_input)
-        parent_obj.trigger_modeling_updates = False
 
         with self.assertRaises(AssertionError):
-            parent_obj.int_attr = 42
+            attach_input(parent_obj, "int_attr", 42)
 
     def test_copy_with_clones_object_linked_inputs(self):
         source_value = SourceValue(10 * u.dimensionless)
@@ -283,9 +305,7 @@ class TestModelingObject(unittest.TestCase):
         other_child = ModelingObjectForTesting("other_occurrence_child")
         detached_parent = ModelingObjectForTesting(
             "detached_occurrence_parent", custom_list_input=ListLinkedToModelingObj([child, other_child]))
-        detached_parent.trigger_modeling_updates = False
-        detached_parent.custom_list_input = ListLinkedToModelingObj([other_child])
-        detached_parent.trigger_modeling_updates = True
+        attach_input(detached_parent, "custom_list_input", ListLinkedToModelingObj([other_child]))
 
         occurrences = child.nb_of_occurrences_per_container
 

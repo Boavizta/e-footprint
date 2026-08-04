@@ -42,7 +42,6 @@ from tests.utils import patch_attribute, recompute_attribute
 class TestNetwork(TestCase):
     def setUp(self):
         self.network = Network("Wifi network", SourceValue(0 * u("kWh/GB"), Sources.TRAFICOM_STUDY))
-        self.network.trigger_modeling_updates = False
 
     def test_update_energy_footprint_per_job_uses_country_weighted_network_energy(self):
         usage_pattern_fr = create_mod_obj_mock(UsagePattern, name="Usage Pattern FR")

@@ -26,7 +26,6 @@ class TestEdgeCPUComponent(TestCase):
             compute_per_unit=SourceValue(8 * u.cpu_core),
             base_compute_consumption=SourceValue(1 * u.cpu_core)
         )
-        self.cpu_component.trigger_modeling_updates = False
         recompute_attribute(self.cpu_component, "carbon_footprint_fabrication")
         recompute_attribute(self.cpu_component, "power")
         recompute_attribute(self.cpu_component, "idle_power")

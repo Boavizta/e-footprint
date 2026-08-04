@@ -36,7 +36,6 @@ class TestDevice(TestCase):
             lifespan=SourceValue(1 * u.year),
             fraction_of_usage_time=SourceValue(1 * u.hour / u.day),
         )
-        device.trigger_modeling_updates = False
 
         usage_pattern_1 = MagicMock()
         usage_pattern_1.country.average_carbon_intensity = SourceValue(100 * u.g / u.kWh)
@@ -68,7 +67,6 @@ class TestDevice(TestCase):
             lifespan=SourceValue(1 * u.year),
             fraction_of_usage_time=SourceValue(12 * u.hour / u.day),
         )
-        device.trigger_modeling_updates = False
 
         usage_pattern_1 = MagicMock()
         usage_pattern_2 = MagicMock()
