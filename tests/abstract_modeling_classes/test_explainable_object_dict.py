@@ -10,6 +10,7 @@ from efootprint.abstract_modeling_classes.source_objects import SourceValue
 from efootprint.abstract_modeling_classes.empty_explainable_object import EmptyExplainableObject
 from efootprint.abstract_modeling_classes.modeling_object import ModelingObject
 from efootprint.abstract_modeling_classes.modeling_update import ModelingUpdate
+from efootprint.abstract_modeling_classes.reactive_core import computed_attribute
 from efootprint.constants.sources import Sources
 from efootprint.constants.units import u
 from tests.utils import create_mod_obj_mock
@@ -38,6 +39,30 @@ class ModelingObjectWithInputDictForContainerTest(ModelingObject):
         super().__init__(name)
         self.input_dict = ExplainableObjectDict(input_dict or {})
 
+
+    @property
+    def systems(self):
+        return []
+
+
+class ModelingObjectWithKeyLocalInputDictForContainerTest(ModelingObject):
+    default_values = {}
+
+    def __init__(
+            self, name, first_child: ModelingObject, second_child: ModelingObject,
+            input_dict: ExplainableObjectDict):
+        super().__init__(name)
+        self.first_child = first_child
+        self.second_child = second_child
+        self.input_dict = input_dict
+
+    @computed_attribute
+    def first_weight(self):
+        return self.input_dict[self.first_child].copy().set_label("First weight")
+
+    @computed_attribute
+    def second_weight(self):
+        return self.input_dict[self.second_child].copy().set_label("Second weight")
 
     @property
     def systems(self):
@@ -400,6 +425,34 @@ class TestExplainableObjectDictStructuralContext(unittest.TestCase):
         self.assertEqual([first_child, second_child], list(owner.input_dict))
         self.assertEqual([owner], first_child.modeling_obj_containers)
         self.assertEqual([owner], second_child.modeling_obj_containers)
+
+    def test_value_only_update_preserves_untouched_key_cache(self):
+        """Test value-only update invalidates the changed key without replacing the input dict."""
+        first_child = ModelingObjectForContainerTest("key-local first child")
+        second_child = ModelingObjectForContainerTest("key-local second child")
+        owner = ModelingObjectWithKeyLocalInputDictForContainerTest(
+            "key-local owner",
+            first_child,
+            second_child,
+            ExplainableObjectDict({
+                first_child: SourceValue(1 * u.dimensionless, label="first weight"),
+                second_child: SourceValue(2 * u.dimensionless, label="second weight"),
+            }),
+        )
+        input_dict = owner.input_dict
+        _ = owner.first_weight
+        _ = owner.second_weight
+
+        with patch(
+                "efootprint.abstract_modeling_classes.modeling_update.ModelingUpdate",
+                wraps=ModelingUpdate) as update_spy:
+            owner.input_dict.update({
+                first_child: SourceValue(3 * u.dimensionless, label="updated first weight")})
+
+        self.assertEqual(1, update_spy.call_count)
+        self.assertIs(input_dict, owner.input_dict)
+        self.assertIsNone(type(owner).first_weight.peek(owner))
+        self.assertIsNotNone(type(owner).second_weight.peek(owner))
 
 
 class TestToWeightedExplainableObjectDict(unittest.TestCase):
