@@ -1,5 +1,3 @@
-from copy import copy
-
 from efootprint.abstract_modeling_classes.contextual_modeling_object_attribute import ContextualModelingObjectAttribute
 from efootprint.abstract_modeling_classes.object_linked_to_modeling_obj import ObjectLinkedToModelingObjBase
 from efootprint.abstract_modeling_classes.modeling_object import ModelingObject, AfterInitMeta
@@ -68,29 +66,94 @@ class ListLinkedToModelingObj(ObjectLinkedToModelingObjBase, list, metaclass=Aft
         for value in list.__iter__(self):
             value.set_modeling_obj_container(self.modeling_obj_container, self.attr_name_in_mod_obj_container)
 
-    def __setitem__(self, index: int, value: ModelingObject):
-        self.check_value_type(value)
-        if self.trigger_modeling_updates:
-            copied_list = list(self)
-            copied_list[index] = value
-            ModelingUpdate([[self.return_copy_with_same_attributes(), copied_list]])
-            self.set_modeling_obj_container(None, None)
+    @staticmethod
+    def _wrapped_value(value):
+        ListLinkedToModelingObj.check_value_type(value)
+        return ContextualModelingObjectAttribute(value)
 
-        value_to_set = ContextualModelingObjectAttribute(value)
-        super().__setitem__(index, value_to_set)
+    def _set_entry_passively(self, index: int | slice, value):
+        """Replace stored relationships with complete link bookkeeping and no ModelingUpdate."""
+        if isinstance(index, slice):
+            values = list(value)
+            previous_values = list.__getitem__(self, index)
+            if index.step not in (None, 1) and len(values) != len(previous_values):
+                raise ValueError(
+                    f"attempt to assign sequence of size {len(values)} to extended slice of size "
+                    f"{len(previous_values)}")
+            for item in values:
+                self.check_value_type(item)
+            values_to_set = [ContextualModelingObjectAttribute(item) for item in values]
+            for previous_value in previous_values:
+                previous_value.set_modeling_obj_container(None, None)
+            list.__setitem__(self, index, values_to_set)
+            for value_to_set in values_to_set:
+                value_to_set.set_modeling_obj_container(
+                    self.modeling_obj_container, self.attr_name_in_mod_obj_container)
+            return
+
+        value_to_set = self._wrapped_value(value)
+        list.__getitem__(self, index).set_modeling_obj_container(None, None)
+        list.__setitem__(self, index, value_to_set)
         value_to_set.set_modeling_obj_container(self.modeling_obj_container, self.attr_name_in_mod_obj_container)
+
+    def _insert_passively(self, index: int, value: ModelingObject):
+        """Insert one stored relationship with complete link bookkeeping and no ModelingUpdate."""
+        value_to_set = self._wrapped_value(value)
+        list.insert(self, index, value_to_set)
+        value_to_set.set_modeling_obj_container(self.modeling_obj_container, self.attr_name_in_mod_obj_container)
+
+    def _extend_passively(self, values):
+        """Append relationships in order with complete link bookkeeping and no ModelingUpdate."""
+        values = list(values)
+        for value in values:
+            self.check_value_type(value)
+        values_to_set = [ContextualModelingObjectAttribute(value) for value in values]
+        list.extend(self, values_to_set)
+        for value_to_set in values_to_set:
+            value_to_set.set_modeling_obj_container(self.modeling_obj_container, self.attr_name_in_mod_obj_container)
+
+    def _drop_entry_passively(self, index: int | slice = -1):
+        """Remove stored relationships with complete bookkeeping and no ModelingUpdate."""
+        if isinstance(index, slice):
+            values = list.__getitem__(self, index)
+            for value in values:
+                value.set_modeling_obj_container(None, None)
+            list.__delitem__(self, index)
+            return values
+        value = list.pop(self, index)
+        value.set_modeling_obj_container(None, None)
+        return value
+
+    def _clear_passively(self):
+        """Remove every stored relationship with complete bookkeeping and no ModelingUpdate."""
+        for value in list.__iter__(self):
+            value.set_modeling_obj_container(None, None)
+        list.clear(self)
+
+    def __setitem__(self, index: int | slice, value):
+        if isinstance(index, slice):
+            value = list(value)
+            for item in value:
+                self.check_value_type(item)
+        else:
+            self.check_value_type(value)
+        if self.trigger_modeling_updates:
+            copied_list = list(list.__iter__(self))
+            copied_list[index] = value
+            ModelingUpdate([[self, copied_list]])
+            return
+
+        self._set_entry_passively(index, value)
 
     def append(self, value: ModelingObject):
         self.check_value_type(value)
         if self.trigger_modeling_updates:
-            copied_list = list(self)
+            copied_list = list(list.__iter__(self))
             copied_list.append(value)
-            ModelingUpdate([[self.return_copy_with_same_attributes(), copied_list]])
-            self.set_modeling_obj_container(None, None)
+            ModelingUpdate([[self, copied_list]])
+            return
 
-        value_to_set = ContextualModelingObjectAttribute(value)
-        super().append(value_to_set)
-        value_to_set.set_modeling_obj_container(self.modeling_obj_container, self.attr_name_in_mod_obj_container)
+        self._insert_passively(list.__len__(self), value)
 
     def to_json(self, with_formula=False):
         return [elt.id for elt in self]
@@ -111,96 +174,98 @@ class ListLinkedToModelingObj(ObjectLinkedToModelingObjBase, list, metaclass=Aft
     def insert(self, index: int, value: ModelingObject):
         self.check_value_type(value)
         if self.trigger_modeling_updates:
-            copied_list = list(self)
+            copied_list = list(list.__iter__(self))
             copied_list.insert(index, value)
-            ModelingUpdate([[self.return_copy_with_same_attributes(), copied_list]])
-            self.set_modeling_obj_container(None, None)
+            ModelingUpdate([[self, copied_list]])
+            return
 
-        value_to_set = ContextualModelingObjectAttribute(value)
-        super().insert(index, value_to_set)
-        value_to_set.set_modeling_obj_container(self.modeling_obj_container, self.attr_name_in_mod_obj_container)
+        self._insert_passively(index, value)
 
     def extend(self, values) -> None:
+        values = list(values)
         if self.trigger_modeling_updates:
-            copied_list = list(self)
+            copied_list = list(list.__iter__(self))
             copied_list.extend(values)
-            ModelingUpdate([[self.return_copy_with_same_attributes(), copied_list]])
-            self.set_modeling_obj_container(None, None)
+            ModelingUpdate([[self, copied_list]])
+            return
 
-        initial_trigger_modeling_updates = copy(self.trigger_modeling_updates)
-        self.trigger_modeling_updates = False
-        for value in values:
-            self.append(value)
-        self.trigger_modeling_updates = initial_trigger_modeling_updates
+        self._extend_passively(values)
 
     def pop(self, index: int = -1):
         if self.trigger_modeling_updates:
-            copied_list = list(self)
-            _ = copied_list.pop(index)
-            ModelingUpdate([[self.return_copy_with_same_attributes(), copied_list]])
-            self.set_modeling_obj_container(None, None)
+            copied_list = list(list.__iter__(self))
+            value = copied_list.pop(index)
+            ModelingUpdate([[self, copied_list]])
+            return value
 
-        value = super().pop(index)
-        value.set_modeling_obj_container(None, None)
-
-        return value
+        return self._drop_entry_passively(index)
 
     def remove(self, value: ContextualModelingObjectAttribute):
         if self.trigger_modeling_updates:
-            copied_list = list(self)
+            copied_list = list(list.__iter__(self))
             copied_list.remove(value)
-            ModelingUpdate([[self.return_copy_with_same_attributes(), copied_list]])
-            self.set_modeling_obj_container(None, None)
+            ModelingUpdate([[self, copied_list]])
+            return
 
-        super().remove(value)
-        value.set_modeling_obj_container(None, None)
+        self._drop_entry_passively(list.index(self, value))
 
     def clear(self):
         if self.trigger_modeling_updates:
-            ModelingUpdate([[self.return_copy_with_same_attributes(), []]])
-            self.set_modeling_obj_container(None, None)
+            ModelingUpdate([[self, []]])
+            return
 
-        for value in self:
-            value.set_modeling_obj_container(None, None)
-        super().clear()
+        self._clear_passively()
+
+    def reverse(self):
+        reversed_values = list(reversed(list(list.__iter__(self))))
+        if self.trigger_modeling_updates:
+            ModelingUpdate([[self, reversed_values]])
+            return
+        list.__setitem__(self, slice(None), reversed_values)
+
+    def sort(self, *args, **kwargs):
+        sorted_values = list(list.__iter__(self))
+        sorted_values.sort(*args, **kwargs)
+        if self.trigger_modeling_updates:
+            ModelingUpdate([[self, sorted_values]])
+            return
+        list.__setitem__(self, slice(None), sorted_values)
 
     def __delitem__(self, index: int):
         if self.trigger_modeling_updates:
-            copied_list = list(self)
+            copied_list = list(list.__iter__(self))
             del copied_list[index]
-            ModelingUpdate([[self.return_copy_with_same_attributes(), copied_list]])
-            self.set_modeling_obj_container(None, None)
+            ModelingUpdate([[self, copied_list]])
+            return
 
-        value = self[index]
-        value.set_modeling_obj_container(None, None)
-        super().__delitem__(index)
+        self._drop_entry_passively(index)
 
     def __iadd__(self, values):
+        values = list(values)
+        updates_were_enabled = self.trigger_modeling_updates
         self.extend(values)
+        if updates_were_enabled:
+            # Augmented assignment writes the returned object back through ModelingObject.__setattr__.
+            # Keep this now-detached receiver equal to the installed replacement so that write-back is a no-op.
+            self._extend_passively(values)
         return self
 
     def __imul__(self, n: int):
         if self.trigger_modeling_updates:
-            copied_list = list(self)
+            copied_list = list(list.__iter__(self))
             copied_list *= n
-            ModelingUpdate([[self.return_copy_with_same_attributes(), copied_list]])
-            self.set_modeling_obj_container(None, None)
+            ModelingUpdate([[self, copied_list]])
 
-        initial_trigger_modeling_updates = copy(self.trigger_modeling_updates)
-        self.trigger_modeling_updates = False
-        for _ in range(n - 1):
-            self.extend(self.copy())
-        self.trigger_modeling_updates = initial_trigger_modeling_updates
+        if n <= 0:
+            self._clear_passively()
+        elif n > 1:
+            initial_values = list(list.__iter__(self))
+            for _ in range(n - 1):
+                self._extend_passively(initial_values)
 
         return self
 
     def __copy__(self):
-        return ListLinkedToModelingObj([value for value in self])
-
-    def return_copy_with_same_attributes(self):
-        copied_list = ListLinkedToModelingObj(self)
-        copied_list.set_modeling_obj_container(self.modeling_obj_container, self.attr_name_in_mod_obj_container)
+        copied_list = type(self)(list(list.__iter__(self)))
         copied_list.trigger_modeling_updates = self.trigger_modeling_updates
-        
         return copied_list
-    

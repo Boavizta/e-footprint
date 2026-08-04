@@ -149,7 +149,10 @@ class TestModelingObject(unittest.TestCase):
 
         self.assertEqual(mod_obj.custom_input, [val1, val2])
         mod_obj.custom_input += [val3]
-        mock_modeling_update_list.assert_called_once_with([[[val1, val2], [val1, val2, val3]]])
+        mock_modeling_update_list.assert_called_once()
+        changes = mock_modeling_update_list.call_args.args[0]
+        self.assertIs(mod_obj.custom_input, changes[0][0])
+        self.assertEqual([val1, val2, val3], changes[0][1])
 
     def test_list_attribute_update_works_with_list_condensed_addition_syntax__no_mocking(
             self):

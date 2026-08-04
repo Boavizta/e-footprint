@@ -1,5 +1,5 @@
 import unittest
-from unittest.mock import MagicMock
+from unittest.mock import MagicMock, patch
 
 from efootprint.abstract_modeling_classes.contextual_modeling_object_attribute import ContextualModelingObjectDictKey
 from efootprint.abstract_modeling_classes.explainable_object_base_class import ExplainableObject
@@ -9,6 +9,7 @@ from efootprint.abstract_modeling_classes.explainable_quantity import Explainabl
 from efootprint.abstract_modeling_classes.source_objects import SourceValue
 from efootprint.abstract_modeling_classes.empty_explainable_object import EmptyExplainableObject
 from efootprint.abstract_modeling_classes.modeling_object import ModelingObject
+from efootprint.abstract_modeling_classes.modeling_update import ModelingUpdate
 from efootprint.constants.sources import Sources
 from efootprint.constants.units import u
 from tests.utils import create_mod_obj_mock
@@ -338,6 +339,49 @@ class TestExplainableObjectDictStructuralContext(unittest.TestCase):
         self.assertEqual(owner, owner.input_dict[existing_child].modeling_obj_container)
         self.assertEqual("input_dict", owner.input_dict[existing_child].attr_name_in_mod_obj_container)
 
+    def test_public_update_and_clear_each_launch_one_modeling_update(self):
+        first_child = ModelingObjectForContainerTest("dict transaction first child")
+        second_child = ModelingObjectForContainerTest("dict transaction second child")
+        owner = ModelingObjectWithInputDictForContainerTest(
+            "dict transaction owner",
+            input_dict={first_child: SourceValue(1 * u.dimensionless, label="first count")},
+        )
+
+        with patch(
+                "efootprint.abstract_modeling_classes.modeling_update.ModelingUpdate",
+                wraps=ModelingUpdate) as update_spy:
+            owner.input_dict.update({
+                first_child: SourceValue(2 * u.dimensionless, label="updated first count"),
+                second_child: SourceValue(3 * u.dimensionless, label="second count"),
+            })
+
+        self.assertEqual(1, update_spy.call_count)
+        self.assertEqual([first_child, second_child], list(owner.input_dict))
+
+        with patch(
+                "efootprint.abstract_modeling_classes.modeling_update.ModelingUpdate",
+                wraps=ModelingUpdate) as update_spy:
+            owner.input_dict.clear()
+
+        self.assertEqual(1, update_spy.call_count)
+        self.assertEqual({}, owner.input_dict)
+        self.assertEqual([], first_child.modeling_obj_containers)
+        self.assertEqual([], second_child.modeling_obj_containers)
+
+    def test_passive_entry_mutation_launches_no_update_and_keeps_relationships_in_sync(self):
+        child = ModelingObjectForContainerTest("passive dict child")
+        owner = ModelingObjectWithInputDictForContainerTest("passive dict owner", input_dict={})
+        weight = SourceValue(4 * u.dimensionless, label="passive count")
+
+        with patch("efootprint.abstract_modeling_classes.modeling_update.ModelingUpdate") as update_spy:
+            owner.input_dict._set_entry_passively(child, weight)
+            owner.input_dict._drop_entry_passively(child)
+
+        update_spy.assert_not_called()
+        self.assertEqual({}, owner.input_dict)
+        self.assertEqual([], child.modeling_obj_containers)
+        self.assertIsNone(weight.modeling_obj_container)
+
 
 class TestToWeightedExplainableObjectDict(unittest.TestCase):
 
@@ -451,6 +495,17 @@ class TestWeightedExplainableObjectDict(unittest.TestCase):
     def test_valid_setitem_still_works(self):
         self.weighted_dict[self.key] = SourceValue(5 * u.dimensionless, label="updated weight")
         self.assertEqual(5, self.weighted_dict[self.key].value.magnitude)
+
+    def test_passive_set_validates_weights_and_copy_preserves_concrete_type(self):
+        with self.assertRaises(ValueError):
+            self.weighted_dict._set_entry_passively(self.key, SourceValue(-1 * u.dimensionless))
+
+        self.weighted_dict.trigger_modeling_updates = True
+        copied = self.weighted_dict.copy()
+
+        self.assertIsInstance(copied, WeightedExplainableObjectDict)
+        self.assertTrue(copied.trigger_modeling_updates)
+        self.assertEqual(list(self.weighted_dict.items()), list(copied.items()))
 
 
 class TestWeightLabelsClassMetadata(unittest.TestCase):

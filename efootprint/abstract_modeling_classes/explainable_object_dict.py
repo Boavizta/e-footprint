@@ -68,7 +68,7 @@ class ExplainableObjectDict(ObjectLinkedToModelingObjBase, dict):
         self.trigger_modeling_updates = False
         if input_dict is not None:
             for key, value in input_dict.items():
-                self[key] = value
+                self._set_entry_passively(key, value)
 
     def _computed_binding(self):
         """(owner, descriptor) when this dict is the facade of a computed dict attribute, else None."""
@@ -135,15 +135,43 @@ class ExplainableObjectDict(ObjectLinkedToModelingObjBase, dict):
         return all_ancestors_with_id
 
     def update(self, __m=None, **kwargs):
+        entries = []
         if __m is not None:
-            for key, value in (__m.items() if hasattr(__m, 'items') else __m):
+            entries.extend(__m.items() if hasattr(__m, 'items') else __m)
+        entries.extend(kwargs.items())
+        if not entries:
+            return
+
+        binding = self._computed_binding()
+        if binding is not None or not self.trigger_modeling_updates:
+            for key, value in entries:
                 self[key] = value
-        for key, value in kwargs.items():
-            self[key] = value
+            return
+
+        new_dict = self._copy_passively()
+        for key, value in entries:
+            new_dict._set_entry_passively(key, value)
+        from efootprint.abstract_modeling_classes.modeling_update import ModelingUpdate
+        ModelingUpdate([[self, new_dict]])
+
+    def _validate_entry_value(self, key, value):
+        if not isinstance(value, (ExplainableObject, EmptyExplainableObject)):
+            raise ValueError(
+                f"ExplainableObjectDicts only accept ExplainableObjects or EmptyExplainableObject as values, "
+                f"received {type(value)}")
+
+    def _copy_passively(self, entries=None):
+        copied_dict = type(self)()
+        for key, value in (dict.items(self) if entries is None else entries):
+            copied_dict._set_entry_passively(key, value)
+        copied_dict.trigger_modeling_updates = self.trigger_modeling_updates
+        return copied_dict
 
     def _set_entry_passively(self, key, value):
         """Store one entry with the container bookkeeping but no engine involvement — used by the
         computed-dict slot machinery and by input-dict storage."""
+        self._validate_entry_value(key, value)
+        key_is_new = not dict.__contains__(self, key)
         if dict.__contains__(self, key) and self.modeling_obj_container is not None:
             previous_value = dict.__getitem__(self, key)
             if previous_value is not value:
@@ -154,20 +182,23 @@ class ExplainableObjectDict(ObjectLinkedToModelingObjBase, dict):
                 new_modeling_obj_container=self.modeling_obj_container, attr_name=self.attr_name_in_mod_obj_container)
         self._add_self_to_key_containers(key)
         self._add_self_to_key_contextual_containers(key)
+        if key_is_new and self.is_structural_input_dict and isinstance(key, ModelingObject):
+            bump_reverse_nodes(key, self.modeling_obj_container)
 
     def _drop_entry_passively(self, key):
         """Remove one entry with the container bookkeeping but no engine involvement."""
+        was_structural = self.is_structural_input_dict and isinstance(key, ModelingObject)
+        modeling_obj_container = self.modeling_obj_container
         if self.modeling_obj_container is not None:
             dict.__getitem__(self, key).set_modeling_obj_container(None, None)
         dict.__delitem__(self, key)
         self._remove_self_from_key_containers(key)
         self._remove_self_from_key_contextual_containers(key)
+        if was_structural:
+            bump_reverse_nodes(key, modeling_obj_container)
 
     def __setitem__(self, key, value: ExplainableObject):
-        if not isinstance(value, ExplainableObject) and not isinstance(value, EmptyExplainableObject):
-            raise ValueError(
-                f"ExplainableObjectDicts only accept ExplainableObjects or EmptyExplainableObject as values, "
-                f"received {type(value)}")
+        self._validate_entry_value(key, value)
 
         binding = self._computed_binding()
         if binding is not None:
@@ -182,11 +213,8 @@ class ExplainableObjectDict(ObjectLinkedToModelingObjBase, dict):
                 ModelingUpdate([[self[key], value]])
             else:
                 # Structural change: new key — full dict replacement so the key set is diffed
-                new_dict = type(self)()
-                for k, v in dict.items(self):
-                    dict.__setitem__(new_dict, k, v)
-                dict.__setitem__(new_dict, key, value)
-                new_dict.trigger_modeling_updates = self.trigger_modeling_updates
+                new_dict = self._copy_passively()
+                new_dict._set_entry_passively(key, value)
                 ModelingUpdate([[self, new_dict]])
             return
 
@@ -204,11 +232,8 @@ class ExplainableObjectDict(ObjectLinkedToModelingObjBase, dict):
 
         if self.trigger_modeling_updates:
             from efootprint.abstract_modeling_classes.modeling_update import ModelingUpdate
-            new_dict = type(self)()
-            for k, v in dict.items(self):
-                if k != key:
-                    dict.__setitem__(new_dict, k, v)
-            new_dict.trigger_modeling_updates = self.trigger_modeling_updates
+            new_dict = self._copy_passively(
+                (k, v) for k, v in dict.items(self) if k != key)
             ModelingUpdate([[self, new_dict]])
             return
 
@@ -286,21 +311,43 @@ class ExplainableObjectDict(ObjectLinkedToModelingObjBase, dict):
         raise KeyError(key)
 
     def popitem(self):
-        key, value = super().popitem()
-        if self.modeling_obj_container is not None:
-            value.set_modeling_obj_container(None, None)
-        self._remove_self_from_key_containers(key)
+        if not dict.__len__(self):
+            raise KeyError("popitem(): dictionary is empty")
+        key = next(reversed(dict.keys(self)))
+        value = dict.__getitem__(self, key)
+        self.__delitem__(key)
         return key, value
 
     def clear(self):
-        for key in list(self.keys()):
-            self.__delitem__(key)
+        if not dict.__len__(self):
+            return
+        binding = self._computed_binding()
+        if binding is not None:
+            for key in list(dict.keys(self)):
+                self.__delitem__(key)
+            return
+        if self.trigger_modeling_updates:
+            from efootprint.abstract_modeling_classes.modeling_update import ModelingUpdate
+            ModelingUpdate([[self, self._copy_passively(())]])
+            return
+        for key in list(dict.keys(self)):
+            self._drop_entry_passively(key)
 
     def setdefault(self, key, default=None):
         if key in self:
             return self[key]
         self[key] = default
-        return self[key]
+        return default
+
+    def __copy__(self):
+        return self._copy_passively()
+
+    def copy(self):
+        return self._copy_passively()
+
+    def __ior__(self, other):
+        self.update(other)
+        return self
 
     def _add_self_to_key_containers(self, key):
         if (self.modeling_obj_container is not None and isinstance(key, ModelingObject)
@@ -389,6 +436,6 @@ class WeightedExplainableObjectDict(ExplainableObjectDict):
     """ExplainableObjectDict of dimensionless, non-negative weights. validate_weight runs on every __setitem__,
     so the invariant holds at construction and across later mutations alike."""
 
-    def __setitem__(self, key, value):
+    def _validate_entry_value(self, key, value):
+        super()._validate_entry_value(key, value)
         validate_weight(key, value)
-        super().__setitem__(key, value)

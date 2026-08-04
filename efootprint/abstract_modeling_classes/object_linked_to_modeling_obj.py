@@ -202,22 +202,18 @@ class ObjectLinkedToModelingObjBase:
                 raise KeyError(f"object of id {self.key_in_dict.id} not found as key in {attr_name} attribute of "
                                f"{mod_obj_container.id} when trying to replace {self} by {new_value}. "
                                f"This should not happen.")
-            initial_trigger = getattr(dict_container, 'trigger_modeling_updates', False)
-            if hasattr(dict_container, 'trigger_modeling_updates'):
-                dict_container.trigger_modeling_updates = False
-                dict_container[self.key_in_dict] = new_value
-                dict_container.trigger_modeling_updates = initial_trigger
+            if hasattr(dict_container, "_set_entry_passively"):
+                dict_container._set_entry_passively(self.key_in_dict, new_value)
             else:
-                dict_container[self.key_in_dict] = new_value
+                self.set_modeling_obj_container(None, None)
+                dict.__setitem__(dict_container, self.key_in_dict, new_value)
+                new_value.set_modeling_obj_container(mod_obj_container, attr_name)
         elif self.list_container is not None:
             if not self.indexes_in_list:
                 raise ValueError(f"object of id {self.id} not found in {attr_name} attribute of {mod_obj_container.id} "
                                  f"when trying to replace \n\n{self}\nby\n\n{new_value}.\n\nThis should not happen.")
             for index in self.indexes_in_list:
-                initial_trigger_modeling_updates = self.list_container.trigger_modeling_updates
-                self.list_container.trigger_modeling_updates = False
-                self.list_container[index] = new_value
-                self.list_container.trigger_modeling_updates = initial_trigger_modeling_updates
+                self.list_container._set_entry_passively(index, new_value)
         else:
             self.set_modeling_obj_container(None, None)
             mod_obj_container.__dict__[attr_name] = new_value

@@ -4,6 +4,19 @@ from copy import copy
 
 from efootprint.abstract_modeling_classes.list_linked_to_modeling_obj import ListLinkedToModelingObj
 from efootprint.abstract_modeling_classes.modeling_object import ModelingObject
+from efootprint.abstract_modeling_classes.modeling_update import ModelingUpdate
+
+
+class ModelingObjectWithListForContainerTest(ModelingObject):
+    default_values = {}
+
+    def __init__(self, name, children: list[ModelingObject]):
+        super().__init__(name)
+        self.children = children
+
+    @property
+    def systems(self):
+        return []
 
 
 class TestListLinkedToModelingObj(unittest.TestCase):
@@ -66,6 +79,17 @@ class TestListLinkedToModelingObj(unittest.TestCase):
         self.assertEqual(self.linked_list[0], self.mock_modeling_obj_3)
         self.mock_modeling_obj_3.set_modeling_obj_container.assert_called_with(self.mock_modeling_obj_1, "attr_name")
 
+    def test_passive_slice_set_and_drop_preserve_order_and_bookkeeping(self):
+        self.linked_list.set_modeling_obj_container(self.mock_modeling_obj_1, "attr_name")
+        self.linked_list._extend_passively([self.mock_modeling_obj_2, self.mock_modeling_obj_3])
+
+        self.linked_list._set_entry_passively(slice(0, 1), [self.mock_modeling_obj_3, self.mock_modeling_obj_2])
+        removed = self.linked_list._drop_entry_passively(slice(1, 2))
+
+        self.assertEqual([self.mock_modeling_obj_3, self.mock_modeling_obj_3], self.linked_list)
+        self.assertEqual([self.mock_modeling_obj_2], removed)
+        removed[0].set_modeling_obj_container.assert_called_with(None, None)
+
     def test_remove(self):
         self.linked_list.set_modeling_obj_container(self.mock_modeling_obj_1, "attr_name")
         self.linked_list.append(self.mock_modeling_obj_2)
@@ -119,6 +143,47 @@ class TestListLinkedToModelingObj(unittest.TestCase):
         self.assertEqual(len(linked_list), len(copy_list))
         for index in range(len(linked_list)):
             self.assertEqual(linked_list[index], copy_list[index])
+
+
+class TestListLinkedToModelingObjTransactions(unittest.TestCase):
+    def test_public_extend_launches_one_update_while_passive_mutation_launches_none(self):
+        first_child = ModelingObject("list transaction first child")
+        second_child = ModelingObject("list transaction second child")
+        third_child = ModelingObject("list transaction third child")
+        owner = ModelingObjectWithListForContainerTest("list transaction owner", [first_child])
+
+        with patch(
+                "efootprint.abstract_modeling_classes.list_linked_to_modeling_obj.ModelingUpdate",
+                wraps=ModelingUpdate) as update_spy:
+            owner.children.extend([second_child, third_child])
+
+        self.assertEqual(1, update_spy.call_count)
+        self.assertEqual([first_child, second_child, third_child], owner.children)
+
+        fourth_child = ModelingObject("list transaction fourth child")
+        with patch(
+                "efootprint.abstract_modeling_classes.list_linked_to_modeling_obj.ModelingUpdate",
+                wraps=ModelingUpdate) as update_spy:
+            owner.children._insert_passively(1, fourth_child)
+
+        update_spy.assert_not_called()
+        self.assertEqual([first_child, fourth_child, second_child, third_child], owner.children)
+        self.assertEqual([owner], fourth_child.modeling_obj_containers)
+
+    def test_public_reverse_launches_one_update_and_preserves_relationships(self):
+        first_child = ModelingObject("list reverse first child")
+        second_child = ModelingObject("list reverse second child")
+        owner = ModelingObjectWithListForContainerTest("list reverse owner", [first_child, second_child])
+
+        with patch(
+                "efootprint.abstract_modeling_classes.list_linked_to_modeling_obj.ModelingUpdate",
+                wraps=ModelingUpdate) as update_spy:
+            owner.children.reverse()
+
+        self.assertEqual(1, update_spy.call_count)
+        self.assertEqual([second_child, first_child], owner.children)
+        self.assertEqual([owner], first_child.modeling_obj_containers)
+        self.assertEqual([owner], second_child.modeling_obj_containers)
 
 
 if __name__ == '__main__':

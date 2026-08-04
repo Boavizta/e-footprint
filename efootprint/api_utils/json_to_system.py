@@ -222,8 +222,9 @@ def json_to_system(system_dict, efootprint_classes_dict=None):
         for key, value in attr_value.items():
             new_dict_items[flat_obj_dict[key]] = explainable_object_from_json(value, sources_dict)
 
-        explainable_object_dict = explainable_object_dict_class_from_init_annotation(
-            type(modeling_obj), attr_key)(new_dict_items)
+        explainable_object_dict = explainable_object_dict_class_from_init_annotation(type(modeling_obj), attr_key)()
+        for key, value in new_dict_items.items():
+            explainable_object_dict._set_entry_passively(key, value)
         current_dict = getattr(modeling_obj, attr_key, None)
         if current_dict is not None and isinstance(current_dict, ExplainableObjectDict):
             current_dict.replace_in_mod_obj_container_without_recomputation(explainable_object_dict)

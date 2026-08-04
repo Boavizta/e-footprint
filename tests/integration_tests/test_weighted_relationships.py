@@ -98,7 +98,13 @@ class TestWeightedRelationships(TestCase):
         self.assertEqual([step_1, step_2], list(journey.uj_steps.keys()))
 
         reordered = to_weighted_explainable_object_dict({step_2: 1, step_1: 1})
-        ModelingUpdate([[journey.uj_steps, reordered]])
+        update = ModelingUpdate([[journey.uj_steps, reordered]])
 
         self.assertEqual([step_2, step_1], list(journey.uj_steps.keys()))
+        self.assertEqual([1, 1], [weight.magnitude for weight in journey.uj_steps.values()])
+
+        update.rollback()
+
+        self.assertIsInstance(journey.uj_steps, WeightedExplainableObjectDict)
+        self.assertEqual([step_1, step_2], list(journey.uj_steps.keys()))
         self.assertEqual([1, 1], [weight.magnitude for weight in journey.uj_steps.values()])
