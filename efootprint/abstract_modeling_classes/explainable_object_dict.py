@@ -156,16 +156,15 @@ class ExplainableObjectDict(ObjectLinkedToModelingObjBase, dict):
             return
 
         new_dict = self._copy_passively()
-        touched_keys = {}
         for key, value in entries:
             new_dict._set_entry_passively(key, value)
-            touched_keys[key] = None
+        dedup_entry_keys = list(dict.fromkeys(key for key, _ in entries))
         from efootprint.abstract_modeling_classes.modeling_update import ModelingUpdate
-        if any(not dict.__contains__(self, key) for key in touched_keys):
+        if any(not dict.__contains__(self, key) for key in dedup_entry_keys):
             ModelingUpdate([[self, new_dict]])
             return
         ModelingUpdate([
-            [dict.__getitem__(self, key), dict.__getitem__(new_dict, key)] for key in touched_keys])
+            [dict.__getitem__(self, key), dict.__getitem__(new_dict, key)] for key in dedup_entry_keys])
 
     def _validate_entry_value(self, key, value):
         if not isinstance(value, (ExplainableObject, EmptyExplainableObject)):
