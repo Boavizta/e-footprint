@@ -1,0 +1,95 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Calculation-graph interning — Backlog plan</title>
+<style>
+  body { font-family: system-ui, -apple-system, sans-serif; line-height: 1.6;
+         max-width: 56rem; margin: 2rem auto; padding: 0 1.2rem; color: #1a1a1a; }
+  h1 { border-bottom: 2px solid #e0e0e0; padding-bottom: .3rem; }
+  h2 { margin-top: 2rem; }
+  small { color: #666; }
+  table { border-collapse: collapse; width: 100%; margin: 1rem 0; }
+  th, td { border: 1px solid #ccc; padding: .4rem .6rem; text-align: left; vertical-align: top; }
+  th { background: #f5f5f5; }
+  code { background: #f4f4f4; padding: .1rem .35rem; border-radius: 3px; font-size: .9em; }
+  blockquote { border-left: 3px solid #ccc; margin: 1rem 0; padding: .2rem 1rem; color: #555; }
+</style>
+</head>
+<body>
+
+<h1>Calculation-graph object/attribute interning — Backlog plan</h1>
+<p><small>Status: Parked backlog · 2026-08-05</small></p>
+
+<section>
+  <h2>1. Decision context</h2>
+  <p>The v23 calculation graph repeats object IDs and attribute names in node addresses. Graph-local lookup tables can
+  replace those strings with integer indices while leaving edge indices and labels unchanged.</p>
+  <blockquote>This is the best broad optimization for logical JSON, but not for the interface's Redis hot path. Django
+  stores a pickled dictionary and pickle already memoizes repeated strings. Do not prioritize this work on the claim
+  that it saves 9% of Redis memory.</blockquote>
+  <table>
+    <thead><tr><th>Canonical 13-model corpus</th><th>Measured value</th></tr></thead>
+    <tbody>
+      <tr><td>Calculation graph share of logical JSON</td><td>31.5% weighted; 42.5% median; 2.7–62.0% range</td></tr>
+      <tr><td>Interning saving in logical JSON</td><td>729 KB / 9.3%</td></tr>
+      <tr><td>Interning saving in Redis/pickle payload</td><td>105 KB / 1.7%</td></tr>
+      <tr><td>JSON codec effect</td><td>Encode 2.62 → 2.43 ms; decode 14.69 → 14.11 ms across all 13 models</td></tr>
+      <tr><td>Pickle codec effect</td><td>Approximately neutral within benchmark noise</td></tr>
+    </tbody>
+  </table>
+</section>
+
+<section>
+  <h2>2. Proposed wire format</h2>
+  <p>Keep the graph self-contained and deterministic:</p>
+  <pre><code>{
+  "objects": ["object-id-0", "object-id-1"],
+  "attributes": ["total_footprint", "energy_footprint"],
+  "nodes": [[0, 0, null], [1, 1, 0]],
+  "edges": [...],
+  "labels": {...}
+}</code></pre>
+  <p>Object and attribute tables follow deterministic first occurrence in the already deterministically sorted node
+  sequence. A dict maps each value to its index while the graph is generated, so there is no post-serialization pass.</p>
+</section>
+
+<section>
+  <h2>3. Implementation outline</h2>
+  <ol>
+    <li>Change <code>calculation_graph_section</code> to emit graph-local object/attribute tables and integer-addressed
+        nodes directly.</li>
+    <li>Change <code>rebuild_dependency_graph</code> to resolve the indices inline while materializing slots; do not
+        allocate a temporary expanded node list.</li>
+    <li>Use the next available JSON major schema version and add the required migration behavior. Since mismatched
+        stored computed state is demoted rather than trusted, avoid preserving obsolete graph topology unnecessarily.</li>
+    <li>Update deterministic serialization, corrupted-index, exact-version cache restoration, invalidation, and
+        randomized mutation-parity tests.</li>
+    <li>Update <code>specs/architecture/persistence.html</code>, changelog, and performance baselines.</li>
+  </ol>
+</section>
+
+<section>
+  <h2>4. Complexity and risks</h2>
+  <ul>
+    <li><strong>Complexity:</strong> medium—roughly 60–100 production lines plus migration, tests, and documentation.</li>
+    <li><strong>Hot path:</strong> direct table construction adds hash lookups during save; direct table lookup adds two
+        or three list reads per node during load. The smaller JSON offsets this for JSON consumers, while pickle should
+        remain neutral. Performance gates are mandatory.</li>
+    <li><strong>Corruption diagnostics:</strong> invalid object, attribute, or key indices must raise an address-specific
+        error rather than leaking <code>IndexError</code>.</li>
+    <li><strong>Readability:</strong> graph nodes become less manually readable, although graph edges are already indexed
+        and this section is machine topology rather than user-authored input.</li>
+  </ul>
+</section>
+
+<section>
+  <h2>5. Activation criterion</h2>
+  <p>Promote this backlog item when logical JSON quota/export size is again a priority, when the Redis serializer moves
+  from pickle to JSON, or when graph growth itself becomes a measured cache/network bottleneck. Re-run the canonical
+  corpus before planning implementation because graph shape and serialization policy may have changed.</p>
+</section>
+
+</body>
+</html>

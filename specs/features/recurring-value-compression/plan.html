@@ -1,0 +1,158 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Recurring-value compression — Implementation plan</title>
+<style>
+  body { font-family: system-ui, -apple-system, sans-serif; line-height: 1.6;
+         max-width: 56rem; margin: 2rem auto; padding: 0 1.2rem; color: #1a1a1a; }
+  h1 { border-bottom: 2px solid #e0e0e0; padding-bottom: .3rem; }
+  h2 { margin-top: 2rem; }
+  small { color: #666; }
+  table { border-collapse: collapse; width: 100%; margin: 1rem 0; }
+  th, td { border: 1px solid #ccc; padding: .4rem .6rem; text-align: left; vertical-align: top; }
+  th { background: #f5f5f5; }
+  code { background: #f4f4f4; padding: .1rem .35rem; border-radius: 3px; font-size: .9em; }
+  details { margin: .6rem 0; border: 1px solid #e0e0e0; border-radius: 6px; padding: .4rem .8rem; }
+  summary { cursor: pointer; font-weight: 600; }
+  blockquote { border-left: 3px solid #ccc; margin: 1rem 0; padding: .2rem 1rem; color: #555; }
+</style>
+</head>
+<body>
+
+<h1>Recurring-value compression — Implementation plan</h1>
+<p><small>Status: Plan — under review · 2026-08-05 · Technical-plan-only workflow approved by the user</small></p>
+
+<section>
+  <h2>1. Outcome and approach</h2>
+  <p><code>ExplainableRecurrentQuantities</code> currently serializes each float32 array as the decimal-text
+  representation of a Python list. Replace that payload with the same lossless storage shape already proven for
+  hourly quantities: contiguous float32 bytes, Zstandard compression, then Base64 for JSON transport. The new
+  discriminator is <code>compressed_recurring_values</code>; current-version readers accept that canonical shape
+  only, while the version migration converts older <code>recurring_values</code> payloads before object hydration.</p>
+  <p>Compression remains local to the recurrent quantity type. Small static compression/decompression helpers mirror
+  the hourly implementation rather than introducing a cross-type abstraction. Metadata, units, formulas, sources,
+  and the 168-hour recurring-pattern invariant are unchanged.</p>
+  <blockquote>The hot-path requirement is a gate, not an aspiration: full snapshot serialization and exact-version
+  loading must not regress on the canonical 13-model corpus at
+  <code>/Users/vinville/dev/e-footprint-full/json_files_that_should_load_and_open_results_without_failing_in_interface</code>.</blockquote>
+</section>
+
+<section>
+  <h2>2. Wire format</h2>
+  <table>
+    <thead><tr><th>Concern</th><th>Current v23</th><th>Planned v24</th></tr></thead>
+    <tbody>
+      <tr><td>Array field</td><td><code>"recurring_values": "[1.0, ...]"</code></td>
+          <td><code>"compressed_recurring_values": "&lt;base64-zstd-f32&gt;"</code></td></tr>
+      <tr><td>Numeric representation</td><td>Float32 converted to decimal text</td>
+          <td>Original contiguous float32 bytes; exact bit preservation</td></tr>
+      <tr><td>Compression</td><td>None</td><td>Zstandard level 0, then Base64</td></tr>
+      <tr><td>Other fields</td><td colspan="2"><code>unit</code>, <code>label</code>, provenance metadata, and optional
+          formula data remain unchanged</td></tr>
+      <tr><td>Malformed data</td><td colspan="2">Fail loudly during Base64/Zstandard decoding or invariant validation;
+          do not silently fall back or coerce</td></tr>
+    </tbody>
+  </table>
+</section>
+
+<section>
+  <h2>3. Affected modules</h2>
+  <table>
+    <thead><tr><th>Module / file</th><th>Change</th></tr></thead>
+    <tbody>
+      <tr><td><code>efootprint/abstract_modeling_classes/explainable_recurrent_quantities.py</code></td>
+          <td>Register the compressed discriminator, decode directly to float32, serialize compressed bytes, and retain
+          the existing explainable metadata/formula contract.</td></tr>
+      <tr><td><code>efootprint/api_utils/version_upgrade_handlers.py</code></td>
+          <td>Add the 23→24 migration. Recursively convert every legacy <code>recurring_values</code> occurrence,
+          including values nested in inputs, dict entries, or explainability formula structures.</td></tr>
+      <tr><td><code>efootprint/version.py</code></td><td>Bump the JSON/schema major version from 23 to 24.</td></tr>
+      <tr><td><code>tests/abstract_modeling_classes/test_explainable_recurrent_quantities.py</code></td>
+          <td>Cover canonical output, exact float32 round-trip, metadata/formula preservation, and invalid compressed data.</td></tr>
+      <tr><td><code>tests/api_utils_tests/test_version_upgrade_handlers.py</code></td>
+          <td>Cover migration at object attributes, dict entries, and nested formula payloads; prove the old key is absent.</td></tr>
+      <tr><td><code>tests/integration_tests/</code></td>
+          <td>Exercise system JSON round-trip with recurring inputs and a full calculated snapshot.</td></tr>
+      <tr><td><code>tests/performance_tests/</code></td>
+          <td>Add or extend a focused benchmark helper for recurrent codec cost and run the canonical-corpus comparison.</td></tr>
+      <tr><td><code>specs/architecture/persistence.html</code></td>
+          <td>Document the v24 recurring-timeseries encoding and version-aware migration.</td></tr>
+      <tr><td><code>CHANGELOG.md</code></td><td>Add one <code>## [Unreleased]</code> entry for the schema and performance change.</td></tr>
+    </tbody>
+  </table>
+</section>
+
+<section>
+  <h2>4. Ordered implementation</h2>
+  <ol>
+    <li>Add recurrent float32 compression/decompression helpers that mirror the hourly codec and prove exact array
+        round-trip independently.</li>
+    <li>Switch recurrent JSON registration, reading, and writing to <code>compressed_recurring_values</code>; preserve
+        all base-class metadata and formula behavior.</li>
+    <li>Add the recursive 23→24 migration and version bump. Convert, do not drop, recurring values because they are
+        authoritative model inputs.</li>
+    <li>Update unit, migration, and integration coverage; regenerate only fixtures whose owning tests require the new
+        current-version representation.</li>
+    <li>Run focused tests, the canonical-corpus size/hot-path benchmark, the full pytest suite, and
+        <code>mkdocs build --strict</code>.</li>
+    <li>Update persistence documentation and the changelog with the measured final results.</li>
+  </ol>
+</section>
+
+<section>
+  <h2>5. Acceptance and performance gates</h2>
+  <ul>
+    <li>Every finite float32 array round-trips bit-for-bit with the same unit, label, source, confidence, comment, and
+        serialized formula relationships.</li>
+    <li>Every supported pre-v24 model upgrades without retaining a <code>recurring_values</code> key.</li>
+    <li>A current-version full snapshot round-trips through <code>system_to_json</code> → JSON →
+        <code>json_to_system</code> without recomputation or semantic drift.</li>
+    <li>The canonical corpus remains 13/13 loadable and result-ready.</li>
+    <li>Indicative corpus targets, to be remeasured after implementation: logical JSON decreases from 7.87 MB toward
+        7.28 MB; Redis/pickle payload decreases from 6.16 MB toward 5.56 MB.</li>
+    <li>Repeated codec measurements show no regression in full snapshot serialization or exact-version loading. The
+        investigation baseline for 351 arrays was 8.18 ms → 0.27 ms encode and 5.15 ms → 0.30 ms decode; final numbers
+        are recorded, not asserted with a flaky wall-clock unit test.</li>
+    <li>Full pytest and strict documentation builds pass.</li>
+  </ul>
+</section>
+
+<section>
+  <h2>6. Risks and mitigations</h2>
+  <ul>
+    <li><strong>Endianness/platform ambiguity:</strong> the project currently serializes native float32 bytes for hourly
+        quantities. Keep the recurrent codec identical and test on the supported Python/CI matrix.</li>
+    <li><strong>Read-only NumPy buffer:</strong> decoding through <code>np.frombuffer</code> follows the hourly path; copy
+        only if recurrent mutation tests demonstrate a writeability requirement.</li>
+    <li><strong>Incomplete migration traversal:</strong> use one recursive JSON-tree conversion and test nested formula
+        and dict shapes rather than enumerating modeling classes.</li>
+    <li><strong>Accidental compatibility shim:</strong> v24 runtime registration recognizes only the new key. Legacy
+        support belongs exclusively to the version handler, consistent with the constitution.</li>
+    <li><strong>Misleading JSON-only win:</strong> record both JSON-budget and actual Redis/pickle measurements.</li>
+  </ul>
+</section>
+
+<section>
+  <h2>7. Alternatives rejected</h2>
+  <ul>
+    <li>Store a JSON number array: removes the quoted string but retains expensive decimal conversion and most bytes.</li>
+    <li>Run-length encoding: excellent for constants but data-dependent and weaker for arbitrary weekly patterns.</li>
+    <li>Compress the whole system payload: obscures random inspection, changes cache integration, and is broader than
+        the identified hotspot.</li>
+    <li>Accept both keys in the live decoder: creates a compatibility branch forbidden by the project policy; migration
+        is the single old-format boundary.</li>
+  </ul>
+</section>
+
+<section>
+  <h2>8. Constitutional and architectural notes</h2>
+  <p>This remains JSON and uses existing NumPy/Zstandard dependencies, so no constitutional principle changes. It is a
+  schema change: constitution §2 requires a migration handler, major version bump, round-trip coverage, full tests,
+  strict docs, and changelog entry. Compression stays in the framework layer; the API migration layer may depend on it,
+  preserving the required dependency direction.</p>
+</section>
+
+</body>
+</html>
