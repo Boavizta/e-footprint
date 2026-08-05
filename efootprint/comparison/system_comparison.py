@@ -12,6 +12,8 @@ from efootprint.abstract_modeling_classes.explainable_quantity import Explainabl
 from efootprint.abstract_modeling_classes.modeling_object import ModelingObject
 from efootprint.all_classes_in_order import OBJECT_CATEGORIES
 from efootprint.constants.units import u
+from efootprint.utils.display import (
+    best_display_unit, format_display_number, format_quantity_for_display, human_readable_unit)
 from efootprint.utils.plot_timeseries import get_time_axis
 from efootprint.utils.tools import get_init_signature_params
 
@@ -493,12 +495,24 @@ def _plot_decomposition(decomposition, label_a, label_b, filepath, figsize, plt_
     fig, ax = plt.subplots(figsize=figsize)
     rows = [row for row in decomposition if row.delta.absolute != 0]
     labels = [f"{row.category} ({row.phase})" for row in rows]
-    deltas = [row.delta.absolute for row in rows]
+    deltas_kg = np.array([row.delta.absolute for row in rows]) * u.kg
+    display_unit = best_display_unit(deltas_kg) if rows else u.kg
+    deltas = deltas_kg.to(display_unit).magnitude
     colors = ["#de5f46" if d > 0 else "#6372f2" for d in deltas]
-    ax.barh(labels, deltas, color=colors)
+    bars = ax.barh(labels, deltas, color=colors)
+    unit_label = human_readable_unit(display_unit)
+    formatted_deltas = format_quantity_for_display(deltas_kg).magnitude if rows else []
+    value_labels = [f"{format_display_number(value)} {unit_label}" for value in formatted_deltas]
+    ax.bar_label(bars, labels=value_labels, padding=3)
+    ax.margins(x=0.1)
     ax.axvline(0, color="black", linewidth=0.8)
-    ax.set_title(f"Footprint difference by category and phase ({label_b} − {label_a})")
-    ax.set_xlabel("kg CO2 difference")
+    title = f"Footprint difference by category and phase ({label_b} − {label_a})"
+    if rows:
+        formatted_total = format_quantity_for_display(sum(row.delta.absolute for row in rows) * u.kg)
+        total_in_display_unit = formatted_total.to(display_unit).magnitude
+        title += f"\nTotal: {format_display_number(total_in_display_unit)} {unit_label} CO₂e"
+    ax.set_title(title)
+    ax.set_xlabel(f"{unit_label} CO2 difference")
 
     if filepath is not None:
         fig.savefig(filepath, bbox_inches="tight")

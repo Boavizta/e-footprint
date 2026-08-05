@@ -6,6 +6,9 @@ and this project adheres to [Semantic Versioning](http://semver.org/)
 
 ## [Unreleased]
 
+### Fixed
+- [FIX] Scale system-comparison decomposition plots to a readable unit, label each bar, and show the net total.
+
 ### Changed
 - Split the reactive engine into a cohesive `efootprint.abstract_modeling_classes.reactive_core` package: `graph.py` owns runtime dependency tracking and invalidation, `computed_slots.py` owns the computed decorator surfaces, and `reverse_relationships.py` owns reverse-link descriptors. The package root preserves the existing import surface.
 - Replaced the single `specs/architecture.md` reference with a self-contained visual HTML architecture hub under `specs/architecture/`: a curated newcomer path and task router lead to canonical pages for layers/modeling, pull-based recomputation, relationships, persistence, attribution, and comparison/display; full implementation detail remains available in collapsible sections.

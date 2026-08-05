@@ -8,7 +8,8 @@ import numpy as np
 from efootprint.abstract_modeling_classes.source_objects import SourceValue
 from efootprint.builders.time_builders import create_source_hourly_values_from_list
 from efootprint.comparison.duplication import assign_fresh_system_id, duplicate_system
-from efootprint.comparison.system_comparison import PHASES, SystemComparison
+from efootprint.comparison.system_comparison import (
+    DecompositionRow, Delta, PHASES, SystemComparison, _plot_decomposition)
 from efootprint.constants.countries import Countries
 from efootprint.constants.units import u
 from efootprint.core.hardware.device import Device
@@ -359,6 +360,24 @@ class TestSystemComparison(TestCase):
             self.assertIsNotNone(figure)
             self.assertIsNotNone(axes)
             plt.close(figure)
+
+    def test_plot_decomposition_uses_best_display_unit_and_labels_values(self):
+        """Test decomposition plots scale all bars to one readable unit and display their values."""
+        from matplotlib import pyplot as plt
+        decomposition = [
+            DecompositionRow("Network", "energy", Delta(before=1_600_000, after=0)),
+            DecompositionRow("Servers", "fabrication", Delta(before=0, after=500_000)),
+        ]
+
+        figure, axes = _plot_decomposition(decomposition, "before", "after", None, (10, 6), False)
+
+        self.assertEqual("t CO2 difference", axes.get_xlabel())
+        self.assertEqual([-1600, 500], [bar.get_width() for bar in axes.patches])
+        self.assertEqual(["-1600 t", "500 t"], [text.get_text() for text in axes.texts])
+        self.assertEqual(
+            "Footprint difference by category and phase (after − before)\nTotal: -1100 t CO₂e",
+            axes.get_title())
+        plt.close(figure)
 
 
 if __name__ == "__main__":
