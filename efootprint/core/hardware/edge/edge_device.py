@@ -204,6 +204,8 @@ class EdgeDevice(ModelingObject, AttributionSource):
         """Hourly fabrication-phase emissions of the whole device (chassis plus all components), broken down by usage pattern. Components with no needs at a pattern count as part of the chassis there: their embodied carbon amortizes with the deployment."""
         total_footprint = self.structure_fabrication_footprint_per_usage_pattern.get(
             usage_pattern, EmptyExplainableObject())
+        if not self.components:
+            total_footprint = total_footprint.copy()
         for component in self.components:
             if usage_pattern in component.fabrication_footprint_per_edge_device_per_usage_pattern:
                 total_footprint += (self.total_nb_of_units

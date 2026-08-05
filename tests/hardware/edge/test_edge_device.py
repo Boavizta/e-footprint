@@ -36,7 +36,7 @@ from efootprint.core.usage.edge.recurrent_edge_storage_need import RecurrentEdge
 from efootprint.core.usage.edge.recurrent_server_need import RecurrentServerNeed
 from tests.core.attribution.conservation import (
     assert_hourly_quantities_equal, assert_source_atoms_conserve, sum_atom_values)
-from tests.utils import attach_attribute, create_mod_obj_mock, set_modeling_obj_containers
+from tests.utils import attach_attribute, create_mod_obj_mock, patch_attribute, set_modeling_obj_containers
 from tests.utils import recompute_attribute
 
 
@@ -215,6 +215,25 @@ class TestEdgeDevice(TestCase):
         self.assertIn("Hourly", result.label)
         self.assertIn("instances fabrication footprint", result.label)
         self.assertIn("Test Pattern", result.label)
+
+    def test_instances_fabrication_returns_fresh_value_for_componentless_device(self):
+        mock_journey = MagicMock(spec=EdgeUsageJourney)
+        mock_pattern = create_mod_obj_mock(EdgeUsagePattern, name="Test Pattern", edge_usage_journey=mock_journey)
+        mock_journey.nb_edge_usage_journeys_in_parallel_per_edge_usage_pattern = {
+            mock_pattern: create_source_hourly_values_from_list([10, 10], pint_unit=u.concurrent)
+        }
+
+        with (
+            patch_attribute(self.edge_device, "components", []),
+            patch.object(EdgeDevice, "edge_usage_patterns", new_callable=PropertyMock, return_value=[mock_pattern]),
+        ):
+            structure = recompute_attribute(
+                self.edge_device, "structure_fabrication_footprint_per_usage_pattern", mock_pattern)
+            result = recompute_attribute(
+                self.edge_device, "instances_fabrication_footprint_per_usage_pattern", mock_pattern)
+
+        self.assertIsNot(structure, result)
+        self.assertTrue(np.allclose(structure.value.magnitude, result.value.magnitude))
 
     def test_update_dict_element_in_instances_fabrication_footprint_per_usage_pattern_with_components(self):
         """Test fabrication footprint calculation with component contributions."""

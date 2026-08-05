@@ -8,6 +8,7 @@ and this project adheres to [Semantic Versioning](http://semver.org/)
 
 ### Fixed
 - [FIX] Scale system-comparison decomposition plots to a readable unit, label each bar, and show the net total.
+- [FIX] Return a fresh value from edge-device per-pattern fabrication calculations when the device has no components, avoiding reactive-slot aliasing during legacy model imports without adding a duplicate node to component-bearing devices' explanation graphs.
 
 ### Changed
 - Split the reactive engine into a cohesive `efootprint.abstract_modeling_classes.reactive_core` package: `graph.py` owns runtime dependency tracking and invalidation, `computed_slots.py` owns the computed decorator surfaces, and `reverse_relationships.py` owns reverse-link descriptors. The package root preserves the existing import surface.
