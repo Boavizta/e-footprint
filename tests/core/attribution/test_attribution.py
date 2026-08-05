@@ -12,7 +12,7 @@ from efootprint.builders.time_builders import create_source_hourly_values_from_l
 from efootprint.constants.units import u
 from efootprint.core.attribution import (
     atoms, atoms_of, attributed_footprint, footprint_per_node, footprint_per_node_per_source,
-    node_totals_and_links, node_totals_and_links_in_kg)
+    node_totals_and_links, node_totals_and_links_by_phase_in_kg, node_totals_and_links_in_kg)
 from efootprint.core.country import Country
 from efootprint.core.hardware.device import Device
 from efootprint.core.hardware.network import Network
@@ -112,6 +112,18 @@ class TestAttributionFold(TestCase):
             self.assertEqual(quantity_totals[node].to(u.kg).magnitude, total_kg)
         for edge, value_kg in kg_links.items():
             self.assertEqual(quantity_links[edge].to(u.kg).magnitude, value_kg)
+
+    def test_multi_phase_kg_fold_matches_each_single_phase_fold(self):
+        """Normalizing the matrix context once must not change either phase's grouping contract."""
+        combined = node_totals_and_links_by_phase_in_kg(
+            self.system, tuple(LifeCyclePhases), ALL_LEVELS)
+
+        for phase in LifeCyclePhases:
+            with self.subTest(phase=phase):
+                self.assertEqual(
+                    node_totals_and_links_in_kg(self.system, phase, ALL_LEVELS),
+                    combined[phase],
+                )
 
     def test_fold_column_sums_equal_phase_total_at_every_level(self):
         """Test that summing node totals over each level recovers the full atom sum (columns conserve)."""

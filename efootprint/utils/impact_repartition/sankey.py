@@ -1,7 +1,8 @@
 """Column-walk Sankey renderer over the attribution fold.
 
-The data layer is one ``attribution.node_totals_and_links_in_kg`` call per life-cycle phase — a float-only
-fold over the stored ``System.impact_repartition_matrix`` period sums, so the fold behind every
+The data layer is one ``attribution.node_totals_and_links_by_phase_in_kg`` call — a float-only fold over
+the stored ``System.impact_repartition_matrix`` period sums, so every requested phase is grouped in one
+pass and the fold behind every
 column/phase/exclusion combination touches no hourly data and creates no Pint quantities. Breakdown
 normalization reuses the source totals from that same fold; only each edge device's condensed
 ``footprint_breakdown_summary`` is read alongside the matrix. Conservation
@@ -23,7 +24,7 @@ from typing import Any, TypeAlias
 import efootprint.all_classes_in_order as class_registry
 from efootprint.abstract_modeling_classes.modeling_object import ModelingObject
 from efootprint.constants.units import u
-from efootprint.core.attribution import node_totals_and_links_in_kg
+from efootprint.core.attribution import node_totals_and_links_by_phase_in_kg
 from efootprint.core.lifecycle_phases import LifeCyclePhases
 from efootprint.utils.display import best_display_unit, format_display_number, format_quantity_for_display, human_readable_unit
 from efootprint.utils.impact_repartition._graph import SankeyGraph
@@ -363,12 +364,10 @@ class ImpactRepartitionSankey:
         visible_levels = self._fold_visible_levels()
         excluded_sources = self._fold_excluded_sources()
         source_classes = self._source_level_classes()
-        phase_data = {}
+        phase_data = node_totals_and_links_by_phase_in_kg(
+            self.system, tuple(phases), visible_levels, exclude=excluded_sources)
         phase_totals = {}
-        for phase in phases:
-            node_totals, links = node_totals_and_links_in_kg(
-                self.system, phase, visible_levels, exclude=excluded_sources)
-            phase_data[phase] = (node_totals, links)
+        for phase, (node_totals, _) in phase_data.items():
             self._source_phase_totals_kg.update(
                 {(node, phase): total for node, total in node_totals.items() if isinstance(node, source_classes)})
             phase_totals[phase] = sum(

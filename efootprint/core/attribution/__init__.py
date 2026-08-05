@@ -21,6 +21,7 @@ hourly reads (``footprint_per_node`` and friends) fold live atoms on every call.
 from abc import abstractmethod
 from dataclasses import dataclass
 
+from efootprint.abstract_modeling_classes.contextual_modeling_object_attribute import ContextualModelingObjectAttribute
 from efootprint.abstract_modeling_classes.empty_explainable_object import EmptyExplainableObject
 from efootprint.abstract_modeling_classes.modeling_object import ModelingObject
 from efootprint.abstract_modeling_classes.reactive_core import (
@@ -136,30 +137,64 @@ def atoms(system, phase, exclude: tuple = ()):
         yield from source.attribution_atoms(phase)
 
 
+def _underlying_modeling_object(obj: ModelingObject) -> ModelingObject:
+    """Strip a relationship-context wrapper at the matrix boundary.
+
+    Attribution grouping is identity-based and does not need contextual read tracking. Keeping raw objects
+    in the fold also prevents every row from repeatedly paying wrapper attribute, hash and ``isinstance``
+    costs.
+    """
+    return obj._value if isinstance(obj, ContextualModelingObjectAttribute) else obj
+
+
+@dataclass(frozen=True)
+class _MatrixFoldContext:
+    objects_by_id: dict[str, ModelingObject]
+    visible_object_ids: frozenset[str]
+    excluded_source_ids: frozenset[str]
+
+
 def _resolved_row_chain(row: dict, objects_by_id: dict) -> list:
     up = objects_by_id[row["up"]]
     cell_nodes = {cell_field: objects_by_id[row[cell_field]] for cell_field in _CELL_FIELDS if cell_field in row}
-    return _chain_nodes(objects_by_id[row["source"]], up, **cell_nodes)
+    return [_underlying_modeling_object(node) for node in _chain_nodes(objects_by_id[row["source"]], up, **cell_nodes)]
 
 
-def node_totals_and_links_in_kg(system, phase, visible_levels: tuple, exclude: tuple = ()):
-    """The Sankey feed as ``({node: kg float}, {(finer, coarser): kg float})`` for one life-cycle phase,
-    folded over the stored ``System.impact_repartition_matrix`` rows — already period-total kg scalars,
-    with no hourly data or model recomputation beyond the cached matrix itself.
+def _matrix_fold_context(system, visible_levels: tuple, exclude: tuple) -> _MatrixFoldContext:
+    raw_objects = (_underlying_modeling_object(obj) for obj in system.all_linked_objects)
+    objects_by_id = {obj.id: obj for obj in raw_objects}
+    return _MatrixFoldContext(
+        objects_by_id=objects_by_id,
+        visible_object_ids=frozenset(
+            object_id for object_id, obj in objects_by_id.items() if isinstance(obj, visible_levels)),
+        excluded_source_ids=frozenset(
+            object_id for object_id, obj in objects_by_id.items() if isinstance(obj, exclude)),
+    )
+
+
+def node_totals_and_links_by_phase_in_kg(system, phases: tuple, visible_levels: tuple, exclude: tuple = ()):
+    """Fold the cached matrix into kg-float node/link totals for every requested life-cycle phase.
+
+    Object normalization and class visibility are resolved once per fold, outside the matrix loop. The
+    result is ``{phase: ({node: kg float}, {(finer, coarser): kg float})}``.
 
     ``visible_levels`` is a tuple of ModelingObject classes; a chain node is visible iff it is an instance
     of one of them — skipping a column = leaving its classes out (adjacent visible nodes link directly).
     Each row contributes its value to every visible node of its chain and to the link between each
     consecutive pair, so Σ incoming == node total == Σ outgoing holds at every node BY CONSTRUCTION —
     no normalization, no rescaling, anywhere."""
-    visible_levels = tuple(visible_levels)
-    exclude = tuple(exclude)
-    objects_by_id = {obj.id: obj for obj in system.all_linked_objects}
-    node_totals, links = {}, {}
+    phases_by_value = {phase.value: phase for phase in phases}
+    context = _matrix_fold_context(system, tuple(visible_levels), tuple(exclude))
+    folds = {phase: ({}, {}) for phase in phases}
     for row in system.impact_repartition_matrix:
-        if row["phase"] != phase.value or isinstance(objects_by_id[row["source"]], exclude):
+        phase = phases_by_value.get(row["phase"])
+        if phase is None or row["source"] in context.excluded_source_ids:
             continue
-        chain = [node for node in _resolved_row_chain(row, objects_by_id) if isinstance(node, visible_levels)]
+        node_totals, links = folds[phase]
+        chain = [
+            node for node in _resolved_row_chain(row, context.objects_by_id)
+            if node.id in context.visible_object_ids
+        ]
         value = float(row["value"])
         for node in chain:
             node_totals[node] = node_totals.get(node, 0.0) + value
@@ -167,7 +202,13 @@ def node_totals_and_links_in_kg(system, phase, visible_levels: tuple, exclude: t
             pair = (chain[index], chain[index + 1])
             links[pair] = links.get(pair, 0.0) + value
 
-    return node_totals, links
+    return folds
+
+
+def node_totals_and_links_in_kg(system, phase, visible_levels: tuple, exclude: tuple = ()):
+    """Single-phase convenience wrapper around :func:`node_totals_and_links_by_phase_in_kg`."""
+    return node_totals_and_links_by_phase_in_kg(
+        system, (phase,), visible_levels, exclude=exclude)[phase]
 
 
 def node_totals_and_links(system, phase, visible_levels: tuple, exclude: tuple = ()):
