@@ -16,8 +16,8 @@ SSOT metadata content (`param_descriptions`, docstrings, `tests/test_description
 
 ### Upgrade-time drift visualization
 
-Depends on the pull-based-computation feature landing (its serialization contract ships the
-protocol: stored footprints are trusted caches only on exact `efootprint_version` match; any
+Builds on the shipped pull-based-computation serialization contract (stored footprints are
+trusted caches only on exact `efootprint_version` match; any
 mismatch demotes them to a retained "as computed by vX" baseline and recomputes on pull, with a
 `system_comparison`-based hook returning the drift). This feature adds the user-facing layer:
 visualize how a library methodology change or upstream-data update (Boaviztapi, EcoLogits) shifted
