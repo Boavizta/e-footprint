@@ -142,10 +142,10 @@ def _resolved_row_chain(row: dict, objects_by_id: dict) -> list:
     return _chain_nodes(objects_by_id[row["source"]], up, **cell_nodes)
 
 
-def node_totals_and_links(system, phase, visible_levels: tuple, exclude: tuple = ()):
-    """The Sankey feed: ``({node: kg Quantity}, {(finer, coarser): kg Quantity})`` for one life-cycle
-    phase, folded over the stored ``System.impact_repartition_matrix`` rows — period-total scalars, no
-    hourly data, no model recomputation beyond the (cached) matrix itself.
+def node_totals_and_links_in_kg(system, phase, visible_levels: tuple, exclude: tuple = ()):
+    """The Sankey feed as ``({node: kg float}, {(finer, coarser): kg float})`` for one life-cycle phase,
+    folded over the stored ``System.impact_repartition_matrix`` rows — already period-total kg scalars,
+    with no hourly data or model recomputation beyond the cached matrix itself.
 
     ``visible_levels`` is a tuple of ModelingObject classes; a chain node is visible iff it is an instance
     of one of them — skipping a column = leaving its classes out (adjacent visible nodes link directly).
@@ -160,13 +160,19 @@ def node_totals_and_links(system, phase, visible_levels: tuple, exclude: tuple =
         if row["phase"] != phase.value or isinstance(objects_by_id[row["source"]], exclude):
             continue
         chain = [node for node in _resolved_row_chain(row, objects_by_id) if isinstance(node, visible_levels)]
-        value = row["value"]
+        value = float(row["value"])
         for node in chain:
             node_totals[node] = node_totals.get(node, 0.0) + value
         for index in range(len(chain) - 1):
             pair = (chain[index], chain[index + 1])
             links[pair] = links.get(pair, 0.0) + value
 
+    return node_totals, links
+
+
+def node_totals_and_links(system, phase, visible_levels: tuple, exclude: tuple = ()):
+    """Quantity-valued attribution fold for programmatic consumers."""
+    node_totals, links = node_totals_and_links_in_kg(system, phase, visible_levels, exclude=exclude)
     return ({node: total * u.kg for node, total in node_totals.items()},
             {pair: total * u.kg for pair, total in links.items()})
 

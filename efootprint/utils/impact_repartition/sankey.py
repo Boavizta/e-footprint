@@ -1,12 +1,10 @@
 """Column-walk Sankey renderer over the attribution fold.
 
-The data layer is one ``attribution.node_totals_and_links`` call per life-cycle phase — a fold over the
-stored ``System.impact_repartition_matrix`` period sums, so the fold behind every column/phase/exclusion
-combination touches no hourly data. The breakdown-by-source decoration (``_render_breakdown`` and its
-``_get_source_phase_footprint`` normalization) reads outside the matrix: the per-source footprint slots
-(``energy_footprint``, ``instances_fabrication_footprint``) and each edge device's condensed
-``footprint_breakdown_summary`` — all serialize-flagged, so a loaded session renders every combination
-from stored data. Conservation
+The data layer is one ``attribution.node_totals_and_links_in_kg`` call per life-cycle phase — a float-only
+fold over the stored ``System.impact_repartition_matrix`` period sums, so the fold behind every
+column/phase/exclusion combination touches no hourly data and creates no Pint quantities. Breakdown
+normalization reuses the source totals from that same fold; only each edge device's condensed
+``footprint_breakdown_summary`` is read alongside the matrix. Conservation
 (Σ incoming == node total == Σ outgoing at every node, column sums == phase total minus exclusions) is
 structural in the fold. Everything in this class
 is presentation: the System root and life-cycle-phase
@@ -22,15 +20,10 @@ import math
 from collections.abc import Sequence
 from typing import Any, TypeAlias
 
-from pint import Quantity
-
 import efootprint.all_classes_in_order as class_registry
-from efootprint.abstract_modeling_classes.empty_explainable_object import EmptyExplainableObject
-from efootprint.abstract_modeling_classes.explainable_hourly_quantities import ExplainableHourlyQuantities
-from efootprint.abstract_modeling_classes.explainable_object_base_class import ExplainableObject
 from efootprint.abstract_modeling_classes.modeling_object import ModelingObject
 from efootprint.constants.units import u
-from efootprint.core.attribution import node_totals_and_links
+from efootprint.core.attribution import node_totals_and_links_in_kg
 from efootprint.core.lifecycle_phases import LifeCyclePhases
 from efootprint.utils.display import best_display_unit, format_display_number, format_quantity_for_display, human_readable_unit
 from efootprint.utils.impact_repartition._graph import SankeyGraph
@@ -73,10 +66,11 @@ class ImpactRepartitionSankey:
         self.lifecycle_phase_filter = lifecycle_phase_filter
         self.display_column_information = display_column_information
         self._graph = SankeyGraph(self._truncate_node_label)
-        self.aggregated_node_members: dict[int, list[tuple[str, Quantity]]] = {}
+        self.aggregated_node_members: dict[int, list[tuple[str, float]]] = {}
         self.aggregated_node_classes: dict[int, list[str]] = {}
         self._built: bool = False
-        self._total_system_value: Quantity = 0 * u.kg
+        self._total_system_value: float = 0.0
+        self._source_phase_totals_kg: dict[tuple[ModelingObject, LifeCyclePhases], float] = {}
         self._manual_column_information: list[ColumnInformation] = []
         self._impact_repartition_start_column: int = 0
         self._node_columns: dict[int, int] = {}
@@ -115,15 +109,15 @@ class ImpactRepartitionSankey:
         return self._graph.link_targets
 
     @property
-    def link_values(self) -> list[Quantity]:
+    def link_values(self) -> list[float]:
         return self._graph.link_values
 
     @property
-    def node_total_values(self) -> list[Quantity]:
+    def node_total_values(self) -> list[float]:
         return self._graph.node_total_values
 
     @property
-    def total_system_value(self) -> Quantity:
+    def total_system_value(self) -> float:
         return self._total_system_value
 
     def _truncate_node_label(self, label: str) -> str:
@@ -203,7 +197,8 @@ class ImpactRepartitionSankey:
         self._graph.reset()
         self.aggregated_node_members = {}
         self.aggregated_node_classes = {}
-        self._total_system_value = 0 * u.kg
+        self._total_system_value = 0.0
+        self._source_phase_totals_kg = {}
         self._manual_column_information = []
         self._impact_repartition_start_column = 0
         self._node_columns = {}
@@ -217,20 +212,8 @@ class ImpactRepartitionSankey:
             self, label: str, key: NodeKey, color_key: str | None = None, obj: ModelingObject | None = None) -> int:
         return self._graph.add_node(label, key, color_key=color_key, obj=obj)
 
-    def _add_link(self, source: int, target: int, value: Quantity) -> None:
+    def _add_link(self, source: int, target: int, value: float) -> None:
         self._graph.add_link(source, target, value)
-
-    @staticmethod
-    def _get_total_value(value: Any) -> Quantity:
-        if isinstance(value, EmptyExplainableObject):
-            return 0.0 * u.kg
-        if isinstance(value, ExplainableHourlyQuantities):
-            return value.sum().value
-        if isinstance(value, Quantity):
-            return value
-        if isinstance(value, ExplainableObject):
-            return value.value
-        raise TypeError(f"Unsupported footprint value type: {type(value)}")
 
     def _get_phases(self) -> list[LifeCyclePhases]:
         if self.lifecycle_phase_filter is not None:
@@ -243,20 +226,15 @@ class ImpactRepartitionSankey:
         return phase.value
 
     @staticmethod
-    def _is_positive(quantity: Quantity) -> bool:
-        magnitude = quantity.magnitude
-        if isinstance(magnitude, float) and math.isnan(magnitude):
+    def _is_positive(value_kg: float) -> bool:
+        if math.isnan(value_kg):
             raise ValueError(
-                f"NaN encountered in Sankey value ({quantity}). NaN values in attribution-fold inputs indicate an "
+                f"NaN encountered in Sankey value ({value_kg} kg). NaN values in attribution-fold inputs indicate an "
                 f"upstream attribution bug (e.g. 0/0 in hourly-series division). Fix the source rather than silently "
                 f"filtering the flow.")
-        return magnitude > 0
+        return value_kg > 0
 
-    def _in_reference_unit(self, quantity: Quantity, reference_quantity: Quantity | None = None) -> Quantity:
-        reference = reference_quantity or self.total_system_value
-        return quantity.to(reference.units)
-
-    def _add_flow_to_node(self, parent_idx: int | None, node_idx: int, value: Quantity) -> None:
+    def _add_flow_to_node(self, parent_idx: int | None, node_idx: int, value: float) -> None:
         if parent_idx is not None:
             self._add_link(parent_idx, node_idx, value)
         else:
@@ -270,34 +248,31 @@ class ImpactRepartitionSankey:
         return None
 
     @staticmethod
-    def _get_source_phase_footprint(source: ModelingObject, phase: LifeCyclePhases) -> Any:
-        if phase == LifeCyclePhases.MANUFACTURING:
-            return source.instances_fabrication_footprint
-        return source.energy_footprint
-
-    @staticmethod
-    def _get_footprint_breakdown_by_source(source: ModelingObject, phase: LifeCyclePhases) -> dict[ModelingObject, Any]:
+    def _get_footprint_breakdown_by_source(source: ModelingObject, phase: LifeCyclePhases) -> dict[ModelingObject, float]:
         summary = getattr(source, "footprint_breakdown_summary", None)
         if not isinstance(summary, dict):
             return {}
         components_by_id = {component.id: component for component in source.components}
-        return {components_by_id[component_id]: kg_value * u.kg
+        return {components_by_id[component_id]: float(kg_value)
                 for component_id, kg_value in summary.get(phase.value, {}).items()}
+
+    def _get_source_phase_total_kg(self, source: ModelingObject, phase: LifeCyclePhases) -> float:
+        return self._source_phase_totals_kg.get((source, phase), 0.0)
 
     def _render_breakdown(
             self, source: ModelingObject, parent_idx: int | None, phase: LifeCyclePhases, phase_context: str | None,
-            flow_value: Quantity) -> None:
+            flow_value: float) -> None:
         """Decorate a flow into ``source`` with its breakdown-by-source children (e.g. EdgeDevice →
         EdgeComponent, the orthogonal hardware axis), scaled by the flow's share of the source's eager
-        phase footprint."""
-        source_phase_footprint = self._get_total_value(self._get_source_phase_footprint(source, phase))
+        phase total from the attribution-matrix fold."""
+        source_phase_footprint = self._get_source_phase_total_kg(source, phase)
         if not self._is_positive(source_phase_footprint):
             return
 
         for breakdown_source, breakdown_value in self._get_footprint_breakdown_by_source(source, phase).items():
             if breakdown_source is source or self._is_excluded(breakdown_source) or self._should_skip_object(breakdown_source):
                 continue
-            breakdown_source_value = self._get_total_value(breakdown_value) * flow_value / source_phase_footprint
+            breakdown_source_value = breakdown_value * flow_value / source_phase_footprint
             if not self._is_positive(breakdown_source_value):
                 continue
             breakdown_idx = self._add_node(
@@ -310,7 +285,7 @@ class ImpactRepartitionSankey:
             self._add_flow_to_node(parent_idx, breakdown_idx, breakdown_source_value)
 
     def _render_source_flow(
-            self, source: ModelingObject, value: Quantity, phase: LifeCyclePhases, phase_context: str | None,
+            self, source: ModelingObject, value: float, phase: LifeCyclePhases, phase_context: str | None,
             parent_idx: int | None) -> None:
         """One flow arriving at an impact source: a skipped source is replaced by its breakdown children
         (dropped if it has none); otherwise the flow passes through the source's category node (when the
@@ -356,13 +331,13 @@ class ImpactRepartitionSankey:
 
         routed_by_own_links = {}
         for (finer, _), value in fold_links.items():
-            routed_by_own_links[finer] = routed_by_own_links.get(finer, 0 * u.kg) + value
+            routed_by_own_links[finer] = routed_by_own_links.get(finer, 0.0) + value
         for node, total in fold_node_totals.items():
-            remainder = total - routed_by_own_links.get(node, 0 * u.kg)
+            remainder = total - routed_by_own_links.get(node, 0.0)
             # Atom values are float32-backed, so a node's total and the sum of its own links carry independent
             # rounding noise (observed up to ~4e-8 relative): only a materially positive remainder is a real
             # bare-chain share.
-            if not self._is_positive(remainder) or remainder.magnitude <= total.magnitude * 1e-6:
+            if not self._is_positive(remainder) or remainder <= total * 1e-6:
                 continue
             if isinstance(node, source_classes):
                 self._render_source_flow(node, remainder, phase, phase_context, parent_idx)
@@ -391,14 +366,14 @@ class ImpactRepartitionSankey:
         phase_data = {}
         phase_totals = {}
         for phase in phases:
-            fold_node_totals, fold_links = node_totals_and_links(
+            node_totals, links = node_totals_and_links_in_kg(
                 self.system, phase, visible_levels, exclude=excluded_sources)
-            node_totals = {node: self._get_total_value(value) for node, value in fold_node_totals.items()}
-            links = {pair: self._get_total_value(value) for pair, value in fold_links.items()}
             phase_data[phase] = (node_totals, links)
+            self._source_phase_totals_kg.update(
+                {(node, phase): total for node, total in node_totals.items() if isinstance(node, source_classes)})
             phase_totals[phase] = sum(
-                (total for node, total in node_totals.items() if isinstance(node, source_classes)), start=0 * u.kg)
-        self._total_system_value = sum(phase_totals.values(), start=0 * u.kg)
+                (total for node, total in node_totals.items() if isinstance(node, source_classes)), start=0.0)
+        self._total_system_value = sum(phase_totals.values(), start=0.0)
 
         current_column_index = 1
         root_idx = None
@@ -525,7 +500,7 @@ class ImpactRepartitionSankey:
         threshold_value = self.total_system_value * self.aggregation_threshold_percent / 100
         aggregate_groups = {}
         for node_idx in range(len(self.node_labels)):
-            if self._in_reference_unit(self.node_total_values[node_idx]).magnitude >= self._in_reference_unit(threshold_value).magnitude:
+            if self.node_total_values[node_idx] >= threshold_value:
                 continue
             column = self._node_columns.get(node_idx)
             if column is None:
@@ -573,7 +548,7 @@ class ImpactRepartitionSankey:
         for column, group in aggregate_groups.items():
             group_members = sorted(
                 group,
-                key=lambda idx: self._in_reference_unit(graph_snapshot.node_total_values[idx]).magnitude,
+                key=lambda idx: graph_snapshot.node_total_values[idx],
                 reverse=True,
             )
             aggregate_idx = self._add_node(
@@ -590,7 +565,7 @@ class ImpactRepartitionSankey:
             for old_idx in group_members:
                 old_to_new_indices[old_idx] = aggregate_idx
 
-        combined_links: dict[tuple[int, int], Quantity] = {}
+        combined_links: dict[tuple[int, int], float] = {}
         for source, target, value in graph_snapshot.links:
             new_source = old_to_new_indices[source]
             new_target = old_to_new_indices[target]
@@ -626,19 +601,17 @@ class ImpactRepartitionSankey:
         return f"rgba({round(red * 255)},{round(green * 255)},{round(blue * 255)},0.8)"
 
     def get_root_display_unit(self):
-        return best_display_unit(self._total_system_value)
+        return best_display_unit(self._total_system_value * u.kg)
 
-    def format_value_in_root_unit(self, quantity: Quantity) -> str:
-        display_quantity = format_quantity_for_display(quantity.to(self.get_root_display_unit()))
+    def format_value_in_root_unit(self, value_kg: float) -> str:
+        display_quantity = format_quantity_for_display((value_kg * u.kg).to(self.get_root_display_unit()))
         magnitude = format_display_number(display_quantity.magnitude)
         return f"{magnitude} {human_readable_unit(display_quantity.units)}"
 
-    def get_percentage_of_total(self, quantity: Quantity) -> float:
-        display_unit = self.get_root_display_unit()
-        total = self.total_system_value.to(display_unit).magnitude
-        if total <= 0:
+    def get_percentage_of_total(self, value_kg: float) -> float:
+        if self.total_system_value <= 0:
             return 0.0
-        return quantity.to(display_unit).magnitude / total * 100
+        return value_kg / self.total_system_value * 100
 
     def _build_hover_labels(self) -> list[str]:
         node_hover = []
@@ -786,7 +759,9 @@ class ImpactRepartitionSankey:
             node_colors[self._spacer_original_source.get(source, source)].replace("0.8)", "0.3)")
             for source in self.link_sources
         ]
-        link_values_for_display = [value.to(self.get_root_display_unit()).magnitude for value in self.link_values]
+        display_unit = self.get_root_display_unit()
+        kg_to_display_unit = (1 * u.kg).to(display_unit).magnitude
+        link_values_for_display = [value * kg_to_display_unit for value in self.link_values]
         display_node_colors = [
             color.replace("0.8)", "0.3)") if idx in self._spacer_nodes else color
             for idx, color in enumerate(node_colors)

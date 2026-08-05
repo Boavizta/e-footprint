@@ -67,8 +67,8 @@ def build_sankey(system, **kwargs):
 def incoming_and_outgoing_by_node(sankey):
     incoming, outgoing = {}, {}
     for source, target, value in zip(sankey.link_sources, sankey.link_targets, sankey.link_values):
-        incoming[target] = incoming.get(target, 0 * u.kg) + value
-        outgoing[source] = outgoing.get(source, 0 * u.kg) + value
+        incoming[target] = incoming.get(target, 0.0) + value
+        outgoing[source] = outgoing.get(source, 0.0) + value
     return incoming, outgoing
 
 
@@ -82,8 +82,8 @@ class TestImpactRepartitionSankeyConservation(TestCase):
     attribution fold, so per-node link balance and per-column totals are structural and must never drift."""
 
     def assert_kg_equal(self, expected, actual, msg=None):
-        expected_kg = expected.to(u.kg).magnitude
-        actual_kg = actual.to(u.kg).magnitude
+        expected_kg = expected.to(u.kg).magnitude if hasattr(expected, "to") else expected
+        actual_kg = actual.to(u.kg).magnitude if hasattr(actual, "to") else actual
         scale = max(abs(expected_kg), 1.0)
         self.assertAlmostEqual(0, (expected_kg - actual_kg) / scale, places=4, msg=msg)
 
@@ -126,7 +126,7 @@ class TestImpactRepartitionSankeyConservation(TestCase):
                 for idx, column in sankey._node_columns.items():
                     if idx in sankey._breakdown_node_indices:
                         continue
-                    column_totals.setdefault(column, 0 * u.kg)
+                    column_totals.setdefault(column, 0.0)
                     column_totals[column] += sankey.node_total_values[idx]
                 for column in range(sankey._node_columns[root_idx] + 1, last_full_column + 1):
                     self.assert_kg_equal(
@@ -134,7 +134,7 @@ class TestImpactRepartitionSankeyConservation(TestCase):
                         msg=f"Column {column} doesn't conserve the system total ({name})")
 
                 leaf_total = sum(
-                    (sankey.node_total_values[idx] for idx in sankey._leaf_node_indices), start=0 * u.kg)
+                    (sankey.node_total_values[idx] for idx in sankey._leaf_node_indices), start=0.0)
                 self.assert_kg_equal(sankey.total_system_value, leaf_total,
                                      msg=f"Leaf nodes don't conserve the system total ({name})")
 
@@ -180,7 +180,10 @@ class TestImpactRepartitionSankeyConservation(TestCase):
         excluded = build_sankey(system, excluded_object_types=["Device"])
 
         device_total = (device.instances_fabrication_footprint.sum() + device.energy_footprint.sum()).value
-        self.assert_kg_equal(baseline.total_system_value - device_total, excluded.total_system_value)
+        self.assert_kg_equal(
+            baseline.total_system_value - device_total.to(u.kg).magnitude,
+            excluded.total_system_value,
+        )
 
         baseline_totals = node_totals_by_key(baseline)
         excluded_totals = node_totals_by_key(excluded)
@@ -203,7 +206,7 @@ class TestImpactRepartitionSankeyConservation(TestCase):
         sankey = build_sankey(system, skipped_impact_repartition_classes=skipped)
 
         self.assert_kg_equal(eager_system_total(system), sankey.total_system_value)
-        leaf_total = sum((sankey.node_total_values[idx] for idx in sankey._leaf_node_indices), start=0 * u.kg)
+        leaf_total = sum((sankey.node_total_values[idx] for idx in sankey._leaf_node_indices), start=0.0)
         self.assert_kg_equal(sankey.total_system_value, leaf_total,
                              msg="Leaf nodes don't conserve the system total under aggressive column skipping")
 
@@ -218,7 +221,10 @@ class TestImpactRepartitionSankeyConservation(TestCase):
         excluded = build_sankey(system, excluded_object_types=["ExternalAPI"])
 
         api_total = (api_server.instances_fabrication_footprint.sum() + api_server.energy_footprint.sum()).value
-        self.assert_kg_equal(baseline.total_system_value - api_total, excluded.total_system_value)
+        self.assert_kg_equal(
+            baseline.total_system_value - api_total.to(u.kg).magnitude,
+            excluded.total_system_value,
+        )
         self.assertIn((api_server.external_api.id, "Usage"), node_totals_by_key(baseline))
         self.assertNotIn((api_server.external_api.id, "Usage"), node_totals_by_key(excluded))
 
@@ -273,10 +279,10 @@ class TestImpactRepartitionSankeyConservation(TestCase):
             breakdown_total = sum(
                 (value for source, target, value in zip(
                     sankey.link_sources, sankey.link_targets, sankey.link_values)
-                 if source == device_idx and target in sankey._breakdown_node_indices), start=0 * u.kg)
-            self.assertGreater(breakdown_total.magnitude, 0)
+                 if source == device_idx and target in sankey._breakdown_node_indices), start=0.0)
+            self.assertGreater(breakdown_total, 0)
             self.assertAlmostEqual(
-                1, (breakdown_total / sankey.node_total_values[device_idx]).to(u.dimensionless).magnitude,
+                1, breakdown_total / sankey.node_total_values[device_idx],
                 places=4)
 
     def test_skipped_source_classes_keep_totals_and_drop_leaves(self):
@@ -338,11 +344,11 @@ class TestImpactRepartitionSankeyPresentation(TestCase):
 
     @staticmethod
     def _kg(value):
-        return value * u.kg
+        return float(value)
 
     @staticmethod
     def _tonne(value):
-        return value * u.tonne
+        return float(value) * 1000
 
     @staticmethod
     def _make_object(name):
@@ -407,7 +413,7 @@ class TestImpactRepartitionSankeyPresentation(TestCase):
         self.assertEqual(2, sankey.node_labels.count("Other (2)"))
         self.assertEqual(2, len(sankey.aggregated_node_members))
         links_to_aggregates = sorted(
-            round(value.to(u.tonne).magnitude, 2)
+            round(value / 1000, 2)
             for target, value in zip(sankey.link_targets, sankey.link_values)
             if target in sankey.aggregated_node_members)
         self.assertEqual([0.18, 0.18], links_to_aggregates)
@@ -575,7 +581,7 @@ class TestImpactRepartitionSankeyPresentation(TestCase):
         # Positive and non-positive scalars still work normally.
         self.assertTrue(sankey._is_positive(self._kg(1.0)))
         self.assertFalse(sankey._is_positive(self._kg(0.0)))
-        self.assertFalse(math.isnan(self._kg(1.0).magnitude))
+        self.assertFalse(math.isnan(self._kg(1.0)))
 
     def test_node_labels_are_truncated_but_hover_keeps_full_name(self):
         """Test label truncation preserves full name in hover."""
@@ -698,7 +704,7 @@ class TestImpactRepartitionSankeyPresentation(TestCase):
         device_total = (device.instances_fabrication_footprint.sum() + device.energy_footprint.sum()).value
         device_idx = sankey.node_indices[(device.id, None)]
         self.assertAlmostEqual(
-            device_total.to(u.kg).magnitude, sankey.node_total_values[device_idx].to(u.kg).magnitude, places=2)
+            device_total.to(u.kg).magnitude, sankey.node_total_values[device_idx], places=2)
 
     def test_skip_object_category_footprint_split_removes_category_nodes(self):
         """Test that skip_object_category_footprint_split=True omits category grouping."""

@@ -11,7 +11,8 @@ from efootprint.abstract_modeling_classes.source_objects import SourceValue
 from efootprint.builders.time_builders import create_source_hourly_values_from_list
 from efootprint.constants.units import u
 from efootprint.core.attribution import (
-    atoms, atoms_of, attributed_footprint, footprint_per_node, footprint_per_node_per_source, node_totals_and_links)
+    atoms, atoms_of, attributed_footprint, footprint_per_node, footprint_per_node_per_source,
+    node_totals_and_links, node_totals_and_links_in_kg)
 from efootprint.core.country import Country
 from efootprint.core.hardware.device import Device
 from efootprint.core.hardware.network import Network
@@ -96,6 +97,21 @@ class TestAttributionFold(TestCase):
                     assert_hourly_quantities_equal(
                         self, total, sum(outgoing, start=0 * u.kg),
                         msg=f"Outgoing links don't sum to {node.name} total in {phase.value}")
+
+    def test_kg_fold_matches_quantity_fold_without_allocating_quantities(self):
+        """The Sankey-specific fold exposes the matrix's canonical kg scalars unchanged."""
+        quantity_totals, quantity_links = node_totals_and_links(
+            self.system, LifeCyclePhases.USAGE, ALL_LEVELS)
+        kg_totals, kg_links = node_totals_and_links_in_kg(
+            self.system, LifeCyclePhases.USAGE, ALL_LEVELS)
+
+        self.assertTrue(all(isinstance(value, float) for value in (*kg_totals.values(), *kg_links.values())))
+        self.assertEqual(quantity_totals.keys(), kg_totals.keys())
+        self.assertEqual(quantity_links.keys(), kg_links.keys())
+        for node, total_kg in kg_totals.items():
+            self.assertEqual(quantity_totals[node].to(u.kg).magnitude, total_kg)
+        for edge, value_kg in kg_links.items():
+            self.assertEqual(quantity_links[edge].to(u.kg).magnitude, value_kg)
 
     def test_fold_column_sums_equal_phase_total_at_every_level(self):
         """Test that summing node totals over each level recovers the full atom sum (columns conserve)."""
