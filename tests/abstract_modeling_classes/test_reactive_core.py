@@ -1,6 +1,7 @@
 import unittest
 from abc import abstractmethod
 from collections import Counter
+import threading
 from unittest import TestCase
 
 from efootprint.abstract_modeling_classes.empty_explainable_object import EmptyExplainableObject
@@ -502,6 +503,89 @@ class TestComputationObserver(TestCase):
 
         self.assertEqual([self.a, c], outer_observed)
         self.assertEqual([self.b], inner_observed)
+
+    def test_overlapping_thread_scopes_keep_callbacks_context_local(self):
+        """Test concurrent observer scopes report only computations made in their own context."""
+        first_entered = threading.Event()
+        second_entered = threading.Event()
+        first_exited = threading.Event()
+        first_observed = []
+        second_observed = []
+        thread_errors = []
+        first_slot = ReactiveSlot("first thread", lambda: 1)
+        second_slot = ReactiveSlot("second thread", lambda: 2)
+
+        def run_first_scope():
+            try:
+                with observe_computations(first_observed.append):
+                    first_entered.set()
+                    self.assertTrue(second_entered.wait(timeout=1))
+                    first_slot.pull()
+                first_exited.set()
+            except BaseException as error:
+                thread_errors.append(error)
+
+        def run_second_scope():
+            try:
+                self.assertTrue(first_entered.wait(timeout=1))
+                with observe_computations(second_observed.append):
+                    second_entered.set()
+                    self.assertTrue(first_exited.wait(timeout=1))
+                    second_slot.pull()
+            except BaseException as error:
+                thread_errors.append(error)
+
+        first_thread = threading.Thread(target=run_first_scope)
+        second_thread = threading.Thread(target=run_second_scope)
+        first_thread.start()
+        second_thread.start()
+        first_thread.join(timeout=2)
+        second_thread.join(timeout=2)
+
+        self.assertFalse(first_thread.is_alive())
+        self.assertFalse(second_thread.is_alive())
+        self.assertEqual([], thread_errors)
+        self.assertEqual([first_slot], first_observed)
+        self.assertEqual([second_slot], second_observed)
+
+    def test_overlapping_thread_scopes_leave_no_stale_observer(self):
+        """Test non-LIFO exits across contexts cannot restore an observer after its scope ended."""
+        first_entered = threading.Event()
+        second_entered = threading.Event()
+        first_exited = threading.Event()
+        first_observed = []
+        thread_errors = []
+
+        def run_first_scope():
+            try:
+                with observe_computations(first_observed.append):
+                    first_entered.set()
+                    self.assertTrue(second_entered.wait(timeout=1))
+                first_exited.set()
+            except BaseException as error:
+                thread_errors.append(error)
+
+        def run_second_scope():
+            try:
+                self.assertTrue(first_entered.wait(timeout=1))
+                with observe_computations(lambda _slot: None):
+                    second_entered.set()
+                    self.assertTrue(first_exited.wait(timeout=1))
+            except BaseException as error:
+                thread_errors.append(error)
+
+        first_thread = threading.Thread(target=run_first_scope)
+        second_thread = threading.Thread(target=run_second_scope)
+        first_thread.start()
+        second_thread.start()
+        first_thread.join(timeout=2)
+        second_thread.join(timeout=2)
+        ReactiveSlot("after overlapping scopes", lambda: 3).pull()
+
+        self.assertFalse(first_thread.is_alive())
+        self.assertFalse(second_thread.is_alive())
+        self.assertEqual([], thread_errors)
+        self.assertEqual([], first_observed)
 
     def test_slot_exposes_non_user_authored_diagnostic_name(self):
         """Test observer diagnostics can identify a calculation without exposing object or dict-key ids."""

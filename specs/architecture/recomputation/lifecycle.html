@@ -47,7 +47,7 @@ self.country = country</code></pre>
 </ol>
 
 <h3 id="computation-observer">Scoped completion observation</h3>
-<p><code>observe_computations(callback)</code> installs one process-local callback for an explicit scope. Every cache-miss computation, including nested scalar, computed-dict element and key-set, and computed-structure slots, calls it after dependency edges and the cached value are coherent; cache hits emit nothing. Nested scopes temporarily replace the current callback and restore it on normal or exceptional exit.</p>
+<p><code>observe_computations(callback)</code> installs one context-local callback for an explicit scope. Every cache-miss computation, including nested scalar, computed-dict element and key-set, and computed-structure slots, calls it after dependency edges and the cached value are coherent; cache hits emit nothing. Nested and overlapping thread/task scopes remain isolated, temporarily replace only their context's current callback, and restore it on normal or exceptional exit.</p>
 <div class="rule"><b>Observer boundary:</b> the callback receives the completed <code>ReactiveSlot</code> and may use its privacy-safe <code>diagnostic_name</code>. It must not mutate the model, pull reactive values, retain the slot, or use the full slot <code>name</code>, which can contain modeled object ids. If the callback raises, the engine drops and unlinks the new value, restores the slot's previous dependency edges, and re-raises; already-successful nested child caches remain available for retry.</div>
 
 <h2 id="memory">2 · Concrete in-memory state after the first read</h2>
