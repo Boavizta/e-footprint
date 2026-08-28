@@ -19,6 +19,7 @@ from .graph import (
     instance_slot_registry,
     invalidate,
     invalidate_node_if_exists,
+    observe_computations,
     peek_instance_slot_registry,
     record_calculus_dependency,
     record_calculus_edges_from_ancestry,

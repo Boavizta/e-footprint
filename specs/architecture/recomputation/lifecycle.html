@@ -46,6 +46,10 @@ self.country = country</code></pre>
 <li>On successful return, <code>ReactiveSlot.replace_dependencies()</code> replaces the computing slot's old dependency sets and adds the computing slot to each input node's reverse <code>_dependents</code> set. <code>attach_cached_value()</code> then stores the result in the computing slot's <code>_value</code>.</li>
 </ol>
 
+<h3 id="computation-observer">Scoped completion observation</h3>
+<p><code>observe_computations(callback)</code> installs one process-local callback for an explicit scope. Every cache-miss computation, including nested scalar, computed-dict element and key-set, and computed-structure slots, calls it after dependency edges and the cached value are coherent; cache hits emit nothing. Nested scopes temporarily replace the current callback and restore it on normal or exceptional exit.</p>
+<div class="rule"><b>Observer boundary:</b> the callback receives the completed <code>ReactiveSlot</code> and may use its privacy-safe <code>diagnostic_name</code>. It must not mutate the model, pull reactive values, retain the slot, or use the full slot <code>name</code>, which can contain modeled object ids. If the callback raises, the engine drops and unlinks the new value, restores the slot's previous dependency edges, and re-raises; already-successful nested child caches remain available for retry.</div>
+
 <h2 id="memory">2 · Concrete in-memory state after the first read</h2>
 <p>This is schematic Python using the real private field names; <code>S_*</code> names below are explanatory labels, not additional objects created by the engine.</p>
 <pre><code>pattern.__dict__["_reactive_slots"] == {
@@ -151,6 +155,7 @@ S_utc._calculus_dependencies == {S_starts, S_timezone}  # topology retained</cod
 <h2 id="correctness">Correctness invariants</h2><ul>
 <li><b>Edges describe real reads.</b> Wave pruning is sound only because recorded edges come from values or relationships the computation actually consumed.</li>
 <li><b>Edges refresh atomically on success.</b> A changed conditional branch cannot retain an obsolete dependency forever.</li>
+<li><b>Observation sees coherent units.</b> Completion callbacks run only after cache and edge commit; callback failure reverses that unit's commit without discarding completed child caches.</li>
 <li><b>Failure favors over-invalidation.</b> Previous edges survive a failed getter; its value does not.</li>
 <li><b>Marked implies dependents marked.</b> This—not cached/void state—is the deletion-wave pruning invariant.</li>
 <li><b>Getters are read-only.</b> Writes during computation are rejected.</li>

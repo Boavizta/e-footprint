@@ -11,7 +11,7 @@ from efootprint.abstract_modeling_classes.reactive_core import (
     CircularDependencyError, ComputationPurpose, ReactiveSlot, ReverseCollection, ReverseLink,
     add_computed_attribute, computation_slots_for_purpose, computed_attribute, computed_dict, computed_slots,
     computed_structure, computed_structures, invalidate, record_calculus_dependency,
-    record_structural_dependency, reverse_slots)
+    observe_computations, record_structural_dependency, reverse_slots)
 from efootprint.abstract_modeling_classes.source_objects import SourceValue
 from efootprint.constants.units import u
 
@@ -98,6 +98,18 @@ class ReactiveCorePurposeHolder(ModelingObject):
     @computed_attribute(purposes={ComputationPurpose.FOOTPRINT})
     def unmaterialized_footprint(self):
         return self.power.copy().set_label("Unmaterialized footprint")
+
+
+class ReactiveCoreObserverGuard(ModelingObject):
+    default_values = {"power": SourceValue(1 * u.W)}
+
+    def __init__(self, name, power: ExplainableQuantity):
+        super().__init__(name)
+        self.power = power
+
+    @computed_attribute(guard=True)
+    def power_validation(self):
+        return self.power.copy().set_label("Validated power")
 
 
 class TestComputedAttribute(TestCase):
@@ -425,6 +437,163 @@ class TestReactiveSlotLifecycle(TestCase):
 
         self.assertEqual(42, self.b.pull())
         self.assertEqual(0, self.compute_counts["b"])
+
+
+class TestComputationObserver(TestCase):
+    def setUp(self):
+        self.compute_counts = Counter()
+        self.values = {"a": 1, "b": 2}
+        self.a = _source_slot("a", self.values, self.compute_counts)
+        self.b = _summing_slot("b", [self.a], self.compute_counts)
+
+    def test_observer_reports_nested_cache_misses_in_completion_order_but_not_cached_reads(self):
+        """Test nested successful computations notify from child to parent and cached reads stay silent."""
+        observed = []
+
+        with observe_computations(observed.append):
+            self.assertEqual(1, self.b.pull())
+            self.assertEqual(1, self.b.pull())
+
+        self.assertEqual([self.a, self.b], observed)
+
+    def test_observer_reports_computed_attribute_structure_and_dict_slots(self):
+        """Test scalar, structure, computed-dict element, and computed-dict key-set completions are observed."""
+        leaf_1 = ReactiveCoreLeaf("observer leaf 1", SourceValue(1 * u.W))
+        leaf_2 = ReactiveCoreLeaf("observer leaf 2", SourceValue(2 * u.W))
+        holder = ReactiveCoreHolder("observer holder", [leaf_1, leaf_2])
+        projection = ReactiveCoreProjectionHolder("observer projection", leaf=leaf_1)
+        observed = []
+
+        with observe_computations(observed.append):
+            _ = leaf_1.double_power
+            _ = projection.projection_total
+            _ = holder.value_per_leaf
+
+        self.assertIn(ReactiveCoreLeaf.double_power.slot(leaf_1), observed)
+        self.assertIn(computed_structures(ReactiveCoreProjectionHolder)["raw_projection"].slot(projection), observed)
+        self.assertIn(computed_structures(ReactiveCoreProjectionHolder)["projection_total"].slot(projection), observed)
+        self.assertIn(ReactiveCoreHolder.value_per_leaf.sub_slot(holder, leaf_1), observed)
+        self.assertIn(ReactiveCoreHolder.value_per_leaf.sub_slot(holder, leaf_2), observed)
+        self.assertIn(ReactiveCoreHolder.value_per_leaf.slot(holder), observed)
+
+    def test_nested_scopes_restore_previous_observer_on_normal_and_exceptional_exit(self):
+        """Test nested scopes replace then restore observers, including when the inner block raises."""
+        outer_observed = []
+        inner_observed = []
+        c = _source_slot("c", {"c": 3}, self.compute_counts)
+
+        with observe_computations(outer_observed.append):
+            self.a.pull()
+            with self.assertRaises(ValueError):
+                with observe_computations(inner_observed.append):
+                    self.b.pull()
+                    raise ValueError("leave inner scope")
+            c.pull()
+
+        self.assertEqual([self.a, c], outer_observed)
+        self.assertEqual([self.b], inner_observed)
+
+    def test_slot_exposes_non_user_authored_diagnostic_name(self):
+        """Test observer diagnostics can identify a calculation without exposing object or dict-key ids."""
+        leaf = ReactiveCoreLeaf("private model label", SourceValue(1 * u.W))
+        holder = ReactiveCoreHolder("private holder label", [leaf])
+        observed = []
+
+        with observe_computations(observed.append):
+            _ = holder.value_per_leaf
+
+        element_slot = ReactiveCoreHolder.value_per_leaf.sub_slot(holder, leaf)
+        self.assertEqual("value_per_leaf", element_slot.diagnostic_name)
+        self.assertNotIn(leaf.id, element_slot.diagnostic_name)
+        self.assertNotIn(holder.id, element_slot.diagnostic_name)
+
+    def test_raising_observer_restores_old_edges_and_leaves_new_child_cache_retryable(self):
+        """Test observer failure drops the parent cache, restores its prior edges, and keeps successful children."""
+        switches = {"read_a": True}
+
+        def conditional_getter():
+            source = self.a if switches["read_a"] else self.b
+            value = source.pull()
+            record_calculus_dependency(source)
+            return value
+
+        conditional = ReactiveSlot("conditional", conditional_getter)
+        self.assertEqual(1, conditional.pull())
+        invalidate(conditional)
+        switches["read_a"] = False
+
+        def reject_parent(slot):
+            if slot is conditional:
+                raise ValueError("observer rejected")
+
+        with self.assertRaises(ValueError):
+            with observe_computations(reject_parent):
+                conditional.pull()
+
+        self.assertFalse(conditional.has_cached_value)
+        self.assertTrue(self.b.has_cached_value)
+        self.assertEqual(frozenset([self.a]), conditional.calculus_dependencies)
+        self.assertEqual(frozenset([self.b, conditional]), self.a.dependents)
+        self.assertNotIn(conditional, self.b.dependents)
+        self.assertEqual(1, conditional.pull())
+        self.assertEqual(1, self.compute_counts["b"])
+
+    def test_raising_observer_unlinks_computed_value_before_retry(self):
+        """Test callback failure detaches a computed value and leaves its scalar slot retryable."""
+        leaf = ReactiveCoreLeaf("observer failure leaf", SourceValue(3 * u.W))
+        produced_values = []
+
+        def reject(slot):
+            produced_values.append(slot._value)
+            raise ValueError("observer rejected")
+
+        with self.assertRaises(ValueError):
+            with observe_computations(reject):
+                _ = leaf.double_power
+
+        self.assertIsNone(produced_values[0].modeling_obj_container)
+        self.assertFalse(ReactiveCoreLeaf.double_power.slot(leaf).has_cached_value)
+        self.assertEqual(6, leaf.double_power.magnitude)
+
+    def test_computed_dict_parent_failure_preserves_completed_element_caches(self):
+        """Test rejecting a computed-dict key-set completion leaves successful element slots cached."""
+        leaf = ReactiveCoreLeaf("observer dict leaf", SourceValue(2 * u.W))
+        holder = ReactiveCoreHolder("observer dict holder", [leaf])
+        descriptor = ReactiveCoreHolder.value_per_leaf
+        parent_slot = descriptor.slot(holder)
+
+        def reject_parent(slot):
+            if slot is parent_slot:
+                raise ValueError("observer rejected")
+
+        with self.assertRaises(ValueError):
+            with observe_computations(reject_parent):
+                _ = holder.value_per_leaf
+
+        self.assertFalse(parent_slot.has_cached_value)
+        self.assertTrue(descriptor.sub_slot(holder, leaf).has_cached_value)
+        self.assertEqual(4, holder.value_per_leaf[leaf].magnitude)
+
+    def test_observer_failure_during_guard_recomputation_preserves_transactional_rollback(self):
+        """Test a rejected guard completion rolls an input edit back and restored guards remain usable."""
+        holder = ReactiveCoreObserverGuard("observer guarded holder", SourceValue(3 * u.W))
+        self.assertEqual(3, holder.power_validation.magnitude)
+        callbacks = 0
+
+        def reject_once(slot):
+            nonlocal callbacks
+            if slot is ReactiveCoreObserverGuard.power_validation.slot(holder):
+                callbacks += 1
+                if callbacks == 1:
+                    raise ValueError("observer rejected")
+
+        with self.assertRaises(ValueError):
+            with observe_computations(reject_once):
+                holder.power = SourceValue(5 * u.W)
+
+        self.assertEqual(3, holder.power.magnitude)
+        self.assertEqual(3, holder.power_validation.magnitude)
+        self.assertEqual(2, callbacks)
 
 
 class TestInvalidationWave(TestCase):

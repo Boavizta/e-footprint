@@ -12,7 +12,8 @@ from efootprint.builders.time_builders import create_source_hourly_values_from_l
 from efootprint.constants.units import u
 from efootprint.core.attribution import (
     atoms, atoms_of, attributed_footprint, footprint_per_node, footprint_per_node_per_source,
-    node_totals_and_links, node_totals_and_links_by_phase_in_kg, node_totals_and_links_in_kg)
+    impact_repartition_rows_cache_coverage, node_totals_and_links, node_totals_and_links_by_phase_in_kg,
+    node_totals_and_links_in_kg)
 from efootprint.core.country import Country
 from efootprint.core.hardware.device import Device
 from efootprint.core.hardware.network import Network
@@ -36,6 +37,43 @@ ALL_LEVELS = (Device, UsageJourneyStep, UsageJourney, UsagePattern, Country)
 def structure_slot(mod_obj, attr_name):
     """The reactive slot behind a computed structure."""
     return computed_structures(mod_obj.efootprint_class)[attr_name].slot(mod_obj)
+
+
+class TestAttributionCacheCoverage(TestCase):
+    def setUp(self):
+        self.device = Device.from_defaults("coverage device")
+        self.network = Network("coverage network", SourceValue(0.05 * u.kWh / u.GB))
+        step = UsageJourneyStep("coverage step", SourceValue(20 * u.min), [])
+        journey = UsageJourney("coverage journey", [step])
+        country = Country(
+            "coverage country", "COV", SourceValue(80 * u.g / u.kWh), ExplainableTimezone(pytz.utc, "UTC timezone"))
+        usage_pattern = UsagePattern(
+            "coverage usage pattern", journey, [self.device], self.network, country,
+            create_source_hourly_values_from_list([1, 2], datetime(2026, 1, 1)))
+        self.system = System("coverage system", [usage_pattern], edge_usage_patterns=[])
+
+    def test_coverage_is_peek_only_for_fresh_source_slots(self):
+        """Test fresh coverage returns no cached sources without creating or computing row slots."""
+        device_registry_before = self.device.__dict__.get("_reactive_slots", {}).copy()
+        network_registry_before = self.network.__dict__.get("_reactive_slots", {}).copy()
+
+        self.assertEqual((0, 2), impact_repartition_rows_cache_coverage(self.system))
+
+        self.assertEqual(device_registry_before, self.device.__dict__.get("_reactive_slots", {}))
+        self.assertEqual(network_registry_before, self.network.__dict__.get("_reactive_slots", {}))
+
+    def test_coverage_counts_partially_cached_source_rows(self):
+        """Test coverage counts exactly the source row slots already materialized."""
+        _ = self.device.impact_repartition_rows
+
+        self.assertEqual((1, 2), impact_repartition_rows_cache_coverage(self.system))
+        self.assertIsNone(computed_structures(Network)["impact_repartition_rows"].peek(self.network))
+
+    def test_coverage_counts_all_sources_after_matrix_materialization(self):
+        """Test materializing the system matrix makes every required source row slot cached."""
+        _ = self.system.impact_repartition_matrix
+
+        self.assertEqual((2, 2), impact_repartition_rows_cache_coverage(self.system))
 
 
 class TestAttributionFold(TestCase):

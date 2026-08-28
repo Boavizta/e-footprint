@@ -25,7 +25,7 @@ from efootprint.abstract_modeling_classes.contextual_modeling_object_attribute i
 from efootprint.abstract_modeling_classes.empty_explainable_object import EmptyExplainableObject
 from efootprint.abstract_modeling_classes.modeling_object import ModelingObject
 from efootprint.abstract_modeling_classes.reactive_core import (
-    computed_structure, record_calculus_edges_from_ancestry)
+    computed_structure, computed_structures, record_calculus_edges_from_ancestry)
 from efootprint.constants.units import u
 from efootprint.core.lifecycle_phases import LifeCyclePhases
 
@@ -145,6 +145,20 @@ def _underlying_modeling_object(obj: ModelingObject) -> ModelingObject:
     costs.
     """
     return obj._value if isinstance(obj, ContextualModelingObjectAttribute) else obj
+
+
+def impact_repartition_rows_cache_coverage(system) -> tuple[int, int]:
+    """Return cached and total attribution-source row slots required by the system matrix.
+
+    This is a peek-only progress surface: relationship proxies are unwrapped before the descriptor
+    lookup, and a missing ``impact_repartition_rows`` value remains uncomputed.
+    """
+    sources = [_underlying_modeling_object(source) for source in attribution_sources(system)]
+    cached = sum(
+        computed_structures(source.efootprint_class)["impact_repartition_rows"].peek(source) is not None
+        for source in sources
+    )
+    return cached, len(sources)
 
 
 @dataclass(frozen=True)

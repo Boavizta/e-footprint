@@ -11,11 +11,34 @@ _VOID = object()
 
 _compute_stack: contextvars.ContextVar[tuple] = contextvars.ContextVar("reactive_compute_stack", default=())
 
+_computation_observer = None
+
 _invalidation_collector: contextvars.ContextVar[set | None] = contextvars.ContextVar(
     "reactive_invalidation_collector", default=None)
 
 _recording_suppressed: contextvars.ContextVar[bool] = contextvars.ContextVar(
     "reactive_recording_suppressed", default=False)
+
+
+@contextmanager
+def observe_computations(callback):
+    """Call ``callback(slot)`` after every successful cache-miss computation in this scope.
+
+    Scopes are process-local and may be nested; leaving a scope restores the observer that was active
+    before it. The callback receives the coherent, cached slot and may inspect
+    ``slot.diagnostic_name`` for a non-user-authored calculation identity. It must not mutate the model,
+    pull reactive values, or retain the slot beyond the callback.
+
+    If the callback raises, the just-produced value is dropped, the slot's previous dependency edges
+    are restored, and the exception is re-raised. Successful child computations remain cached.
+    """
+    global _computation_observer
+    previous_observer = _computation_observer
+    _computation_observer = callback
+    try:
+        yield
+    finally:
+        _computation_observer = previous_observer
 
 
 @contextmanager
@@ -72,6 +95,7 @@ class ReactiveSlot:
 
     def __init__(self, name: str, getter=None, on_value_dropped=None):
         self.name = name
+        self.diagnostic_name = name.split("[", 1)[0].split(" of ", 1)[0]
         self.getter = getter
         self.on_value_dropped = on_value_dropped
         # Ordinary computed slots stay void after invalidation until the next read pulls them.
@@ -133,7 +157,11 @@ class ReactiveSlot:
             if frame.slot is self:
                 chain = " -> ".join([f.slot.name for f in stack[position:]] + [self.name])
                 raise CircularDependencyError(f"Circular dependency between computed slots: {chain}")
+        observer = _computation_observer
         frame = _ComputeFrame(self)
+        if observer is not None:
+            previous_calculus_dependencies = self._calculus_dependencies
+            previous_structural_dependencies = self._structural_dependencies
         token = _compute_stack.set(stack + (frame,))
         try:
             value = self.getter()
@@ -145,6 +173,13 @@ class ReactiveSlot:
             self._wave_passed = False
         self.replace_dependencies(frame.calculus_reads, frame.structural_reads)
         self.attach_cached_value(value)
+        if observer is not None:
+            try:
+                observer(self)
+            except Exception:
+                self._drop_value()
+                self.replace_dependencies(previous_calculus_dependencies, previous_structural_dependencies)
+                raise
         return value
 
     def replace_dependencies(self, calculus_dependencies=frozenset(), structural_dependencies=frozenset()):
