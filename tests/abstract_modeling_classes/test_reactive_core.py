@@ -469,12 +469,22 @@ class TestComputationObserver(TestCase):
             _ = projection.projection_total
             _ = holder.value_per_leaf
 
-        self.assertIn(ReactiveCoreLeaf.double_power.slot(leaf_1), observed)
-        self.assertIn(computed_structures(ReactiveCoreProjectionHolder)["raw_projection"].slot(projection), observed)
-        self.assertIn(computed_structures(ReactiveCoreProjectionHolder)["projection_total"].slot(projection), observed)
-        self.assertIn(ReactiveCoreHolder.value_per_leaf.sub_slot(holder, leaf_1), observed)
-        self.assertIn(ReactiveCoreHolder.value_per_leaf.sub_slot(holder, leaf_2), observed)
-        self.assertIn(ReactiveCoreHolder.value_per_leaf.slot(holder), observed)
+        self.assertEqual([
+            ReactiveCoreLeaf.double_power.slot(leaf_1),
+            computed_structures(ReactiveCoreProjectionHolder)["raw_projection"].slot(projection),
+            computed_structures(ReactiveCoreProjectionHolder)["projection_total"].slot(projection),
+            ReactiveCoreHolder.value_per_leaf.sub_slot(holder, leaf_1),
+            ReactiveCoreHolder.value_per_leaf.sub_slot(holder, leaf_2),
+            ReactiveCoreHolder.value_per_leaf.slot(holder),
+        ], observed)
+        self.assertEqual([
+            "ReactiveCoreLeaf.double_power",
+            "ReactiveCoreProjectionHolder.raw_projection",
+            "ReactiveCoreProjectionHolder.projection_total",
+            "ReactiveCoreHolder.value_per_leaf",
+            "ReactiveCoreHolder.value_per_leaf",
+            "ReactiveCoreHolder.value_per_leaf",
+        ], [slot.diagnostic_name for slot in observed])
 
     def test_nested_scopes_restore_previous_observer_on_normal_and_exceptional_exit(self):
         """Test nested scopes replace then restore observers, including when the inner block raises."""
@@ -503,7 +513,7 @@ class TestComputationObserver(TestCase):
             _ = holder.value_per_leaf
 
         element_slot = ReactiveCoreHolder.value_per_leaf.sub_slot(holder, leaf)
-        self.assertEqual("value_per_leaf", element_slot.diagnostic_name)
+        self.assertEqual("ReactiveCoreHolder.value_per_leaf", element_slot.diagnostic_name)
         self.assertNotIn(leaf.id, element_slot.diagnostic_name)
         self.assertNotIn(holder.id, element_slot.diagnostic_name)
 

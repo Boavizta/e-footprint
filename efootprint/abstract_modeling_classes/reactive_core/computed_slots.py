@@ -150,7 +150,8 @@ class computed_attribute:
         slot = registry.get(self.attr_name)
         if slot is None:
             slot = ReactiveSlot(
-                f"{self.attr_name} of {getattr(instance, 'id', instance)}", on_value_dropped=self._on_value_dropped)
+                f"{self.attr_name} of {getattr(instance, 'id', instance)}", on_value_dropped=self._on_value_dropped,
+                diagnostic_name=f"{type(instance).__name__}.{self.attr_name}")
             slot.getter = self._make_compute_closure(instance, slot)
             slot.guard = self.guard
             registry[self.attr_name] = slot
@@ -300,7 +301,7 @@ class computed_dict(computed_attribute):
         if slot is None:
             slot = ReactiveSlot(
                 f"{self.attr_name}[{getattr(key, 'id', key)}] of {getattr(instance, 'id', instance)}",
-                on_value_dropped=_release_value)
+                on_value_dropped=_release_value, diagnostic_name=f"{type(instance).__name__}.{self.attr_name}")
             slot.getter = self._make_element_compute_closure(instance, key, slot)
             slot.guard = self.guard
             registry[registry_key] = slot
@@ -415,7 +416,9 @@ class computed_structure:
         registry = instance_slot_registry(instance)
         slot = registry.get(self.attr_name)
         if slot is None:
-            slot = ReactiveSlot(f"{self.attr_name} of {getattr(instance, 'id', instance)}")
+            slot = ReactiveSlot(
+                f"{self.attr_name} of {getattr(instance, 'id', instance)}",
+                diagnostic_name=f"{type(instance).__name__}.{self.attr_name}")
             slot.getter = self._make_compute_closure(instance)
             registry[self.attr_name] = slot
         return slot

@@ -93,9 +93,9 @@ class ReactiveSlot:
     the next deletion wave still traverses it.
     """
 
-    def __init__(self, name: str, getter=None, on_value_dropped=None):
+    def __init__(self, name: str, getter=None, on_value_dropped=None, diagnostic_name: str | None = None):
         self.name = name
-        self.diagnostic_name = name.split("[", 1)[0].split(" of ", 1)[0]
+        self.diagnostic_name = diagnostic_name or name.split("[", 1)[0].split(" of ", 1)[0]
         self.getter = getter
         self.on_value_dropped = on_value_dropped
         # Ordinary computed slots stay void after invalidation until the next read pulls them.
