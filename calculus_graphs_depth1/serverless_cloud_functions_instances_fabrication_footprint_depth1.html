@@ -31,7 +31,7 @@
         </center>
         <style type="text/css">
 
-             #mynetwork_c855b2 {
+             #mynetwork_d4fca3 {
                  width: 760px;
                  height: 300px;
                  background-color: #ffffff;
@@ -53,7 +53,7 @@
         <div class="card" style="width: 100%">
             
             
-            <div id="mynetwork_c855b2" class="card-body"></div>
+            <div id="mynetwork_d4fca3" class="card-body"></div>
         </div>
 
         
@@ -83,13 +83,13 @@
 
               // This method is responsible for drawing the graph, returns the drawn network
               function drawGraph() {
-                  var container = document.getElementById('mynetwork_c855b2');
+                  var container = document.getElementById('mynetwork_d4fca3');
 
                   
 
                   // parsing and collecting nodes and edges from the python
-                  nodes = new vis.DataSet([{"color": null, "id": "no value", "label": "no value", "shape": "dot", "size": 15, "title": "no value = no value", "x": 0.0, "y": 150}]);
-                  edges = new vis.DataSet([]);
+                  nodes = new vis.DataSet([{"color": null, "id": "Hourly instances fabrication footprint", "label": "Hourly instances\nfabrication\nfootprint", "shape": "dot", "size": 15, "title": "Hourly instances fabrication footprint\n=\none hour * Fabrication carbon footprint * Hourly number of instances / Lifespan\n=\n1 h * 80 kg * no value / 6 yr\n=\nno value", "x": 0.0, "y": 1050}, {"color": null, "id": "Fabrication carbon footprint", "label": "Fabrication carbon\nfootprint", "shape": "dot", "size": 15, "title": "Fabrication carbon footprint\n=\ndata extraction from (API call response)\n=\ndata extraction from ({\u0027impacts\u0027: {\u0027gwp\u0027: {\u0027unit\u0027: \u0027kgCO2eq\u0027, \u0027description\u0027:\n\u0027Tota...)\n=\n80 kg", "x": -250.0, "y": 900}, {"color": null, "id": "Hourly number of instances", "label": "Hourly number of\ninstances", "shape": "dot", "size": 15, "title": "Hourly number of instances\n=\ncopy (Hourly raw number of instances) logically dependent on Server type\n=\ncopy (no value) logically dependent on serverless\n=\nno value", "x": 0.0, "y": 900}, {"color": "darkred", "id": "Lifespan", "label": "Lifespan", "shape": "dot", "size": 15, "title": "Lifespan = 6 yr", "x": 250.0, "y": 900}]);
+                  edges = new vis.DataSet([{"arrows": "to", "from": "Fabrication carbon footprint", "to": "Hourly instances fabrication footprint"}, {"arrows": "to", "from": "Hourly number of instances", "to": "Hourly instances fabrication footprint"}, {"arrows": "to", "from": "Lifespan", "to": "Hourly instances fabrication footprint"}]);
 
                   nodeColors = {};
                   allNodes = nodes.get({ returnType: "Object" });

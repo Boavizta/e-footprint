@@ -31,7 +31,7 @@
         </center>
         <style type="text/css">
 
-             #mynetwork_133744 {
+             #mynetwork_ad19b5 {
                  width: 760px;
                  height: 300px;
                  background-color: #ffffff;
@@ -53,7 +53,7 @@
         <div class="card" style="width: 100%">
             
             
-            <div id="mynetwork_133744" class="card-body"></div>
+            <div id="mynetwork_ad19b5" class="card-body"></div>
         </div>
 
         
@@ -83,12 +83,12 @@
 
               // This method is responsible for drawing the graph, returns the drawn network
               function drawGraph() {
-                  var container = document.getElementById('mynetwork_133744');
+                  var container = document.getElementById('mynetwork_ad19b5');
 
                   
 
                   // parsing and collecting nodes and edges from the python
-                  nodes = new vis.DataSet([{"color": null, "id": "Hour by hour ram need", "label": "Hour by hour ram\nneed", "shape": "dot", "size": 15, "title": "Hour by hour ram need\n=\nHourly average occurrences across usage patterns * RAM needed during job\nprocessing + Hourly average occurrences across usage patterns * RAM needed\n=\n105192 values from 2025-01-01 00:00:00+00:00 to 2037-01-01 00:00:00+00:00:\nfirst=0.00529 , last=0.000169 , mean=2.87 k, min=0.000169 , max=5.74 k, std=1.66\nk * 50 MB ram + 26298 values from 2025-01-01 00:00:00+00:00 to 2028-01-01\n18:00:00+00:00: first=3 , last=2 , mean=1.65 , min=0.333 , max=3 , std=0.859 *\n50 MB ram\n=\n105192 values from 2025-01-01 00:00:00+00:00 to 2037-01-01 00:00:00+00:00:\nfirst=150 MB ram, last=8.43 kB ram, mean=144 GB ram, min=8.43 kB ram, max=287 GB\nram, std=82.8 GB ram", "x": 0.0, "y": 1200}, {"color": null, "id": "Hourly average occurrences across usage patterns", "label": "Hourly average\noccurrences across\nusage patterns", "shape": "dot", "size": 15, "title": "Hourly average occurrences across usage patterns\n=\nAverage hourly occurrences in usage pattern + Average hourly occurrences in\nDefault edge usage pattern\n=\n26298 values from 2025-01-01 00:00:00+00:00 to 2028-01-01 18:00:00+00:00:\nfirst=0.005 , last=0.00333 , mean=0.00275 , min=0.000556 , max=0.005 ,\nstd=0.00143 + 105192 values from 2025-01-01 00:00:00+00:00 to 2037-01-01\n00:00:00+00:00: first=0.000295 , last=0.000169 , mean=2.87 k, min=0, max=5.74 k,\nstd=1.66 k\n=\n105192 values from 2025-01-01 00:00:00+00:00 to 2037-01-01 00:00:00+00:00:\nfirst=0.00529 , last=0.000169 , mean=2.87 k, min=0.000169 , max=5.74 k, std=1.66\nk", "x": -350.0, "y": 1050}, {"color": "darkred", "id": "RAM needed during job processing", "label": "RAM needed during\njob processing", "shape": "dot", "size": 15, "title": "RAM needed during job processing = 50 MB ram", "x": 0.0, "y": 1050}, {"color": null, "id": "RAM needed", "label": "RAM needed", "shape": "dot", "size": 15, "title": "RAM needed\n=\nduplicate (RAM buffer size per user)\n=\nduplicate (50 MB ram)\n=\n50 MB ram", "x": 350.0, "y": 1050}]);
+                  nodes = new vis.DataSet([{"color": null, "id": "Hour by hour ram need", "label": "Hour by hour ram\nneed", "shape": "dot", "size": 15, "title": "Hour by hour ram need\n=\nHourly average occurrences across usage patterns * RAM needed during job\nprocessing + Hourly average occurrences across usage patterns * RAM needed\n=\n105192 values from 2025-01-01 00:00:00+00:00 to 2037-01-01 00:00:00+00:00:\nfirst=0.00196 , last=0.000169 , mean=2.87 k, min=0.000169 , max=5.74 k, std=1.66\nk * 50 MB ram + 26298 values from 2025-01-01 00:00:00+00:00 to 2028-01-01\n18:00:00+00:00: first=1 , last=2.33 , mean=1.67 , min=0.333 , max=3 , std=0.862\n* 50 MB ram\n=\n105192 values from 2025-01-01 00:00:00+00:00 to 2037-01-01 00:00:00+00:00:\nfirst=50.1 MB ram, last=8.43 kB ram, mean=144 GB ram, min=8.43 kB ram, max=287\nGB ram, std=82.8 GB ram", "x": 0.0, "y": 1200}, {"color": null, "id": "Hourly average occurrences across usage patterns", "label": "Hourly average\noccurrences across\nusage patterns", "shape": "dot", "size": 15, "title": "Hourly average occurrences across usage patterns\n=\nAverage hourly occurrences in usage pattern + Average hourly occurrences in\nDefault edge usage pattern\n=\n26298 values from 2025-01-01 00:00:00+00:00 to 2028-01-01 18:00:00+00:00:\nfirst=0.00167 , last=0.00389 , mean=0.00278 , min=0.000556 , max=0.005 ,\nstd=0.00144 + 105192 values from 2025-01-01 00:00:00+00:00 to 2037-01-01\n00:00:00+00:00: first=0.000295 , last=0.000169 , mean=2.87 k, min=0, max=5.74 k,\nstd=1.66 k\n=\n105192 values from 2025-01-01 00:00:00+00:00 to 2037-01-01 00:00:00+00:00:\nfirst=0.00196 , last=0.000169 , mean=2.87 k, min=0.000169 , max=5.74 k, std=1.66\nk", "x": -350.0, "y": 1050}, {"color": "darkred", "id": "RAM needed during job processing", "label": "RAM needed during\njob processing", "shape": "dot", "size": 15, "title": "RAM needed during job processing = 50 MB ram", "x": 0.0, "y": 1050}, {"color": null, "id": "RAM needed", "label": "RAM needed", "shape": "dot", "size": 15, "title": "RAM needed\n=\nduplicate (RAM buffer size per user)\n=\nduplicate (50 MB ram)\n=\n50 MB ram", "x": 350.0, "y": 1050}]);
                   edges = new vis.DataSet([{"arrows": "to", "from": "Hourly average occurrences across usage patterns", "to": "Hour by hour ram need"}, {"arrows": "to", "from": "RAM needed during job processing", "to": "Hour by hour ram need"}, {"arrows": "to", "from": "Hourly average occurrences across usage patterns", "to": "Hour by hour ram need"}, {"arrows": "to", "from": "RAM needed", "to": "Hour by hour ram need"}]);
 
                   nodeColors = {};

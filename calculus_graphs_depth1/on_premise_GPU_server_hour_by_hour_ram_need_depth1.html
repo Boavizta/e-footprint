@@ -31,7 +31,7 @@
         </center>
         <style type="text/css">
 
-             #mynetwork_06109c {
+             #mynetwork_f55044 {
                  width: 760px;
                  height: 300px;
                  background-color: #ffffff;
@@ -53,7 +53,7 @@
         <div class="card" style="width: 100%">
             
             
-            <div id="mynetwork_06109c" class="card-body"></div>
+            <div id="mynetwork_f55044" class="card-body"></div>
         </div>
 
         
@@ -83,12 +83,12 @@
 
               // This method is responsible for drawing the graph, returns the drawn network
               function drawGraph() {
-                  var container = document.getElementById('mynetwork_06109c');
+                  var container = document.getElementById('mynetwork_f55044');
 
                   
 
                   // parsing and collecting nodes and edges from the python
-                  nodes = new vis.DataSet([{"color": null, "id": "Hour by hour ram need", "label": "Hour by hour ram\nneed", "shape": "dot", "size": 15, "title": "Hour by hour ram need\n=\nHourly average occurrences across usage patterns * RAM needed during job\nprocessing\n=\n26298 values from 2025-01-01 00:00:00+00:00 to 2028-01-01 18:00:00+00:00:\nfirst=0.0025 , last=0.00167 , mean=0.00138 , min=0.000278 , max=0.0025 ,\nstd=0.000716 * 50 MB ram\n=\n26298 values from 2025-01-01 00:00:00+00:00 to 2028-01-01 18:00:00+00:00:\nfirst=125 kB ram, last=83.3 kB ram, mean=68.9 kB ram, min=13.9 kB ram, max=125\nkB ram, std=35.8 kB ram", "x": 0.0, "y": 900}, {"color": null, "id": "Hourly average occurrences across usage patterns", "label": "Hourly average\noccurrences across\nusage patterns", "shape": "dot", "size": 15, "title": "Hourly average occurrences across usage patterns\n=\nAverage hourly occurrences in usage pattern\n=\n26298 values from 2025-01-01 00:00:00+00:00 to 2028-01-01 18:00:00+00:00:\nfirst=0.0025 , last=0.00167 , mean=0.00138 , min=0.000278 , max=0.0025 ,\nstd=0.000716\n=\n26298 values from 2025-01-01 00:00:00+00:00 to 2028-01-01 18:00:00+00:00:\nfirst=0.0025 , last=0.00167 , mean=0.00138 , min=0.000278 , max=0.0025 ,\nstd=0.000716", "x": -112.5, "y": 750}, {"color": "darkred", "id": "RAM needed during job processing", "label": "RAM needed during\njob processing", "shape": "dot", "size": 15, "title": "RAM needed during job processing = 50 MB ram", "x": 112.5, "y": 750}]);
+                  nodes = new vis.DataSet([{"color": null, "id": "Hour by hour ram need", "label": "Hour by hour ram\nneed", "shape": "dot", "size": 15, "title": "Hour by hour ram need\n=\nHourly average occurrences across usage patterns * RAM needed during job\nprocessing\n=\n26298 values from 2025-01-01 00:00:00+00:00 to 2028-01-01 18:00:00+00:00:\nfirst=0.000833 , last=0.00194 , mean=0.00139 , min=0.000278 , max=0.0025 ,\nstd=0.000718 * 50 MB ram\n=\n26298 values from 2025-01-01 00:00:00+00:00 to 2028-01-01 18:00:00+00:00:\nfirst=41.7 kB ram, last=97.2 kB ram, mean=69.4 kB ram, min=13.9 kB ram, max=125\nkB ram, std=35.9 kB ram", "x": 0.0, "y": 900}, {"color": null, "id": "Hourly average occurrences across usage patterns", "label": "Hourly average\noccurrences across\nusage patterns", "shape": "dot", "size": 15, "title": "Hourly average occurrences across usage patterns\n=\nAverage hourly occurrences in usage pattern\n=\n26298 values from 2025-01-01 00:00:00+00:00 to 2028-01-01 18:00:00+00:00:\nfirst=0.000833 , last=0.00194 , mean=0.00139 , min=0.000278 , max=0.0025 ,\nstd=0.000718\n=\n26298 values from 2025-01-01 00:00:00+00:00 to 2028-01-01 18:00:00+00:00:\nfirst=0.000833 , last=0.00194 , mean=0.00139 , min=0.000278 , max=0.0025 ,\nstd=0.000718", "x": -112.5, "y": 750}, {"color": "darkred", "id": "RAM needed during job processing", "label": "RAM needed during\njob processing", "shape": "dot", "size": 15, "title": "RAM needed during job processing = 50 MB ram", "x": 112.5, "y": 750}]);
                   edges = new vis.DataSet([{"arrows": "to", "from": "Hourly average occurrences across usage patterns", "to": "Hour by hour ram need"}, {"arrows": "to", "from": "RAM needed during job processing", "to": "Hour by hour ram need"}]);
 
                   nodeColors = {};

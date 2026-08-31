@@ -31,9 +31,9 @@
         </center>
         <style type="text/css">
 
-             #mynetwork_a67bff {
-                 width: 760px;
-                 height: 300px;
+             #mynetwork_035962 {
+                 width: 1800px;
+                 height: 900px;
                  background-color: #ffffff;
                  border: 1px solid lightgray;
                  position: relative;
@@ -53,7 +53,7 @@
         <div class="card" style="width: 100%">
             
             
-            <div id="mynetwork_a67bff" class="card-body"></div>
+            <div id="mynetwork_035962" class="card-body"></div>
         </div>
 
         
@@ -83,13 +83,13 @@
 
               // This method is responsible for drawing the graph, returns the drawn network
               function drawGraph() {
-                  var container = document.getElementById('mynetwork_a67bff');
+                  var container = document.getElementById('mynetwork_035962');
 
                   
 
                   // parsing and collecting nodes and edges from the python
-                  nodes = new vis.DataSet([{"color": null, "id": "Energy footprint per edge device for Default edge usage pattern", "label": "Energy footprint per\nedge device for\nDefault edge usage\npattern", "shape": "dot", "size": 15, "title": "Energy footprint per edge device for Default edge usage pattern\n=\nHourly energy consumed by per edge device for Default edge usage pattern *\nAverage carbon intensity\n=\n105192 values from 2025-01-01 00:00:00+00:00 to 2037-01-01 00:00:00+00:00:\nfirst=27.2 Wh, last=15.5 Wh, mean=264 MWh, min=0, max=529 MWh, std=153 MWh * 85\ng/kWh\n=\n105192 values from 2025-01-01 00:00:00+00:00 to 2037-01-01 00:00:00+00:00:\nfirst=2.31 g, last=1.32 g, mean=22.5 t, min=0, max=45 t, std=13 t", "x": 0.0, "y": 1200}, {"color": null, "id": "Hourly energy consumed by per edge device for Default edge usage pattern", "label": "Hourly energy\nconsumed by per edge\ndevice for Default\nedge usage pattern", "shape": "dot", "size": 15, "title": "Hourly energy consumed by per edge device for Default edge usage pattern\n=\nHourly nb of edge usage journeys in parallel * Unitary power for Default edge\nusage pattern * one hour\n=\n105192 values from 2025-01-01 00:00:00+00:00 to 2037-01-01 00:00:00+00:00:\nfirst=1.06 , last=0.607 , mean=10.3 M, min=0, max=20.7 M, std=5.96 M * 105192\nvalues from 2025-01-01 00:00:00+00:00 to 2037-01-01 00:00:00+00:00: first=25.6\nW, last=25.6 W, mean=25.6 W, min=25.6 W, max=25.6 W, std=0.00191 mW * 1 h\n=\n105192 values from 2025-01-01 00:00:00+00:00 to 2037-01-01 00:00:00+00:00:\nfirst=27.2 Wh, last=15.5 Wh, mean=264 MWh, min=0, max=529 MWh, std=153 MWh", "x": -150.0, "y": 1050}, {"color": null, "id": "Average carbon intensity", "label": "Average carbon\nintensity", "shape": "dot", "size": 15, "title": "Average carbon intensity = 85 g/kWh", "x": 150.0, "y": 1050}]);
-                  edges = new vis.DataSet([{"arrows": "to", "from": "Hourly energy consumed by per edge device for Default edge usage pattern", "to": "Energy footprint per edge device for Default edge usage pattern"}, {"arrows": "to", "from": "Average carbon intensity", "to": "Energy footprint per edge device for Default edge usage pattern"}]);
+                  nodes = new vis.DataSet([{"color": null, "id": "20 min streaming hourly occupancy in usage pattern", "label": "20 min streaming\nhourly occupancy in\nusage pattern", "shape": "dot", "size": 15, "title": "20 min streaming hourly occupancy in usage pattern\n=\nHourly nb of usage journey starts (UTC) hourly occurrences average Times per\njourney * Time spent by user - Hourly nb of usage journey starts (UTC) max\ncompared with no value\n=\n26298 values from 2025-01-01 00:00:00+00:00 to 2028-01-01 18:00:00+00:00:\nfirst=3 , last=7 , mean=5 , min=1 , max=9 , std=2.59 hourly occurrences average\n1 * 20 min - 26298 values from 2025-01-01 00:00:00+00:00 to 2028-01-01\n18:00:00+00:00: first=3 , last=7 , mean=5 , min=1 , max=9 , std=2.59 max\ncompared with no value\n=\n26298 values from 2025-01-01 00:00:00+00:00 to 2028-01-01 18:00:00+00:00:\nfirst=1 , last=2.33 , mean=1.67 , min=0.333 , max=3 , std=0.862", "x": 0.0, "y": 450}, {"color": null, "id": "Hourly nb of usage journey starts (UTC)", "label": "Hourly nb of usage\njourney starts (UTC)", "shape": "dot", "size": 15, "title": "Hourly nb of usage journey starts (UTC)\n=\nHourly nb of usage journey starts converted to UTC from Timezone\n=\n26298 values from 2025-01-01 00:00:00 to 2028-01-01 18:00:00: first=7 , last=3 ,\nmean=5 , min=1 , max=9 , std=2.59 converted to UTC from Europe/Paris\n=\n26298 values from 2025-01-01 00:00:00+00:00 to 2028-01-01 18:00:00+00:00:\nfirst=3 , last=7 , mean=5 , min=1 , max=9 , std=2.59", "x": -150.0, "y": 300}, {"color": null, "id": "Hourly nb of usage journey starts", "label": "Hourly nb of usage\njourney starts", "shape": "dot", "size": 15, "title": "Hourly nb of usage journey starts = 26298 values from 2025-01-01 00:00:00 to\n2028-01-01 18:00:00: first=7 , last=3 , mean=5 , min=1 , max=9 , std=2.59", "x": -112.5, "y": 150}, {"color": "gold", "id": "Timezone", "label": "Timezone", "shape": "dot", "size": 15, "title": "Timezone = Europe/Paris", "x": 112.5, "y": 150}, {"color": "darkred", "id": "Times per journey", "label": "Times per journey", "shape": "dot", "size": 15, "title": "Times per journey = 1", "x": 0.0, "y": 300}, {"color": null, "id": "Time spent by user", "label": "Time spent by user", "shape": "dot", "size": 15, "title": "Time spent by user = 20 min", "x": 150.0, "y": 300}]);
+                  edges = new vis.DataSet([{"arrows": "to", "from": "Hourly nb of usage journey starts (UTC)", "to": "20 min streaming hourly occupancy in usage pattern"}, {"arrows": "to", "from": "Hourly nb of usage journey starts", "to": "Hourly nb of usage journey starts (UTC)"}, {"arrows": "to", "from": "Timezone", "to": "Hourly nb of usage journey starts (UTC)"}, {"arrows": "to", "from": "Times per journey", "to": "20 min streaming hourly occupancy in usage pattern"}, {"arrows": "to", "from": "Time spent by user", "to": "20 min streaming hourly occupancy in usage pattern"}]);
 
                   nodeColors = {};
                   allNodes = nodes.get({ returnType: "Object" });

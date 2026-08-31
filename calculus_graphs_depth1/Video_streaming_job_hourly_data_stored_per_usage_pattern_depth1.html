@@ -31,7 +31,7 @@
         </center>
         <style type="text/css">
 
-             #mynetwork_8d8a72 {
+             #mynetwork_5d7bcc {
                  width: 760px;
                  height: 300px;
                  background-color: #ffffff;
@@ -53,7 +53,7 @@
         <div class="card" style="width: 100%">
             
             
-            <div id="mynetwork_8d8a72" class="card-body"></div>
+            <div id="mynetwork_5d7bcc" class="card-body"></div>
         </div>
 
         
@@ -83,12 +83,12 @@
 
               // This method is responsible for drawing the graph, returns the drawn network
               function drawGraph() {
-                  var container = document.getElementById('mynetwork_8d8a72');
+                  var container = document.getElementById('mynetwork_5d7bcc');
 
                   
 
                   // parsing and collecting nodes and edges from the python
-                  nodes = new vis.DataSet([{"color": null, "id": "Hourly data stored in usage pattern", "label": "Hourly data stored\nin usage pattern", "shape": "dot", "size": 15, "title": "Hourly data stored in usage pattern\n=\nAverage hourly occurrences in usage pattern * (Data stored by request * one hour\n/ Request duration)\n=\n26298 values from 2025-01-01 00:00:00+00:00 to 2028-01-01 18:00:00+00:00:\nfirst=3 , last=2 , mean=1.65 , min=0.333 , max=3 , std=0.859 * (0 B stored * 1 h\n/ 20 min)\n=\n26298 values from 2025-01-01 00:00:00+00:00 to 2028-01-01 18:00:00+00:00:\nfirst=0, last=0, mean=0, min=0, max=0, std=0", "x": 0.0, "y": 750}, {"color": null, "id": "Average hourly occurrences in usage pattern", "label": "Average hourly\noccurrences in usage\npattern", "shape": "dot", "size": 15, "title": "Average hourly occurrences in usage pattern\n=\nHourly occurrences in usage pattern hourly occurrences average Request duration\n=\n26298 values from 2025-01-01 00:00:00+00:00 to 2028-01-01 18:00:00+00:00:\nfirst=9 , last=6 , mean=4.96 , min=1 , max=9 , std=2.58 hourly occurrences\naverage 20 min\n=\n26298 values from 2025-01-01 00:00:00+00:00 to 2028-01-01 18:00:00+00:00:\nfirst=3 , last=2 , mean=1.65 , min=0.333 , max=3 , std=0.859", "x": -200.0, "y": 600}, {"color": "darkred", "id": "Data stored by request", "label": "Data stored by\nrequest", "shape": "dot", "size": 15, "title": "Data stored by request = 0 B stored", "x": 0.0, "y": 600}, {"color": null, "id": "Request duration", "label": "Request duration", "shape": "dot", "size": 15, "title": "Request duration\n=\nduplicate (Video duration)\n=\nduplicate (20 min)\n=\n20 min", "x": 0.0, "y": 450}]);
+                  nodes = new vis.DataSet([{"color": null, "id": "Hourly data stored in usage pattern", "label": "Hourly data stored\nin usage pattern", "shape": "dot", "size": 15, "title": "Hourly data stored in usage pattern\n=\nAverage hourly occurrences in usage pattern * (Data stored by request * one hour\n/ Request duration)\n=\n26298 values from 2025-01-01 00:00:00+00:00 to 2028-01-01 18:00:00+00:00:\nfirst=1 , last=2.33 , mean=1.67 , min=0.333 , max=3 , std=0.862 * (0 B stored *\n1 h / 20 min)\n=\n26298 values from 2025-01-01 00:00:00+00:00 to 2028-01-01 18:00:00+00:00:\nfirst=0, last=0, mean=0, min=0, max=0, std=0", "x": 0.0, "y": 750}, {"color": null, "id": "Average hourly occurrences in usage pattern", "label": "Average hourly\noccurrences in usage\npattern", "shape": "dot", "size": 15, "title": "Average hourly occurrences in usage pattern\n=\nHourly occurrences in usage pattern hourly occurrences average Request duration\n=\n26298 values from 2025-01-01 00:00:00+00:00 to 2028-01-01 18:00:00+00:00:\nfirst=3 , last=7 , mean=5 , min=1 , max=9 , std=2.59 hourly occurrences average\n20 min\n=\n26298 values from 2025-01-01 00:00:00+00:00 to 2028-01-01 18:00:00+00:00:\nfirst=1 , last=2.33 , mean=1.67 , min=0.333 , max=3 , std=0.862", "x": -200.0, "y": 600}, {"color": "darkred", "id": "Data stored by request", "label": "Data stored by\nrequest", "shape": "dot", "size": 15, "title": "Data stored by request = 0 B stored", "x": 0.0, "y": 600}, {"color": null, "id": "Request duration", "label": "Request duration", "shape": "dot", "size": 15, "title": "Request duration\n=\nduplicate (Video duration)\n=\nduplicate (20 min)\n=\n20 min", "x": 0.0, "y": 450}]);
                   edges = new vis.DataSet([{"arrows": "to", "from": "Average hourly occurrences in usage pattern", "to": "Hourly data stored in usage pattern"}, {"arrows": "to", "from": "Data stored by request", "to": "Hourly data stored in usage pattern"}, {"arrows": "to", "from": "Request duration", "to": "Hourly data stored in usage pattern"}]);
 
                   nodeColors = {};

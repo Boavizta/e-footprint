@@ -31,7 +31,7 @@
         </center>
         <style type="text/css">
 
-             #mynetwork_f38d36 {
+             #mynetwork_80b5cf {
                  width: 760px;
                  height: 300px;
                  background-color: #ffffff;
@@ -53,7 +53,7 @@
         <div class="card" style="width: 100%">
             
             
-            <div id="mynetwork_f38d36" class="card-body"></div>
+            <div id="mynetwork_80b5cf" class="card-body"></div>
         </div>
 
         
@@ -83,12 +83,12 @@
 
               // This method is responsible for drawing the graph, returns the drawn network
               function drawGraph() {
-                  var container = document.getElementById('mynetwork_f38d36');
+                  var container = document.getElementById('mynetwork_80b5cf');
 
                   
 
                   // parsing and collecting nodes and edges from the python
-                  nodes = new vis.DataSet([{"color": null, "id": "Hourly data transferred in usage pattern", "label": "Hourly data\ntransferred in usage\npattern", "shape": "dot", "size": 15, "title": "Hourly data transferred in usage pattern\n=\nAverage hourly occurrences in usage pattern * (Sum of all data uploads and\ndownloads by request * one hour / Request duration)\n=\n26298 values from 2025-01-01 00:00:00+00:00 to 2028-01-01 18:00:00+00:00:\nfirst=0.0025 , last=0.00167 , mean=0.00138 , min=0.000278 , max=0.0025 ,\nstd=0.000716 * (150 kB * 1 h / 1 s)\n=\n26298 values from 2025-01-01 00:00:00+00:00 to 2028-01-01 18:00:00+00:00:\nfirst=1.35 MB, last=900 kB, mean=744 kB, min=150 kB, max=1.35 MB, std=387 kB", "x": 0.0, "y": 750}, {"color": null, "id": "Average hourly occurrences in usage pattern", "label": "Average hourly\noccurrences in usage\npattern", "shape": "dot", "size": 15, "title": "Average hourly occurrences in usage pattern\n=\nHourly occurrences in usage pattern hourly occurrences average Request duration\n=\n26298 values from 2025-01-01 00:00:00+00:00 to 2028-01-01 18:00:00+00:00:\nfirst=9 , last=6 , mean=4.96 , min=1 , max=9 , std=2.58 hourly occurrences\naverage 1 s\n=\n26298 values from 2025-01-01 00:00:00+00:00 to 2028-01-01 18:00:00+00:00:\nfirst=0.0025 , last=0.00167 , mean=0.00138 , min=0.000278 , max=0.0025 ,\nstd=0.000716", "x": -150.0, "y": 600}, {"color": "darkred", "id": "Sum of all data uploads and downloads by request", "label": "Sum of all data\nuploads and\ndownloads by request", "shape": "dot", "size": 15, "title": "Sum of all data uploads and downloads by request = 150 kB", "x": 0.0, "y": 600}, {"color": "darkred", "id": "Request duration", "label": "Request duration", "shape": "dot", "size": 15, "title": "Request duration = 1 s", "x": 112.5, "y": 450}]);
+                  nodes = new vis.DataSet([{"color": null, "id": "Hourly data transferred in usage pattern", "label": "Hourly data\ntransferred in usage\npattern", "shape": "dot", "size": 15, "title": "Hourly data transferred in usage pattern\n=\nAverage hourly occurrences in usage pattern * (Sum of all data uploads and\ndownloads by request * one hour / Request duration)\n=\n26298 values from 2025-01-01 00:00:00+00:00 to 2028-01-01 18:00:00+00:00:\nfirst=0.000833 , last=0.00194 , mean=0.00139 , min=0.000278 , max=0.0025 ,\nstd=0.000718 * (150 kB * 1 h / 1 s)\n=\n26298 values from 2025-01-01 00:00:00+00:00 to 2028-01-01 18:00:00+00:00:\nfirst=450 kB, last=1.05 MB, mean=749 kB, min=150 kB, max=1.35 MB, std=388 kB", "x": 0.0, "y": 750}, {"color": null, "id": "Average hourly occurrences in usage pattern", "label": "Average hourly\noccurrences in usage\npattern", "shape": "dot", "size": 15, "title": "Average hourly occurrences in usage pattern\n=\nHourly occurrences in usage pattern hourly occurrences average Request duration\n=\n26298 values from 2025-01-01 00:00:00+00:00 to 2028-01-01 18:00:00+00:00:\nfirst=3 , last=7 , mean=5 , min=1 , max=9 , std=2.59 hourly occurrences average\n1 s\n=\n26298 values from 2025-01-01 00:00:00+00:00 to 2028-01-01 18:00:00+00:00:\nfirst=0.000833 , last=0.00194 , mean=0.00139 , min=0.000278 , max=0.0025 ,\nstd=0.000718", "x": -150.0, "y": 600}, {"color": "darkred", "id": "Sum of all data uploads and downloads by request", "label": "Sum of all data\nuploads and\ndownloads by request", "shape": "dot", "size": 15, "title": "Sum of all data uploads and downloads by request = 150 kB", "x": 0.0, "y": 600}, {"color": "darkred", "id": "Request duration", "label": "Request duration", "shape": "dot", "size": 15, "title": "Request duration = 1 s", "x": 112.5, "y": 450}]);
                   edges = new vis.DataSet([{"arrows": "to", "from": "Average hourly occurrences in usage pattern", "to": "Hourly data transferred in usage pattern"}, {"arrows": "to", "from": "Sum of all data uploads and downloads by request", "to": "Hourly data transferred in usage pattern"}, {"arrows": "to", "from": "Request duration", "to": "Hourly data transferred in usage pattern"}]);
 
                   nodeColors = {};

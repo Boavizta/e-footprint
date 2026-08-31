@@ -31,7 +31,7 @@
         </center>
         <style type="text/css">
 
-             #mynetwork_3f63be {
+             #mynetwork_ec801a {
                  width: 760px;
                  height: 300px;
                  background-color: #ffffff;
@@ -53,7 +53,7 @@
         <div class="card" style="width: 100%">
             
             
-            <div id="mynetwork_3f63be" class="card-body"></div>
+            <div id="mynetwork_ec801a" class="card-body"></div>
         </div>
 
         
@@ -83,12 +83,12 @@
 
               // This method is responsible for drawing the graph, returns the drawn network
               function drawGraph() {
-                  var container = document.getElementById('mynetwork_3f63be');
+                  var container = document.getElementById('mynetwork_ec801a');
 
                   
 
                   // parsing and collecting nodes and edges from the python
-                  nodes = new vis.DataSet([{"color": null, "id": "Hourly average occurrences across usage patterns", "label": "Hourly average\noccurrences across\nusage patterns", "shape": "dot", "size": 15, "title": "Hourly average occurrences across usage patterns\n=\nAverage hourly occurrences in usage pattern + Average hourly occurrences in\nDefault edge usage pattern\n=\n26298 values from 2025-01-01 00:00:00+00:00 to 2028-01-01 18:00:00+00:00:\nfirst=0.005 , last=0.00333 , mean=0.00275 , min=0.000556 , max=0.005 ,\nstd=0.00143 + 105192 values from 2025-01-01 00:00:00+00:00 to 2037-01-01\n00:00:00+00:00: first=0.000295 , last=0.000169 , mean=2.87 k, min=0, max=5.74 k,\nstd=1.66 k\n=\n105192 values from 2025-01-01 00:00:00+00:00 to 2037-01-01 00:00:00+00:00:\nfirst=0.00529 , last=0.000169 , mean=2.87 k, min=0.000169 , max=5.74 k, std=1.66\nk", "x": 0.0, "y": 1050}, {"color": null, "id": "Average hourly occurrences in usage pattern", "label": "Average hourly\noccurrences in usage\npattern", "shape": "dot", "size": 15, "title": "Average hourly occurrences in usage pattern\n=\nHourly occurrences in usage pattern hourly occurrences average Request duration\n=\n26298 values from 2025-01-01 00:00:00+00:00 to 2028-01-01 18:00:00+00:00:\nfirst=18 , last=12 , mean=9.92 , min=2 , max=18 , std=5.15 hourly occurrences\naverage 1 s\n=\n26298 values from 2025-01-01 00:00:00+00:00 to 2028-01-01 18:00:00+00:00:\nfirst=0.005 , last=0.00333 , mean=0.00275 , min=0.000556 , max=0.005 ,\nstd=0.00143", "x": -225.0, "y": 900}, {"color": null, "id": "Average hourly occurrences in Default edge usage pattern", "label": "Average hourly\noccurrences in\nDefault edge usage\npattern", "shape": "dot", "size": 15, "title": "Average hourly occurrences in Default edge usage pattern\n=\nHourly occurrences in Default edge usage pattern hourly occurrences average\nRequest duration\n=\n105192 values from 2025-01-01 00:00:00+00:00 to 2037-01-01 00:00:00+00:00:\nfirst=1.06 , last=0.607 , mean=10.3 M, min=0, max=20.7 M, std=5.96 M hourly\noccurrences average 1 s\n=\n105192 values from 2025-01-01 00:00:00+00:00 to 2037-01-01 00:00:00+00:00:\nfirst=0.000295 , last=0.000169 , mean=2.87 k, min=0, max=5.74 k, std=1.66 k", "x": 225.0, "y": 900}]);
+                  nodes = new vis.DataSet([{"color": null, "id": "Hourly average occurrences across usage patterns", "label": "Hourly average\noccurrences across\nusage patterns", "shape": "dot", "size": 15, "title": "Hourly average occurrences across usage patterns\n=\nAverage hourly occurrences in usage pattern + Average hourly occurrences in\nDefault edge usage pattern\n=\n26298 values from 2025-01-01 00:00:00+00:00 to 2028-01-01 18:00:00+00:00:\nfirst=0.00167 , last=0.00389 , mean=0.00278 , min=0.000556 , max=0.005 ,\nstd=0.00144 + 105192 values from 2025-01-01 00:00:00+00:00 to 2037-01-01\n00:00:00+00:00: first=0.000295 , last=0.000169 , mean=2.87 k, min=0, max=5.74 k,\nstd=1.66 k\n=\n105192 values from 2025-01-01 00:00:00+00:00 to 2037-01-01 00:00:00+00:00:\nfirst=0.00196 , last=0.000169 , mean=2.87 k, min=0.000169 , max=5.74 k, std=1.66\nk", "x": 0.0, "y": 1050}, {"color": null, "id": "Average hourly occurrences in usage pattern", "label": "Average hourly\noccurrences in usage\npattern", "shape": "dot", "size": 15, "title": "Average hourly occurrences in usage pattern\n=\nHourly occurrences in usage pattern hourly occurrences average Request duration\n=\n26298 values from 2025-01-01 00:00:00+00:00 to 2028-01-01 18:00:00+00:00:\nfirst=6 , last=14 , mean=9.99 , min=2 , max=18 , std=5.17 hourly occurrences\naverage 1 s\n=\n26298 values from 2025-01-01 00:00:00+00:00 to 2028-01-01 18:00:00+00:00:\nfirst=0.00167 , last=0.00389 , mean=0.00278 , min=0.000556 , max=0.005 ,\nstd=0.00144", "x": -225.0, "y": 900}, {"color": null, "id": "Average hourly occurrences in Default edge usage pattern", "label": "Average hourly\noccurrences in\nDefault edge usage\npattern", "shape": "dot", "size": 15, "title": "Average hourly occurrences in Default edge usage pattern\n=\nHourly occurrences in Default edge usage pattern hourly occurrences average\nRequest duration\n=\n105192 values from 2025-01-01 00:00:00+00:00 to 2037-01-01 00:00:00+00:00:\nfirst=1.06 , last=0.607 , mean=10.3 M, min=0, max=20.7 M, std=5.96 M hourly\noccurrences average 1 s\n=\n105192 values from 2025-01-01 00:00:00+00:00 to 2037-01-01 00:00:00+00:00:\nfirst=0.000295 , last=0.000169 , mean=2.87 k, min=0, max=5.74 k, std=1.66 k", "x": 225.0, "y": 900}]);
                   edges = new vis.DataSet([{"arrows": "to", "from": "Average hourly occurrences in usage pattern", "to": "Hourly average occurrences across usage patterns"}, {"arrows": "to", "from": "Average hourly occurrences in Default edge usage pattern", "to": "Hourly average occurrences across usage patterns"}]);
 
                   nodeColors = {};

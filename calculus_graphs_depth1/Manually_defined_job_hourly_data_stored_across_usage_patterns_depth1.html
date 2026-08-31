@@ -31,7 +31,7 @@
         </center>
         <style type="text/css">
 
-             #mynetwork_5d153e {
+             #mynetwork_93a665 {
                  width: 760px;
                  height: 300px;
                  background-color: #ffffff;
@@ -53,7 +53,7 @@
         <div class="card" style="width: 100%">
             
             
-            <div id="mynetwork_5d153e" class="card-body"></div>
+            <div id="mynetwork_93a665" class="card-body"></div>
         </div>
 
         
@@ -83,12 +83,12 @@
 
               // This method is responsible for drawing the graph, returns the drawn network
               function drawGraph() {
-                  var container = document.getElementById('mynetwork_5d153e');
+                  var container = document.getElementById('mynetwork_93a665');
 
                   
 
                   // parsing and collecting nodes and edges from the python
-                  nodes = new vis.DataSet([{"color": null, "id": "Hourly data stored across usage patterns", "label": "Hourly data stored\nacross usage\npatterns", "shape": "dot", "size": 15, "title": "Hourly data stored across usage patterns\n=\nHourly data stored in usage pattern + Hourly data stored in Default edge usage\npattern\n=\n26298 values from 2025-01-01 00:00:00+00:00 to 2028-01-01 18:00:00+00:00:\nfirst=1.8 MB stored, last=1.2 MB stored, mean=992 kB stored, min=200 kB stored,\nmax=1.8 MB stored, std=515 kB stored + 105192 values from 2025-01-01\n00:00:00+00:00 to 2037-01-01 00:00:00+00:00: first=106 kB stored, last=60.7 kB\nstored, mean=1.03 TB stored, min=0, max=2.07 TB stored, std=596 GB stored\n=\n105192 values from 2025-01-01 00:00:00+00:00 to 2037-01-01 00:00:00+00:00:\nfirst=1.91 MB stored, last=60.7 kB stored, mean=1.03 TB stored, min=60.7 kB\nstored, max=2.07 TB stored, std=596 GB stored", "x": 0.0, "y": 1200}, {"color": null, "id": "Hourly data stored in usage pattern", "label": "Hourly data stored\nin usage pattern", "shape": "dot", "size": 15, "title": "Hourly data stored in usage pattern\n=\nAverage hourly occurrences in usage pattern * (Data stored by request * one hour\n/ Request duration)\n=\n26298 values from 2025-01-01 00:00:00+00:00 to 2028-01-01 18:00:00+00:00:\nfirst=0.005 , last=0.00333 , mean=0.00275 , min=0.000556 , max=0.005 ,\nstd=0.00143 * (100 kB stored * 1 h / 1 s)\n=\n26298 values from 2025-01-01 00:00:00+00:00 to 2028-01-01 18:00:00+00:00:\nfirst=1.8 MB stored, last=1.2 MB stored, mean=992 kB stored, min=200 kB stored,\nmax=1.8 MB stored, std=515 kB stored", "x": -225.0, "y": 1050}, {"color": null, "id": "Hourly data stored in Default edge usage pattern", "label": "Hourly data stored\nin Default edge\nusage pattern", "shape": "dot", "size": 15, "title": "Hourly data stored in Default edge usage pattern\n=\nAverage hourly occurrences in Default edge usage pattern * (Data stored by\nrequest * one hour / Request duration)\n=\n105192 values from 2025-01-01 00:00:00+00:00 to 2037-01-01 00:00:00+00:00:\nfirst=0.000295 , last=0.000169 , mean=2.87 k, min=0, max=5.74 k, std=1.66 k *\n(100 kB stored * 1 h / 1 s)\n=\n105192 values from 2025-01-01 00:00:00+00:00 to 2037-01-01 00:00:00+00:00:\nfirst=106 kB stored, last=60.7 kB stored, mean=1.03 TB stored, min=0, max=2.07\nTB stored, std=596 GB stored", "x": 225.0, "y": 1050}]);
+                  nodes = new vis.DataSet([{"color": null, "id": "Hourly data stored across usage patterns", "label": "Hourly data stored\nacross usage\npatterns", "shape": "dot", "size": 15, "title": "Hourly data stored across usage patterns\n=\nHourly data stored in usage pattern + Hourly data stored in Default edge usage\npattern\n=\n26298 values from 2025-01-01 00:00:00+00:00 to 2028-01-01 18:00:00+00:00:\nfirst=600 kB stored, last=1.4 MB stored, mean=999 kB stored, min=200 kB stored,\nmax=1.8 MB stored, std=517 kB stored + 105192 values from 2025-01-01\n00:00:00+00:00 to 2037-01-01 00:00:00+00:00: first=106 kB stored, last=60.7 kB\nstored, mean=1.03 TB stored, min=0, max=2.07 TB stored, std=596 GB stored\n=\n105192 values from 2025-01-01 00:00:00+00:00 to 2037-01-01 00:00:00+00:00:\nfirst=706 kB stored, last=60.7 kB stored, mean=1.03 TB stored, min=60.7 kB\nstored, max=2.07 TB stored, std=596 GB stored", "x": 0.0, "y": 1200}, {"color": null, "id": "Hourly data stored in usage pattern", "label": "Hourly data stored\nin usage pattern", "shape": "dot", "size": 15, "title": "Hourly data stored in usage pattern\n=\nAverage hourly occurrences in usage pattern * (Data stored by request * one hour\n/ Request duration)\n=\n26298 values from 2025-01-01 00:00:00+00:00 to 2028-01-01 18:00:00+00:00:\nfirst=0.00167 , last=0.00389 , mean=0.00278 , min=0.000556 , max=0.005 ,\nstd=0.00144 * (100 kB stored * 1 h / 1 s)\n=\n26298 values from 2025-01-01 00:00:00+00:00 to 2028-01-01 18:00:00+00:00:\nfirst=600 kB stored, last=1.4 MB stored, mean=999 kB stored, min=200 kB stored,\nmax=1.8 MB stored, std=517 kB stored", "x": -225.0, "y": 1050}, {"color": null, "id": "Hourly data stored in Default edge usage pattern", "label": "Hourly data stored\nin Default edge\nusage pattern", "shape": "dot", "size": 15, "title": "Hourly data stored in Default edge usage pattern\n=\nAverage hourly occurrences in Default edge usage pattern * (Data stored by\nrequest * one hour / Request duration)\n=\n105192 values from 2025-01-01 00:00:00+00:00 to 2037-01-01 00:00:00+00:00:\nfirst=0.000295 , last=0.000169 , mean=2.87 k, min=0, max=5.74 k, std=1.66 k *\n(100 kB stored * 1 h / 1 s)\n=\n105192 values from 2025-01-01 00:00:00+00:00 to 2037-01-01 00:00:00+00:00:\nfirst=106 kB stored, last=60.7 kB stored, mean=1.03 TB stored, min=0, max=2.07\nTB stored, std=596 GB stored", "x": 225.0, "y": 1050}]);
                   edges = new vis.DataSet([{"arrows": "to", "from": "Hourly data stored in usage pattern", "to": "Hourly data stored across usage patterns"}, {"arrows": "to", "from": "Hourly data stored in Default edge usage pattern", "to": "Hourly data stored across usage patterns"}]);
 
                   nodeColors = {};

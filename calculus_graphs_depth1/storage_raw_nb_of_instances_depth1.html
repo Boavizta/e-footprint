@@ -31,7 +31,7 @@
         </center>
         <style type="text/css">
 
-             #mynetwork_a55933 {
+             #mynetwork_59aa11 {
                  width: 760px;
                  height: 300px;
                  background-color: #ffffff;
@@ -53,7 +53,7 @@
         <div class="card" style="width: 100%">
             
             
-            <div id="mynetwork_a55933" class="card-body"></div>
+            <div id="mynetwork_59aa11" class="card-body"></div>
         </div>
 
         
@@ -83,12 +83,12 @@
 
               // This method is responsible for drawing the graph, returns the drawn network
               function drawGraph() {
-                  var container = document.getElementById('mynetwork_a55933');
+                  var container = document.getElementById('mynetwork_59aa11');
 
                   
 
                   // parsing and collecting nodes and edges from the python
-                  nodes = new vis.DataSet([{"color": null, "id": "Hourly raw number of instances", "label": "Hourly raw number of\ninstances", "shape": "dot", "size": 15, "title": "Hourly raw number of instances\n=\nFull cumulative storage need / Storage capacity\n=\n105192 values from 2025-01-01 00:00:00+00:00 to 2037-01-01 00:00:00+00:00:\nfirst=5.72 MB stored, last=18100 TB stored, mean=53300 TB stored, min=5.72 MB\nstored, max=99600 TB stored, std=31400 TB stored / 1 TB stored\n=\n105192 values from 2025-01-01 00:00:00+00:00 to 2037-01-01 00:00:00+00:00:\nfirst=0.00000572 , last=18.1 k, mean=53.3 k, min=0.00000572 , max=99.6 k,\nstd=31.4 k", "x": 0.0, "y": 1650}, {"color": null, "id": "Full cumulative storage need", "label": "Full cumulative\nstorage need", "shape": "dot", "size": 15, "title": "Full cumulative storage need\n=\nCumulative storage need for Manually defined job + Cumulative storage need for\nVideo streaming job + Initial storage need\n=\n105192 values from 2025-01-01 00:00:00+00:00 to 2037-01-01 00:00:00+00:00:\nfirst=5.72 MB stored, last=18100 TB stored, mean=53300 TB stored, min=5.72 MB\nstored, max=99600 TB stored, std=31400 TB stored + 26298 values from 2025-01-01\n00:00:00+00:00 to 2028-01-01 18:00:00+00:00: first=0, last=0, mean=0, min=0,\nmax=0, std=0 + 0 B stored\n=\n105192 values from 2025-01-01 00:00:00+00:00 to 2037-01-01 00:00:00+00:00:\nfirst=5.72 MB stored, last=18100 TB stored, mean=53300 TB stored, min=5.72 MB\nstored, max=99600 TB stored, std=31400 TB stored", "x": -262.5, "y": 1500}, {"color": null, "id": "Storage capacity", "label": "Storage capacity", "shape": "dot", "size": 15, "title": "Storage capacity = 1 TB stored", "x": 262.5, "y": 1500}]);
+                  nodes = new vis.DataSet([{"color": null, "id": "Hourly raw number of instances", "label": "Hourly raw number of\ninstances", "shape": "dot", "size": 15, "title": "Hourly raw number of instances\n=\nFull cumulative storage need / Storage capacity\n=\n105192 values from 2025-01-01 00:00:00+00:00 to 2037-01-01 00:00:00+00:00:\nfirst=2.12 MB stored, last=18100 TB stored, mean=53300 TB stored, min=2.12 MB\nstored, max=99600 TB stored, std=31400 TB stored / 1 TB stored\n=\n105192 values from 2025-01-01 00:00:00+00:00 to 2037-01-01 00:00:00+00:00:\nfirst=0.00000212 , last=18.1 k, mean=53.3 k, min=0.00000212 , max=99.6 k,\nstd=31.4 k", "x": 0.0, "y": 1650}, {"color": null, "id": "Full cumulative storage need", "label": "Full cumulative\nstorage need", "shape": "dot", "size": 15, "title": "Full cumulative storage need\n=\nCumulative storage need for Manually defined job + Cumulative storage need for\nVideo streaming job + Initial storage need\n=\n105192 values from 2025-01-01 00:00:00+00:00 to 2037-01-01 00:00:00+00:00:\nfirst=2.12 MB stored, last=18100 TB stored, mean=53300 TB stored, min=2.12 MB\nstored, max=99600 TB stored, std=31400 TB stored + 26298 values from 2025-01-01\n00:00:00+00:00 to 2028-01-01 18:00:00+00:00: first=0, last=0, mean=0, min=0,\nmax=0, std=0 + 0 B stored\n=\n105192 values from 2025-01-01 00:00:00+00:00 to 2037-01-01 00:00:00+00:00:\nfirst=2.12 MB stored, last=18100 TB stored, mean=53300 TB stored, min=2.12 MB\nstored, max=99600 TB stored, std=31400 TB stored", "x": -262.5, "y": 1500}, {"color": null, "id": "Storage capacity", "label": "Storage capacity", "shape": "dot", "size": 15, "title": "Storage capacity = 1 TB stored", "x": 262.5, "y": 1500}]);
                   edges = new vis.DataSet([{"arrows": "to", "from": "Full cumulative storage need", "to": "Hourly raw number of instances"}, {"arrows": "to", "from": "Storage capacity", "to": "Hourly raw number of instances"}]);
 
                   nodeColors = {};

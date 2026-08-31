@@ -31,9 +31,9 @@
         </center>
         <style type="text/css">
 
-             #mynetwork_6659e0 {
-                 width: 760px;
-                 height: 300px;
+             #mynetwork_4af133 {
+                 width: 1800px;
+                 height: 900px;
                  background-color: #ffffff;
                  border: 1px solid lightgray;
                  position: relative;
@@ -53,7 +53,7 @@
         <div class="card" style="width: 100%">
             
             
-            <div id="mynetwork_6659e0" class="card-body"></div>
+            <div id="mynetwork_4af133" class="card-body"></div>
         </div>
 
         
@@ -83,13 +83,13 @@
 
               // This method is responsible for drawing the graph, returns the drawn network
               function drawGraph() {
-                  var container = document.getElementById('mynetwork_6659e0');
+                  var container = document.getElementById('mynetwork_4af133');
 
                   
 
                   // parsing and collecting nodes and edges from the python
-                  nodes = new vis.DataSet([{"color": null, "id": "Unitary power for Default edge usage pattern", "label": "Unitary power for\nDefault edge usage\npattern", "shape": "dot", "size": 15, "title": "Unitary power for Default edge usage pattern\n=\nHourly workload for Default edge usage pattern * (Power - Idle power) + Idle\npower\n=\n105192 values from 2025-01-01 00:00:00+00:00 to 2037-01-01 00:00:00+00:00:\nfirst=0.6 , last=0.6 , mean=0.6 , min=0.6 , max=0.6 , std=0.0000000596 * (40 W -\n4 W) + 4 W\n=\n105192 values from 2025-01-01 00:00:00+00:00 to 2037-01-01 00:00:00+00:00:\nfirst=25.6 W, last=25.6 W, mean=25.6 W, min=25.6 W, max=25.6 W, std=0.00191 mW", "x": 0.0, "y": 900}, {"color": null, "id": "Hourly workload for Default edge usage pattern", "label": "Hourly workload for\nDefault edge usage\npattern", "shape": "dot", "size": 15, "title": "Hourly workload for Default edge usage pattern\n=\nUnitary hourly need for Default edge usage pattern\n=\n105192 values from 2025-01-01 00:00:00+00:00 to 2037-01-01 00:00:00+00:00:\nfirst=0.6 , last=0.6 , mean=0.6 , min=0.6 , max=0.6 , std=0.0000000596\n=\n105192 values from 2025-01-01 00:00:00+00:00 to 2037-01-01 00:00:00+00:00:\nfirst=0.6 , last=0.6 , mean=0.6 , min=0.6 , max=0.6 , std=0.0000000596", "x": -200.0, "y": 750}, {"color": null, "id": "Power", "label": "Power", "shape": "dot", "size": 15, "title": "Power\n=\nPower per unit * Number of units\n=\n40 W * 1\n=\n40 W", "x": 0.0, "y": 750}, {"color": null, "id": "Idle power", "label": "Idle power", "shape": "dot", "size": 15, "title": "Idle power\n=\nIdle power per unit * Number of units\n=\n4 W * 1\n=\n4 W", "x": 200.0, "y": 750}]);
-                  edges = new vis.DataSet([{"arrows": "to", "from": "Hourly workload for Default edge usage pattern", "to": "Unitary power for Default edge usage pattern"}, {"arrows": "to", "from": "Power", "to": "Unitary power for Default edge usage pattern"}, {"arrows": "to", "from": "Idle power", "to": "Unitary power for Default edge usage pattern"}]);
+                  nodes = new vis.DataSet([{"color": null, "id": "Average hourly occurrences of Manually defined job in 20 min streaming for usage pattern", "label": "Average hourly\noccurrences of\nManually defined job\nin 20 min streaming\nfor usage pattern", "shape": "dot", "size": 15, "title": "Average hourly occurrences of Manually defined job in 20 min streaming for usage\npattern\n=\n(Hourly nb of usage journey starts (UTC) shifted by no value) * Times per\njourney * Times per step hourly occurrences average Request duration\n=\n(26298 values from 2025-01-01 00:00:00+00:00 to 2028-01-01 18:00:00+00:00:\nfirst=3 , last=7 , mean=5 , min=1 , max=9 , std=2.59 shifted by no value) * 1 *\n2 hourly occurrences average 1 s\n=\n26298 values from 2025-01-01 00:00:00+00:00 to 2028-01-01 18:00:00+00:00:\nfirst=0.00167 , last=0.00389 , mean=0.00278 , min=0.000556 , max=0.005 ,\nstd=0.00144", "x": 0.0, "y": 450}, {"color": null, "id": "Hourly nb of usage journey starts (UTC)", "label": "Hourly nb of usage\njourney starts (UTC)", "shape": "dot", "size": 15, "title": "Hourly nb of usage journey starts (UTC)\n=\nHourly nb of usage journey starts converted to UTC from Timezone\n=\n26298 values from 2025-01-01 00:00:00 to 2028-01-01 18:00:00: first=7 , last=3 ,\nmean=5 , min=1 , max=9 , std=2.59 converted to UTC from Europe/Paris\n=\n26298 values from 2025-01-01 00:00:00+00:00 to 2028-01-01 18:00:00+00:00:\nfirst=3 , last=7 , mean=5 , min=1 , max=9 , std=2.59", "x": -225.0, "y": 300}, {"color": null, "id": "Hourly nb of usage journey starts", "label": "Hourly nb of usage\njourney starts", "shape": "dot", "size": 15, "title": "Hourly nb of usage journey starts = 26298 values from 2025-01-01 00:00:00 to\n2028-01-01 18:00:00: first=7 , last=3 , mean=5 , min=1 , max=9 , std=2.59", "x": -150.0, "y": 150}, {"color": "gold", "id": "Timezone", "label": "Timezone", "shape": "dot", "size": 15, "title": "Timezone = Europe/Paris", "x": 150.0, "y": 150}, {"color": "darkred", "id": "Times per journey", "label": "Times per journey", "shape": "dot", "size": 15, "title": "Times per journey = 1", "x": -75.0, "y": 300}, {"color": "darkred", "id": "Times per step", "label": "Times per step", "shape": "dot", "size": 15, "title": "Times per step = 2", "x": 75.0, "y": 300}, {"color": "darkred", "id": "Request duration", "label": "Request duration", "shape": "dot", "size": 15, "title": "Request duration = 1 s", "x": 225.0, "y": 300}]);
+                  edges = new vis.DataSet([{"arrows": "to", "from": "Hourly nb of usage journey starts (UTC)", "to": "Average hourly occurrences of Manually defined job in 20 min streaming for usage pattern"}, {"arrows": "to", "from": "Hourly nb of usage journey starts", "to": "Hourly nb of usage journey starts (UTC)"}, {"arrows": "to", "from": "Timezone", "to": "Hourly nb of usage journey starts (UTC)"}, {"arrows": "to", "from": "Times per journey", "to": "Average hourly occurrences of Manually defined job in 20 min streaming for usage pattern"}, {"arrows": "to", "from": "Times per step", "to": "Average hourly occurrences of Manually defined job in 20 min streaming for usage pattern"}, {"arrows": "to", "from": "Request duration", "to": "Average hourly occurrences of Manually defined job in 20 min streaming for usage pattern"}]);
 
                   nodeColors = {};
                   allNodes = nodes.get({ returnType: "Object" });

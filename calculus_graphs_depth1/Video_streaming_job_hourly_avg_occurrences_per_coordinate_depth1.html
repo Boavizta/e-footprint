@@ -31,7 +31,7 @@
         </center>
         <style type="text/css">
 
-             #mynetwork_d12066 {
+             #mynetwork_081df2 {
                  width: 760px;
                  height: 300px;
                  background-color: #ffffff;
@@ -53,7 +53,7 @@
         <div class="card" style="width: 100%">
             
             
-            <div id="mynetwork_d12066" class="card-body"></div>
+            <div id="mynetwork_081df2" class="card-body"></div>
         </div>
 
         
@@ -83,13 +83,13 @@
 
               // This method is responsible for drawing the graph, returns the drawn network
               function drawGraph() {
-                  var container = document.getElementById('mynetwork_d12066');
+                  var container = document.getElementById('mynetwork_081df2');
 
                   
 
                   // parsing and collecting nodes and edges from the python
-                  nodes = new vis.DataSet([{"color": null, "id": "Hourly workload for Default edge usage pattern", "label": "Hourly workload for\nDefault edge usage\npattern", "shape": "dot", "size": 15, "title": "Hourly workload for Default edge usage pattern\n=\nUnitary hourly need for Default edge usage pattern\n=\n105192 values from 2025-01-01 00:00:00+00:00 to 2037-01-01 00:00:00+00:00:\nfirst=0.6 , last=0.6 , mean=0.6 , min=0.6 , max=0.6 , std=0.0000000596\n=\n105192 values from 2025-01-01 00:00:00+00:00 to 2037-01-01 00:00:00+00:00:\nfirst=0.6 , last=0.6 , mean=0.6 , min=0.6 , max=0.6 , std=0.0000000596", "x": 0.0, "y": 750}, {"color": null, "id": "Unitary hourly need for Default edge usage pattern", "label": "Unitary hourly need\nfor Default edge\nusage pattern", "shape": "dot", "size": 15, "title": "Unitary hourly need for Default edge usage pattern\n=\n(Recurrent need expanded over timespan Hourly nb of edge usage journeys in\nparallel converted to UTC from Timezone) * Occurrences within Default edge usage\npattern\n=\n(168 values: first=0.6 , last=0.6 , mean=0.6 , min=0.6 , max=0.6 ,\nstd=0.000000119 expanded over timespan 105192 values from 2025-01-01\n00:00:00+00:00 to 2037-01-01 00:00:00+00:00: first=1.06 , last=0.607 , mean=10.3\nM, min=0, max=20.7 M, std=5.96 M converted to UTC from Europe/Paris) * 1\n=\n105192 values from 2025-01-01 00:00:00+00:00 to 2037-01-01 00:00:00+00:00:\nfirst=0.6 , last=0.6 , mean=0.6 , min=0.6 , max=0.6 , std=0.0000000596", "x": 0.0, "y": 600}]);
-                  edges = new vis.DataSet([{"arrows": "to", "from": "Unitary hourly need for Default edge usage pattern", "to": "Hourly workload for Default edge usage pattern"}]);
+                  nodes = new vis.DataSet([{"color": null, "id": "Average hourly occurrences of Video streaming job in 20 min streaming for usage pattern", "label": "Average hourly\noccurrences of Video\nstreaming job in 20\nmin streaming for\nusage pattern", "shape": "dot", "size": 15, "title": "Average hourly occurrences of Video streaming job in 20 min streaming for usage\npattern\n=\n(Hourly nb of usage journey starts (UTC) shifted by no value) * Times per\njourney * Times per step hourly occurrences average Request duration\n=\n(26298 values from 2025-01-01 00:00:00+00:00 to 2028-01-01 18:00:00+00:00:\nfirst=3 , last=7 , mean=5 , min=1 , max=9 , std=2.59 shifted by no value) * 1 *\n1 hourly occurrences average 20 min\n=\n26298 values from 2025-01-01 00:00:00+00:00 to 2028-01-01 18:00:00+00:00:\nfirst=1 , last=2.33 , mean=1.67 , min=0.333 , max=3 , std=0.862", "x": 0.0, "y": 450}, {"color": null, "id": "Hourly nb of usage journey starts (UTC)", "label": "Hourly nb of usage\njourney starts (UTC)", "shape": "dot", "size": 15, "title": "Hourly nb of usage journey starts (UTC)\n=\nHourly nb of usage journey starts converted to UTC from Timezone\n=\n26298 values from 2025-01-01 00:00:00 to 2028-01-01 18:00:00: first=7 , last=3 ,\nmean=5 , min=1 , max=9 , std=2.59 converted to UTC from Europe/Paris\n=\n26298 values from 2025-01-01 00:00:00+00:00 to 2028-01-01 18:00:00+00:00:\nfirst=3 , last=7 , mean=5 , min=1 , max=9 , std=2.59", "x": -225.0, "y": 300}, {"color": "darkred", "id": "Times per journey", "label": "Times per journey", "shape": "dot", "size": 15, "title": "Times per journey = 1", "x": -75.0, "y": 300}, {"color": "darkred", "id": "Times per step", "label": "Times per step", "shape": "dot", "size": 15, "title": "Times per step = 1", "x": 75.0, "y": 300}, {"color": null, "id": "Request duration", "label": "Request duration", "shape": "dot", "size": 15, "title": "Request duration\n=\nduplicate (Video duration)\n=\nduplicate (20 min)\n=\n20 min", "x": 225.0, "y": 300}]);
+                  edges = new vis.DataSet([{"arrows": "to", "from": "Hourly nb of usage journey starts (UTC)", "to": "Average hourly occurrences of Video streaming job in 20 min streaming for usage pattern"}, {"arrows": "to", "from": "Times per journey", "to": "Average hourly occurrences of Video streaming job in 20 min streaming for usage pattern"}, {"arrows": "to", "from": "Times per step", "to": "Average hourly occurrences of Video streaming job in 20 min streaming for usage pattern"}, {"arrows": "to", "from": "Request duration", "to": "Average hourly occurrences of Video streaming job in 20 min streaming for usage pattern"}]);
 
                   nodeColors = {};
                   allNodes = nodes.get({ returnType: "Object" });

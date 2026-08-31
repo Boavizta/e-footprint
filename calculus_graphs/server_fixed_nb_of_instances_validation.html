@@ -31,9 +31,9 @@
         </center>
         <style type="text/css">
 
-             #mynetwork_f403fb {
-                 width: 760px;
-                 height: 300px;
+             #mynetwork_d87eb2 {
+                 width: 1800px;
+                 height: 900px;
                  background-color: #ffffff;
                  border: 1px solid lightgray;
                  position: relative;
@@ -53,7 +53,7 @@
         <div class="card" style="width: 100%">
             
             
-            <div id="mynetwork_f403fb" class="card-body"></div>
+            <div id="mynetwork_d87eb2" class="card-body"></div>
         </div>
 
         
@@ -83,13 +83,13 @@
 
               // This method is responsible for drawing the graph, returns the drawn network
               function drawGraph() {
-                  var container = document.getElementById('mynetwork_f403fb');
+                  var container = document.getElementById('mynetwork_d87eb2');
 
                   
 
                   // parsing and collecting nodes and edges from the python
-                  nodes = new vis.DataSet([{"color": null, "id": "Hourly energy consumed by per edge device for Default edge usage pattern", "label": "Hourly energy\nconsumed by per edge\ndevice for Default\nedge usage pattern", "shape": "dot", "size": 15, "title": "Hourly energy consumed by per edge device for Default edge usage pattern\n=\nHourly nb of edge usage journeys in parallel * Unitary power for Default edge\nusage pattern * one hour\n=\n105192 values from 2025-01-01 00:00:00+00:00 to 2037-01-01 00:00:00+00:00:\nfirst=1.06 , last=0.607 , mean=10.3 M, min=0, max=20.7 M, std=5.96 M * 105192\nvalues from 2025-01-01 00:00:00+00:00 to 2037-01-01 00:00:00+00:00: first=25.6\nW, last=25.6 W, mean=25.6 W, min=25.6 W, max=25.6 W, std=0.00191 mW * 1 h\n=\n105192 values from 2025-01-01 00:00:00+00:00 to 2037-01-01 00:00:00+00:00:\nfirst=27.2 Wh, last=15.5 Wh, mean=264 MWh, min=0, max=529 MWh, std=153 MWh", "x": 0.0, "y": 1050}, {"color": null, "id": "Hourly nb of edge usage journeys in parallel", "label": "Hourly nb of edge\nusage journeys in\nparallel", "shape": "dot", "size": 15, "title": "Hourly nb of edge usage journeys in parallel\n=\nHourly nb of edge usage journey starts (UTC) hourly occurrences average Usage\nspan\n=\n52597 values from 2025-01-01 00:00:00+00:00 to 2031-01-01 13:00:00+00:00:\nfirst=0, last=0, mean=393 , min=0, max=1 k, std=488 hourly occurrences average 6\nyr\n=\n105192 values from 2025-01-01 00:00:00+00:00 to 2037-01-01 00:00:00+00:00:\nfirst=1.06 , last=0.607 , mean=10.3 M, min=0, max=20.7 M, std=5.96 M", "x": 0.0, "y": 450}, {"color": null, "id": "Unitary power for Default edge usage pattern", "label": "Unitary power for\nDefault edge usage\npattern", "shape": "dot", "size": 15, "title": "Unitary power for Default edge usage pattern\n=\nHourly workload for Default edge usage pattern * (Power - Idle power) + Idle\npower\n=\n105192 values from 2025-01-01 00:00:00+00:00 to 2037-01-01 00:00:00+00:00:\nfirst=0.6 , last=0.6 , mean=0.6 , min=0.6 , max=0.6 , std=0.0000000596 * (40 W -\n4 W) + 4 W\n=\n105192 values from 2025-01-01 00:00:00+00:00 to 2037-01-01 00:00:00+00:00:\nfirst=25.6 W, last=25.6 W, mean=25.6 W, min=25.6 W, max=25.6 W, std=0.00191 mW", "x": 0.0, "y": 900}]);
-                  edges = new vis.DataSet([{"arrows": "to", "from": "Hourly nb of edge usage journeys in parallel", "to": "Hourly energy consumed by per edge device for Default edge usage pattern"}, {"arrows": "to", "from": "Unitary power for Default edge usage pattern", "to": "Hourly energy consumed by per edge device for Default edge usage pattern"}]);
+                  nodes = new vis.DataSet([{"color": null, "id": "no value", "label": "no value", "shape": "dot", "size": 15, "title": "no value\n=\nUser defined number of instances fixed-instance capacity applies to on-premise\nservers Server type\n=\nno value fixed-instance capacity applies to on-premise servers autoscaling\n=\nno value", "x": 0.0, "y": 300}, {"color": null, "id": "User defined number of instances", "label": "User defined number\nof instances", "shape": "dot", "size": 15, "title": "User defined number of instances = no value", "x": -75.0, "y": 150}, {"color": "darkred", "id": "Server type", "label": "Server type", "shape": "dot", "size": 15, "title": "Server type = autoscaling", "x": 75.0, "y": 150}]);
+                  edges = new vis.DataSet([{"arrows": "to", "from": "User defined number of instances", "to": "no value"}, {"arrows": "to", "from": "Server type", "to": "no value"}]);
 
                   nodeColors = {};
                   allNodes = nodes.get({ returnType: "Object" });

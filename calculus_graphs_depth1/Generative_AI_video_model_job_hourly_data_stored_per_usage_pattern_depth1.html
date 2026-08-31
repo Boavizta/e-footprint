@@ -31,7 +31,7 @@
         </center>
         <style type="text/css">
 
-             #mynetwork_f8b843 {
+             #mynetwork_82ff3f {
                  width: 760px;
                  height: 300px;
                  background-color: #ffffff;
@@ -53,7 +53,7 @@
         <div class="card" style="width: 100%">
             
             
-            <div id="mynetwork_f8b843" class="card-body"></div>
+            <div id="mynetwork_82ff3f" class="card-body"></div>
         </div>
 
         
@@ -83,12 +83,12 @@
 
               // This method is responsible for drawing the graph, returns the drawn network
               function drawGraph() {
-                  var container = document.getElementById('mynetwork_f8b843');
+                  var container = document.getElementById('mynetwork_82ff3f');
 
                   
 
                   // parsing and collecting nodes and edges from the python
-                  nodes = new vis.DataSet([{"color": null, "id": "Hourly data stored in usage pattern", "label": "Hourly data stored\nin usage pattern", "shape": "dot", "size": 15, "title": "Hourly data stored in usage pattern\n=\nAverage hourly occurrences in usage pattern * (Data stored by request * one hour\n/ Ecologits generation_latency for sora-2-pro)\n=\n26298 values from 2025-01-01 00:00:00+00:00 to 2028-01-01 18:00:00+00:00:\nfirst=0.568 , last=0.379 , mean=0.313 , min=0.0631 , max=0.568 , std=0.163 * (0\nB stored * 1 h / 3.79 min)\n=\n26298 values from 2025-01-01 00:00:00+00:00 to 2028-01-01 18:00:00+00:00:\nfirst=0, last=0, mean=0, min=0, max=0, std=0", "x": 0.0, "y": 1200}, {"color": null, "id": "Average hourly occurrences in usage pattern", "label": "Average hourly\noccurrences in usage\npattern", "shape": "dot", "size": 15, "title": "Average hourly occurrences in usage pattern\n=\nHourly occurrences in usage pattern hourly occurrences average Ecologits\ngeneration_latency for sora-2-pro\n=\n26298 values from 2025-01-01 00:00:00+00:00 to 2028-01-01 18:00:00+00:00:\nfirst=9 , last=6 , mean=4.96 , min=1 , max=9 , std=2.58 hourly occurrences\naverage 3.79 min\n=\n26298 values from 2025-01-01 00:00:00+00:00 to 2028-01-01 18:00:00+00:00:\nfirst=0.568 , last=0.379 , mean=0.313 , min=0.0631 , max=0.568 , std=0.163", "x": -375.0, "y": 1050}, {"color": "darkred", "id": "Data stored by request", "label": "Data stored by\nrequest", "shape": "dot", "size": 15, "title": "Data stored by request = 0 B stored", "x": 375.0, "y": 1050}, {"color": null, "id": "Ecologits generation_latency for sora-2-pro", "label": "Ecologits\ngeneration_latency\nfor sora-2-pro", "shape": "dot", "size": 15, "title": "Ecologits generation_latency for sora-2-pro\n=\nduplicate (Ecologits generation_latency for sora-2-pro)\n=\nduplicate (3.79 min)\n=\n3.79 min", "x": 300.0, "y": 750}]);
+                  nodes = new vis.DataSet([{"color": null, "id": "Hourly data stored in usage pattern", "label": "Hourly data stored\nin usage pattern", "shape": "dot", "size": 15, "title": "Hourly data stored in usage pattern\n=\nAverage hourly occurrences in usage pattern * (Data stored by request * one hour\n/ Ecologits generation_latency for sora-2-pro)\n=\n26298 values from 2025-01-01 00:00:00+00:00 to 2028-01-01 18:00:00+00:00:\nfirst=0.189 , last=0.442 , mean=0.315 , min=0.0631 , max=0.568 , std=0.163 * (0\nB stored * 1 h / 3.79 min)\n=\n26298 values from 2025-01-01 00:00:00+00:00 to 2028-01-01 18:00:00+00:00:\nfirst=0, last=0, mean=0, min=0, max=0, std=0", "x": 0.0, "y": 1200}, {"color": null, "id": "Average hourly occurrences in usage pattern", "label": "Average hourly\noccurrences in usage\npattern", "shape": "dot", "size": 15, "title": "Average hourly occurrences in usage pattern\n=\nHourly occurrences in usage pattern hourly occurrences average Ecologits\ngeneration_latency for sora-2-pro\n=\n26298 values from 2025-01-01 00:00:00+00:00 to 2028-01-01 18:00:00+00:00:\nfirst=3 , last=7 , mean=5 , min=1 , max=9 , std=2.59 hourly occurrences average\n3.79 min\n=\n26298 values from 2025-01-01 00:00:00+00:00 to 2028-01-01 18:00:00+00:00:\nfirst=0.189 , last=0.442 , mean=0.315 , min=0.0631 , max=0.568 , std=0.163", "x": -375.0, "y": 1050}, {"color": "darkred", "id": "Data stored by request", "label": "Data stored by\nrequest", "shape": "dot", "size": 15, "title": "Data stored by request = 0 B stored", "x": 375.0, "y": 1050}, {"color": null, "id": "Ecologits generation_latency for sora-2-pro", "label": "Ecologits\ngeneration_latency\nfor sora-2-pro", "shape": "dot", "size": 15, "title": "Ecologits generation_latency for sora-2-pro\n=\nduplicate (Ecologits generation_latency for sora-2-pro)\n=\nduplicate (3.79 min)\n=\n3.79 min", "x": 300.0, "y": 750}]);
                   edges = new vis.DataSet([{"arrows": "to", "from": "Average hourly occurrences in usage pattern", "to": "Hourly data stored in usage pattern"}, {"arrows": "to", "from": "Data stored by request", "to": "Hourly data stored in usage pattern"}, {"arrows": "to", "from": "Ecologits generation_latency for sora-2-pro", "to": "Hourly data stored in usage pattern"}]);
 
                   nodeColors = {};
