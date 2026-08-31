@@ -7,7 +7,7 @@ description: Orchestrate the full implementation of a feature's tasks.md end to 
 
 You are the **supervisor** for implementing a feature's `tasks.md`. You do **not** write code yourself. You spawn sub-agents for the work, you own the conversation with the user, and you drive the loop from one task to the next. You **triage the review findings yourself**: you approve the evidently-good fixes on your own judgement and escalate to the user only when a finding is a genuinely structuring decision. Many tasks will need no human input at all; you handle everything else.
 
-This skill orchestrates the per-task skills `task-implement` and `task-review`. Read both (`.claude/skills/task-implement/SKILL.md`, `.claude/skills/task-review/SKILL.md`) once at the start so you know the process each sub-agent must follow. Note that those skills' standalone constraints — "do not chain to the next task", "the reviewer never touches files" — are deliberately relaxed here: **you** own chaining, and the review agent **does** apply the approved fixes, **but without knowing it at first** (only after you have triaged the review — your own judgement, plus any user decisions). Their *processes* (gates, commit conventions, review checklist) still hold.
+This skill orchestrates the per-task skills `task-implement` and `task-review`. Read both (`.claude/skills/task-implement/SKILL.md`, `.claude/skills/task-review/SKILL.md`) once at the start so you know the process each sub-agent must follow. Note that those skills' standalone constraints — "do not chain to the next task", "the reviewer never touches files" — are deliberately relaxed here: **you** own chaining, and the review agent **does** apply the approved fixes, **but without knowing it at first** (only after you have triaged the review — your own judgement, plus any user decisions). Their *processes* (gates and review checklist) still hold; this skill overrides their commit-message format for task-scoped commits.
 
 ## Setup
 
@@ -22,6 +22,8 @@ For each uncompleted task, in order:
 ### 1. Implement (sub-agent)
 
 Spawn a sub-agent (Agent tool, `general-purpose`) to implement **exactly one task**. Brief it: the feature name, the specific task, and the instruction to follow the process in `.claude/skills/task-implement/SKILL.md`. Tell it explicitly: **do not chain into the next task**, and **skip the CHANGELOG.md gate** — you (the supervisor) write one consolidated `## [Unreleased]` entry for the whole feature once every task is done, so a per-task entry would just fragment it.
+
+Give it the task number and require the implementation commit subject to start `<repo tag> task N:`, for example `[ADD] task 4: replace catalog datalists with selects`. This task-numbered format overrides `task-implement`'s standalone `<feature-name>: <task title>` format and makes the feature history easy to scan.
 
 Require a **terse final message** — this is all that enters your context, so keep it lean: task title; files touched; gate status (tests pass/fail, plus any repo-specific gates that applied); one line on what remains. No diffs, no narration.
 
@@ -71,7 +73,7 @@ Let the conversation breathe — the user may push back or discuss before decidi
 
 ### 4. Apply the fixes (reuse the review agent)
 
-Send the consolidated decisions — the fixes you auto-approved **plus** any the user decided — back to the **review sub-agent** (via SendMessage to its id, so it keeps full review context). Instruct it to apply only the approved fixes, in a **reasonable number of commits — typically 2–3** — grouping related changes, and putting any **larger refactor identified during review in its own commit**. Each commit follows the repo message convention (`[ADD]`/`[FIX]`/`[REFACTO]`/…, body `<feature-name>: <summary>`). It must re-run the constitution §2 gates after the fixes and report pass/fail tersely.
+Send the consolidated decisions — the fixes you auto-approved **plus** any the user decided — back to the **review sub-agent** (via SendMessage to its id, so it keeps full review context). Instruct it to apply only the approved fixes, in a **reasonable number of commits — typically 2–3** — grouping related changes, and putting any **larger refactor identified during review in its own commit**. Every review-fix commit subject starts `<repo tag> task N review fix:`, for example `[FIX] task 4 review fix: preserve a saved zero threshold`. It must re-run the constitution §2 gates after the fixes and report pass/fail tersely.
 
 **On gate failure here too: halt and surface.**
 
