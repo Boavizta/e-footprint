@@ -16,9 +16,11 @@ Exempt:
 - Small refactors with no API surface change.
 - Investigations and design exploration. Live freely under `archives/investigations/` or in scratch files.
 
+A conversational batch of bugs is a structured exemption: `bug-fixes` replaces the specify/plan stages with one evidence-backed diagnostic per report and a shared `tasks.md`. Its tasks then use the normal implement, review, and archive stages. A single small bug normally goes straight to diagnosis and implementation without a feature folder.
+
 ## The four stages
 
-**Document formats.** `spec` and `plan` are authored as **self-contained HTML** (`spec.html`, `plan.html`) — they are write-once review documents where mockups, diagrams, tables, and collapsible sections aid review; the `spec-specify` / `spec-plan` skills carry the template (classless CSS inlined, no frameworks/CDNs). `tasks` stays **Markdown** (`tasks.md`): it is a living checklist edited as tasks are marked done, where clean one-line diffs matter more than rich rendering. All three are committed during the feature's life and deleted at archive (stage 5); durable insight is promoted to the live `.md` specs.
+**Document formats.** `spec` and `plan` are authored as **self-contained HTML** (`spec.html`, `plan.html`) — they are write-once review documents where mockups, diagrams, tables, and collapsible sections aid review; the `spec-specify` / `spec-plan` skills carry the template (classless CSS inlined, no frameworks/CDNs). `tasks` stays **Markdown** (`tasks.md`): it is a living checklist edited as tasks are marked done, where clean one-line diffs matter more than rich rendering. A bug batch has `tasks.md` plus Markdown files under `diagnostics/`, with no spec or plan. These working records are committed during the feature's life and deleted at archive (stage 5); durable insight is promoted to the live reference specs.
 
 ### 1. Specify
 
@@ -81,7 +83,7 @@ For each task in `tasks.md`:
 
 Each task ships independently. The feature is complete when all tasks are done.
 
-Skills: `task-implement` picks up a task and executes it. `task-review` reviews the resulting commit. Or run `feature-implement` to orchestrate the whole `tasks.md` end to end — it loops over tasks, spawning the implement and review sub-agents and pausing once per task for your decisions. When `feature-implement` drives the loop, it defers the CHANGELOG gate: each task skips it, and the supervisor writes one consolidated `## [Unreleased]` entry once every task is done, rather than one fragment per task.
+Skills: `task-implement` picks up a task and executes it. `task-review` reviews the resulting commit. For a bug batch, both read the task's linked diagnostic in place of spec and plan. Or run `feature-implement` to orchestrate the whole `tasks.md` end to end — it loops over tasks, spawning the implement and review sub-agents and pausing once per task for your decisions. When `feature-implement` drives the loop, it defers the CHANGELOG gate: each task skips it, and the supervisor writes one consolidated `## [Unreleased]` entry once every task is done, rather than one fragment per task.
 
 ### 5. Archive
 
@@ -89,7 +91,7 @@ Skills: `task-implement` picks up a task and executes it. `task-review` reviews 
 
 When all tasks have shipped:
 
-1. **Promote durable insight into the live reference docs first — and keep them up to date.** Any decision, convention, or constraint that a future contributor or agent would need to make a sound call belongs in the live reference specs (`architecture/` / `conventions.md` / `testing.md`), never in an archive nobody reads. Most of this should already have happened during implementation; this step is the final check that the reference docs reflect reality. This is the whole point of archiving: once the durable parts live where they belong, the spec folder is disposable.
+1. **Promote durable insight into the live reference docs first — and keep them up to date.** Read the available intent records (spec / plan, or bug diagnostics). Any decision, convention, or constraint that a future contributor or agent would need to make a sound call belongs in the live reference specs (`architecture/` / `conventions.md` / `testing.md`), never in an archive nobody reads. Most of this should already have happened during implementation; this step is the final check that the reference docs reflect reality. This is the whole point of archiving: once the durable parts live where they belong, the feature folder is disposable.
 2. **Delete `specs/features/<feature-name>/`** (including any untracked `spec.html` / `plan.html` — a tracked-files delete leaves those behind). Git history preserves everything.
 3. **Confirm `CHANGELOG.md` has an `## [Unreleased]` entry** for the feature. `feature-implement` normally already wrote it at the end of the loop; add one now only if it's missing.
 

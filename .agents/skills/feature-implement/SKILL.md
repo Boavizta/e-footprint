@@ -11,9 +11,9 @@ This skill orchestrates the per-task skills `task-implement` and `task-review`. 
 
 ## Setup
 
-1. **Confirm the feature.** Ask the user which feature, or take the one they named. Read `specs/features/<feature-name>/tasks.md`. For cross-repo features, the single `tasks.md` lives in the driving repo.
-2. **Read the loop's standing inputs once**, so you can brief sub-agents tersely: `specs/features/<feature-name>/spec.html` and `plan.html` (skim for intent), `specs/constitution.md` (gates), `specs/conventions.md`, and `specs/architecture/index.html` plus the owning architecture pages it routes to.
-3. **Identify the uncompleted tasks**, in order. These are the iterations of your loop.
+1. **Confirm the feature.** Ask the user which feature, or take the one they named. Read `specs/features/<feature-name>/tasks.md`. For cross-repo features, the single `tasks.md` lives in the driving repo. If its execution plan defines multiple runs, confirm which run this session executes.
+2. **Read the loop's standing inputs once**, so you can brief sub-agents tersely: `specs/constitution.md` (gates), `specs/conventions.md`, and `specs/architecture/index.html` plus the owning architecture pages it routes to. For a normal feature, also skim `spec.html` and `plan.html` for intent. A bug-fix batch deliberately has neither; each task must link a diagnostic file, which replaces them for that task. If neither form of intent exists, stop.
+3. **Identify the uncompleted tasks** in the selected run's stated order, or document order when no runs are defined. These are the iterations of your loop.
 
 ## Per-task loop
 

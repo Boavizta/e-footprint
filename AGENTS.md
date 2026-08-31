@@ -43,6 +43,7 @@ Feature work follows four stages, each gated by your review:
 4. **Implement** — execute one task at a time, respecting constitution gates. Skill: `task-implement`.
 
 Investigations and ad-hoc design work are exempt; the four-stage flow is for features that ship.
+Conversational bug batches use `bug-fixes`: diagnostics plus `tasks.md`, followed by the normal implement/review/archive stages.
 
 ## Documentation upkeep
 
