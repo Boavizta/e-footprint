@@ -273,10 +273,13 @@ def attributed_footprint(obj: ModelingObject, phase: LifeCyclePhases):
     total = EmptyExplainableObject()
     level = type(obj)
     for system in obj.systems:
-        for atom in atoms(system, phase):
-            node = next((node for node in atom.chain() if isinstance(node, level)), None)
-            if node == obj:
-                total += atom.value
+        for source in attribution_sources(system):
+            for atom in source.attribution_atoms(phase):
+                node = next((node for node in atom.chain() if isinstance(node, level)), None)
+                if node == obj:
+                    total += atom.value
+            total.finalize_explanation()
+            evict_attribution_source_intermediates(source)
     label = ("Attributed fabrication footprint" if phase is LifeCyclePhases.MANUFACTURING
              else "Attributed energy footprint")
     return total.to(u.kg).set_label(label)

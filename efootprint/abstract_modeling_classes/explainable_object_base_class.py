@@ -347,11 +347,15 @@ class ExplainableObject(ObjectLinkedToModelingObj):
             for direct_ancestor_with_id in self.direct_ancestors_with_id:
                 direct_ancestor_with_id.add_child_to_direct_children_with_id(direct_child=self)
 
-            if self.left_parent is not None or self.right_parent is not None:
-                self.explain_nested_tuples = self.compute_explain_nested_tuples()
-                # Free up memory because left parent and right_parent aren’t needed anymore
-                self.left_parent = None
-                self.right_parent = None
+            self.finalize_explanation()
+
+    def finalize_explanation(self):
+        """Retain the calculated formula and release the arithmetic value-parent tree."""
+        if self.left_parent is not None or self.right_parent is not None:
+            self.explain_nested_tuples = self.compute_explain_nested_tuples()
+            self.left_parent = None
+            self.right_parent = None
+        return self
 
     def return_direct_ancestors_with_id_to_child(self):
         if self.modeling_obj_container is not None:
@@ -431,6 +435,8 @@ class ExplainableObject(ObjectLinkedToModelingObj):
                 raise ValueError(
                     f"'{self.label}' is an intermediate calculation node with source '{self.source}' "
                     f"but no modeling_obj_container. Move the source to the final calculated attribute.")
+        if self.explain_nested_tuples is not None:
+            return self.explain_nested_tuples
 
         left_explanation = None
         right_explanation = None

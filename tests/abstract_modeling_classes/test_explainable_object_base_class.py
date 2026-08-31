@@ -261,6 +261,40 @@ class TestExplainableObjectBaseClass(TestCase):
         result = eo.compute_explain_nested_tuples()
         self.assertEqual(result, (left_parent, "+", right_parent))
 
+    def test_finalized_explanation_remains_composable(self):
+        """Test a finalized formula can become a parent of another calculation without retaining value parents."""
+        a = ExplainableObject(value=1, label="a")
+        b = ExplainableObject(value=2, label="b")
+        a.set_modeling_obj_container(MagicMock(), "a")
+        b.set_modeling_obj_container(MagicMock(), "b")
+        subtotal = ExplainableObject(value=3, left_parent=a, right_parent=b, operator="+")
+
+        subtotal.finalize_explanation()
+        total = ExplainableObject(value=6, label="total", left_parent=subtotal, right_parent=subtotal, operator="+")
+        total.finalize_explanation()
+
+        self.assertIsNone(subtotal.left_parent)
+        self.assertIsNone(subtotal.right_parent)
+        self.assertIsNone(total.left_parent)
+        self.assertIsNone(total.right_parent)
+        self.assertEqual("total = a + b + a + b = 1 + 2 + 1 + 2 = 6", total.explain(pretty_print=False))
+        self.assertIs(total, total.finalize_explanation())
+        self.assertEqual("total = a + b + a + b = 1 + 2 + 1 + 2 = 6", total.explain(pretty_print=False))
+
+    def test_attached_finalized_parent_remains_a_concise_formula_boundary(self):
+        """Test a stored formula on an attached value stays collapsed in downstream explanations."""
+        a = ExplainableObject(value=1, label="a")
+        b = ExplainableObject(value=2, label="b")
+        a.set_modeling_obj_container(MagicMock(), "a")
+        b.set_modeling_obj_container(MagicMock(), "b")
+        subtotal = ExplainableObject(value=3, label="subtotal", left_parent=a, right_parent=b, operator="+")
+        subtotal.set_modeling_obj_container(MagicMock(), "subtotal")
+        total = ExplainableObject(value=6, label="total", left_parent=subtotal, right_parent=subtotal, operator="+")
+
+        total.finalize_explanation()
+
+        self.assertEqual("total = subtotal + subtotal = 3 + 3 = 6", total.explain(pretty_print=False))
+
     def test_print_flat_tuple_formula(self):
         left_parent = ExplainableObject(value=3, label="Label L")
         right_parent = ExplainableObject(value=4, label="Label R")

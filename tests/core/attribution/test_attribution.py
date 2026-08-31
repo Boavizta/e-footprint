@@ -1,10 +1,15 @@
 import unittest
 from datetime import datetime
+from types import SimpleNamespace
 from unittest import TestCase
+from unittest.mock import patch
 
+import numpy as np
 import pytz
 
 from efootprint.abstract_modeling_classes.empty_explainable_object import EmptyExplainableObject
+from efootprint.abstract_modeling_classes.explainable_hourly_quantities import ExplainableHourlyQuantities
+from efootprint.abstract_modeling_classes.explainable_object_base_class import ExplainableObject
 from efootprint.abstract_modeling_classes.explainable_timezone import ExplainableTimezone
 from efootprint.abstract_modeling_classes.reactive_core import computed_structures
 from efootprint.abstract_modeling_classes.source_objects import SourceValue
@@ -328,6 +333,92 @@ class TestAttributionFold(TestCase):
                 self, footprint_per_node(self.system, level, LifeCyclePhases.MANUFACTURING)[obj],
                 attributed_footprint(obj, LifeCyclePhases.MANUFACTURING),
                 msg=f"{obj.name} fabrication delegation mismatch")
+
+    def test_attributed_footprint_preserves_exact_hourly_result_and_complete_explanation(self):
+        """Test source-wise finalization preserves bytes and metadata while exposing the complete formula."""
+        for phase, label in ((LifeCyclePhases.USAGE, "Attributed energy footprint"),
+                             (LifeCyclePhases.MANUFACTURING, "Attributed fabrication footprint")):
+            with self.subTest(phase=phase):
+                expected = footprint_per_node(self.system, UsagePattern, phase)[self.up1].set_label(label)
+                expected.finalize_explanation()
+                result = attributed_footprint(self.up1, phase)
+
+                self.assertEqual(expected.magnitude.shape, result.magnitude.shape)
+                self.assertEqual(expected.magnitude.dtype, result.magnitude.dtype)
+                self.assertEqual(expected.magnitude.tobytes(), result.magnitude.tobytes())
+                self.assertEqual(expected.start_date, result.start_date)
+                self.assertEqual(expected.unit, result.unit)
+                self.assertEqual(expected.sum().to(u.kg).magnitude, result.sum().to(u.kg).magnitude)
+                self.assertEqual(label, result.label)
+                self.assertGreater(result.sum().to(u.kg).magnitude, 0)
+                self.assertIsNone(result.left_parent)
+                self.assertIsNone(result.right_parent)
+                self.assertEqual(expected.explain(pretty_print=False), result.explain(pretty_print=False))
+
+    def test_attributed_footprint_preserves_cross_source_float32_addition_order(self):
+        """Test source-wise retention does not regroup float32 additions into per-source subtotals."""
+        start_date = datetime(2026, 1, 1)
+
+        def hourly(value, label):
+            return ExplainableHourlyQuantities(
+                np.array([value], dtype=np.float32) * u.kg, start_date=start_date, label=label)
+
+        first = hourly(1e20, "first source value")
+        second = hourly(-1e20, "second source first value")
+        third = hourly(1, "second source second value")
+
+        def source(name, values):
+            return SimpleNamespace(
+                name=name,
+                attribution_atoms=lambda _phase: tuple(
+                    SimpleNamespace(value=value, chain=lambda: [self.up1]) for value in values))
+
+        sources = (source("first source", (first,)), source("second source", (second, third)))
+        direct_order = sum((first, second, third), start=EmptyExplainableObject())
+        regrouped = first + (second + third)
+
+        self.assertNotEqual(direct_order.magnitude.tobytes(), regrouped.magnitude.tobytes())
+        with (
+            patch("efootprint.core.attribution.attribution_sources", return_value=sources),
+            patch("efootprint.core.attribution.evict_attribution_source_intermediates"),
+        ):
+            result = attributed_footprint(self.up1, LifeCyclePhases.USAGE)
+
+        self.assertEqual(direct_order.magnitude.tobytes(), result.magnitude.tobytes())
+
+    def test_attributed_footprint_finalizes_and_evicts_each_source_before_consuming_the_next(self):
+        """Test each source boundary finalizes the running total before eviction and the next source."""
+        events = []
+        value = ExplainableHourlyQuantities(
+            np.array([1], dtype=np.float32) * u.kg, start_date=datetime(2026, 1, 1), label="source value")
+
+        def source(name):
+            def attribution_atoms(_phase):
+                events.append(f"atoms {name}")
+                return (SimpleNamespace(value=value, chain=lambda: [self.up1]),)
+
+            return SimpleNamespace(name=name, attribution_atoms=attribution_atoms)
+
+        first_source = source("first")
+        second_source = source("second")
+        original_finalize = ExplainableObject.finalize_explanation
+
+        def record_finalize(total):
+            events.append("finalize")
+            return original_finalize(total)
+
+        with (
+            patch("efootprint.core.attribution.attribution_sources", return_value=(first_source, second_source)),
+            patch.object(ExplainableObject, "finalize_explanation", record_finalize),
+            patch(
+                "efootprint.core.attribution.evict_attribution_source_intermediates",
+                side_effect=lambda source_to_evict: events.append(f"evict {source_to_evict.name}"),
+            ),
+        ):
+            attributed_footprint(self.up1, LifeCyclePhases.USAGE)
+
+        self.assertEqual(
+            ["atoms first", "finalize", "evict first", "atoms second", "finalize", "evict second"], events)
 
     def test_attributed_footprint_is_empty_for_systemless_object(self):
         """Test that a system-less object returns a labeled Empty value for both phases."""

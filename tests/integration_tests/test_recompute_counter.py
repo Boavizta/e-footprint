@@ -10,6 +10,8 @@ from unittest.mock import patch
 
 from efootprint.abstract_modeling_classes.reactive_core import ReactiveSlot, computed_slots, instance_slot_registry
 from efootprint.abstract_modeling_classes.source_objects import SourceValue
+from efootprint.core.attribution import attributed_footprint
+from efootprint.core.lifecycle_phases import LifeCyclePhases
 from efootprint.logger import logger
 from tests.performance_tests.generate_big_system import generate_big_system, form_inputs_hourly_starts
 
@@ -135,6 +137,35 @@ class TestRecomputeCounter(TestCase):
         for source_id, rows in untouched_rows_before.items():
             source = next(obj for obj in system.all_linked_objects if obj.id == source_id)
             self.assertIs(rows, source.impact_repartition_rows)
+
+    def test_direct_attribution_evicts_each_sources_transient_intermediates(self):
+        """Test direct attributed reads retain non-zero results while releasing every source's transient helpers."""
+        system = self.build_system()
+        target = system.edge_usage_patterns[0]._value
+        server_transients = ("binding_demand_per_job", "dynamic_share_per_job", "provisioned_share_per_job")
+        transients_by_phase = {
+            LifeCyclePhases.MANUFACTURING: (
+                (system.servers[0], server_transients),
+                (system.edge_devices[0], (
+                    "demand_share_per_need_and_pattern", "fabrication_pool_share_per_carrier_and_pattern",
+                    "fabrication_atom_value_per_need_and_pattern")),
+                (system.storages[0], ("retention_cumulative_per_cell", "baseline_flat_share_per_job")),
+            ),
+            LifeCyclePhases.USAGE: (
+                (system.servers[0], server_transients),
+                (system.edge_devices[0], (
+                    "demand_share_per_need_and_pattern", "energy_atom_value_per_need_and_pattern")),
+            ),
+        }
+
+        for phase in LifeCyclePhases:
+            with self.subTest(phase=phase):
+                result = attributed_footprint(target, phase)
+                self.assertGreater(result.sum().magnitude, 0)
+                for source, transient_names in transients_by_phase[phase]:
+                    source_slots = instance_slot_registry(source)
+                    for transient_name in transient_names:
+                        self.assertFalse(source_slots[transient_name].has_cached_value)
 
     def test_equal_value_recompute_frequency_is_measured(self):
         """Test that recomputations yielding a value equal to the replaced one are counted — the
