@@ -1,0 +1,140 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Delta-encoded hourly timeseries — Backlog analysis</title>
+<style>
+  body { font-family: system-ui, -apple-system, sans-serif; line-height: 1.6;
+         max-width: 58rem; margin: 2rem auto; padding: 0 1.2rem; color: #1a1a1a; }
+  h1 { border-bottom: 2px solid #e0e0e0; padding-bottom: .3rem; }
+  h2 { margin-top: 2rem; }
+  small { color: #666; }
+  table { border-collapse: collapse; width: 100%; margin: 1rem 0; }
+  th, td { border: 1px solid #ccc; padding: .4rem .6rem; text-align: left; vertical-align: top; }
+  th { background: #f5f5f5; }
+  code { background: #f4f4f4; padding: .1rem .35rem; border-radius: 3px; font-size: .9em; }
+  pre { background: #f4f4f4; padding: .8rem; overflow-x: auto; }
+  blockquote { border-left: 3px solid #ccc; margin: 1rem 0; padding: .2rem 1rem; color: #555; }
+</style>
+</head>
+<body>
+
+<h1>Delta-encoded hourly timeseries — Backlog analysis</h1>
+<p><small>Status: Parked backlog · 2026-08-31</small></p>
+
+<section>
+  <h2>1. Decision</h2>
+  <blockquote>Do not implement now. Delta encoding has negligible typical-case benefit in the representative corpus,
+  but is an effective escape hatch if smooth growth-based timeseries repeatedly make serialized models exceed their
+  payload budget.</blockquote>
+  <p>The current codec converts hourly values to <code>float32</code>, compresses their raw bytes with Zstandard, and
+  Base64-encodes the result. Constant and repetitive arrays already compress exceptionally well. Smooth but continually
+  changing aggregates can contain tens of thousands of distinct floating-point values and compress poorly.</p>
+</section>
+
+<section>
+  <h2>2. Proposed transform</h2>
+  <ol>
+    <li>View each <code>float32</code> bit pattern as an unsigned 32-bit integer.</li>
+    <li>Store the first word followed by wrapping unsigned differences between consecutive words.</li>
+    <li>Compress the delta words with the existing Zstandard/Base64 pipeline.</li>
+    <li>Reconstruct with an unsigned cumulative sum and view the recovered words as <code>float32</code>.</li>
+  </ol>
+  <p>This is bit-exact, including negative zero, infinities, and NaN payloads. Arithmetic float deltas are not suitable:
+  cumulative floating-point rounding failed the bit-exact proof of concept. XOR deltas and byte shuffling were also
+  measured and compressed the stress model less effectively.</p>
+  <p>If introduced with a new JSON major version, prefer the self-describing key
+  <code>delta_compressed_values</code>. Existing <code>compressed_values</code> remains the legacy raw-float codec. This
+  avoids a separate encoding field while allowing standalone nested timeseries to decode without top-level version
+  context.</p>
+</section>
+
+<section>
+  <h2>3. Size evidence</h2>
+  <table>
+    <thead><tr><th>Benchmark</th><th>Current</th><th>Universal delta</th><th>Result</th></tr></thead>
+    <tbody>
+      <tr><td>Representative corpus: 14 fully upgraded and materialized models, 596 arrays</td>
+          <td>12.741 MB</td><td>12.689 MB</td><td>0.41% smaller in aggregate</td></tr>
+      <tr><td>Representative corpus, choose the smaller codec per array</td>
+          <td>12.741 MB</td><td>12.631 MB</td><td>0.86% smaller; 405/596 arrays choose delta</td></tr>
+      <tr><td>Growth-heavy smart-building stress model: encoded hourly strings</td>
+          <td>37.572 MB</td><td>11.382 MB</td><td>3.30× smaller</td></tr>
+      <tr><td>Growth-heavy smart-building stress model: complete compact JSON</td>
+          <td>41.895 MB</td><td>15.705 MB</td><td>2.67× smaller; 62.5% reduction</td></tr>
+      <tr><td>Growth-heavy smart-building stress model: formatted export estimate</td>
+          <td>52.093 MB</td><td>25.9 MB</td><td>Approximately 2× smaller</td></tr>
+    </tbody>
+  </table>
+  <p>The representative corpus result is intentionally based on normalized current-schema payloads, not the old files'
+  on-disk bytes: each source file is upgraded through the real interface importer and every serialized computed slot is
+  materialized before measurement. Universal delta made a few tiny files up to 0.29% larger. Adaptive selection removes
+  regressions but requires either compressing twice or a reliable selection heuristic.</p>
+  <p>The stress model contains 160 arrays covering 49.651 MB of raw <code>float32</code> data. Its aggregate impact-source
+  series combine three years of growing starts with a five-year usage span, producing roughly eight-year per-pattern
+  footprints and a nine-calendar-year aggregate. About 52,500 of 78,839 aggregate values are distinct, which defeats
+  the current raw-byte compression but responds well to bit-pattern deltas.</p>
+</section>
+
+<section>
+  <h2>4. Speed evidence</h2>
+  <table>
+    <thead><tr><th>Stress-model operation over all 160 arrays</th><th>Current</th><th>Delta</th><th>Effect</th></tr></thead>
+    <tbody>
+      <tr><td>Encode and compress</td><td>67.9 ms</td><td>87.7 ms</td><td>+19.8 ms / 29% slower</td></tr>
+      <tr><td>Decode and reconstruct</td><td>59.3 ms</td><td>60.4 ms</td><td>+1.1 ms / 2% slower</td></tr>
+      <tr><td>Parse compact JSON</td><td>18.6 ms</td><td>12.9 ms</td><td>31% faster</td></tr>
+      <tr><td>Codec plus compact JSON write estimate</td><td>72.4 ms</td><td>90.5 ms</td><td>Approximately 25% slower</td></tr>
+      <tr><td>Codec plus formatted export estimate</td><td>228 ms</td><td>210 ms</td><td>Approximately 8% faster</td></tr>
+      <tr><td>Parse plus decode every array</td><td>78 ms</td><td>73 ms</td><td>Approximately 6% faster</td></tr>
+    </tbody>
+  </table>
+  <p>These are local median microbenchmarks. Normal model hydration leaves compressed values lazy, so it receives the
+  smaller parse/transfer cost immediately and pays reconstruction only when a value is pulled.</p>
+</section>
+
+<section>
+  <h2>5. Implementation and risks</h2>
+  <ul>
+    <li>Change <code>ExplainableHourlyQuantities.to_json</code> and lazy decompression to write/read
+        <code>delta_compressed_values</code>; retain legacy <code>compressed_values</code> loading.</li>
+    <li>Define byte order explicitly and validate that decompressed buffers contain complete 32-bit words.</li>
+    <li>Re-encode legacy compressed values when writing the new major format. The current lazy pass-through path would
+        otherwise preserve old raw strings indefinitely.</li>
+    <li>Add bit-exact round trips for random values, negative zero, infinities, and NaNs; add legacy-load and malformed
+        payload tests.</li>
+    <li>Pin a growth-heavy size regression fixture. The existing representative corpus alone would not detect the
+        pathological improvement this proposal targets.</li>
+    <li>If adaptive selection is desired, benchmark its doubled compression work or implement and validate a cheap
+        entropy heuristic before adopting it.</li>
+  </ul>
+  <p>Expected production scope is approximately 30–50 lines plus tests and persistence documentation.</p>
+</section>
+
+<section>
+  <h2>6. Reproduction</h2>
+  <p>Run from the interface Poetry environment so the script can normalize old files through the real importer:</p>
+  <pre><code>cd e-footprint-interface
+poetry run python ../e-footprint/specs/backlog/delta-timeseries-encoding/benchmark.py \
+  ../json_files_that_should_load_and_open_results_without_failing_in_interface
+
+# Add the growth-heavy export and repeat the timing microbenchmark:
+poetry run python ../e-footprint/specs/backlog/delta-timeseries-encoding/benchmark.py \
+  ../json_files_that_should_load_and_open_results_without_failing_in_interface \
+  --stress-json "/path/to/growth-heavy-model.e-f.json" --timings</code></pre>
+  <p>The private corpus is not committed. The script redacts filenames by default, verifies every delta round trip, and
+  prints current, universal-delta, and adaptive compact sizes. Normalization may call model-owned external providers if
+  an old fixture lacks cached provider results; use the same dependency versions and API cache when reproducing a
+  release decision.</p>
+</section>
+
+<section>
+  <h2>7. Activation criterion</h2>
+  <p>Reconsider this work if growth-based or otherwise smooth high-entropy hourly aggregates repeatedly approach the
+  interface payload limit, or if serialized timeseries become a measured storage/network bottleneck. Re-run the corpus
+  and a current failing stress model before implementation because serialization policy and workload shape may change.</p>
+</section>
+
+</body>
+</html>
