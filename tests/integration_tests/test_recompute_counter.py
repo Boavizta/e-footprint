@@ -97,9 +97,22 @@ class TestRecomputeCounter(TestCase):
     def test_one_input_edit_invalidates_only_the_matrix_rows_in_its_cone(self):
         """Test that with the impact-repartition matrix materialized, a one-input edit voids only the
         per-source row slots in its dependency cone: re-reading the matrix recomputes the edited server's
-        rows and the matrix concatenation, nothing else in the lazy attribution layer."""
+        rows, its deliberately evicted transient helpers, and the matrix concatenation; other sources stay cached."""
         system = self.build_system()
         _ = system.impact_repartition_matrix
+        transient_names_by_source = (
+            (system.servers[0], ("binding_demand_per_job", "dynamic_share_per_job", "provisioned_share_per_job")),
+            (system.edge_devices[0], (
+                "demand_share_per_need_and_pattern", "fabrication_pool_share_per_carrier_and_pattern",
+                "fabrication_atom_value_per_need_and_pattern", "energy_atom_value_per_need_and_pattern")),
+            (system.storages[0], ("retention_cumulative_per_cell", "baseline_flat_share_per_job")),
+        )
+        for source, transient_names in transient_names_by_source:
+            with self.subTest(source=source.efootprint_class.__name__):
+                source_slots = instance_slot_registry(source)
+                self.assertTrue(source_slots["impact_repartition_rows"].has_cached_value)
+                for transient_name in transient_names:
+                    self.assertFalse(source_slots[transient_name].has_cached_value)
         edited_server = system.servers[0]
         untouched_rows_before = {
             source.id: source.impact_repartition_rows
@@ -112,6 +125,9 @@ class TestRecomputeCounter(TestCase):
         self.assertEqual(
             {
                 f"instances_fabrication_footprint of {edited_server.id}",
+                f"binding_demand_per_job of {edited_server.id}",
+                f"dynamic_share_per_job of {edited_server.id}",
+                f"provisioned_share_per_job of {edited_server.id}",
                 f"impact_repartition_rows of {edited_server.id}",
                 f"impact_repartition_matrix of {system.id}",
             },

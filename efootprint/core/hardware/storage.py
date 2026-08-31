@@ -284,7 +284,7 @@ class Storage(InfraHardware, AttributionSource):
         return (self.instances_fabrication_footprint * baseline_share).to(u.kg).set_label(
             f"{self.name} baseline fabrication footprint")
 
-    @computed_structure
+    @computed_structure(transient=True)
     def retention_cumulative_per_cell(self) -> dict:
         """Per-cell cumulative storage volume held, over every attribution cell of the storage's jobs — the
         hourly numerators of the retention weights. A cell's replicated data-stored rate is its hourly
@@ -302,7 +302,7 @@ class Storage(InfraHardware, AttributionSource):
 
         return cumulatives
 
-    @computed_structure
+    @computed_structure(transient=True)
     def baseline_flat_share_per_job(self) -> dict:
         """Flat period-total occurrence share of each job in the storage's total job occurrences — the
         always-on baseline stream's job weights (flat shares carry footprint at idle hours, where hourly

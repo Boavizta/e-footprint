@@ -11,7 +11,7 @@ from efootprint.abstract_modeling_classes.modeling_object import ModelingObject
 from efootprint.abstract_modeling_classes.reactive_core import (
     CircularDependencyError, ComputationPurpose, ReactiveSlot, ReverseCollection, ReverseLink,
     add_computed_attribute, computation_slots_for_purpose, computed_attribute, computed_dict, computed_slots,
-    computed_structure, computed_structures, invalidate, record_calculus_dependency,
+    computed_structure, computed_structures, evict_transient_structures, invalidate, record_calculus_dependency,
     observe_computations, record_structural_dependency, reverse_slots)
 from efootprint.abstract_modeling_classes.source_objects import SourceValue
 from efootprint.constants.units import u
@@ -1073,7 +1073,7 @@ class ReactiveCoreProjectionHolder(ModelingObject):
         if leaf is not None:
             self.leaf = leaf
 
-    @computed_structure
+    @computed_structure(transient=True)
     def raw_projection(self):
         """Raw dict projection over the leaf's power input."""
         type(self).compute_log.append("raw_projection")
@@ -1137,6 +1137,26 @@ class TestComputedStructure(TestCase):
 
         self.assertIs(pinned, self.holder.raw_projection)
         self.assertEqual([], ReactiveCoreProjectionHolder.compute_log)
+
+    def test_transient_eviction_preserves_cached_descendant_and_invalidation_edges(self):
+        """Test evicting a transient value keeps its cached descendant readable and its dependency edge live."""
+        self.assertEqual(3, self.holder.projection_total)
+
+        evict_transient_structures(self.holder)
+
+        raw_slot = computed_structures(ReactiveCoreProjectionHolder)["raw_projection"].slot(self.holder)
+        total_slot = computed_structures(ReactiveCoreProjectionHolder)["projection_total"].slot(self.holder)
+        self.assertFalse(raw_slot.has_cached_value)
+        self.assertTrue(total_slot.has_cached_value)
+        self.assertEqual(3, self.holder.projection_total)
+        self.leaf.power = SourceValue(2 * u.W)
+        self.assertFalse(total_slot.has_cached_value)
+        self.assertEqual(6, self.holder.projection_total)
+
+    def test_computed_structure_rejects_serialized_transient_configuration(self):
+        """Test a computed structure cannot opt into persistence and explicit value eviction together."""
+        with self.assertRaisesRegex(ValueError, "cannot be both serialized and transient"):
+            computed_structure(serialize=True, transient=True)
 
 
 def _all_registered_classes():

@@ -409,7 +409,7 @@ class ServerBase(InfraHardware, AttributionSource):
     def is_on_premise(self) -> bool:
         return self.server_type == ServerTypes.on_premise()
 
-    @computed_structure
+    @computed_structure(transient=True)
     def binding_demand_per_job(self) -> dict:
         """Each job's hourly demand on the server's binding resource, the resource picked per hour by
         raw[h] = max(compute_need[h] / available_compute_per_instance, ram_need[h] / available_ram_per_instance)
@@ -455,7 +455,7 @@ class ServerBase(InfraHardware, AttributionSource):
 
         return binding_demand_per_job
 
-    @computed_structure
+    @computed_structure(transient=True)
     def dynamic_share_per_job(self) -> dict:
         """Each job's hourly share of the total binding-resource demand, divide_or_fallback(fallback=0) —
         exact for the demand streams: zero demand at an hour means zero dynamic footprint at that hour."""
@@ -466,7 +466,7 @@ class ServerBase(InfraHardware, AttributionSource):
                   else divide_or_fallback(demand, total_demand, fallback=0))
             for job, demand in self.binding_demand_per_job.items()}
 
-    @computed_structure
+    @computed_structure(transient=True)
     def provisioned_share_per_job(self) -> dict:
         """Per-job weights for the provisioned stream (fabrication + idle energy, both proportional to
         nb_of_instances). On-premise provisions once for the whole period, so the weights are flat scalars from

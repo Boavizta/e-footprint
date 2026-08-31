@@ -37,6 +37,7 @@ from .computed_slots import (
     computed_dict,
     computed_structure,
     computed_structures,
+    evict_transient_structures,
     computed_slots,
     prune_stale_computed_dict_keys,
     removed_computed_attribute,

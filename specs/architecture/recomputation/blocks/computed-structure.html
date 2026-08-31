@@ -44,6 +44,10 @@ def impact_repartition_matrix(self):
 <h2 id="pull">Pull behavior</h2>
 <div class="cols"><div class="n lazy"><b>After invalidation</b><br><span>The cached raw value is dropped and stays void until read, like any ordinary non-guard computed slot.</span></div><div class="n input"><b>At consumption time</b><br><span>The reader pulls it only if that consumer needs it. Serialization only peeks and never pulls.</span></div></div>
 
+<h2 id="transient">Explicit cache lifetime</h2>
+<p><code>transient=True</code> marks a runtime-only intermediate whose owning calculation may release its cached value after reducing it. <code>evict_transient_structures(instance)</code> drops each materialized transient structure on that instance without invalidating or removing graph edges: an already-cached descendant remains readable, while a later input edit still reaches and invalidates that descendant through the void intermediate.</p>
+<p>Transient structures cannot also declare <code>serialize=True</code>. Their raw contents are not attached to modeling-container bookkeeping, so eviction only releases the slot's strong reference; it does not detach nested explainables or alter explanations.</p>
+
 <h2 id="persistence">Optional persistence</h2>
 <p>By default, computed structures are runtime-only. <code>serialize=True</code> opts a materialized cache into the minimal persistence contract:</p>
 <ul>

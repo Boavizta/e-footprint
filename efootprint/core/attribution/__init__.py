@@ -25,7 +25,7 @@ from efootprint.abstract_modeling_classes.contextual_modeling_object_attribute i
 from efootprint.abstract_modeling_classes.empty_explainable_object import EmptyExplainableObject
 from efootprint.abstract_modeling_classes.modeling_object import ModelingObject
 from efootprint.abstract_modeling_classes.reactive_core import (
-    computed_structure, computed_structures, record_calculus_edges_from_ancestry)
+    computed_structure, computed_structures, evict_transient_structures, record_calculus_edges_from_ancestry)
 from efootprint.constants.units import u
 from efootprint.core.lifecycle_phases import LifeCyclePhases
 
@@ -145,6 +145,11 @@ def _underlying_modeling_object(obj: ModelingObject) -> ModelingObject:
     costs.
     """
     return obj._value if isinstance(obj, ContextualModelingObjectAttribute) else obj
+
+
+def evict_attribution_source_intermediates(source: ModelingObject) -> None:
+    """Release one source's condensed attribution helpers while retaining their graph topology."""
+    evict_transient_structures(_underlying_modeling_object(source))
 
 
 def impact_repartition_rows_cache_coverage(system) -> tuple[int, int]:

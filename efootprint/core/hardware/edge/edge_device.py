@@ -318,7 +318,7 @@ class EdgeDevice(ModelingObject, AttributionSource):
     # --- Attribution-only atom physics and builder (computed structures / methods, consumed only by the
     # attribution layer, never by the eager calculated-attribute graph) ---
 
-    @computed_structure
+    @computed_structure(transient=True)
     def demand_share_per_need_and_pattern(self) -> dict:
         """Each component need's hourly share of the capacity-occupying demand on its component in a pattern —
         CPU / RAM / workload by the hourly resource need, EdgeStorage by the need's own cumulative HELD volume
@@ -350,7 +350,7 @@ class EdgeDevice(ModelingObject, AttributionSource):
 
         return shares
 
-    @computed_structure
+    @computed_structure(transient=True)
     def fabrication_pool_share_per_carrier_and_pattern(self) -> dict:
         """Chassis-pool rule: components unused at a pattern are part of the chassis. The
         pool at a pattern — every unused component's deployment-booked fabrication plus its equal chassis
@@ -397,7 +397,7 @@ class EdgeDevice(ModelingObject, AttributionSource):
 
         return shares
 
-    @computed_structure
+    @computed_structure(transient=True)
     def fabrication_atom_value_per_need_and_pattern(self) -> dict:
         """Fabrication atom value: (component fabrication + an equal 1/nb_components chassis share,
         matching the breakdown-by-source axis) × the need's demand share, plus the need's equal carrier share
@@ -418,7 +418,7 @@ class EdgeDevice(ModelingObject, AttributionSource):
 
         return values
 
-    @computed_structure
+    @computed_structure(transient=True)
     def energy_atom_value_per_need_and_pattern(self) -> dict:
         """Energy atom value: the idle/base floor of the component's affine power curve — which no
         need's demand changes — split equally across the component's needs at every hour, plus the need's own

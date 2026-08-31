@@ -27,7 +27,7 @@ from efootprint.abstract_modeling_classes.empty_explainable_object import EmptyE
 from efootprint.utils.display import human_readable_unit, display_quantity_as_str
 from efootprint.abstract_modeling_classes.reactive_core import (
     ComputationPurpose, computed_attribute, computed_structure)
-from efootprint.core.attribution import attribution_sources
+from efootprint.core.attribution import attribution_sources, evict_attribution_source_intermediates
 
 
 class System(ModelingObject):
@@ -306,6 +306,7 @@ class System(ModelingObject):
         rows = []
         for source in attribution_sources(self):
             rows += source.impact_repartition_rows
+            evict_attribution_source_intermediates(source)
         return tuple(rows)
 
     def compare_to(self, other: "System"):

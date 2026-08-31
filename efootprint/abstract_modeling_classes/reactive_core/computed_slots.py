@@ -384,13 +384,17 @@ class computed_structure:
     engine recursively records calculus edges from explainables within the returned structure, in
     addition to reads recorded while the getter ran.
 
-    Declared bare (``@computed_structure``) or parametrized
-    (``@computed_structure(serialize=True)``). A serialize-flagged structure persists its cached value
-    when materialized; a save before its first read simply omits it. Serialized structures must be
-    JSON-native because they bypass explainable serialization."""
+    Declared bare (``@computed_structure``) or parametrized. ``serialize=True`` persists a materialized
+    value; ``transient=True`` marks an intermediate that an owning calculation may explicitly evict after
+    reducing it. Eviction drops only the value and preserves graph edges, so cached descendants still
+    invalidate correctly. Serialized structures must be JSON-native because they bypass explainable
+    serialization."""
 
-    def __init__(self, getter=None, *, serialize=False):
+    def __init__(self, getter=None, *, serialize=False, transient=False):
+        if serialize and transient:
+            raise ValueError("A computed structure cannot be both serialized and transient")
         self.serialize = serialize
+        self.transient = transient
         self.getter = None
         if getter is not None:
             self._bind_getter(getter)
@@ -441,6 +445,12 @@ class computed_structure:
             return slot._value
         return None
 
+    def evict_cached_value(self, instance):
+        """Drop this structure's cached value while preserving its dependency edges."""
+        slot = peek_instance_slot_registry(instance).get(self.attr_name)
+        if slot is not None:
+            slot._drop_value()
+
     def __get__(self, instance, owner=None):
         if instance is None:
             return self
@@ -459,6 +469,13 @@ class computed_structure:
 def computed_structures(cls: type) -> dict:
     """All computed-structure descriptors visible on cls, with the most-derived declaration winning."""
     return _collect_slots("_declared_computed_structures", cls)
+
+
+def evict_transient_structures(instance):
+    """Drop materialized transient structures without invalidating their cached dependents."""
+    for descriptor in computed_structures(type(instance)).values():
+        if descriptor.transient:
+            descriptor.evict_cached_value(instance)
 
 
 def computation_slots_for_purpose(instance, purpose: ComputationPurpose) -> frozenset[ReactiveSlot]:
