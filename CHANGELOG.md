@@ -4,7 +4,12 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](http://keepachangelog.com/)
 and this project adheres to [Semantic Versioning](http://semver.org/)
 
-## [V23.0.0]
+## [Unreleased]
+
+### Fixed
+- `System.total_footprint` now preserves full hourly precision, so its period sum exactly matches the combined fabrication and energy category footprints.
+
+## [V23.0.0] - 2026-08-31
 
 ### Fixed
 - System-comparison decomposition plots now use readable units, label each bar, and show the net total.
@@ -13,8 +18,9 @@ and this project adheres to [Semantic Versioning](http://semver.org/)
 
 ### Changed
 - Computation is now pull-based: computed attributes calculate on first read, cache their value, and invalidate only affected dependencies after an input or relationship changes. Updates still validate guards eagerly, while outputs remain lazy unless requested through `eager_outputs`.
-- Additional peak memory used by Sankey generation and attributed-footprint calculations dropped by roughly two-thirds in large-system benchmarks.
-- Serialization uses one minimal schema-v23 format containing inputs, selected cached outputs, provenance, and the calculation graph. Saving is computation-free; files are substantially smaller and load faster.
+- Sankey generation and attributed-footprint calculations use about one-third as much additional peak memory in large-system benchmarks.
+- Serialization uses one minimal schema-v23 format containing inputs, selected cached outputs, provenance, and the calculation graph. For the same standard large-system fixture, the complete cached export fell from 202.8 MB with the previous format to 12.8 MB with schema v23 (15.8× smaller). In an edge-heavy smart-building scenario, the previous format reached 256 MB while adding the third usage pattern, whereas schema v23 represents 10 usage patterns in 52 MB. Saving remains computation-free.
+- Together, the JSON and memory gains make models around 5× larger practical on the same computing resources for comparable workloads; exact capacity still depends on model topology and the requested calculations.
 - Cached values are trusted only when the saved and running e-footprint versions match exactly. Older files migrate to inputs-only and recompute lazily; `System.has_version_baseline` and `compare_to_version_baseline()` expose calculation drift after upgrades.
 - Attribution uses the reactive cache and a period-summed `System.impact_repartition_matrix`. Sankey generation now reuses this matrix, reducing repeated hourly work and improving rendering performance.
 - Computed attributes are read-only. Framework code and deserialization must use descriptor cache APIs instead of direct assignment.
