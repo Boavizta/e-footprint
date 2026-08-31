@@ -295,7 +295,7 @@ class System(ModelingObject):
             start=EmptyExplainableObject(),
         ).to(u.kg).set_label("Total carbon footprint")
 
-        return round(total_footprint, 4)
+        return total_footprint
 
     @computed_structure(serialize=True)
     def impact_repartition_matrix(self) -> tuple:

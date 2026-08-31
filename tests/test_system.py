@@ -3,6 +3,8 @@ from unittest import TestCase
 from unittest.mock import MagicMock, patch, PropertyMock
 import unittest
 
+import numpy as np
+
 from efootprint.abstract_modeling_classes.explainable_quantity import ExplainableQuantity
 from efootprint.abstract_modeling_classes.empty_explainable_object import EmptyExplainableObject
 from efootprint.abstract_modeling_classes.list_linked_to_modeling_obj import ListLinkedToModelingObj
@@ -312,6 +314,26 @@ class TestSystem(TestCase):
         }
 
         self.assertDictEqual(expected_dict, energy_footprints)
+
+    def test_total_footprint_conserves_fractional_hourly_category_streams(self):
+        """Test the hourly and period total conserve fractional fabrication and energy category streams."""
+        fractional_footprint = self._hourly_kg(values=(0.000049, 0.000151, 0.000249))
+        for obj in (self.server, self.storage, self.device):
+            obj.instances_fabrication_footprint = fractional_footprint.copy()
+        for obj in (self.server, self.storage, self.device, self.network):
+            obj.energy_footprint = fractional_footprint.copy()
+
+        category_total = sum(
+            list(self.system.total_fabrication_footprints.values())
+            + list(self.system.total_energy_footprints.values()),
+            start=EmptyExplainableObject(),
+        ).to(u.kg)
+        total_footprint = self.system.total_footprint
+
+        np.testing.assert_allclose(category_total.magnitude, total_footprint.magnitude)
+        self.assertAlmostEqual(category_total.sum().magnitude, total_footprint.sum().magnitude)
+        self.assertEqual("Total carbon footprint", total_footprint.label)
+        self.assertEqual(u.kg, total_footprint.unit)
 
     def test_fabrication_footprint_sum_over_period(self):
         test_footprints = {
