@@ -25,6 +25,8 @@ def format_tutorial_and_save_to_mkdocs_sourcefiles(tutorial_doc_path):
 
     tutorial_reformated = tutorial.replace("```python\n\n```", "")
 
+    tutorial_reformated = tutorial_reformated.replace("```python\n%matplotlib inline\n```\n\n", "")
+
     tutorial_reformated = tutorial_reformated.replace(
         'print("placeholder")\n```\n\n    placeholder',
         '```\n--8<-- "docs_sources/generated_mkdocs_sourcefiles/System footprints.html"')
@@ -75,12 +77,17 @@ def efootprint_tutorial_to_md():
         if cell.get("cell_type") == "code":
             cell["outputs"] = []
             cell["execution_count"] = None
+    notebook_json["cells"].insert(0, {
+        "cell_type": "code", "execution_count": None, "id": "matplotlib-inline", "metadata": {}, "outputs": [],
+        "source": ["%matplotlib inline"]})
     with open(docs_tutorial_path, "w") as file:
         json.dump(notebook_json, file)
 
-    # Force the inline matplotlib backend for the execution kernel. Otherwise an ambient MPLBACKEND
-    # (e.g. "Agg", set by the test suite or an IDE) is inherited by the nbconvert subprocess, matplotlib
-    # figures are not rendered inline, and the tutorial ends up without its plot images.
+    images_path = docs_tutorial_path.replace(".ipynb", "_files")
+    if os.path.exists(images_path):
+        shutil.rmtree(images_path)
+
+    # The magic installs IPython's end-of-cell figure capture hook; MPLBACKEND alone only selects the renderer.
     nbconvert_env = {**os.environ, "MPLBACKEND": "module://matplotlib_inline.backend_inline"}
     try:
         subprocess.run(
