@@ -51,7 +51,7 @@ class TestRecurrentEdgeProcess(TestCase):
         self.recurrent_ram_needed = SourceRecurrentValues(
             Quantity(np.array([4.0] * 168, dtype=np.float32), u.GB_ram))
         self.recurrent_storage_needed = SourceRecurrentValues(
-            Quantity(np.array([4.0] * 168, dtype=np.float32), u.GB))
+            Quantity(np.array([4.0] * 168, dtype=np.float32), u.GB_stored))
 
         self.edge_process = RecurrentEdgeProcess(
             "test edge process",
@@ -73,6 +73,33 @@ class TestRecurrentEdgeProcess(TestCase):
         self.assertIsInstance(self.edge_process.unitary_hourly_storage_need_per_usage_pattern, ExplainableObjectDict)
         # Verify that storage need is a RecurrentEdgeStorageNeed instance
         self.assertIsInstance(self.edge_process.storage_need, RecurrentEdgeStorageNeed)
+
+    def test_negative_compute_need_is_rejected(self):
+        negative_compute = SourceRecurrentValues(
+            Quantity(np.array([-1.0] * 168, dtype=np.float32), u.cpu_core))
+
+        with self.assertRaisesRegex(ValueError, "should be positive but is negative"):
+            RecurrentEdgeProcess(
+                "negative compute process",
+                edge_device=self.mock_edge_computer,
+                recurrent_compute_needed=negative_compute,
+                recurrent_ram_needed=copy(self.recurrent_ram_needed),
+                recurrent_storage_needed=copy(self.recurrent_storage_needed),
+            )
+
+    def test_negative_storage_need_is_allowed(self):
+        negative_storage = SourceRecurrentValues(
+            Quantity(np.array([-1.0] * 168, dtype=np.float32), u.GB_stored))
+
+        process = RecurrentEdgeProcess(
+            "negative storage process",
+            edge_device=self.mock_edge_computer,
+            recurrent_compute_needed=copy(self.recurrent_compute_needed),
+            recurrent_ram_needed=copy(self.recurrent_ram_needed),
+            recurrent_storage_needed=negative_storage,
+        )
+
+        self.assertIs(negative_storage, process.recurrent_storage_needed)
 
     def test_unitary_hourly_storage_need_per_usage_pattern_delegates_to_storage_need(self):
         """Test that unitary_hourly_storage_need_per_usage_pattern delegates to the storage need."""
@@ -139,6 +166,16 @@ class TestRecurrentEdgeProcess(TestCase):
 
         self.assertIs(original_compute, self.edge_process.recurrent_compute_needed)
         self.assertIs(original_ram, self.edge_process.recurrent_ram_needed)
+
+    def test_modeling_update_rejects_negative_recurrent_need_before_applying_it(self):
+        original_compute = self.edge_process.recurrent_compute_needed
+        negative_compute = SourceRecurrentValues(
+            Quantity(np.array([-1.0] * 168, dtype=np.float32), u.cpu_core))
+
+        with self.assertRaisesRegex(ValueError, "should be positive but is negative"):
+            ModelingUpdate([[original_compute, negative_compute]])
+
+        self.assertIs(original_compute, self.edge_process.recurrent_compute_needed)
 
 
 if __name__ == "__main__":

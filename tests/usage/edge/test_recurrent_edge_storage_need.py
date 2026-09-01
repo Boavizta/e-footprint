@@ -38,6 +38,15 @@ class TestRecurrentEdgeStorageNeed(TestCase):
         self.assertEqual("Test Storage Need", self.storage_need.name)
         self.assertEqual(self.mock_storage, self.storage_need.edge_component)
 
+    def test_negative_net_storage_rate_is_allowed(self):
+        recurrent_need = SourceRecurrentValues(
+            Quantity(np.array([2.0] * 84 + [-2.0] * 84, dtype=np.float32), u.GB_stored))
+
+        storage_need = RecurrentEdgeStorageNeed(
+            name="Storage with deletes", edge_component=self.mock_storage, recurrent_need=recurrent_need)
+
+        self.assertIs(recurrent_need, storage_need.recurrent_need)
+
     def test_update_dict_element_in_unitary_hourly_need_per_usage_pattern_monday_start(self):
         """Test update when starting on Monday 00:00 - no values should be zeroed."""
         mock_pattern = create_mod_obj_mock(EdgeUsagePattern, name="Test Pattern Monday")

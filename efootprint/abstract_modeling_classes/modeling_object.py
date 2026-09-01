@@ -5,6 +5,7 @@ from types import UnionType
 from typing import List, Union, get_origin, get_args, TYPE_CHECKING
 import os
 
+import numpy as np
 from IPython.display import HTML
 
 from efootprint.abstract_modeling_classes.explainable_quantity import ExplainableQuantity
@@ -369,17 +370,26 @@ class ModelingObject(metaclass=ABCAfterInitMeta):
         raise TypeError(f"In {self.name}, attribute {name} should be of type {annotation} "
                         f"but is of type {type(self._unwrap_contextual_input_value(input_value))}")
 
-    def _check_input_quantity_positivity_and_unit(self, name, input_value, annotation):
-        if not isinstance(annotation, type) or not issubclass(annotation, ExplainableQuantity):
+    def _check_input_value_positivity_and_unit(self, name, input_value, annotation):
+        from efootprint.abstract_modeling_classes.explainable_recurrent_quantities import \
+            ExplainableRecurrentQuantities
+
+        if not isinstance(annotation, type):
+            return
+        is_scalar_quantity = issubclass(annotation, ExplainableQuantity)
+        is_recurrent_quantity = issubclass(annotation, ExplainableRecurrentQuantities)
+        if not is_scalar_quantity and not is_recurrent_quantity:
+            return
+        if isinstance(input_value, EmptyExplainableObject):
             return
 
-        default_value = self.default_values[name]
-        if (not isinstance(input_value, EmptyExplainableObject)
+        default_value = self.default_values.get(name)
+        if (is_scalar_quantity and default_value is not None
                 and input_value.value.dimensionality != default_value.value.dimensionality):
             raise ValueError(
                 f"Value {input_value} for attribute {name} is not homogeneous to "
                 f"{default_value.value.units} ({default_value.value.dimensionality})")
-        if input_value.magnitude < 0 and name not in self.attributes_that_can_have_negative_values():
+        if np.any(input_value.magnitude < 0) and name not in self.attributes_that_can_have_negative_values():
             raise ValueError(f"Value {input_value} for attribute {name} should be positive but is negative")
 
     def check_input_value(self, name, input_value, replaced_value=None):
@@ -393,7 +403,7 @@ class ModelingObject(metaclass=ABCAfterInitMeta):
 
         annotation = init_param.annotation
         self._check_input_value_type(name, input_value, annotation, replaced_value)
-        self._check_input_quantity_positivity_and_unit(name, input_value, annotation)
+        self._check_input_value_positivity_and_unit(name, input_value, annotation)
 
     def check_belonging_to_authorized_values(self, name, input_value, attributes_with_depending_values):
         if name in self.list_values:

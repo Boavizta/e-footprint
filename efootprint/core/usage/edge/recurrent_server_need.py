@@ -19,14 +19,6 @@ if TYPE_CHECKING:
     from efootprint.core.usage.edge.edge_usage_pattern import EdgeUsagePattern
     
 
-class NegativeServerNeedError(Exception):
-    def __init__(self, server_need_name: str, min_value: float):
-        message = (
-            f"Server need '{server_need_name}' has negative values (min {min_value:.3f}). "
-            f"Server need volumes must be positive.")
-        super().__init__(message)
-
-
 class RecurrentServerNeed(ModelingObject):
     """A bridge between edge and server modeling: a recurring batch of server-side {class:Job}s triggered by an edge deployment, scaled by the number of devices currently deployed."""
 
@@ -79,13 +71,10 @@ class RecurrentServerNeed(ModelingObject):
 
     @computed_attribute(guard=True)
     def recurrent_need_validation(self):
-        """Validates that the recurrent volume is expressed in occurrences and is non-negative; raises a typed error otherwise."""
+        """Validates that the recurrent volume is expressed in occurrences."""
         assert self.recurrent_volume_per_edge_device.unit == u.occurrence, \
             (f"RecurrentServerNeed '{self.name}' has invalid unit '{self.recurrent_volume_per_edge_device.unit}', "
              f"expected 'occurrence'.")
-        min_value = np.min(self.recurrent_volume_per_edge_device.magnitude)
-        if min_value < 0:
-            raise NegativeServerNeedError(self.name, min_value)
         return self.recurrent_volume_per_edge_device.copy().set_label(
             "Validated recurrent need")
         

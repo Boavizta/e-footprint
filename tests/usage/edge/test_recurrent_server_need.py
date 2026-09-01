@@ -10,7 +10,7 @@ from efootprint.abstract_modeling_classes.explainable_hourly_quantities import E
 from efootprint.abstract_modeling_classes.empty_explainable_object import EmptyExplainableObject
 from efootprint.abstract_modeling_classes.source_objects import SourceTimezone
 from efootprint.constants.units import u
-from efootprint.core.usage.edge.recurrent_server_need import RecurrentServerNeed, NegativeServerNeedError
+from efootprint.core.usage.edge.recurrent_server_need import RecurrentServerNeed
 from efootprint.core.hardware.edge.edge_device import EdgeDevice
 from efootprint.core.usage.job import JobBase
 from efootprint.core.usage.edge.edge_function import EdgeFunction
@@ -112,19 +112,14 @@ class TestRecurrentServerNeed(TestCase):
         self.assertIn("invalid unit", str(context.exception))
         self.assertIn("occurrence", str(context.exception))
 
-    def test_update_recurrent_need_validation_negative_values_raises_error(self):
-        """Test update_recurrent_need_validation raises NegativeServerNeedError for negative values."""
+    def test_negative_recurrent_volume_is_rejected_as_an_input(self):
         negative_volume = ExplainableRecurrentQuantities(
             np.array([-1.0] * 168, dtype=np.float32) * u.occurrence, "negative volume")
 
-        server_need = RecurrentServerNeed(
-            "negative need", self.mock_edge_device, negative_volume, [self.mock_job])
+        with self.assertRaisesRegex(ValueError, "should be positive but is negative"):
+            RecurrentServerNeed(
+                "negative need", self.mock_edge_device, negative_volume, [self.mock_job])
 
-        with self.assertRaises(NegativeServerNeedError) as context:
-            recompute_attribute(server_need, "recurrent_need_validation")
-
-        self.assertIn("negative need", str(context.exception))
-        self.assertIn("negative values", str(context.exception))
 
     def test_update_unitary_hourly_volume_per_usage_pattern(self):
         """Test updating unitary hourly volume for all usage patterns."""

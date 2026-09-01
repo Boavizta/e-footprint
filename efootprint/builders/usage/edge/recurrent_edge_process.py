@@ -115,6 +115,10 @@ class RecurrentEdgeProcess(RecurrentEdgeDeviceNeed):
             Quantity(np.array([0] * 168, dtype=np.float32), u.GB_stored)),
     }
 
+    @classmethod
+    def attributes_that_can_have_negative_values(cls):
+        return ["recurrent_storage_needed"]
+
     def __init__(self, name: str, edge_device: EdgeComputer,
                  recurrent_compute_needed: ExplainableRecurrentQuantities,
                  recurrent_ram_needed: ExplainableRecurrentQuantities,

@@ -27,7 +27,6 @@ from efootprint.api_utils.system_to_json import system_to_json
 from efootprint.core.hardware.edge.edge_storage import NegativeCumulativeStorageNeedError
 from efootprint.core.hardware.hardware_base import InsufficientCapacityError
 from efootprint.core.usage.edge.recurrent_edge_component_need import WorkloadOutOfBoundsError
-from efootprint.core.usage.edge.recurrent_server_need import NegativeServerNeedError
 from efootprint.core.usage.job import Job
 from efootprint.core.usage.usage_pattern import UsagePattern
 from tests.performance_tests.generate_big_system import generate_big_system, form_inputs_hourly_starts
@@ -41,8 +40,7 @@ MISSING = object()
 # (parity must hold after rollbacks too); any other exception is a harness or engine bug and fails
 # the test.
 EXPECTED_REJECTION_EXCEPTIONS = (
-    ValueError, InsufficientCapacityError, NegativeCumulativeStorageNeedError, NegativeServerNeedError,
-    WorkloadOutOfBoundsError)
+    ValueError, InsufficientCapacityError, NegativeCumulativeStorageNeedError, WorkloadOutOfBoundsError)
 
 RELINK_SPECS = (
     ("UsagePattern", "usage_journey"),

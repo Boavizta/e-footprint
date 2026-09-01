@@ -253,6 +253,7 @@ class TestExplainableRecurrentQuantitiesFromWeeklyPattern(TestCase):
         )
         form_inputs = weekly_form_inputs()
         form_inputs["unit"] = "gigabyte_ram"
+        form_inputs["profiles"][0]["ranges"][2]["value"] = 1
         source = Source("meter", "https://example.test/meter")
         weekly_need = RecurrentEdgeComponentNeed(
             "Weekly RAM need",

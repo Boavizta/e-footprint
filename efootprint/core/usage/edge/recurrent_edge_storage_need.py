@@ -31,6 +31,10 @@ class RecurrentEdgeStorageNeed(RecurrentEdgeComponentNeed):
             "to derive the cumulative volume actually held."),
     }
 
+    @classmethod
+    def attributes_that_can_have_negative_values(cls):
+        return ["recurrent_need"]
+
     def __init__(self, name: str, edge_component: EdgeStorage, recurrent_need: ExplainableRecurrentQuantities = None):
         super().__init__(name, edge_component, recurrent_need)
 
