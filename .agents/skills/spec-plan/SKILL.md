@@ -29,6 +29,8 @@ The plan is a **single self-contained `.html` file** — same rules as the spec 
 - **Inline everything:** one `<style>` block, no external stylesheet, no `<script src=…>`. Renders with no network.
 - **Collapsible sections use native `<details>/<summary>`** — no JavaScript.
 - Use an inline `<svg>` for a module / data-flow diagram instead of an ASCII sketch when a diagram helps.
+- Keep the standard affected-modules table note-first in visual emphasis: use fixed 27% / 13% / 60%
+  widths for module, change type, and note, and allow long module paths to wrap.
 
 When refining an existing draft (Process step 2), preserve this structure and edit in place.
 
@@ -47,9 +49,12 @@ When refining an existing draft (Process step 2), preserve this structure and ed
   h1 { border-bottom: 2px solid #e0e0e0; padding-bottom: .3rem; }
   h2 { margin-top: 2rem; }
   .status { color: #666; font-size: .9rem; }
-  table { border-collapse: collapse; width: 100%; margin: 1rem 0; }
+  table { border-collapse: collapse; width: 100%; margin: 1rem 0; table-layout: fixed; }
   th, td { border: 1px solid #ccc; padding: .4rem .6rem; text-align: left; vertical-align: top; }
   th { background: #f5f5f5; }
+  th:nth-child(1), td:nth-child(1) { width: 27%; overflow-wrap: anywhere; }
+  th:nth-child(2), td:nth-child(2) { width: 13%; }
+  th:nth-child(3), td:nth-child(3) { width: 60%; }
   code { background: #f4f4f4; padding: .1rem .35rem; border-radius: 3px; font-size: .9em; }
   details { margin: .6rem 0; border: 1px solid #e0e0e0; border-radius: 6px; padding: .4rem .8rem; }
   summary { cursor: pointer; font-weight: 600; }
