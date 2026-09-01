@@ -207,7 +207,7 @@ class ExplainableRecurrentQuantitiesFromWeeklyPattern(ExplainableRecurrentQuanti
 
     def to_json(self, with_formula=False):
         output_dict = {"form_inputs": deepcopy(self.form_inputs)}
-        output_dict.update(super(ExplainableRecurrentQuantities, self).to_json(with_formula))
+        output_dict.update(ExplainableObject.to_json(self, with_formula))
         return output_dict
 
     def __copy__(self):

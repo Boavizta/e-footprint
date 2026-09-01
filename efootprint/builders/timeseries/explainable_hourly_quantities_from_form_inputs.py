@@ -136,7 +136,7 @@ class ExplainableHourlyQuantitiesFromFormInputs(ExplainableHourlyQuantities):
     def to_json(self, with_formula=False):
         output_dict = {"form_inputs": self.form_inputs}
 
-        output_dict.update(super(ExplainableHourlyQuantities, self).to_json(with_formula))
+        output_dict.update(ExplainableObject.to_json(self, with_formula))
 
         return output_dict
 

@@ -85,7 +85,7 @@ class ExplainableRecurrentQuantitiesFromConstant(ExplainableRecurrentQuantities)
         output_dict = {"form_inputs": self.form_inputs}
 
         # Add parent class metadata (label, source, etc.)
-        output_dict.update(super(ExplainableRecurrentQuantities, self).to_json(with_formula))
+        output_dict.update(ExplainableObject.to_json(self, with_formula))
 
         return output_dict
 
