@@ -1,11 +1,15 @@
 import os
 import unittest
 from datetime import datetime, timedelta
+from types import SimpleNamespace
 from unittest import TestCase
 
 import numpy as np
 
 from efootprint.abstract_modeling_classes.source_objects import SourceValue
+from efootprint.abstract_modeling_classes.modeling_object import ModelingObject
+from efootprint.abstract_modeling_classes.explainable_recurrent_quantities import ExplainableRecurrentQuantities
+from efootprint.builders.timeseries import ExplainableRecurrentQuantitiesFromWeeklyPattern
 from efootprint.builders.time_builders import create_source_hourly_values_from_list
 from efootprint.comparison.duplication import assign_fresh_system_id, duplicate_system
 from efootprint.comparison.system_comparison import (
@@ -64,6 +68,28 @@ def build_form_input_system(system_name, server_name, net_growth_rate=10, initia
         f"{system_name} usage pattern", uj, [Device.laptop()], network, Countries.FRANCE(), hourly_starts)
 
     return System(system_name, [usage_pattern], edge_usage_patterns=[])
+
+
+class RecurrentInputHolder(ModelingObject):
+    def __init__(self, name, recurrent_input: ExplainableRecurrentQuantities):
+        super().__init__(name)
+        self.recurrent_input = recurrent_input
+
+
+def build_weekly_pattern_holder(baseline):
+    return RecurrentInputHolder(
+        "weekly input holder",
+        ExplainableRecurrentQuantitiesFromWeeklyPattern(
+            {
+                "unit": "concurrent",
+                "profiles": [
+                    {"name": "all week", "days": list(range(7)), "baseline": baseline, "ranges": []},
+                    {"name": "unused", "days": [], "baseline": 0, "ranges": []},
+                ],
+            },
+            label="Weekly input",
+        ),
+    )
 
 
 class TestDuplicateSystem(TestCase):
@@ -350,6 +376,24 @@ class TestSystemComparison(TestCase):
         diff = system_a.compare_to(system_b).input_diff
 
         self.assertEqual([], [r for r in diff.changed if r.attribute == "hourly_usage_journey_starts"])
+
+    def test_input_diff_surfaces_weekly_pattern_parameter_changes(self):
+        """Test weekly patterns compare their authored profile parameters rather than opaque arrays."""
+        holder_a = build_weekly_pattern_holder(10)
+        holder_b = build_weekly_pattern_holder(20)
+
+        diff = SystemComparison(
+            SimpleNamespace(all_linked_objects=[holder_a]),
+            SimpleNamespace(all_linked_objects=[holder_b]),
+        ).input_diff
+
+        self.assertEqual([], diff.only_in_a)
+        self.assertEqual([], diff.only_in_b)
+        self.assertEqual(1, len(diff.changed))
+        row = diff.changed[0]
+        self.assertEqual("recurrent_input", row.attribute)
+        self.assertEqual("profile 1 baseline: 10 concurrent", row.value_a)
+        self.assertEqual("profile 1 baseline: 20 concurrent", row.value_b)
 
     def test_plot_helpers_smoke_render(self):
         """Test the notebook plot helpers render without error."""
