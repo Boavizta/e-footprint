@@ -69,7 +69,7 @@ class ModelingUpdate:
                 self.changes_list[index][1] = EmptyExplainableObject()
             else:
                 mod_obj_container = old_value.modeling_obj_container
-                mod_obj_container.check_input_value_type_positivity_and_unit(
+                mod_obj_container.check_input_value(
                     old_value.attr_name_in_mod_obj_container, new_value, replaced_value=old_value)
 
             if isinstance(new_value, list):

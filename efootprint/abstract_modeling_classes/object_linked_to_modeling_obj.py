@@ -191,7 +191,7 @@ class ObjectLinkedToModelingObjBase:
             f"ObjectLinkedToModelingObjBase.")
         mod_obj_container = self.modeling_obj_container
         attr_name = self.attr_name_in_mod_obj_container
-        mod_obj_container.check_input_value_type_positivity_and_unit(
+        mod_obj_container.check_input_value(
             attr_name, new_value, replaced_value=self)
         dict_container = self.dict_container
         if dict_container is not None:

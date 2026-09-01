@@ -2,7 +2,7 @@ import uuid
 from abc import ABCMeta
 from copy import copy
 from types import UnionType
-from typing import Annotated, Any, ForwardRef, List, Literal, Type, Union, get_origin, get_args, TYPE_CHECKING
+from typing import List, Union, get_origin, get_args, TYPE_CHECKING
 import os
 
 from IPython.display import HTML
@@ -293,111 +293,110 @@ class ModelingObject(metaclass=ABCAfterInitMeta):
 
         return input_value._value if isinstance(input_value, ContextualModelingObjectAttribute) else input_value
 
+    @staticmethod
+    def _explainable_object_dict_class(annotation):
+        from efootprint.abstract_modeling_classes.explainable_object_dict import ExplainableObjectDict
+
+        origin = get_origin(annotation)
+        candidate = origin if origin is not None else annotation
+        if isinstance(candidate, type) and issubclass(candidate, ExplainableObjectDict):
+            return candidate
+        return None
+
     @classmethod
     def _input_value_matches_annotation(cls, input_value, annotation):
         input_value = cls._unwrap_contextual_input_value(input_value)
-        if annotation is Any:
-            return True
-        if isinstance(annotation, (str, ForwardRef)):
-            raise TypeError(f"Unresolved input annotation {annotation!r}")
-
         origin = get_origin(annotation)
         args = get_args(annotation)
+        explainable_dict_class = cls._explainable_object_dict_class(annotation)
+
         if origin in (Union, UnionType):
             return any(cls._input_value_matches_annotation(input_value, option) for option in args)
-        if origin is Annotated:
-            return cls._input_value_matches_annotation(input_value, args[0])
-        if origin is Literal:
-            return input_value in args
-        if origin in (list, List):
-            return isinstance(input_value, list) and (not args or all(
-                cls._input_value_matches_annotation(item, args[0]) for item in input_value
-            ))
-        if origin is dict:
-            return isinstance(input_value, dict) and (not args or all(
-                cls._input_value_matches_annotation(key, args[0])
-                and cls._input_value_matches_annotation(value, args[1])
-                for key, value in input_value.items()
-            ))
-        if isinstance(origin, type) and issubclass(origin, dict):
+        elif origin in (list, List):
+            if len(args) != 1:
+                raise TypeError(f"Unsupported ModelingObject input annotation {annotation!r}")
+            return isinstance(input_value, list) and all(
+                cls._input_value_matches_annotation(item, args[0]) for item in input_value)
+        elif explainable_dict_class is not None:
+            if origin is not None and len(args) != 1:
+                raise TypeError(f"Unsupported ModelingObject input annotation {annotation!r}")
             if not isinstance(input_value, dict):
                 return False
             from efootprint.abstract_modeling_classes.explainable_object_dict import ExplainableObjectDict
-            if issubclass(origin, ExplainableObjectDict):
-                return (not isinstance(input_value, ExplainableObjectDict) or isinstance(input_value, origin)) and (
-                    not args or all(cls._input_value_matches_annotation(key, args[0]) for key in input_value)
-                )
-            if len(args) == 2:
-                return all(
-                    cls._input_value_matches_annotation(key, args[0])
-                    and cls._input_value_matches_annotation(value, args[1])
-                    for key, value in input_value.items()
-                )
-            return True
-        if origin is not None:
-            if not isinstance(origin, type):
-                raise TypeError(f"Unsupported input annotation {annotation!r}")
-            return isinstance(input_value, origin)
-        if not isinstance(annotation, type):
-            raise TypeError(f"Unsupported input annotation {annotation!r}")
-        if issubclass(annotation, dict):
-            return isinstance(input_value, dict)
-        return isinstance(input_value, annotation)
+            correct_dict_class = (
+                # plain dicts are allowed, they will be automatically converted
+                not isinstance(input_value, ExplainableObjectDict)
+                or isinstance(input_value, explainable_dict_class)
+            )
+            return correct_dict_class and (
+                not args or all(cls._input_value_matches_annotation(key, args[0]) for key in input_value)
+            )
+        elif origin is None and isinstance(annotation, type):
+            return isinstance(input_value, annotation)
+        else:
+            raise TypeError(f"Unsupported ModelingObject input annotation {annotation!r}")
 
     @classmethod
     def _replacement_matches_annotation(cls, input_value, annotation, replaced_value):
         if replaced_value is None:
             return cls._input_value_matches_annotation(input_value, annotation)
 
+        origin = get_origin(annotation)
+        args = get_args(annotation)
+        if origin in (Union, UnionType):
+            return any(cls._replacement_matches_annotation(input_value, option, replaced_value) for option in args)
+
         if replaced_value.dict_container is not None:
-            origin = get_origin(annotation)
-            args = get_args(annotation)
-            if origin in (Union, UnionType):
-                return any(cls._replacement_matches_annotation(input_value, option, replaced_value) for option in args)
-            from efootprint.abstract_modeling_classes.explainable_object_dict import ExplainableObjectDict
-            dict_class = origin if isinstance(origin, type) else annotation
-            if isinstance(dict_class, type) and issubclass(dict_class, ExplainableObjectDict):
+            if cls._explainable_object_dict_class(annotation) is not None:
                 from efootprint.abstract_modeling_classes.explainable_object_base_class import ExplainableObject
                 return cls._input_value_matches_annotation(input_value, ExplainableObject)
-            if origin is dict and len(args) == 2:
-                return cls._input_value_matches_annotation(input_value, args[1])
-            return False
+            raise TypeError(
+                f"Unsupported annotation {annotation!r} for an ExplainableObjectDict member replacement")
 
         if replaced_value.list_container is not None:
-            origin = get_origin(annotation)
-            args = get_args(annotation)
-            if origin in (Union, UnionType):
-                return any(cls._replacement_matches_annotation(input_value, option, replaced_value) for option in args)
             if origin in (list, List) and args:
                 return cls._input_value_matches_annotation(input_value, args[0])
-            return False
+            raise TypeError(f"Unsupported annotation {annotation!r} for a list member replacement")
 
         return cls._input_value_matches_annotation(input_value, annotation)
 
-    def check_input_value_type_positivity_and_unit(self, name, input_value, replaced_value=None):
-        init_sig_params = get_init_signature_params(type(self))
-        if name in init_sig_params:
-            annotation = init_sig_params[name].annotation
-            if (not isinstance(input_value, EmptyExplainableObject)
-                    and not self._replacement_matches_annotation(input_value, annotation, replaced_value)):
-                origin = get_origin(annotation)
-                args = get_args(annotation)
-                if origin in (list, List) and args and isinstance(input_value, list):
-                    expected_name = getattr(args[0], "__name__", str(args[0]))
-                    raise TypeError(f"All elements in '{name}' must be instances of {expected_name}, "
-                                    f"got {[type(item) for item in input_value]}")
-                raise TypeError(f"In {self.name}, attribute {name} should be of type {annotation} "
-                                f"but is of type {type(self._unwrap_contextual_input_value(input_value))}")
-            if isinstance(annotation, type) and issubclass(annotation, ExplainableQuantity):
-                default_value = self.default_values[name]
-                if (not isinstance(input_value, EmptyExplainableObject)
-                        and input_value.value.dimensionality != default_value.value.dimensionality):
-                    raise ValueError(
-                        f"Value {input_value} for attribute {name} is not homogeneous to "
-                        f"{default_value.value.units} ({default_value.value.dimensionality})")
-                if input_value.magnitude < 0 and name not in self.attributes_that_can_have_negative_values():
-                    raise ValueError(
-                        f"Value {input_value} for attribute {name} should be positive but is negative")
+    def _check_input_value_type(self, name, input_value, annotation, replaced_value):
+        if isinstance(input_value, EmptyExplainableObject):
+            return
+        if self._replacement_matches_annotation(input_value, annotation, replaced_value):
+            return
+
+        origin = get_origin(annotation)
+        args = get_args(annotation)
+        if origin in (list, List) and isinstance(input_value, list):
+            expected_name = getattr(args[0], "__name__", str(args[0]))
+            raise TypeError(f"All elements in '{name}' must be instances of {expected_name}, "
+                            f"got {[type(item) for item in input_value]}")
+
+        raise TypeError(f"In {self.name}, attribute {name} should be of type {annotation} "
+                        f"but is of type {type(self._unwrap_contextual_input_value(input_value))}")
+
+    def _check_input_quantity_positivity_and_unit(self, name, input_value, annotation):
+        if not isinstance(annotation, type) or not issubclass(annotation, ExplainableQuantity):
+            return
+
+        default_value = self.default_values[name]
+        if (not isinstance(input_value, EmptyExplainableObject)
+                and input_value.value.dimensionality != default_value.value.dimensionality):
+            raise ValueError(
+                f"Value {input_value} for attribute {name} is not homogeneous to "
+                f"{default_value.value.units} ({default_value.value.dimensionality})")
+        if input_value.magnitude < 0 and name not in self.attributes_that_can_have_negative_values():
+            raise ValueError(f"Value {input_value} for attribute {name} should be positive but is negative")
+
+    def check_input_value(self, name, input_value, replaced_value=None):
+        init_param = get_init_signature_params(type(self)).get(name)
+        if init_param is None:
+            return
+
+        annotation = init_param.annotation
+        self._check_input_value_type(name, input_value, annotation, replaced_value)
+        self._check_input_quantity_positivity_and_unit(name, input_value, annotation)
 
     def check_belonging_to_authorized_values(self, name, input_value, attributes_with_depending_values):
         if name in self.list_values:
@@ -558,7 +557,7 @@ class ModelingObject(metaclass=ABCAfterInitMeta):
             raise AttributeError(f"{name} is a computed attribute and cannot be attached as an input.")
         current_attr = getattr(self, name, None)
         if check_input_validity:
-            self.check_input_value_type_positivity_and_unit(name, input_value)
+            self.check_input_value(name, input_value)
             self.check_belonging_to_authorized_values(name, input_value, self.attributes_with_depending_values())
         value_to_set = input_value
         if isinstance(value_to_set, ModelingObject):

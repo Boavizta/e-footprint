@@ -113,6 +113,12 @@ class UnresolvableSignatureModel(ModelingObject):
         self.value = value
 
 
+class UnsupportedSignatureModel(ModelingObject):
+    def __init__(self, name, targets: tuple[SignatureTarget, ...]):
+        super().__init__(name)
+        self.targets = targets
+
+
 class TestModelingObject(unittest.TestCase):
     def setUp(self):
         patcher = patch.object(ListLinkedToModelingObj, "check_value_type", return_value=True)
@@ -451,6 +457,10 @@ class TestModelingObject(unittest.TestCase):
         """Test an unresolved declared input annotation is rejected instead of bypassing type validation."""
         with self.assertRaisesRegex(TypeError, "Could not resolve UnresolvableSignatureModel.__init__"):
             UnresolvableSignatureModel("unresolvable signature owner", SourceObject("value"))
+
+    def test_signature_validation_fails_closed_for_unsupported_annotation(self):
+        with self.assertRaisesRegex(TypeError, "Unsupported ModelingObject input annotation"):
+            UnsupportedSignatureModel("unsupported signature owner", (SignatureTarget("target"),))
 
 class TestValidationAttributes(unittest.TestCase):
     def test_validation_attributes_returns_attributes_ending_with_validation(self):
