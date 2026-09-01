@@ -1,0 +1,180 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Multiple usage journeys per pattern — Spec</title>
+<style>
+  body { font-family: system-ui, -apple-system, sans-serif; line-height: 1.6;
+         max-width: 52rem; margin: 2rem auto; padding: 0 1.2rem; color: #1a1a1a; }
+  h1 { border-bottom: 2px solid #e0e0e0; padding-bottom: .3rem; }
+  h2 { margin-top: 2rem; }
+  .status { color: #666; font-size: .9rem; }
+  table { border-collapse: collapse; width: 100%; margin: 1rem 0; }
+  th, td { border: 1px solid #ccc; padding: .4rem .6rem; text-align: left; vertical-align: top; }
+  th { background: #f5f5f5; }
+  code { background: #f4f4f4; padding: .1rem .35rem; border-radius: 3px; font-size: .9em; }
+  details { margin: .6rem 0; border: 1px solid #e0e0e0; border-radius: 6px; padding: .4rem .8rem; }
+  summary { cursor: pointer; font-weight: 600; }
+  .mockup { border: 1px dashed #999; border-radius: 8px; padding: 1rem; margin: 1rem 0; }
+  blockquote { border-left: 3px solid #ccc; margin: 1rem 0; padding: .2rem 1rem; color: #555; }
+  fieldset { border: 1px solid #ccc; border-radius: 6px; margin: 1rem 0; padding: .7rem 1rem; }
+  legend { font-weight: 650; }
+  label { display: block; margin: .45rem 0; }
+  input[type="number"] { width: 5rem; margin-left: .5rem; }
+  small { color: #666; }
+</style>
+</head>
+<body>
+
+<h1>Multiple usage journeys per pattern</h1>
+<p class="status">Status: Spec — under review · 2026-09-01</p>
+
+<section>
+  <h2>1. Problem and audience</h2>
+  <ul>
+    <li><strong>Edge deployments.</strong> Industrial users need one deployment cohort to carry
+    several functionality bundles. Today an edge usage pattern points to one edge usage journey,
+    so representing several bundles requires duplicating the deployment context and risks treating
+    one physical deployment as several.</li>
+    <li><strong>Web traffic.</strong> Product teams and consultants need one population, location,
+    device, network, and temporal profile to drive several user journeys at different average
+    frequencies. Today they must duplicate the whole usage pattern for every journey.</li>
+    <li><strong>Why now.</strong> The one-journey relationship blocks realistic edge models and
+    makes related web journeys unnecessarily repetitive. The two co-developed projects can change
+    the model and interface together without carrying a compatibility shim.</li>
+  </ul>
+</section>
+
+<section>
+  <h2>2. Success criteria</h2>
+  <ul>
+    <li>A web usage pattern always contains at least one usage journey. Each relationship has a
+    strictly positive, possibly fractional weight meaning “average executions of this journey per
+    usage-pattern occurrence”; weights are multiplicities and are not required to sum to one.</li>
+    <li>An edge usage pattern always contains at least one edge usage journey. Each linked journey
+    is one functionality bundle applied once to every deployment represented by the pattern.</li>
+    <li>The lifetime of an edge deployment belongs to the edge usage pattern. Every functionality
+    bundle linked to it is active from deployment until the end of that common usage span.</li>
+    <li>A journey can be reused by zero, one, or several patterns. A web journey can have a different
+    weight in each pattern; an edge journey is evaluated in each pattern's deployment context.</li>
+    <li>Pattern-level country, network, devices, and temporal profile apply consistently to every
+    linked journey. Journeys needing different context or timing use separate patterns.</li>
+    <li>For web patterns, journey weight scales journey concurrency, device occupancy, job calls,
+    network traffic, storage demand, server demand, and their resulting impacts.</li>
+    <li>For edge patterns, functionality-specific needs and server calls add on their shared target
+    devices and components, while the physical deployment, chassis, components, and their fixed
+    footprint are not cloned or counted once per bundle.</li>
+    <li>Reuse is containment-aware: the same step, function, job, or need reached through two
+    journey paths contributes once through each path. Distinct needs targeting the same hardware
+    are aggregated on that hardware.</li>
+    <li>The interface lets users select several journeys, edit web relationship weights, see one
+    canvas relationship per selected journey, and cannot create or leave a pattern without a
+    journey. Creation preselects the first available journey with weight 1.</li>
+    <li>Explainability and impact attribution identify the contributing journey even when a pattern
+    has several journeys or reuses the same lower-level object through several journey paths;
+    Sankey conservation remains exact.</li>
+    <li>Existing one-journey JSON models upgrade without input loss and recompute to equivalent
+    footprint results. New models round-trip with all journeys, weights, deployment spans, sources,
+    and relationships preserved.</li>
+  </ul>
+</section>
+
+<section>
+  <h2>3. Scope</h2>
+  <blockquote>Capability-level only. File, class, method, migration-step, and internal-coordinate
+  decisions live in <a href="plan.html">plan.html</a>.</blockquote>
+  <details open><summary>In scope</summary>
+    <ul>
+      <li>A non-empty weighted web pattern-to-journey relationship.</li>
+      <li>A non-empty, unique, unordered edge pattern-to-journey relationship.</li>
+      <li>Moving edge deployment usage span from the functionality bundle to its deployment pattern.</li>
+      <li>Journey-aware calculations, explainability, comparison, and impact attribution.</li>
+      <li>Creation, editing, relationship visualization, validation, and help text in the interface.</li>
+      <li>JSON schema migration and input-only/calculated-state round-trip behavior.</li>
+      <li>Updates to examples, introductory templates, generated reference descriptions, and the
+      durable architecture documentation that owns relationship and persistence semantics.</li>
+    </ul>
+  </details>
+  <details><summary>Out of scope (this iteration)</summary>
+    <ul>
+      <li>Weights, adoption shares, or optionality on edge functionality bundles.</li>
+      <li>Staggered functionality rollout: enabling, phasing in, or retiring a bundle during an
+      existing deployment's lifetime.</li>
+      <li>A separate temporal profile, country, network, or device selection per journey inside one pattern.</li>
+      <li>Automatic normalization of web weights or interpreting them as percentages.</li>
+      <li>Cloning journeys or hardware when they are linked from another pattern.</li>
+      <li>Backward-compatible Python constructor aliases or singular relationship shims.</li>
+    </ul>
+  </details>
+</section>
+
+<section>
+  <h2>4. UX / interface</h2>
+  <p>The pattern form exposes relationship cardinality directly. These native controls are a
+  conceptual mockup: they show the labels, defaults, and distinction between weighted web journeys
+  and unweighted edge bundles, not the final visual styling.</p>
+  <div class="mockup">
+    <fieldset>
+      <legend>Web usage pattern</legend>
+      <p><strong>Usage journeys</strong> <small>At least one · weights are journeys per pattern occurrence</small></p>
+      <label><input type="checkbox" checked> Browse catalogue
+        <input type="number" min="0.000001" step="any" value="1" aria-label="Browse catalogue weight"></label>
+      <label><input type="checkbox" checked> Purchase
+        <input type="number" min="0.000001" step="any" value="0.08" aria-label="Purchase weight"></label>
+      <label><input type="checkbox"> Contact support</label>
+      <small>Example: 1,000 pattern occurrences produce 1,000 browse journeys and 80 purchase journeys.</small>
+    </fieldset>
+
+    <fieldset>
+      <legend>Edge usage pattern</legend>
+      <label>Deployment usage span <input type="number" min="0.000001" step="any" value="6"> years</label>
+      <p><strong>Functionality bundles</strong> <small>At least one · each selected bundle applies once</small></p>
+      <label><input type="checkbox" checked> Environmental monitoring</label>
+      <label><input type="checkbox" checked> Local anomaly alerts</label>
+      <label><input type="checkbox"> Predictive maintenance</label>
+      <small>All selected bundles run on the same deployment for its full usage span.</small>
+    </fieldset>
+  </div>
+</section>
+
+<section>
+  <h2>5. Constraints</h2>
+  <ul>
+    <li>The library remains the modeling truth. The interface exposes and edits these relationships
+    without reimplementing their calculation semantics.</li>
+    <li>A web pattern's occurrence series is a shared driver. All linked journeys start at the same
+    modeled hour before their weight and internal step timing are applied.</li>
+    <li>An edge pattern's start series counts deployment units or cohorts, not functionality-bundle
+    starts. Device-group multiplicities continue to expand one deployment into its physical device counts.</li>
+    <li>Removing or replacing relationships must preserve transactional recomputation: invalid
+    attempts to remove the last journey are rejected without leaving stale calculated state.</li>
+    <li>The JSON schema change requires a major schema/version increment and an upgrade handler.
+    Incompatible calculated caches may be discarded and recomputed; authoritative inputs must survive.</li>
+    <li>Attribution must continue to conserve each footprint stream exactly while exposing journey
+    identity as part of the containment path.</li>
+    <li>The feature is library-driven and cross-repository: its single specification, plan, and task
+    list live in the library repository, with interface work tracked from the same task list.</li>
+  </ul>
+</section>
+
+<section>
+  <h2>6. Open questions</h2>
+  <p>None at capability level.</p>
+</section>
+
+<section>
+  <h2>7. Resuming from cold context</h2>
+  <ol>
+    <li>Read this file end to end.</li>
+    <li>Read <a href="plan.html"><code>plan.html</code></a> for the proposed relationship shapes,
+    journey-aware calculation coordinates, migration, affected modules, and test gates.</li>
+    <li>Read <code>specs/architecture/index.html</code>, then its relationship, persistence, and
+    attribution pages; also read <code>specs/conventions.md</code> and <code>specs/testing.md</code>.</li>
+    <li>For interface work, begin with <code>../e-footprint-interface/specs/architecture.md</code>
+    and its testing guide.</li>
+  </ol>
+</section>
+
+</body>
+</html>
