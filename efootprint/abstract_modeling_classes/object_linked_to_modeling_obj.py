@@ -189,13 +189,10 @@ class ObjectLinkedToModelingObjBase:
         assert isinstance(new_value, ObjectLinkedToModelingObjBase), (
             f"Trying to replace {self} by {new_value} which is not an instance of "
             f"ObjectLinkedToModelingObjBase.")
-        from efootprint.abstract_modeling_classes.empty_explainable_object import EmptyExplainableObject
-
-        if not isinstance(new_value, EmptyExplainableObject) and not isinstance(self, EmptyExplainableObject):
-            assert isinstance(new_value, self.__class__) or isinstance(self, new_value.__class__), \
-                f"Trying to replace {self} of type {type(self)} by {new_value} which is of type {type(new_value)}."
         mod_obj_container = self.modeling_obj_container
         attr_name = self.attr_name_in_mod_obj_container
+        mod_obj_container.check_input_value_type_positivity_and_unit(
+            attr_name, new_value, replaced_value=self)
         dict_container = self.dict_container
         if dict_container is not None:
             if self.key_in_dict not in dict_container:

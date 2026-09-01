@@ -2,6 +2,7 @@ from time import perf_counter
 
 from functools import lru_cache
 from inspect import signature
+from typing import get_type_hints
 
 from efootprint.logger import logger
 
@@ -9,6 +10,14 @@ from efootprint.logger import logger
 @lru_cache(maxsize=None)
 def get_init_signature_params(cls):
     return signature(cls.__init__).parameters
+
+
+@lru_cache(maxsize=None)
+def get_init_type_hints(cls):
+    try:
+        return get_type_hints(cls.__init__)
+    except Exception as error:
+        raise TypeError(f"Could not resolve {cls.__name__}.__init__ type annotations: {error}") from error
 
 
 def round_dict(my_dict, round_level):

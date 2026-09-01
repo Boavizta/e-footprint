@@ -1,7 +1,8 @@
 import unittest
 from unittest.mock import patch, MagicMock, PropertyMock, call
 
-from efootprint.abstract_modeling_classes.explainable_object_dict import ExplainableObjectDict
+from efootprint.abstract_modeling_classes.explainable_object_dict import (
+    ExplainableObjectDict, WeightedExplainableObjectDict)
 from efootprint.abstract_modeling_classes.explainable_object_base_class import ExplainableObject
 from efootprint.abstract_modeling_classes.explainable_quantity import ExplainableQuantity
 from efootprint.abstract_modeling_classes.list_linked_to_modeling_obj import ListLinkedToModelingObj
@@ -78,6 +79,38 @@ class LifecycleModelingObject(ModelingObject):
 
     def after_init(self):
         self.value = SourceValue(2 * u.dimensionless, label="after init value")
+
+
+class SignatureTarget(ModelingObjectForTesting):
+    pass
+
+
+class SignatureTargetChild(SignatureTarget):
+    pass
+
+
+class OtherSignatureTarget(ModelingObjectForTesting):
+    pass
+
+
+class SignatureValidationModel(ModelingObject):
+    def __init__(
+            self, name, target: "SignatureTarget | None", targets: list["SignatureTarget"],
+            weights: WeightedExplainableObjectDict["SignatureTarget"]):
+        super().__init__(name)
+        self.target = target
+        self.targets = targets
+        self.weights = weights
+
+    @property
+    def systems(self):
+        return []
+
+
+class UnresolvableSignatureModel(ModelingObject):
+    def __init__(self, name, value: "MissingSignatureType"):
+        super().__init__(name)
+        self.value = value
 
 
 class TestModelingObject(unittest.TestCase):
@@ -342,6 +375,57 @@ class TestModelingObject(unittest.TestCase):
 
         self.assertEqual([], old_child.modeling_obj_containers)
         self.assertEqual([parent], new_child.modeling_obj_containers)
+
+    def test_signature_validation_resolves_union_forward_refs_and_contextual_wrappers(self):
+        """Test replacement accepts the resolved declared type through its contextual relationship wrapper."""
+        old_target = SignatureTarget("old target")
+        owner = SignatureValidationModel(
+            "signature owner", old_target, [], WeightedExplainableObjectDict())
+        new_target = SignatureTargetChild("new target")
+
+        owner.target = new_target
+
+        self.assertEqual(new_target, owner.target)
+        with self.assertRaises(TypeError):
+            owner.target = OtherSignatureTarget("wrong target")
+        self.assertEqual(new_target, owner.target)
+
+    def test_signature_validation_checks_list_members(self):
+        """Test a parameterized list accepts declared subclasses and rejects unrelated members before mutation."""
+        old_target = SignatureTarget("old list target")
+        owner = SignatureValidationModel(
+            "list signature owner", None, [old_target], WeightedExplainableObjectDict())
+        new_target = SignatureTargetChild("new list target")
+
+        owner.targets = [new_target]
+
+        self.assertEqual([new_target], owner.targets)
+        with self.assertRaises(TypeError):
+            owner.targets = [OtherSignatureTarget("wrong list target")]
+        self.assertEqual([new_target], owner.targets)
+
+    def test_signature_validation_keeps_weighted_dict_key_and_value_contracts_distinct(self):
+        """Test a weighted dict's generic type checks keys without misclassifying an entry value as a key."""
+        key = SignatureTarget("weighted key")
+        initial_weight = SourceValue(1 * u.dimensionless, label="initial weight")
+        owner = SignatureValidationModel(
+            "weighted signature owner", None, [], WeightedExplainableObjectDict({key: initial_weight}))
+        replacement_weight = ExplainableQuantity(2 * u.dimensionless, label="replacement weight")
+
+        owner.weights[key] = replacement_weight
+
+        self.assertIs(replacement_weight, owner.weights[key])
+        invalid_weights = WeightedExplainableObjectDict({
+            OtherSignatureTarget("wrong weighted key"): SourceValue(1 * u.dimensionless, label="weight"),
+        })
+        with self.assertRaises(TypeError):
+            owner.weights = invalid_weights
+        self.assertEqual([key], list(owner.weights))
+
+    def test_signature_validation_fails_closed_when_forward_ref_cannot_be_resolved(self):
+        """Test an unresolved declared input annotation is rejected instead of bypassing type validation."""
+        with self.assertRaisesRegex(TypeError, "Could not resolve UnresolvableSignatureModel.__init__"):
+            UnresolvableSignatureModel("unresolvable signature owner", SourceObject("value"))
 
 class TestValidationAttributes(unittest.TestCase):
     def test_validation_attributes_returns_attributes_ending_with_validation(self):
