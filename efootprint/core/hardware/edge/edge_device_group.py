@@ -2,7 +2,7 @@ from typing import List, TYPE_CHECKING
 
 from efootprint.abstract_modeling_classes.empty_explainable_object import EmptyExplainableObject
 from efootprint.abstract_modeling_classes.explainable_object_dict import (
-    ExplainableObjectDict, WeightedExplainableObjectDict, to_weighted_explainable_object_dict)
+    WeightedExplainableObjectDict, to_weighted_explainable_object_dict)
 from efootprint.abstract_modeling_classes.explainable_quantity import ExplainableQuantity
 from efootprint.abstract_modeling_classes.modeling_object import ModelingObject
 from efootprint.abstract_modeling_classes.modeling_update import ModelingUpdate
@@ -109,11 +109,9 @@ class EdgeDeviceGroup(ModelingObject):
                 f"{','.join(parent.name for parent in parent_groups)}.")
 
         if self.sub_group_counts or self.edge_device_counts:
-            new_sub_group_counts = ExplainableObjectDict()
-            new_edge_device_counts = ExplainableObjectDict()
             ModelingUpdate([
-                [self.sub_group_counts, new_sub_group_counts],
-                [self.edge_device_counts, new_edge_device_counts],
+                [self.sub_group_counts, WeightedExplainableObjectDict()],
+                [self.edge_device_counts, WeightedExplainableObjectDict()],
             ])
 
         super().self_delete()

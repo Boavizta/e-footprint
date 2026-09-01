@@ -5,8 +5,7 @@ import numpy as np
 from pint import Quantity
 
 from efootprint.abstract_modeling_classes.empty_explainable_object import EmptyExplainableObject
-from efootprint.abstract_modeling_classes.explainable_object_dict import (
-    ExplainableObjectDict, WeightedExplainableObjectDict)
+from efootprint.abstract_modeling_classes.explainable_object_dict import WeightedExplainableObjectDict
 from efootprint.abstract_modeling_classes.modeling_update import ModelingUpdate
 from efootprint.abstract_modeling_classes.source_objects import SourceValue, SourceRecurrentValues
 from efootprint.api_utils.json_to_system import json_to_system
@@ -126,7 +125,7 @@ class IntegrationEdgeDeviceGroupBaseClass(IntegrationTestBaseClass):
 
     def run_test_contextual_parentage_survives_structural_dict_update(self):
         initial_sub_group_counts = self.building_group.sub_group_counts
-        updated_sub_group_counts = ExplainableObjectDict(
+        updated_sub_group_counts = WeightedExplainableObjectDict(
             {self.floor_group: SourceValue((NB_FLOORS + 1) * u.dimensionless)}
         )
 
@@ -169,10 +168,10 @@ class IntegrationEdgeDeviceGroupBaseClass(IntegrationTestBaseClass):
         child_group = EdgeDeviceGroup("transient child group")
         initial_sub_group_counts = parent_group.sub_group_counts
         initial_edge_device_counts = parent_group.edge_device_counts
-        updated_sub_group_counts = ExplainableObjectDict(
+        updated_sub_group_counts = WeightedExplainableObjectDict(
             {child_group: SourceValue((NB_FLOORS + 1) * u.dimensionless)}
         )
-        updated_edge_device_counts = ExplainableObjectDict(
+        updated_edge_device_counts = WeightedExplainableObjectDict(
             {self.edge_device: SourceValue(2 * u.dimensionless)}
         )
 

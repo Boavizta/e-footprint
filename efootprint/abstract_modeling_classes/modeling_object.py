@@ -324,7 +324,9 @@ class ModelingObject(metaclass=ABCAfterInitMeta):
                 return False
             from efootprint.abstract_modeling_classes.explainable_object_dict import ExplainableObjectDict
             if issubclass(origin, ExplainableObjectDict):
-                return not args or all(cls._input_value_matches_annotation(key, args[0]) for key in input_value)
+                return (not isinstance(input_value, ExplainableObjectDict) or isinstance(input_value, origin)) and (
+                    not args or all(cls._input_value_matches_annotation(key, args[0]) for key in input_value)
+                )
             if len(args) == 2:
                 return all(
                     cls._input_value_matches_annotation(key, args[0])

@@ -422,6 +422,31 @@ class TestModelingObject(unittest.TestCase):
             owner.weights = invalid_weights
         self.assertEqual([key], list(owner.weights))
 
+    def test_signature_validation_preserves_weighted_dict_type_and_batch_atomicity(self):
+        """Test an unweighted dict cannot replace a weighted input or let an earlier batch change apply."""
+        old_target = SignatureTarget("weighted batch old target")
+        key = SignatureTarget("weighted batch key")
+        weights = WeightedExplainableObjectDict({
+            key: SourceValue(1 * u.dimensionless, label="initial batch weight"),
+        })
+        owner = SignatureValidationModel("weighted batch owner", old_target, [], weights)
+        new_target = SignatureTargetChild("weighted batch new target")
+        unweighted = ExplainableObjectDict({
+            key: SourceValue(2 * u.dimensionless, label="unweighted replacement"),
+        })
+
+        with self.assertRaises(TypeError):
+            ModelingUpdate([[owner.target, new_target], [owner.weights, unweighted]])
+
+        self.assertIs(old_target, owner.target._value)
+        self.assertIs(weights, owner.weights)
+        self.assertIsInstance(owner.weights, WeightedExplainableObjectDict)
+
+        owner.weights = {key: SourceValue(3 * u.dimensionless, label="raw replacement")}
+
+        self.assertIsInstance(owner.weights, WeightedExplainableObjectDict)
+        self.assertEqual(3, owner.weights[key].magnitude)
+
     def test_signature_validation_fails_closed_when_forward_ref_cannot_be_resolved(self):
         """Test an unresolved declared input annotation is rejected instead of bypassing type validation."""
         with self.assertRaisesRegex(TypeError, "Could not resolve UnresolvableSignatureModel.__init__"):
