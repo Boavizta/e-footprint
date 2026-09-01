@@ -166,7 +166,7 @@ class ExplainableObjectDict(ObjectLinkedToModelingObjBase, dict):
         ModelingUpdate([
             [dict.__getitem__(self, key), dict.__getitem__(new_dict, key)] for key in dedup_entry_keys])
 
-    def _validate_entry_value(self, key, value):
+    def validate_entry_value(self, key, value):
         if not isinstance(value, (ExplainableObject, EmptyExplainableObject)):
             raise ValueError(
                 f"ExplainableObjectDicts only accept ExplainableObjects or EmptyExplainableObject as values, "
@@ -181,7 +181,7 @@ class ExplainableObjectDict(ObjectLinkedToModelingObjBase, dict):
     def _set_entry_passively(self, key, value):
         """Store one entry with the container bookkeeping but no engine involvement — used by the
         computed-dict slot machinery and by input-dict storage."""
-        self._validate_entry_value(key, value)
+        self.validate_entry_value(key, value)
         key_is_new = not dict.__contains__(self, key)
         if dict.__contains__(self, key) and self.modeling_obj_container is not None:
             previous_value = dict.__getitem__(self, key)
@@ -209,7 +209,7 @@ class ExplainableObjectDict(ObjectLinkedToModelingObjBase, dict):
             bump_reverse_nodes(key, modeling_obj_container)
 
     def __setitem__(self, key, value: ExplainableObject):
-        self._validate_entry_value(key, value)
+        self.validate_entry_value(key, value)
 
         binding = self._computed_binding()
         if binding is not None:
@@ -452,6 +452,6 @@ class WeightedExplainableObjectDict(ExplainableObjectDict):
     """ExplainableObjectDict of dimensionless, non-negative weights. validate_weight runs on every __setitem__,
     so the invariant holds at construction and across later mutations alike."""
 
-    def _validate_entry_value(self, key, value):
-        super()._validate_entry_value(key, value)
+    def validate_entry_value(self, key, value):
+        super().validate_entry_value(key, value)
         validate_weight(key, value)

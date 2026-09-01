@@ -453,6 +453,21 @@ class TestModelingObject(unittest.TestCase):
         self.assertIsInstance(owner.weights, WeightedExplainableObjectDict)
         self.assertEqual(3, owner.weights[key].magnitude)
 
+    def test_weighted_dict_member_is_validated_before_batch_mutation(self):
+        old_target = SignatureTarget("member batch old target")
+        key = SignatureTarget("member batch key")
+        initial_weight = SourceValue(1 * u.dimensionless, label="initial member batch weight")
+        owner = SignatureValidationModel(
+            "member batch owner", old_target, [], WeightedExplainableObjectDict({key: initial_weight}))
+        new_target = SignatureTargetChild("member batch new target")
+        invalid_weight = SourceValue(-2 * u.dimensionless, label="invalid member batch weight")
+
+        with self.assertRaisesRegex(ValueError, "non-negative"):
+            ModelingUpdate([[owner.target, new_target], [owner.weights[key], invalid_weight]])
+
+        self.assertIs(old_target, owner.target._value)
+        self.assertIs(initial_weight, owner.weights[key])
+
     def test_signature_validation_fails_closed_when_forward_ref_cannot_be_resolved(self):
         """Test an unresolved declared input annotation is rejected instead of bypassing type validation."""
         with self.assertRaisesRegex(TypeError, "Could not resolve UnresolvableSignatureModel.__init__"):

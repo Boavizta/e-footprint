@@ -66,11 +66,12 @@ class ModelingUpdate:
                               f"{old_value} should be an ObjectLinkedToModelingObjBase but is of type {type(old_value)}"
             if new_value is None:
                 assert isinstance(old_value, ExplainableObject)
-                self.changes_list[index][1] = EmptyExplainableObject()
-            else:
-                mod_obj_container = old_value.modeling_obj_container
-                mod_obj_container.check_input_value(
-                    old_value.attr_name_in_mod_obj_container, new_value, replaced_value=old_value)
+                new_value = EmptyExplainableObject()
+                self.changes_list[index][1] = new_value
+
+            mod_obj_container = old_value.modeling_obj_container
+            mod_obj_container.check_input_value(
+                old_value.attr_name_in_mod_obj_container, new_value, replaced_value=old_value)
 
             if isinstance(new_value, list):
                 from efootprint.abstract_modeling_classes.list_linked_to_modeling_obj import ListLinkedToModelingObj

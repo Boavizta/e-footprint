@@ -346,13 +346,6 @@ class ModelingObject(metaclass=ABCAfterInitMeta):
         if origin in (Union, UnionType):
             return any(cls._replacement_matches_annotation(input_value, option, replaced_value) for option in args)
 
-        if replaced_value.dict_container is not None:
-            if cls._explainable_object_dict_class(annotation) is not None:
-                from efootprint.abstract_modeling_classes.explainable_object_base_class import ExplainableObject
-                return cls._input_value_matches_annotation(input_value, ExplainableObject)
-            raise TypeError(
-                f"Unsupported annotation {annotation!r} for an ExplainableObjectDict member replacement")
-
         if replaced_value.list_container is not None:
             if origin in (list, List) and args:
                 return cls._input_value_matches_annotation(input_value, args[0])
@@ -390,6 +383,10 @@ class ModelingObject(metaclass=ABCAfterInitMeta):
             raise ValueError(f"Value {input_value} for attribute {name} should be positive but is negative")
 
     def check_input_value(self, name, input_value, replaced_value=None):
+        if replaced_value is not None and replaced_value.dict_container is not None:
+            replaced_value.dict_container.validate_entry_value(replaced_value.key_in_dict, input_value)
+            return
+
         init_param = get_init_signature_params(type(self)).get(name)
         if init_param is None:
             return
