@@ -6,7 +6,14 @@ and this project adheres to [Semantic Versioning](http://semver.org/)
 
 ## [Unreleased]
 
+### Added
+- `ExplainableRecurrentQuantitiesFromWeeklyPattern` builds a canonical 168-hour recurrent timeseries from named weekday profiles, baselines, and validated hourly ranges. It preserves every authored profile—including unused ones—plus source metadata through duplication and JSON round trips, and exposes readable inputs for model comparison.
+
+### Changed
+- `ModelingUpdate` now checks replacements against resolved constructor type annotations while preserving atomic and container invariants, so compatible recurrent-quantity strategies such as constants and weekly patterns can be switched safely.
+
 ### Fixed
+- Constant and weekly recurrent quantities now preserve their exact authored values through duplication and JSON round trips, avoiding spurious differences after reopening a model.
 - `System.total_footprint` now preserves full hourly precision, so its period sum exactly matches the combined fabrication and energy category footprints.
 
 ## [V23.0.0] - 2026-08-31
