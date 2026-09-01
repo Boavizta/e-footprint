@@ -34,6 +34,7 @@ nav:
   - How to get started: get_started.md
   - The e-footprint methodology: methodology.md
   - Web vs edge modeling: web_vs_edge.md
+  - Environmental footprint reference definitions: environmental_footprint_definitions.md
 - How-to guides:
     - How to model a machine learning workflow: machine_learning_workflow.md
     - How to model a database: database_modeling.md
