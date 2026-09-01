@@ -103,15 +103,33 @@ class TestExplainableRecurrentQuantitiesFromWeeklyPattern(TestCase):
         self.assert_validation_error(form_inputs, "profiles", "missing_day_assignment")
 
     def test_baselines_and_range_values_must_be_finite_numbers(self):
-        """Test non-numeric and non-finite authored values report their precise field paths."""
+        """Test values must be numeric, finite, and representable in the canonical float32 week."""
+        float32_overflow = float(np.finfo(np.float32).max) * 2
         for field_path, mutate in (
             ("profiles[0].baseline", lambda inputs: inputs["profiles"][0].update(baseline=np.nan)),
             ("profiles[0].ranges[1].value", lambda inputs: inputs["profiles"][0]["ranges"][1].update(value=np.inf)),
+            ("profiles[0].baseline", lambda inputs: inputs["profiles"][0].update(baseline=float32_overflow)),
+            (
+                "profiles[0].ranges[1].value",
+                lambda inputs: inputs["profiles"][0]["ranges"][1].update(value=float32_overflow),
+            ),
         ):
             with self.subTest(field_path=field_path):
                 form_inputs = weekly_form_inputs()
                 mutate(form_inputs)
                 self.assert_validation_error(form_inputs, field_path, "invalid_number")
+
+        form_inputs = weekly_form_inputs()
+        form_inputs["profiles"][0]["baseline"] = float(np.finfo(np.float32).max)
+        result = ExplainableRecurrentQuantitiesFromWeeklyPattern(form_inputs)
+        self.assertTrue(np.isfinite(result.magnitude).all())
+
+    def test_unit_must_be_valid_for_a_timeseries(self):
+        """Test a dimensionless unit reports the weekly builder's structured validation error."""
+        form_inputs = weekly_form_inputs()
+        form_inputs["unit"] = "dimensionless"
+
+        self.assert_validation_error(form_inputs, "unit", "invalid_unit")
 
     def test_range_hours_are_integral_bounded_and_in_increasing_order(self):
         """Test range bounds, within-range order, chronological order, and overlap are validated."""
@@ -138,6 +156,25 @@ class TestExplainableRecurrentQuantitiesFromWeeklyPattern(TestCase):
             form_inputs["profiles"][0]["ranges"][1],
         )
         self.assert_validation_error(form_inputs, "profiles[0].ranges[2].start", "ranges_not_ordered")
+
+        form_inputs = weekly_form_inputs()
+        form_inputs["profiles"][0]["ranges"] = [
+            {"start": 8, "end": 18, "value": 2},
+            {"start": 0, "end": 5, "value": 0.25},
+            {"start": 5, "end": 8, "value": -1},
+        ]
+        with self.assertRaises(WeeklyPatternValidationError) as context:
+            ExplainableRecurrentQuantitiesFromWeeklyPattern(form_inputs)
+        self.assertEqual(
+            [
+                {
+                    "path": "profiles[0].ranges[1].start",
+                    "code": "ranges_not_ordered",
+                    "message": "Ranges must be ordered by start hour.",
+                }
+            ],
+            context.exception.errors,
+        )
 
     def test_negative_values_are_intrinsically_valid(self):
         """Test the builder leaves attribute-specific negative-value policy to the owning model."""

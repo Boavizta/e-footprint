@@ -10,6 +10,8 @@ from efootprint.abstract_modeling_classes.explainable_object_base_class import E
 from efootprint.abstract_modeling_classes.explainable_recurrent_quantities import ExplainableRecurrentQuantities
 from efootprint.utils.display import format_display_number
 
+_FLOAT32_MAX = float(np.finfo(np.float32).max)
+
 
 class WeeklyPatternValidationError(ValueError):
     """One or more invalid fields in authored weekly-pattern inputs."""
@@ -19,8 +21,13 @@ class WeeklyPatternValidationError(ValueError):
         super().__init__("; ".join(f"{error['path']}: {error['message']}" for error in errors))
 
 
-def _is_finite_number(value) -> bool:
-    return isinstance(value, Real) and not isinstance(value, bool) and np.isfinite(value)
+def _is_finite_float32_number(value) -> bool:
+    return (
+        isinstance(value, Real)
+        and not isinstance(value, bool)
+        and np.isfinite(value)
+        and abs(value) <= _FLOAT32_MAX
+    )
 
 
 @ExplainableObject.register_subclass(
@@ -75,9 +82,12 @@ class ExplainableRecurrentQuantitiesFromWeeklyPattern(ExplainableRecurrentQuanti
             add("unit", "invalid_unit", "Unit must be a non-empty Pint unit string.")
         else:
             try:
-                Quantity(1, unit)
+                parsed_unit = Quantity(1, unit)
             except (TypeError, ValueError, UndefinedUnitError):
                 add("unit", "invalid_unit", f"'{unit}' is not a valid Pint unit.")
+            else:
+                if str(parsed_unit.units) == "dimensionless":
+                    add("unit", "invalid_unit", "Unit must not be dimensionless.")
 
         profiles = self.form_inputs.get("profiles")
         if not isinstance(profiles, list):
@@ -104,8 +114,8 @@ class ExplainableRecurrentQuantitiesFromWeeklyPattern(ExplainableRecurrentQuanti
                 seen_names.add(name)
 
             baseline_path = f"{profile_path}.baseline"
-            if not _is_finite_number(profile.get("baseline")):
-                add(baseline_path, "invalid_number", "Baseline must be a finite number.")
+            if not _is_finite_float32_number(profile.get("baseline")):
+                add(baseline_path, "invalid_number", "Baseline must be a finite number representable as float32.")
 
             days = profile.get("days")
             if not isinstance(days, list):
@@ -141,8 +151,12 @@ class ExplainableRecurrentQuantitiesFromWeeklyPattern(ExplainableRecurrentQuanti
                     add(f"{range_path}.start", "invalid_start_hour", "Range start must be an integer from 0 to 23.")
                 if not end_valid:
                     add(f"{range_path}.end", "invalid_end_hour", "Range end must be an integer from 1 to 24.")
-                if not _is_finite_number(time_range.get("value")):
-                    add(f"{range_path}.value", "invalid_number", "Range value must be a finite number.")
+                if not _is_finite_float32_number(time_range.get("value")):
+                    add(
+                        f"{range_path}.value",
+                        "invalid_number",
+                        "Range value must be a finite number representable as float32.",
+                    )
 
                 if not start_valid or not end_valid:
                     continue
@@ -151,10 +165,12 @@ class ExplainableRecurrentQuantitiesFromWeeklyPattern(ExplainableRecurrentQuanti
                     continue
                 if previous_start is not None and start < previous_start:
                     add(f"{range_path}.start", "ranges_not_ordered", "Ranges must be ordered by start hour.")
-                elif range_index and start < covered_until:
-                    add(f"{range_path}.start", "ranges_overlap", "Ranges in a profile must not overlap.")
+                    covered_until = end
+                else:
+                    if previous_start is not None and start < covered_until:
+                        add(f"{range_path}.start", "ranges_overlap", "Ranges in a profile must not overlap.")
+                    covered_until = max(covered_until, end)
                 previous_start = start
-                covered_until = max(covered_until, end)
 
         for day, owner in enumerate(day_owners):
             if owner is None:
