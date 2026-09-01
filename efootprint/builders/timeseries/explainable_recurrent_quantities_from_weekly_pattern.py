@@ -22,12 +22,7 @@ class WeeklyPatternValidationError(ValueError):
 
 
 def _is_finite_float32_number(value) -> bool:
-    return (
-        isinstance(value, Real)
-        and not isinstance(value, bool)
-        and np.isfinite(value)
-        and abs(value) <= _FLOAT32_MAX
-    )
+    return isinstance(value, Real) and not isinstance(value, bool) and np.isfinite(value) and abs(value) <= _FLOAT32_MAX
 
 
 @ExplainableObject.register_subclass(
@@ -187,6 +182,10 @@ class ExplainableRecurrentQuantitiesFromWeeklyPattern(ExplainableRecurrentQuanti
                 day_values[time_range["start"] : time_range["end"]] = float(time_range["value"])
             week[profile["days"]] = day_values
         return Quantity(week.reshape(168), self.form_inputs["unit"])
+
+    def __eq__(self, other):
+        """Compare the exact authoring model, not only its computed week."""
+        return type(other) is type(self) and self.form_inputs == other.form_inputs
 
     @property
     def form_inputs_for_display(self):

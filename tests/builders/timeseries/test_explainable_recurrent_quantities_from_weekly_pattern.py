@@ -66,14 +66,15 @@ class TestExplainableRecurrentQuantitiesFromWeeklyPattern(TestCase):
 
     def test_profile_count_must_be_between_one_and_seven(self):
         """Test empty and over-limit profile lists report the stable profile-count error."""
-        for profiles in ([], [
-            {"name": f"profile {index}", "days": list(range(7)) if index == 0 else [], "baseline": 0, "ranges": []}
-            for index in range(8)
-        ]):
+        for profiles in (
+            [],
+            [
+                {"name": f"profile {index}", "days": list(range(7)) if index == 0 else [], "baseline": 0, "ranges": []}
+                for index in range(8)
+            ],
+        ):
             with self.subTest(profile_count=len(profiles)):
-                self.assert_validation_error(
-                    {"unit": "concurrent", "profiles": profiles}, "profiles", "profile_count"
-                )
+                self.assert_validation_error({"unit": "concurrent", "profiles": profiles}, "profiles", "profile_count")
 
     def test_profile_names_are_non_empty_case_sensitive_and_unique(self):
         """Test blank and repeated names fail while names differing only by case remain distinct."""
@@ -181,6 +182,25 @@ class TestExplainableRecurrentQuantitiesFromWeeklyPattern(TestCase):
         result = ExplainableRecurrentQuantitiesFromWeeklyPattern(weekly_form_inputs())
         self.assertEqual(-1, result.magnitude.min())
 
+    def test_equality_uses_exact_authored_state_instead_of_only_computed_values(self):
+        """Test equal output does not hide a builder switch or changes to unused profiles."""
+        constant = ExplainableRecurrentQuantitiesFromConstant({"constant_value": 1, "constant_unit": "concurrent"})
+        weekly_inputs = weekly_form_inputs()
+        weekly_inputs["profiles"] = [
+            {"name": "all week", "days": list(range(7)), "baseline": 1, "ranges": []},
+            {"name": "unused", "days": [], "baseline": 5, "ranges": []},
+        ]
+        weekly = ExplainableRecurrentQuantitiesFromWeeklyPattern(weekly_inputs)
+        changed_inputs = deepcopy(weekly_inputs)
+        changed_inputs["profiles"][1]["name"] = "renamed unused"
+        changed_weekly = ExplainableRecurrentQuantitiesFromWeeklyPattern(changed_inputs)
+
+        np.testing.assert_array_equal(constant.magnitude, weekly.magnitude)
+        np.testing.assert_array_equal(weekly.magnitude, changed_weekly.magnitude)
+        self.assertNotEqual(constant, weekly)
+        self.assertNotEqual(weekly, changed_weekly)
+        self.assertEqual(weekly, ExplainableRecurrentQuantitiesFromWeeklyPattern(weekly_inputs))
+
     def test_copy_preserves_authored_state_and_metadata_without_aliasing(self):
         """Test shallow copying retains all authoring metadata while deep-copying nested profiles."""
         source = Source("meter", "https://example.test/meter")
@@ -227,7 +247,8 @@ class TestExplainableRecurrentQuantitiesFromWeeklyPattern(TestCase):
         """Test a weekly builder survives the complete system serialization and hydration path."""
         system, _ = IntegrationTestSimpleEdgeSystemBaseClass.generate_simple_edge_system()
         ram_need = next(
-            obj for obj in system.all_linked_objects
+            obj
+            for obj in system.all_linked_objects
             if isinstance(obj, RecurrentEdgeComponentNeed) and obj.name == "RAM need"
         )
         form_inputs = weekly_form_inputs()
