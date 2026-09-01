@@ -13,7 +13,8 @@ This skill orchestrates the per-task skills `task-implement` and `task-review`. 
 
 1. **Confirm the feature.** Ask the user which feature, or take the one they named. Read `specs/features/<feature-name>/tasks.md`. For cross-repo features, the single `tasks.md` lives in the driving repo. If its execution plan defines multiple runs, confirm which run this session executes.
 2. **Read the loop's standing inputs once**, so you can brief sub-agents tersely: `specs/constitution.md` (gates), `specs/conventions.md`, and `specs/architecture/index.html` plus the owning architecture pages it routes to. For a normal feature, also skim `spec.html` and `plan.html` for intent. A bug-fix batch deliberately has neither; each task must link a diagnostic file, which replaces them for that task. If neither form of intent exists, stop.
-3. **Identify the uncompleted tasks** in the selected run's stated order, or document order when no runs are defined. These are the iterations of your loop.
+3. **Check autonomy readiness once, before implementation.** Treat an approved spec, plan, and tasks list as the load-bearing contract for a smooth autonomous run. Confirm that acceptance criteria are testable, product and architectural decisions needed for implementation are resolved, task boundaries and ordering are coherent, and the selected model/reasoning effort are appropriate for the feature. Propagate the run's chosen model and effort to implement and review sub-agents rather than silently downshifting them. Stop here only when a real gap would force implementation to invent product behavior, architecture, scope, or a contract; ordinary implementation details are the agents' responsibility.
+4. **Identify the uncompleted tasks** in the selected run's stated order, or document order when no runs are defined. These are the iterations of your loop.
 
 ## Per-task loop
 
@@ -27,7 +28,9 @@ Give it the task number and require the implementation commit subject to start `
 
 Require a **terse final message** — this is all that enters your context, so keep it lean: task title; files touched; gate status (tests pass/fail, plus any repo-specific gates that applied); one line on what remains. No diffs, no narration.
 
-**On gate failure or a surfaced blocker** (tests red, plan assumption wrong, missing dependency, scope creep): **halt the loop.** Report the failure to the user with the agent's output and wait. Do not silently retry and do not move on.
+**A red gate is diagnostic evidence, not an automatic user interruption.** Have the implement agent diagnose the failure. When the cause and correction are evident, in scope, and low risk—such as an implementation defect, stale test expectation, malformed fixture, formatting issue, or another local inconsistency—tell the same agent to fix it, rerun the affected gate, and continue without asking the user. Briefly surface the recovery as a non-blocking progress update when useful; never hide a still-failing gate.
+
+**Halt only for a load-bearing blocker:** the failure reveals a wrong or missing product assumption, requires a scope or contract change, presents reasonable architectural alternatives, needs an unavailable dependency or new authority, would require a destructive operation, affects broad unrelated behavior, or remains unexplained after reasonable in-scope diagnosis and correction attempts. Report the evidence and the decision or authority needed; do not move to the next task with a red gate.
 
 ### 2. Review (sub-agent)
 
@@ -75,7 +78,7 @@ Let the conversation breathe — the user may push back or discuss before decidi
 
 Send the consolidated decisions — the fixes you auto-approved **plus** any the user decided — back to the **review sub-agent** (via SendMessage to its id, so it keeps full review context). Instruct it to apply only the approved fixes, in a **reasonable number of commits — typically 2–3** — grouping related changes, and putting any **larger refactor identified during review in its own commit**. Every review-fix commit subject starts `<repo tag> task N review fix:`, for example `[FIX] task 4 review fix: preserve a saved zero threshold`. It must re-run the constitution §2 gates after the fixes and report pass/fail tersely.
 
-**On gate failure here too: halt and surface.**
+Apply the same gate policy here: autonomously diagnose and correct evident in-scope failures, rerun the affected gates, and halt only for a load-bearing blocker. Never move to the next task while a gate remains red.
 
 ### 5. Continue
 
@@ -100,8 +103,8 @@ A sub-agent's internal work never enters your context — only its final message
 
 ## Halt-and-surface conditions (never silently continue)
 
-- Any quality gate fails (implement step or fix step).
-- A sub-agent surfaces a missing dependency, wrong plan assumption, or scope creep.
+- A quality-gate failure exposes a wrong or missing product assumption, scope/contract change, architectural fork, broad unrelated regression, unavailable dependency or authority, or remains unexplained after reasonable in-scope correction attempts. An evident local implementation/test/fixture/formatting correction is handled autonomously and the gate is rerun.
+- A sub-agent surfaces a missing dependency, wrong plan assumption, or scope creep that cannot be resolved without changing the approved task or obtaining new authority.
 - A destructive operation would be needed (constitution §3.3) — ask first.
 - A finding is a genuinely structuring decision (unintended bug, logical gap in the spec, big refactoring opportunity, architectural fork, scope/contract change) — escalate it per step 3 rather than auto-approving.
 - The user, mid-discussion, signals they want to stop or take over.
