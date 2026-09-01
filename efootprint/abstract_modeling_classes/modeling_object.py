@@ -19,7 +19,7 @@ from efootprint.abstract_modeling_classes.reactive_core import (
 from efootprint.utils.graph_tools import WIDTH, HEIGHT, add_unique_id_to_mynetwork
 from efootprint.utils.object_relationships_graphs import build_object_relationships_graph, \
     USAGE_PATTERN_VIEW_CLASSES_TO_IGNORE
-from efootprint.utils.tools import get_init_signature_params, get_init_type_hints
+from efootprint.utils.tools import get_init_signature_params
 from efootprint.constants.units import u
 
 if TYPE_CHECKING:
@@ -377,9 +377,7 @@ class ModelingObject(metaclass=ABCAfterInitMeta):
     def check_input_value_type_positivity_and_unit(self, name, input_value, replaced_value=None):
         init_sig_params = get_init_signature_params(type(self))
         if name in init_sig_params:
-            annotation = get_init_type_hints(type(self)).get(name)
-            if annotation is None:
-                raise TypeError(f"{type(self).__name__}.__init__ input '{name}' has no resolvable type annotation")
+            annotation = init_sig_params[name].annotation
             if (not isinstance(input_value, EmptyExplainableObject)
                     and not self._replacement_matches_annotation(input_value, annotation, replaced_value)):
                 origin = get_origin(annotation)

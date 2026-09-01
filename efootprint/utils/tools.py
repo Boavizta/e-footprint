@@ -9,15 +9,18 @@ from efootprint.logger import logger
 
 @lru_cache(maxsize=None)
 def get_init_signature_params(cls):
-    return signature(cls.__init__).parameters
-
-
-@lru_cache(maxsize=None)
-def get_init_type_hints(cls):
+    """Return constructor parameters with runtime-resolved type annotations."""
+    init_signature = signature(cls.__init__)
     try:
-        return get_type_hints(cls.__init__)
+        type_hints = get_type_hints(cls.__init__)
     except Exception as error:
         raise TypeError(f"Could not resolve {cls.__name__}.__init__ type annotations: {error}") from error
+
+    resolved_params = [
+        param.replace(annotation=type_hints.get(name, param.annotation))
+        for name, param in init_signature.parameters.items()
+    ]
+    return init_signature.replace(parameters=resolved_params).parameters
 
 
 def round_dict(my_dict, round_level):

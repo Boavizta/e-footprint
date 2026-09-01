@@ -1,13 +1,11 @@
 from abc import abstractmethod
-from typing import List, TYPE_CHECKING
+from typing import List
 
 from efootprint.abstract_modeling_classes.empty_explainable_object import EmptyExplainableObject
 from efootprint.abstract_modeling_classes.explainable_quantity import ExplainableQuantity
 from efootprint.abstract_modeling_classes.modeling_object import ModelingObject
+from efootprint.core.hardware.server_base import ServerBase
 from efootprint.utils.tools import get_init_signature_params
-
-if TYPE_CHECKING:
-    from efootprint.core.hardware.server_base import ServerBase
 
 
 class Service(ModelingObject):
@@ -45,7 +43,7 @@ class Service(ModelingObject):
 
         return compatible_jobs
 
-    def __init__(self, name, server: "ServerBase",
+    def __init__(self, name, server: ServerBase,
                  base_ram_consumption: ExplainableQuantity = None,
                  base_compute_consumption: ExplainableQuantity = None):
         super().__init__(name=name)
