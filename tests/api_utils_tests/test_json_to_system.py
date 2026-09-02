@@ -116,6 +116,21 @@ class TestJsonToSystem(IntegrationTestBaseClass):
 
         class_obj_dict, flat_obj_dict, _ = json_to_system(base_system_dict)
 
+    def test_loads_real_version_23_payload_with_plural_pattern_migration(self):
+        with open(os.path.join(root_test_dir, "performance_tests", "big_system.json"), "rb") as file:
+            version_23_system_dict = json.load(file)
+
+        _, _, upgraded_dict = json_to_system(version_23_system_dict)
+
+        self.assertEqual("23.0.0", version_23_system_dict["efootprint_version"])
+        self.assertTrue(all(
+            "usage_journeys" in pattern and "hourly_occurrences" in pattern
+            for pattern in upgraded_dict["UsagePattern"].values()))
+        self.assertTrue(all(
+            "edge_usage_journeys" in pattern and "hourly_deployment_starts" in pattern and "usage_span" in pattern
+            for pattern in upgraded_dict["EdgeUsagePattern"].values()))
+        self.assertTrue(all("usage_span" not in journey for journey in upgraded_dict["EdgeUsageJourney"].values()))
+
     def test_json_to_system_doesnt_update_input_dict(self):
         input_dict = deepcopy(self.base_system_dict)
 

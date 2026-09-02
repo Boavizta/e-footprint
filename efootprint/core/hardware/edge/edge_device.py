@@ -463,10 +463,10 @@ class EdgeDevice(ModelingObject, AttributionSource):
         return values[(need, usage_pattern)]
 
     def attribution_atoms(self, phase: LifeCyclePhases):
-        """Slot enumeration: for each pattern, walk the journey's edge functions (with multiplicity), each
+        """Slot enumeration: for each pattern, walk every selected bundle's edge functions (with multiplicity), each
         function's device-need bundles, each bundle's component needs — one atom per (need, bundle, function)
-        slot, valued atom_value × slot count / total occurrences of the need in the journey, so the slots of a
-        need partition its atom_value exactly: within-journey reuse splits across its bundles and functions by
+        slot, valued atom_value × slot count / total occurrences of the need in the pattern, so the slots of a
+        need partition its atom_value exactly: path reuse splits across its bundles and functions by
         occurrence ratios; the common case is one slot with ratio 1. In the fabrication phase the device's
         RecurrentServerNeeds carry their equal share of the unused-components chassis pool through (rsn, ef)
         slots, split by the same occurrence ratios."""

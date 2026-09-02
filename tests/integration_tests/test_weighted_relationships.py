@@ -4,19 +4,22 @@ from unittest import TestCase
 
 import numpy as np
 from efootprint.abstract_modeling_classes.explainable_object_dict import (
-    WeightedExplainableObjectDict, to_weighted_explainable_object_dict)
+    PositiveWeightedExplainableObjectDict, WeightedExplainableObjectDict, to_weighted_explainable_object_dict)
 from efootprint.abstract_modeling_classes.modeling_update import ModelingUpdate
 from efootprint.abstract_modeling_classes.source_objects import SourceValue
 from efootprint.api_utils.json_to_system import json_to_system
 from efootprint.api_utils.system_to_json import system_to_json
 from efootprint.builders.time_builders import create_source_hourly_values_from_list
 from efootprint.constants.countries import Countries
+from efootprint.constants.sources import Sources
 from efootprint.constants.units import u
 from efootprint.core.hardware.device import Device
 from efootprint.core.hardware.network import Network
 from efootprint.core.hardware.server import Server, ServerTypes
 from efootprint.core.hardware.storage import Storage
 from efootprint.core.system import System
+from efootprint.core.usage.edge.edge_usage_journey import EdgeUsageJourney
+from efootprint.core.usage.edge.edge_usage_pattern import EdgeUsagePattern
 from efootprint.core.usage.job import Job, JobOccurrenceCoordinate
 from efootprint.core.usage.usage_journey import UsageJourney
 from efootprint.core.usage.usage_journey_step import UsageJourneyStep
@@ -80,6 +83,10 @@ class TestWeightedRelationships(TestCase):
     def test_json_round_trip_preserves_non_default_weights(self):
         system, journey, step_1, step_2, job = build_system(
             lambda s1, s2: {s1: 2, s2: 0.5}, lambda j: {j: 3}, "weighted")
+        pattern = system.usage_patterns[0]
+        second_journey = UsageJourney("second weighted pattern journey", [step_1])
+        pattern.usage_journeys[journey] = SourceValue(1.5 * u.dimensionless, Sources.USER_DATA)
+        pattern.usage_journeys[second_journey] = SourceValue(0.25 * u.dimensionless, Sources.USER_DATA)
         system_json = system_to_json(system, save_computed_state=False)
 
         class_obj_dict, flat_obj_dict, _ = json_to_system(json.loads(json.dumps(system_json)))
@@ -92,10 +99,36 @@ class TestWeightedRelationships(TestCase):
         self.assertIsInstance(reloaded_step_1.jobs, WeightedExplainableObjectDict)
         self.assertEqual([3], [weight.magnitude for weight in reloaded_step_1.jobs.values()])
         self.assertEqual(SourceValue((2 * 5 + 0.5 * 20) * u.min), reloaded_journey.duration)
+        reloaded_pattern = flat_obj_dict[pattern.id]
+        self.assertIsInstance(reloaded_pattern.usage_journeys, PositiveWeightedExplainableObjectDict)
+        self.assertEqual(
+            [journey.id, second_journey.id], [reloaded.id for reloaded in reloaded_pattern.usage_journeys])
+        self.assertEqual([1.5, 0.25], [weight.magnitude for weight in reloaded_pattern.usage_journeys.values()])
+        self.assertTrue(all(
+            weight.source == Sources.USER_DATA for weight in reloaded_pattern.usage_journeys.values()))
 
         reloaded_system = list(class_obj_dict["System"].values())[0]
         self.assertEqual(
             system.total_footprint.value_as_float_list, reloaded_system.total_footprint.value_as_float_list)
+        self.assertEqual(system_json, system_to_json(reloaded_system, save_computed_state=False))
+
+    def test_edge_plural_relationship_and_pattern_span_round_trip(self):
+        first = EdgeUsageJourney("first round-trip edge bundle", [])
+        second = EdgeUsageJourney("second round-trip edge bundle", [])
+        pattern = EdgeUsagePattern(
+            "round-trip edge pattern", [first, second], Network.wifi_network(), Countries.FRANCE(),
+            create_source_hourly_values_from_list([1], datetime(2026, 1, 1)),
+            usage_span=SourceValue(2 * u.year, Sources.USER_DATA))
+        system = System("round-trip edge system", [], [pattern])
+        system_json = system_to_json(system, save_computed_state=False)
+
+        class_obj_dict, flat_obj_dict, _ = json_to_system(json.loads(json.dumps(system_json)))
+        reloaded_pattern = flat_obj_dict[pattern.id]
+
+        self.assertEqual(
+            [first.id, second.id], [journey.id for journey in reloaded_pattern.edge_usage_journeys])
+        self.assertEqual(SourceValue(2 * u.year, Sources.USER_DATA), reloaded_pattern.usage_span)
+        reloaded_system = next(iter(class_obj_dict["System"].values()))
         self.assertEqual(system_json, system_to_json(reloaded_system, save_computed_state=False))
 
     def test_weights_change_computed_results(self):

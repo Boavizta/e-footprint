@@ -15,7 +15,7 @@ def utc_hourly_occurrences(self):
     converted = self.hourly_occurrences.convert_to_utc(
         local_timezone=self.country.timezone
     )
-    return converted.set_label("Hourly journey starts (UTC)")</code></pre>
+    return converted.set_label("Hourly nb of pattern occurrences (UTC)")</code></pre>
 <div class="cols"><div><div class="n value"><b>Calculus edges — values used</b><br><span><code>hourly_occurrences</code> → result<br><code>country.timezone</code> → result</span></div><div class="ar">Changing either value invalidates the result.</div></div><div><div class="n slot"><b>Structural edge — relationship used</b><br><span><code>self.country</code> link → result</span></div><div class="ar">Replacing France with Japan invalidates the result, even before considering their timezone values.</div></div></div></div>
 <div class="rule"><b>Why reading <code>self.country.timezone</code> creates both kinds:</b> the computation depends on <em>which country</em> the link points to (structural), and on <em>that country's timezone value</em> (calculus). Both edges point to the computed <code>utc_hourly_occurrences</code> slot and trigger the same invalidation behavior.</div>
 <details><summary>What “getter-less node” or “bump node” means</summary><div class="fbody"><p>The graph needs a stable internal identity for each input value and relationship membership so computed slots can list it as a dependency. That identity is represented by a <a class="term" href="../glossary.html#reactive-slot"><code>ReactiveSlot</code></a> with no getter: it computes nothing and holds no derived value. A write “bumps” it by launching <a class="term" href="../glossary.html#invalidation">invalidation</a> into its dependents.</p><p>This is storage machinery, not a third conceptual dependency kind. At the modeling level, think only in terms of value/calculus dependencies and relationship/structural dependencies.</p></div></details>
@@ -24,7 +24,7 @@ def utc_hourly_occurrences(self):
 <pre><code># UsagePattern.__init__ (abridged)
 self.hourly_occurrences = hourly_occurrences.to(
     u.occurrence
-).set_label("Hourly nb of usage journey starts")
+).set_label("Hourly nb of pattern occurrences")
 self.country = country</code></pre>
 <p><code>AfterInitMeta</code> keeps the complete constructor and the subclass's <code>after_init()</code> hook passive. Input assignment and relationship-container mutation use explicit attachment/storage paths during this phase, so builder defaults can be created or replaced without invalidation, guards, or update transactions. The metaclass makes the finished instance live exactly once; there is no caller-controlled bypass for later writes.</p>
 <div class="tablewrap"><table><tr><th>Data</th><th>Where it lives after construction</th><th>Why</th></tr>

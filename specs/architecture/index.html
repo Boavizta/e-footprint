@@ -37,7 +37,7 @@
         converted = self.hourly_occurrences.convert_to_utc(
             local_timezone=self.country.timezone
         )
-        return converted.set_label("Hourly journey starts (UTC)")</code></pre>
+        return converted.set_label("Hourly nb of pattern occurrences (UTC)")</code></pre>
 <div class="cols"><div class="n core"><b>Value dependencies</b><br><span>The result uses <code>hourly_occurrences</code> and the linked country's <code>timezone</code>.</span></div><div class="n framework"><b>Relationship dependency</b><br><span>The result also depends on which <code>Country</code> the <code>country</code> link points to.</span></div></div>
 <p style="font-size:.88rem;color:var(--muted);margin-bottom:0">The reactive framework observes those ordinary reads while the getter runs. First compare the <a href="recomputation/computed-surfaces.html">three computed surfaces</a>; then use the <a href="recomputation/lifecycle.html#walkthrough">complete lifecycle walkthrough</a> for exact runtime state and code paths.</p></div>
 

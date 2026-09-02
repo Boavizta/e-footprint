@@ -778,9 +778,6 @@ def upgrade_version_22_to_23(system_dict, efootprint_classes_dict=None):
 
 def upgrade_version_23_to_24(system_dict, efootprint_classes_dict=None):
     """Version 24 makes web and edge pattern-to-journey relationships plural and moves edge lifetime to patterns."""
-    web_obsolete_computed = {"utc_hourly_occurrences"}
-    edge_obsolete_computed = {"utc_hourly_deployment_starts", "nb_deployments_in_parallel"}
-
     for pattern in system_dict.get("UsagePattern", {}).values():
         journey_id = pattern.pop("usage_journey", None)
         if journey_id is not None:
@@ -790,8 +787,6 @@ def upgrade_version_23_to_24(system_dict, efootprint_classes_dict=None):
         if "hourly_usage_journey_starts" in pattern:
             rename_dict_key(pattern, "hourly_usage_journey_starts", "hourly_occurrences")
         pattern["hourly_occurrences"]["label"] = "Hourly nb of pattern occurrences"
-        for attr_name in web_obsolete_computed:
-            pattern.pop(attr_name, None)
 
     edge_journeys = system_dict.get("EdgeUsageJourney", {})
     for pattern in system_dict.get("EdgeUsagePattern", {}).values():
@@ -803,8 +798,6 @@ def upgrade_version_23_to_24(system_dict, efootprint_classes_dict=None):
         if "hourly_edge_usage_journey_starts" in pattern:
             rename_dict_key(pattern, "hourly_edge_usage_journey_starts", "hourly_deployment_starts")
         pattern["hourly_deployment_starts"]["label"] = "Hourly nb of deployment starts"
-        for attr_name in edge_obsolete_computed:
-            pattern.pop(attr_name, None)
 
     for journey in edge_journeys.values():
         journey.pop("usage_span", None)

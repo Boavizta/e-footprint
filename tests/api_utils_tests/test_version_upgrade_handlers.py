@@ -21,16 +21,19 @@ class TestVersionUpgradeHandlers(TestCase):
     def test_upgrade_23_to_24_pluralizes_patterns_and_moves_edge_span(self):
         span = {"value": 2.0, "unit": "year", "label": "Usage span", "source": "user_data"}
         input_dict = {
+            "efootprint_version": "23.1.0",
             "calculation_graph": {"nodes": ["obsolete"]},
             "UsagePattern": {"web": {
+                "id": "web", "name": "Web pattern",
                 "usage_journey": "journey", "hourly_usage_journey_starts": {
-                    "value": [1], "unit": "occurrence", "label": "old"},
-                "utc_hourly_occurrences": {"label": "obsolete"}}},
-            "EdgeUsageJourney": {"edge-journey": {"usage_span": copy.deepcopy(span)}},
+                    "value": [1], "unit": "occurrence", "label": "old"}}},
+            "EdgeUsageJourney": {"edge-journey": {
+                "id": "edge-journey", "name": "Edge journey", "edge_functions": [],
+                "usage_span": copy.deepcopy(span)}},
             "EdgeUsagePattern": {"edge": {
+                "id": "edge", "name": "Edge pattern",
                 "edge_usage_journey": "edge-journey", "hourly_edge_usage_journey_starts": {
-                    "value": [1], "unit": "occurrence", "label": "old"},
-                "nb_deployments_in_parallel": {"label": "obsolete"}}},
+                    "value": [1], "unit": "occurrence", "label": "old"}}},
         }
 
         output = upgrade_version_23_to_24(copy.deepcopy(input_dict))
