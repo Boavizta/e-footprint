@@ -130,19 +130,19 @@ def generate_tribune_system() -> System:
         recurrent_server_needs=[iot_to_cloud])
 
     iot_journey = EdgeUsageJourney(
-        "Usage d'un capteur", edge_functions=[iot_function],
-        usage_span=SourceValue(8 * u.year))
+        "Usage d'un capteur", edge_functions=[iot_function])
 
     iot_network = Network("Réseau IoT (cellulaire)", SourceValue(0.1 * u("kWh/GB")))
 
     # Déploiement : 10 000 capteurs mis en service sur 5 ans, répartis entre les trois pays
     def make_iot_pattern(label, country, weekly_deployments):
         return EdgeUsagePattern(
-            label, edge_usage_journey=iot_journey, network=iot_network, country=country,
-            hourly_edge_usage_journey_starts=create_hourly_usage_from_frequency(
+            label, edge_usage_journeys=[iot_journey], network=iot_network, country=country,
+            hourly_deployment_starts=create_hourly_usage_from_frequency(
                 timespan=NB_YEARS * u.year, input_volume=weekly_deployments, frequency="weekly",
                 active_days=[0, 1, 2, 3, 4], hours=[10],
-                start_date=START_DATE))
+                start_date=START_DATE),
+            usage_span=SourceValue(8 * u.year))
 
     iot_patterns = [
         make_iot_pattern("Flotte IoT en France", france, 7),

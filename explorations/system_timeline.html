@@ -102,7 +102,7 @@ about dates of change. Every design decision below is downstream of not repeatin
 
 <h2>2. The two time axes</h2>
 <p><strong>Modeled time</strong> is the hourly axis the engine computes over —
-<code>hourly_usage_journey_starts(t)</code>, footprint(t). <strong>System-version time</strong>
+<code>hourly_occurrences(t)</code>, footprint(t). <strong>System-version time</strong>
 is the axis on which the <em>description</em> of the system changes: a deploy, an optimization, a
 new journey. A <code>System</code> object is the physics of the service <em>at one version</em>;
 the two axes touch at exactly one join point — an entry's <code>effective_from</code> date says

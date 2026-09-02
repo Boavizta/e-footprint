@@ -14,7 +14,7 @@ from efootprint.core.hardware.hardware_base import InsufficientCapacityError
 from efootprint.core.usage.edge.edge_usage_pattern import EdgeUsagePattern
 from efootprint.core.usage.edge.recurrent_edge_component_need import RecurrentEdgeComponentNeed
 from efootprint.core.usage.edge.recurrent_edge_storage_need import RecurrentEdgeStorageNeed
-from tests.utils import create_mod_obj_mock, set_modeling_obj_containers
+from tests.utils import create_mod_obj_mock, set_edge_pattern_component_needs, set_modeling_obj_containers
 from tests.utils import patch_attribute, recompute_attribute
 
 
@@ -152,6 +152,7 @@ class TestEdgeStorage(TestCase):
             usage_pattern: create_source_hourly_values_from_list([10, 30, 60], pint_unit=u.GB_stored)
         }
         set_modeling_obj_containers(self.edge_storage, [mock_need])
+        set_edge_pattern_component_needs(usage_pattern, [mock_need], self.edge_storage)
 
         with patch_attribute(self.edge_storage, "base_storage_need", SourceValue(5 * u.GB_stored)), \
              patch_attribute(self.edge_storage, "storage_capacity", SourceValue(100 * u.GB_stored)):
@@ -170,6 +171,7 @@ class TestEdgeStorage(TestCase):
             usage_pattern: create_source_hourly_values_from_list([-10, -20, -5], pint_unit=u.GB_stored)
         }
         set_modeling_obj_containers(self.edge_storage, [mock_need])
+        set_edge_pattern_component_needs(usage_pattern, [mock_need], self.edge_storage)
 
         with patch_attribute(self.edge_storage, "base_storage_need", SourceValue(5 * u.GB_stored)), \
              patch_attribute(self.edge_storage, "storage_capacity", SourceValue(100 * u.GB_stored)):
@@ -188,6 +190,7 @@ class TestEdgeStorage(TestCase):
             usage_pattern: create_source_hourly_values_from_list([40, 80], pint_unit=u.GB_stored)
         }
         set_modeling_obj_containers(self.edge_storage, [mock_need])
+        set_edge_pattern_component_needs(usage_pattern, [mock_need], self.edge_storage)
 
         with patch_attribute(self.edge_storage, "base_storage_need", SourceValue(10 * u.GB_stored)), \
              patch_attribute(self.edge_storage, "storage_capacity", SourceValue(50 * u.GB_stored)):
@@ -207,6 +210,7 @@ class TestEdgeStorage(TestCase):
             usage_pattern: create_source_hourly_values_from_list([80, 120], pint_unit=u.GB_stored)
         }
         set_modeling_obj_containers(self.edge_storage, [mock_need])
+        set_edge_pattern_component_needs(usage_pattern, [mock_need], self.edge_storage)
         self.edge_storage.base_storage_need = SourceValue(0 * u.GB_stored)
         self.edge_storage.storage_capacity_per_unit = SourceValue(50 * u.GB_stored)
         self.edge_storage.nb_of_units = SourceValue(3 * u.dimensionless)
@@ -229,6 +233,8 @@ class TestEdgeStorage(TestCase):
             pattern_2: create_source_hourly_values_from_list([40, 50], pint_unit=u.GB_stored),
         }
         set_modeling_obj_containers(self.edge_storage, [mock_need])
+        set_edge_pattern_component_needs(pattern_1, [mock_need], self.edge_storage)
+        set_edge_pattern_component_needs(pattern_2, [mock_need], self.edge_storage)
 
         with patch_attribute(self.edge_storage, "base_storage_need", SourceValue(5 * u.GB_stored)), \
              patch.object(EdgeStorage, "edge_usage_patterns", new_callable=PropertyMock, return_value=[pattern_1, pattern_2]):

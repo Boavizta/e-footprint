@@ -68,7 +68,7 @@ class TestRecomputeCounter(TestCase):
         other_patterns = list(system.usage_patterns[1:]) + list(system.edge_usage_patterns)
 
         with RecomputeRecorder() as update_recorder:
-            edited_pattern.hourly_usage_journey_starts = form_inputs_hourly_starts(NB_YEARS, initial_volume=1234.5)
+            edited_pattern.hourly_occurrences = form_inputs_hourly_starts(NB_YEARS, initial_volume=1234.5)
 
         self.assertNotIn(f"total_footprint of {system.id}", update_recorder.computed_slot_names)
         with RecomputeRecorder() as recorder:
@@ -79,7 +79,7 @@ class TestRecomputeCounter(TestCase):
         recomputed = set(update_recorder.computed_slot_names) | set(recorder.computed_slot_names)
         self.assertGreater(len(recomputed), 0)
 
-        self.assertIn(f"utc_hourly_usage_journey_starts of {edited_pattern.id}", recomputed)
+        self.assertIn(f"utc_hourly_occurrences of {edited_pattern.id}", recomputed)
         self.assertIn(f"total_footprint of {system.id}", recorder.computed_slot_names)
 
         # Slots that only depend on other patterns' traffic must not recompute.
@@ -173,7 +173,7 @@ class TestRecomputeCounter(TestCase):
         system = self.build_system()
         representative_edits = [
             lambda: setattr(
-                system.usage_patterns[0], "hourly_usage_journey_starts",
+                system.usage_patterns[0], "hourly_occurrences",
                 form_inputs_hourly_starts(NB_YEARS, initial_volume=987.6)),
             lambda: setattr(
                 system.servers[0], "lifespan", SourceValue(system.servers[0].lifespan.value * 1.5)),

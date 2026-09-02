@@ -117,11 +117,11 @@ class System(ModelingObject):
 
     @property
     def usage_journeys(self) -> List[UsageJourney]:
-        return list(dict.fromkeys([up.usage_journey for up in self.usage_patterns]))
+        return list(dict.fromkeys(journey for up in self.usage_patterns for journey in up.usage_journeys))
 
     @property
     def edge_usage_journeys(self) -> List[EdgeUsageJourney]:
-        return list(dict.fromkeys([eup.edge_usage_journey for eup in self.edge_usage_patterns]))
+        return list(dict.fromkeys(journey for eup in self.edge_usage_patterns for journey in eup.edge_usage_journeys))
 
     @property
     def devices(self) -> List[Device]:

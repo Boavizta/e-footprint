@@ -455,3 +455,22 @@ class WeightedExplainableObjectDict(ExplainableObjectDict):
     def validate_entry_value(self, key, value):
         super().validate_entry_value(key, value)
         validate_weight(key, value)
+
+
+class PositiveWeightedExplainableObjectDict(WeightedExplainableObjectDict):
+    """Weighted relationship whose members must each have a strictly positive weight."""
+
+    def validate_entry_value(self, key, value):
+        super().validate_entry_value(key, value)
+        if value.value.magnitude <= 0:
+            key_name = getattr(key, "name", key)
+            raise ValueError(f"Weight for {key_name} should be strictly positive but is {value.value.magnitude}")
+
+    def __delitem__(self, key):
+        if key in self and len(self) == 1:
+            raise ValueError("A positive weighted relationship cannot remove its final member")
+        super().__delitem__(key)
+
+    def clear(self):
+        if self:
+            raise ValueError("A positive weighted relationship cannot remove its final member")

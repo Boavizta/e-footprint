@@ -19,19 +19,19 @@
 <h2 id="decoration">How decorator syntax installs the descriptor</h2>
 <div class="cols"><div><h3>Written</h3><pre><code>class UsagePattern(ModelingObject):
     @computed_attribute
-    def utc_hourly_usage_journey_starts(self):
+    def utc_hourly_occurrences(self):
         return ...</code></pre></div><div><h3>Conceptual expansion</h3><pre><code>class UsagePattern(ModelingObject):
-    def utc_hourly_usage_journey_starts(self):
+    def utc_hourly_occurrences(self):
         return ...
 
-    utc_hourly_usage_journey_starts = computed_attribute(
-        utc_hourly_usage_journey_starts
+    utc_hourly_occurrences = computed_attribute(
+        utc_hourly_occurrences
     )</code></pre></div></div>
 <div class="diagram"><div class="dtitle">Class-body execution order</div>
-<div class="n python"><b>1 · <code>def</code> creates a function</b><br><span>The function is temporarily bound to <code>utc_hourly_usage_journey_starts</code> in the class namespace under construction.</span></div><div class="ar">↓ Python evaluates and applies the decorator</div>
+<div class="n python"><b>1 · <code>def</code> creates a function</b><br><span>The function is temporarily bound to <code>utc_hourly_occurrences</code> in the class namespace under construction.</span></div><div class="ar">↓ Python evaluates and applies the decorator</div>
 <div class="n slot"><b>2 · <code>computed_attribute(function)</code> returns a descriptor</b><br><span><code>__init__</code> calls <code>_bind_getter</code>, retaining the original function and its docstring.</span></div><div class="ar">↓ Python rebinds the same class-namespace name to the returned object</div>
 <div class="n value"><b>3 · <code>type</code> creates <code>UsagePattern</code></b><br><span>The finished class dictionary contains the descriptor, not the original bare function.</span></div><div class="ar">↓ Python's descriptor setup hook</div>
-<div class="n slot"><b>4 · <code>descriptor.__set_name__(UsagePattern, "utc_hourly_usage_journey_starts")</code></b><br><span>It verifies the getter/name match and registers the declaration in <code>_declared_computed_slots</code>.</span></div></div>
+<div class="n slot"><b>4 · <code>descriptor.__set_name__(UsagePattern, "utc_hourly_occurrences")</code></b><br><span>It verifies the getter/name match and registers the declaration in <code>_declared_computed_slots</code>.</span></div></div>
 <p>The decorator does not explicitly call <code>setattr(UsagePattern, ...)</code>. Python stores whatever the decorator returns under the function's name while it is still assembling the class namespace.</p>
 
 <h2 id="parameterized">Parameterized decorator form</h2>
@@ -50,14 +50,14 @@ decorator = computed_attribute(
 value = decorator(value)</code></pre><p>The first call supplies options; the second supplies the getter.</p></div></div>
 <pre><code># Conceptual expansion of @computed_attribute(serialize=True)
 decorator = computed_attribute(serialize=True)  # getter is not bound yet
-descriptor = decorator(utc_hourly_usage_journey_starts)
+descriptor = decorator(utc_hourly_occurrences)
 # descriptor.__call__ binds the getter and returns descriptor itself
 
-utc_hourly_usage_journey_starts = descriptor</code></pre>
+utc_hourly_occurrences = descriptor</code></pre>
 <div class="tablewrap"><table><tr><th>Option</th><th>Independent responsibility</th></tr><tr><td><code>serialize=True</code></td><td>Persist the cached value when materialized.</td></tr><tr><td><code>guard=True</code></td><td>Pull after invalidation so intentional validation failures reject the update.</td></tr><tr><td><code>purposes={ComputationPurpose.FOOTPRINT}</code></td><td>Mark a meaningful footprint output root. Intermediate footprint membership is derived from the materialized dependency graph, not copied onto each descriptor.</td></tr></table></div>
 
 <h2 id="access">How the installed descriptor handles reads</h2>
-<div class="cols"><div class="n python"><b>Class read</b><br><span><code>UsagePattern.utc_hourly_usage_journey_starts</code><br>Python calls <code>__get__(None, UsagePattern)</code>; the descriptor returns itself. Documentation and registry code inspect this form.</span></div><div class="n value"><b>Instance read</b><br><span><code>pattern.utc_hourly_usage_journey_starts</code><br>Python calls <code>__get__(pattern, UsagePattern)</code>; the descriptor resolves and pulls the instance slot.</span></div></div>
+<div class="cols"><div class="n python"><b>Class read</b><br><span><code>UsagePattern.utc_hourly_occurrences</code><br>Python calls <code>__get__(None, UsagePattern)</code>; the descriptor returns itself. Documentation and registry code inspect this form.</span></div><div class="n value"><b>Instance read</b><br><span><code>pattern.utc_hourly_occurrences</code><br>Python calls <code>__get__(pattern, UsagePattern)</code>; the descriptor resolves and pulls the instance slot.</span></div></div>
 <div class="diagram"><div class="dtitle">First instance read</div>
 <div class="n slot"><b><code>computed_attribute.__get__</code></b><br><span>Calls <code>self.slot(pattern)</code>.</span></div><div class="ar">↓</div>
 <div class="n slot"><b><code>slot(pattern)</code></b><br><span>Looks in <code>pattern.__dict__["_reactive_slots"]</code>. If absent, creates a <code>ReactiveSlot</code> and gives it a <a class="term" href="../../glossary.html#closure">closure</a> around <code>self.getter(pattern)</code>.</span></div><div class="ar">↓</div>
@@ -84,9 +84,9 @@ utc_hourly_usage_journey_starts = descriptor</code></pre>
 
 <h2 id="storage">What is stored where</h2>
 <div class="tablewrap"><table><tr><th>Location</th><th>Contents</th><th>Shared?</th></tr>
-<tr><td><code>UsagePattern.__dict__["utc_hourly_usage_journey_starts"]</code></td><td>The <code>computed_attribute</code> descriptor and original getter.</td><td>One declaration shared by all instances.</td></tr>
-<tr><td><code>pattern_a.__dict__["_reactive_slots"]["utc_hourly_usage_journey_starts"]</code></td><td>Pattern A's slot, cached result, and edges.</td><td>No.</td></tr>
-<tr><td><code>pattern_b.__dict__["_reactive_slots"]["utc_hourly_usage_journey_starts"]</code></td><td>Pattern B's independent slot, cached result, and edges.</td><td>No.</td></tr>
+<tr><td><code>UsagePattern.__dict__["utc_hourly_occurrences"]</code></td><td>The <code>computed_attribute</code> descriptor and original getter.</td><td>One declaration shared by all instances.</td></tr>
+<tr><td><code>pattern_a.__dict__["_reactive_slots"]["utc_hourly_occurrences"]</code></td><td>Pattern A's slot, cached result, and edges.</td><td>No.</td></tr>
+<tr><td><code>pattern_b.__dict__["_reactive_slots"]["utc_hourly_occurrences"]</code></td><td>Pattern B's independent slot, cached result, and edges.</td><td>No.</td></tr>
 <tr><td>The computed explainable value</td><td>A <a class="term" href="../../glossary.html#backpointer">backpointer</a> in <code>value._reactive_slot</code> to its owning instance slot.</td><td>Belongs to one slot; getters must return fresh values.</td></tr></table></div>
 <div class="rule"><b>“Class-level descriptor” does not mean “class-level cache.”</b> The class shares computation behavior; instances never share computed slot state.</div>
 

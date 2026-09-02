@@ -1,5 +1,5 @@
 {
-    "efootprint_version": "23.1.0",
+    "efootprint_version": "24.0.0",
     "Sources": {
         "Base-ADEME_V19": {
             "id": "Base-ADEME_V19",
@@ -46,7 +46,7 @@
         "Daily-shoppers": {
             "name": "Daily shoppers",
             "id": "Daily-shoppers",
-            "hourly_usage_journey_starts": {
+            "hourly_occurrences": {
                 "form_inputs": {
                     "start_date": "2025-01-01",
                     "modeling_duration_value": 3,
@@ -56,41 +56,22 @@
                     "net_growth_rate_in_percentage": 8,
                     "net_growth_rate_timespan": "year"
                 },
-                "label": "Hourly nb of usage journey starts",
+                "label": "Hourly nb of pattern occurrences",
                 "source": "user_data"
             },
-            "usage_journey": "Shopping-journey",
+            "usage_journeys": {
+                "Shopping-journey": {
+                    "value": 1.0,
+                    "unit": "dimensionless",
+                    "label": "Journeys per pattern occurrence",
+                    "source": "hypothesis"
+                }
+            },
             "devices": [
                 "Default-laptop"
             ],
             "network": "Default-wifi-network",
             "country": "France"
-        }
-    },
-    "UsageJourney": {
-        "Shopping-journey": {
-            "name": "Shopping journey",
-            "id": "Shopping-journey",
-            "uj_steps": {
-                "Browse-the-catalog": {
-                    "value": 1.0,
-                    "unit": "dimensionless",
-                    "label": "Times per journey",
-                    "source": "hypothesis"
-                },
-                "Add-an-item-to-the-cart": {
-                    "value": 1.0,
-                    "unit": "dimensionless",
-                    "label": "Times per journey",
-                    "source": "hypothesis"
-                },
-                "Check-out": {
-                    "value": 1.0,
-                    "unit": "dimensionless",
-                    "label": "Times per journey",
-                    "source": "hypothesis"
-                }
-            }
         }
     },
     "Device": {
@@ -154,75 +135,27 @@
             }
         }
     },
-    "UsageJourneyStep": {
-        "Browse-the-catalog": {
-            "name": "Browse the catalog",
-            "id": "Browse-the-catalog",
-            "user_time_spent": {
-                "value": 1.0,
-                "unit": "minute",
-                "label": "Time spent by user",
-                "source": "hypothesis"
-            },
-            "jobs": {
-                "Serve-catalog-page": {
+    "UsageJourney": {
+        "Shopping-journey": {
+            "name": "Shopping journey",
+            "id": "Shopping-journey",
+            "uj_steps": {
+                "Browse-the-catalog": {
                     "value": 1.0,
                     "unit": "dimensionless",
-                    "label": "Times per step",
+                    "label": "Times per journey",
                     "source": "hypothesis"
                 },
-                "Read-product-catalog": {
+                "Add-an-item-to-the-cart": {
                     "value": 1.0,
                     "unit": "dimensionless",
-                    "label": "Times per step",
-                    "source": "hypothesis"
-                }
-            }
-        },
-        "Add-an-item-to-the-cart": {
-            "name": "Add an item to the cart",
-            "id": "Add-an-item-to-the-cart",
-            "user_time_spent": {
-                "value": 1.0,
-                "unit": "minute",
-                "label": "Time spent by user",
-                "source": "hypothesis"
-            },
-            "jobs": {
-                "Update-cart": {
-                    "value": 1.0,
-                    "unit": "dimensionless",
-                    "label": "Times per step",
+                    "label": "Times per journey",
                     "source": "hypothesis"
                 },
-                "Write-cart-row": {
+                "Check-out": {
                     "value": 1.0,
                     "unit": "dimensionless",
-                    "label": "Times per step",
-                    "source": "hypothesis"
-                }
-            }
-        },
-        "Check-out": {
-            "name": "Check out",
-            "id": "Check-out",
-            "user_time_spent": {
-                "value": 1.0,
-                "unit": "minute",
-                "label": "Time spent by user",
-                "source": "hypothesis"
-            },
-            "jobs": {
-                "Submit-order": {
-                    "value": 1.0,
-                    "unit": "dimensionless",
-                    "label": "Times per step",
-                    "source": "hypothesis"
-                },
-                "Write-order-row": {
-                    "value": 1.0,
-                    "unit": "dimensionless",
-                    "label": "Times per step",
+                    "label": "Times per journey",
                     "source": "hypothesis"
                 }
             }
@@ -264,41 +197,6 @@
             },
             "server": "Web-application-server"
         },
-        "Read-product-catalog": {
-            "name": "Read product catalog",
-            "id": "Read-product-catalog",
-            "data_transferred": {
-                "value": 5.0,
-                "unit": "kilobyte",
-                "label": "Sum of all data uploads and downloads by request",
-                "source": "hypothesis"
-            },
-            "data_stored": {
-                "value": 0.0,
-                "unit": "kilobyte_stored",
-                "label": "Data stored by request",
-                "source": "hypothesis"
-            },
-            "request_duration": {
-                "value": 20.0,
-                "unit": "millisecond",
-                "label": "Request duration",
-                "source": "hypothesis"
-            },
-            "ram_needed": {
-                "value": 20.0,
-                "unit": "megabyte_ram",
-                "label": "RAM needed during job processing",
-                "source": "hypothesis"
-            },
-            "compute_needed": {
-                "value": 0.1,
-                "unit": "cpu_core",
-                "label": "cpu cores needed on server Product database server during job processing",
-                "source": "hypothesis"
-            },
-            "server": "Product-database-server"
-        },
         "Update-cart": {
             "name": "Update cart",
             "id": "Update-cart",
@@ -334,41 +232,6 @@
             },
             "server": "Web-application-server"
         },
-        "Write-cart-row": {
-            "name": "Write cart row",
-            "id": "Write-cart-row",
-            "data_transferred": {
-                "value": 2.0,
-                "unit": "kilobyte",
-                "label": "Sum of all data uploads and downloads by request",
-                "source": "hypothesis"
-            },
-            "data_stored": {
-                "value": 2.0,
-                "unit": "kilobyte_stored",
-                "label": "Data stored by request",
-                "source": "hypothesis"
-            },
-            "request_duration": {
-                "value": 40.0,
-                "unit": "millisecond",
-                "label": "Request duration",
-                "source": "hypothesis"
-            },
-            "ram_needed": {
-                "value": 50.0,
-                "unit": "megabyte_ram",
-                "label": "RAM needed during job processing",
-                "source": "hypothesis"
-            },
-            "compute_needed": {
-                "value": 0.2,
-                "unit": "cpu_core",
-                "label": "cpu cores needed on server Product database server during job processing",
-                "source": "hypothesis"
-            },
-            "server": "Product-database-server"
-        },
         "Submit-order": {
             "name": "Submit order",
             "id": "Submit-order",
@@ -403,6 +266,76 @@
                 "source": "hypothesis"
             },
             "server": "Web-application-server"
+        },
+        "Read-product-catalog": {
+            "name": "Read product catalog",
+            "id": "Read-product-catalog",
+            "data_transferred": {
+                "value": 5.0,
+                "unit": "kilobyte",
+                "label": "Sum of all data uploads and downloads by request",
+                "source": "hypothesis"
+            },
+            "data_stored": {
+                "value": 0.0,
+                "unit": "kilobyte_stored",
+                "label": "Data stored by request",
+                "source": "hypothesis"
+            },
+            "request_duration": {
+                "value": 20.0,
+                "unit": "millisecond",
+                "label": "Request duration",
+                "source": "hypothesis"
+            },
+            "ram_needed": {
+                "value": 20.0,
+                "unit": "megabyte_ram",
+                "label": "RAM needed during job processing",
+                "source": "hypothesis"
+            },
+            "compute_needed": {
+                "value": 0.1,
+                "unit": "cpu_core",
+                "label": "cpu cores needed on server Product database server during job processing",
+                "source": "hypothesis"
+            },
+            "server": "Product-database-server"
+        },
+        "Write-cart-row": {
+            "name": "Write cart row",
+            "id": "Write-cart-row",
+            "data_transferred": {
+                "value": 2.0,
+                "unit": "kilobyte",
+                "label": "Sum of all data uploads and downloads by request",
+                "source": "hypothesis"
+            },
+            "data_stored": {
+                "value": 2.0,
+                "unit": "kilobyte_stored",
+                "label": "Data stored by request",
+                "source": "hypothesis"
+            },
+            "request_duration": {
+                "value": 40.0,
+                "unit": "millisecond",
+                "label": "Request duration",
+                "source": "hypothesis"
+            },
+            "ram_needed": {
+                "value": 50.0,
+                "unit": "megabyte_ram",
+                "label": "RAM needed during job processing",
+                "source": "hypothesis"
+            },
+            "compute_needed": {
+                "value": 0.2,
+                "unit": "cpu_core",
+                "label": "cpu cores needed on server Product database server during job processing",
+                "source": "hypothesis"
+            },
+            "server": "Product-database-server"
         },
         "Write-order-row": {
             "name": "Write order row",
@@ -699,6 +632,80 @@
             "fixed_nb_of_instances": {
                 "value": null,
                 "label": "User defined number of instances"
+            }
+        }
+    },
+    "UsageJourneyStep": {
+        "Browse-the-catalog": {
+            "name": "Browse the catalog",
+            "id": "Browse-the-catalog",
+            "user_time_spent": {
+                "value": 1.0,
+                "unit": "minute",
+                "label": "Time spent by user",
+                "source": "hypothesis"
+            },
+            "jobs": {
+                "Serve-catalog-page": {
+                    "value": 1.0,
+                    "unit": "dimensionless",
+                    "label": "Times per step",
+                    "source": "hypothesis"
+                },
+                "Read-product-catalog": {
+                    "value": 1.0,
+                    "unit": "dimensionless",
+                    "label": "Times per step",
+                    "source": "hypothesis"
+                }
+            }
+        },
+        "Add-an-item-to-the-cart": {
+            "name": "Add an item to the cart",
+            "id": "Add-an-item-to-the-cart",
+            "user_time_spent": {
+                "value": 1.0,
+                "unit": "minute",
+                "label": "Time spent by user",
+                "source": "hypothesis"
+            },
+            "jobs": {
+                "Update-cart": {
+                    "value": 1.0,
+                    "unit": "dimensionless",
+                    "label": "Times per step",
+                    "source": "hypothesis"
+                },
+                "Write-cart-row": {
+                    "value": 1.0,
+                    "unit": "dimensionless",
+                    "label": "Times per step",
+                    "source": "hypothesis"
+                }
+            }
+        },
+        "Check-out": {
+            "name": "Check out",
+            "id": "Check-out",
+            "user_time_spent": {
+                "value": 1.0,
+                "unit": "minute",
+                "label": "Time spent by user",
+                "source": "hypothesis"
+            },
+            "jobs": {
+                "Submit-order": {
+                    "value": 1.0,
+                    "unit": "dimensionless",
+                    "label": "Times per step",
+                    "source": "hypothesis"
+                },
+                "Write-order-row": {
+                    "value": 1.0,
+                    "unit": "dimensionless",
+                    "label": "Times per step",
+                    "source": "hypothesis"
+                }
             }
         }
     }

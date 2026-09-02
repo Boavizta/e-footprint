@@ -113,7 +113,8 @@ class Network(ModelingObject, AttributionSource):
                         cell.slot_multiplicity * u.dimensionless,
                         f"{cell.rsn.name} slot multiplicity via {cell.ef.name}")
                 yield Atom(
-                    source=self, stream="single", job=job, up=cell.up, step=cell.step, rsn=cell.rsn, ef=cell.ef,
+                    source=self, stream="single", job=job, up=cell.up, journey=cell.journey, step=cell.step,
+                    rsn=cell.rsn, ef=cell.ef,
                     value=self.energy_footprint_for_data_volume_and_usage_pattern(data_volume, cell.up)
                     .to(u.kg).set_label(
                         f"{self.name} energy footprint via {job.name} in {cell.location_label} ({cell.up.name})"))

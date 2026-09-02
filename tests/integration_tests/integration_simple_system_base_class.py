@@ -2,7 +2,8 @@ import os
 from datetime import datetime
 
 from efootprint.abstract_modeling_classes.empty_explainable_object import EmptyExplainableObject
-from efootprint.abstract_modeling_classes.explainable_object_dict import to_weighted_explainable_object_dict
+from efootprint.abstract_modeling_classes.explainable_object_dict import (
+    PositiveWeightedExplainableObjectDict, to_weighted_explainable_object_dict)
 from efootprint.abstract_modeling_classes.modeling_update import ModelingUpdate
 from efootprint.abstract_modeling_classes.source_objects import SourceValue
 from efootprint.core.hardware.device import Device
@@ -56,7 +57,7 @@ class IntegrationTestSimpleSystemBaseClass(IntegrationTestBaseClass):
 
         start_date = datetime.strptime("2025-01-01", "%Y-%m-%d")
         usage_pattern = UsagePattern(
-            "Usage Pattern", uj, [Device.laptop()], network, Countries.FRANCE(),
+            "Usage Pattern", [uj], [Device.laptop()], network, Countries.FRANCE(),
             create_source_hourly_values_from_list(
                 [elt * 1000000 for elt in [1, 2, 4, 5, 8, 12, 2, 2, 3]], start_date))
 
@@ -147,12 +148,12 @@ class IntegrationTestSimpleSystemBaseClass(IntegrationTestBaseClass):
         self.assertEqual(self.initial_footprint, system.total_footprint)
         self._test_variations_on_obj_inputs(uj)
         self._test_variations_on_obj_inputs(network)
-        self._test_variations_on_obj_inputs(usage_pattern, attrs_to_skip=["hourly_usage_journey_starts"])
+        self._test_variations_on_obj_inputs(usage_pattern, attrs_to_skip=["hourly_occurrences"])
         self._test_variations_on_obj_inputs(job_1, attrs_to_skip=["data_stored"])
         self._test_input_change(
-            self.usage_pattern.hourly_usage_journey_starts,
+            self.usage_pattern.hourly_occurrences,
             create_source_hourly_values_from_list([elt * 1000 for elt in [12, 23, 41, 55, 68, 12, 23, 26, 43]]),
-            self.usage_pattern, "hourly_usage_journey_starts")
+            self.usage_pattern, "hourly_occurrences")
 
     def run_test_variations_on_inputs(self):
         self._run_test_variations_on_inputs_from_object_list(
@@ -228,7 +229,7 @@ class IntegrationTestSimpleSystemBaseClass(IntegrationTestBaseClass):
         network = Network.from_defaults("Network")
         start_date = datetime.strptime("2025-01-01", "%Y-%m-%d")
         usage_pattern = UsagePattern(
-            "Usage pattern", uj, [Device.laptop()], network, Countries.FRANCE(),
+            "Usage pattern", [uj], [Device.laptop()], network, Countries.FRANCE(),
             create_source_hourly_values_from_list(
                 [elt * 1000 for elt in [1, 2, 4, 5, 8, 12, 2, 2, 3]], start_date))
         system = System("System", [usage_pattern], edge_usage_patterns=[])
@@ -301,7 +302,10 @@ class IntegrationTestSimpleSystemBaseClass(IntegrationTestBaseClass):
         new_uj = UsageJourney("New version of daily Youtube usage", uj_steps=[self.uj_step_1])
         scenario = ObjectLinkScenario(
             name="update_usage_journey",
-            updates_builder=[[self.usage_pattern.usage_journey, new_uj]],
+            updates_builder=[[
+                self.usage_pattern.usage_journeys,
+                PositiveWeightedExplainableObjectDict(to_weighted_explainable_object_dict(
+                    [new_uj], weight_label="Journeys per pattern occurrence"))]],
             expected_changed=[self.server, self.network, self.usage_pattern.devices[0]],
         )
         self._run_object_link_scenario(scenario)
@@ -359,9 +363,9 @@ class IntegrationTestSimpleSystemBaseClass(IntegrationTestBaseClass):
             uj_steps=[UsageJourneyStep.from_defaults("Ingest daily data", jobs=[data_job_2])]
         )
         usage_pattern = UsagePattern(
-            "analytics provider daily uploads", daily_analytics_uj, devices=[Device.smartphone()],
+            "analytics provider daily uploads", [daily_analytics_uj], devices=[Device.smartphone()],
             country=self.usage_pattern.country, network=Network.from_defaults("analytics provider network"),
-            hourly_usage_journey_starts=create_hourly_usage_from_frequency(
+            hourly_occurrences=create_hourly_usage_from_frequency(
                 timespan=1 * u.year, input_volume=1, frequency="daily",
                 start_date=datetime.strptime("2024-01-01", "%Y-%m-%d"))
         )
@@ -378,7 +382,7 @@ class IntegrationTestSimpleSystemBaseClass(IntegrationTestBaseClass):
         )
         self._run_object_link_scenario(scenario)
 
-    def run_test_change_network_and_hourly_usage_journey_starts_simultaneously_recomputes_in_right_order(self):
+    def run_test_change_network_and_hourly_occurrences_simultaneously_recomputes_in_right_order(self):
         new_network = Network.from_defaults("New network with same specs as default")
         new_hourly = create_source_hourly_values_from_list(
             [elt * 1000 for elt in [12, 23, 41, 55, 68, 12, 23, 26, 43]])
@@ -395,7 +399,7 @@ class IntegrationTestSimpleSystemBaseClass(IntegrationTestBaseClass):
             name="change_network_and_hourly_usage_starts",
             updates_builder=[
                 [self.usage_pattern.network, new_network],
-                [self.usage_pattern.hourly_usage_journey_starts, new_hourly],
+                [self.usage_pattern.hourly_occurrences, new_hourly],
             ],
             expected_changed=[self.network, self.usage_pattern.devices[0]],
             post_assertions=post_assertions,

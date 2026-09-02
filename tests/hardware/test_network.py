@@ -147,11 +147,11 @@ class TestNetworkAttributionAtoms(TestCase):
         start_date = datetime(2026, 1, 1)
         identical_traffic = [6, 2]
         cls.low_ci_up = UsagePattern(
-            "network atoms low ci pattern", cls.journey, [device], cls.network,
+            "network atoms low ci pattern", [cls.journey], [device], cls.network,
             country("network atoms low ci country", 50 * u.g / u.kWh),
             create_source_hourly_values_from_list(identical_traffic, start_date))
         cls.high_ci_up = UsagePattern(
-            "network atoms high ci pattern", cls.journey, [device], cls.network,
+            "network atoms high ci pattern", [cls.journey], [device], cls.network,
             country("network atoms high ci country", 500 * u.g / u.kWh),
             create_source_hourly_values_from_list(identical_traffic, start_date))
 
@@ -167,11 +167,12 @@ class TestNetworkAttributionAtoms(TestCase):
             [cls.dual_job])
         edge_function = EdgeFunction("network atoms edge function", [device_need], [cls.rsn])
         edge_journey = EdgeUsageJourney(
-            "network atoms edge journey", [edge_function], usage_span=SourceValue(1 * u.year))
+            "network atoms edge journey", [edge_function])
         cls.edge_up = EdgeUsagePattern(
-            "network atoms edge usage pattern", edge_journey, cls.network,
+            "network atoms edge usage pattern", [edge_journey], cls.network,
             country("network atoms edge country", 200 * u.g / u.kWh),
-            create_source_hourly_values_from_list([4, 0, 6], start_date))
+            create_source_hourly_values_from_list([4, 0, 6], start_date),
+            usage_span=SourceValue(1 * u.year))
 
         cls.system = System(
             "network atoms system", [cls.low_ci_up, cls.high_ci_up], edge_usage_patterns=[cls.edge_up])

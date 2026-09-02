@@ -69,9 +69,10 @@ class TestJob(TestCase):
         uj1.uj_steps = {uj_step11: SourceValue(1 * u.dimensionless)}
         uj_step11.jobs = {self.job: SourceValue(1 * u.dimensionless)}
         uj_step11.user_time_spent = SourceValue(90 * u.min)
-        usage_pattern = create_mod_obj_mock(UsagePattern, name="usage pattern", usage_journey=uj1)
+        usage_pattern = create_mod_obj_mock(
+            UsagePattern, name="usage pattern", usage_journeys={uj1: SourceValue(1 * u.dimensionless)})
         hourly_uj_starts = create_source_hourly_values_from_list([1, 2, 5, 7])
-        usage_pattern.utc_hourly_usage_journey_starts = hourly_uj_starts
+        usage_pattern.utc_hourly_occurrences = hourly_uj_starts
         attach_attribute(self.job, "hourly_occurrences_per_usage_pattern", ExplainableObjectDict())
 
         recompute_attribute(self.job, "hourly_occurrences_per_usage_pattern", usage_pattern)
@@ -86,9 +87,10 @@ class TestJob(TestCase):
         uj1.uj_steps = {uj_step11: SourceValue(1 * u.dimensionless)}
         uj_step11.jobs = {self.job: SourceValue(3 * u.dimensionless)}
         uj_step11.user_time_spent = SourceValue(90 * u.min)
-        usage_pattern = create_mod_obj_mock(UsagePattern, name="usage pattern", usage_journey=uj1)
+        usage_pattern = create_mod_obj_mock(
+            UsagePattern, name="usage pattern", usage_journeys={uj1: SourceValue(1 * u.dimensionless)})
         hourly_uj_starts = create_source_hourly_values_from_list([1, 2, 5, 7])
-        usage_pattern.utc_hourly_usage_journey_starts = hourly_uj_starts
+        usage_pattern.utc_hourly_occurrences = hourly_uj_starts
         attach_attribute(self.job, "hourly_occurrences_per_usage_pattern", ExplainableObjectDict())
 
         recompute_attribute(self.job, "hourly_occurrences_per_usage_pattern", usage_pattern)
@@ -104,9 +106,10 @@ class TestJob(TestCase):
         uj1.uj_steps = {uj_step11: SourceValue(2 * u.dimensionless)}
         uj_step11.jobs = {self.job: SourceValue(3 * u.dimensionless)}
         uj_step11.user_time_spent = SourceValue(10 * u.min)
-        usage_pattern = create_mod_obj_mock(UsagePattern, name="usage pattern", usage_journey=uj1)
+        usage_pattern = create_mod_obj_mock(
+            UsagePattern, name="usage pattern", usage_journeys={uj1: SourceValue(1 * u.dimensionless)})
         hourly_uj_starts = create_source_hourly_values_from_list([1, 2, 5, 7])
-        usage_pattern.utc_hourly_usage_journey_starts = hourly_uj_starts
+        usage_pattern.utc_hourly_occurrences = hourly_uj_starts
         attach_attribute(self.job, "hourly_occurrences_per_usage_pattern", ExplainableObjectDict())
 
         recompute_attribute(self.job, "hourly_occurrences_per_usage_pattern", usage_pattern)
@@ -124,9 +127,10 @@ class TestJob(TestCase):
         uj_step11.user_time_spent = SourceValue(1 * u.min)
         uj_step12.jobs = {self.job: SourceValue(2 * u.dimensionless)}
         uj_step12.user_time_spent = SourceValue(1 * u.min)
-        usage_pattern = create_mod_obj_mock(UsagePattern, name="usage pattern", usage_journey=uj1)
+        usage_pattern = create_mod_obj_mock(
+            UsagePattern, name="usage pattern", usage_journeys={uj1: SourceValue(1 * u.dimensionless)})
         hourly_uj_starts = create_source_hourly_values_from_list([1, 2, 5, 7])
-        usage_pattern.utc_hourly_usage_journey_starts = hourly_uj_starts
+        usage_pattern.utc_hourly_occurrences = hourly_uj_starts
         attach_attribute(self.job, "hourly_occurrences_per_usage_pattern", ExplainableObjectDict())
 
         recompute_attribute(self.job, "hourly_occurrences_per_usage_pattern", usage_pattern)
@@ -141,9 +145,10 @@ class TestJob(TestCase):
         uj1.uj_steps = {uj_step11: SourceValue(0 * u.dimensionless)}
         uj_step11.jobs = {self.job: SourceValue(3 * u.dimensionless)}
         uj_step11.user_time_spent = SourceValue(10 * u.min)
-        usage_pattern = create_mod_obj_mock(UsagePattern, name="usage pattern", usage_journey=uj1)
+        usage_pattern = create_mod_obj_mock(
+            UsagePattern, name="usage pattern", usage_journeys={uj1: SourceValue(1 * u.dimensionless)})
         hourly_uj_starts = create_source_hourly_values_from_list([1, 2, 5, 7])
-        usage_pattern.utc_hourly_usage_journey_starts = hourly_uj_starts
+        usage_pattern.utc_hourly_occurrences = hourly_uj_starts
         attach_attribute(self.job, "hourly_occurrences_per_usage_pattern", ExplainableObjectDict())
 
         recompute_attribute(self.job, "hourly_occurrences_per_usage_pattern", usage_pattern)
@@ -162,9 +167,10 @@ class TestJob(TestCase):
         uj_step11.user_time_spent = SourceValue(40 * u.min)
         uj_step12.jobs = {self.job: SourceValue(1 * u.dimensionless)}
         uj_step12.user_time_spent = SourceValue(4 * u.min)
-        usage_pattern = create_mod_obj_mock(UsagePattern, name="usage pattern", usage_journey=uj1)
+        usage_pattern = create_mod_obj_mock(
+            UsagePattern, name="usage pattern", usage_journeys={uj1: SourceValue(1 * u.dimensionless)})
         hourly_uj_starts = create_source_hourly_values_from_list([1, 2, 5, 7])
-        usage_pattern.utc_hourly_usage_journey_starts = hourly_uj_starts
+        usage_pattern.utc_hourly_occurrences = hourly_uj_starts
         attach_attribute(self.job, "hourly_occurrences_per_usage_pattern", ExplainableObjectDict())
 
         recompute_attribute(self.job, "hourly_occurrences_per_usage_pattern", usage_pattern)
@@ -183,9 +189,10 @@ class TestJob(TestCase):
         uj_step11.user_time_spent = SourceValue(40 * u.min)
         uj_step12.jobs = {self.job: SourceValue(1 * u.dimensionless)}
         uj_step12.user_time_spent = SourceValue(4 * u.min)
-        usage_pattern = create_mod_obj_mock(UsagePattern, name="usage pattern", usage_journey=uj1)
+        usage_pattern = create_mod_obj_mock(
+            UsagePattern, name="usage pattern", usage_journeys={uj1: SourceValue(1 * u.dimensionless)})
         hourly_uj_starts = create_source_hourly_values_from_list([1, 2, 5, 7])
-        usage_pattern.utc_hourly_usage_journey_starts = hourly_uj_starts
+        usage_pattern.utc_hourly_occurrences = hourly_uj_starts
         attach_attribute(self.job, "hourly_occurrences_per_usage_pattern", ExplainableObjectDict())
 
         recompute_attribute(self.job, "hourly_occurrences_per_usage_pattern", usage_pattern)
@@ -204,9 +211,10 @@ class TestJob(TestCase):
         uj_step11.user_time_spent = SourceValue(61 * u.min)
         uj_step12.jobs = {self.job: SourceValue(1 * u.dimensionless)}
         uj_step12.user_time_spent = SourceValue(4 * u.min)
-        usage_pattern = create_mod_obj_mock(UsagePattern, name="usage pattern", usage_journey=uj1)
+        usage_pattern = create_mod_obj_mock(
+            UsagePattern, name="usage pattern", usage_journeys={uj1: SourceValue(1 * u.dimensionless)})
         hourly_uj_starts = create_source_hourly_values_from_list([1, 2, 5, 7])
-        usage_pattern.utc_hourly_usage_journey_starts = hourly_uj_starts
+        usage_pattern.utc_hourly_occurrences = hourly_uj_starts
         attach_attribute(self.job, "hourly_occurrences_per_usage_pattern", ExplainableObjectDict())
 
         recompute_attribute(self.job, "hourly_occurrences_per_usage_pattern", usage_pattern)
@@ -230,9 +238,10 @@ class TestJob(TestCase):
         uj_step12.user_time_spent = SourceValue(4 * u.min)
         uj_step13.jobs = {self.job: SourceValue(2 * u.dimensionless)}
         uj_step13.user_time_spent = SourceValue(1 * u.min)
-        usage_pattern = create_mod_obj_mock(UsagePattern, name="usage pattern", usage_journey=uj1)
+        usage_pattern = create_mod_obj_mock(
+            UsagePattern, name="usage pattern", usage_journeys={uj1: SourceValue(1 * u.dimensionless)})
         hourly_uj_starts = create_source_hourly_values_from_list([1, 2, 5, 7])
-        usage_pattern.utc_hourly_usage_journey_starts = hourly_uj_starts
+        usage_pattern.utc_hourly_occurrences = hourly_uj_starts
         attach_attribute(self.job, "hourly_occurrences_per_usage_pattern", ExplainableObjectDict())
 
         recompute_attribute(self.job, "hourly_occurrences_per_usage_pattern", usage_pattern)
@@ -342,13 +351,11 @@ class TestJob(TestCase):
         edge_usage_pattern = create_mod_obj_mock(EdgeUsagePattern, name="Edge Pattern",
                                                  class_as_simple_str="EdgeUsagePattern")
 
-        # Setup nb_edge_usage_journeys_in_parallel
+        # Setup active deployments
         nb_parallel = create_source_hourly_values_from_list([2, 3, 4, 5])
         mock_edge_usage_journey = create_mod_obj_mock(EdgeUsageJourney, name="Mock Edge Journey")
-        mock_edge_usage_journey.nb_edge_usage_journeys_in_parallel_per_edge_usage_pattern = {
-            edge_usage_pattern: nb_parallel
-        }
-        edge_usage_pattern.edge_usage_journey = mock_edge_usage_journey
+        edge_usage_pattern.nb_deployments_in_parallel = nb_parallel
+        edge_usage_pattern.edge_usage_journeys = [mock_edge_usage_journey]
 
         # Setup recurrent server need with unitary hourly volume
         unitary_volume = create_source_hourly_values_from_list([1, 1, 1, 1])
@@ -357,6 +364,7 @@ class TestJob(TestCase):
         mock_server_need.unitary_hourly_volume_per_usage_pattern = {edge_usage_pattern: unitary_volume}
         # Only the pattern's own edge journey's server needs contribute to its occurrences.
         mock_edge_usage_journey.recurrent_server_needs = [mock_server_need]
+        edge_usage_pattern.recurrent_server_needs = [mock_server_need]
 
         set_modeling_obj_containers(self.job, [mock_server_need])
         attach_attribute(self.job, "hourly_occurrences_per_usage_pattern", ExplainableObjectDict())

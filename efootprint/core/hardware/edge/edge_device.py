@@ -37,8 +37,8 @@ class EdgeDevice(ModelingObject, AttributionSource):
         "computer-like hardware composed of CPU, RAM, and storage, prefer {class:EdgeComputer}.")
 
     pitfalls = (
-        "{param:EdgeDevice.lifespan} must be longer than every {param:EdgeUsageJourney.usage_span} that uses "
-        "the device. Otherwise the device cannot last the journey and the model raises an error.")
+        "{param:EdgeDevice.lifespan} must cover every {param:EdgeUsagePattern.usage_span} that deploys the "
+        "device. Otherwise the hardware cannot last for the deployment and the model raises an error.")
 
     param_descriptions = {
         "structure_carbon_footprint_fabrication": (
@@ -113,12 +113,12 @@ class EdgeDevice(ModelingObject, AttributionSource):
 
     @computed_attribute(guard=True)
     def lifespan_validation(self):
-        """Validates that the device lifespan is at least as long as every {class:EdgeUsageJourney} that uses it; raises otherwise."""
+        """Validates that the device lifespan covers every deployment pattern that uses it."""
         result = EmptyExplainableObject().generate_explainable_object_with_logical_dependency(self.lifespan)
-        for edge_usage_journey in self.edge_usage_journeys:
-            if self.lifespan < edge_usage_journey.usage_span:
-                raise InsufficientCapacityError(self, "lifespan", self.lifespan, edge_usage_journey.usage_span)
-            result = result.generate_explainable_object_with_logical_dependency(edge_usage_journey.usage_span)
+        for edge_usage_pattern in self.edge_usage_patterns:
+            if self.lifespan < edge_usage_pattern.usage_span:
+                raise InsufficientCapacityError(self, "lifespan", self.lifespan, edge_usage_pattern.usage_span)
+            result = result.generate_explainable_object_with_logical_dependency(edge_usage_pattern.usage_span)
         return result
 
     @computed_attribute(guard=True)
@@ -172,8 +172,7 @@ class EdgeDevice(ModelingObject, AttributionSource):
     def structure_fabrication_footprint_per_usage_pattern(self, usage_pattern: "EdgeUsagePattern"):
         """Hourly fabrication-phase emissions of the chassis (excluding components), broken down by usage pattern."""
         structure_fabrication_intensity = self.structure_carbon_footprint_fabrication / self.lifespan
-        nb_instances = usage_pattern.edge_usage_journey.nb_edge_usage_journeys_in_parallel_per_edge_usage_pattern[
-            usage_pattern]
+        nb_instances = usage_pattern.nb_deployments_in_parallel
         return (
             self.total_nb_of_units * nb_instances * structure_fabrication_intensity * ExplainableQuantity(1 * u.hour, "one hour")
         ).to(u.kg).set_label(f"Hourly structure fabrication footprint for {usage_pattern.name}")
@@ -193,8 +192,7 @@ class EdgeDevice(ModelingObject, AttributionSource):
                 f"Cannot book the fabrication of unused component {component.name} at pattern "
                 f"{usage_pattern.name}: its lifespan is a calculated attribute that was never computed because "
                 f"the component has no needs. Give the component an input lifespan or link a need to it.")
-        nb_instances = usage_pattern.edge_usage_journey.nb_edge_usage_journeys_in_parallel_per_edge_usage_pattern[
-            usage_pattern]
+        nb_instances = usage_pattern.nb_deployments_in_parallel
         return (nb_instances * fabrication / component.lifespan * ExplainableQuantity(1 * u.hour, "one hour")
                 ).to(u.kg).set_label(f"Hourly unused {component.name} fabrication footprint for {usage_pattern.name}")
 
@@ -439,9 +437,7 @@ class EdgeDevice(ModelingObject, AttributionSource):
                 values[(need, usage_pattern)] = EmptyExplainableObject(
                     label=f"{self.name} energy footprint attributed to {need.name} in {usage_pattern.name}")
                 continue
-            nb_journeys_in_parallel = (
-                usage_pattern.edge_usage_journey.nb_edge_usage_journeys_in_parallel_per_edge_usage_pattern[
-                    usage_pattern])
+            nb_journeys_in_parallel = usage_pattern.nb_deployments_in_parallel
             idle_and_base_floor = (
                 self.total_nb_of_units * nb_journeys_in_parallel * component.unitary_power_at_zero_recurrent_need
                 * one_hour * usage_pattern.country.average_carbon_intensity).to(u.kg)
@@ -477,47 +473,39 @@ class EdgeDevice(ModelingObject, AttributionSource):
         pool_shares = (self.fabrication_pool_share_per_carrier_and_pattern
                        if phase == LifeCyclePhases.MANUFACTURING else {})
         for usage_pattern in self.edge_usage_patterns:
-            journey = usage_pattern.edge_usage_journey
-            slot_counts = {}
-            rsn_slot_counts = {}
-            for edge_function in dict.fromkeys(journey.edge_functions):
-                ef_count = journey.edge_functions.count(edge_function)
-                for device_need in dict.fromkeys(edge_function.recurrent_edge_device_needs):
-                    if device_need.edge_device != self:
-                        continue
-                    redn_count = edge_function.recurrent_edge_device_needs.count(device_need)
-                    for component_need in dict.fromkeys(device_need.recurrent_edge_component_needs):
-                        recn_count = device_need.recurrent_edge_component_needs.count(component_need)
-                        slot_counts[(component_need, device_need, edge_function)] = (
-                            ef_count * redn_count * recn_count)
-                if usage_pattern in pool_shares:
-                    for server_need in dict.fromkeys(edge_function.recurrent_server_needs):
-                        if server_need.edge_device != self:
-                            continue
-                        rsn_slot_counts[(server_need, edge_function)] = (
-                            ef_count * edge_function.recurrent_server_needs.count(server_need))
+            component_paths = [
+                path for path in usage_pattern.containment_inventory.component_need_paths
+                if path.recurrent_edge_device_need.edge_device == self]
             occurrences_per_need = defaultdict(int)
-            for (component_need, _, _), count in slot_counts.items():
-                occurrences_per_need[component_need] += count
-            for (component_need, device_need, edge_function), count in slot_counts.items():
+            for path in component_paths:
+                occurrences_per_need[path.recurrent_edge_component_need] += path.nb_occurrences
+            for path in component_paths:
+                component_need = path.recurrent_edge_component_need
                 occurrence_share = ExplainableQuantity(
-                    count / occurrences_per_need[component_need] * u.dimensionless,
-                    f"{component_need.name} occurrence share via {device_need.name} in {edge_function.name}")
+                    path.nb_occurrences / occurrences_per_need[component_need] * u.dimensionless,
+                    f"{component_need.name} occurrence share via {path.recurrent_edge_device_need.name} "
+                    f"in {path.edge_function.name}")
                 yield Atom(
-                    source=self, stream="single", up=usage_pattern, recn=component_need, redn=device_need,
-                    ef=edge_function,
+                    source=self, stream="single", up=usage_pattern, journey=path.journey, recn=component_need,
+                    redn=path.recurrent_edge_device_need, ef=path.edge_function,
                     value=(self.atom_value(component_need, usage_pattern, phase) * occurrence_share).set_label(
                         f"{self.name} {phase.value.lower()} footprint via {component_need.name} through "
-                        f"{device_need.name} in {edge_function.name} ({usage_pattern.name})"))
+                        f"{path.recurrent_edge_device_need.name} in {path.edge_function.name} "
+                        f"({usage_pattern.name})"))
+            server_paths = [
+                path for path in usage_pattern.containment_inventory.server_need_paths
+                if path.recurrent_server_need.edge_device == self] if usage_pattern in pool_shares else []
             occurrences_per_rsn = defaultdict(int)
-            for (server_need, _), count in rsn_slot_counts.items():
-                occurrences_per_rsn[server_need] += count
-            for (server_need, edge_function), count in rsn_slot_counts.items():
+            for path in server_paths:
+                occurrences_per_rsn[path.recurrent_server_need] += path.nb_occurrences
+            for path in server_paths:
+                server_need = path.recurrent_server_need
                 occurrence_share = ExplainableQuantity(
-                    count / occurrences_per_rsn[server_need] * u.dimensionless,
-                    f"{server_need.name} occurrence share in {edge_function.name}")
+                    path.nb_occurrences / occurrences_per_rsn[server_need] * u.dimensionless,
+                    f"{server_need.name} occurrence share in {path.edge_function.name}")
                 yield Atom(
-                    source=self, stream="single", up=usage_pattern, rsn=server_need, ef=edge_function,
+                    source=self, stream="single", up=usage_pattern, journey=path.journey, rsn=server_need,
+                    ef=path.edge_function,
                     value=(pool_shares[usage_pattern] * occurrence_share).set_label(
                         f"{self.name} {phase.value.lower()} footprint via {server_need.name} in "
-                        f"{edge_function.name} ({usage_pattern.name})"))
+                        f"{path.edge_function.name} ({usage_pattern.name})"))

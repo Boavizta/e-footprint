@@ -50,6 +50,24 @@ def validate_system_dict_structure(system_dict, valid_class_keys):
                     f"Object keys must match their `id`.")
 
 
+def validate_pattern_journey_relationships(system_dict):
+    """Validate plural journey invariants before passive hydration bypasses computed guards."""
+    for pattern_id, pattern in system_dict.get("UsagePattern", {}).items():
+        journeys = pattern.get("usage_journeys")
+        if not isinstance(journeys, dict) or not journeys:
+            raise ValueError(f"UsagePattern '{pattern_id}' requires at least one usage journey")
+        weights = [weight.get("value") if isinstance(weight, dict) else None for weight in journeys.values()]
+        if any(isinstance(weight, bool) or not isinstance(weight, (int, float)) or weight <= 0
+               for weight in weights):
+            raise ValueError(f"UsagePattern '{pattern_id}' journey weights must be strictly positive")
+    for pattern_id, pattern in system_dict.get("EdgeUsagePattern", {}).items():
+        journeys = pattern.get("edge_usage_journeys")
+        if not isinstance(journeys, list) or not journeys:
+            raise ValueError(f"EdgeUsagePattern '{pattern_id}' requires at least one edge usage journey")
+        if len(set(journeys)) != len(journeys):
+            raise ValueError(f"EdgeUsagePattern '{pattern_id}' cannot contain duplicate edge usage journeys")
+
+
 def compute_classes_generation_order(efootprint_classes_dict):
     classes_to_order_dict = copy(efootprint_classes_dict)
     classes_generation_order = []
@@ -174,6 +192,7 @@ def json_to_system(system_dict, efootprint_classes_dict=None):
     version_matches = file_version == efootprint.__version__
     if not version_matches:
         system_dict = upgrade_system_dict_to_current_version(system_dict, efootprint_classes_dict)
+    validate_pattern_journey_relationships(system_dict)
     # Stored values are only trusted as caches when their dependency edges can be reinstalled: a
     # values-bearing file always carries the calculation-graph section, so its absence means an
     # inputs-only file (nothing to attach anyway).

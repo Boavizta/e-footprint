@@ -5,6 +5,8 @@
 
 ## Task 1 — Land the plural library model and migration
 
+**Status:** Done.
+
 **Goal:** Deliver the complete e-footprint domain change as one coherent schema/API transition: weighted web journeys,
 unweighted edge functionality bundles, journey-aware web coordinates, aggregate edge need calculations, conservative
 attribution, comparison support, and migration of existing one-journey JSON.

@@ -27,18 +27,18 @@
 <p class="tagline" style="font-size:.92rem;margin-bottom:.5rem">Most domain classes assign their inputs in <code>__init__</code>, then declare each derived value as a decorated getter. This abridged example is the real shape of <code>UsagePattern</code>.</p>
 <div class="diagram"><div class="dtitle">Inputs are stored; the formula reads like ordinary Python</div>
 <pre><code>class UsagePattern(ModelingObject):
-    def __init__(self, name, country, hourly_usage_journey_starts, ...):
+    def __init__(self, name, country, hourly_occurrences, ...):
         super().__init__(name)
         self.country = country
-        self.hourly_usage_journey_starts = hourly_usage_journey_starts
+        self.hourly_occurrences = hourly_occurrences
 
     @computed_attribute
-    def utc_hourly_usage_journey_starts(self):
-        converted = self.hourly_usage_journey_starts.convert_to_utc(
+    def utc_hourly_occurrences(self):
+        converted = self.hourly_occurrences.convert_to_utc(
             local_timezone=self.country.timezone
         )
         return converted.set_label("Hourly journey starts (UTC)")</code></pre>
-<div class="cols"><div class="n core"><b>Value dependencies</b><br><span>The result uses <code>hourly_usage_journey_starts</code> and the linked country's <code>timezone</code>.</span></div><div class="n framework"><b>Relationship dependency</b><br><span>The result also depends on which <code>Country</code> the <code>country</code> link points to.</span></div></div>
+<div class="cols"><div class="n core"><b>Value dependencies</b><br><span>The result uses <code>hourly_occurrences</code> and the linked country's <code>timezone</code>.</span></div><div class="n framework"><b>Relationship dependency</b><br><span>The result also depends on which <code>Country</code> the <code>country</code> link points to.</span></div></div>
 <p style="font-size:.88rem;color:var(--muted);margin-bottom:0">The reactive framework observes those ordinary reads while the getter runs. First compare the <a href="recomputation/computed-surfaces.html">three computed surfaces</a>; then use the <a href="recomputation/lifecycle.html#walkthrough">complete lifecycle walkthrough</a> for exact runtime state and code paths.</p></div>
 
 <h2>First time here? Curated understanding path</h2>

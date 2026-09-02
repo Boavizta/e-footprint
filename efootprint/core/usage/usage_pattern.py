@@ -7,14 +7,15 @@ from efootprint.core.usage.usage_journey import UsageJourney
 from efootprint.core.usage.job import Job
 from efootprint.core.hardware.network import Network
 from efootprint.abstract_modeling_classes.modeling_object import ModelingObject
-from efootprint.abstract_modeling_classes.explainable_hourly_quantities import (
-    ExplainableHourlyQuantities)
+from efootprint.abstract_modeling_classes.explainable_hourly_quantities import ExplainableHourlyQuantities
+from efootprint.abstract_modeling_classes.explainable_object_dict import (
+    PositiveWeightedExplainableObjectDict, to_weighted_explainable_object_dict)
 from efootprint.abstract_modeling_classes.empty_explainable_object import EmptyExplainableObject
 from efootprint.abstract_modeling_classes.reactive_core import computed_attribute
 
 
 class UsagePattern(ModelingObject):
-    """A population of users that performs a {class:UsageJourney}, in a given {class:Country}, on given {class:Device}s, with a given hourly volume of journey starts."""
+    """A population of users that performs weighted {class:UsageJourney}s in one shared context."""
 
     disambiguation = (
         "Use {class:UsagePattern} for traffic where each {class:UsageJourney} start is independent. Use "
@@ -22,8 +23,9 @@ class UsagePattern(ModelingObject):
         "{doc:web_vs_edge}.")
 
     param_descriptions = {
-        "usage_journey": (
-            "The {class:UsageJourney} performed by users in this pattern."),
+        "usage_journeys": (
+            "Non-empty mapping from each {class:UsageJourney} to its average number of executions per pattern "
+            "occurrence. Weights must be strictly positive and do not need to sum to one."),
         "devices": (
             "Devices that users perform the journey on. Fabrication and energy footprints of each device are "
             "weighted by the time the journey occupies on it."),
@@ -31,35 +33,48 @@ class UsagePattern(ModelingObject):
             "{class:Network} carrying traffic between the user's device and the servers."),
         "country": (
             "{class:Country} where the users are located. Drives device-side electricity carbon intensity and "
-            "the timezone of {param:UsagePattern.hourly_usage_journey_starts}."),
-        "hourly_usage_journey_starts": (
-            "Hourly timeseries giving the number of usage journeys that begin in each hour of the modeling "
-            "period, expressed in the country's local timezone."),
+            "the timezone of {param:UsagePattern.hourly_occurrences}."),
+        "hourly_occurrences": (
+            "Hourly timeseries giving the number of pattern occurrences in each hour of the modeling period, "
+            "expressed in the country's local timezone."),
     }
 
-    def __init__(self, name: str, usage_journey: UsageJourney, devices: List[Device],
-                 network: Network, country: Country, hourly_usage_journey_starts: ExplainableHourlyQuantities):
+    weight_labels = {"usage_journeys": "Journeys per pattern occurrence"}
+
+    def __init__(self, name: str, usage_journeys: PositiveWeightedExplainableObjectDict[UsageJourney],
+                 devices: List[Device],
+                 network: Network, country: Country, hourly_occurrences: ExplainableHourlyQuantities):
         super().__init__(name)
-        self.hourly_usage_journey_starts = hourly_usage_journey_starts.to(u.occurrence).set_label(
-            "Hourly nb of usage journey starts")
-        self.usage_journey = usage_journey
+        self.hourly_occurrences = hourly_occurrences.to(u.occurrence).set_label("Hourly nb of pattern occurrences")
+        normalized_journeys = PositiveWeightedExplainableObjectDict(to_weighted_explainable_object_dict(
+            usage_journeys, weight_label=self.weight_labels["usage_journeys"]))
+        invalid_types = [type(journey) for journey in normalized_journeys if not isinstance(journey, UsageJourney)]
+        if invalid_types:
+            raise TypeError(f"All keys in 'usage_journeys' must be instances of UsageJourney, got {invalid_types}")
+        self.usage_journeys = normalized_journeys
+        self._validate_usage_journeys()
         self.devices = devices
         self.network = network
         self.country = country
 
-
-
+    def _validate_usage_journeys(self):
+        if not self.usage_journeys:
+            raise ValueError(f"UsagePattern '{self.name}' requires at least one usage journey")
+        if any(weight.value.magnitude <= 0 for weight in self.usage_journeys.values()):
+            raise ValueError(f"UsagePattern '{self.name}' journey weights must be strictly positive")
 
     @property
     def jobs(self) -> List[Job]:
-        return self.usage_journey.jobs
+        return list(dict.fromkeys(job for journey in self.usage_journeys for job in journey.jobs))
+
+    @computed_attribute(guard=True)
+    def usage_journeys_validation(self):
+        """Validates that the pattern always contains journeys with strictly positive weights."""
+        self._validate_usage_journeys()
+        return EmptyExplainableObject()
 
     @computed_attribute
-    def utc_hourly_usage_journey_starts(self):
-        """Hourly journey starts converted from the country's local timezone to UTC, so that downstream calculations can be combined across patterns in different timezones."""
-        utc_hourly_usage_journey_starts = self.hourly_usage_journey_starts.convert_to_utc(
-            local_timezone=self.country.timezone)
-
-        return utc_hourly_usage_journey_starts.set_label(
-            "Hourly nb of usage journey starts (UTC)")
-
+    def utc_hourly_occurrences(self):
+        """Hourly pattern occurrences converted from the country's local timezone to UTC."""
+        return self.hourly_occurrences.convert_to_utc(local_timezone=self.country.timezone).set_label(
+            "Hourly nb of pattern occurrences (UTC)")

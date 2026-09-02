@@ -99,6 +99,19 @@ def set_modeling_obj_containers(efootprint_obj: ModelingObject, mod_obj_containe
     efootprint_obj.contextual_modeling_obj_containers = mock_contextual_containers
 
 
+def set_edge_pattern_component_needs(edge_usage_pattern, recurrent_needs, edge_component):
+    """Attach the containment-inventory slice needed by focused edge-component getter tests."""
+    from types import SimpleNamespace
+
+    for need in recurrent_needs:
+        need.edge_component = edge_component
+    edge_usage_pattern.containment_inventory = SimpleNamespace(
+        component_need_paths=[
+            SimpleNamespace(recurrent_edge_component_need=need) for need in recurrent_needs
+        ]
+    )
+
+
 def create_mod_obj_mock(efootprint_class, name: str = None, **kwargs):
     mock_obj = MagicMock(spec=efootprint_class)
     mock_obj.name = name if name else "Mock " + efootprint_class.__name__

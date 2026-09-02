@@ -83,10 +83,10 @@ class IntegrationEdgeDeviceGroupBaseClass(IntegrationTestBaseClass):
         start_date = datetime.strptime("2025-01-01", "%Y-%m-%d")
         edge_usage_pattern = EdgeUsagePattern(
             "grouped edge usage pattern",
-            edge_usage_journey=edge_usage_journey,
+            edge_usage_journeys=[edge_usage_journey],
             network=Network.wifi_network(),
             country=Countries.FRANCE(),
-            hourly_edge_usage_journey_starts=create_source_hourly_values_from_list(
+            hourly_deployment_starts=create_source_hourly_values_from_list(
                 [1000, 1000, 2000, 2000, 3000, 3000, 1000, 1000, 2000], start_date),
         )
 

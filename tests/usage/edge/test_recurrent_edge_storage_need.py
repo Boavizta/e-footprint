@@ -57,15 +57,14 @@ class TestRecurrentEdgeStorageNeed(TestCase):
         mock_timezone = MagicMock()
         mock_edge_usage_journey = create_mod_obj_mock(EdgeUsageJourney, name="Mock Journey")
 
-        mock_edge_usage_journey.nb_edge_usage_journeys_in_parallel_per_edge_usage_pattern = {
-            mock_pattern: mock_nb_euj_in_parallel
-        }
+        mock_pattern.nb_deployments_in_parallel = mock_nb_euj_in_parallel
         mock_edge_function = create_mod_obj_mock(EdgeFunction, name="Mock Function")
         mock_recurrent_device_need = create_mod_obj_mock(RecurrentEdgeDeviceNeed, name="Mock Device Need")
         mock_recurrent_device_need.recurrent_edge_component_needs = [self.storage_need]
         mock_edge_function.recurrent_edge_device_needs = [mock_recurrent_device_need]
         mock_edge_usage_journey.edge_functions = [mock_edge_function]
-        mock_pattern.edge_usage_journey = mock_edge_usage_journey
+        path = MagicMock(recurrent_edge_component_need=self.storage_need, nb_occurrences=1)
+        mock_pattern.containment_inventory = MagicMock(component_need_paths=[path])
         mock_pattern.country = mock_country
         mock_country.timezone = mock_timezone
 
@@ -96,15 +95,14 @@ class TestRecurrentEdgeStorageNeed(TestCase):
         mock_timezone = MagicMock()
         mock_edge_usage_journey = create_mod_obj_mock(EdgeUsageJourney, name="Mock Journey")
 
-        mock_edge_usage_journey.nb_edge_usage_journeys_in_parallel_per_edge_usage_pattern = {
-            mock_pattern: mock_nb_euj_in_parallel
-        }
+        mock_pattern.nb_deployments_in_parallel = mock_nb_euj_in_parallel
         mock_edge_function = create_mod_obj_mock(EdgeFunction, name="Mock Function")
         mock_recurrent_device_need = create_mod_obj_mock(RecurrentEdgeDeviceNeed, name="Mock Device Need")
         mock_recurrent_device_need.recurrent_edge_component_needs = [self.storage_need]
         mock_edge_function.recurrent_edge_device_needs = [mock_recurrent_device_need]
         mock_edge_usage_journey.edge_functions = [mock_edge_function]
-        mock_pattern.edge_usage_journey = mock_edge_usage_journey
+        path = MagicMock(recurrent_edge_component_need=self.storage_need, nb_occurrences=1)
+        mock_pattern.containment_inventory = MagicMock(component_need_paths=[path])
         mock_pattern.country = mock_country
         mock_country.timezone = mock_timezone
 
@@ -149,22 +147,16 @@ class TestRecurrentEdgeStorageNeed(TestCase):
         """Test total hourly need across usage patterns uses cumulative per-pattern need and parallel journeys."""
         pattern_1 = create_mod_obj_mock(EdgeUsagePattern, name="Pattern 1")
         pattern_2 = create_mod_obj_mock(EdgeUsagePattern, name="Pattern 2")
-        pattern_1.edge_usage_journey = create_mod_obj_mock(EdgeUsageJourney, "Journey 1")
-        pattern_2.edge_usage_journey = create_mod_obj_mock(EdgeUsageJourney, "Journey 2")
-        pattern_1.edge_usage_journey.nb_edge_usage_journeys_in_parallel_per_edge_usage_pattern = {
-            pattern_1: ExplainableHourlyQuantities(
+        pattern_1.nb_deployments_in_parallel = ExplainableHourlyQuantities(
                 np.array([2.0, 2.0, 2.0], dtype=np.float32) * u.concurrent,
                 ciso8601.parse_datetime("2025-01-06T00:00:00"),
                 "pattern 1 journeys",
             )
-        }
-        pattern_2.edge_usage_journey.nb_edge_usage_journeys_in_parallel_per_edge_usage_pattern = {
-            pattern_2: ExplainableHourlyQuantities(
+        pattern_2.nb_deployments_in_parallel = ExplainableHourlyQuantities(
                 np.array([3.0, 3.0, 3.0], dtype=np.float32) * u.concurrent,
                 ciso8601.parse_datetime("2025-01-06T00:00:00"),
                 "pattern 2 journeys",
             )
-        }
         attach_attribute(self.storage_need, "cumulative_unitary_storage_need_per_usage_pattern", {
             pattern_1: ExplainableHourlyQuantities(
                 np.array([1.0, 1.0, 3.0], dtype=np.float32) * u.GB_stored,

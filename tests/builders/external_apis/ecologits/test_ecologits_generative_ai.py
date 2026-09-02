@@ -18,6 +18,7 @@ from efootprint.builders.external_apis.ecologits.ecologits_external_api import (
 from efootprint.constants.units import u
 from efootprint.core.lifecycle_phases import LifeCyclePhases
 from efootprint.core.usage.job import JobAttributionCell
+from efootprint.core.usage.usage_journey import UsageJourney
 from efootprint.core.usage.usage_journey_step import UsageJourneyStep
 from efootprint.core.usage.usage_pattern import UsagePattern
 from tests.core.attribution.conservation import assert_source_atoms_conserve
@@ -190,6 +191,7 @@ class TestEcoLogitsGenAIExternalAPI(TestCase):
             flat_share_quantity = ExplainableQuantity(flat_share * u.dimensionless, f"flat share in {up_name}")
             return JobAttributionCell(
                 up=create_mod_obj_mock(UsagePattern, up_name),
+                journey=create_mod_obj_mock(UsageJourney, f"journey of {up_name}"),
                 hourly_share=ExplainableHourlyQuantities(
                     Quantity(np.full(24, hourly_share, dtype=np.float32), u.dimensionless), self.start_date,
                     left_parent=flat_share_quantity, operator="hourly share matching"),

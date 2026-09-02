@@ -9,7 +9,7 @@ from efootprint.core.hardware.edge.edge_ram_component import EdgeRAMComponent
 from efootprint.core.hardware.hardware_base import InsufficientCapacityError
 from efootprint.core.usage.edge.recurrent_edge_component_need import RecurrentEdgeComponentNeed
 from efootprint.core.usage.edge.edge_usage_pattern import EdgeUsagePattern
-from tests.utils import create_mod_obj_mock, set_modeling_obj_containers
+from tests.utils import create_mod_obj_mock, set_edge_pattern_component_needs, set_modeling_obj_containers
 from tests.utils import recompute_attribute
 
 
@@ -71,6 +71,7 @@ class TestEdgeRAMComponent(TestCase):
         }
         mock_need.edge_usage_patterns = [mock_pattern]
         set_modeling_obj_containers(self.ram_component, [mock_need])
+        set_edge_pattern_component_needs(mock_pattern, [mock_need], self.ram_component)
         self.ram_component.nb_of_units = SourceValue(3 * u.dimensionless)
         recompute_attribute(self.ram_component, "ram")
 
@@ -105,6 +106,7 @@ class TestEdgeRAMComponent(TestCase):
         mock_need_2.edge_usage_patterns = [mock_pattern]
 
         set_modeling_obj_containers(self.ram_component, [mock_need_1, mock_need_2])
+        set_edge_pattern_component_needs(mock_pattern, [mock_need_1, mock_need_2], self.ram_component)
 
         recompute_attribute(self.ram_component, "available_ram_per_instance")
         result = recompute_attribute(self.ram_component, "unitary_hourly_ram_need_per_usage_pattern", mock_pattern)
@@ -124,6 +126,7 @@ class TestEdgeRAMComponent(TestCase):
         mock_need.edge_usage_patterns = [mock_pattern]
 
         set_modeling_obj_containers(self.ram_component, [mock_need])
+        set_edge_pattern_component_needs(mock_pattern, [mock_need], self.ram_component)
 
         recompute_attribute(self.ram_component, "available_ram_per_instance")
 

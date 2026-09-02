@@ -43,18 +43,18 @@ EXPECTED_REJECTION_EXCEPTIONS = (
     ValueError, InsufficientCapacityError, NegativeCumulativeStorageNeedError, WorkloadOutOfBoundsError)
 
 RELINK_SPECS = (
-    ("UsagePattern", "usage_journey"),
     ("UsagePattern", "network"),
     ("UsagePattern", "country"),
     ("EdgeUsagePattern", "network"),
     ("EdgeUsagePattern", "country"),
-    ("EdgeUsagePattern", "edge_usage_journey"),
 )
 
 LIST_SPECS = (
     ("UsageJourney", "uj_steps"),
     ("UsageJourneyStep", "jobs"),
+    ("UsagePattern", "usage_journeys"),
     ("UsagePattern", "devices"),
+    ("EdgeUsagePattern", "edge_usage_journeys"),
 )
 
 
@@ -83,8 +83,9 @@ class TestRandomizedMutationParity(TestCase):
     def set_collection(obj, attr_name, members):
         """Assign a new member collection, matching the attribute's current shape (weighted dicts carry
         per-member weights and can't be replaced by plain lists on a live system)."""
-        if isinstance(getattr(obj, attr_name), ExplainableObjectDict):
-            setattr(obj, attr_name, to_weighted_explainable_object_dict(members))
+        current_collection = getattr(obj, attr_name)
+        if isinstance(current_collection, ExplainableObjectDict):
+            setattr(obj, attr_name, type(current_collection)(to_weighted_explainable_object_dict(members)))
         else:
             setattr(obj, attr_name, members)
 
@@ -102,8 +103,8 @@ class TestRandomizedMutationParity(TestCase):
         return f"scale input {obj.name}.{attr_name} by {round(factor, 3)}"
 
     def mutate_timeseries_input(self, rng, system):
-        pattern_specs = ([(up, "hourly_usage_journey_starts") for up in system.usage_patterns]
-                         + [(eup, "hourly_edge_usage_journey_starts") for eup in system.edge_usage_patterns])
+        pattern_specs = ([(up, "hourly_occurrences") for up in system.usage_patterns]
+                         + [(eup, "hourly_deployment_starts") for eup in system.edge_usage_patterns])
         pattern, attr_name = rng.choice(pattern_specs)
         initial_volume = round(rng.uniform(200, 5000), 1)
         setattr(pattern, attr_name, form_inputs_hourly_starts(NB_YEARS, initial_volume=initial_volume))
@@ -174,12 +175,12 @@ class TestRandomizedMutationParity(TestCase):
         self.created_objects_count += 1
         new_pattern = UsagePattern(
             f"parity harness usage pattern {self.created_objects_count}",
-            usage_journey=rng.choice(self.objects_of_class(system, "UsageJourney")),
+            usage_journeys=[rng.choice(self.objects_of_class(system, "UsageJourney"))],
             devices=list(template.devices), network=template.network, country=template.country,
-            hourly_usage_journey_starts=form_inputs_hourly_starts(
+            hourly_occurrences=form_inputs_hourly_starts(
                 NB_YEARS, initial_volume=round(rng.uniform(200, 5000), 1)))
         system.usage_patterns = list(system.usage_patterns) + [new_pattern]
-        return f"add new usage pattern {new_pattern.name} on {new_pattern.usage_journey.name}"
+        return f"add new usage pattern {new_pattern.name}"
 
     def mutate_delete_usage_pattern(self, rng, system):
         if len(system.usage_patterns) < 2:

@@ -110,7 +110,14 @@ class Device(HardwareBase, AttributionSource):
 
     @property
     def usage_journey_steps(self) -> List["UsageJourneyStep"]:
-        return list(dict.fromkeys(sum([list(usage_pattern.usage_journey.uj_steps) for usage_pattern in self.usage_patterns], [])))
+        return list(dict.fromkeys(
+            step for usage_pattern in self.usage_patterns for journey in usage_pattern.usage_journeys
+            for step in journey.uj_steps))
+
+    def nb_journeys_in_parallel(self, usage_pattern: "UsagePattern"):
+        return sum(
+            (journey.nb_usage_journeys_in_parallel_per_usage_pattern[usage_pattern]
+             for journey in usage_pattern.usage_journeys), start=EmptyExplainableObject())
 
 
     @computed_dict(keys="usage_patterns")
@@ -118,7 +125,7 @@ class Device(HardwareBase, AttributionSource):
         """Hourly carbon emissions caused by the device's electricity use, broken down by usage pattern. Equal to the energy spent by concurrent journeys times the country's grid carbon intensity."""
         energy_spent_over_one_full_hour_by_one_device = self.power * ExplainableQuantity(1 * u.hour, "one full hour")
         instances_energy = (
-            usage_pattern.usage_journey.nb_usage_journeys_in_parallel_per_usage_pattern[usage_pattern]
+            self.nb_journeys_in_parallel(usage_pattern)
             * energy_spent_over_one_full_hour_by_one_device
         ).to(u.kWh)
         return (
@@ -142,7 +149,7 @@ class Device(HardwareBase, AttributionSource):
     def instances_fabrication_footprint_per_usage_pattern(self, usage_pattern: "UsagePattern"):
         """Hourly fabrication-phase emissions of all devices in use, broken down by usage pattern. Equal to one device's hourly amortised embodied carbon (lifespan and usage-time-adjusted) multiplied by the number of journeys concurrently in progress."""
         return (
-            usage_pattern.usage_journey.nb_usage_journeys_in_parallel_per_usage_pattern[usage_pattern]
+            self.nb_journeys_in_parallel(usage_pattern)
             * self.device_fabrication_footprint_over_one_hour).to(u.kg).set_label(
             f"Fabrication footprint for {usage_pattern.name}")
 
@@ -169,15 +176,18 @@ class Device(HardwareBase, AttributionSource):
             self.power * ExplainableQuantity(1 * u.hour, "one full hour")).to(u.kWh)
         fabrication_over_one_occupied_hour = self.device_fabrication_footprint_over_one_hour
         for usage_pattern in self.usage_patterns:
-            for uj_step in usage_pattern.usage_journey.uj_steps:
-                occupancy = uj_step.hourly_avg_occurrences_per_usage_pattern[usage_pattern]
-                if phase == LifeCyclePhases.USAGE:
-                    value = (energy_over_one_occupied_hour * occupancy
-                             * usage_pattern.country.average_carbon_intensity)
-                else:
-                    value = fabrication_over_one_occupied_hour * occupancy
-                yield Atom(
-                    source=self, stream="single", up=usage_pattern, step=uj_step,
-                    value=value.to(u.kg).set_label(
-                        f"{self.name} {phase.value.lower()} footprint in {uj_step.name} "
-                        f"({usage_pattern.name})"))
+            for journey in usage_pattern.usage_journeys:
+                from efootprint.core.usage.usage_journey_step import UsageJourneyStepCoordinate
+                coordinate = UsageJourneyStepCoordinate(usage_pattern, journey)
+                for uj_step in journey.uj_steps:
+                    occupancy = uj_step.hourly_avg_occurrences_per_usage_coordinate[coordinate]
+                    if phase == LifeCyclePhases.USAGE:
+                        value = (energy_over_one_occupied_hour * occupancy
+                                 * usage_pattern.country.average_carbon_intensity)
+                    else:
+                        value = fabrication_over_one_occupied_hour * occupancy
+                    yield Atom(
+                        source=self, stream="single", up=usage_pattern, journey=journey, step=uj_step,
+                        value=value.to(u.kg).set_label(
+                            f"{self.name} {phase.value.lower()} footprint in {journey.name} / {uj_step.name} "
+                            f"({usage_pattern.name})"))

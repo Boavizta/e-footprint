@@ -287,12 +287,8 @@ class TestRecurrentEdgeComponentNeed(TestCase):
 
         mock_journey = create_mod_obj_mock(EdgeUsageJourney, name="Mock Journey")
         mock_journey.edge_usage_patterns = [mock_pattern_1, mock_pattern_2]
-        mock_journey.nb_edge_usage_journeys_in_parallel_per_edge_usage_pattern = {
-            mock_pattern_1: mock_nb_parallel_1,
-            mock_pattern_2: mock_nb_parallel_2,
-        }
-        mock_pattern_1.edge_usage_journey = mock_journey
-        mock_pattern_2.edge_usage_journey = mock_journey
+        mock_pattern_1.nb_deployments_in_parallel = mock_nb_parallel_1
+        mock_pattern_2.nb_deployments_in_parallel = mock_nb_parallel_2
 
         mock_function = create_mod_obj_mock(EdgeFunction, name="Mock Function")
         mock_function.edge_usage_journeys = [mock_journey]
@@ -303,6 +299,9 @@ class TestRecurrentEdgeComponentNeed(TestCase):
         mock_device_need.edge_functions = [mock_function]
         mock_device_need.recurrent_edge_component_needs = [self.component_need]
         mock_function.recurrent_edge_device_needs = [mock_device_need]
+        path = MagicMock(recurrent_edge_component_need=self.component_need, nb_occurrences=1)
+        mock_pattern_1.containment_inventory = MagicMock(component_need_paths=[path])
+        mock_pattern_2.containment_inventory = MagicMock(component_need_paths=[path])
 
         set_modeling_obj_containers(self.component_need, [mock_device_need])
 
@@ -323,18 +322,17 @@ class TestRecurrentEdgeComponentNeed(TestCase):
         mock_pattern = create_mod_obj_mock(EdgeUsagePattern, name="Pattern")
         mock_pattern.country = MagicMock(timezone=SourceTimezone(pytz.timezone("Europe/Paris")))
         mock_journey = create_mod_obj_mock(EdgeUsageJourney, name="Journey", edge_usage_patterns=[mock_pattern])
-        mock_journey.nb_edge_usage_journeys_in_parallel_per_edge_usage_pattern = {
-            mock_pattern: ExplainableHourlyQuantities(
-                np.array([1.0, 1.0], dtype=np.float32) * u.concurrent,
-                datetime(2023, 1, 2, 0, 0, 0, tzinfo=pytz.utc),
-                "parallel journeys")}
-        mock_pattern.edge_usage_journey = mock_journey
+        mock_pattern.nb_deployments_in_parallel = ExplainableHourlyQuantities(
+            np.array([1.0, 1.0], dtype=np.float32) * u.concurrent,
+            datetime(2023, 1, 2, 0, 0, 0, tzinfo=pytz.utc), "parallel journeys")
 
         mock_function = create_mod_obj_mock(EdgeFunction, name="Function", edge_usage_journeys=[mock_journey])
         mock_journey.edge_functions = [mock_function, mock_function]
         mock_device_need = create_mod_obj_mock(RecurrentEdgeDeviceNeed, name="Device Need", edge_functions=[mock_function])
         mock_device_need.recurrent_edge_component_needs = [self.component_need, self.component_need]
         mock_function.recurrent_edge_device_needs = [mock_device_need, mock_device_need]
+        path = MagicMock(recurrent_edge_component_need=self.component_need, nb_occurrences=8)
+        mock_pattern.containment_inventory = MagicMock(component_need_paths=[path])
         set_modeling_obj_containers(self.component_need, [mock_device_need])
 
         recompute_attribute(self.component_need, "unitary_hourly_need_per_usage_pattern")
@@ -346,16 +344,12 @@ class TestRecurrentEdgeComponentNeed(TestCase):
         """Test total hourly need combines per-pattern need with parallel journey counts."""
         mock_pattern_1 = create_mod_obj_mock(EdgeUsagePattern, name="Pattern 1")
         mock_pattern_2 = create_mod_obj_mock(EdgeUsagePattern, name="Pattern 2")
-        mock_pattern_1.edge_usage_journey = create_mod_obj_mock(EdgeUsageJourney, "Journey 1")
-        mock_pattern_2.edge_usage_journey = create_mod_obj_mock(EdgeUsageJourney, "Journey 2")
-        mock_pattern_1.edge_usage_journey.edge_usage_patterns = [mock_pattern_1]
-        mock_pattern_2.edge_usage_journey.edge_usage_patterns = [mock_pattern_2]
-        mock_pattern_1.edge_usage_journey.nb_edge_usage_journeys_in_parallel_per_edge_usage_pattern = {
-            mock_pattern_1: ExplainableHourlyQuantities(
-                np.array([2.0, 2.0], dtype=np.float32) * u.concurrent, datetime(2023, 1, 1), "parallel 1")}
-        mock_pattern_2.edge_usage_journey.nb_edge_usage_journeys_in_parallel_per_edge_usage_pattern = {
-            mock_pattern_2: ExplainableHourlyQuantities(
-                np.array([4.0, 4.0], dtype=np.float32) * u.concurrent, datetime(2023, 1, 1), "parallel 2")}
+        journey_1 = create_mod_obj_mock(EdgeUsageJourney, "Journey 1", edge_usage_patterns=[mock_pattern_1])
+        journey_2 = create_mod_obj_mock(EdgeUsageJourney, "Journey 2", edge_usage_patterns=[mock_pattern_2])
+        mock_pattern_1.nb_deployments_in_parallel = ExplainableHourlyQuantities(
+            np.array([2.0, 2.0], dtype=np.float32) * u.concurrent, datetime(2023, 1, 1), "parallel 1")
+        mock_pattern_2.nb_deployments_in_parallel = ExplainableHourlyQuantities(
+            np.array([4.0, 4.0], dtype=np.float32) * u.concurrent, datetime(2023, 1, 1), "parallel 2")
         attach_attribute(self.component_need, "unitary_hourly_need_per_usage_pattern", ExplainableObjectDict({
             mock_pattern_1: ExplainableHourlyQuantities(
                 np.array([1.0, 1.0], dtype=np.float32) * u.cpu_core, datetime(2023, 1, 1), "need 1"),
@@ -363,7 +357,7 @@ class TestRecurrentEdgeComponentNeed(TestCase):
                 np.array([2.0, 2.0], dtype=np.float32) * u.cpu_core, datetime(2023, 1, 1), "need 2"),
         }))
         mock_function = create_mod_obj_mock(EdgeFunction, name="Mock Function")
-        mock_function.edge_usage_journeys = [mock_pattern_1.edge_usage_journey, mock_pattern_2.edge_usage_journey]
+        mock_function.edge_usage_journeys = [journey_1, journey_2]
         mock_device_need = create_mod_obj_mock(RecurrentEdgeDeviceNeed, name="Mock Device Need")
         mock_device_need.edge_functions = [mock_function]
         set_modeling_obj_containers(self.component_need, [mock_device_need])

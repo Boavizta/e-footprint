@@ -22,7 +22,7 @@
             ],
             "network": "id-0ca432-Default-wifi-network",
             "country": "id-f328ed-France",
-            "hourly_usage_journey_starts": {
+            "hourly_occurrences": {
                 "label": "Usage pattern 1 hourly nb of visits from hypothesis",
                 "values": [
                     1000.0,
@@ -77,7 +77,7 @@
             "id": "c1f646",
             "edge_usage_journey": "ba37e8",
             "country": "id-f328ed-France",
-            "hourly_edge_usage_journey_starts": {
+            "hourly_deployment_starts": {
                 "label": "Edge usage pattern 1 nb of visits from hypothesis",
                 "values": [
                     1000.0,

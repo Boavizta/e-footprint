@@ -10,12 +10,12 @@ from efootprint.core.hardware.network import Network
 from efootprint.core.usage.usage_pattern import UsagePattern
 
 from efootprint.builders.timeseries import ExplainableHourlyQuantitiesFromFormInputs
-from tests.utils import recompute_attribute
+from tests.utils import create_mod_obj_mock, recompute_attribute
 
 
 class CalculusGraphTest(TestCase):
     def test_calculus_graph_html_gen(self):
-        self.mock_usage_journey = MagicMock(spec=UsageJourney, id="usage-journey-id")
+        self.mock_usage_journey = create_mod_obj_mock(UsageJourney, "usage journey", id="usage-journey-id")
         self.mock_devices = [MagicMock(spec=Device, id="device-id"), MagicMock(spec=Device, id="device-id2")]
         self.mock_network = MagicMock(spec=Network, id="network-id")
         self.mock_country = MagicMock(spec=Country, id="FR-id")
@@ -27,8 +27,8 @@ class CalculusGraphTest(TestCase):
         )
         self.usage_pattern = UsagePattern.from_defaults(
             name="test_usage_pattern_from_form",
-            hourly_usage_journey_starts=self.default_hourly_starts,
-            usage_journey=self.mock_usage_journey,
+            hourly_occurrences=self.default_hourly_starts,
+            usage_journeys=[self.mock_usage_journey],
             devices=self.mock_devices,
             network=self.mock_network,
             country=self.mock_country
@@ -38,9 +38,9 @@ class CalculusGraphTest(TestCase):
         calculated_attributes = self.usage_pattern.calculated_attributes
 
         # To get calculus graph html
-        recompute_attribute(self.usage_pattern, "utc_hourly_usage_journey_starts")
+        recompute_attribute(self.usage_pattern, "utc_hourly_occurrences")
 
-        calculus_graph = build_calculus_graph(self.usage_pattern.utc_hourly_usage_journey_starts)
+        calculus_graph = build_calculus_graph(self.usage_pattern.utc_hourly_occurrences)
         calculus_graph.cdn_resources = "remote"
         html = calculus_graph.generate_html()
         self.assertGreater(len(html), 0)

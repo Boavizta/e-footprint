@@ -10,7 +10,7 @@ from efootprint.api_utils.json_to_system import json_to_system
 from efootprint.api_utils.version_upgrade_handlers import upgrade_version_9_to_10, upgrade_version_10_to_11, \
     upgrade_version_11_to_12, upgrade_version_12_to_13, upgrade_version_13_to_14, upgrade_version_14_to_15, \
     upgrade_version_15_to_16, upgrade_version_16_to_17, upgrade_version_18_to_19, upgrade_version_19_to_20, \
-    upgrade_version_20_to_21, upgrade_version_21_to_22
+    upgrade_version_20_to_21, upgrade_version_21_to_22, upgrade_version_23_to_24
 from efootprint.abstract_modeling_classes.source_objects import SourceValue
 from efootprint.constants.units import u
 
@@ -18,6 +18,33 @@ API_UTILS_TEST_DIR = os.path.dirname(os.path.abspath(__file__))
 
 
 class TestVersionUpgradeHandlers(TestCase):
+    def test_upgrade_23_to_24_pluralizes_patterns_and_moves_edge_span(self):
+        span = {"value": 2.0, "unit": "year", "label": "Usage span", "source": "user_data"}
+        input_dict = {
+            "calculation_graph": {"nodes": ["obsolete"]},
+            "UsagePattern": {"web": {
+                "usage_journey": "journey", "hourly_usage_journey_starts": {
+                    "value": [1], "unit": "occurrence", "label": "old"},
+                "utc_hourly_occurrences": {"label": "obsolete"}}},
+            "EdgeUsageJourney": {"edge-journey": {"usage_span": copy.deepcopy(span)}},
+            "EdgeUsagePattern": {"edge": {
+                "edge_usage_journey": "edge-journey", "hourly_edge_usage_journey_starts": {
+                    "value": [1], "unit": "occurrence", "label": "old"},
+                "nb_deployments_in_parallel": {"label": "obsolete"}}},
+        }
+
+        output = upgrade_version_23_to_24(copy.deepcopy(input_dict))
+
+        self.assertEqual(1.0, output["UsagePattern"]["web"]["usage_journeys"]["journey"]["value"])
+        self.assertEqual("Journeys per pattern occurrence",
+                         output["UsagePattern"]["web"]["usage_journeys"]["journey"]["label"])
+        self.assertEqual(["edge-journey"], output["EdgeUsagePattern"]["edge"]["edge_usage_journeys"])
+        self.assertEqual(span, output["EdgeUsagePattern"]["edge"]["usage_span"])
+        self.assertNotIn("usage_span", output["EdgeUsageJourney"]["edge-journey"])
+        self.assertIn("hourly_occurrences", output["UsagePattern"]["web"])
+        self.assertIn("hourly_deployment_starts", output["EdgeUsagePattern"]["edge"])
+        self.assertNotIn("calculation_graph", output)
+
     def test_upgrade_19_to_20(self):
         input_dict = {
             "Job": {
@@ -377,7 +404,7 @@ class TestVersionUpgradeHandlers(TestCase):
                 "pattern_1": {
                     "name": "Basic Pattern",
                     "id": "pattern_1",
-                    "hourly_usage_journey_starts": {
+                    "hourly_occurrences": {
                         "compressed_values": [1, 2, 3],
                         "unit": "dimensionless",
                         "label": "hourly usage"
@@ -389,7 +416,7 @@ class TestVersionUpgradeHandlers(TestCase):
                 "edge_pattern_1": {
                     "name": "Edge Pattern",
                     "id": "edge_pattern_1",
-                    "hourly_edge_usage_journey_starts": {
+                    "hourly_deployment_starts": {
                         "compressed_values": [10, 20],
                         "unit": "dimensionless",
                         "label": "edge starts"
@@ -495,7 +522,7 @@ class TestVersionUpgradeHandlers(TestCase):
                 "pattern_1": {
                     "name": "Basic Pattern",
                     "id": "pattern_1",
-                    "hourly_usage_journey_starts": {
+                    "hourly_occurrences": {
                         "compressed_values": [1, 2, 3],
                         "unit": "occurrence",
                         "label": "hourly usage"
@@ -506,7 +533,7 @@ class TestVersionUpgradeHandlers(TestCase):
                 "edge_pattern_1": {
                     "name": "Edge Pattern",
                     "id": "edge_pattern_1",
-                    "hourly_edge_usage_journey_starts": {
+                    "hourly_deployment_starts": {
                         "compressed_values": [10, 20],
                         "unit": "occurrence",
                         "label": "edge starts"

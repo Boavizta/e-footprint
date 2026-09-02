@@ -91,14 +91,14 @@ class IntegrationTestComplexSystemBaseClass(IntegrationTestBaseClass):
         network1 = Network.from_defaults("network 1")
         start_date = datetime.strptime("2025-01-01", "%Y-%m-%d")
         usage_pattern1 = UsagePattern(
-            "Usage pattern 1", uj, [Device.laptop("Laptop 1")], network1,
+            "Usage pattern 1", [uj], [Device.laptop("Laptop 1")], network1,
             Countries.FRANCE(),
             create_source_hourly_values_from_list(
                 [elt * 1000 for elt in [1, 2, 4, 5, 8, 12, 2, 2, 3]], start_date=start_date))
 
         network2 = Network.from_defaults("network 2")
         usage_pattern2 = UsagePattern(
-            "Usage pattern 2", uj, [Device.laptop("Laptop 2")], network2,
+            "Usage pattern 2", [uj], [Device.laptop("Laptop 2")], network2,
             Countries.FRANCE(),
             create_source_hourly_values_from_list(
                 [elt * 1000 for elt in [4, 2, 1, 5, 2, 1, 7, 8, 3]], start_date=start_date))
@@ -118,10 +118,10 @@ class IntegrationTestComplexSystemBaseClass(IntegrationTestBaseClass):
 
         edge_usage_pattern = EdgeUsagePattern(
             "Edge usage pattern",
-            edge_usage_journey=edge_usage_journey,
+            edge_usage_journeys=[edge_usage_journey],
             network=network1,
             country=Countries.FRANCE(),
-            hourly_edge_usage_journey_starts=create_source_hourly_values_from_list(
+            hourly_deployment_starts=create_source_hourly_values_from_list(
                 [elt * 100 for elt in [1, 1, 2, 2, 3, 3, 1, 1, 2]], start_date)
         )
 
@@ -198,7 +198,7 @@ class IntegrationTestComplexSystemBaseClass(IntegrationTestBaseClass):
     def run_test_add_new_usage_pattern_with_new_network_and_edit_its_hourly_uj_starts(self):
         new_network = Network.wifi_network()
         new_up = UsagePattern(
-            "New usage pattern video watching in France", self.uj, [Device.laptop()], new_network, Countries.FRANCE(),
+            "New usage pattern video watching in France", [self.uj], [Device.laptop()], new_network, Countries.FRANCE(),
             create_source_hourly_values_from_list([elt * 1000 for elt in [1, 4, 1, 5, 3, 1, 5, 23, 2]]))
 
         server1_job1 = self.server1_job1
@@ -219,8 +219,8 @@ class IntegrationTestComplexSystemBaseClass(IntegrationTestBaseClass):
             self.assertEqual(len(server1_job1.hourly_avg_occurrences_across_usage_patterns.direct_ancestors_with_id), 4)
 
             logger.warning("Editing the usage pattern network")
-            cleanup.callback(setattr, new_up, "hourly_usage_journey_starts", new_up.hourly_usage_journey_starts)
-            new_up.hourly_usage_journey_starts = create_source_hourly_values_from_list(
+            cleanup.callback(setattr, new_up, "hourly_occurrences", new_up.hourly_occurrences)
+            new_up.hourly_occurrences = create_source_hourly_values_from_list(
                 [elt * 1000 for elt in [2, 4, 1, 5, 3, 1, 5, 23, 2]])
             # self.network1.energy_footprint should not have been recomputed, nor its ancestors
             for elt in self.network1.energy_footprint.direct_ancestors_with_id:
@@ -236,10 +236,10 @@ class IntegrationTestComplexSystemBaseClass(IntegrationTestBaseClass):
             "New edge usage journey", edge_functions=[new_edge_function])
         new_edge_usage_pattern = EdgeUsagePattern(
             "New edge usage pattern",
-            edge_usage_journey=new_edge_usage_journey,
+            edge_usage_journeys=[new_edge_usage_journey],
             network=Network.wifi_network(),
             country=Countries.FRANCE(),
-            hourly_edge_usage_journey_starts=create_source_hourly_values_from_list(
+            hourly_deployment_starts=create_source_hourly_values_from_list(
                 [elt * 50 for elt in [2, 1, 3, 2, 4, 2, 1, 2, 3]], self.start_date)
         )
         updated_edge_usage_patterns = self.system.edge_usage_patterns + [new_edge_usage_pattern]

@@ -74,20 +74,20 @@ for calls that hit an external provider's API.
 # Two patterns, same country, different journeys
 training_pattern = UsagePattern(
     "Weekly retraining",
-    usage_journey=training_journey,
+    usage_journeys=[training_journey],
     devices=[],  # backend-only workload: no end-user device
     network=internal_network,
     country=country_fr,
-    hourly_usage_journey_starts=weekly_pulse_of_one_start_per_week,
+    hourly_occurrences=weekly_pulse_of_one_start_per_week,
 )
 
 inference_pattern = UsagePattern(
     "Production inference",
-    usage_journey=inference_journey,
+    usage_journeys=[inference_journey],
     devices=[smartphone],
     network=mobile_network,
     country=country_fr,
-    hourly_usage_journey_starts=hourly_traffic,
+    hourly_occurrences=hourly_traffic,
 )
 ```
 

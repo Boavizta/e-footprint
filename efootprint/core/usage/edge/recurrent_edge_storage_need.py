@@ -48,10 +48,8 @@ class RecurrentEdgeStorageNeed(RecurrentEdgeComponentNeed):
         # if usage_pattern.nb_edge_usage_journey_in_parallel.start_date doesn't start on a Monday 00:00,
         # set the first values of the storage need to 0 until the first Monday 00:00, so that if storage need increases
         # during beginning of the week then decreases at the end of the week, it doesn't go negative
-        start_date_weekday = usage_pattern.edge_usage_journey.nb_edge_usage_journeys_in_parallel_per_edge_usage_pattern[
-            usage_pattern].start_date.weekday()
-        start_date_hour = usage_pattern.edge_usage_journey.nb_edge_usage_journeys_in_parallel_per_edge_usage_pattern[
-            usage_pattern].start_date.hour
+        start_date_weekday = usage_pattern.nb_deployments_in_parallel.start_date.weekday()
+        start_date_hour = usage_pattern.nb_deployments_in_parallel.start_date.hour
         if start_date_weekday != 0 or start_date_hour != 0:
             hours_until_first_monday_00 = (7 - start_date_weekday) * 24 - start_date_hour
             base_storage_need.magnitude[:hours_until_first_monday_00] = 0
@@ -84,7 +82,7 @@ class RecurrentEdgeStorageNeed(RecurrentEdgeComponentNeed):
         return sum(
             [
                 self.cumulative_unitary_storage_need_per_usage_pattern[usage_pattern]
-                * usage_pattern.edge_usage_journey.nb_edge_usage_journeys_in_parallel_per_edge_usage_pattern[usage_pattern]
+                * usage_pattern.nb_deployments_in_parallel
                 for usage_pattern in self.edge_usage_patterns
             ],
             start=EmptyExplainableObject(),

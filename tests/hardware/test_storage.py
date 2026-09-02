@@ -274,11 +274,11 @@ class TestStorageAttributionAtoms(TestCase):
         network = Network("storage atoms network", SourceValue(0.05 * u.kWh / u.GB))
         start_date = datetime(2026, 1, 1)
         cls.up1 = UsagePattern(
-            "storage atoms web usage pattern 1", cls.journey, [device], network,
+            "storage atoms web usage pattern 1", [cls.journey], [device], network,
             country("storage atoms first country", 100 * u.g / u.kWh),
             create_source_hourly_values_from_list([10, 0, 5, 0, 8], start_date))
         cls.up2 = UsagePattern(
-            "storage atoms web usage pattern 2", cls.journey, [device], network,
+            "storage atoms web usage pattern 2", [cls.journey], [device], network,
             country("storage atoms second country", 300 * u.g / u.kWh),
             create_source_hourly_values_from_list([3, 7], start_date))
 
@@ -294,11 +294,12 @@ class TestStorageAttributionAtoms(TestCase):
             [cls.dual_job])
         edge_function = EdgeFunction("storage atoms edge function", [device_need], [cls.rsn])
         edge_journey = EdgeUsageJourney(
-            "storage atoms edge journey", [edge_function], usage_span=SourceValue(1 * u.year))
+            "storage atoms edge journey", [edge_function])
         cls.edge_up = EdgeUsagePattern(
-            "storage atoms edge usage pattern", edge_journey, network,
+            "storage atoms edge usage pattern", [edge_journey], network,
             country("storage atoms edge country", 200 * u.g / u.kWh),
-            create_source_hourly_values_from_list([4, 0, 6], start_date))
+            create_source_hourly_values_from_list([4, 0, 6], start_date),
+            usage_span=SourceValue(1 * u.year))
 
         cls.system = System(
             "storage atoms system", [cls.up1, cls.up2], edge_usage_patterns=[cls.edge_up])
@@ -351,7 +352,7 @@ class TestStorageAttributionAtoms(TestCase):
         step = UsageJourneyStep("idle hours storage step", SourceValue(30 * u.min), [job])
         journey = UsageJourney("idle hours storage journey", [step])
         up = UsagePattern(
-            "idle hours storage usage pattern", journey, [Device.from_defaults("idle hours storage laptop")],
+            "idle hours storage usage pattern", [journey], [Device.from_defaults("idle hours storage laptop")],
             Network("idle hours storage network", SourceValue(0.05 * u.kWh / u.GB)),
             Country("idle hours storage country", "IHS", SourceValue(100 * u.g / u.kWh),
                     ExplainableTimezone(pytz.utc, "UTC timezone")),
@@ -381,7 +382,7 @@ class TestStorageAttributionAtoms(TestCase):
         step = UsageJourneyStep("zero traffic storage step", SourceValue(30 * u.min), [job_a, job_b])
         journey = UsageJourney("zero traffic storage journey", [step])
         up = UsagePattern(
-            "zero traffic storage usage pattern", journey,
+            "zero traffic storage usage pattern", [journey],
             [Device.from_defaults("zero traffic storage laptop")],
             Network("zero traffic storage network", SourceValue(0.05 * u.kWh / u.GB)),
             Country("zero traffic storage country", "ZTS", SourceValue(100 * u.g / u.kWh),

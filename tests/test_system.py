@@ -123,7 +123,7 @@ class TestSystem(TestCase):
 
         edge_usage_journey.edge_functions = [edge_function]
         edge_usage_journey.edge_devices = [edge_computer]
-        edge_usage_pattern.edge_usage_journey = edge_usage_journey
+        edge_usage_pattern.edge_usage_journeys = [edge_usage_journey]
         edge_usage_pattern.country = create_mod_obj_mock(Country, name="edge_usage_country", systems=[])
         edge_usage_pattern.network = create_mod_obj_mock(Network, name="edge_usage_network", systems=[])
 
@@ -157,9 +157,10 @@ class TestSystem(TestCase):
         self.device = create_mod_obj_mock(Device, name="device", systems=[])
         self.usage_pattern.devices = [self.device]
         self.usage_pattern.country = create_mod_obj_mock(Country, name="country", systems=[])
-        self.usage_pattern.usage_journey = create_mod_obj_mock(UsageJourney, name="usage_journey", systems=[])
+        usage_journey = create_mod_obj_mock(UsageJourney, name="usage_journey", systems=[])
+        self.usage_pattern.usage_journeys = [usage_journey]
         uj_step = create_mod_obj_mock(UsageJourneyStep, name="usage_journey_step", systems=[])
-        self.usage_pattern.usage_journey.uj_steps = [uj_step]
+        usage_journey.uj_steps = [uj_step]
         self.server = create_mod_obj_mock(Server, name="server", id="server_id", systems=[])
         self.storage = create_mod_obj_mock(Storage, name="storage", id="storage_id", systems=[])
         self.server.storage = self.storage

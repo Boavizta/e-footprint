@@ -1,13 +1,8 @@
 from typing import List, TYPE_CHECKING
 
 from efootprint.abstract_modeling_classes.explainable_object_dict import ExplainableObjectDict
-from efootprint.abstract_modeling_classes.explainable_quantity import ExplainableQuantity
 from efootprint.abstract_modeling_classes.modeling_object import ModelingObject
-from efootprint.abstract_modeling_classes.source_objects import SourceValue
-from efootprint.constants.units import u
-from efootprint.core.usage.compute_nb_occurrences_in_parallel import compute_nb_avg_hourly_occurrences
 from efootprint.core.usage.edge.edge_function import EdgeFunction
-from efootprint.abstract_modeling_classes.reactive_core import computed_dict
 
 if TYPE_CHECKING:
     from efootprint.core.usage.edge.edge_usage_pattern import EdgeUsagePattern
@@ -18,7 +13,7 @@ if TYPE_CHECKING:
 
 
 class EdgeUsageJourney(ModelingObject):
-    """A long-running activity of an edge fleet, composed of {class:EdgeFunction}s that run for the {param:EdgeUsageJourney.usage_span} of the deployment and can span several device types."""
+    """A reusable functionality bundle composed of {class:EdgeFunction}s and applied by an {class:EdgeUsagePattern}."""
 
     disambiguation = (
         "Use {class:EdgeUsageJourney} for hardware that runs continuously, like a sensor that captures data "
@@ -27,21 +22,15 @@ class EdgeUsageJourney(ModelingObject):
 
     param_descriptions = {
         "edge_functions": (
-            "{class:EdgeFunction}s active during the journey, each describing what runs on devices and what "
-            "is sent to servers."),
-        "usage_span": (
-            "How long one edge device is in use, from deployment to retirement. The fabrication footprint is "
-            "amortised over this duration."),
+            "{class:EdgeFunction}s active in this bundle, each describing what runs on devices and what is sent "
+            "to servers."),
     }
 
-    default_values = {
-        "usage_span": SourceValue(6 * u.year)
-    }
+    default_values = {}
 
-    def __init__(self, name: str, edge_functions: List[EdgeFunction], usage_span: ExplainableQuantity):
+    def __init__(self, name: str, edge_functions: List[EdgeFunction]):
         super().__init__(name)
         self.edge_functions = edge_functions
-        self.usage_span = usage_span.set_label(f"Usage span")
 
 
 
@@ -64,14 +53,3 @@ class EdgeUsageJourney(ModelingObject):
     @property
     def edge_devices(self) -> List["EdgeDevice"]:
         return list(dict.fromkeys([edge_need.edge_device for edge_need in self.recurrent_edge_device_needs]))
-
-
-    @computed_dict(keys="edge_usage_patterns")
-    def nb_edge_usage_journeys_in_parallel_per_edge_usage_pattern(
-            self, edge_usage_pattern: "EdgeUsagePattern"):
-        """Hourly count of edge usage journeys that are concurrently active in each pattern, derived from the journey-start timeseries and the journey usage span."""
-        nb_of_edge_usage_journeys_in_parallel = compute_nb_avg_hourly_occurrences(
-            edge_usage_pattern.utc_hourly_edge_usage_journey_starts, self.usage_span)
-        return (
-            nb_of_edge_usage_journeys_in_parallel.to(u.concurrent)
-            .set_label("Hourly nb of edge usage journeys in parallel"))

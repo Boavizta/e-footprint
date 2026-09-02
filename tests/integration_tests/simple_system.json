@@ -1,5 +1,5 @@
 {
-    "efootprint_version": "23.1.0",
+    "efootprint_version": "24.0.0",
     "Sources": {
         "Base-ADEME_V19": {
             "id": "Base-ADEME_V19",
@@ -41,40 +41,27 @@
         "Usage-Pattern": {
             "name": "Usage Pattern",
             "id": "Usage-Pattern",
-            "hourly_usage_journey_starts": {
+            "hourly_occurrences": {
                 "compressed_values": "KLUv/SAkIQEAACR0SQAk9EkAJHRKgJaYSgAk9EoAGzdLACT0SQAk9EkAGzdK",
                 "unit": "occurrence",
                 "start_date": "2025-01-01 00:00:00",
                 "timezone": null,
-                "label": "Hourly nb of usage journey starts",
+                "label": "Hourly nb of pattern occurrences",
                 "source": "hypothesis"
             },
-            "usage_journey": "Usage-journey",
+            "usage_journeys": {
+                "Usage-journey": {
+                    "value": 1.0,
+                    "unit": "dimensionless",
+                    "label": "Journeys per pattern occurrence",
+                    "source": "hypothesis"
+                }
+            },
             "devices": [
                 "Default-laptop"
             ],
             "network": "Default-network",
             "country": "France"
-        }
-    },
-    "UsageJourney": {
-        "Usage-journey": {
-            "name": "Usage journey",
-            "id": "Usage-journey",
-            "uj_steps": {
-                "UJ-step-1": {
-                    "value": 1.0,
-                    "unit": "dimensionless",
-                    "label": "Times per journey",
-                    "source": "hypothesis"
-                },
-                "UJ-step-2": {
-                    "value": 1.0,
-                    "unit": "dimensionless",
-                    "label": "Times per journey",
-                    "source": "hypothesis"
-                }
-            }
         }
     },
     "Device": {
@@ -138,39 +125,21 @@
             }
         }
     },
-    "UsageJourneyStep": {
-        "UJ-step-1": {
-            "name": "UJ step 1",
-            "id": "UJ-step-1",
-            "user_time_spent": {
-                "value": 1.0,
-                "unit": "minute",
-                "label": "Time spent by user",
-                "source": "hypothesis"
-            },
-            "jobs": {
-                "job-1": {
+    "UsageJourney": {
+        "Usage-journey": {
+            "name": "Usage journey",
+            "id": "Usage-journey",
+            "uj_steps": {
+                "UJ-step-1": {
                     "value": 1.0,
                     "unit": "dimensionless",
-                    "label": "Times per step",
+                    "label": "Times per journey",
                     "source": "hypothesis"
-                }
-            }
-        },
-        "UJ-step-2": {
-            "name": "UJ step 2",
-            "id": "UJ-step-2",
-            "user_time_spent": {
-                "value": 1.0,
-                "unit": "minute",
-                "label": "Time spent by user",
-                "source": "hypothesis"
-            },
-            "jobs": {
-                "job-2": {
+                },
+                "UJ-step-2": {
                     "value": 1.0,
                     "unit": "dimensionless",
-                    "label": "Times per step",
+                    "label": "Times per journey",
                     "source": "hypothesis"
                 }
             }
@@ -393,6 +362,44 @@
                 "unit": "concurrent",
                 "label": "User defined number of instances",
                 "source": "hypothesis"
+            }
+        }
+    },
+    "UsageJourneyStep": {
+        "UJ-step-1": {
+            "name": "UJ step 1",
+            "id": "UJ-step-1",
+            "user_time_spent": {
+                "value": 1.0,
+                "unit": "minute",
+                "label": "Time spent by user",
+                "source": "hypothesis"
+            },
+            "jobs": {
+                "job-1": {
+                    "value": 1.0,
+                    "unit": "dimensionless",
+                    "label": "Times per step",
+                    "source": "hypothesis"
+                }
+            }
+        },
+        "UJ-step-2": {
+            "name": "UJ step 2",
+            "id": "UJ-step-2",
+            "user_time_spent": {
+                "value": 1.0,
+                "unit": "minute",
+                "label": "Time spent by user",
+                "source": "hypothesis"
+            },
+            "jobs": {
+                "job-2": {
+                    "value": 1.0,
+                    "unit": "dimensionless",
+                    "label": "Times per step",
+                    "source": "hypothesis"
+                }
             }
         }
     }

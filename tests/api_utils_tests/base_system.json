@@ -14,7 +14,7 @@
         "uuid-Youtube-usage-in-France": {
             "name": "Youtube usage in France",
             "id": "uuid-Youtube-usage-in-France",
-            "hourly_usage_journey_starts": {
+            "hourly_occurrences": {
                 "label": "Youtube usage in France hourly nb of visits from hypothesis",
                 "values": [
                     1000.0,

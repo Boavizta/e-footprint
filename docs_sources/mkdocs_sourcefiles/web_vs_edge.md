@@ -29,26 +29,26 @@ edge case, usage depends on the number of units deployed.
 
 ## How the two paradigms map
 
-Both paradigms organize the model the same way — a *pattern* drives a
-*journey*, which is composed of *units of work* — but each layer means
+Both paradigms organize the model the same way — a *pattern* selects one
+or more *journeys*, which are composed of *units of work* — but each layer means
 something different:
 
 | Layer        | Web                                              | Edge                                                                 |
 |--------------|--------------------------------------------------|----------------------------------------------------------------------|
-| Pattern      | {class:UsagePattern} — hourly rate of **user journey starts** in a country. | {class:EdgeUsagePattern} — hourly rate of **device deployments** in a country. |
-| Journey      | {class:UsageJourney} — *one visit*: a short, discrete sequence of steps. | {class:EdgeUsageJourney} — *the long-running activity of the deployed fleet*: a set of functions that run while devices are in service (over the {param:EdgeUsageJourney.usage_span}), and that can span several device types. |
+| Pattern      | {class:UsagePattern} — hourly rate of **pattern occurrences** in a country, with a positive weight per journey. | {class:EdgeUsagePattern} — hourly rate and {param:EdgeUsagePattern.usage_span} of **device deployments** in a country. |
+| Journey      | {class:UsageJourney} — *one visit*: a short, discrete sequence of steps. | {class:EdgeUsageJourney} — a reusable functionality bundle carried by each deployment: a set of functions that can span several device types. |
 | Unit of work | {class:UsageJourneyStep} — a discrete step with bounded {param:UsageJourneyStep.user_time_spent}, triggering {class:Job}s once per step. | {class:EdgeFunction} — a coherent feature, described by **recurring** device-side needs ({class:RecurrentEdgeDeviceNeed}) and **recurring** server-side jobs ({class:RecurrentServerNeed}) — unbounded in time. |
 
 Reading the table top to bottom captures the difference in one line:
 
 - **Web** is **unitary journeys × volume**: each visit is short and
   discrete; impact scales with how many *start* per hour.
-- **Edge** is **recurrent functions × deployed units**: the journey
-  runs for years and decomposes into functions described by *what runs
+- **Edge** is **recurrent functions × deployed units**: each deployment
+  runs for its pattern's usage span and its bundles decompose into functions described by *what runs
   recurrently*, not by per-call payloads. The count of deployed units
   actively in service comes from the deployment schedule and the
-  {param:EdgeUsageJourney.usage_span} (calculated by
-  {calc:EdgeUsageJourney.nb_edge_usage_journeys_in_parallel_per_edge_usage_pattern}).
+  {param:EdgeUsagePattern.usage_span} (calculated by
+  {calc:EdgeUsagePattern.nb_deployments_in_parallel}).
 
 ## Where they meet
 

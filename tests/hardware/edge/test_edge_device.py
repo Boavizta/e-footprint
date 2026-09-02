@@ -13,6 +13,7 @@ from efootprint.abstract_modeling_classes.explainable_quantity import Explainabl
 from efootprint.abstract_modeling_classes.explainable_timezone import ExplainableTimezone
 from efootprint.abstract_modeling_classes.source_objects import SourceValue, SourceRecurrentValues
 from efootprint.builders.time_builders import create_source_hourly_values_from_list
+from efootprint.constants.countries import Countries
 from efootprint.constants.units import u
 from efootprint.core.attribution import atoms_of
 from efootprint.core.country import Country
@@ -193,10 +194,9 @@ class TestEdgeDevice(TestCase):
     def test_update_dict_element_in_instances_fabrication_footprint_per_usage_pattern_structure_only(self):
         """Test fabrication footprint calculation with structure only (no component footprints)."""
         mock_journey = MagicMock(spec=EdgeUsageJourney)
-        mock_pattern = create_mod_obj_mock(EdgeUsagePattern, name="Test Pattern", edge_usage_journey=mock_journey)
-        mock_journey.nb_edge_usage_journeys_in_parallel_per_edge_usage_pattern = {
-            mock_pattern: create_source_hourly_values_from_list([10, 10], pint_unit=u.concurrent)
-        }
+        mock_pattern = create_mod_obj_mock(
+            EdgeUsagePattern, name="Test Pattern",
+            nb_deployments_in_parallel=create_source_hourly_values_from_list([10, 10], pint_unit=u.concurrent))
 
         self.mock_component_1.fabrication_footprint_per_edge_device_per_usage_pattern = ExplainableObjectDict()
         self.mock_component_2.fabrication_footprint_per_edge_device_per_usage_pattern = ExplainableObjectDict()
@@ -218,10 +218,9 @@ class TestEdgeDevice(TestCase):
 
     def test_instances_fabrication_returns_fresh_value_for_componentless_device(self):
         mock_journey = MagicMock(spec=EdgeUsageJourney)
-        mock_pattern = create_mod_obj_mock(EdgeUsagePattern, name="Test Pattern", edge_usage_journey=mock_journey)
-        mock_journey.nb_edge_usage_journeys_in_parallel_per_edge_usage_pattern = {
-            mock_pattern: create_source_hourly_values_from_list([10, 10], pint_unit=u.concurrent)
-        }
+        mock_pattern = create_mod_obj_mock(
+            EdgeUsagePattern, name="Test Pattern",
+            nb_deployments_in_parallel=create_source_hourly_values_from_list([10, 10], pint_unit=u.concurrent))
 
         with (
             patch_attribute(self.edge_device, "components", []),
@@ -238,10 +237,9 @@ class TestEdgeDevice(TestCase):
     def test_update_dict_element_in_instances_fabrication_footprint_per_usage_pattern_with_components(self):
         """Test fabrication footprint calculation with component contributions."""
         mock_journey = MagicMock(spec=EdgeUsageJourney)
-        mock_pattern = create_mod_obj_mock(EdgeUsagePattern, name="Test Pattern", edge_usage_journey=mock_journey)
-        mock_journey.nb_edge_usage_journeys_in_parallel_per_edge_usage_pattern = {
-            mock_pattern: create_source_hourly_values_from_list([10, 10], pint_unit=u.concurrent)
-        }
+        mock_pattern = create_mod_obj_mock(
+            EdgeUsagePattern, name="Test Pattern",
+            nb_deployments_in_parallel=create_source_hourly_values_from_list([10, 10], pint_unit=u.concurrent))
 
         component_1_footprint = create_source_hourly_values_from_list([5, 5], pint_unit=u.kg)
         component_2_footprint = create_source_hourly_values_from_list([8, 8], pint_unit=u.kg)
@@ -269,10 +267,9 @@ class TestEdgeDevice(TestCase):
         """Test that a component with no needs at the pattern is booked as part of the chassis: its embodied
         carbon amortizes with the deployment, from input attributes."""
         mock_journey = MagicMock(spec=EdgeUsageJourney)
-        mock_pattern = create_mod_obj_mock(EdgeUsagePattern, name="Test Pattern", edge_usage_journey=mock_journey)
-        mock_journey.nb_edge_usage_journeys_in_parallel_per_edge_usage_pattern = {
-            mock_pattern: create_source_hourly_values_from_list([10, 10], pint_unit=u.concurrent)
-        }
+        mock_pattern = create_mod_obj_mock(
+            EdgeUsagePattern, name="Test Pattern",
+            nb_deployments_in_parallel=create_source_hourly_values_from_list([10, 10], pint_unit=u.concurrent))
 
         self.mock_component_1.fabrication_footprint_per_edge_device_per_usage_pattern = ExplainableObjectDict()
         self.mock_component_1.carbon_footprint_fabrication_from_inputs = SourceValue(50 * u.kg)
@@ -572,12 +569,15 @@ class TestEdgeDevice(TestCase):
         edge_function = EdgeFunction("Mock Function", recurrent_edge_device_needs=[edge_need],
                                      recurrent_server_needs=[])
 
-        usage_span = SourceValue(1 * u.year)
-        euj = EdgeUsageJourney("test euj", edge_functions=[edge_function], usage_span=usage_span)
-        edge_device.pull_computed_attributes()
+        euj = EdgeUsageJourney("test euj", edge_functions=[edge_function])
+        pattern = EdgeUsagePattern.from_defaults(
+            "test pattern", edge_usage_journeys=[euj], network=Network.wifi_network(),
+            country=Countries.FRANCE(), hourly_deployment_starts=create_source_hourly_values_from_list([1]),
+            usage_span=SourceValue(1 * u.year))
+        System("lifespan validation system", [], [pattern])
 
         with self.assertRaises(InsufficientCapacityError):
-            euj.usage_span = SourceValue(3 * u.year)
+            pattern.usage_span = SourceValue(3 * u.year)
 
 
 
@@ -779,20 +779,22 @@ class TestEdgeDeviceAttributionAtoms(TestCase):
             "edge atoms function", recurrent_edge_device_needs=[cls.main_bundle, cls.reuse_bundle],
             recurrent_server_needs=[])
         cls.journey = EdgeUsageJourney(
-            "edge atoms journey", edge_functions=[cls.edge_function], usage_span=SourceValue(168 * u.hour))
+            "edge atoms journey", edge_functions=[cls.edge_function])
 
         network = Network("edge atoms network", SourceValue(0.05 * u.kWh / u.GB))
         start_date = datetime(2025, 1, 6)  # a Monday, so weekly patterns align with the series grid
         cls.low_ci_up = EdgeUsagePattern(
-            "edge atoms low ci pattern", cls.journey, network,
+            "edge atoms low ci pattern", [cls.journey], network,
             Country("edge atoms low ci country", "EAL", SourceValue(50 * u.g / u.kWh),
                     ExplainableTimezone(pytz.utc, "UTC timezone")),
-            create_source_hourly_values_from_list([1, 0, 2], start_date))
+            create_source_hourly_values_from_list([1, 0, 2], start_date),
+            usage_span=SourceValue(168 * u.hour))
         cls.high_ci_up = EdgeUsagePattern(
-            "edge atoms high ci pattern", cls.journey, network,
+            "edge atoms high ci pattern", [cls.journey], network,
             Country("edge atoms high ci country", "EAH", SourceValue(500 * u.g / u.kWh),
                     ExplainableTimezone(pytz.utc, "UTC timezone")),
-            create_source_hourly_values_from_list([2, 1], start_date))
+            create_source_hourly_values_from_list([2, 1], start_date),
+            usage_span=SourceValue(168 * u.hour))
         cls.system = System("edge atoms system", [], edge_usage_patterns=[cls.low_ci_up, cls.high_ci_up])
 
     def test_edge_device_atoms_conserve_both_phases(self):
@@ -829,7 +831,7 @@ class TestEdgeDeviceAttributionAtoms(TestCase):
         """Test that the idle/base energy floor is split equally between the CPU's two needs at every hour —
         including the hours where only the active need has demand, which a single demand weight mis-splits."""
         up = self.low_ci_up
-        nb_journeys = self.journey.nb_edge_usage_journeys_in_parallel_per_edge_usage_pattern[up]
+        nb_journeys = up.nb_deployments_in_parallel
         floor = (nb_journeys * self.cpu.unitary_power_at_zero_recurrent_need
                  * ExplainableQuantity(1 * u.hour, "one hour") * up.country.average_carbon_intensity).to(u.kg)
         half = ExplainableQuantity(0.5 * u.dimensionless, "half")
@@ -935,12 +937,12 @@ class TestEdgeDeviceUnusedComponentsChassisPool(TestCase):
         bundle = RecurrentEdgeDeviceNeed(
             "pool bundle", edge_device=cls.device, recurrent_edge_component_needs=[cls.cpu_need])
         function = EdgeFunction("pool function", recurrent_edge_device_needs=[bundle], recurrent_server_needs=[])
-        journey = EdgeUsageJourney("pool journey", edge_functions=[function], usage_span=SourceValue(168 * u.hour))
+        journey = EdgeUsageJourney("pool journey", edge_functions=[function])
         network = Network("pool network", SourceValue(0.05 * u.kWh / u.GB))
         cls.up = EdgeUsagePattern(
-            "pool pattern", journey, network,
+            "pool pattern", [journey], network,
             Country("pool country", "PC", SourceValue(50 * u.g / u.kWh), ExplainableTimezone(pytz.utc, "UTC tz 1")),
-            create_source_hourly_values_from_list([1, 1], start_date))
+            create_source_hourly_values_from_list([1, 1], start_date), usage_span=SourceValue(168 * u.hour))
 
         # Scenario 2 — a second device reached at a second pattern only through a RecurrentServerNeed.
         cls.rsn_cpu = EdgeCPUComponent(
@@ -959,12 +961,12 @@ class TestEdgeDeviceUnusedComponentsChassisPool(TestCase):
         used_function = EdgeFunction(
             "rsn used function", recurrent_edge_device_needs=[rsn_bundle], recurrent_server_needs=[])
         used_journey = EdgeUsageJourney(
-            "rsn used journey", edge_functions=[used_function], usage_span=SourceValue(168 * u.hour))
+            "rsn used journey", edge_functions=[used_function])
         cls.used_up = EdgeUsagePattern(
-            "rsn used pattern", used_journey, network,
+            "rsn used pattern", [used_journey], network,
             Country("rsn country 1", "RC1", SourceValue(50 * u.g / u.kWh),
                     ExplainableTimezone(pytz.utc, "UTC tz 2")),
-            create_source_hourly_values_from_list([1, 1], start_date))
+            create_source_hourly_values_from_list([1, 1], start_date), usage_span=SourceValue(168 * u.hour))
         cls.rsn = RecurrentServerNeed(
             "rsn", edge_device=cls.rsn_device,
             recurrent_volume_per_edge_device=SourceRecurrentValues(
@@ -973,12 +975,12 @@ class TestEdgeDeviceUnusedComponentsChassisPool(TestCase):
         cls.rsn_function = EdgeFunction(
             "rsn only function", recurrent_edge_device_needs=[], recurrent_server_needs=[cls.rsn])
         rsn_journey = EdgeUsageJourney(
-            "rsn only journey", edge_functions=[cls.rsn_function], usage_span=SourceValue(168 * u.hour))
+            "rsn only journey", edge_functions=[cls.rsn_function])
         cls.rsn_only_up = EdgeUsagePattern(
-            "rsn only pattern", rsn_journey, network,
+            "rsn only pattern", [rsn_journey], network,
             Country("rsn country 2", "RC2", SourceValue(500 * u.g / u.kWh),
                     ExplainableTimezone(pytz.utc, "UTC tz 3")),
-            create_source_hourly_values_from_list([3, 3], start_date))
+            create_source_hourly_values_from_list([3, 3], start_date), usage_span=SourceValue(168 * u.hour))
 
         cls.system = System("pool system", [], edge_usage_patterns=[cls.up, cls.used_up, cls.rsn_only_up])
 
@@ -1057,24 +1059,26 @@ class TestEdgeDeviceUnusedComponentsChassisPool(TestCase):
         used_function = EdgeFunction(
             "carrierless used function", recurrent_edge_device_needs=[used_bundle], recurrent_server_needs=[])
         used_journey = EdgeUsageJourney(
-            "carrierless used journey", edge_functions=[used_function], usage_span=SourceValue(168 * u.hour))
+            "carrierless used journey", edge_functions=[used_function])
         empty_bundle = RecurrentEdgeDeviceNeed(
             "carrierless bundle", edge_device=device, recurrent_edge_component_needs=[])
         function = EdgeFunction(
             "carrierless function", recurrent_edge_device_needs=[empty_bundle], recurrent_server_needs=[])
         journey = EdgeUsageJourney(
-            "carrierless journey", edge_functions=[function], usage_span=SourceValue(168 * u.hour))
+            "carrierless journey", edge_functions=[function])
         network = Network("carrierless network", SourceValue(0.05 * u.kWh / u.GB))
         used_pattern = EdgeUsagePattern(
-            "carrierless used pattern", used_journey, network,
+            "carrierless used pattern", [used_journey], network,
             Country("carrierless country 1", "CC1", SourceValue(50 * u.g / u.kWh),
                     ExplainableTimezone(pytz.utc, "UTC tz 4")),
-            create_source_hourly_values_from_list([1, 1], datetime(2025, 1, 6)))
+            create_source_hourly_values_from_list([1, 1], datetime(2025, 1, 6)),
+            usage_span=SourceValue(168 * u.hour))
         carrierless_pattern = EdgeUsagePattern(
-            "carrierless pattern", journey, network,
+            "carrierless pattern", [journey], network,
             Country("carrierless country 2", "CC2", SourceValue(50 * u.g / u.kWh),
                     ExplainableTimezone(pytz.utc, "UTC tz 5")),
-            create_source_hourly_values_from_list([1, 1], datetime(2025, 1, 6)))
+            create_source_hourly_values_from_list([1, 1], datetime(2025, 1, 6)),
+            usage_span=SourceValue(168 * u.hour))
         System("carrierless system", [], edge_usage_patterns=[used_pattern, carrierless_pattern])
 
         self.assertIn(

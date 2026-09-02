@@ -14,7 +14,7 @@ from efootprint.core.usage.edge.recurrent_edge_component_need import (
     WorkloadOutOfBoundsError,
 )
 from efootprint.core.usage.edge.edge_usage_pattern import EdgeUsagePattern
-from tests.utils import create_mod_obj_mock, set_modeling_obj_containers
+from tests.utils import create_mod_obj_mock, set_edge_pattern_component_needs, set_modeling_obj_containers
 from tests.utils import recompute_attribute
 
 
@@ -59,6 +59,7 @@ class TestEdgeWorkloadComponent(TestCase):
         mock_need_2.edge_usage_patterns = [mock_pattern]
 
         set_modeling_obj_containers(self.appliance_component, [mock_need_1, mock_need_2])
+        set_edge_pattern_component_needs(mock_pattern, [mock_need_1, mock_need_2], self.appliance_component)
 
         result = recompute_attribute(
             self.appliance_component, "unitary_hourly_workload_per_usage_pattern", mock_pattern)
@@ -84,6 +85,7 @@ class TestEdgeWorkloadComponent(TestCase):
         mock_need_2.edge_usage_patterns = [mock_pattern]
 
         set_modeling_obj_containers(self.appliance_component, [mock_need_1, mock_need_2])
+        set_edge_pattern_component_needs(mock_pattern, [mock_need_1, mock_need_2], self.appliance_component)
 
         with self.assertRaises(WorkloadOutOfBoundsError) as context:
             recompute_attribute(self.appliance_component, "unitary_hourly_workload_per_usage_pattern", mock_pattern)
@@ -107,6 +109,8 @@ class TestEdgeWorkloadComponent(TestCase):
         }
 
         set_modeling_obj_containers(self.appliance_component, [mock_need])
+        set_edge_pattern_component_needs(mock_pattern1, [mock_need], self.appliance_component)
+        set_edge_pattern_component_needs(mock_pattern2, [mock_need], self.appliance_component)
 
         recompute_attribute(self.appliance_component, "unitary_hourly_workload_per_usage_pattern")
 

@@ -154,7 +154,7 @@ class TestImpactRepartitionSankeyConservation(TestCase):
 
         baseline_totals = node_totals_by_key(baseline)
         skipped_totals = node_totals_by_key(skipped)
-        journey = system.usage_patterns[0].usage_journey
+        journey = next(iter(system.usage_patterns[0].usage_journeys))
         self.assertIn((journey.id, "Usage"), baseline_totals)
         self.assertNotIn((journey.id, "Usage"), skipped_totals)
         for key, value in skipped_totals.items():

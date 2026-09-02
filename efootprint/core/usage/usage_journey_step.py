@@ -1,3 +1,4 @@
+from dataclasses import dataclass
 from typing import List, TYPE_CHECKING
 
 from efootprint.abstract_modeling_classes.empty_explainable_object import EmptyExplainableObject
@@ -15,6 +16,18 @@ if TYPE_CHECKING:
     from efootprint.core.usage.usage_journey import UsageJourney
     from efootprint.core.usage.usage_pattern import UsagePattern
     from efootprint.core.hardware.network import Network
+
+
+@dataclass(frozen=True)
+class UsageJourneyStepCoordinate:
+    """Stable key for one step occupancy calculation along an actual pattern-to-journey path."""
+
+    usage_pattern: "UsagePattern"
+    usage_journey: "UsageJourney"
+
+    @property
+    def id(self):
+        return f"{self.usage_pattern.id}/journey/{self.usage_journey.id}"
 
 
 class UsageJourneyStep(ModelingObject):
@@ -48,20 +61,30 @@ class UsageJourneyStep(ModelingObject):
         return list(dict.fromkeys(sum([uj.usage_patterns for uj in self.usage_journeys], start=[])))
 
     @property
+    def usage_coordinates(self):
+        return tuple(
+            UsageJourneyStepCoordinate(pattern, journey)
+            for journey in self.usage_journeys for pattern in journey.usage_patterns
+            if journey in pattern.usage_journeys
+        )
+
+    @property
     def networks(self) -> List["Network"]:
         return list(dict.fromkeys([up.network for up in self.usage_patterns]))
 
-    @computed_dict(keys="usage_patterns")
-    def hourly_avg_occurrences_per_usage_pattern(self, up):
+    @computed_dict(keys="usage_coordinates")
+    def hourly_avg_occurrences_per_usage_coordinate(self, coordinate: UsageJourneyStepCoordinate):
         """The step's concurrent occupancy per usage pattern — the journeys concurrently inside the step's
         [delay, delay + times_per_journey × user_time_spent] window, computed as the difference of
         journey-parallel counts at the window's end vs start offsets (exact for fractional offsets).
         Consecutive windows telescope, so summing over a journey's steps tiles
         nb_usage_journeys_in_parallel_per_usage_pattern. Attribution-only primitive (the Device occupancy weight)."""
-        journey_starts = up.utc_hourly_usage_journey_starts
+        up = coordinate.usage_pattern
+        journey = coordinate.usage_journey
+        journey_starts = up.utc_hourly_occurrences * up.usage_journeys[journey]
         occupancy = EmptyExplainableObject()
         delay_between_uj_start_and_step_start = EmptyExplainableObject()
-        for journey_step, times_per_journey in up.usage_journey.uj_steps.items():
+        for journey_step, times_per_journey in journey.uj_steps.items():
             delay_at_step_end = (delay_between_uj_start_and_step_start
                                  + times_per_journey * journey_step.user_time_spent)
             if journey_step == self:

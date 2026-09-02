@@ -2,6 +2,7 @@ import json
 from datetime import datetime
 from unittest import TestCase
 
+import numpy as np
 from efootprint.abstract_modeling_classes.explainable_object_dict import (
     WeightedExplainableObjectDict, to_weighted_explainable_object_dict)
 from efootprint.abstract_modeling_classes.modeling_update import ModelingUpdate
@@ -16,7 +17,7 @@ from efootprint.core.hardware.network import Network
 from efootprint.core.hardware.server import Server, ServerTypes
 from efootprint.core.hardware.storage import Storage
 from efootprint.core.system import System
-from efootprint.core.usage.job import Job
+from efootprint.core.usage.job import Job, JobOccurrenceCoordinate
 from efootprint.core.usage.usage_journey import UsageJourney
 from efootprint.core.usage.usage_journey_step import UsageJourneyStep
 from efootprint.core.usage.usage_pattern import UsagePattern
@@ -31,7 +32,7 @@ def build_system(uj_steps_builder, jobs_builder, suffix):
     step_2 = UsageJourneyStep(f"step 2 {suffix}", SourceValue(20 * u.min), jobs_builder(job))
     journey = UsageJourney(f"journey {suffix}", uj_steps_builder(step_1, step_2))
     usage_pattern = UsagePattern(
-        f"usage pattern {suffix}", journey, [Device.laptop(f"laptop {suffix}")],
+        f"usage pattern {suffix}", [journey], [Device.laptop(f"laptop {suffix}")],
         Network.from_defaults(f"network {suffix}"), Countries.FRANCE(),
         create_source_hourly_values_from_list([10, 4, 20, 8], datetime(2026, 1, 1)))
     system = System(f"system {suffix}", [usage_pattern], edge_usage_patterns=[])
@@ -40,6 +41,31 @@ def build_system(uj_steps_builder, jobs_builder, suffix):
 
 
 class TestWeightedRelationships(TestCase):
+    def test_pattern_journey_weights_create_distinct_shared_child_coordinates(self):
+        storage = Storage.from_defaults("multi journey storage")
+        server = Server.from_defaults("multi journey server", storage=storage)
+        job = Job.from_defaults("shared multi journey job", server=server)
+        step = UsageJourneyStep("shared multi journey step", SourceValue(1 * u.hour), [job])
+        first = UsageJourney("first weighted journey", [step])
+        second = UsageJourney("second weighted journey", [step])
+        pattern = UsagePattern(
+            "multi journey pattern", {first: 0.5, second: 2}, [Device.laptop("multi journey laptop")],
+            Network.from_defaults("multi journey network"), Countries.FRANCE(),
+            create_source_hourly_values_from_list([4, 2], datetime(2026, 1, 1)))
+        System("multi journey system", [pattern], [])
+
+        first_coordinate = JobOccurrenceCoordinate(pattern, journey=first, step=step)
+        second_coordinate = JobOccurrenceCoordinate(pattern, journey=second, step=step)
+        first_occurrences = job.hourly_avg_occurrences_per_coordinate[first_coordinate]
+        second_occurrences = job.hourly_avg_occurrences_per_coordinate[second_coordinate]
+        np.testing.assert_allclose(second_occurrences.magnitude, 4 * first_occurrences.magnitude)
+        self.assertEqual({first, second}, {cell.journey for cell in job.attribution_cells})
+        self.assertTrue(all(
+            weight.label == "Journeys per pattern occurrence" for weight in pattern.usage_journeys.values()))
+        with self.assertRaises(ValueError):
+            pattern.usage_journeys[first] = SourceValue(0 * u.dimensionless)
+        self.assertEqual(0.5, pattern.usage_journeys[first].magnitude)
+
     def test_all_weights_at_one_match_list_sugar_results(self):
         """A system built with list sugar computes exactly the same footprint as one built with explicit
         weight-1 dicts — the pre-feature semantics are the all-multipliers-at-1 case."""

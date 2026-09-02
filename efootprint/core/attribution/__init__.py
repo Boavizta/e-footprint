@@ -32,16 +32,11 @@ from efootprint.core.lifecycle_phases import LifeCyclePhases
 _CELL_FIELDS = ("job", "step", "rsn", "ef", "recn", "redn")
 
 
-def _chain_nodes(source, up, job=None, step=None, rsn=None, ef=None, recn=None, redn=None):
-    """Ordered nodes an atom climbs through, source-ward -> System-ward. Coarser keys (journey,
-    country) are derived from ``up``, never stored.
+def _chain_nodes(source, up, journey, job=None, step=None, rsn=None, ef=None, recn=None, redn=None):
+    """Ordered nodes an atom climbs through, source-ward -> System-ward.
 
-    web job cell     : [source, job, step, up.usage_journey, up, up.country]
-    edge job cell    : [source, job, rsn, ef, up.edge_usage_journey, up, up.country]
-    device cell      : [source, step, up.usage_journey, up, up.country]
-    edge device cell : [source, recn, redn, ef, up.edge_usage_journey, up, up.country]
+    Journey identity is explicit because one pattern can now contain several journeys.
     """
-    journey = up.usage_journey if hasattr(up, "usage_journey") else up.edge_usage_journey
     nodes = (source, job, recn, rsn, redn, ef, step, journey, up, up.country)
 
     return [node for node in nodes if node is not None]
@@ -59,6 +54,7 @@ class Atom:
     stream: str
     value: object  # ExplainableHourlyQuantities | EmptyExplainableObject
     up: ModelingObject
+    journey: ModelingObject
     job: ModelingObject = None
     step: ModelingObject = None
     rsn: ModelingObject = None
@@ -69,7 +65,7 @@ class Atom:
     def chain(self):
         """The atom's ordered chain nodes (see ``_chain_nodes``)."""
         return _chain_nodes(
-            self.source, self.up, job=self.job, step=self.step, rsn=self.rsn, ef=self.ef, recn=self.recn,
+            self.source, self.up, self.journey, job=self.job, step=self.step, rsn=self.rsn, ef=self.ef, recn=self.recn,
             redn=self.redn)
 
 
@@ -84,6 +80,7 @@ def _atom_row(atom: Atom, phase: LifeCyclePhases) -> dict:
     """The atom's dict-encoded matrix row: source, stream and phase, the cell coordinate ids (absent
     coordinates omitted), and the value reduced to its period sum in kg."""
     row = {"source": atom.source.id, "stream": atom.stream, "phase": phase.value, "up": atom.up.id,
+           "journey": atom.journey.id,
            "value": _period_sum_in_kg(atom.value)}
     for cell_field in _CELL_FIELDS:
         node = getattr(atom, cell_field)
@@ -176,7 +173,8 @@ class _MatrixFoldContext:
 def _resolved_row_chain(row: dict, objects_by_id: dict) -> list:
     up = objects_by_id[row["up"]]
     cell_nodes = {cell_field: objects_by_id[row[cell_field]] for cell_field in _CELL_FIELDS if cell_field in row}
-    return [_underlying_modeling_object(node) for node in _chain_nodes(objects_by_id[row["source"]], up, **cell_nodes)]
+    return [_underlying_modeling_object(node) for node in _chain_nodes(
+        objects_by_id[row["source"]], up, objects_by_id[row["journey"]], **cell_nodes)]
 
 
 def _matrix_fold_context(system, visible_levels: tuple, exclude: tuple) -> _MatrixFoldContext:

@@ -99,10 +99,10 @@ class IntegrationTestSimpleEdgeSystemBaseClass(IntegrationTestBaseClass):
         start_date = datetime.strptime("2025-01-01", "%Y-%m-%d")
         edge_usage_pattern = EdgeUsagePattern(
             "Default edge usage pattern",
-            edge_usage_journey=edge_usage_journey,
+            edge_usage_journeys=[edge_usage_journey],
             network=Network.wifi_network(),
             country=Countries.FRANCE(),
-            hourly_edge_usage_journey_starts=create_source_hourly_values_from_list(
+            hourly_deployment_starts=create_source_hourly_values_from_list(
                 [elt * 1000 for elt in [1, 1, 2, 2, 3, 3, 1, 1, 2]], start_date)
         )
         system = System("Edge system", [], edge_usage_patterns=[edge_usage_pattern])
@@ -177,9 +177,9 @@ class IntegrationTestSimpleEdgeSystemBaseClass(IntegrationTestBaseClass):
             # and this behavior is already unit tested.
             edge_process, attrs_to_skip=["recurrent_ram_needed", "recurrent_storage_needed"],
             special_mult={"recurrent_compute_needed": 2, "recurrent_storage_needed": 10})
-        self._test_variations_on_obj_inputs(edge_usage_journey, special_mult={"usage_span": 0.9})
+        self._test_variations_on_obj_inputs(edge_usage_journey)
         self._test_variations_on_obj_inputs(
-            edge_usage_pattern, attrs_to_skip=["hourly_edge_usage_journey_starts"])
+            edge_usage_pattern, attrs_to_skip=["hourly_deployment_starts"], special_mult={"usage_span": 0.9})
         for component_need in edge_device_need.recurrent_edge_component_needs:
             self._test_variations_on_obj_inputs(
                 component_need, attrs_to_skip=[], special_mult={"recurrent_need": 2})
@@ -199,10 +199,10 @@ class IntegrationTestSimpleEdgeSystemBaseClass(IntegrationTestBaseClass):
             cleanup.callback(
                 setattr,
                 self.edge_usage_pattern,
-                "hourly_edge_usage_journey_starts",
-                self.edge_usage_pattern.hourly_edge_usage_journey_starts,
+                "hourly_deployment_starts",
+                self.edge_usage_pattern.hourly_deployment_starts,
             )
-            self.edge_usage_pattern.hourly_edge_usage_journey_starts = create_source_hourly_values_from_list(
+            self.edge_usage_pattern.hourly_deployment_starts = create_source_hourly_values_from_list(
                 [elt for elt in [2, 3, 4, 5, 6, 7, 2, 3, 4]], self.start_date)
 
             self.assertNotEqual(self.initial_footprint, self.system.total_footprint)
@@ -253,13 +253,13 @@ class IntegrationTestSimpleEdgeSystemBaseClass(IntegrationTestBaseClass):
             with self.assertRaises(InsufficientCapacityError):
                 self.edge_storage.storage_capacity_per_unit = SourceValue(50 * u.GB_stored)
 
-        # Test EdgeUsageJourney - usage_span vs lifespan
+        # Test EdgeUsagePattern - usage_span vs lifespan
         # Increase usage_span to trigger error in update_usage_span_validation
-        logger.warning("Testing EdgeUsageJourney usage_span vs lifespan error")
+        logger.warning("Testing EdgeUsagePattern usage_span vs lifespan error")
         with self.cleanup_stack() as cleanup:
-            cleanup.callback(setattr, self.edge_usage_journey, "usage_span", self.edge_usage_journey.usage_span)
+            cleanup.callback(setattr, self.edge_usage_pattern, "usage_span", self.edge_usage_pattern.usage_span)
             with self.assertRaises(InsufficientCapacityError):
-                self.edge_usage_journey.usage_span = SourceValue(10 * u.year)
+                self.edge_usage_pattern.usage_span = SourceValue(10 * u.year)
 
         # Test EdgeWorkloadComponent - max workload exceeds 100%
         # Increase workload to trigger error in update_dict_element_in_unitary_hourly_workload_per_usage_pattern
@@ -384,7 +384,7 @@ class IntegrationTestSimpleEdgeSystemBaseClass(IntegrationTestBaseClass):
 
         scenario = ObjectLinkScenario(
             name="update_edge_usage_journey",
-            updates_builder=[[self.edge_usage_pattern.edge_usage_journey, new_edge_usage_journey]],
+            updates_builder=[[self.edge_usage_pattern.edge_usage_journeys, [new_edge_usage_journey]]],
             expected_changed=[self.edge_computer, self.edge_storage],
             expect_total_change=False,
         )
@@ -407,10 +407,10 @@ class IntegrationTestSimpleEdgeSystemBaseClass(IntegrationTestBaseClass):
             "additional edge usage journey", edge_functions=[new_edge_function])
         new_edge_usage_pattern = EdgeUsagePattern(
             "Additional edge usage pattern",
-            edge_usage_journey=new_edge_usage_journey,
+            edge_usage_journeys=[new_edge_usage_journey],
             network=self.edge_usage_pattern.network,
             country=self.edge_usage_pattern.country,
-            hourly_edge_usage_journey_starts=create_source_hourly_values_from_list(
+            hourly_deployment_starts=create_source_hourly_values_from_list(
                 [elt for elt in [0.5, 0.5, 1, 1, 1.5, 1.5, 0.5, 0.5, 1]], self.start_date)
         )
 
@@ -436,10 +436,10 @@ class IntegrationTestSimpleEdgeSystemBaseClass(IntegrationTestBaseClass):
     def run_test_add_edge_usage_pattern_to_edge_usage_journey(self):
         new_edge_usage_pattern = EdgeUsagePattern(
             "Additional edge usage pattern",
-            edge_usage_journey=self.edge_usage_journey,
+            edge_usage_journeys=[self.edge_usage_journey],
             network=self.edge_usage_pattern.network,
             country=self.edge_usage_pattern.country,
-            hourly_edge_usage_journey_starts=create_source_hourly_values_from_list(
+            hourly_deployment_starts=create_source_hourly_values_from_list(
                 [elt for elt in [0.5, 0.5, 1, 1, 1.5, 1.5, 0.5, 0.5, 1]], self.start_date)
         )
 
@@ -466,10 +466,10 @@ class IntegrationTestSimpleEdgeSystemBaseClass(IntegrationTestBaseClass):
             "Second edge usage journey", edge_functions=[new_edge_function])
         new_edge_usage_pattern = EdgeUsagePattern(
             "Second edge usage pattern",
-            edge_usage_journey=new_edge_usage_journey,
+            edge_usage_journeys=[new_edge_usage_journey],
             network=self.edge_usage_pattern.network,
             country=Countries.FRANCE(),
-            hourly_edge_usage_journey_starts=create_source_hourly_values_from_list(
+            hourly_deployment_starts=create_source_hourly_values_from_list(
                 [elt for elt in [0.5, 0.5, 1, 1, 1.5, 1.5, 0.5, 0.5, 1]], self.start_date)
         )
 
@@ -517,9 +517,9 @@ class IntegrationTestSimpleEdgeSystemBaseClass(IntegrationTestBaseClass):
         edge_usage_journey = EdgeUsageJourney.from_defaults(
             "bug repro edge usage journey", edge_functions=[edge_function])
         edge_usage_pattern = EdgeUsagePattern(
-            "bug repro edge usage pattern", edge_usage_journey=edge_usage_journey,
+            "bug repro edge usage pattern", edge_usage_journeys=[edge_usage_journey],
             network=Network.wifi_network(), country=new_country,
-            hourly_edge_usage_journey_starts=create_source_hourly_values_from_list(
+            hourly_deployment_starts=create_source_hourly_values_from_list(
                 [elt * 1000 for elt in [1, 1, 2, 2, 3, 3, 1, 1, 2]], self.start_date))
 
         with self.cleanup_stack() as cleanup:

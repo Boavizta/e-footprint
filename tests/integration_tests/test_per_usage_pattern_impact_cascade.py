@@ -95,7 +95,7 @@ class TestPerUsagePatternImpactCascade(TestCase):
         start_date = datetime(2026, 1, 1)
         low_carbon_pattern = UsagePattern(
             "low carbon web usage",
-            journey,
+            [journey],
             [device],
             network,
             self._country("low carbon country", 100 * u.g / u.kWh),
@@ -103,7 +103,7 @@ class TestPerUsagePatternImpactCascade(TestCase):
         )
         high_carbon_pattern = UsagePattern(
             "high carbon web usage",
-            journey,
+            [journey],
             [device],
             network,
             self._country("high carbon country", 200 * u.g / u.kWh),
@@ -162,12 +162,12 @@ class TestPerUsagePatternImpactCascade(TestCase):
         network = Network("shared network", SourceValue(1 * u.kWh / u.GB))
         start_date = datetime(2026, 1, 1)
         low_carbon_pattern = UsagePattern(
-            "low carbon web usage", journey, [device], network,
+            "low carbon web usage", [journey], [device], network,
             self._country("low carbon country", 100 * u.g / u.kWh),
             create_source_hourly_values_from_list([0, 1, 0, 1], start_date),
         )
         high_carbon_pattern = UsagePattern(
-            "high carbon web usage", journey, [device], network,
+            "high carbon web usage", [journey], [device], network,
             self._country("high carbon country", 200 * u.g / u.kWh),
             create_source_hourly_values_from_list([0, 1, 0, 1], start_date),
         )
@@ -208,11 +208,11 @@ class TestPerUsagePatternImpactCascade(TestCase):
         low_country = self._country("low carbon country", 100 * u.g / u.kWh)
         high_country = self._country("high carbon country", 200 * u.g / u.kWh)
         low_carbon_pattern = UsagePattern(
-            "low carbon web usage", journey, [device], network, low_country,
+            "low carbon web usage", [journey], [device], network, low_country,
             create_source_hourly_values_from_list([1], start_date),
         )
         high_carbon_pattern = UsagePattern(
-            "high carbon web usage", journey, [device], network, high_country,
+            "high carbon web usage", [journey], [device], network, high_country,
             create_source_hourly_values_from_list([1], start_date),
         )
         system = System(
@@ -276,11 +276,11 @@ class TestPerUsagePatternImpactCascade(TestCase):
         network = Network("shared network", SourceValue(1 * u.kWh / u.GB))
         start_date = datetime(2026, 1, 1)
         low_pattern = UsagePattern(
-            "low carbon web usage", low_journey, [device], network,
+            "low carbon web usage", [low_journey], [device], network,
             self._country("low carbon country", 100 * u.g / u.kWh),
             create_source_hourly_values_from_list([1], start_date))
         high_pattern = UsagePattern(
-            "high carbon web usage", high_journey, [device], network,
+            "high carbon web usage", [high_journey], [device], network,
             self._country("high carbon country", 300 * u.g / u.kWh),
             create_source_hourly_values_from_list([1], start_date))
         system = System("shared web system", [low_pattern, high_pattern], edge_usage_patterns=[])
@@ -318,7 +318,7 @@ class TestPerUsagePatternImpactCascade(TestCase):
             lifespan=SourceValue(1 * u.year), fraction_of_usage_time=SourceValue(24 * u.hour / u.day))
         network = Network("network", SourceValue(1 * u.kWh / u.GB))
         pattern = UsagePattern(
-            "web usage", journey, [device], network, self._country("country", 200 * u.g / u.kWh),
+            "web usage", [journey], [device], network, self._country("country", 200 * u.g / u.kWh),
             create_source_hourly_values_from_list([1, 0, 0, 0], datetime(2026, 1, 1)))
         system = System("web system", [pattern], edge_usage_patterns=[])
 
@@ -372,22 +372,24 @@ class TestPerUsagePatternImpactCascade(TestCase):
             [job],
         )
         edge_function = EdgeFunction("edge function", [device_need], [server_need])
-        journey = EdgeUsageJourney("shared edge journey", [edge_function], SourceValue(1 * u.hour))
+        journey = EdgeUsageJourney("shared edge journey", [edge_function])
         network = Network("edge network", SourceValue(1 * u.kWh / u.GB))
         start_date = datetime(2026, 1, 1)
         low_carbon_pattern = EdgeUsagePattern(
             "low carbon edge usage",
-            journey,
+            [journey],
             network,
             self._country("low carbon edge country", 100 * u.g / u.kWh),
             create_source_hourly_values_from_list([1], start_date),
+            usage_span=SourceValue(1 * u.hour),
         )
         high_carbon_pattern = EdgeUsagePattern(
             "high carbon edge usage",
-            journey,
+            [journey],
             network,
             self._country("high carbon edge country", 200 * u.g / u.kWh),
             create_source_hourly_values_from_list([1], start_date),
+            usage_span=SourceValue(1 * u.hour),
         )
         system = System("shared edge system", [], [low_carbon_pattern, high_carbon_pattern])
 
@@ -450,20 +452,19 @@ class TestPerUsagePatternImpactCascade(TestCase):
         high_server_need = RecurrentServerNeed("high edge server need", high_device, recurrent_volume(), [shared_job])
         bulk_server_need = RecurrentServerNeed("bulk edge server need", high_device, recurrent_volume(), [bulk_job])
         low_journey = EdgeUsageJourney(
-            "low edge journey", [EdgeFunction("low edge function", [], [low_server_need])], SourceValue(1 * u.hour))
+            "low edge journey", [EdgeFunction("low edge function", [], [low_server_need])])
         high_journey = EdgeUsageJourney(
-            "high edge journey", [EdgeFunction("high edge function", [], [high_server_need, bulk_server_need])],
-            SourceValue(1 * u.hour))
+            "high edge journey", [EdgeFunction("high edge function", [], [high_server_need, bulk_server_need])])
         network = Network("shared edge network", SourceValue(1 * u.kWh / u.GB))
         start_date = datetime(2026, 1, 1)
         low_pattern = EdgeUsagePattern(
-            "low carbon edge usage", low_journey, network,
+            "low carbon edge usage", [low_journey], network,
             self._country("low carbon edge country", 100 * u.g / u.kWh),
-            create_source_hourly_values_from_list([1], start_date))
+            create_source_hourly_values_from_list([1], start_date), usage_span=SourceValue(1 * u.hour))
         high_pattern = EdgeUsagePattern(
-            "high carbon edge usage", high_journey, network,
+            "high carbon edge usage", [high_journey], network,
             self._country("high carbon edge country", 300 * u.g / u.kWh),
-            create_source_hourly_values_from_list([1], start_date))
+            create_source_hourly_values_from_list([1], start_date), usage_span=SourceValue(1 * u.hour))
         system = System("shared edge system", [], [low_pattern, high_pattern])
 
         # The network's per-pattern footprint is grid-weighted by each pattern's country: the low pattern
@@ -503,11 +504,12 @@ class TestPerUsagePatternImpactCascade(TestCase):
             "edge server need", edge_device,
             SourceRecurrentValues(Quantity(np.array([1] * 168, dtype=np.float32), u.occurrence)), [job])
         edge_function = EdgeFunction("edge function", [device_need], [server_need])
-        journey = EdgeUsageJourney("edge journey", [edge_function], SourceValue(1 * u.hour))
+        journey = EdgeUsageJourney("edge journey", [edge_function])
         network = Network("edge network", SourceValue(1 * u.kWh / u.GB))
         pattern = EdgeUsagePattern(
-            "edge usage", journey, network, self._country("edge country", 200 * u.g / u.kWh),
-            create_source_hourly_values_from_list([1, 0, 0, 0], datetime(2026, 1, 1)))
+            "edge usage", [journey], network, self._country("edge country", 200 * u.g / u.kWh),
+            create_source_hourly_values_from_list([1, 0, 0, 0], datetime(2026, 1, 1)),
+            usage_span=SourceValue(1 * u.hour))
         system = System("edge system", [], [pattern])
 
         ImpactRepartitionSankey(system, aggregation_threshold_percent=1).build()

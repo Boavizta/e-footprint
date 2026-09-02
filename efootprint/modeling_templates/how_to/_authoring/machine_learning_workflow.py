@@ -58,7 +58,7 @@ def build_system() -> System:
     start_date = "2025-01-01"
 
     training_pattern = UsagePattern(
-        "Weekly retraining pattern", training_journey, [], network, france,
+        "Weekly retraining pattern", [training_journey], [], network, france,
         ExplainableHourlyQuantitiesFromFormInputs({
             "start_date": start_date,
             "modeling_duration_value": 3,
@@ -69,7 +69,7 @@ def build_system() -> System:
             "net_growth_rate_timespan": "year",
         }, source=Sources.USER_DATA))
     inference_pattern = UsagePattern(
-        "Production inference pattern", inference_journey, [laptop], network, france,
+        "Production inference pattern", [inference_journey], [laptop], network, france,
         ExplainableHourlyQuantitiesFromFormInputs({
             "start_date": start_date,
             "modeling_duration_value": 3,

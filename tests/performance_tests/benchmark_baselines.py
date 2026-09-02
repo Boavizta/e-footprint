@@ -43,7 +43,7 @@ def peak_rss_mb():
 
 
 def pick_edited_job(system):
-    return list(list(system.usage_patterns[0].usage_journey.uj_steps)[0].jobs)[1]
+    return list(list(next(iter(system.usage_patterns[0].usage_journeys)).uj_steps)[0].jobs)[1]
 
 
 def timed_full_build():
@@ -69,7 +69,7 @@ def benchmark_timeseries_edit_ms(system, nb_iterations=6):
         new_value = form_inputs_hourly_starts(
             BIG_SYSTEM_STANDARD_PARAMS["nb_years"], initial_volume=2000 if i % 2 == 0 else 3000)
         start = perf_counter()
-        system.usage_patterns[0].hourly_usage_journey_starts = new_value
+        system.usage_patterns[0].hourly_occurrences = new_value
         durations.append(perf_counter() - start)
     return round(1000 * mean(durations), 1)
 

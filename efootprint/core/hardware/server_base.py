@@ -517,7 +517,8 @@ class ServerBase(InfraHardware, AttributionSource):
                     cell_share = (cell.flat_share if stream == "provisioned" and self.is_on_premise
                                   else cell.hourly_share)
                     yield Atom(
-                        source=self, stream=stream, job=job, up=cell.up, step=cell.step, rsn=cell.rsn, ef=cell.ef,
+                        source=self, stream=stream, job=job, up=cell.up, journey=cell.journey, step=cell.step,
+                        rsn=cell.rsn, ef=cell.ef,
                         value=(stream_footprint * job_weight * cell_share).to(u.kg).set_label(
                             f"{self.name} {stream} {phase.value.lower()} footprint via {job.name} "
                             f"in {cell.location_label} ({cell.up.name})"))

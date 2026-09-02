@@ -143,7 +143,7 @@ def generate_big_system(
                 usage_patterns.append(
                     UsagePattern(
                         unique(f"usage pattern {up_nb} of uj {uj_index} of server {server_index}"),
-                        usage_journey=usage_journey,
+                        usage_journeys=[usage_journey],
                         devices=[
                             Device(name=unique(f"device for server {server_index} uj {uj_index} up {up_nb}"),
                                    carbon_footprint_fabrication=SourceValue(156 * u.kg, source=None),
@@ -155,7 +155,7 @@ def generate_big_system(
                             unique(f"devices country server {server_index} uj {uj_index} up {up_nb}"),
                             "its 3 letter shortname, for example FRA",
                             SourceValue(85 * u.g / u.kWh, source=None), tz('Europe/Paris'))(),
-                        hourly_usage_journey_starts=form_inputs_hourly_starts(nb_years)
+                        hourly_occurrences=form_inputs_hourly_starts(nb_years)
                     )
                 )
 
@@ -213,18 +213,17 @@ def generate_big_system(
 
         edge_usage_journey = EdgeUsageJourney(
             unique(f"Default edge usage journey {edge_usage_pattern_index}"),
-            edge_functions=[edge_function],
-            usage_span=SourceValue(6 * u.year)
+            edge_functions=[edge_function]
         )
         network = Network(
             unique(f"edge network {edge_usage_pattern_index}"),
             bandwidth_energy_intensity=SourceValue(0.05 * u("kWh/GB"), source=None))
         edge_usage_pattern = EdgeUsagePattern(
             unique(f"Default edge usage pattern {edge_usage_pattern_index}"),
-            edge_usage_journey=edge_usage_journey,
+            edge_usage_journeys=[edge_usage_journey],
             network=network,
             country=new_france(unique(f"France for edge usage pattern {edge_usage_pattern_index}")),
-            hourly_edge_usage_journey_starts=form_inputs_hourly_starts(nb_years)
+            hourly_deployment_starts=form_inputs_hourly_starts(nb_years)
                 )
         edge_usage_patterns.append(edge_usage_pattern)
 

@@ -62,9 +62,7 @@ class TestEdgeComponent(TestCase):
         """Test fabrication footprint per edge device calculation for a single pattern."""
         mock_pattern = create_mod_obj_mock(EdgeUsagePattern, name="Test Pattern")
         mock_edge_usage_journey = create_mod_obj_mock(EdgeUsageJourney, "Test Journey")
-        mock_edge_usage_journey.nb_edge_usage_journeys_in_parallel_per_edge_usage_pattern = {
-            mock_pattern: SourceValue(10 * u.concurrent)}
-        mock_pattern.edge_usage_journey = mock_edge_usage_journey
+        mock_pattern.nb_deployments_in_parallel = SourceValue(10 * u.concurrent)
 
         result = recompute_attribute(
             self.component, "fabrication_footprint_per_edge_device_per_usage_pattern", mock_pattern)
@@ -80,9 +78,8 @@ class TestEdgeComponent(TestCase):
         """Test energy per edge device calculation for a single pattern."""
         mock_pattern = create_mod_obj_mock(EdgeUsagePattern, name="Test Pattern")
         mock_edge_usage_journey = create_mod_obj_mock(EdgeUsageJourney, "Test Journey")
-        mock_edge_usage_journey.nb_edge_usage_journeys_in_parallel_per_edge_usage_pattern = {
-            mock_pattern: create_source_hourly_values_from_list([10, 20], pint_unit=u.concurrent)}
-        mock_pattern.edge_usage_journey = mock_edge_usage_journey
+        mock_pattern.nb_deployments_in_parallel = create_source_hourly_values_from_list(
+            [10, 20], pint_unit=u.concurrent)
 
         unitary_power = create_source_hourly_values_from_list([30, 40], pint_unit=u.W)
         attach_attribute(
@@ -172,9 +169,7 @@ class TestEdgeComponent(TestCase):
         """Test nb_of_units multiplies fabrication footprint per edge device."""
         mock_pattern = create_mod_obj_mock(EdgeUsagePattern, name="Pattern with units")
         mock_edge_usage_journey = create_mod_obj_mock(EdgeUsageJourney, "Journey with units")
-        mock_edge_usage_journey.nb_edge_usage_journeys_in_parallel_per_edge_usage_pattern = {
-            mock_pattern: SourceValue(2 * u.concurrent)}
-        mock_pattern.edge_usage_journey = mock_edge_usage_journey
+        mock_pattern.nb_deployments_in_parallel = SourceValue(2 * u.concurrent)
         self.component.nb_of_units = SourceValue(3 * u.dimensionless)
         recompute_attribute(self.component, "carbon_footprint_fabrication")
 
@@ -188,9 +183,8 @@ class TestEdgeComponent(TestCase):
         """Test nb_of_units multiplies energy per edge device."""
         mock_pattern = create_mod_obj_mock(EdgeUsagePattern, name="Pattern energy units")
         mock_edge_usage_journey = create_mod_obj_mock(EdgeUsageJourney, "Journey energy units")
-        mock_edge_usage_journey.nb_edge_usage_journeys_in_parallel_per_edge_usage_pattern = {
-            mock_pattern: create_source_hourly_values_from_list([2, 1], pint_unit=u.concurrent)}
-        mock_pattern.edge_usage_journey = mock_edge_usage_journey
+        mock_pattern.nb_deployments_in_parallel = create_source_hourly_values_from_list(
+            [2, 1], pint_unit=u.concurrent)
         self.component.nb_of_units = SourceValue(3 * u.dimensionless)
         recompute_attribute(self.component, "power")
         recompute_attribute(self.component, "idle_power")
@@ -230,9 +224,9 @@ class TestEdgeComponentJsonRoundTrip(TestCase):
 
         start_date = datetime.strptime("2025-01-01", "%Y-%m-%d")
         edge_usage_pattern = EdgeUsagePattern(
-            "test edge usage pattern", edge_usage_journey=edge_usage_journey,
+            "test edge usage pattern", edge_usage_journeys=[edge_usage_journey],
             network=Network.wifi_network(), country=Countries.FRANCE(),
-            hourly_edge_usage_journey_starts=create_source_hourly_values_from_list(
+            hourly_deployment_starts=create_source_hourly_values_from_list(
                 [1000, 1000, 2000, 2000, 3000, 3000, 1000, 1000, 2000], start_date))
 
         system = System("test edge system", [], edge_usage_patterns=[edge_usage_pattern])

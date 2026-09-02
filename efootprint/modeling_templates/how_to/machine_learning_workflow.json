@@ -1,5 +1,5 @@
 {
-    "efootprint_version": "23.1.0",
+    "efootprint_version": "24.0.0",
     "Sources": {
         "Base-ADEME_V19": {
             "id": "Base-ADEME_V19",
@@ -52,7 +52,7 @@
         "Weekly-retraining-pattern": {
             "name": "Weekly retraining pattern",
             "id": "Weekly-retraining-pattern",
-            "hourly_usage_journey_starts": {
+            "hourly_occurrences": {
                 "form_inputs": {
                     "start_date": "2025-01-01",
                     "modeling_duration_value": 3,
@@ -62,10 +62,17 @@
                     "net_growth_rate_in_percentage": 0,
                     "net_growth_rate_timespan": "year"
                 },
-                "label": "Hourly nb of usage journey starts",
+                "label": "Hourly nb of pattern occurrences",
                 "source": "user_data"
             },
-            "usage_journey": "Monthly-retraining-journey",
+            "usage_journeys": {
+                "Monthly-retraining-journey": {
+                    "value": 1.0,
+                    "unit": "dimensionless",
+                    "label": "Journeys per pattern occurrence",
+                    "source": "hypothesis"
+                }
+            },
             "devices": [],
             "network": "Default-wifi-network",
             "country": "France"
@@ -73,7 +80,7 @@
         "Production-inference-pattern": {
             "name": "Production inference pattern",
             "id": "Production-inference-pattern",
-            "hourly_usage_journey_starts": {
+            "hourly_occurrences": {
                 "form_inputs": {
                     "start_date": "2025-01-01",
                     "modeling_duration_value": 3,
@@ -83,41 +90,22 @@
                     "net_growth_rate_in_percentage": 25,
                     "net_growth_rate_timespan": "year"
                 },
-                "label": "Hourly nb of usage journey starts",
+                "label": "Hourly nb of pattern occurrences",
                 "source": "user_data"
             },
-            "usage_journey": "Inference-journey",
+            "usage_journeys": {
+                "Inference-journey": {
+                    "value": 1.0,
+                    "unit": "dimensionless",
+                    "label": "Journeys per pattern occurrence",
+                    "source": "hypothesis"
+                }
+            },
             "devices": [
                 "Default-laptop"
             ],
             "network": "Default-wifi-network",
             "country": "France"
-        }
-    },
-    "UsageJourney": {
-        "Monthly-retraining-journey": {
-            "name": "Monthly retraining journey",
-            "id": "Monthly-retraining-journey",
-            "uj_steps": {
-                "Training-run": {
-                    "value": 1.0,
-                    "unit": "dimensionless",
-                    "label": "Times per journey",
-                    "source": "hypothesis"
-                }
-            }
-        },
-        "Inference-journey": {
-            "name": "Inference journey",
-            "id": "Inference-journey",
-            "uj_steps": {
-                "Inference-call": {
-                    "value": 1.0,
-                    "unit": "dimensionless",
-                    "label": "Times per journey",
-                    "source": "hypothesis"
-                }
-            }
         }
     },
     "Network": {
@@ -181,39 +169,27 @@
             }
         }
     },
-    "UsageJourneyStep": {
-        "Training-run": {
-            "name": "Training run",
-            "id": "Training-run",
-            "user_time_spent": {
-                "value": 1.0,
-                "unit": "minute",
-                "label": "Time spent by user",
-                "source": "hypothesis"
-            },
-            "jobs": {
-                "Weekly-retraining": {
+    "UsageJourney": {
+        "Monthly-retraining-journey": {
+            "name": "Monthly retraining journey",
+            "id": "Monthly-retraining-journey",
+            "uj_steps": {
+                "Training-run": {
                     "value": 1.0,
                     "unit": "dimensionless",
-                    "label": "Times per step",
+                    "label": "Times per journey",
                     "source": "hypothesis"
                 }
             }
         },
-        "Inference-call": {
-            "name": "Inference call",
-            "id": "Inference-call",
-            "user_time_spent": {
-                "value": 1.0,
-                "unit": "minute",
-                "label": "Time spent by user",
-                "source": "hypothesis"
-            },
-            "jobs": {
-                "Inference-GPU-job": {
+        "Inference-journey": {
+            "name": "Inference journey",
+            "id": "Inference-journey",
+            "uj_steps": {
+                "Inference-call": {
                     "value": 1.0,
                     "unit": "dimensionless",
-                    "label": "Times per step",
+                    "label": "Times per journey",
                     "source": "hypothesis"
                 }
             }
@@ -588,6 +564,44 @@
             "fixed_nb_of_instances": {
                 "value": null,
                 "label": "User defined number of instances"
+            }
+        }
+    },
+    "UsageJourneyStep": {
+        "Training-run": {
+            "name": "Training run",
+            "id": "Training-run",
+            "user_time_spent": {
+                "value": 1.0,
+                "unit": "minute",
+                "label": "Time spent by user",
+                "source": "hypothesis"
+            },
+            "jobs": {
+                "Weekly-retraining": {
+                    "value": 1.0,
+                    "unit": "dimensionless",
+                    "label": "Times per step",
+                    "source": "hypothesis"
+                }
+            }
+        },
+        "Inference-call": {
+            "name": "Inference call",
+            "id": "Inference-call",
+            "user_time_spent": {
+                "value": 1.0,
+                "unit": "minute",
+                "label": "Time spent by user",
+                "source": "hypothesis"
+            },
+            "jobs": {
+                "Inference-GPU-job": {
+                    "value": 1.0,
+                    "unit": "dimensionless",
+                    "label": "Times per step",
+                    "source": "hypothesis"
+                }
             }
         }
     }

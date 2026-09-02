@@ -70,6 +70,13 @@ class EdgeComponent(ModelingObject):
     def edge_usage_patterns(self) -> List["EdgeUsagePattern"]:
         return list(dict.fromkeys(sum([need.edge_usage_patterns for need in self.recurrent_edge_component_needs], start=[])))
 
+    def recurrent_needs_in_usage_pattern(self, usage_pattern: "EdgeUsagePattern"):
+        """Distinct recurring needs targeting this component along the pattern's actual containment paths."""
+        return list(dict.fromkeys(
+            path.recurrent_edge_component_need
+            for path in usage_pattern.containment_inventory.component_need_paths
+            if path.recurrent_edge_component_need.edge_component == self))
+
     @property
     def instances_fabrication_footprint(self):
         if self.edge_device is None:
@@ -124,8 +131,7 @@ class EdgeComponent(ModelingObject):
             self, usage_pattern: "EdgeUsagePattern"):
         """Hourly fabrication footprint of one component on one device, broken down by usage pattern. Equal to the component's amortised fabrication intensity times the number of concurrent edge journeys."""
         component_fabrication_intensity = self.carbon_footprint_fabrication / self.lifespan
-        nb_instances = (
-            usage_pattern.edge_usage_journey.nb_edge_usage_journeys_in_parallel_per_edge_usage_pattern)[usage_pattern]
+        nb_instances = usage_pattern.nb_deployments_in_parallel
 
         fabrication_footprint_per_edge_device = (
             nb_instances * component_fabrication_intensity * ExplainableQuantity(1 * u.hour, "one hour"))
@@ -138,8 +144,7 @@ class EdgeComponent(ModelingObject):
     @computed_dict(keys="edge_usage_patterns")
     def energy_per_edge_device_per_usage_pattern(self, usage_pattern: "EdgeUsagePattern"):
         """Hourly energy consumed by one component on one device, broken down by usage pattern. Equal to the unitary power profile times the number of concurrent edge journeys."""
-        nb_instances = (
-            usage_pattern.edge_usage_journey.nb_edge_usage_journeys_in_parallel_per_edge_usage_pattern)[usage_pattern]
+        nb_instances = usage_pattern.nb_deployments_in_parallel
         unitary_energy = self.unitary_power_per_usage_pattern[usage_pattern] * ExplainableQuantity(1 * u.hour, "one hour")
         energy_per_edge_device = nb_instances * unitary_energy
 
@@ -179,4 +184,3 @@ class EdgeComponent(ModelingObject):
             self.energy_footprint_per_edge_device_per_usage_pattern.values(), start=EmptyExplainableObject())
         return energy_footprint.set_label(
             "Total energy footprint per edge device across usage patterns")
-

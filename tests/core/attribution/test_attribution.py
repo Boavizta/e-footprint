@@ -25,7 +25,7 @@ from efootprint.core.hardware.network import Network
 from efootprint.core.lifecycle_phases import LifeCyclePhases
 from efootprint.core.system import System
 from efootprint.core.usage.usage_journey import UsageJourney
-from efootprint.core.usage.usage_journey_step import UsageJourneyStep
+from efootprint.core.usage.usage_journey_step import UsageJourneyStep, UsageJourneyStepCoordinate
 from efootprint.core.usage.usage_pattern import UsagePattern
 from tests.core.attribution.conservation import (
     assert_hourly_quantities_equal, assert_source_atoms_conserve, sum_atom_values)
@@ -53,7 +53,7 @@ class TestAttributionCacheCoverage(TestCase):
         country = Country(
             "coverage country", "COV", SourceValue(80 * u.g / u.kWh), ExplainableTimezone(pytz.utc, "UTC timezone"))
         usage_pattern = UsagePattern(
-            "coverage usage pattern", journey, [self.device], self.network, country,
+            "coverage usage pattern", [journey], [self.device], self.network, country,
             create_source_hourly_values_from_list([1, 2], datetime(2026, 1, 1)))
         self.system = System("coverage system", [usage_pattern], edge_usage_patterns=[])
 
@@ -103,14 +103,14 @@ class TestAttributionFold(TestCase):
         cls.low_ci_country = country("fold low ci country", 80 * u.g / u.kWh)
         start_date = datetime(2026, 1, 1)
         cls.up1 = UsagePattern(
-            "fold usage pattern 1", cls.journey, [cls.device, cls.tracked_device], network, cls.low_ci_country,
+            "fold usage pattern 1", [cls.journey], [cls.device, cls.tracked_device], network, cls.low_ci_country,
             create_source_hourly_values_from_list([12, 0, 7, 3], start_date))
         cls.up2 = UsagePattern(
-            "fold usage pattern 2", cls.journey, [cls.device], network,
+            "fold usage pattern 2", [cls.journey], [cls.device], network,
             country("fold high ci country", 450 * u.g / u.kWh),
             create_source_hourly_values_from_list([2, 9], start_date))
         cls.up3 = UsagePattern(
-            "fold usage pattern 3", cls.other_journey, [cls.device], network, cls.low_ci_country,
+            "fold usage pattern 3", [cls.other_journey], [cls.device], network, cls.low_ci_country,
             create_source_hourly_values_from_list([5, 5, 5], start_date))
 
         cls.system = System("fold system", [cls.up1, cls.up2, cls.up3], edge_usage_patterns=[])
@@ -286,7 +286,7 @@ class TestAttributionFold(TestCase):
         phase = LifeCyclePhases.USAGE
         stale_atoms = atoms_of(self.device, phase)
         stale_matrix = self.system.impact_repartition_matrix
-        _ = self.step_a.hourly_avg_occurrences_per_usage_pattern
+        _ = self.step_a.hourly_avg_occurrences_per_usage_coordinate
         initial_power = self.device.power
         try:
             self.device.power = SourceValue(100 * u.W)
@@ -448,17 +448,19 @@ class TestAttributionFold(TestCase):
         """Test that a computed structure materialized on a not-yet-linked object is invalidated by the linking
         writes through the dependency graph, so post-build reads see the full graph."""
         step = UsageJourneyStep("prebuild step", SourceValue(10 * u.min), [])
-        self.assertEqual({}, step.hourly_avg_occurrences_per_usage_pattern)
+        self.assertEqual({}, step.hourly_avg_occurrences_per_usage_coordinate)
         journey = UsageJourney("prebuild journey", [step])
         usage_pattern = UsagePattern(
-            "prebuild usage pattern", journey, [Device.from_defaults("prebuild laptop")],
+            "prebuild usage pattern", [journey], [Device.from_defaults("prebuild laptop")],
             Network("prebuild network", SourceValue(0.05 * u.kWh / u.GB)),
             Country("prebuild country", "PBC", SourceValue(100 * u.g / u.kWh),
                     ExplainableTimezone(pytz.utc, "UTC timezone")),
             create_source_hourly_values_from_list([1, 2], datetime(2026, 1, 1)))
         System("prebuild system", [usage_pattern], edge_usage_patterns=[])
 
-        self.assertIn(usage_pattern, step.hourly_avg_occurrences_per_usage_pattern)
+        self.assertIn(
+            UsageJourneyStepCoordinate(usage_pattern, journey),
+            step.hourly_avg_occurrences_per_usage_coordinate)
 
 
 if __name__ == "__main__":

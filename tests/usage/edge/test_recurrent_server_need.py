@@ -133,13 +133,14 @@ class TestRecurrentServerNeed(TestCase):
 
         mock_journey = create_mod_obj_mock(EdgeUsageJourney, name="Mock Journey")
         mock_journey.edge_usage_patterns = [mock_pattern_1]
-        mock_journey.nb_edge_usage_journeys_in_parallel_per_edge_usage_pattern = {mock_pattern_1: mock_nb_parallel}
-        mock_pattern_1.edge_usage_journey = mock_journey
+        mock_pattern_1.nb_deployments_in_parallel = mock_nb_parallel
 
         mock_function = create_mod_obj_mock(EdgeFunction, name="Mock Function")
         mock_function.edge_usage_journeys = [mock_journey]
         mock_function.recurrent_server_needs = [self.server_need]
         mock_journey.edge_functions = [mock_function]
+        path = MagicMock(recurrent_server_need=self.server_need, nb_occurrences=1)
+        mock_pattern_1.containment_inventory = MagicMock(server_need_paths=[path])
 
         set_modeling_obj_containers(self.server_need, [mock_function])
 

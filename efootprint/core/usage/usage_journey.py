@@ -76,7 +76,7 @@ class UsageJourney(ModelingObject):
     def nb_usage_journeys_in_parallel_per_usage_pattern(self, usage_pattern: "UsagePattern"):
         """Hourly count of journeys that are concurrently in progress in each usage pattern, derived from journey starts and journey duration. Used to size devices that are occupied for the full journey duration."""
         nb_of_usage_journeys_in_parallel = compute_nb_avg_hourly_occurrences(
-            usage_pattern.utc_hourly_usage_journey_starts, self.duration)
+            usage_pattern.utc_hourly_occurrences * usage_pattern.usage_journeys[self], self.duration)
 
         return nb_of_usage_journeys_in_parallel.to(
             u.concurrent).set_label(f"{usage_pattern.name} hourly nb of user journeys in parallel")

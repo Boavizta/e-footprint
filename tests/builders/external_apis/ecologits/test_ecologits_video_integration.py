@@ -44,7 +44,7 @@ def _build_system(duration_s: float):
     network = Network.from_defaults("Default network")
     start = datetime.strptime("2025-01-01", "%Y-%m-%d")
     up = UsagePattern(
-        "Usage Pattern", uj, [Device.laptop()], network, Countries.FRANCE(),
+        "Usage Pattern", [uj], [Device.laptop()], network, Countries.FRANCE(),
         create_source_hourly_values_from_list([1, 2, 4, 5, 8, 12, 2, 2, 3], start))
     system = System("Video system", [up], edge_usage_patterns=[])
     return system, api, job

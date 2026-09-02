@@ -34,6 +34,7 @@ class JobAttributionCell:
     for the always-on streams). slot_multiplicity is the o(rsn, ef, up)/o(rsn, up) count ratio for edge cells
     (1 for web cells); it is already folded into both shares."""
     up: ModelingObject
+    journey: ModelingObject
     hourly_share: object
     flat_share: object
     step: ModelingObject = None
@@ -49,7 +50,9 @@ class JobAttributionCell:
 
     @property
     def occurrence_coordinate(self) -> "JobOccurrenceCoordinate":
-        return JobOccurrenceCoordinate(self.up, step=self.step, recurrent_server_need=self.rsn)
+        return JobOccurrenceCoordinate(
+            self.up, journey=self.journey if self.step is not None else None,
+            step=self.step, recurrent_server_need=self.rsn)
 
 
 @dataclass(frozen=True)
@@ -57,22 +60,29 @@ class JobOccurrenceCoordinate:
     """Stable key for one base occurrence calculation: a usage pattern and exactly one web or edge trigger."""
 
     usage_pattern: ModelingObject
+    journey: ModelingObject = None
     step: ModelingObject = None
     recurrent_server_need: ModelingObject = None
 
     def __post_init__(self):
         if (self.step is None) == (self.recurrent_server_need is None):
             raise ValueError("A job occurrence coordinate requires exactly one step or recurrent server need")
+        if self.step is not None and self.journey is None:
+            raise ValueError("A web job occurrence coordinate requires a usage journey")
+        if self.recurrent_server_need is not None and self.journey is not None:
+            raise ValueError("An edge base occurrence coordinate must not include a journey")
 
     def __str__(self):
         trigger = self.step if self.step is not None else self.recurrent_server_need
-        return f"{self.usage_pattern.name} / {trigger.name}"
+        journey = f" / {self.journey.name}" if self.journey is not None else ""
+        return f"{self.usage_pattern.name}{journey} / {trigger.name}"
 
     @property
     def id(self) -> str:
         trigger_kind = "step" if self.step is not None else "recurrent-server-need"
         trigger = self.step if self.step is not None else self.recurrent_server_need
-        return f"{self.usage_pattern.id}/{trigger_kind}/{trigger.id}"
+        journey = f"/journey/{self.journey.id}" if self.journey is not None else ""
+        return f"{self.usage_pattern.id}{journey}/{trigger_kind}/{trigger.id}"
 
 
 class JobBase(ModelingObject):
@@ -162,26 +172,24 @@ class JobBase(ModelingObject):
         from efootprint.core.usage.usage_pattern import UsagePattern
         if isinstance(usage_pattern, UsagePattern):
             job_occurrences = EmptyExplainableObject()
-            delay_between_uj_start_and_job_evt = EmptyExplainableObject()
-            for uj_step, step_times_per_journey in usage_pattern.usage_journey.uj_steps.items():
-                if self in uj_step.jobs:
-                    job_occurrences += usage_pattern.utc_hourly_usage_journey_starts.return_shifted_hourly_quantities(
-                        delay_between_uj_start_and_job_evt) * (step_times_per_journey * uj_step.jobs[self])
-
-                delay_between_uj_start_and_job_evt += step_times_per_journey * uj_step.user_time_spent
+            for journey, journey_weight in usage_pattern.usage_journeys.items():
+                delay_between_uj_start_and_job_evt = EmptyExplainableObject()
+                for uj_step, step_times_per_journey in journey.uj_steps.items():
+                    if self in uj_step.jobs:
+                        job_occurrences += usage_pattern.utc_hourly_occurrences.return_shifted_hourly_quantities(
+                            delay_between_uj_start_and_job_evt) * (
+                            journey_weight * step_times_per_journey * uj_step.jobs[self])
+                    delay_between_uj_start_and_job_evt += step_times_per_journey * uj_step.user_time_spent
         else:  # usage_pattern is an EdgeUsagePattern
             job_occurrences = EmptyExplainableObject()
-            # Only the server needs in THIS pattern's own edge journey contribute to its occurrences: a job
-            # shared across edge journeys is triggered separately in each, and a server need only carries a
-            # per-pattern volume for the patterns of its own journey (mirrors the web branch's scoping to
-            # usage_pattern.usage_journey.uj_steps).
-            for recurrent_server_need in usage_pattern.edge_usage_journey.recurrent_server_needs:
+            # Only server needs reachable through this pattern's selected bundles contribute. Repeated
+            # containment paths are already folded into each need's per-pattern unitary volume.
+            for recurrent_server_need in usage_pattern.recurrent_server_needs:
                 if self not in recurrent_server_need.jobs:
                     continue
                 job_occurrences += (
                         recurrent_server_need.unitary_hourly_volume_per_usage_pattern[usage_pattern]
-                        * usage_pattern.edge_usage_journey.
-                        nb_edge_usage_journeys_in_parallel_per_edge_usage_pattern[usage_pattern]
+                        * usage_pattern.nb_deployments_in_parallel
                         * recurrent_server_need.jobs[self])
 
         return job_occurrences.to(u.occurrence).set_label(
@@ -255,8 +263,9 @@ class JobBase(ModelingObject):
     @property
     def occurrence_coordinates(self) -> tuple[JobOccurrenceCoordinate, ...]:
         web_coordinates = (
-            JobOccurrenceCoordinate(up, step=step)
-            for step in self.usage_journey_steps for up in step.usage_patterns)
+            JobOccurrenceCoordinate(up, journey=journey, step=step)
+            for step in self.usage_journey_steps for journey in step.usage_journeys for up in journey.usage_patterns
+            if journey in up.usage_journeys)
         edge_coordinates = (
             JobOccurrenceCoordinate(up, recurrent_server_need=rsn)
             for rsn in self.recurrent_server_needs for up in rsn.edge_usage_patterns)
@@ -270,20 +279,20 @@ class JobBase(ModelingObject):
         if coordinate.step is not None:
             step_occurrences = EmptyExplainableObject()
             delay_between_uj_start_and_step_start = EmptyExplainableObject()
-            for journey_step, step_times_per_journey in usage_pattern.usage_journey.uj_steps.items():
+            for journey_step, step_times_per_journey in coordinate.journey.uj_steps.items():
                 if journey_step == coordinate.step and self in coordinate.step.jobs:
                     step_occurrences += (
-                        usage_pattern.utc_hourly_usage_journey_starts.return_shifted_hourly_quantities(
+                        usage_pattern.utc_hourly_occurrences.return_shifted_hourly_quantities(
                             delay_between_uj_start_and_step_start)
-                        * (step_times_per_journey * coordinate.step.jobs[self]))
+                        * (usage_pattern.usage_journeys[coordinate.journey]
+                           * step_times_per_journey * coordinate.step.jobs[self]))
                 delay_between_uj_start_and_step_start += step_times_per_journey * journey_step.user_time_spent
             raw_occurrences = step_occurrences
         else:
             recurrent_server_need = coordinate.recurrent_server_need
             raw_occurrences = (
                 recurrent_server_need.unitary_hourly_volume_per_usage_pattern[usage_pattern]
-                * usage_pattern.edge_usage_journey.nb_edge_usage_journeys_in_parallel_per_edge_usage_pattern[
-                    usage_pattern]
+                * usage_pattern.nb_deployments_in_parallel
                 * recurrent_server_need.jobs[self])
 
         trigger = coordinate.step if coordinate.step is not None else coordinate.recurrent_server_need
@@ -310,31 +319,33 @@ class JobBase(ModelingObject):
         cell_builds = []
 
         for uj_step in self.usage_journey_steps:
-            for up in uj_step.usage_patterns:
-                coordinate = JobOccurrenceCoordinate(up, step=uj_step)
-                cell_builds.append((
-                    dict(up=up, step=uj_step),
-                    self.hourly_avg_occurrences_per_coordinate[coordinate],
-                    f"{self.name} flat occurrence share in {uj_step.name} for {up.name}"))
+            for journey in uj_step.usage_journeys:
+                for up in journey.usage_patterns:
+                    if journey not in up.usage_journeys:
+                        continue
+                    coordinate = JobOccurrenceCoordinate(up, journey=journey, step=uj_step)
+                    cell_builds.append((
+                        dict(up=up, journey=journey, step=uj_step),
+                        self.hourly_avg_occurrences_per_coordinate[coordinate],
+                        f"{self.name} flat occurrence share in {journey.name} / {uj_step.name} for {up.name}"))
 
         for rsn in self.recurrent_server_needs:
             for edge_up in rsn.edge_usage_patterns:
                 coordinate = JobOccurrenceCoordinate(edge_up, recurrent_server_need=rsn)
                 rsn_occurrences = self.hourly_avg_occurrences_per_coordinate[coordinate]
-                journey_edge_functions = edge_up.edge_usage_journey.edge_functions
-                rsn_occurrences_in_journey = sum(
-                    ef.recurrent_server_needs.count(rsn) for ef in journey_edge_functions)
-                for ef in rsn.edge_functions:
-                    nb_journey_uses_of_ef = journey_edge_functions.count(ef)
-                    if nb_journey_uses_of_ef == 0:
-                        continue
-                    slot_multiplicity = (nb_journey_uses_of_ef * ef.recurrent_server_needs.count(rsn)
-                                         / rsn_occurrences_in_journey)
+                paths = [path for path in edge_up.containment_inventory.server_need_paths
+                         if path.recurrent_server_need == rsn]
+                total_path_occurrences = sum(path.nb_occurrences for path in paths)
+                for path in paths:
+                    slot_multiplicity = path.nb_occurrences / total_path_occurrences
                     cell_builds.append((
-                        dict(up=edge_up, rsn=rsn, ef=ef, slot_multiplicity=slot_multiplicity),
+                        dict(up=edge_up, journey=path.journey, rsn=rsn, ef=path.edge_function,
+                             slot_multiplicity=slot_multiplicity),
                         rsn_occurrences * ExplainableQuantity(
-                            slot_multiplicity * u.dimensionless, label=f"{rsn.name} slot multiplicity via {ef.name}"),
-                        f"{self.name} flat occurrence share in {rsn.name} via {ef.name} for {edge_up.name}"))
+                            slot_multiplicity * u.dimensionless,
+                            label=f"{rsn.name} slot multiplicity via {path.edge_function.name}"),
+                        f"{self.name} flat occurrence share in {rsn.name} via {path.edge_function.name} "
+                        f"for {edge_up.name}"))
 
         total_occurrences_sum = total_occurrences.sum()
         job_never_runs = total_occurrences_sum.magnitude == 0

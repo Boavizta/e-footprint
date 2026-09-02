@@ -42,15 +42,12 @@ class TestEdgeUsageJourney(TestCase):
         self.usage_span = SourceValue(2 * u.year)
 
         self.edge_usage_journey = EdgeUsageJourney("test edge usage journey",
-                                                   edge_functions=[self.mock_edge_function_1, self.mock_edge_function_2],
-                                                   usage_span=self.usage_span)
+                                                   edge_functions=[self.mock_edge_function_1, self.mock_edge_function_2])
 
     def test_init(self):
         """Test EdgeUsageJourney initialization."""
         self.assertEqual("test edge usage journey", self.edge_usage_journey.name)
         self.assertEqual([self.mock_edge_function_1, self.mock_edge_function_2], self.edge_usage_journey.edge_functions)
-        self.assertEqual("Usage span", self.edge_usage_journey.usage_span.label)
-        self.assertEqual(2 * u.year, self.edge_usage_journey.usage_span.value)
 
     def test_recurrent_edge_device_needs_property(self):
         """Test recurrent_edge_device_needs property returns unique edge needs from all edge functions."""
@@ -61,21 +58,6 @@ class TestEdgeUsageJourney(TestCase):
         """Test edge_devices property returns unique edge devices from all edge needs."""
         edge_devices = self.edge_usage_journey.edge_devices
         self.assertEqual([self.mock_edge_device], edge_devices)
-
-    def test_changing_to_usage_span_not_superior_to_edge_device_lifespan_doesnt_raise_error(self):
-        mock_edge_device = create_mod_obj_mock(EdgeDevice, name="Mock Device")
-        mock_edge_device.lifespan = SourceValue(2 * u.year)
-
-        mock_edge_need = create_mod_obj_mock(RecurrentEdgeDeviceNeed, name="Mock Need")
-        mock_edge_need.edge_device = mock_edge_device
-
-        mock_edge_function = create_mod_obj_mock(EdgeFunction, name="Mock Function")
-        mock_edge_function.recurrent_edge_device_needs = [mock_edge_need]
-
-        usage_span = SourceValue(1 * u.year)
-        euj = EdgeUsageJourney("test euj", edge_functions=[mock_edge_function], usage_span=usage_span)
-
-        euj.usage_span = SourceValue(2 * u.year)
 
     def test_edge_usage_patterns_property_multiple_containers(self):
         """Test edge_usage_patterns property returns all containers."""
@@ -122,8 +104,8 @@ class TestEdgeUsageJourney(TestCase):
 
 
 
-    @patch('efootprint.core.usage.edge.edge_usage_journey.compute_nb_avg_hourly_occurrences')
-    def test_update_nb_edge_usage_journeys_in_parallel_per_edge_usage_pattern(self, mock_compute_nb_avg):
+    @patch('efootprint.core.usage.edge.edge_usage_pattern.compute_nb_avg_hourly_occurrences')
+    def test_update_nb_deployments_in_parallel(self, mock_compute_nb_avg):
         """Test updating journey-level parallel counts per edge usage pattern."""
         mock_result = EmptyExplainableObject()
         mock_compute_nb_avg.return_value = mock_result
@@ -133,20 +115,19 @@ class TestEdgeUsageJourney(TestCase):
         mock_network = create_mod_obj_mock(Network, name="Mock Network")
         hourly_starts = ExplainableHourlyQuantities(np.array([1.0, 2.0, 3.0]) * u.concurrent,
                                                     datetime(2023, 1, 1, 0, 0, 0), "test hourly starts")
-        edge_usage_pattern = EdgeUsagePattern("test edge usage pattern", edge_usage_journey=self.edge_usage_journey,
+        edge_usage_pattern = EdgeUsagePattern("test edge usage pattern", edge_usage_journeys=[self.edge_usage_journey],
                                               network=mock_network, country=mock_country,
-                                              hourly_edge_usage_journey_starts=hourly_starts)
+                                              hourly_deployment_starts=hourly_starts,
+                                              usage_span=self.usage_span)
         utc_starts = ExplainableHourlyQuantities(np.array([1.0, 2.0, 3.0]) * u.concurrent,
                                                  datetime(2023, 1, 1, 0, 0, 0), "UTC starts")
-        attach_attribute(edge_usage_pattern, "utc_hourly_edge_usage_journey_starts", utc_starts)
+        attach_attribute(edge_usage_pattern, "utc_hourly_deployment_starts", utc_starts)
         set_modeling_obj_containers(self.edge_usage_journey, [edge_usage_pattern])
 
-        recompute_attribute(self.edge_usage_journey, "nb_edge_usage_journeys_in_parallel_per_edge_usage_pattern")
+        recompute_attribute(edge_usage_pattern, "nb_deployments_in_parallel")
 
         mock_compute_nb_avg.assert_called_once_with(utc_starts, self.usage_span)
-        self.assertEqual(
-            self.edge_usage_journey.nb_edge_usage_journeys_in_parallel_per_edge_usage_pattern[edge_usage_pattern],
-            mock_result)
+        self.assertEqual(edge_usage_pattern.nb_deployments_in_parallel, mock_result)
 
 
 if __name__ == "__main__":

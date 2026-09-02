@@ -1,5 +1,5 @@
 {
-    "efootprint_version": "23.1.0",
+    "efootprint_version": "24.0.0",
     "Sources": {
         "Base-ADEME_V19": {
             "id": "Base-ADEME_V19",
@@ -56,34 +56,27 @@
         "Youtube-usage-in-France": {
             "name": "Youtube usage in France",
             "id": "Youtube-usage-in-France",
-            "hourly_usage_journey_starts": {
+            "hourly_occurrences": {
                 "compressed_values": "KLUv/SAkIQEAAAB6RAAA+kQAAHpFAECcRQAA+kUAgDtGAAD6RAAA+kQAgDtF",
                 "unit": "occurrence",
                 "start_date": "2025-01-01 00:00:00",
                 "timezone": null,
-                "label": "Hourly nb of usage journey starts",
+                "label": "Hourly nb of pattern occurrences",
                 "source": "hypothesis"
             },
-            "usage_journey": "Daily-Youtube-usage",
+            "usage_journeys": {
+                "Daily-Youtube-usage": {
+                    "value": 1.0,
+                    "unit": "dimensionless",
+                    "label": "Journeys per pattern occurrence",
+                    "source": "hypothesis"
+                }
+            },
             "devices": [
                 "Default-laptop"
             ],
             "network": "Default-network",
             "country": "France"
-        }
-    },
-    "UsageJourney": {
-        "Daily-Youtube-usage": {
-            "name": "Daily Youtube usage",
-            "id": "Daily-Youtube-usage",
-            "uj_steps": {
-                "20-min-streaming-on-Youtube-with-genAI-chat": {
-                    "value": 1.0,
-                    "unit": "dimensionless",
-                    "label": "Times per journey",
-                    "source": "hypothesis"
-                }
-            }
         }
     },
     "Device": {
@@ -147,33 +140,15 @@
             }
         }
     },
-    "UsageJourneyStep": {
-        "20-min-streaming-on-Youtube-with-genAI-chat": {
-            "name": "20 min streaming on Youtube with genAI chat",
-            "id": "20-min-streaming-on-Youtube-with-genAI-chat",
-            "user_time_spent": {
-                "value": 20.0,
-                "unit": "minute",
-                "label": "Time spent by user",
-                "source": "hypothesis"
-            },
-            "jobs": {
-                "direct-GPU-server-job": {
+    "UsageJourney": {
+        "Daily-Youtube-usage": {
+            "name": "Daily Youtube usage",
+            "id": "Daily-Youtube-usage",
+            "uj_steps": {
+                "20-min-streaming-on-Youtube-with-genAI-chat": {
                     "value": 1.0,
                     "unit": "dimensionless",
-                    "label": "Times per step",
-                    "source": "hypothesis"
-                },
-                "Streaming-job": {
-                    "value": 1.0,
-                    "unit": "dimensionless",
-                    "label": "Times per step",
-                    "source": "hypothesis"
-                },
-                "GenAI-job": {
-                    "value": 1.0,
-                    "unit": "dimensionless",
-                    "label": "Times per step",
+                    "label": "Times per journey",
                     "source": "hypothesis"
                 }
             }
@@ -616,6 +591,38 @@
         "GenAI-service-server": {
             "name": "GenAI service server",
             "id": "GenAI-service-server"
+        }
+    },
+    "UsageJourneyStep": {
+        "20-min-streaming-on-Youtube-with-genAI-chat": {
+            "name": "20 min streaming on Youtube with genAI chat",
+            "id": "20-min-streaming-on-Youtube-with-genAI-chat",
+            "user_time_spent": {
+                "value": 20.0,
+                "unit": "minute",
+                "label": "Time spent by user",
+                "source": "hypothesis"
+            },
+            "jobs": {
+                "direct-GPU-server-job": {
+                    "value": 1.0,
+                    "unit": "dimensionless",
+                    "label": "Times per step",
+                    "source": "hypothesis"
+                },
+                "Streaming-job": {
+                    "value": 1.0,
+                    "unit": "dimensionless",
+                    "label": "Times per step",
+                    "source": "hypothesis"
+                },
+                "GenAI-job": {
+                    "value": 1.0,
+                    "unit": "dimensionless",
+                    "label": "Times per step",
+                    "source": "hypothesis"
+                }
+            }
         }
     }
 }

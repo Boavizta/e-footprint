@@ -72,7 +72,7 @@ class EdgeRAMComponent(EdgeComponent):
         """Hourly RAM demand on one component, broken down by usage pattern. Raises error if peak demand exceeds the component's available memory."""
         unitary_hourly_ram_need = sum(
             [need.unitary_hourly_need_per_usage_pattern[usage_pattern]
-             for need in self.recurrent_edge_component_needs if usage_pattern in need.edge_usage_patterns],
+             for need in self.recurrent_needs_in_usage_pattern(usage_pattern)],
             start=EmptyExplainableObject())
 
         if not isinstance(unitary_hourly_ram_need, EmptyExplainableObject):

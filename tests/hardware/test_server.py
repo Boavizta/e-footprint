@@ -540,11 +540,11 @@ class TestServerAttributionAtoms(TestCase):
         network = Network("server atoms network", SourceValue(0.05 * u.kWh / u.GB))
         start_date = datetime(2026, 1, 1)
         cls.up1 = UsagePattern(
-            "server atoms web usage pattern 1", cls.journey, [device], network,
+            "server atoms web usage pattern 1", [cls.journey], [device], network,
             country("server atoms first country", 100 * u.g / u.kWh),
             create_source_hourly_values_from_list([10, 0, 5, 0, 8], start_date))
         cls.up2 = UsagePattern(
-            "server atoms web usage pattern 2", cls.journey, [device], network,
+            "server atoms web usage pattern 2", [cls.journey], [device], network,
             country("server atoms second country", 300 * u.g / u.kWh),
             create_source_hourly_values_from_list([3, 7], start_date))
 
@@ -560,11 +560,12 @@ class TestServerAttributionAtoms(TestCase):
             [cls.dual_job])
         edge_function = EdgeFunction("server atoms edge function", [device_need], [cls.rsn])
         edge_journey = EdgeUsageJourney(
-            "server atoms edge journey", [edge_function], usage_span=SourceValue(1 * u.year))
+            "server atoms edge journey", [edge_function])
         cls.edge_up = EdgeUsagePattern(
-            "server atoms edge usage pattern", edge_journey, network,
+            "server atoms edge usage pattern", [edge_journey], network,
             country("server atoms edge country", 200 * u.g / u.kWh),
-            create_source_hourly_values_from_list([4, 0, 6], start_date))
+            create_source_hourly_values_from_list([4, 0, 6], start_date),
+            usage_span=SourceValue(1 * u.year))
 
         cls.system = System(
             "server atoms system", [cls.up1, cls.up2], edge_usage_patterns=[cls.edge_up])
@@ -598,7 +599,7 @@ class TestServerAttributionAtoms(TestCase):
         share of the idle footprint)."""
         zero_occurrence_hour = 4  # up2 journey starts are [3, 7] and the job runs 10 min, so hour 4 is idle
         cell_occurrences = self.web_only_job.hourly_avg_occurrences_per_coordinate[
-            JobOccurrenceCoordinate(self.up2, step=self.step_a)]
+            JobOccurrenceCoordinate(self.up2, journey=self.journey, step=self.step_a)]
         self.assertEqual(
             0, np.append(cell_occurrences.magnitude, np.zeros(5))[zero_occurrence_hour])
 
@@ -620,7 +621,7 @@ class TestServerAttributionAtoms(TestCase):
         step = UsageJourneyStep("idle hours step", SourceValue(30 * u.min), [job])
         journey = UsageJourney("idle hours journey", [step])
         up = UsagePattern(
-            "idle hours usage pattern", journey, [Device.from_defaults("idle hours laptop")],
+            "idle hours usage pattern", [journey], [Device.from_defaults("idle hours laptop")],
             Network("idle hours network", SourceValue(0.05 * u.kWh / u.GB)),
             Country("idle hours country", "IHC", SourceValue(100 * u.g / u.kWh),
                     ExplainableTimezone(pytz.utc, "UTC timezone")),
@@ -652,7 +653,7 @@ class TestAttributionCachesAfterModelingUpdate(TestCase):
         step = UsageJourneyStep("stale weights step", SourceValue(15 * u.min), [job])
         journey = UsageJourney("stale weights journey", [step])
         up = UsagePattern(
-            "stale weights usage pattern", journey, [Device.from_defaults("stale weights laptop")],
+            "stale weights usage pattern", [journey], [Device.from_defaults("stale weights laptop")],
             Network("stale weights network", SourceValue(0.05 * u.kWh / u.GB)),
             Country("stale weights country", "SWC", SourceValue(100 * u.g / u.kWh),
                     ExplainableTimezone(pytz.utc, "UTC timezone")),
@@ -661,7 +662,7 @@ class TestAttributionCachesAfterModelingUpdate(TestCase):
 
         _ = server.binding_demand_per_job  # a render materializes the attribution structures
 
-        up.hourly_usage_journey_starts = create_source_hourly_values_from_list([100, 200], datetime(2026, 1, 1))
+        up.hourly_occurrences = create_source_hourly_values_from_list([100, 200], datetime(2026, 1, 1))
 
         demand_after_update = server.binding_demand_per_job[job].magnitude.copy()
         self.assertTrue(np.allclose(

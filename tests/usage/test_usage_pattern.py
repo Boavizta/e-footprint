@@ -5,14 +5,15 @@ from unittest.mock import MagicMock
 import pytz
 
 from efootprint.abstract_modeling_classes.modeling_object import ModelingObject
-from efootprint.abstract_modeling_classes.source_objects import SourceObject
+from efootprint.abstract_modeling_classes.source_objects import SourceObject, SourceValue
+from efootprint.constants.units import u
 from efootprint.core.country import Country
 from efootprint.core.hardware.device import Device
 from efootprint.core.hardware.network import Network
 from efootprint.core.usage.usage_journey import UsageJourney
 from efootprint.core.usage.usage_pattern import UsagePattern
 from efootprint.builders.time_builders import create_source_hourly_values_from_list, create_random_source_hourly_values
-from tests.utils import recompute_attribute
+from tests.utils import create_mod_obj_mock, recompute_attribute
 
 
 class TestUsagePattern(unittest.TestCase):
@@ -20,7 +21,7 @@ class TestUsagePattern(unittest.TestCase):
         self.job1 = MagicMock()
         self.job2 = MagicMock()
 
-        usage_journey = MagicMock(spec=UsageJourney)
+        usage_journey = create_mod_obj_mock(UsageJourney, "usage journey")
         usage_journey.jobs = [self.job1, self.job2]
         country = MagicMock(spec=Country)
         country.timezone = SourceObject(pytz.timezone("Europe/Paris"), label="country timezone")
@@ -30,18 +31,38 @@ class TestUsagePattern(unittest.TestCase):
 
         self.usage_pattern = UsagePattern(
             "usage_pattern",
-            usage_journey,
+            [usage_journey],
             [self.device],
             network,
             country,
-            hourly_usage_journey_starts=create_source_hourly_values_from_list([1, 2, 3]),
+            hourly_occurrences=create_source_hourly_values_from_list([1, 2, 3]),
         )
 
 
     def test_jobs(self):
         self.assertEqual([self.job1, self.job2], self.usage_pattern.jobs)
 
-    def test_update_utc_hourly_usage_journey_starts_converts_start_date(self):
+    def test_journey_weights_are_positive_nonempty_and_guard_live_mutation(self):
+        journey = next(iter(self.usage_pattern.usage_journeys))
+        second = create_mod_obj_mock(UsageJourney, "second journey")
+        second.jobs = []
+        weighted = UsagePattern(
+            "weighted pattern", {journey: 0.25, second: 2}, [self.device], self.usage_pattern.network,
+            self.usage_pattern.country, create_source_hourly_values_from_list([1]))
+        self.assertEqual([0.25, 2], [weight.magnitude for weight in weighted.usage_journeys.values()])
+        self.assertTrue(all(
+            weight.label == "Journeys per pattern occurrence" for weight in weighted.usage_journeys.values()))
+
+        with self.assertRaises(ValueError):
+            UsagePattern(
+                "empty pattern", {}, [self.device], self.usage_pattern.network,
+                self.usage_pattern.country, create_source_hourly_values_from_list([1]))
+        with self.assertRaises(ValueError):
+            UsagePattern(
+                "zero weight pattern", {journey: 0}, [self.device], self.usage_pattern.network,
+                self.usage_pattern.country, create_source_hourly_values_from_list([1]))
+
+    def test_update_utc_hourly_occurrences_converts_start_date(self):
         """Test UTC conversion keeps UTC midnight anchor and shifts data instead.
 
         Paris is UTC+1 in January (no DST). Local midnight = UTC 23:00 previous day,
@@ -49,26 +70,26 @@ class TestUsagePattern(unittest.TestCase):
         UTC midnight and is rotated to the end of the shifted series; start_date remains
         2025-01-01 00:00 UTC.
         """
-        self.usage_pattern.hourly_usage_journey_starts = create_source_hourly_values_from_list(
+        self.usage_pattern.hourly_occurrences = create_source_hourly_values_from_list(
             [1, 2, 3], start_date=datetime(2025, 1, 1, 0, 0, 0),
         )
 
-        recompute_attribute(self.usage_pattern, "utc_hourly_usage_journey_starts")
+        recompute_attribute(self.usage_pattern, "utc_hourly_occurrences")
 
-        self.assertEqual([2.0, 3.0, 1.0], self.usage_pattern.utc_hourly_usage_journey_starts.value_as_float_list)
-        self.assertEqual(pytz.utc, self.usage_pattern.utc_hourly_usage_journey_starts.start_date.tzinfo)
+        self.assertEqual([2.0, 3.0, 1.0], self.usage_pattern.utc_hourly_occurrences.value_as_float_list)
+        self.assertEqual(pytz.utc, self.usage_pattern.utc_hourly_occurrences.start_date.tzinfo)
         self.assertEqual(
             pytz.utc.localize(datetime(2025, 1, 1, 0, 0, 0)),
-            self.usage_pattern.utc_hourly_usage_journey_starts.start_date,
+            self.usage_pattern.utc_hourly_occurrences.start_date,
         )
 
     def test_initialisation_with_wrong_devices_types_raises_right_error(self):
         wrong_device = MagicMock(spec=ModelingObject)
         with self.assertRaises(TypeError) as context:
             usage_pattern = UsagePattern(
-                "usage_pattern", self.usage_pattern.usage_journey, [wrong_device], self.usage_pattern.network,
+                "usage_pattern", list(self.usage_pattern.usage_journeys), [wrong_device], self.usage_pattern.network,
                 self.usage_pattern.country,
-                hourly_usage_journey_starts=create_random_source_hourly_values()
+                hourly_occurrences=create_random_source_hourly_values()
             )
         self.assertEqual(
             str(context.exception),
@@ -79,15 +100,14 @@ class TestUsagePattern(unittest.TestCase):
         wrong_usage_journey = MagicMock(spec=ModelingObject)
         with self.assertRaises(TypeError) as context:
             usage_pattern = UsagePattern(
-                "usage_pattern", wrong_usage_journey, [self.device], self.usage_pattern.network,
+                "usage_pattern", [wrong_usage_journey], [self.device], self.usage_pattern.network,
                 self.usage_pattern.country,
-                hourly_usage_journey_starts=create_random_source_hourly_values()
+                hourly_occurrences=create_random_source_hourly_values()
             )
         self.assertEqual(
             str(context.exception),
-            "In usage_pattern, attribute usage_journey should be of type "
-            "<class 'efootprint.core.usage.usage_journey.UsageJourney'> but is of type "
-            "<class 'unittest.mock.MagicMock'>"
+            "All keys in 'usage_journeys' must be instances of UsageJourney, got "
+            "[<class 'unittest.mock.MagicMock'>]"
         )
 
 

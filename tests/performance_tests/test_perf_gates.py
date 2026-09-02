@@ -111,7 +111,7 @@ class TestPerformanceGates(TestCase):
         and are logged for visibility."""
         baseline_ms_per_iteration = self.baseline["nudge_and_read_loop"]["avg_ms_per_iteration"]
         system = generate_big_system(**BIG_SYSTEM_STANDARD_PARAMS)
-        job = list(list(system.usage_patterns[0].usage_journey.uj_steps)[0].jobs)[1]
+        job = list(list(next(iter(system.usage_patterns[0].usage_journeys)).uj_steps)[0].jobs)[1]
         usage_pattern = job.usage_patterns[0]
         network = usage_pattern.network
         new_values = [SourceValue(100 * u.MB), SourceValue(30 * u.MB)]

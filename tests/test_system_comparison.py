@@ -41,7 +41,7 @@ def build_system(system_name, server_name, hourly_starts=None, start="2025-01-01
     start_date = datetime.strptime(start, "%Y-%m-%d")
     hourly_starts = hourly_starts if hourly_starts is not None else [1, 2, 4, 5, 8, 12, 2, 2, 3]
     usage_pattern = UsagePattern(
-        f"{system_name} usage pattern", uj, [Device.laptop()], network, Countries.FRANCE(),
+        f"{system_name} usage pattern", [uj], [Device.laptop()], network, Countries.FRANCE(),
         create_source_hourly_values_from_list([elt * 1000000 for elt in hourly_starts], start_date))
 
     return System(system_name, [usage_pattern], edge_usage_patterns=[])
@@ -50,7 +50,7 @@ def build_system(system_name, server_name, hourly_starts=None, start="2025-01-01
 def build_form_input_system(system_name, server_name, net_growth_rate=10, initial_volume=100,
                             start="2025-01-01"):
     """Like ``build_system`` but the usage volume is a *form-built* timeseries (hourly-from-growth),
-    so its ``hourly_usage_journey_starts`` carries the raw growth parameters a user would enter in the
+    so its ``hourly_occurrences`` carries the raw growth parameters a user would enter in the
     interface — the shape the form-input diff surfaces parameter-by-parameter."""
     from efootprint.builders.timeseries.explainable_hourly_quantities_from_form_inputs import (
         ExplainableHourlyQuantitiesFromFormInputs)
@@ -65,7 +65,7 @@ def build_form_input_system(system_name, server_name, net_growth_rate=10, initia
         "initial_volume": initial_volume, "initial_volume_timespan": "month",
         "net_growth_rate_in_percentage": net_growth_rate, "net_growth_rate_timespan": "year"})
     usage_pattern = UsagePattern(
-        f"{system_name} usage pattern", uj, [Device.laptop()], network, Countries.FRANCE(), hourly_starts)
+        f"{system_name} usage pattern", [uj], [Device.laptop()], network, Countries.FRANCE(), hourly_starts)
 
     return System(system_name, [usage_pattern], edge_usage_patterns=[])
 
@@ -309,7 +309,7 @@ class TestSystemComparison(TestCase):
         uj_b = next(o for o in self.system_b.all_linked_objects if isinstance(o, UsageJourney))
         network_b = next(o for o in self.system_b.all_linked_objects if isinstance(o, Network))
         second_up_b = UsagePattern(
-            "model B second pattern", uj_b, [Device.laptop("shared spare device")], network_b,
+            "model B second pattern", [uj_b], [Device.laptop("shared spare device")], network_b,
             Countries.FRANCE(),
             create_source_hourly_values_from_list([1, 2, 4, 5, 8, 12, 2, 2, 3], datetime(2025, 1, 1)))
         self.system_b.usage_patterns = list(self.system_b.usage_patterns) + [second_up_b]
@@ -345,7 +345,7 @@ class TestSystemComparison(TestCase):
 
         self.assertEqual([], diff.only_in_a)
         self.assertEqual([], diff.only_in_b)
-        changed = [row for row in diff.changed if row.attribute == "hourly_usage_journey_starts"]
+        changed = [row for row in diff.changed if row.attribute == "hourly_occurrences"]
         self.assertEqual(1, len(changed))
         row = changed[0]
         self.assertEqual("UsagePattern", row.object_class)
@@ -363,7 +363,7 @@ class TestSystemComparison(TestCase):
 
         diff = system_a.compare_to(system_b).input_diff
 
-        row = next(r for r in diff.changed if r.attribute == "hourly_usage_journey_starts")
+        row = next(r for r in diff.changed if r.attribute == "hourly_occurrences")
         self.assertEqual("initial volume: 100 per month\nnet growth rate: 10 % per year", row.value_a)
         self.assertEqual("initial volume: 250 per month\nnet growth rate: 20 % per year", row.value_b)
 
@@ -375,7 +375,7 @@ class TestSystemComparison(TestCase):
 
         diff = system_a.compare_to(system_b).input_diff
 
-        self.assertEqual([], [r for r in diff.changed if r.attribute == "hourly_usage_journey_starts"])
+        self.assertEqual([], [r for r in diff.changed if r.attribute == "hourly_occurrences"])
 
     def test_input_diff_surfaces_weekly_pattern_parameter_changes(self):
         """Test weekly patterns compare their authored profile parameters rather than opaque arrays."""

@@ -350,13 +350,15 @@ class Storage(InfraHardware, AttributionSource):
                         retention_footprint * divide_or_fallback(cell_cumulative, job_written_need, fallback=0)
                     ).to(u.kg)
                 yield Atom(
-                    source=self, stream="retention", job=job, up=cell.up, step=cell.step, rsn=cell.rsn,
+                    source=self, stream="retention", job=job, up=cell.up, journey=cell.journey,
+                    step=cell.step, rsn=cell.rsn,
                     ef=cell.ef,
                     value=retention_value.set_label(
                         f"{self.name} retention fabrication footprint via {job.name} "
                         f"in {cell.location_label} ({cell.up.name})"))
                 yield Atom(
-                    source=self, stream="baseline", job=job, up=cell.up, step=cell.step, rsn=cell.rsn,
+                    source=self, stream="baseline", job=job, up=cell.up, journey=cell.journey,
+                    step=cell.step, rsn=cell.rsn,
                     ef=cell.ef,
                     value=(baseline_footprint * job_baseline_share * cell.flat_share).to(u.kg).set_label(
                         f"{self.name} baseline fabrication footprint via {job.name} "

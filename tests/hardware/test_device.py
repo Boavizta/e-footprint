@@ -18,7 +18,7 @@ from efootprint.core.hardware.network import Network
 from efootprint.core.lifecycle_phases import LifeCyclePhases
 from efootprint.core.system import System
 from efootprint.core.usage.usage_journey import UsageJourney
-from efootprint.core.usage.usage_journey_step import UsageJourneyStep
+from efootprint.core.usage.usage_journey_step import UsageJourneyStep, UsageJourneyStepCoordinate
 from efootprint.core.usage.usage_pattern import UsagePattern
 from tests.core.attribution.conservation import (
     assert_hourly_quantities_equal, assert_source_atoms_conserve, sum_atom_values)
@@ -47,8 +47,8 @@ class TestDevice(TestCase):
             usage_pattern_1: create_source_hourly_values_from_list([1, 2, 3]),
             usage_pattern_2: create_source_hourly_values_from_list([0, 1, 0]),
         }
-        usage_pattern_1.usage_journey = usage_journey
-        usage_pattern_2.usage_journey = usage_journey
+        usage_pattern_1.usage_journeys = [usage_journey]
+        usage_pattern_2.usage_journeys = [usage_journey]
 
         set_modeling_obj_containers(device, [usage_pattern_1, usage_pattern_2])
 
@@ -76,8 +76,8 @@ class TestDevice(TestCase):
             usage_pattern_1: create_source_hourly_values_from_list([1, 2, 3]),
             usage_pattern_2: create_source_hourly_values_from_list([0, 1, 0]),
         }
-        usage_pattern_1.usage_journey = usage_journey
-        usage_pattern_2.usage_journey = usage_journey
+        usage_pattern_1.usage_journeys = [usage_journey]
+        usage_pattern_2.usage_journeys = [usage_journey]
 
         set_modeling_obj_containers(device, [usage_pattern_1, usage_pattern_2])
 
@@ -111,12 +111,12 @@ class TestDeviceAttributionAtoms(TestCase):
         network = Network("device atoms network", SourceValue(0.05 * u.kWh / u.GB))
         start_date = datetime(2026, 1, 1)
         cls.low_ci_up = UsagePattern(
-            "device atoms low ci pattern", cls.journey, [cls.device], network,
+            "device atoms low ci pattern", [cls.journey], [cls.device], network,
             Country("device atoms low ci country", "DLC", SourceValue(50 * u.g / u.kWh),
                     ExplainableTimezone(pytz.utc, "UTC timezone")),
             create_source_hourly_values_from_list([8, 0, 4], start_date))
         cls.high_ci_up = UsagePattern(
-            "device atoms high ci pattern", cls.journey, [cls.device], network,
+            "device atoms high ci pattern", [cls.journey], [cls.device], network,
             Country("device atoms high ci country", "DHC", SourceValue(500 * u.g / u.kWh),
                     ExplainableTimezone(pytz.utc, "UTC timezone")),
             create_source_hourly_values_from_list([3, 6], start_date))
@@ -142,7 +142,8 @@ class TestDeviceAttributionAtoms(TestCase):
     def test_device_usage_atoms_carry_per_pattern_carbon_intensity(self):
         """Test that each usage cell is occupancy × power × its own pattern's CI — never a blend."""
         for atom in atoms_of(self.device, LifeCyclePhases.USAGE):
-            occupancy = atom.step.hourly_avg_occurrences_per_usage_pattern[atom.up]
+            occupancy = atom.step.hourly_avg_occurrences_per_usage_coordinate[
+                UsageJourneyStepCoordinate(atom.up, atom.journey)]
             expected = (occupancy * self.device.power
                         * ExplainableQuantity(1 * u.hour, "one hour")
                         * atom.up.country.average_carbon_intensity).to(u.kg)

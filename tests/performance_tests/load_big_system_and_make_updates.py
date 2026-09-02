@@ -21,7 +21,7 @@ with open(os.path.join(root_dir, "big_system.json"), "r") as file:
 log_number_of_live_objects()
 nb_system_loadings = 10
 update_on_system(
-    nb_system_loadings, deepcopy(system_dict), "UsagePattern", "hourly_usage_journey_starts",
+    nb_system_loadings, deepcopy(system_dict), "UsagePattern", "hourly_occurrences",
     form_inputs_hourly_starts(nb_years=3))
 
 log_number_of_live_objects()

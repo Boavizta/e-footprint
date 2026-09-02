@@ -150,8 +150,7 @@ class EdgeStorage(EdgeComponent):
         total = sum(
             [
                 recurrent_need.cumulative_unitary_storage_need_per_usage_pattern[usage_pattern]
-                for recurrent_need in self.recurrent_edge_storage_needs
-                if usage_pattern in recurrent_need.cumulative_unitary_storage_need_per_usage_pattern
+                for recurrent_need in self.recurrent_needs_in_usage_pattern(usage_pattern)
             ],
             start=EmptyExplainableObject(),
         )

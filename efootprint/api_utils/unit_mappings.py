@@ -11,9 +11,9 @@ These mappings define which attributes should use which semantic units:
 # Defined at base class level - automatically applies to all subclasses
 TIMESERIES_UNIT_MIGRATIONS = {
     # UsagePattern attributes (applies to all subclasses like EdgeUsagePattern)
-    ("UsagePattern", "hourly_usage_journey_starts"): "occurrence",
+    ("UsagePattern", "hourly_occurrences"): "occurrence",
     # EdgeUsagePattern specific attributes
-    ("EdgeUsagePattern", "hourly_edge_usage_journey_starts"): "occurrence",
+    ("EdgeUsagePattern", "hourly_deployment_starts"): "occurrence",
     # RecurrentEdgeWorkload attributes (uses ExplainableRecurrentQuantities)
     ("RecurrentEdgeWorkload", "recurrent_workload"): "concurrent",
 }

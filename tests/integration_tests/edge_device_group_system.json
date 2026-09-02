@@ -1,5 +1,5 @@
 {
-    "efootprint_version": "23.1.0",
+    "efootprint_version": "24.0.0",
     "Sources": {
         "Our-world-in-data-28202429": {
             "id": "Our-world-in-data-28202429",
@@ -36,15 +36,23 @@
         "grouped-edge-usage-pattern": {
             "name": "grouped edge usage pattern",
             "id": "grouped-edge-usage-pattern",
-            "hourly_edge_usage_journey_starts": {
+            "hourly_deployment_starts": {
                 "compressed_values": "KLUv/SAkpQAAQAAAekT6gDtFBAA7DYA7YNwHRwQ=",
                 "unit": "occurrence",
                 "start_date": "2025-01-01 00:00:00",
                 "timezone": null,
-                "label": "Hourly nb of edge usage journey starts",
+                "label": "Hourly nb of deployment starts",
                 "source": "hypothesis"
             },
-            "edge_usage_journey": "grouped-edge-usage-journey",
+            "edge_usage_journeys": [
+                "grouped-edge-usage-journey"
+            ],
+            "usage_span": {
+                "value": 6.0,
+                "unit": "year",
+                "label": "Usage span",
+                "source": "hypothesis"
+            },
             "network": "Default-wifi-network",
             "country": "France"
         }
@@ -55,13 +63,7 @@
             "id": "grouped-edge-usage-journey",
             "edge_functions": [
                 "grouped-edge-function"
-            ],
-            "usage_span": {
-                "value": 6.0,
-                "unit": "year",
-                "label": "Usage span",
-                "source": "hypothesis"
-            }
+            ]
         }
     },
     "EdgeFunction": {

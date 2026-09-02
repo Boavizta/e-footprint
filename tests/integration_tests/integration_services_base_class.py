@@ -71,7 +71,7 @@ class IntegrationTestServicesBaseClass(IntegrationTestBaseClass):
 
         start_date = datetime.strptime("2025-01-01", "%Y-%m-%d")
         usage_pattern = UsagePattern(
-            "Youtube usage in France", uj, [Device.laptop()], network, Countries.FRANCE(),
+            "Youtube usage in France", [uj], [Device.laptop()], network, Countries.FRANCE(),
             create_source_hourly_values_from_list(
                 [elt * 1000 for elt in [1, 2, 4, 5, 8, 12, 2, 2, 3]], start_date))
 

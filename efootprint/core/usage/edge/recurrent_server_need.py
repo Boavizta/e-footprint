@@ -82,13 +82,11 @@ class RecurrentServerNeed(ModelingObject):
     def unitary_hourly_volume_per_usage_pattern(self, usage_pattern: "EdgeUsagePattern"):
         """Hourly job-trigger volume for one edge device in each usage pattern, derived by replaying the typical-week pattern in the country's timezone and scaling by how many times the need appears in the journey."""
         unitary_hourly_volume = self.recurrent_volume_per_edge_device.generate_hourly_quantities_over_timespan(
-            usage_pattern.edge_usage_journey.nb_edge_usage_journeys_in_parallel_per_edge_usage_pattern[usage_pattern],
+            usage_pattern.nb_deployments_in_parallel,
             usage_pattern.country.timezone)
-        nb_of_occurrences_of_self_within_usage_pattern = 0
-        for edge_function in usage_pattern.edge_usage_journey.edge_functions:
-            for recurrent_server_need in edge_function.recurrent_server_needs:
-                if recurrent_server_need == self:
-                    nb_of_occurrences_of_self_within_usage_pattern += 1
+        nb_of_occurrences_of_self_within_usage_pattern = sum(
+            path.nb_occurrences for path in usage_pattern.containment_inventory.server_need_paths
+            if path.recurrent_server_need == self)
 
         unitary_hourly_volume *= ExplainableQuantity(nb_of_occurrences_of_self_within_usage_pattern * u.dimensionless,
                                                    label=f"Occurrences within {usage_pattern.name}")

@@ -27,7 +27,7 @@ from efootprint.core.usage.edge.recurrent_edge_device_need import RecurrentEdgeD
 from efootprint.core.usage.edge.recurrent_server_need import RecurrentServerNeed
 from efootprint.core.usage.job import Job, JobOccurrenceCoordinate
 from efootprint.core.usage.usage_journey import UsageJourney
-from efootprint.core.usage.usage_journey_step import UsageJourneyStep
+from efootprint.core.usage.usage_journey_step import UsageJourneyStep, UsageJourneyStepCoordinate
 from efootprint.core.usage.usage_pattern import UsagePattern
 
 
@@ -61,10 +61,10 @@ class TestAttributionPrimitives(TestCase):
         network = Network("attribution primitives network", SourceValue(0.05 * u.kWh / u.GB))
         start_date = datetime(2026, 1, 1)
         cls.up1 = UsagePattern(
-            "web usage pattern 1", cls.journey, [device], network, country("first web country", 100 * u.g / u.kWh),
+            "web usage pattern 1", [cls.journey], [device], network, country("first web country", 100 * u.g / u.kWh),
             create_source_hourly_values_from_list([10, 0, 5, 0, 8], start_date))
         cls.up2 = UsagePattern(
-            "web usage pattern 2", cls.journey, [device], network, country("second web country", 300 * u.g / u.kWh),
+            "web usage pattern 2", [cls.journey], [device], network, country("second web country", 300 * u.g / u.kWh),
             create_source_hourly_values_from_list([3, 7], start_date))
 
         workload_component = EdgeWorkloadComponent.from_defaults("attribution primitives workload component")
@@ -84,9 +84,9 @@ class TestAttributionPrimitives(TestCase):
         cls.ef1 = EdgeFunction("edge function 1", [device_need], [cls.shared_rsn])
         cls.ef2 = EdgeFunction("edge function 2", [], [cls.shared_rsn, cls.other_rsn])
         cls.edge_journey = EdgeUsageJourney(
-            "edge journey", [cls.ef1, cls.ef2], usage_span=SourceValue(1 * u.year))
+            "edge journey", [cls.ef1, cls.ef2])
         cls.edge_up = EdgeUsagePattern(
-            "edge usage pattern", cls.edge_journey, network, country("edge country", 200 * u.g / u.kWh),
+            "edge usage pattern", [cls.edge_journey], network, country("edge country", 200 * u.g / u.kWh),
             create_source_hourly_values_from_list([4, 0, 6], start_date))
 
         cls.system = System(
@@ -102,7 +102,8 @@ class TestAttributionPrimitives(TestCase):
         data-transferred rate."""
         job = self.dual_job
         partition_sum = sum(
-            job.hourly_data_transferred_per_coordinate[JobOccurrenceCoordinate(up, step=uj_step)]
+            job.hourly_data_transferred_per_coordinate[
+                JobOccurrenceCoordinate(up, journey=self.journey, step=uj_step)]
             for uj_step in job.usage_journey_steps for up in uj_step.usage_patterns)
         partition_sum += sum(
             job.hourly_data_transferred_per_coordinate[
@@ -114,8 +115,9 @@ class TestAttributionPrimitives(TestCase):
         """Test that step occupancies summed over a journey's distinct steps tile the journey's parallel count,
         including for a step repeated within the journey."""
         for up in (self.up1, self.up2):
-            occupancy_sum = (self.step_a.hourly_avg_occurrences_per_usage_pattern[up]
-                             + self.step_b.hourly_avg_occurrences_per_usage_pattern[up])
+            coordinate = UsageJourneyStepCoordinate(up, self.journey)
+            occupancy_sum = (self.step_a.hourly_avg_occurrences_per_usage_coordinate[coordinate]
+                             + self.step_b.hourly_avg_occurrences_per_usage_coordinate[coordinate])
             self.assert_hourly_quantities_equal(
                 self.journey.nb_usage_journeys_in_parallel_per_usage_pattern[up], occupancy_sum)
 
@@ -144,7 +146,7 @@ class TestAttributionPrimitives(TestCase):
         step_two = UsageJourneyStep("zero traffic step two", SourceValue(15 * u.min), [zero_job])
         journey = UsageJourney("zero traffic journey", [step_one, step_two])
         up = UsagePattern(
-            "zero traffic usage pattern", journey, [Device.from_defaults("zero traffic laptop")],
+            "zero traffic usage pattern", [journey], [Device.from_defaults("zero traffic laptop")],
             Network("zero traffic network", SourceValue(0.05 * u.kWh / u.GB)),
             Country("zero traffic country", "ZTC", SourceValue(100 * u.g / u.kWh),
                     ExplainableTimezone(pytz.utc, "UTC timezone")),
@@ -215,7 +217,7 @@ class TestAttributionPrimitives(TestCase):
         start_date = datetime(2026, 1, 1)
 
         try:
-            self.up1.hourly_usage_journey_starts = create_source_hourly_values_from_list(
+            self.up1.hourly_occurrences = create_source_hourly_values_from_list(
                 [11, 0, 5, 0, 8], start_date)
             for coordinate in coordinates:
                 occurrence_slot = registry[("hourly_avg_occurrences_per_coordinate", coordinate)]
@@ -227,14 +229,14 @@ class TestAttributionPrimitives(TestCase):
                     self.assertTrue(occurrence_slot.has_cached_value)
                     self.assertTrue(transfer_slot.has_cached_value)
         finally:
-            self.up1.hourly_usage_journey_starts = create_source_hourly_values_from_list(
+            self.up1.hourly_occurrences = create_source_hourly_values_from_list(
                 [10, 0, 5, 0, 8], start_date)
 
     def test_departed_trigger_prunes_both_coordinate_mappings(self):
         """Test removing a step/job relationship drops its coordinate and both cached sub-slots."""
         job = self.dual_job
         tuple(job.hourly_data_transferred_per_coordinate.values())
-        departed_coordinate = JobOccurrenceCoordinate(self.up1, step=self.step_b)
+        departed_coordinate = JobOccurrenceCoordinate(self.up1, journey=self.journey, step=self.step_b)
 
         try:
             del self.step_b.jobs[job]
@@ -276,7 +278,7 @@ class TestFractionalWeightOccupancyTiling(TestCase):
             "fractional weights country", "FWC", SourceValue(100 * u.g / u.kWh),
             ExplainableTimezone(pytz.utc, "UTC timezone"))
         cls.up = UsagePattern(
-            "fractional weights usage pattern", cls.journey, [device], network, country,
+            "fractional weights usage pattern", [cls.journey], [device], network, country,
             create_source_hourly_values_from_list([10, 0, 5, 0, 8], datetime(2026, 1, 1)))
         cls.system = System("fractional weights system", [cls.up], edge_usage_patterns=[])
 
@@ -284,8 +286,9 @@ class TestFractionalWeightOccupancyTiling(TestCase):
         self.assertEqual(SourceValue(0.5 * 30 * u.min + 2.5 * 60 * u.min), self.journey.duration)
 
     def test_step_occupancy_tiles_nb_usage_journeys_in_parallel_with_fractional_weights(self):
-        occupancy_sum = (self.step_a.hourly_avg_occurrences_per_usage_pattern[self.up]
-                         + self.step_b.hourly_avg_occurrences_per_usage_pattern[self.up])
+        coordinate = UsageJourneyStepCoordinate(self.up, self.journey)
+        occupancy_sum = (self.step_a.hourly_avg_occurrences_per_usage_coordinate[coordinate]
+                         + self.step_b.hourly_avg_occurrences_per_usage_coordinate[coordinate])
         expected = self.journey.nb_usage_journeys_in_parallel_per_usage_pattern[self.up]
         max_abs_diff = (expected - occupancy_sum).abs().max()
         scale = max(expected.abs().max().magnitude, 1e-9)

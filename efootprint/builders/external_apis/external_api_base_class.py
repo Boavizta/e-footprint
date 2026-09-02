@@ -51,7 +51,8 @@ class ExternalAPIServer(ModelingObject, AttributionSource):
             job_footprint = self.job_request_footprint(job, phase)
             for cell in job.attribution_cells:
                 yield Atom(
-                    source=self, stream="single", job=job, up=cell.up, step=cell.step, rsn=cell.rsn, ef=cell.ef,
+                    source=self, stream="single", job=job, up=cell.up, journey=cell.journey, step=cell.step,
+                    rsn=cell.rsn, ef=cell.ef,
                     value=(job_footprint * cell.hourly_share).to(u.kg).set_label(
                         f"{self.name} {phase.value.lower()} footprint via {job.name} "
                         f"in {cell.location_label} ({cell.up.name})"))

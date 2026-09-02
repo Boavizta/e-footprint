@@ -139,6 +139,9 @@ class ModelingObject(metaclass=ABCAfterInitMeta):
                 new_value.initialize_calculus_graph_data_from_json(attr_value, flat_obj_dict, sources_dict)
             elif isinstance(attr_value, dict) and "label" not in attr_value:
                 explainable_object_dicts_to_create_after_objects_creation[(new_obj, attr_key)] = attr_value
+                # Reserve the attribute's insertion position while its referenced keys are still being
+                # hydrated. Replacing this placeholder later preserves canonical JSON field ordering.
+                new_obj.__dict__.setdefault(attr_key, None)
             elif isinstance(attr_value, str) and attr_key not in ("id", "name") and attr_value in flat_obj_dict:
                 # A scalar string attribute is treated as a reference when it matches an existing object id.
                 # `name` is always a plain label, never a reference: excluding it prevents an object whose name

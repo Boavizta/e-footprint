@@ -119,11 +119,11 @@ usage_journey = UsageJourney("user journey", uj_steps=[streaming_step])
 network = Network(
         "network",
         bandwidth_energy_intensity=SourceValue(0.05 * u("kWh/GB"), source=None))
-random_hourly_usage_journey_starts = create_random_source_hourly_values(timespan=3 * u.year)
-random_hourly_usage_journey_starts.source = None
+random_hourly_occurrences = create_random_source_hourly_values(timespan=3 * u.year)
+random_hourly_occurrences.source = None
 usage_pattern = UsagePattern(
     "usage pattern",
-    usage_journey=usage_journey,
+    usage_journeys=[usage_journey],
     devices=[
         Device(name="device on which the user journey is made",
                  carbon_footprint_fabrication=SourceValue(156 * u.kg, source=None),
@@ -133,7 +133,7 @@ usage_pattern = UsagePattern(
     network=network,
     country=country_generator(
             "devices country", "its 3 letter shortname, for example FRA", SourceValue(85 * u.g / u.kWh, source=None), tz('Europe/Paris'))(),
-    hourly_usage_journey_starts=random_hourly_usage_journey_starts)
+    hourly_occurrences=random_hourly_occurrences)
 
 edge_storage = EdgeStorage(
     "edge SSD storage",
@@ -256,20 +256,20 @@ edge_function = EdgeFunction(
 
 edge_usage_journey = EdgeUsageJourney(
     "edge usage journey",
-    edge_functions=[edge_function],
-    usage_span=SourceValue(6 * u.year, source=None)
+    edge_functions=[edge_function]
 )
 
 edge_usage_pattern = EdgeUsagePattern(
     "Default edge usage pattern",
-    edge_usage_journey=edge_usage_journey,
+    edge_usage_journeys=[edge_usage_journey],
     country=country_generator(
             "devices country", "its 3 letter shortname, for example FRA",
         SourceValue(85 * u.g / u.kWh, source=None), tz('Europe/Paris'))(),
     network=network,
-    hourly_edge_usage_journey_starts=create_hourly_usage_from_frequency(
+    hourly_deployment_starts=create_hourly_usage_from_frequency(
         timespan=6 * u.year, input_volume=1000, frequency='weekly',
-        active_days=[0, 1, 2, 3, 4, 5], hours=[8, 9, 10, 11, 12, 13, 15, 16, 17, 18, 19])
+        active_days=[0, 1, 2, 3, 4, 5], hours=[8, 9, 10, 11, 12, 13, 15, 16, 17, 18, 19]),
+    usage_span=SourceValue(6 * u.year, source=None)
         )
 
 workload_component = EdgeWorkloadComponent(
