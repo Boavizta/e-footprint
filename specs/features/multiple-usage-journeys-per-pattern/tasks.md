@@ -151,6 +151,8 @@ reveals avoidable cache growth or source-retention pressure.
 
 ## Task 3 — Adapt the interface and deliver the plural-pattern UX
 
+**Status:** Done.
+
 **Goal:** Adopt the performance-validated library contract throughout e-footprint-interface, expose the agreed creation,
 editing, validation, and canvas behavior, and retain only interface-specific production profiling concerns.
 
