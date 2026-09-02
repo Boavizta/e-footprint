@@ -102,6 +102,8 @@ attribution, comparison support, and migration of existing one-journey JSON.
 
 ## Task 2 — Establish library-native memory benchmarks and harden cache scaling
 
+**Status:** Done.
+
 **Goal:** Move model-engine memory/performance work close to its source implementation in e-footprint, profile the new
 multi-journey/shared-child topology immediately after Task 1, and make focused library refinements if the evidence
 reveals avoidable cache growth or source-retention pressure.
