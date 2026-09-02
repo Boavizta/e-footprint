@@ -26,14 +26,14 @@ class TestVersionUpgradeHandlers(TestCase):
             "UsagePattern": {"web": {
                 "id": "web", "name": "Web pattern",
                 "usage_journey": "journey", "hourly_usage_journey_starts": {
-                    "value": [1], "unit": "occurrence", "label": "old"}}},
+                    "value": [1], "unit": "dimensionless", "label": "old"}}},
             "EdgeUsageJourney": {"edge-journey": {
                 "id": "edge-journey", "name": "Edge journey", "edge_functions": [],
                 "usage_span": copy.deepcopy(span)}},
             "EdgeUsagePattern": {"edge": {
                 "id": "edge", "name": "Edge pattern",
                 "edge_usage_journey": "edge-journey", "hourly_edge_usage_journey_starts": {
-                    "value": [1], "unit": "occurrence", "label": "old"}}},
+                    "value": [1], "unit": "dimensionless", "label": "old"}}},
         }
 
         output = upgrade_version_23_to_24(copy.deepcopy(input_dict))
@@ -46,6 +46,8 @@ class TestVersionUpgradeHandlers(TestCase):
         self.assertNotIn("usage_span", output["EdgeUsageJourney"]["edge-journey"])
         self.assertIn("hourly_occurrences", output["UsagePattern"]["web"])
         self.assertIn("hourly_deployment_starts", output["EdgeUsagePattern"]["edge"])
+        self.assertEqual("occurrence", output["UsagePattern"]["web"]["hourly_occurrences"]["unit"])
+        self.assertEqual("occurrence", output["EdgeUsagePattern"]["edge"]["hourly_deployment_starts"]["unit"])
         self.assertNotIn("calculation_graph", output)
 
     def test_upgrade_19_to_20(self):

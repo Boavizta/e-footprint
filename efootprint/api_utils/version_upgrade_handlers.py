@@ -787,6 +787,7 @@ def upgrade_version_23_to_24(system_dict, efootprint_classes_dict=None):
         if "hourly_usage_journey_starts" in pattern:
             rename_dict_key(pattern, "hourly_usage_journey_starts", "hourly_occurrences")
         pattern["hourly_occurrences"]["label"] = "Hourly nb of pattern occurrences"
+        pattern["hourly_occurrences"]["unit"] = "occurrence"
 
     edge_journeys = system_dict.get("EdgeUsageJourney", {})
     for pattern in system_dict.get("EdgeUsagePattern", {}).values():
@@ -798,6 +799,7 @@ def upgrade_version_23_to_24(system_dict, efootprint_classes_dict=None):
         if "hourly_edge_usage_journey_starts" in pattern:
             rename_dict_key(pattern, "hourly_edge_usage_journey_starts", "hourly_deployment_starts")
         pattern["hourly_deployment_starts"]["label"] = "Hourly nb of deployment starts"
+        pattern["hourly_deployment_starts"]["unit"] = "occurrence"
 
     for journey in edge_journeys.values():
         journey.pop("usage_span", None)
