@@ -42,18 +42,12 @@ def materialized_state(system: System) -> dict[str, int | None]:
     return {
         "modeling_objects": len(objects),
         "reactive_slots": sum(len(registry) for registry in registries),
-        "cached_reactive_slots": sum(
-            slot.has_cached_value for registry in registries for slot in registry.values()),
-        "web_step_coordinate_slots": cached_sub_slot_count(
-            system, "hourly_avg_occurrences_per_usage_coordinate"),
-        "job_occurrence_coordinate_slots": cached_sub_slot_count(
-            system, "hourly_avg_occurrences_per_coordinate"),
-        "job_transfer_coordinate_slots": cached_sub_slot_count(
-            system, "hourly_data_transferred_per_coordinate"),
-        "edge_component_hourly_slots": cached_sub_slot_count(
-            system, "unitary_hourly_need_per_usage_pattern"),
-        "edge_server_hourly_slots": cached_sub_slot_count(
-            system, "unitary_hourly_volume_per_usage_pattern"),
+        "cached_reactive_slots": sum(slot.has_cached_value for registry in registries for slot in registry.values()),
+        "web_step_coordinate_slots": cached_sub_slot_count(system, "hourly_avg_occurrences_per_usage_coordinate"),
+        "job_occurrence_coordinate_slots": cached_sub_slot_count(system, "hourly_avg_occurrences_per_coordinate"),
+        "job_transfer_coordinate_slots": cached_sub_slot_count(system, "hourly_data_transferred_per_coordinate"),
+        "edge_component_hourly_slots": cached_sub_slot_count(system, "unitary_hourly_need_per_usage_pattern"),
+        "edge_server_hourly_slots": cached_sub_slot_count(system, "unitary_hourly_volume_per_usage_pattern"),
         "attribution_matrix_rows": None if matrix is None else len(matrix),
         "cached_transient_structures": transient_cached,
     }
