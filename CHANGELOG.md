@@ -4,6 +4,21 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](http://keepachangelog.com/)
 and this project adheres to [Semantic Versioning](http://semver.org/)
 
+## [Unreleased]
+
+### Added
+- `UsagePattern.usage_journeys` links one traffic pattern to one or more journeys with strictly positive, fractional “Journeys per pattern occurrence” weights. Each weight scales journey concurrency, device occupancy, downstream jobs, network/storage/server demand, footprints, and attribution while preserving every actual journey path.
+- `EdgeUsagePattern.edge_usage_journeys` combines several functionality bundles on one physical deployment. Deployment starts and lifetime now belong to the pattern; distinct bundle needs aggregate on shared hardware while the chassis, components, and fixed footprint are counted once.
+- A library-native `performance/memory` laboratory profiles multi-journey and shared-child models without Django, with deterministic checks proving web caches grow with actual journey paths and edge caches with distinct pattern/need pairs rather than Cartesian combinations.
+
+### Changed
+- Traversal, comparison, explainability, and impact attribution retain journey identity when lower-level steps, functions, jobs, or needs are shared. Membership and weight changes remain visible, and attribution and Sankey totals stay conservative.
+- JSON schema V24 migrates singular web and edge journey relationships to their plural forms, moves edge deployment timing onto each pattern, preserves authored input provenance, and discards incompatible calculated state so existing models recompute equivalently.
+
+### Fixed
+- Web journey relationships reject non-finite weights, and aggregate edge results no longer depend on functionality-bundle order.
+- V24 migration marks renamed web occurrence and edge deployment-start series with the correct `occurrence` unit, keeping migrated models valid through round trips and interface validation.
+
 ## [V23.1.0]
 
 ### Added
