@@ -9,7 +9,8 @@ from efootprint.abstract_modeling_classes.explainable_timezone import Explainabl
 from efootprint.abstract_modeling_classes.source_objects import SourceRecurrentValues, SourceValue
 from efootprint.builders.time_builders import create_source_hourly_values_from_list
 from efootprint.constants.units import u
-from efootprint.core.attribution import attributed_footprint, footprint_per_node_per_source
+from efootprint.core.attribution import (
+    attributed_footprint, footprint_per_node_per_source, node_totals_and_links_in_kg)
 from efootprint.core.country import Country
 from efootprint.core.hardware.device import Device
 from efootprint.core.hardware.edge.edge_device import EdgeDevice
@@ -30,6 +31,7 @@ from efootprint.core.usage.usage_journey import UsageJourney
 from efootprint.core.usage.usage_journey_step import UsageJourneyStep
 from efootprint.core.usage.usage_pattern import UsagePattern
 from efootprint.utils.impact_repartition import ImpactRepartitionSankey
+from tests.core.attribution.conservation import assert_source_atoms_conserve
 
 
 class TestPerUsagePatternImpactCascade(TestCase):
@@ -69,6 +71,72 @@ class TestPerUsagePatternImpactCascade(TestCase):
             base_ram_consumption=SourceValue(0 * u.GB_ram),
             base_compute_consumption=SourceValue(0 * u.cpu_core),
         )
+
+    def test_multiple_edge_bundles_count_hardware_once_and_are_order_invariant(self):
+        component = EdgeWorkloadComponent.from_defaults(
+            "multi-bundle component", carbon_footprint_fabrication_per_unit=SourceValue(20 * u.kg),
+            power_per_unit=SourceValue(10 * u.W), idle_power_per_unit=SourceValue(1 * u.W),
+            lifespan=SourceValue(1 * u.year))
+        device = EdgeDevice.from_defaults(
+            "multi-bundle device", structure_carbon_footprint_fabrication=SourceValue(10 * u.kg),
+            components=[component], lifespan=SourceValue(1 * u.year))
+
+        def need(name, value):
+            return RecurrentEdgeComponentNeed(
+                name, component, SourceRecurrentValues(
+                    Quantity(np.array([value] * 168, dtype=np.float32), u.concurrent)))
+
+        large_need = need("large need", 0.5)
+        tiny_need_a = need("tiny need a", 3e-8)
+        tiny_need_b = need("tiny need b", 3e-8)
+        shared_need = need("shared need", 0)
+        storage = self._neutral_storage("multi-bundle storage")
+        server = self._server("multi-bundle server", storage)
+        job = Job.from_defaults("multi-bundle job", server=server)
+        shared_server_need = RecurrentServerNeed(
+            "shared server need", device,
+            SourceRecurrentValues(Quantity(np.array([1] * 168, dtype=np.float32), u.occurrence)), [job])
+
+        def journey(name, component_needs, server_needs=()):
+            device_need = RecurrentEdgeDeviceNeed(f"{name} device need", device, component_needs)
+            return EdgeUsageJourney(name, [EdgeFunction(f"{name} function", [device_need], list(server_needs))])
+
+        first = journey("first bundle", [large_need])
+        second = journey("second bundle", [tiny_need_a, shared_need], [shared_server_need])
+        third = journey("third bundle", [tiny_need_b, shared_need], [shared_server_need])
+        pattern = EdgeUsagePattern(
+            "multi-bundle pattern", [first], Network.wifi_network(),
+            self._country("multi-bundle country", 100 * u.g / u.kWh),
+            create_source_hourly_values_from_list([1], datetime(2026, 1, 5)),
+            usage_span=SourceValue(1 * u.hour))
+        system = System("multi-bundle system", [], [pattern])
+
+        one_bundle_fabrication = device.instances_fabrication_footprint_per_usage_pattern[pattern].magnitude.copy()
+        pattern.edge_usage_journeys = [first, second, third]
+        np.testing.assert_array_equal(
+            one_bundle_fabrication, device.instances_fabrication_footprint_per_usage_pattern[pattern].magnitude)
+        self.assertEqual(2, sum(
+            path.nb_occurrences for path in pattern.containment_inventory.component_need_paths
+            if path.recurrent_edge_component_need == shared_need))
+        self.assertEqual(2, sum(
+            path.nb_occurrences for path in pattern.containment_inventory.server_need_paths
+            if path.recurrent_server_need == shared_server_need))
+        assert_source_atoms_conserve(self, device)
+        assert_source_atoms_conserve(self, server)
+
+        workload = component.unitary_hourly_workload_per_usage_pattern[pattern].magnitude.copy()
+        total = system.total_footprint.magnitude.copy()
+        matrix = system.impact_repartition_matrix
+        fold = node_totals_and_links_in_kg(
+            system, LifeCyclePhases.USAGE, (EdgeDevice, EdgeUsageJourney, EdgeUsagePattern, Country))
+
+        pattern.edge_usage_journeys = [third, second, first]
+
+        np.testing.assert_array_equal(workload, component.unitary_hourly_workload_per_usage_pattern[pattern].magnitude)
+        np.testing.assert_array_equal(total, system.total_footprint.magnitude)
+        self.assertEqual(matrix, system.impact_repartition_matrix)
+        self.assertEqual(fold, node_totals_and_links_in_kg(
+            system, LifeCyclePhases.USAGE, (EdgeDevice, EdgeUsageJourney, EdgeUsagePattern, Country)))
 
     def test_shared_usage_journey_attributes_country_dependent_and_neutral_usage_separately(self):
         storage = self._neutral_storage("web storage")

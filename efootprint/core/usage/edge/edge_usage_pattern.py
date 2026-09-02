@@ -96,16 +96,20 @@ class EdgeUsagePattern(ModelingObject):
 
     @property
     def recurrent_edge_device_needs(self) -> List["RecurrentEdgeDeviceNeed"]:
-        return list(dict.fromkeys(
-            need for journey in self.edge_usage_journeys for need in journey.recurrent_edge_device_needs))
+        return sorted(dict.fromkeys(
+            need for journey in self.edge_usage_journeys for need in journey.recurrent_edge_device_needs),
+            key=lambda need: need.id)
 
     @property
     def recurrent_server_needs(self) -> List["RecurrentServerNeed"]:
-        return list(dict.fromkeys(need for journey in self.edge_usage_journeys for need in journey.recurrent_server_needs))
+        return sorted(dict.fromkeys(
+            need for journey in self.edge_usage_journeys for need in journey.recurrent_server_needs),
+            key=lambda need: need.id)
 
     @property
     def jobs(self) -> List["JobBase"]:
-        return list(dict.fromkeys(job for journey in self.edge_usage_journeys for job in journey.jobs))
+        return sorted(dict.fromkeys(job for journey in self.edge_usage_journeys for job in journey.jobs),
+                      key=lambda job: job.id)
 
     @computed_structure
     def containment_inventory(self):
@@ -120,8 +124,12 @@ class EdgeUsagePattern(ModelingObject):
                     for component_need in device_need.recurrent_edge_component_needs:
                         component_paths[(journey, edge_function, device_need, component_need)] += 1
         return EdgeContainmentInventory(
-            server_need_paths=tuple(EdgeServerNeedPath(*path, count) for path, count in server_paths.items()),
-            component_need_paths=tuple(EdgeComponentNeedPath(*path, count) for path, count in component_paths.items()),
+            server_need_paths=tuple(
+                EdgeServerNeedPath(*path, count) for path, count in sorted(
+                    server_paths.items(), key=lambda item: tuple(obj.id for obj in item[0]))),
+            component_need_paths=tuple(
+                EdgeComponentNeedPath(*path, count) for path, count in sorted(
+                    component_paths.items(), key=lambda item: tuple(obj.id for obj in item[0]))),
         )
 
     @computed_attribute
