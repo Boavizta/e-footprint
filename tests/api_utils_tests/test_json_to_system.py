@@ -27,6 +27,8 @@ class TestJsonToSystem(IntegrationTestBaseClass):
         malformed_relationships = (
             {"UsagePattern": {"web": {"usage_journeys": {}}}},
             {"UsagePattern": {"web": {"usage_journeys": {"journey": {"value": 0}}}}},
+            {"UsagePattern": {"web": {"usage_journeys": {"journey": {"value": float("nan")}}}}},
+            {"UsagePattern": {"web": {"usage_journeys": {"journey": {"value": float("inf")}}}}},
             {"EdgeUsagePattern": {"edge": {"edge_usage_journeys": []}}},
             {"EdgeUsagePattern": {"edge": {"edge_usage_journeys": ["journey", "journey"]}}},
         )

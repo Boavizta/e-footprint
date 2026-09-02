@@ -1,3 +1,4 @@
+import math
 from collections import Counter
 
 from efootprint.abstract_modeling_classes.explainable_object_base_class import ExplainableObject
@@ -462,7 +463,7 @@ class PositiveWeightedExplainableObjectDict(WeightedExplainableObjectDict):
 
     def validate_entry_value(self, key, value):
         super().validate_entry_value(key, value)
-        if value.value.magnitude <= 0:
+        if not math.isfinite(value.value.magnitude) or value.value.magnitude <= 0:
             key_name = getattr(key, "name", key)
             raise ValueError(f"Weight for {key_name} should be strictly positive but is {value.value.magnitude}")
 

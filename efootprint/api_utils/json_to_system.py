@@ -1,3 +1,4 @@
+import math
 from copy import copy
 from inspect import _empty as empty_annotation, isabstract
 from types import UnionType
@@ -57,7 +58,8 @@ def validate_pattern_journey_relationships(system_dict):
         if not isinstance(journeys, dict) or not journeys:
             raise ValueError(f"UsagePattern '{pattern_id}' requires at least one usage journey")
         weights = [weight.get("value") if isinstance(weight, dict) else None for weight in journeys.values()]
-        if any(isinstance(weight, bool) or not isinstance(weight, (int, float)) or weight <= 0
+        if any(isinstance(weight, bool) or not isinstance(weight, (int, float))
+               or not math.isfinite(weight) or weight <= 0
                for weight in weights):
             raise ValueError(f"UsagePattern '{pattern_id}' journey weights must be strictly positive")
     for pattern_id, pattern in system_dict.get("EdgeUsagePattern", {}).items():

@@ -61,6 +61,12 @@ class TestUsagePattern(unittest.TestCase):
             UsagePattern(
                 "zero weight pattern", {journey: 0}, [self.device], self.usage_pattern.network,
                 self.usage_pattern.country, create_source_hourly_values_from_list([1]))
+        for non_finite_weight in (float("nan"), float("inf")):
+            with self.subTest(non_finite_weight=non_finite_weight), self.assertRaises(ValueError):
+                UsagePattern(
+                    "non-finite weight pattern", {journey: non_finite_weight}, [self.device],
+                    self.usage_pattern.network, self.usage_pattern.country,
+                    create_source_hourly_values_from_list([1]))
 
     def test_update_utc_hourly_occurrences_converts_start_date(self):
         """Test UTC conversion keeps UTC midnight anchor and shifts data instead.
