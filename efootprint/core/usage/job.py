@@ -21,11 +21,9 @@ from efootprint.abstract_modeling_classes.reactive_core import (
 if TYPE_CHECKING:
     from efootprint.core.usage.usage_pattern import UsagePattern
     from efootprint.core.usage.usage_journey import UsageJourney
-    from efootprint.core.usage.usage_journey_step import UsageJourneyStep
     from efootprint.core.hardware.network import Network
     from efootprint.core.usage.edge.edge_usage_journey import EdgeUsageJourney
     from efootprint.core.usage.edge.edge_usage_pattern import EdgeUsagePattern
-    from efootprint.core.usage.edge.recurrent_server_need import RecurrentServerNeed
 
 
 @dataclass(frozen=True, eq=False)

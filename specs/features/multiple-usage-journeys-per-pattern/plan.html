@@ -25,7 +25,7 @@
 <body>
 
 <h1>Multiple usage journeys per pattern — Implementation plan</h1>
-<p class="status">Status: Plan — <strong>under review</strong> · 2026-09-01 ·
+<p class="status">Status: Plan — <strong>approved</strong> · 2026-09-01 ·
 Spec: <a href="spec.html">spec.html</a></p>
 
 <section>
@@ -45,6 +45,12 @@ Spec: <a href="spec.html">spec.html</a></p>
   hardware totals use one pattern-level deployed-device series; bundle needs add before component power
   and footprint calculations, preventing physical fabrication and idle/base energy from being repeated
   per bundle.</p>
+
+  <p>Validate memory and cache scaling immediately after the library behavior lands, before adapting the
+  interface. Establish <code>e-footprint/performance/memory/</code> as the canonical home for model-engine
+  benchmarks so calculation changes can be profiled and refined beside their implementation. Keep only
+  Django startup, <code>ModelWeb</code>, rendered-payload, memory-monitor, cgroup, and production-container
+  measurements in e-footprint-interface; retain its historical evidence in place.</p>
 
   <svg viewBox="0 0 800 310" role="img" aria-labelledby="flow-title flow-desc">
     <title id="flow-title">Journey-aware pattern calculation flow</title>
@@ -110,21 +116,25 @@ Spec: <a href="spec.html">spec.html</a></p>
     <tbody>
       <tr><td><code>efootprint/core/usage/usage_pattern.py</code></td><td>modified</td><td>Weighted non-empty journey relationship, weight metadata, occurrence terminology, aggregate jobs, and relationship validation.</td></tr>
       <tr><td><code>efootprint/core/usage/usage_journey.py</code><br><code>usage_journey_step.py</code></td><td>modified</td><td>Apply the pattern-specific journey weight; cache step occupancy by the actual <code>(pattern, journey)</code> path when a step is reused within one pattern.</td></tr>
-      <tr><td><code>efootprint/core/usage/edge/edge_usage_pattern.py</code><br><code>edge_usage_journey.py</code></td><td>modified</td><td>Move span/concurrency to the deployment pattern; add the non-empty journey list; expose one typed, non-serialized containment inventory of server-need and component-need paths.</td></tr>
+      <tr><td><code>efootprint/core/usage/edge/edge_usage_pattern.py</code><br><code>edge_usage_journey.py</code></td><td>modified</td><td>Move span/concurrency to the deployment pattern; enforce the non-empty, duplicate-free journey list; expose one typed, non-serialized containment inventory of server-need and component-need paths.</td></tr>
       <tr><td><code>efootprint/core/usage/job.py</code></td><td>modified</td><td>Add journey to web occurrence coordinates; keep the edge base coordinate at <code>(pattern, recurrent server need)</code> and carry bundle identity plus scalar path share on attribution cells.</td></tr>
       <tr><td><code>efootprint/core/usage/edge/recurrent_*.py</code></td><td>modified</td><td>Expand one recurring series per <code>(pattern, need)</code> over the calendar covered by the deployment series, multiply it by <code>nb_of_occurrences_of_self_within_usage_pattern</code> obtained from the inventory, then apply active deployments in downstream physical aggregation.</td></tr>
       <tr><td><code>efootprint/core/hardware/device.py</code></td><td>modified</td><td>Sum weighted journey occupancy per pattern and emit one device atom per journey/step path.</td></tr>
       <tr><td><code>efootprint/core/hardware/edge/edge_component.py</code><br><code>edge_device.py</code></td><td>modified</td><td>Use pattern-level active deployments for fixed hardware; combine aggregate need demand before component energy and allocation; split the resulting need atoms across inventory paths while retaining existing transient source helpers.</td></tr>
+      <tr><td><code>efootprint/core/hardware/server_base.py</code><br><code>storage.py</code><br><code>network.py</code><br><code>efootprint/builders/external_apis/external_api_base_class.py</code></td><td>modified</td><td>Propagate the explicit journey carried by every Job attribution cell into the atoms emitted by all server-side impact sources.</td></tr>
       <tr><td><code>efootprint/core/system.py</code></td><td>modified</td><td>Flatten journeys from all pattern collections and preserve stable deduplication for system traversal.</td></tr>
       <tr><td><code>efootprint/core/attribution/__init__.py</code></td><td>modified</td><td>Store explicit journey identity in atom coordinates and serialized matrix rows instead of deriving a singular journey from the pattern.</td></tr>
+      <tr><td><code>efootprint/comparison/</code></td><td>verified / modified as needed</td><td>Expose weighted web journey membership and weight changes with the “Journeys per pattern occurrence” relationship label through the existing input-diff machinery.</td></tr>
       <tr><td><code>efootprint/api_utils/version_upgrade_handlers.py</code><br><code>efootprint/version.py</code><br><code>pyproject.toml</code></td><td>modified</td><td>Introduce the next schema major and transform singular relationships, edge span ownership, occurrence field names, and incompatible calculated state.</td></tr>
       <tr><td><code>efootprint/modeling_templates/</code><br><code>efootprint/builders/</code><br><code>docs_sources/</code></td><td>modified as applicable</td><td>Update constructors, examples, template authoring sources, generated descriptions, and public reference wording.</td></tr>
       <tr><td><code>tests/</code></td><td>modified / expanded</td><td>Update fixtures and API callers; add multi-journey computation, mutation, persistence, migration, attribution, and reuse coverage.</td></tr>
+      <tr><td><code>performance/memory/</code><br><code>tests/performance_tests/</code></td><td>new / modified</td><td>Move model-engine memory scenarios close to e-footprint: native hydration, totals, cold/warm attribution matrix, direct attribution, shared-child topology generation, cache/slot counts, and fresh-process evidence. Permit measured library refinements before interface adaptation.</td></tr>
       <tr><td><code>../e-footprint-interface/model_builder/domain/entities/web_core/usage/</code></td><td>modified</td><td>Expose web weights, edge bundle selection, pattern-owned span/defaults, non-empty creation defaults, and plural volume terminology.</td></tr>
       <tr><td><code>../e-footprint-interface/model_builder/adapters/forms/</code><br><code>adapters/ui_config/</code></td><td>modified</td><td>Use the existing weighted-dict and multi-select patterns; preselect the first journey, preserve weight sources, prevent last removal, and update labels/tooltips.</td></tr>
       <tr><td><code>../e-footprint-interface/model_builder/domain/entities/web_core/usage/usage_pattern_web_base_class.py</code></td><td>modified</td><td>Emit canvas links to every selected journey while retaining top-level journey cards rather than rendering them as nested accordion children.</td></tr>
       <tr><td><code>../e-footprint-interface/model_builder/domain/services/system_validation_service.py</code></td><td>modified</td><td>Keep computation-readiness messages aligned with the new cardinality and bundle semantics as a user-facing safeguard.</td></tr>
       <tr><td><code>../e-footprint-interface/scripts/intro_template_scenarios/</code><br><code>tests/</code></td><td>modified / expanded</td><td>Update scenario builders, form snapshots, integration workflows, results smoke cases, and one critical Playwright flow for each paradigm.</td></tr>
+      <tr><td><code>../e-footprint-interface/performance/memory/</code></td><td>refined</td><td>Keep the production adapter concerns: Django/application imports, <code>ModelWeb</code> and session hydration, rendered Sankey payloads, computation-memory monitor modes, cgroup enforcement, and container calibration. Preserve historical evidence and point model-engine benchmarking to the library.</td></tr>
     </tbody>
   </table>
 </section>
@@ -193,14 +203,24 @@ Spec: <a href="spec.html">spec.html</a></p>
       <li>Do not add transient semantics to <code>computed_dict</code> in this feature unless profiling first
       demonstrates a material retained-memory regression and a separately reviewed lifetime design covers
       all shared consumers and dependent structures.</li>
+      <li>Run model-engine memory work from the library immediately after the core implementation. Native
+      scenarios load through e-footprint, compute totals, cold/warm attribution matrices, and direct attributed
+      footprints while varying patterns, journeys, shared children, and modeled hours. Findings may drive a
+      focused library refinement before the interface task begins.</li>
+      <li>Do not relocate historical interface measurements: they describe production-container and middleware
+      behavior. Slim future interface profiling to runtime/adapter overhead and keep calculation/cache physics in
+      the library benchmark.</li>
     </ul>
   </details>
   <details><summary>Cardinality enforcement</summary>
     <p>Use domain guards that read relationship membership/weights so a live mutation participates in
-    <code>ModelingUpdate</code> and rolls back atomically. Also reject empty constructor input and
-    validate raw loaded pattern records before hydration makes them live, because the current loader
-    intentionally does not compute guards. The interface mirrors the invariant by preselecting the
-    first journey and disabling removal of the final relationship; it is not the source of truth.</p>
+    <code>ModelingUpdate</code> and rolls back atomically. Reject empty constructor input on both sides,
+    non-positive web weights, and duplicate edge journey references. Validate the same invariants in raw
+    loaded pattern records before hydration makes them live, because the current loader intentionally does
+    not compute guards. Web uniqueness already follows from weighted-dictionary keys; edge uniqueness needs
+    an explicit guard because lists and JSON arrays permit duplicates. The interface mirrors the invariant
+    by preselecting the first journey and disabling removal of the final relationship; it is not the source
+    of truth.</p>
   </details>
 </section>
 
@@ -232,7 +252,8 @@ Spec: <a href="spec.html">spec.html</a></p>
     <li><strong>Library tests:</strong> cover weights below/above 1, two journeys with distinct and
     shared steps/jobs, two edge bundles with distinct and shared needs, one journey reused by several
     patterns, physical edge-footprint non-duplication, last-link mutation rollback, dependency
-    invalidation after membership/weight changes, and all old single-journey behavior at weight 1.</li>
+    invalidation after membership/weight changes, duplicate-edge-journey rejection at construction,
+    mutation, and load, edge-list order invariance, and all old single-journey behavior at weight 1.</li>
     <li><strong>Attribution tests:</strong> extend conservation harness cases with multiple journeys
     under one pattern and reused lower-level objects. Assert journey nodes and matrix rows remain
     distinguishable and sum to eager footprint streams. Assert each need's
@@ -240,6 +261,8 @@ Spec: <a href="spec.html">spec.html</a></p>
     <code>nb_occurrences</code> and normalized path shares sum to one.</li>
     <li><strong>Serialization tests:</strong> round-trip both relationship types and weight sources;
     add the version migration and verify old calculated state cannot attach under obsolete coordinates.</li>
+    <li><strong>Comparison tests:</strong> verify adding/removing a web journey and changing its weight
+    produces relationship-diff rows labelled “Journeys per pattern occurrence”.</li>
     <li><strong>Interface tests:</strong> unit snapshots for the weighted/multi-select forms and moved
     usage span; integration create/edit/delete flows including the last-link invariant; results-view
     smoke coverage; one non-redundant E2E flow for weighted web journeys and one for multiple edge bundles.</li>
@@ -247,11 +270,12 @@ Spec: <a href="spec.html">spec.html</a></p>
     sub-slots, a journey weight or membership edit invalidates only the affected coordinate cone, departed
     paths are pruned, and edge relationship edits rebuild the containment inventory and its dependent
     aggregate series.</li>
-    <li><strong>Performance and memory:</strong> update benchmark accessors and big-system generation.
-    Exercise <code>cold-sankey</code>, <code>results-primed-sankey</code>, and direct-attribution scenarios
-    with many journeys and shared children; compare materialized coordinate-subslot counts, peak and retained
-    memory, and reactive callback counts. Assert hourly cache growth follows actual web paths and distinct
-    edge <code>(pattern, need)</code> pairs, never a Cartesian product or edge bundle-path count.</li>
+    <li><strong>Performance and memory:</strong> add a library-native memory laboratory and update benchmark
+    accessors/big-system generation. Exercise native hydration, totals, cold/warm attribution matrix, primed
+    calculation, and direct-attribution scenarios with many journeys and shared children; compare materialized
+    coordinate-subslot counts, peak and retained memory, and reactive callback counts. Assert hourly cache growth
+    follows actual web paths and distinct edge <code>(pattern, need)</code> pairs, never a Cartesian product or edge
+    bundle-path count. Keep interface profiling focused on production adapter/container behavior.</li>
     <li><strong>Docs:</strong> update library relationship, persistence, attribution, and modeling pages;
     update interface architecture's relationship/form section and user-journey design/help text. This
     is the non-trivial relationship pattern documentation required by both repositories' agent guidance.</li>
