@@ -4,7 +4,7 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](http://keepachangelog.com/)
 and this project adheres to [Semantic Versioning](http://semver.org/)
 
-## [Unreleased]
+## [V23.1.0]
 
 ### Added
 - `ExplainableRecurrentQuantitiesFromWeeklyPattern` builds a canonical 168-hour recurrent timeseries from named weekday profiles, baselines, and validated hourly ranges. It preserves every authored profile—including unused ones—plus source metadata through duplication and JSON round trips, and exposes readable inputs for model comparison.
