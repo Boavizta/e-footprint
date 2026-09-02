@@ -15,7 +15,7 @@ from efootprint.api_utils.json_to_system import json_to_system
 from efootprint.api_utils.system_to_json import system_to_json
 from efootprint.core.system import System
 from performance.memory.inspection import materialized_state
-from performance.memory.scenarios import SCENARIOS, prepare_scenario, run_scenario
+from performance.memory.scenarios import EDGE_PATTERN_SCENARIOS, SCENARIOS, prepare_scenario, run_scenario
 from performance.memory.topology import TopologyConfig, build_synthetic_topology
 
 
@@ -27,6 +27,7 @@ class MemorySampler:
         self.interval_seconds = interval_seconds
         self.stage = "startup"
         self.stage_peaks = {}
+        self._lock = threading.Lock()
         self._stop = threading.Event()
         self._thread = threading.Thread(target=self._run, daemon=True)
 
@@ -38,28 +39,30 @@ class MemorySampler:
         self._thread.join()
 
     def begin(self, stage: str):
-        self.stage = stage
+        with self._lock:
+            self.stage = stage
         self.sample()
 
     def sample(self) -> dict[str, float | None]:
-        try:
-            info = self.process.memory_full_info()
-        except (psutil.AccessDenied, PermissionError):
-            info = self.process.memory_info()
-        values = {
-            "rss_mb": info.rss / 2 ** 20,
-            "pss_mb": getattr(info, "pss", None),
-            "uss_mb": getattr(info, "uss", None),
-            "cgroup_current_mb": _read_cgroup_mb("memory.current"),
-            "cgroup_peak_mb": _read_cgroup_mb("memory.peak"),
-        }
-        for name in ("pss_mb", "uss_mb"):
-            if values[name] is not None:
-                values[name] /= 2 ** 20
-        peak = self.stage_peaks.setdefault(self.stage, {})
-        for name, value in values.items():
-            if value is not None:
-                peak[name] = max(value, peak.get(name, value))
+        with self._lock:
+            try:
+                info = self.process.memory_full_info()
+            except (psutil.AccessDenied, PermissionError):
+                info = self.process.memory_info()
+            values = {
+                "rss_mb": info.rss / 2**20,
+                "pss_mb": getattr(info, "pss", None),
+                "uss_mb": getattr(info, "uss", None),
+                "cgroup_current_mb": _read_cgroup_mb("memory.current"),
+                "cgroup_peak_mb": _read_cgroup_mb("memory.peak"),
+            }
+            for name in ("pss_mb", "uss_mb"):
+                if values[name] is not None:
+                    values[name] /= 2**20
+            peak = self.stage_peaks.setdefault(self.stage, {})
+            for name, value in values.items():
+                if value is not None:
+                    peak[name] = max(value, peak.get(name, value))
         return values
 
     def _run(self):
@@ -76,7 +79,7 @@ def _read_cgroup_mb(filename: str) -> float | None:
         if path.exists():
             value = path.read_text().strip()
             if value != "max":
-                return int(value) / 2 ** 20
+                return int(value) / 2**20
     return None
 
 
@@ -149,6 +152,11 @@ def main() -> None:
         system = _hydrate(payload)
     hydration_seconds = time.perf_counter() - hydration_started_at
     dimensions.update(_system_dimensions(system))
+    if args.scenario in EDGE_PATTERN_SCENARIOS and not system.edge_usage_patterns:
+        parser.error(
+            f"scenario '{args.scenario}' requires a model with at least one edge usage pattern; "
+            "direct attribution targets the first edge usage pattern"
+        )
 
     sampler.begin("priming")
     prepare_scenario(system, args.scenario)

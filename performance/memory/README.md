@@ -32,6 +32,9 @@ Pass `--model /absolute/path/to/system.json` to load an existing e-footprint JSO
 inputs only, release the authoring graph, and hydrate the payload with `json_to_system`; hydration therefore exercises
 the same native library boundary without carrying warm calculated state.
 
+The three direct-attribution scenarios target the model's first edge usage pattern and require the loaded model to
+contain at least one edge usage pattern. Other scenarios work with web-only, edge-only, or mixed systems.
+
 The final `RESULT` line is JSON. It includes topology dimensions, successful reactive callback counts, materialized
 coordinate/cache-slot counts, attribution row count, elapsed time, retained and post-GC memory, and per-stage peaks.
 RSS is always reported. PSS/USS and cgroup current/peak are included when the operating system exposes them. Commit

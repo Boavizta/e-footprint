@@ -7,7 +7,6 @@ from efootprint.core.attribution import attributed_footprint
 from efootprint.core.lifecycle_phases import LifeCyclePhases
 from efootprint.core.system import System
 
-
 SCENARIOS = (
     "hydrate",
     "total-footprint",
@@ -18,6 +17,7 @@ SCENARIOS = (
     "attributed-usage",
     "retained-attributed-results",
 )
+EDGE_PATTERN_SCENARIOS = frozenset({"attributed-manufacturing", "attributed-usage", "retained-attributed-results"})
 
 
 @dataclass(frozen=True)
@@ -42,9 +42,7 @@ def run_scenario(system: System, scenario: str, retained_results: int = 5) -> Sc
     if scenario == "total-footprint":
         result = system.total_footprint
         return ScenarioResult((result,), float(result.sum().to(u.kg).magnitude))
-    if scenario in {
-        "cold-attribution-matrix", "warm-attribution-matrix", "result-primed-attribution-matrix"
-    }:
+    if scenario in {"cold-attribution-matrix", "warm-attribution-matrix", "result-primed-attribution-matrix"}:
         result = system.impact_repartition_matrix
         return ScenarioResult((result,), sum(float(row["value"]) for row in result))
     if scenario == "attributed-manufacturing":
