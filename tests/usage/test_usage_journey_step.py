@@ -6,11 +6,21 @@ from efootprint.abstract_modeling_classes.contextual_modeling_object_attribute i
 from efootprint.abstract_modeling_classes.explainable_quantity import ExplainableQuantity
 from efootprint.abstract_modeling_classes.source_objects import SourceValue
 from efootprint.core.usage.usage_journey import UsageJourney
-from efootprint.core.usage.usage_journey_step import UsageJourneyStep
+from efootprint.core.usage.usage_journey_step import UsageJourneyStep, UsageJourneyStepCoordinate
+from efootprint.core.usage.usage_pattern import UsagePattern
 from efootprint.constants.units import u
+from tests.utils import create_mod_obj_mock
 
 
 class TestUsageJourneyStep(TestCase):
+    def test_usage_coordinate_string_identifies_pattern_and_journey(self):
+        """Test usage-coordinate display names stay concise for calculated-attribute dictionaries."""
+        pattern = create_mod_obj_mock(UsagePattern, "Daily shoppers")
+        journey = create_mod_obj_mock(UsageJourney, "Shopping journey")
+
+        self.assertEqual(
+            "Daily shoppers / Shopping journey", str(UsageJourneyStepCoordinate(pattern, journey)))
+
     def test_usage_journey_step_without_job_doesnt_break(self):
         uj_step_without_job = UsageJourneyStep("", user_time_spent=SourceValue(2 * u.min), jobs=[])
 

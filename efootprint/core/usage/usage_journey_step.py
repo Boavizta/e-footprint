@@ -25,6 +25,9 @@ class UsageJourneyStepCoordinate:
     usage_pattern: "UsagePattern"
     usage_journey: "UsageJourney"
 
+    def __str__(self):
+        return f"{self.usage_pattern.name} / {self.usage_journey.name}"
+
     @property
     def id(self):
         return f"{self.usage_pattern.id}/journey/{self.usage_journey.id}"
