@@ -102,8 +102,8 @@ class TestJsonToSystem(IntegrationTestBaseClass):
 
         class_obj_dict, flat_obj_dict, _ = json_to_system(base_system_dict)
 
-    def test_loads_real_version_23_payload_with_plural_pattern_migration(self):
-        with open(os.path.join(root_test_dir, "performance_tests", "big_system.json"), "rb") as file:
+    def test_loads_version_23_payload_with_plural_pattern_migration(self):
+        with open(os.path.join(API_UTILS_TEST_DIR, "base_system_v23.json"), "rb") as file:
             version_23_system_dict = json.load(file)
 
         _, _, upgraded_dict = json_to_system(version_23_system_dict)

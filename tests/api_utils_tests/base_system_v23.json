@@ -1,0 +1,149 @@
+{
+  "efootprint_version": "23.0.0",
+  "Sources": {
+    "b71216bf-5cf": {
+      "id": "b71216bf-5cf",
+      "name": "Our world in data (2024)",
+      "link": "https://ourworldindata.org/grapher/carbon-intensity-electricity"
+    },
+    "hypothesis": {
+      "id": "hypothesis",
+      "name": "e-footprint hypothesis",
+      "link": null
+    },
+    "user_data": {
+      "id": "user_data",
+      "name": "user data",
+      "link": null
+    }
+  },
+  "System": {
+    "system": {
+      "name": "system",
+      "id": "system",
+      "usage_patterns": [
+        "usage-pattern-1-of-uj-1-of-server-1"
+      ],
+      "edge_usage_patterns": [
+        "Default-edge-usage-pattern-1"
+      ]
+    }
+  },
+  "UsagePattern": {
+    "usage-pattern-1-of-uj-1-of-server-1": {
+      "name": "usage pattern 1 of uj 1 of server 1",
+      "id": "usage-pattern-1-of-uj-1-of-server-1",
+      "devices": [],
+      "network": "web-network-server-1-uj-1",
+      "country": "devices-country-server-1-uj-1-up-1",
+      "usage_journey": "user-journey-server-1-uj-1",
+      "hourly_usage_journey_starts": {
+        "form_inputs": {
+          "start_date": "2024-01-01",
+          "modeling_duration_value": 5,
+          "modeling_duration_unit": "year",
+          "net_growth_rate_in_percentage": 2,
+          "net_growth_rate_timespan": "month",
+          "initial_volume": 1000.0,
+          "initial_volume_timespan": "month"
+        },
+        "label": "Hourly nb of pattern occurrences"
+      }
+    }
+  },
+  "Network": {
+    "web-network-server-1-uj-1": {
+      "name": "web network server 1 uj 1",
+      "id": "web-network-server-1-uj-1",
+      "bandwidth_energy_intensity": {
+        "value": 0.05,
+        "unit": "kilowatt_hour / gigabyte",
+        "label": "bandwith energy intensity"
+      }
+    },
+    "edge-network-1": {
+      "name": "edge network 1",
+      "id": "edge-network-1",
+      "bandwidth_energy_intensity": {
+        "value": 0.05,
+        "unit": "kilowatt_hour / gigabyte",
+        "label": "bandwith energy intensity"
+      }
+    }
+  },
+  "Country": {
+    "devices-country-server-1-uj-1-up-1": {
+      "name": "devices country server 1 uj 1 up 1",
+      "id": "devices-country-server-1-uj-1-up-1",
+      "short_name": "its 3 letter shortname, for example FRA",
+      "average_carbon_intensity": {
+        "value": 85.0,
+        "unit": "gram / kilowatt_hour",
+        "label": "Average carbon intensity"
+      },
+      "timezone": {
+        "zone": "Europe/Paris",
+        "label": "Timezone",
+        "source": "user_data"
+      }
+    },
+    "France-for-edge-usage-pattern-1": {
+      "name": "France for edge usage pattern 1",
+      "id": "France-for-edge-usage-pattern-1",
+      "short_name": "FRA",
+      "average_carbon_intensity": {
+        "value": 44.0,
+        "unit": "gram / kilowatt_hour",
+        "label": "Average carbon intensity",
+        "source": "b71216bf-5cf",
+        "confidence": "high"
+      },
+      "timezone": {
+        "zone": "Europe/Paris",
+        "label": "Timezone",
+        "source": "user_data"
+      }
+    }
+  },
+  "EdgeUsagePattern": {
+    "Default-edge-usage-pattern-1": {
+      "name": "Default edge usage pattern 1",
+      "id": "Default-edge-usage-pattern-1",
+      "network": "edge-network-1",
+      "country": "France-for-edge-usage-pattern-1",
+      "edge_usage_journey": "Default-edge-usage-journey-1",
+      "hourly_edge_usage_journey_starts": {
+        "form_inputs": {
+          "start_date": "2024-01-01",
+          "modeling_duration_value": 5,
+          "modeling_duration_unit": "year",
+          "net_growth_rate_in_percentage": 2,
+          "net_growth_rate_timespan": "month",
+          "initial_volume": 1000.0,
+          "initial_volume_timespan": "month"
+        },
+        "label": "Hourly nb of deployment starts"
+      }
+    }
+  },
+  "EdgeUsageJourney": {
+    "Default-edge-usage-journey-1": {
+      "name": "Default edge usage journey 1",
+      "id": "Default-edge-usage-journey-1",
+      "edge_functions": [],
+      "usage_span": {
+        "value": 6.0,
+        "unit": "year",
+        "label": "Usage span",
+        "source": "hypothesis"
+      }
+    }
+  },
+  "UsageJourney": {
+    "user-journey-server-1-uj-1": {
+      "name": "user journey server 1 uj 1",
+      "id": "user-journey-server-1-uj-1",
+      "uj_steps": {}
+    }
+  }
+}
