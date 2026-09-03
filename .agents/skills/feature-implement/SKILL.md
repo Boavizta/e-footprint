@@ -26,15 +26,17 @@ Spawn a sub-agent (Agent tool, `general-purpose`) to implement **exactly one tas
 
 Give it the task number and require the implementation commit subject to start `<repo tag> task N:`, for example `[ADD] task 4: replace catalog datalists with selects`. This task-numbered format overrides `task-implement`'s standalone `<feature-name>: <task title>` format and makes the feature history easy to scan.
 
-Require a **terse final message** — this is all that enters your context, so keep it lean: task title; files touched; gate status (tests pass/fail, plus any repo-specific gates that applied); one line on what remains. No diffs, no narration.
+Require a **terse final message** — this is all that enters your context, so keep it lean: task title; files touched; gate status (tests pass/fail, plus any repo-specific gates that applied); `Scope deviations / boy-scout fixes: none` or each deviation with its supported reproduction and owning layer; one line on what remains. No diffs or general narration. A synthetic test that directly manufactures internal state is not a supported reproduction.
 
-**A red gate is diagnostic evidence, not an automatic user interruption.** Have the implement agent diagnose the failure. When the cause and correction are evident, in scope, and low risk—such as an implementation defect, stale test expectation, malformed fixture, formatting issue, or another local inconsistency—tell the same agent to fix it, rerun the affected gate, and continue without asking the user. Briefly surface the recovery as a non-blocking progress update when useful; never hide a still-failing gate.
+**A red gate is diagnostic evidence, not an automatic user interruption.** Have the implement agent diagnose the failure. When the cause and correction are evident, in scope, and low risk—such as an implementation defect, stale test expectation, malformed fixture, formatting issue, or another local inconsistency—tell the same agent to fix the demonstrated cause, rerun the affected gate, and continue without asking the user. Never convert an unexplained failure into speculative hardening or a downstream workaround. Briefly surface the recovery as a non-blocking progress update when useful; never hide a still-failing gate.
 
 **Halt only for a load-bearing blocker:** the failure reveals a wrong or missing product assumption, requires a scope or contract change, presents reasonable architectural alternatives, needs an unavailable dependency or new authority, would require a destructive operation, affects broad unrelated behavior, or remains unexplained after reasonable in-scope diagnosis and correction attempts. Report the evidence and the decision or authority needed; do not move to the next task with a red gate.
 
 ### 2. Review (sub-agent)
 
 Spawn a **second** sub-agent to review the commit, following `.claude/skills/task-review/SKILL.md` (it reviews `git show HEAD` against the checklist). Brief it with the feature name and task.
+
+Require it to apply the checklist's provenance audit to every new defensive construct and every out-of-task hunk: name the supported state producer and owning layer, and reject synthetic internal-state setup as the sole justification for production integration code.
 
 The review agent has the full review context — so **it does the deep work, not you.** Have it return, for **every** finding, a compact triage line, and a full question block **only** for the findings it judges to be structuring decisions:
 
@@ -50,7 +52,7 @@ The review agent has the full review context — so **it does the deep work, not
      ...
 ```
 
-**EVIDENT-FIX** = a clear, low-risk improvement that any careful reviewer would just make (dead code, a missed invariant with one obvious fix, a local simplification, a test gap with a clear test to add). **STRUCTURING-DECISION** = a finding where reasonable choices genuinely diverge and the user would want a say — e.g. an unintended bug, a logical gap in the spec, a big refactoring opportunity, an architectural fork, or anything that changes scope or contracts.
+**EVIDENT-FIX** = a clear, low-risk improvement that any careful reviewer would just make (dead code, a missed invariant with one obvious fix, a local simplification, a test gap with a clear test to add). For behavioural or defensive changes, "evident" also requires a supported reproduction and a fix in the layer that owns the invariant. **STRUCTURING-DECISION** = a finding where reasonable choices genuinely diverge and the user would want a say — e.g. an unintended bug, a logical gap in the spec, a big refactoring opportunity, an architectural fork, or anything that changes scope or contracts.
 
 For the structuring ones, brief the agent on the `AskUserQuestion` shape so its output drops in cleanly: each question has 2–4 options (use only as many as there are genuine alternatives — don't pad to a count); the recommended option comes first and is labelled "(Recommended)" with its rationale in the description; headers are ≤12 chars. **Options must be real alternatives**, not a fix/defer/reject template — genuinely different *ways to resolve* the finding (e.g. "extract a shared helper" vs "inline at both call sites" vs "restructure X to remove the need"), each with its trade-off. The default assumption is that a finding *will* be fixed on the spot, even when the fix implies substantial refactoring; offer defer/reject only when the agent genuinely thinks not-fixing is on the table.
 
@@ -62,7 +64,7 @@ This output is compact by construction, so the agent **always returns it inline*
 
 Apply **your own judgement** to the review agent's classification. The agent proposes the split; you make the call.
 
-**Auto-approve the evident fixes.** For findings classed EVIDENT-FIX that you also judge clearly worth doing, approve them yourself — no user input needed. The bar is "evidently good to do": correct, in-scope, low-risk, no contract or scope change. If you disagree with the agent's "evident" call (the fix looks riskier or more consequential than the agent thought), treat it as a structuring decision instead.
+**Auto-approve the evident fixes.** For findings classed EVIDENT-FIX that you also judge clearly worth doing, approve them yourself — no user input needed. The bar is "evidently good to do": correct, in-scope, low-risk, no contract or scope change; for behavioural or defensive changes, it must also have a supported reproduction and live in the owning layer. If you disagree with the agent's "evident" call (the fix looks riskier or more consequential than the agent thought), treat it as a structuring decision instead.
 
 **Escalate only the structuring decisions.** Surface a finding to the user only when it is genuinely structuring — an **unintended bug**, a **logical gap in the spec**, a **big refactoring opportunity**, an architectural fork, or any change to scope/contracts where reasonable choices diverge. When in doubt about whether something rises to this bar, **lean on the review agent** (SendMessage to its id) for more context before deciding — don't read the code yourself.
 

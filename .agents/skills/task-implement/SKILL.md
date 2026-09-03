@@ -14,6 +14,8 @@ You are about to implement one task from an approved tasks list.
 2. **Load the task's intent.** Read `tasks.md` in full. For a normal feature, read `spec.html` and `plan.html` in full. For a bug-fix batch with neither file, the selected task must contain a `**Diagnostic:**` link; read that diagnostic in full instead. If the feature has neither spec/plan nor a linked diagnostic, stop. Start at `specs/architecture/index.html`, follow its task routing to the owning architecture pages, and read `specs/conventions.md`. Read `specs/constitution.md` for the quality gates.
 
 3. **Implement the task.** Touch only the files listed in the task. If you need to touch more, stop and surface it.
+   - Before adding a guard, fallback, reconciliation hook, duplicated validation, or unrelated hardening, identify the concrete supported execution path that produces the state, the user-visible failure it causes, and the layer that owns the invariant. A test that directly manufactures private or internal state proves only the helper's behaviour; it does not establish that production code needs a new integration hook.
+   - Fix a discovered defect at the layer that produces it. If that requires an unlisted file, stop and surface the scope change; never work around the cause in a listed downstream file merely to stay inside the task's file list.
 
 4. **Run quality gates** from `specs/constitution.md` §2:
    - Tests pass.
@@ -28,11 +30,11 @@ You are about to implement one task from an approved tasks list.
    - Example: `[ADD] source-block: hoist inline sources to top-level Sources block`.
    This scopes the diff so `task-review` can analyse it cleanly.
 
-7. **Tell the user** what was implemented, what tests pass, what's left in the tasks list. Also remind the user to run the `task-review` skill on the task.
+7. **Tell the user** what was implemented, what tests pass, what's left in the tasks list, and report `Scope deviations / boy-scout fixes: none` or list each deviation with its supported reproduction and owning layer. Also remind the user to run the `task-review` skill on the task.
 
 ## Constraints
 
 - One task at a time. Do not chain into the next task without user confirmation.
 - If a task reveals a missing dependency or an incorrect plan or diagnostic assumption, **stop and surface it** rather than expanding scope.
-- If you discover an unrelated bug, follow constitution §3.1: fix on the spot or surface it. Do not paper over.
+- If you discover an unrelated bug, follow constitution §3.1: fix the demonstrated root cause on the spot when it is within the approved files, or surface it. Do not add speculative protection, and do not paper over an upstream defect downstream.
 - **Never reference spec documents in code comments or any production/test file.** Do not mention task numbers (e.g. "Task 3"), spec section markers (e.g. "§4.2"), plan paragraphs, or feature names from the spec workflow (e.g. "model-comparison Task 4"). Spec documents are deleted after the archiving step; any such reference becomes a dangling pointer and leaks implementation-process noise into the codebase. Describe the *why* of the code in plain terms instead.
