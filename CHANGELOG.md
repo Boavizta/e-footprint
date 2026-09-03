@@ -4,16 +4,15 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](http://keepachangelog.com/)
 and this project adheres to [Semantic Versioning](http://semver.org/)
 
-## [Unreleased]
+## [V24.0.0]
 
 ### Added
 - `UsagePattern.usage_journeys` links one traffic pattern to one or more journeys with strictly positive, fractional “Journeys per pattern occurrence” weights. Each weight scales journey concurrency, device occupancy, downstream jobs, network/storage/server demand, footprints, and attribution while preserving every actual journey path.
-- `EdgeUsagePattern.edge_usage_journeys` combines several edge usage journeys on one physical deployment. Deployment starts and lifetime now belong to the pattern; distinct journey needs aggregate on shared hardware while the chassis, components, and fixed footprint are counted once.
+- `EdgeUsagePattern.edge_usage_journeys` combines several edge usage journeys on one physical deployment. Deployment lifetime now belongs to the pattern; distinct journey needs aggregate on shared hardware while the chassis, components, and fixed footprint are counted once.
 - A library-native `performance/memory` laboratory profiles multi-journey and shared-child models without Django, with deterministic checks proving web caches grow with actual journey paths and edge caches with distinct pattern/need pairs rather than Cartesian combinations.
 
 ### Changed
 - Traversal, comparison, explainability, and impact attribution retain journey identity when lower-level steps, functions, jobs, or needs are shared. Membership and weight changes remain visible, and attribution and Sankey totals stay conservative.
-- JSON schema V24 migrates singular web and edge journey relationships to their plural forms, moves edge deployment timing onto each pattern, preserves authored input provenance, and discards incompatible calculated state so existing models recompute equivalently.
 
 ### Fixed
 - Web journey relationships reject non-finite weights, and aggregate edge results no longer depend on edge-usage-journey order.
