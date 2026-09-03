@@ -9,7 +9,8 @@ from efootprint.abstract_modeling_classes.empty_explainable_object import EmptyE
 from efootprint.abstract_modeling_classes.explainable_hourly_quantities import ExplainableHourlyQuantities
 from efootprint.abstract_modeling_classes.modeling_object import ModelingObject
 from efootprint.core.usage.edge.edge_usage_journey import EdgeUsageJourney
-from efootprint.core.usage.edge.edge_usage_pattern import EdgeUsagePattern
+from efootprint.core.usage.edge.edge_usage_pattern import (
+    EdgeComponentNeedPath, EdgeServerNeedPath, EdgeUsagePattern)
 from efootprint.core.usage.edge.edge_function import EdgeFunction
 from efootprint.core.usage.edge.recurrent_edge_component_need import RecurrentEdgeComponentNeed
 from efootprint.core.usage.edge.recurrent_edge_device_need import RecurrentEdgeDeviceNeed
@@ -48,8 +49,14 @@ class TestEdgeUsagePattern(TestCase):
             self.hourly_starts())
 
         inventory = pattern.containment_inventory
-        self.assertEqual(4, sum(path.nb_occurrences for path in inventory.component_need_paths))
-        self.assertEqual(2, sum(path.nb_occurrences for path in inventory.server_need_paths))
+        self.assertEqual((
+            EdgeComponentNeedPath(first, first_function, device_need, shared_component_need, 2),
+            EdgeComponentNeedPath(second, second_function, device_need, shared_component_need, 2),
+        ), inventory.component_need_paths)
+        self.assertEqual((
+            EdgeServerNeedPath(first, first_function, server_need, 1),
+            EdgeServerNeedPath(second, second_function, server_need, 1),
+        ), inventory.server_need_paths)
 
     def test_edge_journey_list_invariants_hold_on_construction_and_live_mutation(self):
         with self.assertRaises(ValueError):
