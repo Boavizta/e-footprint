@@ -11,11 +11,11 @@ if TYPE_CHECKING:
 
 
 class RecurrentEdgeDeviceNeed(ModelingObject):
-    """A bundle of recurring component-level needs (CPU, RAM, storage, workload) that together define the load placed on a whole {class:EdgeDevice}."""
+    """A set of recurring component-level needs (CPU, RAM, storage, workload) that together define the load placed on a whole {class:EdgeDevice}."""
 
     param_descriptions = {
         "edge_device": (
-            "{class:EdgeDevice} on which the bundled needs run."),
+            "{class:EdgeDevice} on which the component needs run."),
         "recurrent_edge_component_needs": (
             "List of per-component recurring needs that make up the device-level load (typically one need per "
             "component on the device)."),

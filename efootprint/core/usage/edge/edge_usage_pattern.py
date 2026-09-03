@@ -47,7 +47,7 @@ class EdgeContainmentInventory:
 
 
 class EdgeUsagePattern(ModelingObject):
-    """One edge deployment cohort carrying a non-empty set of functionality bundles for a shared usage span."""
+    """One edge deployment cohort carrying a non-empty set of edge usage journeys for a shared usage span."""
 
     disambiguation = (
         "Use {class:EdgeUsagePattern} for hardware deployed continuously in the field. Use {class:UsagePattern} "
@@ -55,10 +55,10 @@ class EdgeUsagePattern(ModelingObject):
 
     param_descriptions = {
         "edge_usage_journeys": (
-            "Non-empty, duplicate-free list of {class:EdgeUsageJourney} functionality bundles carried by every "
-            "deployment in this pattern."),
+            "Non-empty, duplicate-free selection of {class:EdgeUsageJourney} objects carried by every deployment in this "
+            "pattern."),
         "usage_span": (
-            "How long each physical deployment remains active. All selected functionality bundles share this span."),
+            "How long each physical deployment remains active. All selected edge usage journeys share this span."),
         "network": (
             "{class:Network} used by the edge devices to communicate with servers (when applicable)."),
         "country": (
@@ -90,7 +90,7 @@ class EdgeUsagePattern(ModelingObject):
 
     @computed_attribute(guard=True)
     def edge_usage_journeys_validation(self):
-        """Validates that the pattern always contains unique functionality bundles."""
+        """Validates that the pattern always contains unique edge usage journeys."""
         self._validate_edge_usage_journeys()
         return EmptyExplainableObject()
 
@@ -113,7 +113,7 @@ class EdgeUsagePattern(ModelingObject):
 
     @computed_structure
     def containment_inventory(self):
-        """Actual functionality-bundle containment paths with nested-list multiplicities collapsed to counts."""
+        """Actual edge-usage-journey containment paths with nested-list multiplicities collapsed to counts."""
         server_paths = Counter()
         component_paths = Counter()
         for journey in self.edge_usage_journeys:

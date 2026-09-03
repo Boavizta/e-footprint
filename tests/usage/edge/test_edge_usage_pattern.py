@@ -30,7 +30,7 @@ class TestEdgeUsagePattern(TestCase):
             np.array([1.0, 2.0, 3.0, 4.0, 5.0]) * u.concurrent,
             datetime(2023, 1, 1), "test hourly starts")
 
-    def test_containment_inventory_counts_actual_paths_across_bundles(self):
+    def test_containment_inventory_counts_actual_paths_across_journeys(self):
         shared_component_need = create_mod_obj_mock(RecurrentEdgeComponentNeed, "Shared component need")
         device_need = create_mod_obj_mock(RecurrentEdgeDeviceNeed, "Shared device need")
         device_need.recurrent_edge_component_needs = [shared_component_need, shared_component_need]
@@ -41,10 +41,10 @@ class TestEdgeUsagePattern(TestCase):
         second_function = create_mod_obj_mock(EdgeFunction, "Second function")
         second_function.recurrent_edge_device_needs = [device_need]
         second_function.recurrent_server_needs = [server_need]
-        first = EdgeUsageJourney("First bundle", [first_function])
-        second = EdgeUsageJourney("Second bundle", [second_function])
+        first = EdgeUsageJourney("First journey", [first_function])
+        second = EdgeUsageJourney("Second journey", [second_function])
         pattern = EdgeUsagePattern(
-            "Multi-bundle pattern", [first, second], self.mock_network, self.mock_country,
+            "Multi-journey pattern", [first, second], self.mock_network, self.mock_country,
             self.hourly_starts())
 
         inventory = pattern.containment_inventory
@@ -60,7 +60,7 @@ class TestEdgeUsagePattern(TestCase):
                 "Duplicate pattern", [self.mock_edge_usage_journey, self.mock_edge_usage_journey],
                 self.mock_network, self.mock_country, self.hourly_starts())
 
-        live_journey = EdgeUsageJourney("Live bundle", [])
+        live_journey = EdgeUsageJourney("Live journey", [])
         live_pattern = EdgeUsagePattern(
             "Live pattern", [live_journey], Network.wifi_network(), Countries.FRANCE(), self.hourly_starts())
         System("Live edge system", [], [live_pattern])

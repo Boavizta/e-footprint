@@ -457,16 +457,16 @@ class EdgeDevice(ModelingObject, AttributionSource):
     def atom_value(self, need: "RecurrentEdgeComponentNeed", usage_pattern: "EdgeUsagePattern",
                    phase: LifeCyclePhases):
         """The per-(need, pattern) atom value — the need's footprint at the pattern across every
-        bundle and function it sits in, before the slot-multiplicity split of attribution_atoms."""
+        edge usage journey and function it sits in, before the slot-multiplicity split of attribution_atoms."""
         values = (self.fabrication_atom_value_per_need_and_pattern if phase == LifeCyclePhases.MANUFACTURING
                   else self.energy_atom_value_per_need_and_pattern)
         return values[(need, usage_pattern)]
 
     def attribution_atoms(self, phase: LifeCyclePhases):
-        """Slot enumeration: for each pattern, walk every selected bundle's edge functions (with multiplicity), each
-        function's device-need bundles, each bundle's component needs — one atom per (need, bundle, function)
+        """Slot enumeration: for each pattern, walk every selected edge usage journey's functions (with multiplicity),
+        each function's recurrent device needs, and each device need's component needs — one atom per path
         slot, valued atom_value × slot count / total occurrences of the need in the pattern, so the slots of a
-        need partition its atom_value exactly: path reuse splits across its bundles and functions by
+        need partition its atom_value exactly: path reuse splits across its device needs and functions by
         occurrence ratios; the common case is one slot with ratio 1. In the fabrication phase the device's
         RecurrentServerNeeds carry their equal share of the unused-components chassis pool through (rsn, ef)
         slots, split by the same occurrence ratios."""

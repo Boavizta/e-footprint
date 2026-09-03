@@ -767,16 +767,16 @@ class TestEdgeDeviceAttributionAtoms(TestCase):
             recurrent_need=SourceRecurrentValues(
                 Quantity(np.array([2] * 84 + [-2] * 84, dtype=np.float32), u.GB_stored)))
 
-        cls.main_bundle = RecurrentEdgeDeviceNeed(
-            "edge atoms main bundle", edge_device=cls.device,
+        cls.main_device_need = RecurrentEdgeDeviceNeed(
+            "edge atoms main device need", edge_device=cls.device,
             recurrent_edge_component_needs=[
                 cls.cpu_active_need, cls.cpu_idle_need, cls.ram_need, cls.workload_need, cls.storage_write_need,
                 cls.storage_cycle_need])
-        cls.reuse_bundle = RecurrentEdgeDeviceNeed(
-            "edge atoms reuse bundle", edge_device=cls.device,
+        cls.reused_device_need = RecurrentEdgeDeviceNeed(
+            "edge atoms reused device need", edge_device=cls.device,
             recurrent_edge_component_needs=[cls.cpu_active_need])
         cls.edge_function = EdgeFunction(
-            "edge atoms function", recurrent_edge_device_needs=[cls.main_bundle, cls.reuse_bundle],
+            "edge atoms function", recurrent_edge_device_needs=[cls.main_device_need, cls.reused_device_need],
             recurrent_server_needs=[])
         cls.journey = EdgeUsageJourney(
             "edge atoms journey", edge_functions=[cls.edge_function])
@@ -814,13 +814,13 @@ class TestEdgeDeviceAttributionAtoms(TestCase):
                 sum_atom_values(fabrication_atoms))
 
     def test_within_journey_reuse_splits_by_occurrence_ratios(self):
-        """Test that a need reused in two bundles of one journey yields one atom per slot, each carrying half
+        """Test that a need reused in two recurrent device needs of one journey yields one atom per slot, each carrying half
         of its atom_value (the occurrence ratios sum to 1)."""
         for phase in LifeCyclePhases:
             reused_atoms = [
                 a for a in atoms_of(self.device, phase)
                 if a.recn == self.cpu_active_need and a.up == self.low_ci_up]
-            self.assertEqual({self.main_bundle.id, self.reuse_bundle.id}, {a.redn.id for a in reused_atoms})
+            self.assertEqual({self.main_device_need.id, self.reused_device_need.id}, {a.redn.id for a in reused_atoms})
             atom_value = self.device.atom_value(self.cpu_active_need, self.low_ci_up, phase)
             half = ExplainableQuantity(0.5 * u.dimensionless, "half")
             for atom in reused_atoms:
@@ -934,9 +934,9 @@ class TestEdgeDeviceUnusedComponentsChassisPool(TestCase):
         cls.cpu_need = RecurrentEdgeComponentNeed(
             "pool cpu need", edge_component=cls.cpu,
             recurrent_need=SourceRecurrentValues(Quantity(np.array([1] * 168, dtype=np.float32), u.cpu_core)))
-        bundle = RecurrentEdgeDeviceNeed(
-            "pool bundle", edge_device=cls.device, recurrent_edge_component_needs=[cls.cpu_need])
-        function = EdgeFunction("pool function", recurrent_edge_device_needs=[bundle], recurrent_server_needs=[])
+        device_need = RecurrentEdgeDeviceNeed(
+            "pool device need", edge_device=cls.device, recurrent_edge_component_needs=[cls.cpu_need])
+        function = EdgeFunction("pool function", recurrent_edge_device_needs=[device_need], recurrent_server_needs=[])
         journey = EdgeUsageJourney("pool journey", edge_functions=[function])
         network = Network("pool network", SourceValue(0.05 * u.kWh / u.GB))
         cls.up = EdgeUsagePattern(
@@ -956,10 +956,10 @@ class TestEdgeDeviceUnusedComponentsChassisPool(TestCase):
         rsn_cpu_need = RecurrentEdgeComponentNeed(
             "rsn cpu need", edge_component=cls.rsn_cpu,
             recurrent_need=SourceRecurrentValues(Quantity(np.array([1] * 168, dtype=np.float32), u.cpu_core)))
-        rsn_bundle = RecurrentEdgeDeviceNeed(
-            "rsn bundle", edge_device=cls.rsn_device, recurrent_edge_component_needs=[rsn_cpu_need])
+        rsn_device_need = RecurrentEdgeDeviceNeed(
+            "rsn device need", edge_device=cls.rsn_device, recurrent_edge_component_needs=[rsn_cpu_need])
         used_function = EdgeFunction(
-            "rsn used function", recurrent_edge_device_needs=[rsn_bundle], recurrent_server_needs=[])
+            "rsn used function", recurrent_edge_device_needs=[rsn_device_need], recurrent_server_needs=[])
         used_journey = EdgeUsageJourney(
             "rsn used journey", edge_functions=[used_function])
         cls.used_up = EdgeUsagePattern(
@@ -1054,16 +1054,16 @@ class TestEdgeDeviceUnusedComponentsChassisPool(TestCase):
         cpu_need = RecurrentEdgeComponentNeed(
             "carrierless cpu need", edge_component=cpu,
             recurrent_need=SourceRecurrentValues(Quantity(np.array([1] * 168, dtype=np.float32), u.cpu_core)))
-        used_bundle = RecurrentEdgeDeviceNeed(
-            "carrierless used bundle", edge_device=device, recurrent_edge_component_needs=[cpu_need])
+        used_device_need = RecurrentEdgeDeviceNeed(
+            "carrierless used device need", edge_device=device, recurrent_edge_component_needs=[cpu_need])
         used_function = EdgeFunction(
-            "carrierless used function", recurrent_edge_device_needs=[used_bundle], recurrent_server_needs=[])
+            "carrierless used function", recurrent_edge_device_needs=[used_device_need], recurrent_server_needs=[])
         used_journey = EdgeUsageJourney(
             "carrierless used journey", edge_functions=[used_function])
-        empty_bundle = RecurrentEdgeDeviceNeed(
-            "carrierless bundle", edge_device=device, recurrent_edge_component_needs=[])
+        empty_device_need = RecurrentEdgeDeviceNeed(
+            "carrierless empty device need", edge_device=device, recurrent_edge_component_needs=[])
         function = EdgeFunction(
-            "carrierless function", recurrent_edge_device_needs=[empty_bundle], recurrent_server_needs=[])
+            "carrierless function", recurrent_edge_device_needs=[empty_device_need], recurrent_server_needs=[])
         journey = EdgeUsageJourney(
             "carrierless journey", edge_functions=[function])
         network = Network("carrierless network", SourceValue(0.05 * u.kWh / u.GB))

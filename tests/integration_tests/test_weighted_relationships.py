@@ -113,8 +113,8 @@ class TestWeightedRelationships(TestCase):
         self.assertEqual(system_json, system_to_json(reloaded_system, save_computed_state=False))
 
     def test_edge_plural_relationship_and_pattern_span_round_trip(self):
-        first = EdgeUsageJourney("first round-trip edge bundle", [])
-        second = EdgeUsageJourney("second round-trip edge bundle", [])
+        first = EdgeUsageJourney("first round-trip edge journey", [])
+        second = EdgeUsageJourney("second round-trip edge journey", [])
         pattern = EdgeUsagePattern(
             "round-trip edge pattern", [first, second], Network.wifi_network(), Countries.FRANCE(),
             create_source_hourly_values_from_list([1], datetime(2026, 1, 1)),

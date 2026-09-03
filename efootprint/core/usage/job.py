@@ -182,7 +182,7 @@ class JobBase(ModelingObject):
                     delay_between_uj_start_and_job_evt += step_times_per_journey * uj_step.user_time_spent
         else:  # usage_pattern is an EdgeUsagePattern
             job_occurrences = EmptyExplainableObject()
-            # Only server needs reachable through this pattern's selected bundles contribute. Repeated
+            # Only server needs reachable through this pattern's selected edge usage journeys contribute. Repeated
             # containment paths are already folded into each need's per-pattern unitary volume.
             for recurrent_server_need in usage_pattern.recurrent_server_needs:
                 if self not in recurrent_server_need.jobs:

@@ -27,7 +27,7 @@ class TestMultiJourneyScaling(TestCase):
             self.assertEqual(list(topology.edge_journeys), list(pattern.edge_usage_journeys))
 
     def test_hourly_caches_follow_paths_and_distinct_pattern_need_pairs(self):
-        """Test web arrays follow actual paths while shared edge arrays ignore bundle path multiplicity."""
+        """Test web arrays follow actual paths while shared edge arrays ignore journey path multiplicity."""
         pattern_count = 2
         journeys_per_pattern = 4
         topology = build_synthetic_topology(

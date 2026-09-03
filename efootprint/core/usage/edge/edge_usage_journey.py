@@ -13,7 +13,7 @@ if TYPE_CHECKING:
 
 
 class EdgeUsageJourney(ModelingObject):
-    """A reusable functionality bundle composed of {class:EdgeFunction}s and applied by an {class:EdgeUsagePattern}."""
+    """A reusable set of {class:EdgeFunction}s applied together by an {class:EdgeUsagePattern}."""
 
     disambiguation = (
         "Use {class:EdgeUsageJourney} for hardware that runs continuously, like a sensor that captures data "
@@ -22,7 +22,7 @@ class EdgeUsageJourney(ModelingObject):
 
     param_descriptions = {
         "edge_functions": (
-            "{class:EdgeFunction}s active in this bundle, each describing what runs on devices and what is sent "
+            "{class:EdgeFunction}s active in this journey, each describing what runs on devices and what is sent "
             "to servers."),
     }
 

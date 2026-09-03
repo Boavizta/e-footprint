@@ -72,13 +72,13 @@ class TestPerUsagePatternImpactCascade(TestCase):
             base_compute_consumption=SourceValue(0 * u.cpu_core),
         )
 
-    def test_multiple_edge_bundles_count_hardware_once_and_are_order_invariant(self):
+    def test_multiple_edge_journeys_count_hardware_once_and_are_order_invariant(self):
         component = EdgeWorkloadComponent.from_defaults(
-            "multi-bundle component", carbon_footprint_fabrication_per_unit=SourceValue(20 * u.kg),
+            "multi-journey component", carbon_footprint_fabrication_per_unit=SourceValue(20 * u.kg),
             power_per_unit=SourceValue(10 * u.W), idle_power_per_unit=SourceValue(1 * u.W),
             lifespan=SourceValue(1 * u.year))
         device = EdgeDevice.from_defaults(
-            "multi-bundle device", structure_carbon_footprint_fabrication=SourceValue(10 * u.kg),
+            "multi-journey device", structure_carbon_footprint_fabrication=SourceValue(10 * u.kg),
             components=[component], lifespan=SourceValue(1 * u.year))
 
         def need(name, value):
@@ -90,9 +90,9 @@ class TestPerUsagePatternImpactCascade(TestCase):
         tiny_need_a = need("tiny need a", 3e-8)
         tiny_need_b = need("tiny need b", 3e-8)
         shared_need = need("shared need", 0)
-        storage = self._neutral_storage("multi-bundle storage")
-        server = self._server("multi-bundle server", storage)
-        job = Job.from_defaults("multi-bundle job", server=server)
+        storage = self._neutral_storage("multi-journey storage")
+        server = self._server("multi-journey server", storage)
+        job = Job.from_defaults("multi-journey job", server=server)
         shared_server_need = RecurrentServerNeed(
             "shared server need", device,
             SourceRecurrentValues(Quantity(np.array([1] * 168, dtype=np.float32), u.occurrence)), [job])
@@ -101,20 +101,20 @@ class TestPerUsagePatternImpactCascade(TestCase):
             device_need = RecurrentEdgeDeviceNeed(f"{name} device need", device, component_needs)
             return EdgeUsageJourney(name, [EdgeFunction(f"{name} function", [device_need], list(server_needs))])
 
-        first = journey("first bundle", [large_need])
-        second = journey("second bundle", [tiny_need_a, shared_need], [shared_server_need])
-        third = journey("third bundle", [tiny_need_b, shared_need], [shared_server_need])
+        first = journey("first journey", [large_need])
+        second = journey("second journey", [tiny_need_a, shared_need], [shared_server_need])
+        third = journey("third journey", [tiny_need_b, shared_need], [shared_server_need])
         pattern = EdgeUsagePattern(
-            "multi-bundle pattern", [first], Network.wifi_network(),
-            self._country("multi-bundle country", 100 * u.g / u.kWh),
+            "multi-journey pattern", [first], Network.wifi_network(),
+            self._country("multi-journey country", 100 * u.g / u.kWh),
             create_source_hourly_values_from_list([1], datetime(2026, 1, 5)),
             usage_span=SourceValue(1 * u.hour))
-        system = System("multi-bundle system", [], [pattern])
+        system = System("multi-journey system", [], [pattern])
 
-        one_bundle_fabrication = device.instances_fabrication_footprint_per_usage_pattern[pattern].magnitude.copy()
+        one_journey_fabrication = device.instances_fabrication_footprint_per_usage_pattern[pattern].magnitude.copy()
         pattern.edge_usage_journeys = [first, second, third]
         np.testing.assert_array_equal(
-            one_bundle_fabrication, device.instances_fabrication_footprint_per_usage_pattern[pattern].magnitude)
+            one_journey_fabrication, device.instances_fabrication_footprint_per_usage_pattern[pattern].magnitude)
         self.assertEqual(2, sum(
             path.nb_occurrences for path in pattern.containment_inventory.component_need_paths
             if path.recurrent_edge_component_need == shared_need))

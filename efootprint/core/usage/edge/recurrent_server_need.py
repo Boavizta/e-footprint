@@ -80,7 +80,7 @@ class RecurrentServerNeed(ModelingObject):
         
     @computed_dict(keys="edge_usage_patterns")
     def unitary_hourly_volume_per_usage_pattern(self, usage_pattern: "EdgeUsagePattern"):
-        """Hourly job-trigger volume for one edge device, derived by replaying the typical week over the deployment calendar and scaling by the need's containment-path count across selected bundles."""
+        """Hourly job-trigger volume for one edge device, derived by replaying the typical week over the deployment calendar and scaling by the need's containment-path count across selected edge usage journeys."""
         unitary_hourly_volume = self.recurrent_volume_per_edge_device.generate_hourly_quantities_over_timespan(
             usage_pattern.nb_deployments_in_parallel,
             usage_pattern.country.timezone)
