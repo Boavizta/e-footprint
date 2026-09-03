@@ -19,7 +19,8 @@ You are reviewing the diff of the last commit. You are a critic, not a fixer. Yo
 
    - **Complexity** — recursive traversal, multi-layer indirection, or private helpers that could be a flat loop or direct inline logic.
    - **Dead defensive code** — code guarding hypothetical cases not grounded in real data or an enforced invariant.
-   - **Missed invariant** — a constraint that is assumed downstream but not asserted at the earliest possible layer.
+   - **Missed invariant** — a constraint assumed downstream but not enforced by its authoritative owner or at the earliest layer with the required domain context. Do not request duplicate semantic validation in transport or presentation layers.
+   - **Cross-path consistency** — when parsing, validation, rendering, or error-handling responsibility moves, inspect sibling creation, editing, preview, import/export, and relevant unit/integration/E2E paths for stale copies or expectations.
    - **Test quality** — piecemeal property assertions instead of full expected-state assertions; tests covering scenarios that can't actually happen.
    - **Integration coverage of new public-API consumption** — if the diff calls a public method/property/dict-attr on a `ModelingObject` subclass that no existing test path was reaching, flag whether the relevant integration fixture has an assertion that touches the new call site. `run_test_materialize_all_cached_properties` already covers new `cached_property` definitions; this rule catches the rest (plain `@property`, methods, dict lookups, new behavioural shapes on existing APIs).
    - **Convention violation** — anything contradicting `constitution.md` or `conventions.md`.
