@@ -102,19 +102,15 @@ class TestUsagePattern(unittest.TestCase):
             "All elements in 'devices' must be instances of Device, got [<class 'unittest.mock.MagicMock'>]"
         )
 
-    def test_initialisation_with_wrong_usage_journey_type_raises_right_error(self):
+    def test_initialisation_rejects_wrong_usage_journey_type(self):
+        """Test initialization delegates usage-journey key type validation to ModelingObject."""
         wrong_usage_journey = MagicMock(spec=ModelingObject)
-        with self.assertRaises(TypeError) as context:
-            usage_pattern = UsagePattern(
+        with self.assertRaises(TypeError):
+            UsagePattern(
                 "usage_pattern", [wrong_usage_journey], [self.device], self.usage_pattern.network,
                 self.usage_pattern.country,
                 hourly_occurrences=create_random_source_hourly_values()
             )
-        self.assertEqual(
-            str(context.exception),
-            "All keys in 'usage_journeys' must be instances of UsageJourney, got "
-            "[<class 'unittest.mock.MagicMock'>]"
-        )
 
 
 if __name__ == '__main__':

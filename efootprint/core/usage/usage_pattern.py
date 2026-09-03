@@ -48,20 +48,15 @@ class UsagePattern(ModelingObject):
         self.hourly_occurrences = hourly_occurrences.to(u.occurrence).set_label("Hourly nb of pattern occurrences")
         normalized_journeys = PositiveWeightedExplainableObjectDict(to_weighted_explainable_object_dict(
             usage_journeys, weight_label=self.weight_labels["usage_journeys"]))
-        invalid_types = [type(journey) for journey in normalized_journeys if not isinstance(journey, UsageJourney)]
-        if invalid_types:
-            raise TypeError(f"All keys in 'usage_journeys' must be instances of UsageJourney, got {invalid_types}")
         self.usage_journeys = normalized_journeys
-        self._validate_usage_journeys()
+        self._validate_has_usage_journey()
         self.devices = devices
         self.network = network
         self.country = country
 
-    def _validate_usage_journeys(self):
+    def _validate_has_usage_journey(self):
         if not self.usage_journeys:
             raise ValueError(f"UsagePattern '{self.name}' requires at least one usage journey")
-        if any(weight.value.magnitude <= 0 for weight in self.usage_journeys.values()):
-            raise ValueError(f"UsagePattern '{self.name}' journey weights must be strictly positive")
 
     @property
     def jobs(self) -> List[Job]:
@@ -69,8 +64,8 @@ class UsagePattern(ModelingObject):
 
     @computed_attribute(guard=True)
     def usage_journeys_validation(self):
-        """Validates that the pattern always contains journeys with strictly positive weights."""
-        self._validate_usage_journeys()
+        """Validates that the pattern always contains at least one journey."""
+        self._validate_has_usage_journey()
         return EmptyExplainableObject()
 
     @computed_attribute
