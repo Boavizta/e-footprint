@@ -264,8 +264,7 @@ class JobBase(ModelingObject):
     def occurrence_coordinates(self) -> tuple[JobOccurrenceCoordinate, ...]:
         web_coordinates = (
             JobOccurrenceCoordinate(up, journey=journey, step=step)
-            for step in self.usage_journey_steps for journey in step.usage_journeys for up in journey.usage_patterns
-            if journey in up.usage_journeys)
+            for step in self.usage_journey_steps for journey in step.usage_journeys for up in journey.usage_patterns)
         edge_coordinates = (
             JobOccurrenceCoordinate(up, recurrent_server_need=rsn)
             for rsn in self.recurrent_server_needs for up in rsn.edge_usage_patterns)
@@ -321,8 +320,6 @@ class JobBase(ModelingObject):
         for uj_step in self.usage_journey_steps:
             for journey in uj_step.usage_journeys:
                 for up in journey.usage_patterns:
-                    if journey not in up.usage_journeys:
-                        continue
                     coordinate = JobOccurrenceCoordinate(up, journey=journey, step=uj_step)
                     cell_builds.append((
                         dict(up=up, journey=journey, step=uj_step),

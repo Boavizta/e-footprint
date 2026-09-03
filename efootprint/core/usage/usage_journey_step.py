@@ -68,7 +68,6 @@ class UsageJourneyStep(ModelingObject):
         return tuple(
             UsageJourneyStepCoordinate(pattern, journey)
             for journey in self.usage_journeys for pattern in journey.usage_patterns
-            if journey in pattern.usage_journeys
         )
 
     @property
