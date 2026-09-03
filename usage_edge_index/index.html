@@ -19,7 +19,7 @@
       
       
       <link rel="icon" href="../assets/images/favicon.png">
-      <meta name="generator" content="mkdocs-1.6.1, mkdocs-material-9.7.6">
+      <meta name="generator" content="mkdocs-1.6.1, mkdocs-material-9.7.7">
     
     
       
@@ -27,7 +27,7 @@
       
     
     
-      <link rel="stylesheet" href="../assets/stylesheets/main.484c7ddc.min.css">
+      <link rel="stylesheet" href="../assets/stylesheets/main.ec1eaa64.min.css">
       
       
 
@@ -3268,14 +3268,13 @@ over its lifetime — not the visits a user pays to a centralized service,
 but the recurring activity that runs while devices are in the field.</p>
 <p>The shape is three layers deep.</p>
 <p>An <a href="../EdgeUsagePattern/">EdgeUsagePattern</a> is the deployment schedule in a given
-<a href="../Country/">Country</a>: an hourly timeseries of <a href="../EdgeUsageJourney/">EdgeUsageJourney</a>
-<em>starts</em>, expressed in the country's local timezone. Each start is one
-device entering service.</p>
-<p>An <a href="../EdgeUsageJourney/">EdgeUsageJourney</a> is what that device does from the moment
-it is deployed until it is retired — <a href="../EdgeUsageJourney/#usage_span">EdgeUsageJourney.usage_span</a>
-duration later. The journey is composed of <a href="../EdgeFunction/">EdgeFunction</a>s, each
-covering one coherent feature of the deployment (a telemetry loop, a
-camera capture cycle, a control task).</p>
+<a href="../Country/">Country</a>: an hourly timeseries of deployment starts, expressed in
+the country's local timezone, plus the <a href="../EdgeUsagePattern/#usage_span">EdgeUsagePattern.usage_span</a>
+for which each deployed device remains in service. It selects a non-empty,
+duplicate-free list of <a href="../EdgeUsageJourney/">EdgeUsageJourney</a> functionality bundles.</p>
+<p>An <a href="../EdgeUsageJourney/">EdgeUsageJourney</a> is a reusable functionality bundle composed
+of <a href="../EdgeFunction/">EdgeFunction</a>s, each covering one coherent feature of the
+deployment (a telemetry loop, a camera capture cycle, a control task).</p>
 <p>An <a href="../EdgeFunction/">EdgeFunction</a> expresses load in two directions. On the
 device side it carries a list of <a href="../RecurrentEdgeDeviceNeed/">RecurrentEdgeDeviceNeed</a>s,
 each bundling the per-component demand
@@ -3343,7 +3342,7 @@ that ties these objects to the rest of e-footprint.</p>
       <script id="__config" type="application/json">{"annotate": null, "base": "..", "features": ["content.code.copy"], "search": "../assets/javascripts/workers/search.2c215733.min.js", "tags": null, "translations": {"clipboard.copied": "Copied to clipboard", "clipboard.copy": "Copy to clipboard", "search.result.more.one": "1 more on this page", "search.result.more.other": "# more on this page", "search.result.none": "No matching documents", "search.result.one": "1 matching document", "search.result.other": "# matching documents", "search.result.placeholder": "Type to start searching", "search.result.term.missing": "Missing", "select.version": "Select version"}, "version": null}</script>
     
     
-      <script src="../assets/javascripts/bundle.79ae519e.min.js"></script>
+      <script src="../assets/javascripts/bundle.d7400e89.min.js"></script>
       
     
   </body>

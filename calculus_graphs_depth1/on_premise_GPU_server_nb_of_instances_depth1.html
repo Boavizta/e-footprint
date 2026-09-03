@@ -31,7 +31,7 @@
         </center>
         <style type="text/css">
 
-             #mynetwork_dbe395 {
+             #mynetwork_ea34b6 {
                  width: 760px;
                  height: 300px;
                  background-color: #ffffff;
@@ -53,7 +53,7 @@
         <div class="card" style="width: 100%">
             
             
-            <div id="mynetwork_dbe395" class="card-body"></div>
+            <div id="mynetwork_ea34b6" class="card-body"></div>
         </div>
 
         
@@ -83,12 +83,12 @@
 
               // This method is responsible for drawing the graph, returns the drawn network
               function drawGraph() {
-                  var container = document.getElementById('mynetwork_dbe395');
+                  var container = document.getElementById('mynetwork_ea34b6');
 
                   
 
                   // parsing and collecting nodes and edges from the python
-                  nodes = new vis.DataSet([{"color": null, "id": "Hourly number of instances", "label": "Hourly number of\ninstances", "shape": "dot", "size": 15, "title": "Hourly number of instances\n=\nHourly raw number of instances depending on not being empty User defined number\nof instances logically dependent on Server type\n=\n26298 values from 2025-01-01 00:00:00+00:00 to 2028-01-01 18:00:00+00:00:\nfirst=0.000231 , last=0.00054 , mean=0.000385 , min=0.0000772 , max=0.000694 ,\nstd=0.0002 depending on not being empty no value logically dependent on\non-premise\n=\n26298 values from 2025-01-01 00:00:00+00:00 to 2028-01-01 18:00:00+00:00:\nfirst=1 , last=1 , mean=1 , min=1 , max=1 , std=0", "x": 0.0, "y": 1200}, {"color": null, "id": "Hourly raw number of instances", "label": "Hourly raw number of\ninstances", "shape": "dot", "size": 15, "title": "Hourly raw number of instances\n=\nHour by hour ram need / Available RAM per instance max compared with Hour by\nhour compute need / Available CPU per instance\n=\n26298 values from 2025-01-01 00:00:00+00:00 to 2028-01-01 18:00:00+00:00:\nfirst=41.7 kB ram, last=97.2 kB ram, mean=69.4 kB ram, min=13.9 kB ram, max=125\nkB ram, std=35.9 kB ram / 288 GB ram max compared with 26298 values from\n2025-01-01 00:00:00+00:00 to 2028-01-01 18:00:00+00:00: first=0.000833 gpu,\nlast=0.00194 gpu, mean=0.00139 gpu, min=0.000278 gpu, max=0.0025 gpu,\nstd=0.000718 gpu / 3.6 gpu\n=\n26298 values from 2025-01-01 00:00:00+00:00 to 2028-01-01 18:00:00+00:00:\nfirst=0.000231 , last=0.00054 , mean=0.000385 , min=0.0000772 , max=0.000694 ,\nstd=0.0002", "x": -400.0, "y": 1050}, {"color": null, "id": "User defined number of instances", "label": "User defined number\nof instances", "shape": "dot", "size": 15, "title": "User defined number of instances = no value", "x": 0.0, "y": 1050}, {"color": "darkred", "id": "Server type", "label": "Server type", "shape": "dot", "size": 15, "title": "Server type = on-premise", "x": 400.0, "y": 1050}]);
+                  nodes = new vis.DataSet([{"color": null, "id": "Hourly number of instances", "label": "Hourly number of\ninstances", "shape": "dot", "size": 15, "title": "Hourly number of instances\n=\nHourly raw number of instances depending on not being empty User defined number\nof instances logically dependent on Server type\n=\n26298 values from 2025-01-01 00:00:00+00:00 to 2028-01-01 18:00:00+00:00:\nfirst=0.000694 , last=0.000231 , mean=0.000385 , min=0.0000772 , max=0.000694 ,\nstd=0.0002 depending on not being empty no value logically dependent on\non-premise\n=\n26298 values from 2025-01-01 00:00:00+00:00 to 2028-01-01 18:00:00+00:00:\nfirst=1 , last=1 , mean=1 , min=1 , max=1 , std=0", "x": 0.0, "y": 1200}, {"color": null, "id": "Hourly raw number of instances", "label": "Hourly raw number of\ninstances", "shape": "dot", "size": 15, "title": "Hourly raw number of instances\n=\nHour by hour ram need / Available RAM per instance max compared with Hour by\nhour compute need / Available CPU per instance\n=\n26298 values from 2025-01-01 00:00:00+00:00 to 2028-01-01 18:00:00+00:00:\nfirst=125 kB ram, last=41.7 kB ram, mean=69.4 kB ram, min=13.9 kB ram, max=125\nkB ram, std=36 kB ram / 288 GB ram max compared with 26298 values from\n2025-01-01 00:00:00+00:00 to 2028-01-01 18:00:00+00:00: first=0.0025 gpu,\nlast=0.000833 gpu, mean=0.00139 gpu, min=0.000278 gpu, max=0.0025 gpu,\nstd=0.000719 gpu / 3.6 gpu\n=\n26298 values from 2025-01-01 00:00:00+00:00 to 2028-01-01 18:00:00+00:00:\nfirst=0.000694 , last=0.000231 , mean=0.000385 , min=0.0000772 , max=0.000694 ,\nstd=0.0002", "x": -400.0, "y": 1050}, {"color": null, "id": "User defined number of instances", "label": "User defined number\nof instances", "shape": "dot", "size": 15, "title": "User defined number of instances = no value", "x": 0.0, "y": 1050}, {"color": "darkred", "id": "Server type", "label": "Server type", "shape": "dot", "size": 15, "title": "Server type = on-premise", "x": 400.0, "y": 1050}]);
                   edges = new vis.DataSet([{"arrows": "to", "from": "Hourly raw number of instances", "to": "Hourly number of instances"}, {"arrows": "to", "from": "User defined number of instances", "to": "Hourly number of instances"}, {"arrows": "to", "from": "Server type", "to": "Hourly number of instances"}]);
 
                   nodeColors = {};

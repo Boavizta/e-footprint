@@ -31,7 +31,7 @@
         </center>
         <style type="text/css">
 
-             #mynetwork_fca5dc {
+             #mynetwork_7efbc1 {
                  width: 760px;
                  height: 300px;
                  background-color: #ffffff;
@@ -53,7 +53,7 @@
         <div class="card" style="width: 100%">
             
             
-            <div id="mynetwork_fca5dc" class="card-body"></div>
+            <div id="mynetwork_7efbc1" class="card-body"></div>
         </div>
 
         
@@ -83,12 +83,12 @@
 
               // This method is responsible for drawing the graph, returns the drawn network
               function drawGraph() {
-                  var container = document.getElementById('mynetwork_fca5dc');
+                  var container = document.getElementById('mynetwork_7efbc1');
 
                   
 
                   // parsing and collecting nodes and edges from the python
-                  nodes = new vis.DataSet([{"color": null, "id": "Cumulative storage need for Manually defined job", "label": "Cumulative storage\nneed for Manually\ndefined job", "shape": "dot", "size": 15, "title": "Cumulative storage need for Manually defined job\n=\nHourly data stored across usage patterns * Data replication factor cumulative\nsum with automatic dumps Data storage duration\n=\n105192 values from 2025-01-01 00:00:00+00:00 to 2037-01-01 00:00:00+00:00:\nfirst=706 kB stored, last=60.7 kB stored, mean=1.03 TB stored, min=60.7 kB\nstored, max=2.07 TB stored, std=596 GB stored * 3 cumulative sum with automatic\ndumps 2 yr\n=\n105192 values from 2025-01-01 00:00:00+00:00 to 2037-01-01 00:00:00+00:00:\nfirst=2.12 MB stored, last=18100 TB stored, mean=53300 TB stored, min=2.12 MB\nstored, max=99600 TB stored, std=31400 TB stored", "x": 0.0, "y": 1350}, {"color": null, "id": "Hourly data stored across usage patterns", "label": "Hourly data stored\nacross usage\npatterns", "shape": "dot", "size": 15, "title": "Hourly data stored across usage patterns\n=\nHourly data stored in usage pattern + Hourly data stored in Default edge usage\npattern\n=\n26298 values from 2025-01-01 00:00:00+00:00 to 2028-01-01 18:00:00+00:00:\nfirst=600 kB stored, last=1.4 MB stored, mean=999 kB stored, min=200 kB stored,\nmax=1.8 MB stored, std=517 kB stored + 105192 values from 2025-01-01\n00:00:00+00:00 to 2037-01-01 00:00:00+00:00: first=106 kB stored, last=60.7 kB\nstored, mean=1.03 TB stored, min=0, max=2.07 TB stored, std=596 GB stored\n=\n105192 values from 2025-01-01 00:00:00+00:00 to 2037-01-01 00:00:00+00:00:\nfirst=706 kB stored, last=60.7 kB stored, mean=1.03 TB stored, min=60.7 kB\nstored, max=2.07 TB stored, std=596 GB stored", "x": -300.0, "y": 1200}, {"color": null, "id": "Data replication factor", "label": "Data replication\nfactor", "shape": "dot", "size": 15, "title": "Data replication factor = 3", "x": 0.0, "y": 1200}, {"color": null, "id": "Data storage duration", "label": "Data storage\nduration", "shape": "dot", "size": 15, "title": "Data storage duration = 2 yr", "x": 300.0, "y": 1200}]);
+                  nodes = new vis.DataSet([{"color": null, "id": "Cumulative storage need for Manually defined job", "label": "Cumulative storage\nneed for Manually\ndefined job", "shape": "dot", "size": 15, "title": "Cumulative storage need for Manually defined job\n=\nHourly data stored across usage patterns * Data replication factor cumulative\nsum with automatic dumps Data storage duration\n=\n105192 values from 2025-01-01 00:00:00+00:00 to 2037-01-01 00:00:00+00:00:\nfirst=1.91 MB stored, last=60.7 kB stored, mean=1.03 TB stored, min=60.7 kB\nstored, max=2.07 TB stored, std=596 GB stored * 3 cumulative sum with automatic\ndumps 2 yr\n=\n105192 values from 2025-01-01 00:00:00+00:00 to 2037-01-01 00:00:00+00:00:\nfirst=5.72 MB stored, last=18100 TB stored, mean=53300 TB stored, min=5.72 MB\nstored, max=99600 TB stored, std=31400 TB stored", "x": 0.0, "y": 1350}, {"color": null, "id": "Hourly data stored across usage patterns", "label": "Hourly data stored\nacross usage\npatterns", "shape": "dot", "size": 15, "title": "Hourly data stored across usage patterns\n=\nHourly data stored in usage pattern + Hourly data stored in Default edge usage\npattern\n=\n26298 values from 2025-01-01 00:00:00+00:00 to 2028-01-01 18:00:00+00:00:\nfirst=1.8 MB stored, last=600 kB stored, mean=999 kB stored, min=200 kB stored,\nmax=1.8 MB stored, std=518 kB stored + 105192 values from 2025-01-01\n00:00:00+00:00 to 2037-01-01 00:00:00+00:00: first=106 kB stored, last=60.7 kB\nstored, mean=1.03 TB stored, min=0, max=2.07 TB stored, std=596 GB stored\n=\n105192 values from 2025-01-01 00:00:00+00:00 to 2037-01-01 00:00:00+00:00:\nfirst=1.91 MB stored, last=60.7 kB stored, mean=1.03 TB stored, min=60.7 kB\nstored, max=2.07 TB stored, std=596 GB stored", "x": -350.0, "y": 1200}, {"color": null, "id": "Data replication factor", "label": "Data replication\nfactor", "shape": "dot", "size": 15, "title": "Data replication factor = 3", "x": 0.0, "y": 1200}, {"color": null, "id": "Data storage duration", "label": "Data storage\nduration", "shape": "dot", "size": 15, "title": "Data storage duration = 2 yr", "x": 350.0, "y": 1200}]);
                   edges = new vis.DataSet([{"arrows": "to", "from": "Hourly data stored across usage patterns", "to": "Cumulative storage need for Manually defined job"}, {"arrows": "to", "from": "Data replication factor", "to": "Cumulative storage need for Manually defined job"}, {"arrows": "to", "from": "Data storage duration", "to": "Cumulative storage need for Manually defined job"}]);
 
                   nodeColors = {};

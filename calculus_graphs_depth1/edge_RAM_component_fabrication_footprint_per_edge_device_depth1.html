@@ -31,7 +31,7 @@
         </center>
         <style type="text/css">
 
-             #mynetwork_e65910 {
+             #mynetwork_adec52 {
                  width: 760px;
                  height: 300px;
                  background-color: #ffffff;
@@ -53,7 +53,7 @@
         <div class="card" style="width: 100%">
             
             
-            <div id="mynetwork_e65910" class="card-body"></div>
+            <div id="mynetwork_adec52" class="card-body"></div>
         </div>
 
         
@@ -83,12 +83,12 @@
 
               // This method is responsible for drawing the graph, returns the drawn network
               function drawGraph() {
-                  var container = document.getElementById('mynetwork_e65910');
+                  var container = document.getElementById('mynetwork_adec52');
 
                   
 
                   // parsing and collecting nodes and edges from the python
-                  nodes = new vis.DataSet([{"color": null, "id": "Total fabrication footprint per edge device across usage patterns", "label": "Total fabrication\nfootprint per edge\ndevice across usage\npatterns", "shape": "dot", "size": 15, "title": "Total fabrication footprint per edge device across usage patterns\n=\nHourly fabrication footprint per edge device for Default edge usage pattern\n=\n105192 values from 2025-01-01 00:00:00+00:00 to 2037-01-01 00:00:00+00:00:\nfirst=404 mg, last=231 mg, mean=3.93 t, min=0, max=7.86 t, std=2.27 t\n=\n105192 values from 2025-01-01 00:00:00+00:00 to 2037-01-01 00:00:00+00:00:\nfirst=404 mg, last=231 mg, mean=3.93 t, min=0, max=7.86 t, std=2.27 t", "x": 0.0, "y": 750}, {"color": null, "id": "Hourly fabrication footprint per edge device for Default edge usage pattern", "label": "Hourly fabrication\nfootprint per edge\ndevice for Default\nedge usage pattern", "shape": "dot", "size": 15, "title": "Hourly fabrication footprint per edge device for Default edge usage pattern\n=\nHourly nb of edge usage journeys in parallel * (Carbon footprint fabrication /\nLifespan) * one hour\n=\n105192 values from 2025-01-01 00:00:00+00:00 to 2037-01-01 00:00:00+00:00:\nfirst=1.06 , last=0.607 , mean=10.3 M, min=0, max=20.7 M, std=5.96 M * (20 kg /\n6 yr) * 1 h\n=\n105192 values from 2025-01-01 00:00:00+00:00 to 2037-01-01 00:00:00+00:00:\nfirst=404 mg, last=231 mg, mean=3.93 t, min=0, max=7.86 t, std=2.27 t", "x": 0.0, "y": 600}]);
+                  nodes = new vis.DataSet([{"color": null, "id": "Total fabrication footprint per edge device across usage patterns", "label": "Total fabrication\nfootprint per edge\ndevice across usage\npatterns", "shape": "dot", "size": 15, "title": "Total fabrication footprint per edge device across usage patterns\n=\nHourly fabrication footprint per edge device for Default edge usage pattern\n=\n105192 values from 2025-01-01 00:00:00+00:00 to 2037-01-01 00:00:00+00:00:\nfirst=404 mg, last=231 mg, mean=3.93 t, min=0, max=7.86 t, std=2.27 t\n=\n105192 values from 2025-01-01 00:00:00+00:00 to 2037-01-01 00:00:00+00:00:\nfirst=404 mg, last=231 mg, mean=3.93 t, min=0, max=7.86 t, std=2.27 t", "x": 0.0, "y": 750}, {"color": null, "id": "Hourly fabrication footprint per edge device for Default edge usage pattern", "label": "Hourly fabrication\nfootprint per edge\ndevice for Default\nedge usage pattern", "shape": "dot", "size": 15, "title": "Hourly fabrication footprint per edge device for Default edge usage pattern\n=\nHourly nb of deployments in parallel * (Carbon footprint fabrication / Lifespan)\n* one hour\n=\n105192 values from 2025-01-01 00:00:00+00:00 to 2037-01-01 00:00:00+00:00:\nfirst=1.06 , last=0.607 , mean=10.3 M, min=0, max=20.7 M, std=5.96 M * (20 kg /\n6 yr) * 1 h\n=\n105192 values from 2025-01-01 00:00:00+00:00 to 2037-01-01 00:00:00+00:00:\nfirst=404 mg, last=231 mg, mean=3.93 t, min=0, max=7.86 t, std=2.27 t", "x": 0.0, "y": 600}]);
                   edges = new vis.DataSet([{"arrows": "to", "from": "Hourly fabrication footprint per edge device for Default edge usage pattern", "to": "Total fabrication footprint per edge device across usage patterns"}]);
 
                   nodeColors = {};

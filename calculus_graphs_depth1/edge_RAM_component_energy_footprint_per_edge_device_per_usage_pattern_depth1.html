@@ -31,7 +31,7 @@
         </center>
         <style type="text/css">
 
-             #mynetwork_56e2d5 {
+             #mynetwork_39b01f {
                  width: 760px;
                  height: 300px;
                  background-color: #ffffff;
@@ -53,7 +53,7 @@
         <div class="card" style="width: 100%">
             
             
-            <div id="mynetwork_56e2d5" class="card-body"></div>
+            <div id="mynetwork_39b01f" class="card-body"></div>
         </div>
 
         
@@ -83,12 +83,12 @@
 
               // This method is responsible for drawing the graph, returns the drawn network
               function drawGraph() {
-                  var container = document.getElementById('mynetwork_56e2d5');
+                  var container = document.getElementById('mynetwork_39b01f');
 
                   
 
                   // parsing and collecting nodes and edges from the python
-                  nodes = new vis.DataSet([{"color": null, "id": "Energy footprint per edge device for Default edge usage pattern", "label": "Energy footprint per\nedge device for\nDefault edge usage\npattern", "shape": "dot", "size": 15, "title": "Energy footprint per edge device for Default edge usage pattern\n=\nHourly energy consumed by per edge device for Default edge usage pattern *\nAverage carbon intensity\n=\n105192 values from 2025-01-01 00:00:00+00:00 to 2037-01-01 00:00:00+00:00:\nfirst=4.25 Wh, last=2.43 Wh, mean=41.3 MWh, min=0, max=82.7 MWh, std=23.9 MWh *\n85 g/kWh\n=\n105192 values from 2025-01-01 00:00:00+00:00 to 2037-01-01 00:00:00+00:00:\nfirst=361 mg, last=206 mg, mean=3.51 t, min=0, max=7.03 t, std=2.03 t", "x": 0.0, "y": 1200}, {"color": null, "id": "Hourly energy consumed by per edge device for Default edge usage pattern", "label": "Hourly energy\nconsumed by per edge\ndevice for Default\nedge usage pattern", "shape": "dot", "size": 15, "title": "Hourly energy consumed by per edge device for Default edge usage pattern\n=\nHourly nb of edge usage journeys in parallel * Unitary power for Default edge\nusage pattern * one hour\n=\n105192 values from 2025-01-01 00:00:00+00:00 to 2037-01-01 00:00:00+00:00:\nfirst=1.06 , last=0.607 , mean=10.3 M, min=0, max=20.7 M, std=5.96 M * 105192\nvalues from 2025-01-01 00:00:00+00:00 to 2037-01-01 00:00:00+00:00: first=4 W,\nlast=4 W, mean=4 W, min=4 W, max=4 W, std=0 * 1 h\n=\n105192 values from 2025-01-01 00:00:00+00:00 to 2037-01-01 00:00:00+00:00:\nfirst=4.25 Wh, last=2.43 Wh, mean=41.3 MWh, min=0, max=82.7 MWh, std=23.9 MWh", "x": -225.0, "y": 1050}, {"color": null, "id": "Average carbon intensity", "label": "Average carbon\nintensity", "shape": "dot", "size": 15, "title": "Average carbon intensity = 85 g/kWh", "x": 225.0, "y": 1050}]);
+                  nodes = new vis.DataSet([{"color": null, "id": "Energy footprint per edge device for Default edge usage pattern", "label": "Energy footprint per\nedge device for\nDefault edge usage\npattern", "shape": "dot", "size": 15, "title": "Energy footprint per edge device for Default edge usage pattern\n=\nHourly energy consumed by per edge device for Default edge usage pattern *\nAverage carbon intensity\n=\n105192 values from 2025-01-01 00:00:00+00:00 to 2037-01-01 00:00:00+00:00:\nfirst=4.25 Wh, last=2.43 Wh, mean=41.3 MWh, min=0, max=82.7 MWh, std=23.9 MWh *\n85 g/kWh\n=\n105192 values from 2025-01-01 00:00:00+00:00 to 2037-01-01 00:00:00+00:00:\nfirst=361 mg, last=206 mg, mean=3.51 t, min=0, max=7.03 t, std=2.03 t", "x": 0.0, "y": 1200}, {"color": null, "id": "Hourly energy consumed by per edge device for Default edge usage pattern", "label": "Hourly energy\nconsumed by per edge\ndevice for Default\nedge usage pattern", "shape": "dot", "size": 15, "title": "Hourly energy consumed by per edge device for Default edge usage pattern\n=\nHourly nb of deployments in parallel * Unitary power for Default edge usage\npattern * one hour\n=\n105192 values from 2025-01-01 00:00:00+00:00 to 2037-01-01 00:00:00+00:00:\nfirst=1.06 , last=0.607 , mean=10.3 M, min=0, max=20.7 M, std=5.96 M * 105192\nvalues from 2025-01-01 00:00:00+00:00 to 2037-01-01 00:00:00+00:00: first=4 W,\nlast=4 W, mean=4 W, min=4 W, max=4 W, std=0 * 1 h\n=\n105192 values from 2025-01-01 00:00:00+00:00 to 2037-01-01 00:00:00+00:00:\nfirst=4.25 Wh, last=2.43 Wh, mean=41.3 MWh, min=0, max=82.7 MWh, std=23.9 MWh", "x": -225.0, "y": 1050}, {"color": null, "id": "Average carbon intensity", "label": "Average carbon\nintensity", "shape": "dot", "size": 15, "title": "Average carbon intensity = 85 g/kWh", "x": 225.0, "y": 1050}]);
                   edges = new vis.DataSet([{"arrows": "to", "from": "Hourly energy consumed by per edge device for Default edge usage pattern", "to": "Energy footprint per edge device for Default edge usage pattern"}, {"arrows": "to", "from": "Average carbon intensity", "to": "Energy footprint per edge device for Default edge usage pattern"}]);
 
                   nodeColors = {};

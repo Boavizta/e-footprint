@@ -31,7 +31,7 @@
         </center>
         <style type="text/css">
 
-             #mynetwork_b0e541 {
+             #mynetwork_79441e {
                  width: 760px;
                  height: 300px;
                  background-color: #ffffff;
@@ -53,7 +53,7 @@
         <div class="card" style="width: 100%">
             
             
-            <div id="mynetwork_b0e541" class="card-body"></div>
+            <div id="mynetwork_79441e" class="card-body"></div>
         </div>
 
         
@@ -83,12 +83,12 @@
 
               // This method is responsible for drawing the graph, returns the drawn network
               function drawGraph() {
-                  var container = document.getElementById('mynetwork_b0e541');
+                  var container = document.getElementById('mynetwork_79441e');
 
                   
 
                   // parsing and collecting nodes and edges from the python
-                  nodes = new vis.DataSet([{"color": null, "id": "Devices fabrication footprint", "label": "Devices fabrication\nfootprint", "shape": "dot", "size": 15, "title": "Devices fabrication footprint\n=\nFabrication footprint for usage pattern\n=\n26298 values from 2025-01-01 00:00:00+00:00 to 2028-01-01 18:00:00+00:00:\nfirst=10.2 g, last=23.7 g, mean=16.9 g, min=3.39 g, max=30.5 g, std=8.77 g\n=\n26298 values from 2025-01-01 00:00:00+00:00 to 2028-01-01 18:00:00+00:00:\nfirst=10.2 g, last=23.7 g, mean=16.9 g, min=3.39 g, max=30.5 g, std=8.77 g", "x": 0.0, "y": 750}, {"color": null, "id": "Fabrication footprint for usage pattern", "label": "Fabrication\nfootprint for usage\npattern", "shape": "dot", "size": 15, "title": "Fabrication footprint for usage pattern\n=\nusage pattern hourly nb of user journeys in parallel * (Carbon footprint\nfabrication * one hour / (Lifespan * Fraction of usage time))\n=\n26298 values from 2025-01-01 00:00:00+00:00 to 2028-01-01 18:00:00+00:00:\nfirst=1 , last=2.33 , mean=1.67 , min=0.333 , max=3 , std=0.862 * (156 kg * 1 h\n/ (6 yr * 7 h/d))\n=\n26298 values from 2025-01-01 00:00:00+00:00 to 2028-01-01 18:00:00+00:00:\nfirst=10.2 g, last=23.7 g, mean=16.9 g, min=3.39 g, max=30.5 g, std=8.77 g", "x": 0.0, "y": 600}]);
+                  nodes = new vis.DataSet([{"color": null, "id": "Devices fabrication footprint", "label": "Devices fabrication\nfootprint", "shape": "dot", "size": 15, "title": "Devices fabrication footprint\n=\nFabrication footprint for usage pattern\n=\n26298 values from 2025-01-01 00:00:00+00:00 to 2028-01-01 18:00:00+00:00:\nfirst=30.5 g, last=10.2 g, mean=16.9 g, min=3.39 g, max=30.5 g, std=8.78 g\n=\n26298 values from 2025-01-01 00:00:00+00:00 to 2028-01-01 18:00:00+00:00:\nfirst=30.5 g, last=10.2 g, mean=16.9 g, min=3.39 g, max=30.5 g, std=8.78 g", "x": 0.0, "y": 900}, {"color": null, "id": "Fabrication footprint for usage pattern", "label": "Fabrication\nfootprint for usage\npattern", "shape": "dot", "size": 15, "title": "Fabrication footprint for usage pattern\n=\nusage pattern hourly nb of journeys in parallel * (Carbon footprint fabrication\n* one hour / (Lifespan * Fraction of usage time))\n=\n26298 values from 2025-01-01 00:00:00+00:00 to 2028-01-01 18:00:00+00:00:\nfirst=3 , last=1 , mean=1.67 , min=0.333 , max=3 , std=0.863 * (156 kg * 1 h /\n(6 yr * 7 h/d))\n=\n26298 values from 2025-01-01 00:00:00+00:00 to 2028-01-01 18:00:00+00:00:\nfirst=30.5 g, last=10.2 g, mean=16.9 g, min=3.39 g, max=30.5 g, std=8.78 g", "x": 0.0, "y": 750}]);
                   edges = new vis.DataSet([{"arrows": "to", "from": "Fabrication footprint for usage pattern", "to": "Devices fabrication footprint"}]);
 
                   nodeColors = {};

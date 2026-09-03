@@ -19,7 +19,7 @@
       
       
       <link rel="icon" href="../assets/images/favicon.png">
-      <meta name="generator" content="mkdocs-1.6.1, mkdocs-material-9.7.6">
+      <meta name="generator" content="mkdocs-1.6.1, mkdocs-material-9.7.7">
     
     
       
@@ -27,7 +27,7 @@
       
     
     
-      <link rel="stylesheet" href="../assets/stylesheets/main.484c7ddc.min.css">
+      <link rel="stylesheet" href="../assets/stylesheets/main.ec1eaa64.min.css">
       
       
 
@@ -4276,7 +4276,7 @@
 <h2 id="calculated-attributes">Calculated attributes</h2>
 <h3 id="raw_nb_of_instances">raw_nb_of_instances</h3>
 <p>Hourly number of instances strictly required to serve hourly demand, taking the maximum across the RAM and compute dimensions, before rounding to whole instances.  </p>
-<p>Example value: 26298 values from 2025-01-01 00:00:00+00:00 to 2028-01-01 18:00:00+00:00: first=0.000231 , last=0.00054 , mean=0.000385 , min=0.0000772 , max=0.000694 , std=0.0002   </p>
+<p>Example value: 26298 values from 2025-01-01 00:00:00+00:00 to 2028-01-01 18:00:00+00:00: first=0.000694 , last=0.000231 , mean=0.000385 , min=0.0000772 , max=0.000694 , std=0.0002   </p>
 <p>Depends directly on:  </p>
 <ul>
 <li><a href="./#hour_by_hour_ram_need">Hour by hour ram need</a></li>
@@ -4318,7 +4318,7 @@
         </center>
         <style type="text/css">
 
-             #mynetwork_5c45ad {
+             #mynetwork_1e8010 {
                  width: 760px;
                  height: 300px;
                  background-color: #ffffff;
@@ -4340,7 +4340,7 @@
         <div class="card" style="width: 100%">
 
 
-            <div id="mynetwork_5c45ad" class="card-body"></div>
+            <div id="mynetwork_1e8010" class="card-body"></div>
         </div>
 
 
@@ -4370,12 +4370,12 @@
 
               // This method is responsible for drawing the graph, returns the drawn network
               function drawGraph() {
-                  var container = document.getElementById('mynetwork_5c45ad');
+                  var container = document.getElementById('mynetwork_1e8010');
 
 
 
                   // parsing and collecting nodes and edges from the python
-                  nodes = new vis.DataSet([{"color": null, "id": "Hourly raw number of instances", "label": "Hourly raw number of\ninstances", "shape": "dot", "size": 15, "title": "Hourly raw number of instances\n=\nHour by hour ram need / Available RAM per instance max compared with Hour by\nhour compute need / Available CPU per instance\n=\n26298 values from 2025-01-01 00:00:00+00:00 to 2028-01-01 18:00:00+00:00:\nfirst=41.7 kB ram, last=97.2 kB ram, mean=69.4 kB ram, min=13.9 kB ram, max=125\nkB ram, std=35.9 kB ram / 288 GB ram max compared with 26298 values from\n2025-01-01 00:00:00+00:00 to 2028-01-01 18:00:00+00:00: first=0.000833 gpu,\nlast=0.00194 gpu, mean=0.00139 gpu, min=0.000278 gpu, max=0.0025 gpu,\nstd=0.000718 gpu / 3.6 gpu\n=\n26298 values from 2025-01-01 00:00:00+00:00 to 2028-01-01 18:00:00+00:00:\nfirst=0.000231 , last=0.00054 , mean=0.000385 , min=0.0000772 , max=0.000694 ,\nstd=0.0002", "x": 0.0, "y": 1050}, {"color": null, "id": "Hour by hour ram need", "label": "Hour by hour ram\nneed", "shape": "dot", "size": 15, "title": "Hour by hour ram need\n=\nHourly average occurrences across usage patterns * RAM needed during job\nprocessing\n=\n26298 values from 2025-01-01 00:00:00+00:00 to 2028-01-01 18:00:00+00:00:\nfirst=0.000833 , last=0.00194 , mean=0.00139 , min=0.000278 , max=0.0025 ,\nstd=0.000718 * 50 MB ram\n=\n26298 values from 2025-01-01 00:00:00+00:00 to 2028-01-01 18:00:00+00:00:\nfirst=41.7 kB ram, last=97.2 kB ram, mean=69.4 kB ram, min=13.9 kB ram, max=125\nkB ram, std=35.9 kB ram", "x": -450.0, "y": 900}, {"color": null, "id": "Available RAM per instance", "label": "Available RAM per\ninstance", "shape": "dot", "size": 15, "title": "Available RAM per instance\n=\nRAM * Utilization rate - Occupied RAM per instance including services\n=\n320 GB ram * 0.9 - 0 B ram\n=\n288 GB ram", "x": -150.0, "y": 900}, {"color": null, "id": "Hour by hour compute need", "label": "Hour by hour compute\nneed", "shape": "dot", "size": 15, "title": "Hour by hour compute need\n=\nHourly average occurrences across usage patterns * gpus needed on server on\npremise GPU server during job processing\n=\n26298 values from 2025-01-01 00:00:00+00:00 to 2028-01-01 18:00:00+00:00:\nfirst=0.000833 , last=0.00194 , mean=0.00139 , min=0.000278 , max=0.0025 ,\nstd=0.000718 * 1 gpu\n=\n26298 values from 2025-01-01 00:00:00+00:00 to 2028-01-01 18:00:00+00:00:\nfirst=0.000833 gpu, last=0.00194 gpu, mean=0.00139 gpu, min=0.000278 gpu,\nmax=0.0025 gpu, std=0.000718 gpu", "x": 150.0, "y": 900}, {"color": null, "id": "Available CPU per instance", "label": "Available CPU per\ninstance", "shape": "dot", "size": 15, "title": "Available CPU per instance\n=\nNb gpus * Utilization rate - Occupied CPU per instance including services\n=\n4 gpu * 0.9 - 0 gpu\n=\n3.6 gpu", "x": 450.0, "y": 900}]);
+                  nodes = new vis.DataSet([{"color": null, "id": "Hourly raw number of instances", "label": "Hourly raw number of\ninstances", "shape": "dot", "size": 15, "title": "Hourly raw number of instances\n=\nHour by hour ram need / Available RAM per instance max compared with Hour by\nhour compute need / Available CPU per instance\n=\n26298 values from 2025-01-01 00:00:00+00:00 to 2028-01-01 18:00:00+00:00:\nfirst=125 kB ram, last=41.7 kB ram, mean=69.4 kB ram, min=13.9 kB ram, max=125\nkB ram, std=36 kB ram / 288 GB ram max compared with 26298 values from\n2025-01-01 00:00:00+00:00 to 2028-01-01 18:00:00+00:00: first=0.0025 gpu,\nlast=0.000833 gpu, mean=0.00139 gpu, min=0.000278 gpu, max=0.0025 gpu,\nstd=0.000719 gpu / 3.6 gpu\n=\n26298 values from 2025-01-01 00:00:00+00:00 to 2028-01-01 18:00:00+00:00:\nfirst=0.000694 , last=0.000231 , mean=0.000385 , min=0.0000772 , max=0.000694 ,\nstd=0.0002", "x": 0.0, "y": 1050}, {"color": null, "id": "Hour by hour ram need", "label": "Hour by hour ram\nneed", "shape": "dot", "size": 15, "title": "Hour by hour ram need\n=\nHourly average occurrences across usage patterns * RAM needed during job\nprocessing\n=\n26298 values from 2025-01-01 00:00:00+00:00 to 2028-01-01 18:00:00+00:00:\nfirst=0.0025 , last=0.000833 , mean=0.00139 , min=0.000278 , max=0.0025 ,\nstd=0.000719 * 50 MB ram\n=\n26298 values from 2025-01-01 00:00:00+00:00 to 2028-01-01 18:00:00+00:00:\nfirst=125 kB ram, last=41.7 kB ram, mean=69.4 kB ram, min=13.9 kB ram, max=125\nkB ram, std=36 kB ram", "x": -450.0, "y": 900}, {"color": null, "id": "Available RAM per instance", "label": "Available RAM per\ninstance", "shape": "dot", "size": 15, "title": "Available RAM per instance\n=\nRAM * Utilization rate - Occupied RAM per instance including services\n=\n320 GB ram * 0.9 - 0 B ram\n=\n288 GB ram", "x": -150.0, "y": 900}, {"color": null, "id": "Hour by hour compute need", "label": "Hour by hour compute\nneed", "shape": "dot", "size": 15, "title": "Hour by hour compute need\n=\nHourly average occurrences across usage patterns * gpus needed on server on\npremise GPU server during job processing\n=\n26298 values from 2025-01-01 00:00:00+00:00 to 2028-01-01 18:00:00+00:00:\nfirst=0.0025 , last=0.000833 , mean=0.00139 , min=0.000278 , max=0.0025 ,\nstd=0.000719 * 1 gpu\n=\n26298 values from 2025-01-01 00:00:00+00:00 to 2028-01-01 18:00:00+00:00:\nfirst=0.0025 gpu, last=0.000833 gpu, mean=0.00139 gpu, min=0.000278 gpu,\nmax=0.0025 gpu, std=0.000719 gpu", "x": 150.0, "y": 900}, {"color": null, "id": "Available CPU per instance", "label": "Available CPU per\ninstance", "shape": "dot", "size": 15, "title": "Available CPU per instance\n=\nNb gpus * Utilization rate - Occupied CPU per instance including services\n=\n4 gpu * 0.9 - 0 gpu\n=\n3.6 gpu", "x": 450.0, "y": 900}]);
                   edges = new vis.DataSet([{"arrows": "to", "from": "Hour by hour ram need", "to": "Hourly raw number of instances"}, {"arrows": "to", "from": "Available RAM per instance", "to": "Hourly raw number of instances"}, {"arrows": "to", "from": "Hour by hour compute need", "to": "Hourly raw number of instances"}, {"arrows": "to", "from": "Available CPU per instance", "to": "Hourly raw number of instances"}]);
 
                   nodeColors = {};
@@ -4485,7 +4485,7 @@
         </center>
         <style type="text/css">
 
-             #mynetwork_dbe395 {
+             #mynetwork_ea34b6 {
                  width: 760px;
                  height: 300px;
                  background-color: #ffffff;
@@ -4507,7 +4507,7 @@
         <div class="card" style="width: 100%">
 
 
-            <div id="mynetwork_dbe395" class="card-body"></div>
+            <div id="mynetwork_ea34b6" class="card-body"></div>
         </div>
 
 
@@ -4537,12 +4537,12 @@
 
               // This method is responsible for drawing the graph, returns the drawn network
               function drawGraph() {
-                  var container = document.getElementById('mynetwork_dbe395');
+                  var container = document.getElementById('mynetwork_ea34b6');
 
 
 
                   // parsing and collecting nodes and edges from the python
-                  nodes = new vis.DataSet([{"color": null, "id": "Hourly number of instances", "label": "Hourly number of\ninstances", "shape": "dot", "size": 15, "title": "Hourly number of instances\n=\nHourly raw number of instances depending on not being empty User defined number\nof instances logically dependent on Server type\n=\n26298 values from 2025-01-01 00:00:00+00:00 to 2028-01-01 18:00:00+00:00:\nfirst=0.000231 , last=0.00054 , mean=0.000385 , min=0.0000772 , max=0.000694 ,\nstd=0.0002 depending on not being empty no value logically dependent on\non-premise\n=\n26298 values from 2025-01-01 00:00:00+00:00 to 2028-01-01 18:00:00+00:00:\nfirst=1 , last=1 , mean=1 , min=1 , max=1 , std=0", "x": 0.0, "y": 1200}, {"color": null, "id": "Hourly raw number of instances", "label": "Hourly raw number of\ninstances", "shape": "dot", "size": 15, "title": "Hourly raw number of instances\n=\nHour by hour ram need / Available RAM per instance max compared with Hour by\nhour compute need / Available CPU per instance\n=\n26298 values from 2025-01-01 00:00:00+00:00 to 2028-01-01 18:00:00+00:00:\nfirst=41.7 kB ram, last=97.2 kB ram, mean=69.4 kB ram, min=13.9 kB ram, max=125\nkB ram, std=35.9 kB ram / 288 GB ram max compared with 26298 values from\n2025-01-01 00:00:00+00:00 to 2028-01-01 18:00:00+00:00: first=0.000833 gpu,\nlast=0.00194 gpu, mean=0.00139 gpu, min=0.000278 gpu, max=0.0025 gpu,\nstd=0.000718 gpu / 3.6 gpu\n=\n26298 values from 2025-01-01 00:00:00+00:00 to 2028-01-01 18:00:00+00:00:\nfirst=0.000231 , last=0.00054 , mean=0.000385 , min=0.0000772 , max=0.000694 ,\nstd=0.0002", "x": -400.0, "y": 1050}, {"color": null, "id": "User defined number of instances", "label": "User defined number\nof instances", "shape": "dot", "size": 15, "title": "User defined number of instances = no value", "x": 0.0, "y": 1050}, {"color": "darkred", "id": "Server type", "label": "Server type", "shape": "dot", "size": 15, "title": "Server type = on-premise", "x": 400.0, "y": 1050}]);
+                  nodes = new vis.DataSet([{"color": null, "id": "Hourly number of instances", "label": "Hourly number of\ninstances", "shape": "dot", "size": 15, "title": "Hourly number of instances\n=\nHourly raw number of instances depending on not being empty User defined number\nof instances logically dependent on Server type\n=\n26298 values from 2025-01-01 00:00:00+00:00 to 2028-01-01 18:00:00+00:00:\nfirst=0.000694 , last=0.000231 , mean=0.000385 , min=0.0000772 , max=0.000694 ,\nstd=0.0002 depending on not being empty no value logically dependent on\non-premise\n=\n26298 values from 2025-01-01 00:00:00+00:00 to 2028-01-01 18:00:00+00:00:\nfirst=1 , last=1 , mean=1 , min=1 , max=1 , std=0", "x": 0.0, "y": 1200}, {"color": null, "id": "Hourly raw number of instances", "label": "Hourly raw number of\ninstances", "shape": "dot", "size": 15, "title": "Hourly raw number of instances\n=\nHour by hour ram need / Available RAM per instance max compared with Hour by\nhour compute need / Available CPU per instance\n=\n26298 values from 2025-01-01 00:00:00+00:00 to 2028-01-01 18:00:00+00:00:\nfirst=125 kB ram, last=41.7 kB ram, mean=69.4 kB ram, min=13.9 kB ram, max=125\nkB ram, std=36 kB ram / 288 GB ram max compared with 26298 values from\n2025-01-01 00:00:00+00:00 to 2028-01-01 18:00:00+00:00: first=0.0025 gpu,\nlast=0.000833 gpu, mean=0.00139 gpu, min=0.000278 gpu, max=0.0025 gpu,\nstd=0.000719 gpu / 3.6 gpu\n=\n26298 values from 2025-01-01 00:00:00+00:00 to 2028-01-01 18:00:00+00:00:\nfirst=0.000694 , last=0.000231 , mean=0.000385 , min=0.0000772 , max=0.000694 ,\nstd=0.0002", "x": -400.0, "y": 1050}, {"color": null, "id": "User defined number of instances", "label": "User defined number\nof instances", "shape": "dot", "size": 15, "title": "User defined number of instances = no value", "x": 0.0, "y": 1050}, {"color": "darkred", "id": "Server type", "label": "Server type", "shape": "dot", "size": 15, "title": "Server type = on-premise", "x": 400.0, "y": 1050}]);
                   edges = new vis.DataSet([{"arrows": "to", "from": "Hourly raw number of instances", "to": "Hourly number of instances"}, {"arrows": "to", "from": "User defined number of instances", "to": "Hourly number of instances"}, {"arrows": "to", "from": "Server type", "to": "Hourly number of instances"}]);
 
                   nodeColors = {};
@@ -4611,7 +4611,7 @@
 <p>You can also visit the <a href='../calculus_graphs/on_premise_GPU_server_nb_of_instances.html' target='_blank'>link to Hourly number of instances’s full calculation graph</a>.</p>
 <h3 id="instances_energy">instances_energy</h3>
 <p>Hourly energy consumed by all running instances, decomposed into idle baseline energy plus the extra energy drawn while serving load, with PUE applied.  </p>
-<p>Example value: 26298 values from 2025-01-01 00:00:00+00:00 to 2028-01-01 18:00:00+00:00: first=240 Wh, last=241 Wh, mean=241 Wh, min=240 Wh, max=241 Wh, std=335 mWh  </p>
+<p>Example value: 26298 values from 2025-01-01 00:00:00+00:00 to 2028-01-01 18:00:00+00:00: first=241 Wh, last=240 Wh, mean=241 Wh, min=240 Wh, max=241 Wh, std=336 mWh  </p>
 <p>Depends directly on:  </p>
 <ul>
 <li><a href="./#nb_of_instances">Hourly number of instances</a></li>
@@ -4654,7 +4654,7 @@
         </center>
         <style type="text/css">
 
-             #mynetwork_8b1523 {
+             #mynetwork_5a6f89 {
                  width: 760px;
                  height: 300px;
                  background-color: #ffffff;
@@ -4676,7 +4676,7 @@
         <div class="card" style="width: 100%">
 
 
-            <div id="mynetwork_8b1523" class="card-body"></div>
+            <div id="mynetwork_5a6f89" class="card-body"></div>
         </div>
 
 
@@ -4706,12 +4706,12 @@
 
               // This method is responsible for drawing the graph, returns the drawn network
               function drawGraph() {
-                  var container = document.getElementById('mynetwork_8b1523');
+                  var container = document.getElementById('mynetwork_5a6f89');
 
 
 
                   // parsing and collecting nodes and edges from the python
-                  nodes = new vis.DataSet([{"color": null, "id": "Hourly energy consumed by instances", "label": "Hourly energy\nconsumed by\ninstances", "shape": "dot", "size": 15, "title": "Hourly energy consumed by instances\n=\nHourly number of instances * Idle power * PUE * one hour + Hourly raw number of\ninstances * (Power - Idle power) * PUE * one hour\n=\n26298 values from 2025-01-01 00:00:00+00:00 to 2028-01-01 18:00:00+00:00:\nfirst=1 , last=1 , mean=1 , min=1 , max=1 , std=0 * 200 W * 1.2 * 1 h + 26298\nvalues from 2025-01-01 00:00:00+00:00 to 2028-01-01 18:00:00+00:00:\nfirst=0.000231 , last=0.00054 , mean=0.000385 , min=0.0000772 , max=0.000694 ,\nstd=0.0002 * (1.6 kW - 200 W) * 1.2 * 1 h\n=\n26298 values from 2025-01-01 00:00:00+00:00 to 2028-01-01 18:00:00+00:00:\nfirst=240 Wh, last=241 Wh, mean=241 Wh, min=240 Wh, max=241 Wh, std=335 mWh", "x": 0.0, "y": 1350}, {"color": null, "id": "Hourly number of instances", "label": "Hourly number of\ninstances", "shape": "dot", "size": 15, "title": "Hourly number of instances\n=\nHourly raw number of instances depending on not being empty User defined number\nof instances logically dependent on Server type\n=\n26298 values from 2025-01-01 00:00:00+00:00 to 2028-01-01 18:00:00+00:00:\nfirst=0.000231 , last=0.00054 , mean=0.000385 , min=0.0000772 , max=0.000694 ,\nstd=0.0002 depending on not being empty no value logically dependent on\non-premise\n=\n26298 values from 2025-01-01 00:00:00+00:00 to 2028-01-01 18:00:00+00:00:\nfirst=1 , last=1 , mean=1 , min=1 , max=1 , std=0", "x": -720.0, "y": 1200}, {"color": null, "id": "Idle power", "label": "Idle power", "shape": "dot", "size": 15, "title": "Idle power\n=\nGPU idle power * Nb gpus\n=\n50 W/gpu * 4 gpu\n=\n200 W", "x": -360.0, "y": 1200}, {"color": null, "id": "PUE", "label": "PUE", "shape": "dot", "size": 15, "title": "PUE = 1.2", "x": 0.0, "y": 1200}, {"color": null, "id": "Hourly raw number of instances", "label": "Hourly raw number of\ninstances", "shape": "dot", "size": 15, "title": "Hourly raw number of instances\n=\nHour by hour ram need / Available RAM per instance max compared with Hour by\nhour compute need / Available CPU per instance\n=\n26298 values from 2025-01-01 00:00:00+00:00 to 2028-01-01 18:00:00+00:00:\nfirst=41.7 kB ram, last=97.2 kB ram, mean=69.4 kB ram, min=13.9 kB ram, max=125\nkB ram, std=35.9 kB ram / 288 GB ram max compared with 26298 values from\n2025-01-01 00:00:00+00:00 to 2028-01-01 18:00:00+00:00: first=0.000833 gpu,\nlast=0.00194 gpu, mean=0.00139 gpu, min=0.000278 gpu, max=0.0025 gpu,\nstd=0.000718 gpu / 3.6 gpu\n=\n26298 values from 2025-01-01 00:00:00+00:00 to 2028-01-01 18:00:00+00:00:\nfirst=0.000231 , last=0.00054 , mean=0.000385 , min=0.0000772 , max=0.000694 ,\nstd=0.0002", "x": -809.9999999999999, "y": 1050}, {"color": null, "id": "Power", "label": "Power", "shape": "dot", "size": 15, "title": "Power\n=\nGPU power * Nb gpus\n=\n400 W/gpu * 4 gpu\n=\n1.6 kW", "x": 720.0, "y": 1200}]);
+                  nodes = new vis.DataSet([{"color": null, "id": "Hourly energy consumed by instances", "label": "Hourly energy\nconsumed by\ninstances", "shape": "dot", "size": 15, "title": "Hourly energy consumed by instances\n=\nHourly number of instances * Idle power * PUE * one hour + Hourly raw number of\ninstances * (Power - Idle power) * PUE * one hour\n=\n26298 values from 2025-01-01 00:00:00+00:00 to 2028-01-01 18:00:00+00:00:\nfirst=1 , last=1 , mean=1 , min=1 , max=1 , std=0 * 200 W * 1.2 * 1 h + 26298\nvalues from 2025-01-01 00:00:00+00:00 to 2028-01-01 18:00:00+00:00:\nfirst=0.000694 , last=0.000231 , mean=0.000385 , min=0.0000772 , max=0.000694 ,\nstd=0.0002 * (1.6 kW - 200 W) * 1.2 * 1 h\n=\n26298 values from 2025-01-01 00:00:00+00:00 to 2028-01-01 18:00:00+00:00:\nfirst=241 Wh, last=240 Wh, mean=241 Wh, min=240 Wh, max=241 Wh, std=336 mWh", "x": 0.0, "y": 1350}, {"color": null, "id": "Hourly number of instances", "label": "Hourly number of\ninstances", "shape": "dot", "size": 15, "title": "Hourly number of instances\n=\nHourly raw number of instances depending on not being empty User defined number\nof instances logically dependent on Server type\n=\n26298 values from 2025-01-01 00:00:00+00:00 to 2028-01-01 18:00:00+00:00:\nfirst=0.000694 , last=0.000231 , mean=0.000385 , min=0.0000772 , max=0.000694 ,\nstd=0.0002 depending on not being empty no value logically dependent on\non-premise\n=\n26298 values from 2025-01-01 00:00:00+00:00 to 2028-01-01 18:00:00+00:00:\nfirst=1 , last=1 , mean=1 , min=1 , max=1 , std=0", "x": -720.0, "y": 1200}, {"color": null, "id": "Idle power", "label": "Idle power", "shape": "dot", "size": 15, "title": "Idle power\n=\nGPU idle power * Nb gpus\n=\n50 W/gpu * 4 gpu\n=\n200 W", "x": -360.0, "y": 1200}, {"color": null, "id": "PUE", "label": "PUE", "shape": "dot", "size": 15, "title": "PUE = 1.2", "x": 0.0, "y": 1200}, {"color": null, "id": "Hourly raw number of instances", "label": "Hourly raw number of\ninstances", "shape": "dot", "size": 15, "title": "Hourly raw number of instances\n=\nHour by hour ram need / Available RAM per instance max compared with Hour by\nhour compute need / Available CPU per instance\n=\n26298 values from 2025-01-01 00:00:00+00:00 to 2028-01-01 18:00:00+00:00:\nfirst=125 kB ram, last=41.7 kB ram, mean=69.4 kB ram, min=13.9 kB ram, max=125\nkB ram, std=36 kB ram / 288 GB ram max compared with 26298 values from\n2025-01-01 00:00:00+00:00 to 2028-01-01 18:00:00+00:00: first=0.0025 gpu,\nlast=0.000833 gpu, mean=0.00139 gpu, min=0.000278 gpu, max=0.0025 gpu,\nstd=0.000719 gpu / 3.6 gpu\n=\n26298 values from 2025-01-01 00:00:00+00:00 to 2028-01-01 18:00:00+00:00:\nfirst=0.000694 , last=0.000231 , mean=0.000385 , min=0.0000772 , max=0.000694 ,\nstd=0.0002", "x": -809.9999999999999, "y": 1050}, {"color": null, "id": "Power", "label": "Power", "shape": "dot", "size": 15, "title": "Power\n=\nGPU power * Nb gpus\n=\n400 W/gpu * 4 gpu\n=\n1.6 kW", "x": 720.0, "y": 1200}]);
                   edges = new vis.DataSet([{"arrows": "to", "from": "Hourly number of instances", "to": "Hourly energy consumed by instances"}, {"arrows": "to", "from": "Idle power", "to": "Hourly energy consumed by instances"}, {"arrows": "to", "from": "PUE", "to": "Hourly energy consumed by instances"}, {"arrows": "to", "from": "Hourly raw number of instances", "to": "Hourly energy consumed by instances"}, {"arrows": "to", "from": "Power", "to": "Hourly energy consumed by instances"}]);
 
                   nodeColors = {};
@@ -4821,7 +4821,7 @@
         </center>
         <style type="text/css">
 
-             #mynetwork_e06f57 {
+             #mynetwork_07f94b {
                  width: 760px;
                  height: 300px;
                  background-color: #ffffff;
@@ -4843,7 +4843,7 @@
         <div class="card" style="width: 100%">
 
 
-            <div id="mynetwork_e06f57" class="card-body"></div>
+            <div id="mynetwork_07f94b" class="card-body"></div>
         </div>
 
 
@@ -4873,12 +4873,12 @@
 
               // This method is responsible for drawing the graph, returns the drawn network
               function drawGraph() {
-                  var container = document.getElementById('mynetwork_e06f57');
+                  var container = document.getElementById('mynetwork_07f94b');
 
 
 
                   // parsing and collecting nodes and edges from the python
-                  nodes = new vis.DataSet([{"color": null, "id": "Hourly instances fabrication footprint", "label": "Hourly instances\nfabrication\nfootprint", "shape": "dot", "size": 15, "title": "Hourly instances fabrication footprint\n=\nHourly number of instances * Carbon footprint fabrication * one hour / Lifespan\n=\n26298 values from 2025-01-01 00:00:00+00:00 to 2028-01-01 18:00:00+00:00:\nfirst=1 , last=1 , mean=1 , min=1 , max=1 , std=0 * 3.1 t * 1 h / 6 yr\n=\n26298 values from 2025-01-01 00:00:00+00:00 to 2028-01-01 18:00:00+00:00:\nfirst=58.9 g, last=58.9 g, mean=58.9 g, min=58.9 g, max=58.9 g, std=0.0112 mg", "x": 0.0, "y": 1350}, {"color": null, "id": "Hourly number of instances", "label": "Hourly number of\ninstances", "shape": "dot", "size": 15, "title": "Hourly number of instances\n=\nHourly raw number of instances depending on not being empty User defined number\nof instances logically dependent on Server type\n=\n26298 values from 2025-01-01 00:00:00+00:00 to 2028-01-01 18:00:00+00:00:\nfirst=0.000231 , last=0.00054 , mean=0.000385 , min=0.0000772 , max=0.000694 ,\nstd=0.0002 depending on not being empty no value logically dependent on\non-premise\n=\n26298 values from 2025-01-01 00:00:00+00:00 to 2028-01-01 18:00:00+00:00:\nfirst=1 , last=1 , mean=1 , min=1 , max=1 , std=0", "x": -400.0, "y": 1200}, {"color": null, "id": "Carbon footprint fabrication", "label": "Carbon footprint\nfabrication", "shape": "dot", "size": 15, "title": "Carbon footprint fabrication\n=\nCarbon footprint without GPU + Nb gpus * Carbon footprint one GPU\n=\n2.5 t + 4 gpu * 150 kg/gpu\n=\n3.1 t", "x": 0.0, "y": 1200}, {"color": null, "id": "Lifespan", "label": "Lifespan", "shape": "dot", "size": 15, "title": "Lifespan = 6 yr", "x": 400.0, "y": 1200}]);
+                  nodes = new vis.DataSet([{"color": null, "id": "Hourly instances fabrication footprint", "label": "Hourly instances\nfabrication\nfootprint", "shape": "dot", "size": 15, "title": "Hourly instances fabrication footprint\n=\nHourly number of instances * Carbon footprint fabrication * one hour / Lifespan\n=\n26298 values from 2025-01-01 00:00:00+00:00 to 2028-01-01 18:00:00+00:00:\nfirst=1 , last=1 , mean=1 , min=1 , max=1 , std=0 * 3.1 t * 1 h / 6 yr\n=\n26298 values from 2025-01-01 00:00:00+00:00 to 2028-01-01 18:00:00+00:00:\nfirst=58.9 g, last=58.9 g, mean=58.9 g, min=58.9 g, max=58.9 g, std=0.0112 mg", "x": 0.0, "y": 1350}, {"color": null, "id": "Hourly number of instances", "label": "Hourly number of\ninstances", "shape": "dot", "size": 15, "title": "Hourly number of instances\n=\nHourly raw number of instances depending on not being empty User defined number\nof instances logically dependent on Server type\n=\n26298 values from 2025-01-01 00:00:00+00:00 to 2028-01-01 18:00:00+00:00:\nfirst=0.000694 , last=0.000231 , mean=0.000385 , min=0.0000772 , max=0.000694 ,\nstd=0.0002 depending on not being empty no value logically dependent on\non-premise\n=\n26298 values from 2025-01-01 00:00:00+00:00 to 2028-01-01 18:00:00+00:00:\nfirst=1 , last=1 , mean=1 , min=1 , max=1 , std=0", "x": -400.0, "y": 1200}, {"color": null, "id": "Carbon footprint fabrication", "label": "Carbon footprint\nfabrication", "shape": "dot", "size": 15, "title": "Carbon footprint fabrication\n=\nCarbon footprint without GPU + Nb gpus * Carbon footprint one GPU\n=\n2.5 t + 4 gpu * 150 kg/gpu\n=\n3.1 t", "x": 0.0, "y": 1200}, {"color": null, "id": "Lifespan", "label": "Lifespan", "shape": "dot", "size": 15, "title": "Lifespan = 6 yr", "x": 400.0, "y": 1200}]);
                   edges = new vis.DataSet([{"arrows": "to", "from": "Hourly number of instances", "to": "Hourly instances fabrication footprint"}, {"arrows": "to", "from": "Carbon footprint fabrication", "to": "Hourly instances fabrication footprint"}, {"arrows": "to", "from": "Lifespan", "to": "Hourly instances fabrication footprint"}]);
 
                   nodeColors = {};
@@ -4947,7 +4947,7 @@
 <p>You can also visit the <a href='../calculus_graphs/on_premise_GPU_server_instances_fabrication_footprint.html' target='_blank'>link to Hourly instances fabrication footprint’s full calculation graph</a>.</p>
 <h3 id="energy_footprint">energy_footprint</h3>
 <p>Hourly carbon emissions caused by the electricity consumed by the server, equal to the sum of its idle and load energy footprints.  </p>
-<p>Example value: 26298 values from 2025-01-01 00:00:00+00:00 to 2028-01-01 18:00:00+00:00: first=24 g, last=24.1 g, mean=24.1 g, min=24 g, max=24.1 g, std=33.5 mg  </p>
+<p>Example value: 26298 values from 2025-01-01 00:00:00+00:00 to 2028-01-01 18:00:00+00:00: first=24.1 g, last=24 g, mean=24.1 g, min=24 g, max=24.1 g, std=33.6 mg  </p>
 <p>Depends directly on:  </p>
 <ul>
 <li><a href="./#idle_energy_footprint">Hourly idle energy footprint</a></li>
@@ -4987,7 +4987,7 @@
         </center>
         <style type="text/css">
 
-             #mynetwork_46141c {
+             #mynetwork_c6ba3b {
                  width: 760px;
                  height: 300px;
                  background-color: #ffffff;
@@ -5009,7 +5009,7 @@
         <div class="card" style="width: 100%">
 
 
-            <div id="mynetwork_46141c" class="card-body"></div>
+            <div id="mynetwork_c6ba3b" class="card-body"></div>
         </div>
 
 
@@ -5039,12 +5039,12 @@
 
               // This method is responsible for drawing the graph, returns the drawn network
               function drawGraph() {
-                  var container = document.getElementById('mynetwork_46141c');
+                  var container = document.getElementById('mynetwork_c6ba3b');
 
 
 
                   // parsing and collecting nodes and edges from the python
-                  nodes = new vis.DataSet([{"color": null, "id": "Hourly energy footprint", "label": "Hourly energy\nfootprint", "shape": "dot", "size": 15, "title": "Hourly energy footprint\n=\nHourly idle energy footprint + Hourly load energy footprint\n=\n26298 values from 2025-01-01 00:00:00+00:00 to 2028-01-01 18:00:00+00:00:\nfirst=24 g, last=24 g, mean=24 g, min=24 g, max=24 g, std=0.00186 mg + 26298\nvalues from 2025-01-01 00:00:00+00:00 to 2028-01-01 18:00:00+00:00: first=38.9\nmg, last=90.7 mg, mean=64.8 mg, min=13 mg, max=117 mg, std=33.5 mg\n=\n26298 values from 2025-01-01 00:00:00+00:00 to 2028-01-01 18:00:00+00:00:\nfirst=24 g, last=24.1 g, mean=24.1 g, min=24 g, max=24.1 g, std=33.5 mg", "x": 0.0, "y": 1500}, {"color": null, "id": "Hourly idle energy footprint", "label": "Hourly idle energy\nfootprint", "shape": "dot", "size": 15, "title": "Hourly idle energy footprint\n=\nHourly number of instances * Idle power * PUE * one hour * Average carbon\nintensity of electricity\n=\n26298 values from 2025-01-01 00:00:00+00:00 to 2028-01-01 18:00:00+00:00:\nfirst=1 , last=1 , mean=1 , min=1 , max=1 , std=0 * 200 W * 1.2 * 1 h * 100\ng/kWh\n=\n26298 values from 2025-01-01 00:00:00+00:00 to 2028-01-01 18:00:00+00:00:\nfirst=24 g, last=24 g, mean=24 g, min=24 g, max=24 g, std=0.00186 mg", "x": -450.0, "y": 1350}, {"color": null, "id": "Hourly load energy footprint", "label": "Hourly load energy\nfootprint", "shape": "dot", "size": 15, "title": "Hourly load energy footprint\n=\nHourly raw number of instances * (Power - Idle power) * PUE * one hour * Average\ncarbon intensity of electricity\n=\n26298 values from 2025-01-01 00:00:00+00:00 to 2028-01-01 18:00:00+00:00:\nfirst=0.000231 , last=0.00054 , mean=0.000385 , min=0.0000772 , max=0.000694 ,\nstd=0.0002 * (1.6 kW - 200 W) * 1.2 * 1 h * 100 g/kWh\n=\n26298 values from 2025-01-01 00:00:00+00:00 to 2028-01-01 18:00:00+00:00:\nfirst=38.9 mg, last=90.7 mg, mean=64.8 mg, min=13 mg, max=117 mg, std=33.5 mg", "x": 450.0, "y": 1350}]);
+                  nodes = new vis.DataSet([{"color": null, "id": "Hourly energy footprint", "label": "Hourly energy\nfootprint", "shape": "dot", "size": 15, "title": "Hourly energy footprint\n=\nHourly idle energy footprint + Hourly load energy footprint\n=\n26298 values from 2025-01-01 00:00:00+00:00 to 2028-01-01 18:00:00+00:00:\nfirst=24 g, last=24 g, mean=24 g, min=24 g, max=24 g, std=0.00186 mg + 26298\nvalues from 2025-01-01 00:00:00+00:00 to 2028-01-01 18:00:00+00:00: first=117\nmg, last=38.9 mg, mean=64.8 mg, min=13 mg, max=117 mg, std=33.6 mg\n=\n26298 values from 2025-01-01 00:00:00+00:00 to 2028-01-01 18:00:00+00:00:\nfirst=24.1 g, last=24 g, mean=24.1 g, min=24 g, max=24.1 g, std=33.6 mg", "x": 0.0, "y": 1500}, {"color": null, "id": "Hourly idle energy footprint", "label": "Hourly idle energy\nfootprint", "shape": "dot", "size": 15, "title": "Hourly idle energy footprint\n=\nHourly number of instances * Idle power * PUE * one hour * Average carbon\nintensity of electricity\n=\n26298 values from 2025-01-01 00:00:00+00:00 to 2028-01-01 18:00:00+00:00:\nfirst=1 , last=1 , mean=1 , min=1 , max=1 , std=0 * 200 W * 1.2 * 1 h * 100\ng/kWh\n=\n26298 values from 2025-01-01 00:00:00+00:00 to 2028-01-01 18:00:00+00:00:\nfirst=24 g, last=24 g, mean=24 g, min=24 g, max=24 g, std=0.00186 mg", "x": -450.0, "y": 1350}, {"color": null, "id": "Hourly load energy footprint", "label": "Hourly load energy\nfootprint", "shape": "dot", "size": 15, "title": "Hourly load energy footprint\n=\nHourly raw number of instances * (Power - Idle power) * PUE * one hour * Average\ncarbon intensity of electricity\n=\n26298 values from 2025-01-01 00:00:00+00:00 to 2028-01-01 18:00:00+00:00:\nfirst=0.000694 , last=0.000231 , mean=0.000385 , min=0.0000772 , max=0.000694 ,\nstd=0.0002 * (1.6 kW - 200 W) * 1.2 * 1 h * 100 g/kWh\n=\n26298 values from 2025-01-01 00:00:00+00:00 to 2028-01-01 18:00:00+00:00:\nfirst=117 mg, last=38.9 mg, mean=64.8 mg, min=13 mg, max=117 mg, std=33.6 mg", "x": 450.0, "y": 1350}]);
                   edges = new vis.DataSet([{"arrows": "to", "from": "Hourly idle energy footprint", "to": "Hourly energy footprint"}, {"arrows": "to", "from": "Hourly load energy footprint", "to": "Hourly energy footprint"}]);
 
                   nodeColors = {};
@@ -5113,7 +5113,7 @@
 <p>You can also visit the <a href='../calculus_graphs/on_premise_GPU_server_energy_footprint.html' target='_blank'>link to Hourly energy footprint’s full calculation graph</a>.</p>
 <h3 id="hour_by_hour_ram_need">hour_by_hour_ram_need</h3>
 <p>Hourly RAM demand placed on the server by all of its jobs combined.  </p>
-<p>Example value: 26298 values from 2025-01-01 00:00:00+00:00 to 2028-01-01 18:00:00+00:00: first=41.7 kB ram, last=97.2 kB ram, mean=69.4 kB ram, min=13.9 kB ram, max=125 kB ram, std=35.9 kB ram  </p>
+<p>Example value: 26298 values from 2025-01-01 00:00:00+00:00 to 2028-01-01 18:00:00+00:00: first=125 kB ram, last=41.7 kB ram, mean=69.4 kB ram, min=13.9 kB ram, max=125 kB ram, std=36 kB ram  </p>
 <p>Depends directly on:  </p>
 <ul>
 <li><a href="../GPUJob/#hourly_avg_occurrences_across_usage_patterns">Hourly average occurrences across usage patterns</a></li>
@@ -5153,7 +5153,7 @@
         </center>
         <style type="text/css">
 
-             #mynetwork_f55044 {
+             #mynetwork_93f465 {
                  width: 760px;
                  height: 300px;
                  background-color: #ffffff;
@@ -5175,7 +5175,7 @@
         <div class="card" style="width: 100%">
 
 
-            <div id="mynetwork_f55044" class="card-body"></div>
+            <div id="mynetwork_93f465" class="card-body"></div>
         </div>
 
 
@@ -5205,12 +5205,12 @@
 
               // This method is responsible for drawing the graph, returns the drawn network
               function drawGraph() {
-                  var container = document.getElementById('mynetwork_f55044');
+                  var container = document.getElementById('mynetwork_93f465');
 
 
 
                   // parsing and collecting nodes and edges from the python
-                  nodes = new vis.DataSet([{"color": null, "id": "Hour by hour ram need", "label": "Hour by hour ram\nneed", "shape": "dot", "size": 15, "title": "Hour by hour ram need\n=\nHourly average occurrences across usage patterns * RAM needed during job\nprocessing\n=\n26298 values from 2025-01-01 00:00:00+00:00 to 2028-01-01 18:00:00+00:00:\nfirst=0.000833 , last=0.00194 , mean=0.00139 , min=0.000278 , max=0.0025 ,\nstd=0.000718 * 50 MB ram\n=\n26298 values from 2025-01-01 00:00:00+00:00 to 2028-01-01 18:00:00+00:00:\nfirst=41.7 kB ram, last=97.2 kB ram, mean=69.4 kB ram, min=13.9 kB ram, max=125\nkB ram, std=35.9 kB ram", "x": 0.0, "y": 900}, {"color": null, "id": "Hourly average occurrences across usage patterns", "label": "Hourly average\noccurrences across\nusage patterns", "shape": "dot", "size": 15, "title": "Hourly average occurrences across usage patterns\n=\nAverage hourly occurrences in usage pattern\n=\n26298 values from 2025-01-01 00:00:00+00:00 to 2028-01-01 18:00:00+00:00:\nfirst=0.000833 , last=0.00194 , mean=0.00139 , min=0.000278 , max=0.0025 ,\nstd=0.000718\n=\n26298 values from 2025-01-01 00:00:00+00:00 to 2028-01-01 18:00:00+00:00:\nfirst=0.000833 , last=0.00194 , mean=0.00139 , min=0.000278 , max=0.0025 ,\nstd=0.000718", "x": -112.5, "y": 750}, {"color": "darkred", "id": "RAM needed during job processing", "label": "RAM needed during\njob processing", "shape": "dot", "size": 15, "title": "RAM needed during job processing = 50 MB ram", "x": 112.5, "y": 750}]);
+                  nodes = new vis.DataSet([{"color": null, "id": "Hour by hour ram need", "label": "Hour by hour ram\nneed", "shape": "dot", "size": 15, "title": "Hour by hour ram need\n=\nHourly average occurrences across usage patterns * RAM needed during job\nprocessing\n=\n26298 values from 2025-01-01 00:00:00+00:00 to 2028-01-01 18:00:00+00:00:\nfirst=0.0025 , last=0.000833 , mean=0.00139 , min=0.000278 , max=0.0025 ,\nstd=0.000719 * 50 MB ram\n=\n26298 values from 2025-01-01 00:00:00+00:00 to 2028-01-01 18:00:00+00:00:\nfirst=125 kB ram, last=41.7 kB ram, mean=69.4 kB ram, min=13.9 kB ram, max=125\nkB ram, std=36 kB ram", "x": 0.0, "y": 900}, {"color": null, "id": "Hourly average occurrences across usage patterns", "label": "Hourly average\noccurrences across\nusage patterns", "shape": "dot", "size": 15, "title": "Hourly average occurrences across usage patterns\n=\nAverage hourly occurrences in usage pattern\n=\n26298 values from 2025-01-01 00:00:00+00:00 to 2028-01-01 18:00:00+00:00:\nfirst=0.0025 , last=0.000833 , mean=0.00139 , min=0.000278 , max=0.0025 ,\nstd=0.000719\n=\n26298 values from 2025-01-01 00:00:00+00:00 to 2028-01-01 18:00:00+00:00:\nfirst=0.0025 , last=0.000833 , mean=0.00139 , min=0.000278 , max=0.0025 ,\nstd=0.000719", "x": -150.0, "y": 750}, {"color": "darkred", "id": "RAM needed during job processing", "label": "RAM needed during\njob processing", "shape": "dot", "size": 15, "title": "RAM needed during job processing = 50 MB ram", "x": 150.0, "y": 750}]);
                   edges = new vis.DataSet([{"arrows": "to", "from": "Hourly average occurrences across usage patterns", "to": "Hour by hour ram need"}, {"arrows": "to", "from": "RAM needed during job processing", "to": "Hour by hour ram need"}]);
 
                   nodeColors = {};
@@ -5279,7 +5279,7 @@
 <p>You can also visit the <a href='../calculus_graphs/on_premise_GPU_server_hour_by_hour_ram_need.html' target='_blank'>link to Hour by hour ram need’s full calculation graph</a>.</p>
 <h3 id="hour_by_hour_compute_need">hour_by_hour_compute_need</h3>
 <p>Hourly compute demand placed on the server by all of its jobs combined.  </p>
-<p>Example value: 26298 values from 2025-01-01 00:00:00+00:00 to 2028-01-01 18:00:00+00:00: first=0.000833 gpu, last=0.00194 gpu, mean=0.00139 gpu, min=0.000278 gpu, max=0.0025 gpu, std=0.000718 gpu  </p>
+<p>Example value: 26298 values from 2025-01-01 00:00:00+00:00 to 2028-01-01 18:00:00+00:00: first=0.0025 gpu, last=0.000833 gpu, mean=0.00139 gpu, min=0.000278 gpu, max=0.0025 gpu, std=0.000719 gpu  </p>
 <p>Depends directly on:  </p>
 <ul>
 <li><a href="../GPUJob/#hourly_avg_occurrences_across_usage_patterns">Hourly average occurrences across usage patterns</a></li>
@@ -5319,7 +5319,7 @@
         </center>
         <style type="text/css">
 
-             #mynetwork_a53d0a {
+             #mynetwork_70b4d5 {
                  width: 760px;
                  height: 300px;
                  background-color: #ffffff;
@@ -5341,7 +5341,7 @@
         <div class="card" style="width: 100%">
 
 
-            <div id="mynetwork_a53d0a" class="card-body"></div>
+            <div id="mynetwork_70b4d5" class="card-body"></div>
         </div>
 
 
@@ -5371,12 +5371,12 @@
 
               // This method is responsible for drawing the graph, returns the drawn network
               function drawGraph() {
-                  var container = document.getElementById('mynetwork_a53d0a');
+                  var container = document.getElementById('mynetwork_70b4d5');
 
 
 
                   // parsing and collecting nodes and edges from the python
-                  nodes = new vis.DataSet([{"color": null, "id": "Hour by hour compute need", "label": "Hour by hour compute\nneed", "shape": "dot", "size": 15, "title": "Hour by hour compute need\n=\nHourly average occurrences across usage patterns * gpus needed on server on\npremise GPU server during job processing\n=\n26298 values from 2025-01-01 00:00:00+00:00 to 2028-01-01 18:00:00+00:00:\nfirst=0.000833 , last=0.00194 , mean=0.00139 , min=0.000278 , max=0.0025 ,\nstd=0.000718 * 1 gpu\n=\n26298 values from 2025-01-01 00:00:00+00:00 to 2028-01-01 18:00:00+00:00:\nfirst=0.000833 gpu, last=0.00194 gpu, mean=0.00139 gpu, min=0.000278 gpu,\nmax=0.0025 gpu, std=0.000718 gpu", "x": 0.0, "y": 900}, {"color": null, "id": "Hourly average occurrences across usage patterns", "label": "Hourly average\noccurrences across\nusage patterns", "shape": "dot", "size": 15, "title": "Hourly average occurrences across usage patterns\n=\nAverage hourly occurrences in usage pattern\n=\n26298 values from 2025-01-01 00:00:00+00:00 to 2028-01-01 18:00:00+00:00:\nfirst=0.000833 , last=0.00194 , mean=0.00139 , min=0.000278 , max=0.0025 ,\nstd=0.000718\n=\n26298 values from 2025-01-01 00:00:00+00:00 to 2028-01-01 18:00:00+00:00:\nfirst=0.000833 , last=0.00194 , mean=0.00139 , min=0.000278 , max=0.0025 ,\nstd=0.000718", "x": -112.5, "y": 750}, {"color": "darkred", "id": "gpus needed on server on premise GPU server during job processing", "label": "gpus needed on\nserver on premise\nGPU server during\njob processing", "shape": "dot", "size": 15, "title": "gpus needed on server on premise GPU server during job processing = 1 gpu", "x": 112.5, "y": 750}]);
+                  nodes = new vis.DataSet([{"color": null, "id": "Hour by hour compute need", "label": "Hour by hour compute\nneed", "shape": "dot", "size": 15, "title": "Hour by hour compute need\n=\nHourly average occurrences across usage patterns * gpus needed on server on\npremise GPU server during job processing\n=\n26298 values from 2025-01-01 00:00:00+00:00 to 2028-01-01 18:00:00+00:00:\nfirst=0.0025 , last=0.000833 , mean=0.00139 , min=0.000278 , max=0.0025 ,\nstd=0.000719 * 1 gpu\n=\n26298 values from 2025-01-01 00:00:00+00:00 to 2028-01-01 18:00:00+00:00:\nfirst=0.0025 gpu, last=0.000833 gpu, mean=0.00139 gpu, min=0.000278 gpu,\nmax=0.0025 gpu, std=0.000719 gpu", "x": 0.0, "y": 900}, {"color": null, "id": "Hourly average occurrences across usage patterns", "label": "Hourly average\noccurrences across\nusage patterns", "shape": "dot", "size": 15, "title": "Hourly average occurrences across usage patterns\n=\nAverage hourly occurrences in usage pattern\n=\n26298 values from 2025-01-01 00:00:00+00:00 to 2028-01-01 18:00:00+00:00:\nfirst=0.0025 , last=0.000833 , mean=0.00139 , min=0.000278 , max=0.0025 ,\nstd=0.000719\n=\n26298 values from 2025-01-01 00:00:00+00:00 to 2028-01-01 18:00:00+00:00:\nfirst=0.0025 , last=0.000833 , mean=0.00139 , min=0.000278 , max=0.0025 ,\nstd=0.000719", "x": -150.0, "y": 750}, {"color": "darkred", "id": "gpus needed on server on premise GPU server during job processing", "label": "gpus needed on\nserver on premise\nGPU server during\njob processing", "shape": "dot", "size": 15, "title": "gpus needed on server on premise GPU server during job processing = 1 gpu", "x": 150.0, "y": 750}]);
                   edges = new vis.DataSet([{"arrows": "to", "from": "Hourly average occurrences across usage patterns", "to": "Hour by hour compute need"}, {"arrows": "to", "from": "gpus needed on server on premise GPU server during job processing", "to": "Hour by hour compute need"}]);
 
                   nodeColors = {};
@@ -5484,7 +5484,7 @@
         </center>
         <style type="text/css">
 
-             #mynetwork_468d30 {
+             #mynetwork_8a9a71 {
                  width: 760px;
                  height: 300px;
                  background-color: #ffffff;
@@ -5506,7 +5506,7 @@
         <div class="card" style="width: 100%">
 
 
-            <div id="mynetwork_468d30" class="card-body"></div>
+            <div id="mynetwork_8a9a71" class="card-body"></div>
         </div>
 
 
@@ -5536,7 +5536,7 @@
 
               // This method is responsible for drawing the graph, returns the drawn network
               function drawGraph() {
-                  var container = document.getElementById('mynetwork_468d30');
+                  var container = document.getElementById('mynetwork_8a9a71');
 
 
 
@@ -5649,7 +5649,7 @@
         </center>
         <style type="text/css">
 
-             #mynetwork_266bc4 {
+             #mynetwork_42cb05 {
                  width: 760px;
                  height: 300px;
                  background-color: #ffffff;
@@ -5671,7 +5671,7 @@
         <div class="card" style="width: 100%">
 
 
-            <div id="mynetwork_266bc4" class="card-body"></div>
+            <div id="mynetwork_42cb05" class="card-body"></div>
         </div>
 
 
@@ -5701,7 +5701,7 @@
 
               // This method is responsible for drawing the graph, returns the drawn network
               function drawGraph() {
-                  var container = document.getElementById('mynetwork_266bc4');
+                  var container = document.getElementById('mynetwork_42cb05');
 
 
 
@@ -5816,7 +5816,7 @@
         </center>
         <style type="text/css">
 
-             #mynetwork_2d22ae {
+             #mynetwork_860b9f {
                  width: 760px;
                  height: 300px;
                  background-color: #ffffff;
@@ -5838,7 +5838,7 @@
         <div class="card" style="width: 100%">
 
 
-            <div id="mynetwork_2d22ae" class="card-body"></div>
+            <div id="mynetwork_860b9f" class="card-body"></div>
         </div>
 
 
@@ -5868,7 +5868,7 @@
 
               // This method is responsible for drawing the graph, returns the drawn network
               function drawGraph() {
-                  var container = document.getElementById('mynetwork_2d22ae');
+                  var container = document.getElementById('mynetwork_860b9f');
 
 
 
@@ -5983,7 +5983,7 @@
         </center>
         <style type="text/css">
 
-             #mynetwork_717072 {
+             #mynetwork_0e3be3 {
                  width: 760px;
                  height: 300px;
                  background-color: #ffffff;
@@ -6005,7 +6005,7 @@
         <div class="card" style="width: 100%">
 
 
-            <div id="mynetwork_717072" class="card-body"></div>
+            <div id="mynetwork_0e3be3" class="card-body"></div>
         </div>
 
 
@@ -6035,7 +6035,7 @@
 
               // This method is responsible for drawing the graph, returns the drawn network
               function drawGraph() {
-                  var container = document.getElementById('mynetwork_717072');
+                  var container = document.getElementById('mynetwork_0e3be3');
 
 
 
@@ -6151,7 +6151,7 @@
         </center>
         <style type="text/css">
 
-             #mynetwork_54290d {
+             #mynetwork_daadcc {
                  width: 760px;
                  height: 300px;
                  background-color: #ffffff;
@@ -6173,7 +6173,7 @@
         <div class="card" style="width: 100%">
 
 
-            <div id="mynetwork_54290d" class="card-body"></div>
+            <div id="mynetwork_daadcc" class="card-body"></div>
         </div>
 
 
@@ -6203,12 +6203,12 @@
 
               // This method is responsible for drawing the graph, returns the drawn network
               function drawGraph() {
-                  var container = document.getElementById('mynetwork_54290d');
+                  var container = document.getElementById('mynetwork_daadcc');
 
 
 
                   // parsing and collecting nodes and edges from the python
-                  nodes = new vis.DataSet([{"color": null, "id": "Hourly idle energy footprint", "label": "Hourly idle energy\nfootprint", "shape": "dot", "size": 15, "title": "Hourly idle energy footprint\n=\nHourly number of instances * Idle power * PUE * one hour * Average carbon\nintensity of electricity\n=\n26298 values from 2025-01-01 00:00:00+00:00 to 2028-01-01 18:00:00+00:00:\nfirst=1 , last=1 , mean=1 , min=1 , max=1 , std=0 * 200 W * 1.2 * 1 h * 100\ng/kWh\n=\n26298 values from 2025-01-01 00:00:00+00:00 to 2028-01-01 18:00:00+00:00:\nfirst=24 g, last=24 g, mean=24 g, min=24 g, max=24 g, std=0.00186 mg", "x": 0.0, "y": 1350}, {"color": null, "id": "Hourly number of instances", "label": "Hourly number of\ninstances", "shape": "dot", "size": 15, "title": "Hourly number of instances\n=\nHourly raw number of instances depending on not being empty User defined number\nof instances logically dependent on Server type\n=\n26298 values from 2025-01-01 00:00:00+00:00 to 2028-01-01 18:00:00+00:00:\nfirst=0.000231 , last=0.00054 , mean=0.000385 , min=0.0000772 , max=0.000694 ,\nstd=0.0002 depending on not being empty no value logically dependent on\non-premise\n=\n26298 values from 2025-01-01 00:00:00+00:00 to 2028-01-01 18:00:00+00:00:\nfirst=1 , last=1 , mean=1 , min=1 , max=1 , std=0", "x": -450.0, "y": 1200}, {"color": null, "id": "Idle power", "label": "Idle power", "shape": "dot", "size": 15, "title": "Idle power\n=\nGPU idle power * Nb gpus\n=\n50 W/gpu * 4 gpu\n=\n200 W", "x": -150.0, "y": 1200}, {"color": null, "id": "PUE", "label": "PUE", "shape": "dot", "size": 15, "title": "PUE = 1.2", "x": 150.0, "y": 1200}, {"color": null, "id": "Average carbon intensity of electricity", "label": "Average carbon\nintensity of\nelectricity", "shape": "dot", "size": 15, "title": "Average carbon intensity of electricity = 100 g/kWh", "x": 450.0, "y": 1200}]);
+                  nodes = new vis.DataSet([{"color": null, "id": "Hourly idle energy footprint", "label": "Hourly idle energy\nfootprint", "shape": "dot", "size": 15, "title": "Hourly idle energy footprint\n=\nHourly number of instances * Idle power * PUE * one hour * Average carbon\nintensity of electricity\n=\n26298 values from 2025-01-01 00:00:00+00:00 to 2028-01-01 18:00:00+00:00:\nfirst=1 , last=1 , mean=1 , min=1 , max=1 , std=0 * 200 W * 1.2 * 1 h * 100\ng/kWh\n=\n26298 values from 2025-01-01 00:00:00+00:00 to 2028-01-01 18:00:00+00:00:\nfirst=24 g, last=24 g, mean=24 g, min=24 g, max=24 g, std=0.00186 mg", "x": 0.0, "y": 1350}, {"color": null, "id": "Hourly number of instances", "label": "Hourly number of\ninstances", "shape": "dot", "size": 15, "title": "Hourly number of instances\n=\nHourly raw number of instances depending on not being empty User defined number\nof instances logically dependent on Server type\n=\n26298 values from 2025-01-01 00:00:00+00:00 to 2028-01-01 18:00:00+00:00:\nfirst=0.000694 , last=0.000231 , mean=0.000385 , min=0.0000772 , max=0.000694 ,\nstd=0.0002 depending on not being empty no value logically dependent on\non-premise\n=\n26298 values from 2025-01-01 00:00:00+00:00 to 2028-01-01 18:00:00+00:00:\nfirst=1 , last=1 , mean=1 , min=1 , max=1 , std=0", "x": -450.0, "y": 1200}, {"color": null, "id": "Idle power", "label": "Idle power", "shape": "dot", "size": 15, "title": "Idle power\n=\nGPU idle power * Nb gpus\n=\n50 W/gpu * 4 gpu\n=\n200 W", "x": -150.0, "y": 1200}, {"color": null, "id": "PUE", "label": "PUE", "shape": "dot", "size": 15, "title": "PUE = 1.2", "x": 150.0, "y": 1200}, {"color": null, "id": "Average carbon intensity of electricity", "label": "Average carbon\nintensity of\nelectricity", "shape": "dot", "size": 15, "title": "Average carbon intensity of electricity = 100 g/kWh", "x": 450.0, "y": 1200}]);
                   edges = new vis.DataSet([{"arrows": "to", "from": "Hourly number of instances", "to": "Hourly idle energy footprint"}, {"arrows": "to", "from": "Idle power", "to": "Hourly idle energy footprint"}, {"arrows": "to", "from": "PUE", "to": "Hourly idle energy footprint"}, {"arrows": "to", "from": "Average carbon intensity of electricity", "to": "Hourly idle energy footprint"}]);
 
                   nodeColors = {};
@@ -6277,7 +6277,7 @@
 <p>You can also visit the <a href='../calculus_graphs/on_premise_GPU_server_idle_energy_footprint.html' target='_blank'>link to Hourly idle energy footprint’s full calculation graph</a>.</p>
 <h3 id="load_energy_footprint">load_energy_footprint</h3>
 <p>Hourly carbon emissions of the extra energy drawn while serving load (power above idle times PUE times raw number of instances times grid carbon intensity) — the usage-phase component that rides the dynamic attribution stream.  </p>
-<p>Example value: 26298 values from 2025-01-01 00:00:00+00:00 to 2028-01-01 18:00:00+00:00: first=38.9 mg, last=90.7 mg, mean=64.8 mg, min=13 mg, max=117 mg, std=33.5 mg  </p>
+<p>Example value: 26298 values from 2025-01-01 00:00:00+00:00 to 2028-01-01 18:00:00+00:00: first=117 mg, last=38.9 mg, mean=64.8 mg, min=13 mg, max=117 mg, std=33.6 mg  </p>
 <p>Depends directly on:  </p>
 <ul>
 <li><a href="./#raw_nb_of_instances">Hourly raw number of instances</a></li>
@@ -6320,7 +6320,7 @@
         </center>
         <style type="text/css">
 
-             #mynetwork_ad9f58 {
+             #mynetwork_049d8f {
                  width: 760px;
                  height: 300px;
                  background-color: #ffffff;
@@ -6342,7 +6342,7 @@
         <div class="card" style="width: 100%">
 
 
-            <div id="mynetwork_ad9f58" class="card-body"></div>
+            <div id="mynetwork_049d8f" class="card-body"></div>
         </div>
 
 
@@ -6372,12 +6372,12 @@
 
               // This method is responsible for drawing the graph, returns the drawn network
               function drawGraph() {
-                  var container = document.getElementById('mynetwork_ad9f58');
+                  var container = document.getElementById('mynetwork_049d8f');
 
 
 
                   // parsing and collecting nodes and edges from the python
-                  nodes = new vis.DataSet([{"color": null, "id": "Hourly load energy footprint", "label": "Hourly load energy\nfootprint", "shape": "dot", "size": 15, "title": "Hourly load energy footprint\n=\nHourly raw number of instances * (Power - Idle power) * PUE * one hour * Average\ncarbon intensity of electricity\n=\n26298 values from 2025-01-01 00:00:00+00:00 to 2028-01-01 18:00:00+00:00:\nfirst=0.000231 , last=0.00054 , mean=0.000385 , min=0.0000772 , max=0.000694 ,\nstd=0.0002 * (1.6 kW - 200 W) * 1.2 * 1 h * 100 g/kWh\n=\n26298 values from 2025-01-01 00:00:00+00:00 to 2028-01-01 18:00:00+00:00:\nfirst=38.9 mg, last=90.7 mg, mean=64.8 mg, min=13 mg, max=117 mg, std=33.5 mg", "x": 0.0, "y": 1200}, {"color": null, "id": "Hourly raw number of instances", "label": "Hourly raw number of\ninstances", "shape": "dot", "size": 15, "title": "Hourly raw number of instances\n=\nHour by hour ram need / Available RAM per instance max compared with Hour by\nhour compute need / Available CPU per instance\n=\n26298 values from 2025-01-01 00:00:00+00:00 to 2028-01-01 18:00:00+00:00:\nfirst=41.7 kB ram, last=97.2 kB ram, mean=69.4 kB ram, min=13.9 kB ram, max=125\nkB ram, std=35.9 kB ram / 288 GB ram max compared with 26298 values from\n2025-01-01 00:00:00+00:00 to 2028-01-01 18:00:00+00:00: first=0.000833 gpu,\nlast=0.00194 gpu, mean=0.00139 gpu, min=0.000278 gpu, max=0.0025 gpu,\nstd=0.000718 gpu / 3.6 gpu\n=\n26298 values from 2025-01-01 00:00:00+00:00 to 2028-01-01 18:00:00+00:00:\nfirst=0.000231 , last=0.00054 , mean=0.000385 , min=0.0000772 , max=0.000694 ,\nstd=0.0002", "x": -480.0, "y": 1050}, {"color": null, "id": "Power", "label": "Power", "shape": "dot", "size": 15, "title": "Power\n=\nGPU power * Nb gpus\n=\n400 W/gpu * 4 gpu\n=\n1.6 kW", "x": -240.0, "y": 1050}, {"color": null, "id": "Idle power", "label": "Idle power", "shape": "dot", "size": 15, "title": "Idle power\n=\nGPU idle power * Nb gpus\n=\n50 W/gpu * 4 gpu\n=\n200 W", "x": 0.0, "y": 1050}, {"color": null, "id": "PUE", "label": "PUE", "shape": "dot", "size": 15, "title": "PUE = 1.2", "x": 240.0, "y": 1050}, {"color": null, "id": "Average carbon intensity of electricity", "label": "Average carbon\nintensity of\nelectricity", "shape": "dot", "size": 15, "title": "Average carbon intensity of electricity = 100 g/kWh", "x": 480.0, "y": 1050}]);
+                  nodes = new vis.DataSet([{"color": null, "id": "Hourly load energy footprint", "label": "Hourly load energy\nfootprint", "shape": "dot", "size": 15, "title": "Hourly load energy footprint\n=\nHourly raw number of instances * (Power - Idle power) * PUE * one hour * Average\ncarbon intensity of electricity\n=\n26298 values from 2025-01-01 00:00:00+00:00 to 2028-01-01 18:00:00+00:00:\nfirst=0.000694 , last=0.000231 , mean=0.000385 , min=0.0000772 , max=0.000694 ,\nstd=0.0002 * (1.6 kW - 200 W) * 1.2 * 1 h * 100 g/kWh\n=\n26298 values from 2025-01-01 00:00:00+00:00 to 2028-01-01 18:00:00+00:00:\nfirst=117 mg, last=38.9 mg, mean=64.8 mg, min=13 mg, max=117 mg, std=33.6 mg", "x": 0.0, "y": 1200}, {"color": null, "id": "Hourly raw number of instances", "label": "Hourly raw number of\ninstances", "shape": "dot", "size": 15, "title": "Hourly raw number of instances\n=\nHour by hour ram need / Available RAM per instance max compared with Hour by\nhour compute need / Available CPU per instance\n=\n26298 values from 2025-01-01 00:00:00+00:00 to 2028-01-01 18:00:00+00:00:\nfirst=125 kB ram, last=41.7 kB ram, mean=69.4 kB ram, min=13.9 kB ram, max=125\nkB ram, std=36 kB ram / 288 GB ram max compared with 26298 values from\n2025-01-01 00:00:00+00:00 to 2028-01-01 18:00:00+00:00: first=0.0025 gpu,\nlast=0.000833 gpu, mean=0.00139 gpu, min=0.000278 gpu, max=0.0025 gpu,\nstd=0.000719 gpu / 3.6 gpu\n=\n26298 values from 2025-01-01 00:00:00+00:00 to 2028-01-01 18:00:00+00:00:\nfirst=0.000694 , last=0.000231 , mean=0.000385 , min=0.0000772 , max=0.000694 ,\nstd=0.0002", "x": -480.0, "y": 1050}, {"color": null, "id": "Power", "label": "Power", "shape": "dot", "size": 15, "title": "Power\n=\nGPU power * Nb gpus\n=\n400 W/gpu * 4 gpu\n=\n1.6 kW", "x": -240.0, "y": 1050}, {"color": null, "id": "Idle power", "label": "Idle power", "shape": "dot", "size": 15, "title": "Idle power\n=\nGPU idle power * Nb gpus\n=\n50 W/gpu * 4 gpu\n=\n200 W", "x": 0.0, "y": 1050}, {"color": null, "id": "PUE", "label": "PUE", "shape": "dot", "size": 15, "title": "PUE = 1.2", "x": 240.0, "y": 1050}, {"color": null, "id": "Average carbon intensity of electricity", "label": "Average carbon\nintensity of\nelectricity", "shape": "dot", "size": 15, "title": "Average carbon intensity of electricity = 100 g/kWh", "x": 480.0, "y": 1050}]);
                   edges = new vis.DataSet([{"arrows": "to", "from": "Hourly raw number of instances", "to": "Hourly load energy footprint"}, {"arrows": "to", "from": "Power", "to": "Hourly load energy footprint"}, {"arrows": "to", "from": "Idle power", "to": "Hourly load energy footprint"}, {"arrows": "to", "from": "PUE", "to": "Hourly load energy footprint"}, {"arrows": "to", "from": "Average carbon intensity of electricity", "to": "Hourly load energy footprint"}]);
 
                   nodeColors = {};
@@ -6486,7 +6486,7 @@
         </center>
         <style type="text/css">
 
-             #mynetwork_05ddfd {
+             #mynetwork_e86834 {
                  width: 760px;
                  height: 300px;
                  background-color: #ffffff;
@@ -6508,7 +6508,7 @@
         <div class="card" style="width: 100%">
 
 
-            <div id="mynetwork_05ddfd" class="card-body"></div>
+            <div id="mynetwork_e86834" class="card-body"></div>
         </div>
 
 
@@ -6538,7 +6538,7 @@
 
               // This method is responsible for drawing the graph, returns the drawn network
               function drawGraph() {
-                  var container = document.getElementById('mynetwork_05ddfd');
+                  var container = document.getElementById('mynetwork_e86834');
 
 
 
@@ -6653,7 +6653,7 @@
         </center>
         <style type="text/css">
 
-             #mynetwork_756048 {
+             #mynetwork_6b55f3 {
                  width: 760px;
                  height: 300px;
                  background-color: #ffffff;
@@ -6675,7 +6675,7 @@
         <div class="card" style="width: 100%">
 
 
-            <div id="mynetwork_756048" class="card-body"></div>
+            <div id="mynetwork_6b55f3" class="card-body"></div>
         </div>
 
 
@@ -6705,7 +6705,7 @@
 
               // This method is responsible for drawing the graph, returns the drawn network
               function drawGraph() {
-                  var container = document.getElementById('mynetwork_756048');
+                  var container = document.getElementById('mynetwork_6b55f3');
 
 
 
@@ -6819,7 +6819,7 @@
         </center>
         <style type="text/css">
 
-             #mynetwork_94746b {
+             #mynetwork_bda910 {
                  width: 760px;
                  height: 300px;
                  background-color: #ffffff;
@@ -6841,7 +6841,7 @@
         <div class="card" style="width: 100%">
 
 
-            <div id="mynetwork_94746b" class="card-body"></div>
+            <div id="mynetwork_bda910" class="card-body"></div>
         </div>
 
 
@@ -6871,7 +6871,7 @@
 
               // This method is responsible for drawing the graph, returns the drawn network
               function drawGraph() {
-                  var container = document.getElementById('mynetwork_94746b');
+                  var container = document.getElementById('mynetwork_bda910');
 
 
 
@@ -6985,7 +6985,7 @@
         </center>
         <style type="text/css">
 
-             #mynetwork_1c0b5e {
+             #mynetwork_98a87e {
                  width: 760px;
                  height: 300px;
                  background-color: #ffffff;
@@ -7007,7 +7007,7 @@
         <div class="card" style="width: 100%">
 
 
-            <div id="mynetwork_1c0b5e" class="card-body"></div>
+            <div id="mynetwork_98a87e" class="card-body"></div>
         </div>
 
 
@@ -7037,7 +7037,7 @@
 
               // This method is responsible for drawing the graph, returns the drawn network
               function drawGraph() {
-                  var container = document.getElementById('mynetwork_1c0b5e');
+                  var container = document.getElementById('mynetwork_98a87e');
 
 
 
@@ -7151,7 +7151,7 @@
         </center>
         <style type="text/css">
 
-             #mynetwork_4ed44d {
+             #mynetwork_f43d54 {
                  width: 760px;
                  height: 300px;
                  background-color: #ffffff;
@@ -7173,7 +7173,7 @@
         <div class="card" style="width: 100%">
 
 
-            <div id="mynetwork_4ed44d" class="card-body"></div>
+            <div id="mynetwork_f43d54" class="card-body"></div>
         </div>
 
 
@@ -7203,7 +7203,7 @@
 
               // This method is responsible for drawing the graph, returns the drawn network
               function drawGraph() {
-                  var container = document.getElementById('mynetwork_4ed44d');
+                  var container = document.getElementById('mynetwork_f43d54');
 
 
 
@@ -7327,7 +7327,7 @@
       <script id="__config" type="application/json">{"annotate": null, "base": "..", "features": ["content.code.copy"], "search": "../assets/javascripts/workers/search.2c215733.min.js", "tags": null, "translations": {"clipboard.copied": "Copied to clipboard", "clipboard.copy": "Copy to clipboard", "search.result.more.one": "1 more on this page", "search.result.more.other": "# more on this page", "search.result.none": "No matching documents", "search.result.one": "1 matching document", "search.result.other": "# matching documents", "search.result.placeholder": "Type to start searching", "search.result.term.missing": "Missing", "select.version": "Select version"}, "version": null}</script>
     
     
-      <script src="../assets/javascripts/bundle.79ae519e.min.js"></script>
+      <script src="../assets/javascripts/bundle.d7400e89.min.js"></script>
       
     
   </body>

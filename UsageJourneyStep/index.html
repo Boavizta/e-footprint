@@ -19,7 +19,7 @@
       
       
       <link rel="icon" href="../assets/images/favicon.png">
-      <meta name="generator" content="mkdocs-1.6.1, mkdocs-material-9.7.6">
+      <meta name="generator" content="mkdocs-1.6.1, mkdocs-material-9.7.7">
     
     
       
@@ -27,7 +27,7 @@
       
     
     
-      <link rel="stylesheet" href="../assets/stylesheets/main.484c7ddc.min.css">
+      <link rel="stylesheet" href="../assets/stylesheets/main.ec1eaa64.min.css">
       
       
 
@@ -2369,10 +2369,10 @@
       <ul class="md-nav__list">
         
           <li class="md-nav__item">
-  <a href="#hourly_avg_occurrences_per_usage_pattern" class="md-nav__link">
+  <a href="#hourly_avg_occurrences_per_usage_coordinate" class="md-nav__link">
     <span class="md-ellipsis">
       
-        hourly_avg_occurrences_per_usage_pattern
+        hourly_avg_occurrences_per_usage_coordinate
       
     </span>
   </a>
@@ -3451,10 +3451,10 @@
       <ul class="md-nav__list">
         
           <li class="md-nav__item">
-  <a href="#hourly_avg_occurrences_per_usage_pattern" class="md-nav__link">
+  <a href="#hourly_avg_occurrences_per_usage_coordinate" class="md-nav__link">
     <span class="md-ellipsis">
       
-        hourly_avg_occurrences_per_usage_pattern
+        hourly_avg_occurrences_per_usage_coordinate
       
     </span>
   </a>
@@ -3498,18 +3498,19 @@
 <li><a href="../UsageJourney/">UsageJourney</a></li>
 </ul>
 <h2 id="calculated-attributes">Calculated attributes</h2>
-<h3 id="hourly_avg_occurrences_per_usage_pattern">hourly_avg_occurrences_per_usage_pattern</h3>
+<h3 id="hourly_avg_occurrences_per_usage_coordinate">hourly_avg_occurrences_per_usage_coordinate</h3>
 <p>The step's concurrent occupancy per usage pattern — the journeys concurrently inside the step's
 [delay, delay + times_per_journey × user_time_spent] window, computed as the difference of
 journey-parallel counts at the window's end vs start offsets (exact for fractional offsets).
 Consecutive windows telescope, so summing over a journey's steps tiles
 nb_usage_journeys_in_parallel_per_usage_pattern. Attribution-only primitive (the Device occupancy weight).  </p>
 <p>Example value: {<br />
-UsagePattern usage pattern (372e96e6-e4c): 26298 values from 2025-01-01 00:00:00+00:00 to 2028-01-01 18:00:00+00:00: first=1 , last=2.33 , mean=1.67 , min=0.333 , max=3 , std=0.862 , <br />
+usage pattern / user journey: 26298 values from 2025-01-01 00:00:00+00:00 to 2028-01-01 18:00:00+00:00: first=3 , last=1 , mean=1.67 , min=0.333 , max=3 , std=0.863 , <br />
 }  </p>
 <p>Depends directly on:  </p>
 <ul>
-<li><a href="../UsagePattern/#utc_hourly_usage_journey_starts">Hourly nb of usage journey starts (UTC)</a></li>
+<li><a href="../UsagePattern/#utc_hourly_occurrences">Hourly nb of pattern occurrences (UTC)</a></li>
+<li><a href="../UsagePattern/#usage_journeys">Journeys per pattern occurrence</a></li>
 <li><a href="../UsageJourney/#uj_steps">Times per journey</a></li>
 <li><a href="./#user_time_spent">Time spent by user</a>  </li>
 </ul>
@@ -3547,7 +3548,7 @@ UsagePattern usage pattern (372e96e6-e4c): 26298 values from 2025-01-01 00:00:00
         </center>
         <style type="text/css">
 
-             #mynetwork_6ba916 {
+             #mynetwork_b9a59f {
                  width: 760px;
                  height: 300px;
                  background-color: #ffffff;
@@ -3569,7 +3570,7 @@ UsagePattern usage pattern (372e96e6-e4c): 26298 values from 2025-01-01 00:00:00
         <div class="card" style="width: 100%">
 
 
-            <div id="mynetwork_6ba916" class="card-body"></div>
+            <div id="mynetwork_b9a59f" class="card-body"></div>
         </div>
 
 
@@ -3599,13 +3600,13 @@ UsagePattern usage pattern (372e96e6-e4c): 26298 values from 2025-01-01 00:00:00
 
               // This method is responsible for drawing the graph, returns the drawn network
               function drawGraph() {
-                  var container = document.getElementById('mynetwork_6ba916');
+                  var container = document.getElementById('mynetwork_b9a59f');
 
 
 
                   // parsing and collecting nodes and edges from the python
-                  nodes = new vis.DataSet([{"color": null, "id": "20 min streaming hourly occupancy in usage pattern", "label": "20 min streaming\nhourly occupancy in\nusage pattern", "shape": "dot", "size": 15, "title": "20 min streaming hourly occupancy in usage pattern\n=\nHourly nb of usage journey starts (UTC) hourly occurrences average Times per\njourney * Time spent by user - Hourly nb of usage journey starts (UTC) max\ncompared with no value\n=\n26298 values from 2025-01-01 00:00:00+00:00 to 2028-01-01 18:00:00+00:00:\nfirst=3 , last=7 , mean=5 , min=1 , max=9 , std=2.59 hourly occurrences average\n1 * 20 min - 26298 values from 2025-01-01 00:00:00+00:00 to 2028-01-01\n18:00:00+00:00: first=3 , last=7 , mean=5 , min=1 , max=9 , std=2.59 max\ncompared with no value\n=\n26298 values from 2025-01-01 00:00:00+00:00 to 2028-01-01 18:00:00+00:00:\nfirst=1 , last=2.33 , mean=1.67 , min=0.333 , max=3 , std=0.862", "x": 0.0, "y": 450}, {"color": null, "id": "Hourly nb of usage journey starts (UTC)", "label": "Hourly nb of usage\njourney starts (UTC)", "shape": "dot", "size": 15, "title": "Hourly nb of usage journey starts (UTC)\n=\nHourly nb of usage journey starts converted to UTC from Timezone\n=\n26298 values from 2025-01-01 00:00:00 to 2028-01-01 18:00:00: first=7 , last=3 ,\nmean=5 , min=1 , max=9 , std=2.59 converted to UTC from Europe/Paris\n=\n26298 values from 2025-01-01 00:00:00+00:00 to 2028-01-01 18:00:00+00:00:\nfirst=3 , last=7 , mean=5 , min=1 , max=9 , std=2.59", "x": -150.0, "y": 300}, {"color": "darkred", "id": "Times per journey", "label": "Times per journey", "shape": "dot", "size": 15, "title": "Times per journey = 1", "x": 0.0, "y": 300}, {"color": null, "id": "Time spent by user", "label": "Time spent by user", "shape": "dot", "size": 15, "title": "Time spent by user = 20 min", "x": 150.0, "y": 300}]);
-                  edges = new vis.DataSet([{"arrows": "to", "from": "Hourly nb of usage journey starts (UTC)", "to": "20 min streaming hourly occupancy in usage pattern"}, {"arrows": "to", "from": "Times per journey", "to": "20 min streaming hourly occupancy in usage pattern"}, {"arrows": "to", "from": "Time spent by user", "to": "20 min streaming hourly occupancy in usage pattern"}]);
+                  nodes = new vis.DataSet([{"color": null, "id": "20 min streaming hourly occupancy in usage pattern", "label": "20 min streaming\nhourly occupancy in\nusage pattern", "shape": "dot", "size": 15, "title": "20 min streaming hourly occupancy in usage pattern\n=\nHourly nb of pattern occurrences (UTC) * Journeys per pattern occurrence hourly\noccurrences average Times per journey * Time spent by user - Hourly nb of\npattern occurrences (UTC) * Journeys per pattern occurrence max compared with no\nvalue\n=\n26298 values from 2025-01-01 00:00:00+00:00 to 2028-01-01 18:00:00+00:00:\nfirst=9 , last=3 , mean=5 , min=1 , max=9 , std=2.59 * 1 hourly occurrences\naverage 1 * 20 min - 26298 values from 2025-01-01 00:00:00+00:00 to 2028-01-01\n18:00:00+00:00: first=9 , last=3 , mean=5 , min=1 , max=9 , std=2.59 * 1 max\ncompared with no value\n=\n26298 values from 2025-01-01 00:00:00+00:00 to 2028-01-01 18:00:00+00:00:\nfirst=3 , last=1 , mean=1.67 , min=0.333 , max=3 , std=0.863", "x": 0.0, "y": 450}, {"color": null, "id": "Hourly nb of pattern occurrences (UTC)", "label": "Hourly nb of pattern\noccurrences (UTC)", "shape": "dot", "size": 15, "title": "Hourly nb of pattern occurrences (UTC)\n=\nHourly nb of pattern occurrences converted to UTC from Timezone\n=\n26298 values from 2025-01-01 00:00:00 to 2028-01-01 18:00:00: first=3 , last=7 ,\nmean=5 , min=1 , max=9 , std=2.59 converted to UTC from Europe/Paris\n=\n26298 values from 2025-01-01 00:00:00+00:00 to 2028-01-01 18:00:00+00:00:\nfirst=9 , last=3 , mean=5 , min=1 , max=9 , std=2.59", "x": -225.0, "y": 300}, {"color": "darkred", "id": "Journeys per pattern occurrence", "label": "Journeys per pattern\noccurrence", "shape": "dot", "size": 15, "title": "Journeys per pattern occurrence = 1", "x": -75.0, "y": 300}, {"color": "darkred", "id": "Times per journey", "label": "Times per journey", "shape": "dot", "size": 15, "title": "Times per journey = 1", "x": 75.0, "y": 300}, {"color": null, "id": "Time spent by user", "label": "Time spent by user", "shape": "dot", "size": 15, "title": "Time spent by user = 20 min", "x": 225.0, "y": 300}]);
+                  edges = new vis.DataSet([{"arrows": "to", "from": "Hourly nb of pattern occurrences (UTC)", "to": "20 min streaming hourly occupancy in usage pattern"}, {"arrows": "to", "from": "Journeys per pattern occurrence", "to": "20 min streaming hourly occupancy in usage pattern"}, {"arrows": "to", "from": "Times per journey", "to": "20 min streaming hourly occupancy in usage pattern"}, {"arrows": "to", "from": "Time spent by user", "to": "20 min streaming hourly occupancy in usage pattern"}]);
 
                   nodeColors = {};
                   allNodes = nodes.get({ returnType: "Object" });
@@ -3670,7 +3671,7 @@ UsagePattern usage pattern (372e96e6-e4c): 26298 values from 2025-01-01 00:00:00
     </body>
 </html>
 
-<p>You can also visit the <a href='../calculus_graphs/20_min_streaming_hourly_avg_occurrences_per_usage_pattern.html' target='_blank'>link to 20 min streaming hourly occupancy in usage pattern’s full calculation graph</a>.</p>
+<p>You can also visit the <a href='../calculus_graphs/20_min_streaming_hourly_avg_occurrences_per_usage_coordinate.html' target='_blank'>link to 20 min streaming hourly occupancy in usage pattern’s full calculation graph</a>.</p>
 
 
 
@@ -3723,7 +3724,7 @@ UsagePattern usage pattern (372e96e6-e4c): 26298 values from 2025-01-01 00:00:00
       <script id="__config" type="application/json">{"annotate": null, "base": "..", "features": ["content.code.copy"], "search": "../assets/javascripts/workers/search.2c215733.min.js", "tags": null, "translations": {"clipboard.copied": "Copied to clipboard", "clipboard.copy": "Copy to clipboard", "search.result.more.one": "1 more on this page", "search.result.more.other": "# more on this page", "search.result.none": "No matching documents", "search.result.one": "1 matching document", "search.result.other": "# matching documents", "search.result.placeholder": "Type to start searching", "search.result.term.missing": "Missing", "select.version": "Select version"}, "version": null}</script>
     
     
-      <script src="../assets/javascripts/bundle.79ae519e.min.js"></script>
+      <script src="../assets/javascripts/bundle.d7400e89.min.js"></script>
       
     
   </body>

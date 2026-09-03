@@ -19,7 +19,7 @@
       
       
       <link rel="icon" href="../assets/images/favicon.png">
-      <meta name="generator" content="mkdocs-1.6.1, mkdocs-material-9.7.6">
+      <meta name="generator" content="mkdocs-1.6.1, mkdocs-material-9.7.7">
     
     
       
@@ -27,7 +27,7 @@
       
     
     
-      <link rel="stylesheet" href="../assets/stylesheets/main.484c7ddc.min.css">
+      <link rel="stylesheet" href="../assets/stylesheets/main.ec1eaa64.min.css">
       
       
 
@@ -2491,10 +2491,10 @@
 </li>
         
           <li class="md-nav__item">
-  <a href="#edge_usage_journey" class="md-nav__link">
+  <a href="#edge_usage_journeys" class="md-nav__link">
     <span class="md-ellipsis">
       
-        edge_usage_journey
+        edge_usage_journeys
       
     </span>
   </a>
@@ -2524,10 +2524,21 @@
 </li>
         
           <li class="md-nav__item">
-  <a href="#hourly_edge_usage_journey_starts" class="md-nav__link">
+  <a href="#hourly_deployment_starts" class="md-nav__link">
     <span class="md-ellipsis">
       
-        hourly_edge_usage_journey_starts
+        hourly_deployment_starts
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#usage_span" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        usage_span
       
     </span>
   </a>
@@ -2563,10 +2574,32 @@
       <ul class="md-nav__list">
         
           <li class="md-nav__item">
-  <a href="#utc_hourly_edge_usage_journey_starts" class="md-nav__link">
+  <a href="#edge_usage_journeys_validation" class="md-nav__link">
     <span class="md-ellipsis">
       
-        utc_hourly_edge_usage_journey_starts
+        edge_usage_journeys_validation
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#utc_hourly_deployment_starts" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        utc_hourly_deployment_starts
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#nb_deployments_in_parallel" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        nb_deployments_in_parallel
       
     </span>
   </a>
@@ -3447,10 +3480,10 @@
 </li>
         
           <li class="md-nav__item">
-  <a href="#edge_usage_journey" class="md-nav__link">
+  <a href="#edge_usage_journeys" class="md-nav__link">
     <span class="md-ellipsis">
       
-        edge_usage_journey
+        edge_usage_journeys
       
     </span>
   </a>
@@ -3480,10 +3513,21 @@
 </li>
         
           <li class="md-nav__item">
-  <a href="#hourly_edge_usage_journey_starts" class="md-nav__link">
+  <a href="#hourly_deployment_starts" class="md-nav__link">
     <span class="md-ellipsis">
       
-        hourly_edge_usage_journey_starts
+        hourly_deployment_starts
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#usage_span" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        usage_span
       
     </span>
   </a>
@@ -3519,10 +3563,32 @@
       <ul class="md-nav__list">
         
           <li class="md-nav__item">
-  <a href="#utc_hourly_edge_usage_journey_starts" class="md-nav__link">
+  <a href="#edge_usage_journeys_validation" class="md-nav__link">
     <span class="md-ellipsis">
       
-        utc_hourly_edge_usage_journey_starts
+        edge_usage_journeys_validation
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#utc_hourly_deployment_starts" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        utc_hourly_deployment_starts
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#nb_deployments_in_parallel" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        nb_deployments_in_parallel
       
     </span>
   </a>
@@ -3552,36 +3618,38 @@
 
 
 <h1 id="edgeusagepattern">EdgeUsagePattern</h1>
-<p>The deployment schedule of a fleet of edge devices in a given <a href="../Country/">Country</a>, expressed as an hourly volume of <a href="../EdgeUsageJourney/">EdgeUsageJourney</a> deployments.</p>
+<p>One edge deployment cohort carrying a non-empty set of edge usage journeys for a shared usage span.</p>
 <h2 id="when-to-use-this-class">When to use this class</h2>
 <p>Use <a href="./">EdgeUsagePattern</a> for hardware deployed continuously in the field. Use <a href="../UsagePattern/">UsagePattern</a> for end-user devices that run a request-style <a href="../UsageJourney/">UsageJourney</a> in a web context. See <a href="../web_vs_edge/">web_vs_edge</a>.</p>
 <h2 id="params">Params</h2>
 <h3 id="name">name</h3>
 <p>A human readable description of the object.</p>
-<h3 id="edge_usage_journey">edge_usage_journey</h3>
-<p>The <a href="../EdgeUsageJourney/">EdgeUsageJourney</a> performed by the deployed edge devices.</p>
-<p>An instance of <a href="../EdgeUsageJourney/">EdgeUsageJourney</a>.</p>
+<h3 id="edge_usage_journeys">edge_usage_journeys</h3>
+<p>Non-empty, duplicate-free selection of <a href="../EdgeUsageJourney/">EdgeUsageJourney</a> objects carried by every deployment in this pattern.</p>
+<p>A list of <a href="../EdgeUsageJourney/">EdgeUsageJourneys</a>.</p>
 <h3 id="network">network</h3>
 <p><a href="../Network/">Network</a> used by the edge devices to communicate with servers (when applicable).</p>
 <p>An instance of <a href="../Network/">Network</a>.</p>
 <h3 id="country">country</h3>
-<p><a href="../Country/">Country</a> where the edge devices are deployed. Drives grid carbon intensity and the timezone of <a href="./#hourly_edge_usage_journey_starts">EdgeUsagePattern.hourly_edge_usage_journey_starts</a>.</p>
+<p><a href="../Country/">Country</a> where the edge devices are deployed. Drives grid carbon intensity and the timezone of <a href="./#hourly_deployment_starts">EdgeUsagePattern.hourly_deployment_starts</a>.</p>
 <p>An instance of <a href="../Country/">Country</a>.</p>
-<h3 id="hourly_edge_usage_journey_starts">hourly_edge_usage_journey_starts</h3>
-<p>Hourly timeseries giving how many edge devices are deployed in each hour of the modeling period.</p>
-<p>Hourly nb of edge usage journey starts, in hourly timeseries data.</p>
+<h3 id="hourly_deployment_starts">hourly_deployment_starts</h3>
+<p>Hourly timeseries giving how many deployment cohorts begin in each hour of the modeling period.</p>
+<p>Hourly nb of deployment starts, in hourly timeseries data.</p>
+<h3 id="usage_span">usage_span</h3>
+<p>How long each physical deployment remains active. All selected edge usage journeys share this span.</p>
+<p>Unit: year.</p>
 <h2 id="backwards-links">Backwards links</h2>
 <ul>
 <li><a href="../System/">System</a></li>
 </ul>
 <h2 id="calculated-attributes">Calculated attributes</h2>
-<h3 id="utc_hourly_edge_usage_journey_starts">utc_hourly_edge_usage_journey_starts</h3>
-<p>Hourly journey starts converted from the country's local timezone to UTC, so downstream calculations can be aggregated across patterns in different timezones.  </p>
-<p>Example value: 52597 values from 2025-01-01 00:00:00+00:00 to 2031-01-01 13:00:00+00:00: first=0, last=0, mean=393 , min=0, max=1 k, std=488   </p>
+<h3 id="edge_usage_journeys_validation">edge_usage_journeys_validation</h3>
+<p>Validates that the pattern always contains unique edge usage journeys.  </p>
+<p>Example value: no value  </p>
 <p>Depends directly on:  </p>
 <ul>
-<li><a href="./#hourly_edge_usage_journey_starts">Hourly nb of edge usage journey starts</a></li>
-<li><a href="../Country/#timezone">Timezone</a>  </li>
+<li></li>
 </ul>
 <p>through the following calculations:  </p>
 <html>
@@ -3617,7 +3685,7 @@
         </center>
         <style type="text/css">
 
-             #mynetwork_d00adb {
+             #mynetwork_ea1829 {
                  width: 760px;
                  height: 300px;
                  background-color: #ffffff;
@@ -3639,7 +3707,7 @@
         <div class="card" style="width: 100%">
 
 
-            <div id="mynetwork_d00adb" class="card-body"></div>
+            <div id="mynetwork_ea1829" class="card-body"></div>
         </div>
 
 
@@ -3669,13 +3737,13 @@
 
               // This method is responsible for drawing the graph, returns the drawn network
               function drawGraph() {
-                  var container = document.getElementById('mynetwork_d00adb');
+                  var container = document.getElementById('mynetwork_ea1829');
 
 
 
                   // parsing and collecting nodes and edges from the python
-                  nodes = new vis.DataSet([{"color": null, "id": "Hourly nb of edge usage journey starts (UTC)", "label": "Hourly nb of edge\nusage journey starts\n(UTC)", "shape": "dot", "size": 15, "title": "Hourly nb of edge usage journey starts (UTC)\n=\nHourly nb of edge usage journey starts converted to UTC from Timezone\n=\n52597 values from 2025-01-01 00:00:00 to 2031-01-01 13:00:00: first=0, last=1 k,\nmean=393 , min=0, max=1 k, std=488 converted to UTC from Europe/Paris\n=\n52597 values from 2025-01-01 00:00:00+00:00 to 2031-01-01 13:00:00+00:00:\nfirst=0, last=0, mean=393 , min=0, max=1 k, std=488", "x": 0.0, "y": 300}, {"color": "darkred", "id": "Hourly nb of edge usage journey starts", "label": "Hourly nb of edge\nusage journey starts", "shape": "dot", "size": 15, "title": "Hourly nb of edge usage journey starts = 52597 values from 2025-01-01 00:00:00\nto 2031-01-01 13:00:00: first=0, last=1 k, mean=393 , min=0, max=1 k, std=488", "x": -75.0, "y": 150}, {"color": "gold", "id": "Timezone", "label": "Timezone", "shape": "dot", "size": 15, "title": "Timezone = Europe/Paris", "x": 75.0, "y": 150}]);
-                  edges = new vis.DataSet([{"arrows": "to", "from": "Hourly nb of edge usage journey starts", "to": "Hourly nb of edge usage journey starts (UTC)"}, {"arrows": "to", "from": "Timezone", "to": "Hourly nb of edge usage journey starts (UTC)"}]);
+                  nodes = new vis.DataSet([{"color": null, "id": "no value", "label": "no value", "shape": "dot", "size": 15, "title": "no value = no value", "x": 0.0, "y": 150}]);
+                  edges = new vis.DataSet([]);
 
                   nodeColors = {};
                   allNodes = nodes.get({ returnType: "Object" });
@@ -3740,7 +3808,339 @@
     </body>
 </html>
 
-<p>You can also visit the <a href='../calculus_graphs/Default_edge_usage_pattern_utc_hourly_edge_usage_journey_starts.html' target='_blank'>link to Hourly nb of edge usage journey starts (UTC)’s full calculation graph</a>.</p>
+<p>You can also visit the <a href='../calculus_graphs/Default_edge_usage_pattern_edge_usage_journeys_validation.html' target='_blank'>link to no value’s full calculation graph</a>.</p>
+<h3 id="utc_hourly_deployment_starts">utc_hourly_deployment_starts</h3>
+<p>Hourly deployment starts converted from the country's local timezone to UTC.  </p>
+<p>Example value: 52597 values from 2025-01-01 00:00:00+00:00 to 2031-01-01 13:00:00+00:00: first=0, last=0, mean=393 , min=0, max=1 k, std=488   </p>
+<p>Depends directly on:  </p>
+<ul>
+<li><a href="./#hourly_deployment_starts">Hourly nb of deployment starts</a></li>
+<li><a href="../Country/#timezone">Timezone</a>  </li>
+</ul>
+<p>through the following calculations:  </p>
+<html>
+    <head>
+        <meta charset="utf-8">
+
+            <script src="lib/bindings/utils.js"></script>
+            <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/vis-network/9.1.2/dist/dist/vis-network.min.css" integrity="sha512-WgxfT5LWjfszlPHXRmBWHkV2eceiWTOBvrKCNbdgDYTHrT2AeLCGbF4sZlZw3UMN3WtL0tGUoIAKsu8mllg/XA==" crossorigin="anonymous" referrerpolicy="no-referrer" />
+            <script src="https://cdnjs.cloudflare.com/ajax/libs/vis-network/9.1.2/dist/vis-network.min.js" integrity="sha512-LnvoEWDFrqGHlHmDD2101OrLcbsfkrzoSpvtSQtxK3RMnRV0eOkhhBN2dXHKRrUU8p2DGRTk35n4O8nWSVe1mQ==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
+
+
+<center>
+<h1></h1>
+</center>
+
+<!-- <link rel="stylesheet" href="../node_modules/vis/dist/vis.min.css" type="text/css" />
+<script type="text/javascript" src="../node_modules/vis/dist/vis.js"> </script>-->
+        <link
+          href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.0-beta3/dist/css/bootstrap.min.css"
+          rel="stylesheet"
+          integrity="sha384-eOJMYsd53ii+scO/bJGFsiCZc+5NDVN2yr8+0RDqr0Ql0h+rP48ckxlpbzKgwra6"
+          crossorigin="anonymous"
+        />
+        <script
+          src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.0-beta3/dist/js/bootstrap.bundle.min.js"
+          integrity="sha384-JEW9xMcG8R+pH31jmWH6WWP0WintQrMb4s7ZOdauHnUtxwoG2vI5DkLtS3qm9Ekf"
+          crossorigin="anonymous"
+        ></script>
+
+
+        <center>
+          <h1></h1>
+        </center>
+        <style type="text/css">
+
+             #mynetwork_b175d6 {
+                 width: 760px;
+                 height: 300px;
+                 background-color: #ffffff;
+                 border: 1px solid lightgray;
+                 position: relative;
+                 float: left;
+             }
+
+
+
+
+
+
+        </style>
+    </head>
+
+
+    <body>
+        <div class="card" style="width: 100%">
+
+
+            <div id="mynetwork_b175d6" class="card-body"></div>
+        </div>
+
+
+
+
+        <script type="text/javascript">
+
+              // initialize global variables.
+              var edges;
+              var nodes;
+              var allNodes;
+              var allEdges;
+              var nodeColors;
+              var originalNodes;
+              var network;
+              var container;
+              var options, data;
+              var filter = {
+                  item : '',
+                  property : '',
+                  value : []
+              };
+
+
+
+
+
+              // This method is responsible for drawing the graph, returns the drawn network
+              function drawGraph() {
+                  var container = document.getElementById('mynetwork_b175d6');
+
+
+
+                  // parsing and collecting nodes and edges from the python
+                  nodes = new vis.DataSet([{"color": null, "id": "Hourly nb of deployment starts (UTC)", "label": "Hourly nb of\ndeployment starts\n(UTC)", "shape": "dot", "size": 15, "title": "Hourly nb of deployment starts (UTC)\n=\nHourly nb of deployment starts converted to UTC from Timezone\n=\n52597 values from 2025-01-01 00:00:00 to 2031-01-01 13:00:00: first=0, last=1 k,\nmean=393 , min=0, max=1 k, std=488 converted to UTC from Europe/Paris\n=\n52597 values from 2025-01-01 00:00:00+00:00 to 2031-01-01 13:00:00+00:00:\nfirst=0, last=0, mean=393 , min=0, max=1 k, std=488", "x": 0.0, "y": 300}, {"color": "darkred", "id": "Hourly nb of deployment starts", "label": "Hourly nb of\ndeployment starts", "shape": "dot", "size": 15, "title": "Hourly nb of deployment starts = 52597 values from 2025-01-01 00:00:00 to\n2031-01-01 13:00:00: first=0, last=1 k, mean=393 , min=0, max=1 k, std=488", "x": -75.0, "y": 150}, {"color": "gold", "id": "Timezone", "label": "Timezone", "shape": "dot", "size": 15, "title": "Timezone = Europe/Paris", "x": 75.0, "y": 150}]);
+                  edges = new vis.DataSet([{"arrows": "to", "from": "Hourly nb of deployment starts", "to": "Hourly nb of deployment starts (UTC)"}, {"arrows": "to", "from": "Timezone", "to": "Hourly nb of deployment starts (UTC)"}]);
+
+                  nodeColors = {};
+                  allNodes = nodes.get({ returnType: "Object" });
+                  for (nodeId in allNodes) {
+                    nodeColors[nodeId] = allNodes[nodeId].color;
+                  }
+                  allEdges = edges.get({ returnType: "Object" });
+                  // adding nodes and edges to the graph
+                  data = {nodes: nodes, edges: edges};
+
+                  var options = {
+    "configure": {
+        "enabled": false
+    },
+    "edges": {
+        "color": {
+            "inherit": true
+        },
+        "smooth": {
+            "enabled": true,
+            "type": "dynamic"
+        }
+    },
+    "interaction": {
+        "dragNodes": true,
+        "hideEdgesOnDrag": false,
+        "hideNodesOnDrag": false
+    },
+    "physics": {
+        "enabled": false,
+        "stabilization": {
+            "enabled": true,
+            "fit": true,
+            "iterations": 1000,
+            "onlyDynamicEdges": false,
+            "updateInterval": 50
+        }
+    }
+};
+
+
+
+
+
+
+                  network = new vis.Network(container, data, options);
+
+
+
+
+
+
+
+
+
+
+                  return network;
+
+              }
+              drawGraph();
+        </script>
+    </body>
+</html>
+
+<p>You can also visit the <a href='../calculus_graphs/Default_edge_usage_pattern_utc_hourly_deployment_starts.html' target='_blank'>link to Hourly nb of deployment starts (UTC)’s full calculation graph</a>.</p>
+<h3 id="nb_deployments_in_parallel">nb_deployments_in_parallel</h3>
+<p>Hourly count of active physical deployments derived from deployment starts and usage span.  </p>
+<p>Example value: 105192 values from 2025-01-01 00:00:00+00:00 to 2037-01-01 00:00:00+00:00: first=1.06 , last=0.607 , mean=10.3 M, min=0, max=20.7 M, std=5.96 M  </p>
+<p>Depends directly on:  </p>
+<ul>
+<li><a href="./#utc_hourly_deployment_starts">Hourly nb of deployment starts (UTC)</a></li>
+<li><a href="./#usage_span">Usage span</a>  </li>
+</ul>
+<p>through the following calculations:  </p>
+<html>
+    <head>
+        <meta charset="utf-8">
+
+            <script src="lib/bindings/utils.js"></script>
+            <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/vis-network/9.1.2/dist/dist/vis-network.min.css" integrity="sha512-WgxfT5LWjfszlPHXRmBWHkV2eceiWTOBvrKCNbdgDYTHrT2AeLCGbF4sZlZw3UMN3WtL0tGUoIAKsu8mllg/XA==" crossorigin="anonymous" referrerpolicy="no-referrer" />
+            <script src="https://cdnjs.cloudflare.com/ajax/libs/vis-network/9.1.2/dist/vis-network.min.js" integrity="sha512-LnvoEWDFrqGHlHmDD2101OrLcbsfkrzoSpvtSQtxK3RMnRV0eOkhhBN2dXHKRrUU8p2DGRTk35n4O8nWSVe1mQ==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
+
+
+<center>
+<h1></h1>
+</center>
+
+<!-- <link rel="stylesheet" href="../node_modules/vis/dist/vis.min.css" type="text/css" />
+<script type="text/javascript" src="../node_modules/vis/dist/vis.js"> </script>-->
+        <link
+          href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.0-beta3/dist/css/bootstrap.min.css"
+          rel="stylesheet"
+          integrity="sha384-eOJMYsd53ii+scO/bJGFsiCZc+5NDVN2yr8+0RDqr0Ql0h+rP48ckxlpbzKgwra6"
+          crossorigin="anonymous"
+        />
+        <script
+          src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.0-beta3/dist/js/bootstrap.bundle.min.js"
+          integrity="sha384-JEW9xMcG8R+pH31jmWH6WWP0WintQrMb4s7ZOdauHnUtxwoG2vI5DkLtS3qm9Ekf"
+          crossorigin="anonymous"
+        ></script>
+
+
+        <center>
+          <h1></h1>
+        </center>
+        <style type="text/css">
+
+             #mynetwork_6e6f5c {
+                 width: 760px;
+                 height: 300px;
+                 background-color: #ffffff;
+                 border: 1px solid lightgray;
+                 position: relative;
+                 float: left;
+             }
+
+
+
+
+
+
+        </style>
+    </head>
+
+
+    <body>
+        <div class="card" style="width: 100%">
+
+
+            <div id="mynetwork_6e6f5c" class="card-body"></div>
+        </div>
+
+
+
+
+        <script type="text/javascript">
+
+              // initialize global variables.
+              var edges;
+              var nodes;
+              var allNodes;
+              var allEdges;
+              var nodeColors;
+              var originalNodes;
+              var network;
+              var container;
+              var options, data;
+              var filter = {
+                  item : '',
+                  property : '',
+                  value : []
+              };
+
+
+
+
+
+              // This method is responsible for drawing the graph, returns the drawn network
+              function drawGraph() {
+                  var container = document.getElementById('mynetwork_6e6f5c');
+
+
+
+                  // parsing and collecting nodes and edges from the python
+                  nodes = new vis.DataSet([{"color": null, "id": "Hourly nb of deployments in parallel", "label": "Hourly nb of\ndeployments in\nparallel", "shape": "dot", "size": 15, "title": "Hourly nb of deployments in parallel\n=\nHourly nb of deployment starts (UTC) hourly occurrences average Usage span\n=\n52597 values from 2025-01-01 00:00:00+00:00 to 2031-01-01 13:00:00+00:00:\nfirst=0, last=0, mean=393 , min=0, max=1 k, std=488 hourly occurrences average 6\nyr\n=\n105192 values from 2025-01-01 00:00:00+00:00 to 2037-01-01 00:00:00+00:00:\nfirst=1.06 , last=0.607 , mean=10.3 M, min=0, max=20.7 M, std=5.96 M", "x": 0.0, "y": 450}, {"color": null, "id": "Hourly nb of deployment starts (UTC)", "label": "Hourly nb of\ndeployment starts\n(UTC)", "shape": "dot", "size": 15, "title": "Hourly nb of deployment starts (UTC)\n=\nHourly nb of deployment starts converted to UTC from Timezone\n=\n52597 values from 2025-01-01 00:00:00 to 2031-01-01 13:00:00: first=0, last=1 k,\nmean=393 , min=0, max=1 k, std=488 converted to UTC from Europe/Paris\n=\n52597 values from 2025-01-01 00:00:00+00:00 to 2031-01-01 13:00:00+00:00:\nfirst=0, last=0, mean=393 , min=0, max=1 k, std=488", "x": -75.0, "y": 300}, {"color": null, "id": "Usage span", "label": "Usage span", "shape": "dot", "size": 15, "title": "Usage span = 6 yr", "x": 75.0, "y": 300}]);
+                  edges = new vis.DataSet([{"arrows": "to", "from": "Hourly nb of deployment starts (UTC)", "to": "Hourly nb of deployments in parallel"}, {"arrows": "to", "from": "Usage span", "to": "Hourly nb of deployments in parallel"}]);
+
+                  nodeColors = {};
+                  allNodes = nodes.get({ returnType: "Object" });
+                  for (nodeId in allNodes) {
+                    nodeColors[nodeId] = allNodes[nodeId].color;
+                  }
+                  allEdges = edges.get({ returnType: "Object" });
+                  // adding nodes and edges to the graph
+                  data = {nodes: nodes, edges: edges};
+
+                  var options = {
+    "configure": {
+        "enabled": false
+    },
+    "edges": {
+        "color": {
+            "inherit": true
+        },
+        "smooth": {
+            "enabled": true,
+            "type": "dynamic"
+        }
+    },
+    "interaction": {
+        "dragNodes": true,
+        "hideEdgesOnDrag": false,
+        "hideNodesOnDrag": false
+    },
+    "physics": {
+        "enabled": false,
+        "stabilization": {
+            "enabled": true,
+            "fit": true,
+            "iterations": 1000,
+            "onlyDynamicEdges": false,
+            "updateInterval": 50
+        }
+    }
+};
+
+
+
+
+
+
+                  network = new vis.Network(container, data, options);
+
+
+
+
+
+
+
+
+
+
+                  return network;
+
+              }
+              drawGraph();
+        </script>
+    </body>
+</html>
+
+<p>You can also visit the <a href='../calculus_graphs/Default_edge_usage_pattern_nb_deployments_in_parallel.html' target='_blank'>link to Hourly nb of deployments in parallel’s full calculation graph</a>.</p>
 
 
 
@@ -3793,7 +4193,7 @@
       <script id="__config" type="application/json">{"annotate": null, "base": "..", "features": ["content.code.copy"], "search": "../assets/javascripts/workers/search.2c215733.min.js", "tags": null, "translations": {"clipboard.copied": "Copied to clipboard", "clipboard.copy": "Copy to clipboard", "search.result.more.one": "1 more on this page", "search.result.more.other": "# more on this page", "search.result.none": "No matching documents", "search.result.one": "1 matching document", "search.result.other": "# matching documents", "search.result.placeholder": "Type to start searching", "search.result.term.missing": "Missing", "select.version": "Select version"}, "version": null}</script>
     
     
-      <script src="../assets/javascripts/bundle.79ae519e.min.js"></script>
+      <script src="../assets/javascripts/bundle.d7400e89.min.js"></script>
       
     
   </body>

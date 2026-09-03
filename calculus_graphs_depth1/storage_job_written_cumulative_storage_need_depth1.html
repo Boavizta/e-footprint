@@ -31,7 +31,7 @@
         </center>
         <style type="text/css">
 
-             #mynetwork_f866b7 {
+             #mynetwork_5343ff {
                  width: 760px;
                  height: 300px;
                  background-color: #ffffff;
@@ -53,7 +53,7 @@
         <div class="card" style="width: 100%">
             
             
-            <div id="mynetwork_f866b7" class="card-body"></div>
+            <div id="mynetwork_5343ff" class="card-body"></div>
         </div>
 
         
@@ -83,12 +83,12 @@
 
               // This method is responsible for drawing the graph, returns the drawn network
               function drawGraph() {
-                  var container = document.getElementById('mynetwork_f866b7');
+                  var container = document.getElementById('mynetwork_5343ff');
 
                   
 
                   // parsing and collecting nodes and edges from the python
-                  nodes = new vis.DataSet([{"color": null, "id": "Job-written cumulative storage need of storage", "label": "Job-written\ncumulative storage\nneed of storage", "shape": "dot", "size": 15, "title": "Job-written cumulative storage need of storage\n=\nCumulative storage need for Manually defined job + Cumulative storage need for\nVideo streaming job\n=\n105192 values from 2025-01-01 00:00:00+00:00 to 2037-01-01 00:00:00+00:00:\nfirst=2.12 MB stored, last=18100 TB stored, mean=53300 TB stored, min=2.12 MB\nstored, max=99600 TB stored, std=31400 TB stored + 26298 values from 2025-01-01\n00:00:00+00:00 to 2028-01-01 18:00:00+00:00: first=0, last=0, mean=0, min=0,\nmax=0, std=0\n=\n105192 values from 2025-01-01 00:00:00+00:00 to 2037-01-01 00:00:00+00:00:\nfirst=2.12 MB stored, last=18100 TB stored, mean=53300 TB stored, min=2.12 MB\nstored, max=99600 TB stored, std=31400 TB stored", "x": 0.0, "y": 1500}, {"color": null, "id": "Cumulative storage need for Manually defined job", "label": "Cumulative storage\nneed for Manually\ndefined job", "shape": "dot", "size": 15, "title": "Cumulative storage need for Manually defined job\n=\nHourly data stored across usage patterns * Data replication factor cumulative\nsum with automatic dumps Data storage duration\n=\n105192 values from 2025-01-01 00:00:00+00:00 to 2037-01-01 00:00:00+00:00:\nfirst=706 kB stored, last=60.7 kB stored, mean=1.03 TB stored, min=60.7 kB\nstored, max=2.07 TB stored, std=596 GB stored * 3 cumulative sum with automatic\ndumps 2 yr\n=\n105192 values from 2025-01-01 00:00:00+00:00 to 2037-01-01 00:00:00+00:00:\nfirst=2.12 MB stored, last=18100 TB stored, mean=53300 TB stored, min=2.12 MB\nstored, max=99600 TB stored, std=31400 TB stored", "x": -262.5, "y": 1350}, {"color": null, "id": "Cumulative storage need for Video streaming job", "label": "Cumulative storage\nneed for Video\nstreaming job", "shape": "dot", "size": 15, "title": "Cumulative storage need for Video streaming job\n=\nHourly data stored across usage patterns * Data replication factor cumulative\nsum with automatic dumps Data storage duration\n=\n26298 values from 2025-01-01 00:00:00+00:00 to 2028-01-01 18:00:00+00:00:\nfirst=0, last=0, mean=0, min=0, max=0, std=0 * 3 cumulative sum with automatic\ndumps 2 yr\n=\n26298 values from 2025-01-01 00:00:00+00:00 to 2028-01-01 18:00:00+00:00:\nfirst=0, last=0, mean=0, min=0, max=0, std=0", "x": 262.5, "y": 1350}]);
+                  nodes = new vis.DataSet([{"color": null, "id": "Job-written cumulative storage need of storage", "label": "Job-written\ncumulative storage\nneed of storage", "shape": "dot", "size": 15, "title": "Job-written cumulative storage need of storage\n=\nCumulative storage need for Manually defined job + Cumulative storage need for\nVideo streaming job\n=\n105192 values from 2025-01-01 00:00:00+00:00 to 2037-01-01 00:00:00+00:00:\nfirst=5.72 MB stored, last=18100 TB stored, mean=53300 TB stored, min=5.72 MB\nstored, max=99600 TB stored, std=31400 TB stored + 26298 values from 2025-01-01\n00:00:00+00:00 to 2028-01-01 18:00:00+00:00: first=0, last=0, mean=0, min=0,\nmax=0, std=0\n=\n105192 values from 2025-01-01 00:00:00+00:00 to 2037-01-01 00:00:00+00:00:\nfirst=5.72 MB stored, last=18100 TB stored, mean=53300 TB stored, min=5.72 MB\nstored, max=99600 TB stored, std=31400 TB stored", "x": 0.0, "y": 1500}, {"color": null, "id": "Cumulative storage need for Manually defined job", "label": "Cumulative storage\nneed for Manually\ndefined job", "shape": "dot", "size": 15, "title": "Cumulative storage need for Manually defined job\n=\nHourly data stored across usage patterns * Data replication factor cumulative\nsum with automatic dumps Data storage duration\n=\n105192 values from 2025-01-01 00:00:00+00:00 to 2037-01-01 00:00:00+00:00:\nfirst=1.91 MB stored, last=60.7 kB stored, mean=1.03 TB stored, min=60.7 kB\nstored, max=2.07 TB stored, std=596 GB stored * 3 cumulative sum with automatic\ndumps 2 yr\n=\n105192 values from 2025-01-01 00:00:00+00:00 to 2037-01-01 00:00:00+00:00:\nfirst=5.72 MB stored, last=18100 TB stored, mean=53300 TB stored, min=5.72 MB\nstored, max=99600 TB stored, std=31400 TB stored", "x": -300.0, "y": 1350}, {"color": null, "id": "Cumulative storage need for Video streaming job", "label": "Cumulative storage\nneed for Video\nstreaming job", "shape": "dot", "size": 15, "title": "Cumulative storage need for Video streaming job\n=\nHourly data stored across usage patterns * Data replication factor cumulative\nsum with automatic dumps Data storage duration\n=\n26298 values from 2025-01-01 00:00:00+00:00 to 2028-01-01 18:00:00+00:00:\nfirst=0, last=0, mean=0, min=0, max=0, std=0 * 3 cumulative sum with automatic\ndumps 2 yr\n=\n26298 values from 2025-01-01 00:00:00+00:00 to 2028-01-01 18:00:00+00:00:\nfirst=0, last=0, mean=0, min=0, max=0, std=0", "x": 300.0, "y": 1350}]);
                   edges = new vis.DataSet([{"arrows": "to", "from": "Cumulative storage need for Manually defined job", "to": "Job-written cumulative storage need of storage"}, {"arrows": "to", "from": "Cumulative storage need for Video streaming job", "to": "Job-written cumulative storage need of storage"}]);
 
                   nodeColors = {};
