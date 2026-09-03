@@ -114,10 +114,13 @@ class Device(HardwareBase, AttributionSource):
             step for usage_pattern in self.usage_patterns for journey in usage_pattern.usage_journeys
             for step in journey.uj_steps))
 
-    def nb_journeys_in_parallel(self, usage_pattern: "UsagePattern"):
+    @computed_dict(keys="usage_patterns")
+    def nb_journeys_in_parallel_per_usage_pattern(self, usage_pattern: "UsagePattern"):
+        """Hourly count of journeys concurrently occupying this device, broken down by usage pattern."""
         return sum(
             (journey.nb_usage_journeys_in_parallel_per_usage_pattern[usage_pattern]
-             for journey in usage_pattern.usage_journeys), start=EmptyExplainableObject())
+             for journey in usage_pattern.usage_journeys), start=EmptyExplainableObject()).set_label(
+            f"{usage_pattern.name} hourly nb of journeys in parallel")
 
 
     @computed_dict(keys="usage_patterns")
@@ -125,7 +128,7 @@ class Device(HardwareBase, AttributionSource):
         """Hourly carbon emissions caused by the device's electricity use, broken down by usage pattern. Equal to the energy spent by concurrent journeys times the country's grid carbon intensity."""
         energy_spent_over_one_full_hour_by_one_device = self.power * ExplainableQuantity(1 * u.hour, "one full hour")
         instances_energy = (
-            self.nb_journeys_in_parallel(usage_pattern)
+            self.nb_journeys_in_parallel_per_usage_pattern[usage_pattern]
             * energy_spent_over_one_full_hour_by_one_device
         ).to(u.kWh)
         return (
@@ -149,7 +152,7 @@ class Device(HardwareBase, AttributionSource):
     def instances_fabrication_footprint_per_usage_pattern(self, usage_pattern: "UsagePattern"):
         """Hourly fabrication-phase emissions of all devices in use, broken down by usage pattern. Equal to one device's hourly amortised embodied carbon (lifespan and usage-time-adjusted) multiplied by the number of journeys concurrently in progress."""
         return (
-            self.nb_journeys_in_parallel(usage_pattern)
+            self.nb_journeys_in_parallel_per_usage_pattern[usage_pattern]
             * self.device_fabrication_footprint_over_one_hour).to(u.kg).set_label(
             f"Fabrication footprint for {usage_pattern.name}")
 

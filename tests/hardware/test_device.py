@@ -52,9 +52,14 @@ class TestDevice(TestCase):
 
         set_modeling_obj_containers(device, [usage_pattern_1, usage_pattern_2])
 
+        recompute_attribute(device, "nb_journeys_in_parallel_per_usage_pattern")
         recompute_attribute(device, "energy_footprint_per_usage_pattern")
         recompute_attribute(device, "energy_footprint")
 
+        self.assertIn("nb_journeys_in_parallel_per_usage_pattern", device.calculated_attributes)
+        self.assertTrue(np.allclose(
+            [1, 2, 3],
+            device.nb_journeys_in_parallel_per_usage_pattern[usage_pattern_1].magnitude))
         self.assertEqual(u.kg, device.energy_footprint.unit)
         self.assertTrue(np.allclose([0.1, 0.4, 0.3], device.energy_footprint.magnitude))
 
