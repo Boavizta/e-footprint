@@ -121,9 +121,8 @@ class System(ModelingObject):
 
     @property
     def edge_usage_journeys(self) -> List[EdgeUsageJourney]:
-        return sorted(dict.fromkeys(
-            journey for eup in self.edge_usage_patterns for journey in eup.edge_usage_journeys),
-            key=lambda journey: journey.id)
+        return list(dict.fromkeys(
+            journey for eup in self.edge_usage_patterns for journey in eup.edge_usage_journeys))
 
     @property
     def devices(self) -> List[Device]:

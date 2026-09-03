@@ -96,20 +96,17 @@ class EdgeUsagePattern(ModelingObject):
 
     @property
     def recurrent_edge_device_needs(self) -> List["RecurrentEdgeDeviceNeed"]:
-        return sorted(dict.fromkeys(
-            need for journey in self.edge_usage_journeys for need in journey.recurrent_edge_device_needs),
-            key=lambda need: need.id)
+        return list(dict.fromkeys(
+            need for journey in self.edge_usage_journeys for need in journey.recurrent_edge_device_needs))
 
     @property
     def recurrent_server_needs(self) -> List["RecurrentServerNeed"]:
-        return sorted(dict.fromkeys(
-            need for journey in self.edge_usage_journeys for need in journey.recurrent_server_needs),
-            key=lambda need: need.id)
+        return list(dict.fromkeys(
+            need for journey in self.edge_usage_journeys for need in journey.recurrent_server_needs))
 
     @property
     def jobs(self) -> List["JobBase"]:
-        return sorted(dict.fromkeys(job for journey in self.edge_usage_journeys for job in journey.jobs),
-                      key=lambda job: job.id)
+        return list(dict.fromkeys(job for journey in self.edge_usage_journeys for job in journey.jobs))
 
     @computed_structure
     def containment_inventory(self):
@@ -125,11 +122,9 @@ class EdgeUsagePattern(ModelingObject):
                         component_paths[(journey, edge_function, device_need, component_need)] += 1
         return EdgeContainmentInventory(
             server_need_paths=tuple(
-                EdgeServerNeedPath(*path, count) for path, count in sorted(
-                    server_paths.items(), key=lambda item: tuple(obj.id for obj in item[0]))),
+                EdgeServerNeedPath(*path, count) for path, count in server_paths.items()),
             component_need_paths=tuple(
-                EdgeComponentNeedPath(*path, count) for path, count in sorted(
-                    component_paths.items(), key=lambda item: tuple(obj.id for obj in item[0]))),
+                EdgeComponentNeedPath(*path, count) for path, count in component_paths.items()),
         )
 
     @computed_attribute

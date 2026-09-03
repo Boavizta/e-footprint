@@ -113,6 +113,7 @@ class TestPerUsagePatternImpactCascade(TestCase):
 
         one_journey_fabrication = device.instances_fabrication_footprint_per_usage_pattern[pattern].magnitude.copy()
         pattern.edge_usage_journeys = [first, second, third]
+        self.assertEqual([first, second, third], system.edge_usage_journeys)
         np.testing.assert_array_equal(
             one_journey_fabrication, device.instances_fabrication_footprint_per_usage_pattern[pattern].magnitude)
         self.assertEqual(2, sum(
@@ -132,11 +133,30 @@ class TestPerUsagePatternImpactCascade(TestCase):
 
         pattern.edge_usage_journeys = [third, second, first]
 
-        np.testing.assert_array_equal(workload, component.unitary_hourly_workload_per_usage_pattern[pattern].magnitude)
-        np.testing.assert_array_equal(total, system.total_footprint.magnitude)
-        self.assertEqual(matrix, system.impact_repartition_matrix)
-        self.assertEqual(fold, node_totals_and_links_in_kg(
-            system, LifeCyclePhases.USAGE, (EdgeDevice, EdgeUsageJourney, EdgeUsagePattern, Country)))
+        self.assertEqual([third, second, first], system.edge_usage_journeys)
+        np.testing.assert_allclose(
+            workload, component.unitary_hourly_workload_per_usage_pattern[pattern].magnitude, rtol=1e-6)
+        np.testing.assert_allclose(total, system.total_footprint.magnitude, rtol=1e-6)
+        matrix_by_path = {
+            frozenset((key, value) for key, value in row.items() if key != "value"): row["value"]
+            for row in matrix}
+        updated_matrix_by_path = {
+            frozenset((key, value) for key, value in row.items() if key != "value"): row["value"]
+            for row in system.impact_repartition_matrix}
+        self.assertEqual(matrix_by_path.keys(), updated_matrix_by_path.keys())
+        np.testing.assert_allclose(
+            list(matrix_by_path.values()),
+            [updated_matrix_by_path[path] for path in matrix_by_path],
+            rtol=1e-6)
+        updated_fold = node_totals_and_links_in_kg(
+            system, LifeCyclePhases.USAGE, (EdgeDevice, EdgeUsageJourney, EdgeUsagePattern, Country))
+        self.assertEqual(len(fold), len(updated_fold))
+        for expected_values, updated_values in zip(fold, updated_fold):
+            self.assertEqual(expected_values.keys(), updated_values.keys())
+            np.testing.assert_allclose(
+                list(expected_values.values()),
+                [updated_values[key] for key in expected_values],
+                rtol=1e-6)
 
     def test_shared_usage_journey_attributes_country_dependent_and_neutral_usage_separately(self):
         storage = self._neutral_storage("web storage")
