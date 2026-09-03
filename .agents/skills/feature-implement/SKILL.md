@@ -26,7 +26,15 @@ Spawn a sub-agent (Agent tool, `general-purpose`) to implement **exactly one tas
 
 Give it the task number and require the implementation commit subject to start `<repo tag> task N:`, for example `[ADD] task 4: replace catalog datalists with selects`. This task-numbered format overrides `task-implement`'s standalone `<feature-name>: <task title>` format and makes the feature history easy to scan.
 
-Require a **terse final message** — this is all that enters your context, so keep it lean: task title; files touched; gate status (tests pass/fail, plus any repo-specific gates that applied); `Scope deviations / boy-scout fixes: none` or each deviation with its supported reproduction and owning layer; one line on what remains. No diffs or general narration. A synthetic test that directly manufactures internal state is not a supported reproduction.
+Require a **compact structured handoff** — this is all that enters your context, so preserve decision-relevant information without step-by-step narration. For a substantive task, roughly 150–250 words is a useful target rather than a hard limit; simple tasks can be shorter, and material risks or decisions must not be omitted to meet it. Include:
+
+- outcome and key implementation decisions or invariants;
+- main files or areas changed;
+- tests run and the behaviours they cover, plus any failing or unavailable gate;
+- `Scope deviations / boy-scout fixes: none` or each deviation with its supported reproduction and owning layer;
+- remaining risks, unresolved questions, follow-ups, and what remains in the task list.
+
+Do not include diffs, command transcripts, or chronological implementation narration. A synthetic test that directly manufactures internal state is not a supported reproduction.
 
 **A red gate is diagnostic evidence, not an automatic user interruption.** Have the implement agent diagnose the failure. When the cause and correction are evident, in scope, and low risk—such as an implementation defect, stale test expectation, malformed fixture, formatting issue, or another local inconsistency—tell the same agent to fix the demonstrated cause, rerun the affected gate, and continue without asking the user. Never convert an unexplained failure into speculative hardening or a downstream workaround. Briefly surface the recovery as a non-blocking progress update when useful; never hide a still-failing gate.
 
@@ -101,7 +109,7 @@ This is the **only** point in the loop that touches `CHANGELOG.md` — implement
 
 ## Context discipline (why this stays lean)
 
-A sub-agent's internal work never enters your context — only its final message does. Your context therefore grows by roughly one findings list per task, not by implementation transcripts. Protect that: insist on terse sub-agent returns, keep returned findings compact (deeper detail stays in the review agent, fetched on demand), delegate code-reading to the review agent during Q&A, and stop referencing a task's findings once its fixes are committed. None of this reclaims context already spent — it only bounds *growth*. If a feature is very large (>~8 tasks) and discussions run heavy, suggest the user split it across more than one `feature-implement` run rather than letting your context grow unbounded.
+A sub-agent's internal work never enters your context — only its final message does. Your context therefore grows by roughly one findings list per task, not by implementation transcripts. Protect that: require compact, decision-relevant handoffs rather than lossy summaries, keep returned findings focused (deeper detail stays in the review agent, fetched on demand), delegate code-reading to the review agent during Q&A, and stop referencing a task's findings once its fixes are committed. None of this reclaims context already spent — it only bounds *growth*. If a feature is very large (>~8 tasks) and discussions run heavy, suggest the user split it across more than one `feature-implement` run rather than letting your context grow unbounded.
 
 ## Halt-and-surface conditions (never silently continue)
 
