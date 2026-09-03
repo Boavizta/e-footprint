@@ -199,6 +199,9 @@ def collect_referenced_source_ids(serialized_blocks) -> set:
 def system_to_json(input_system, output_filepath=None, indent=4, save_computed_state=True):
     """Serialize a system under the minimal persistence contract: every object's inputs, the cached
     values of serialize-flagged slots (with their formulas), and the values-free calculation graph.
+    Its output is the supported input to ``json_to_system``; arbitrary externally authored or untrusted
+    JSON is outside the serialization contract.
+
     Anything absent recomputes on read after a load. ``save_computed_state=False`` writes a pure
     inputs-only file (no stored values, no calculation graph) — for lean committed files and
     from-scratch rebuilds. The top-level ``Sources`` block holds only sources a serialized value

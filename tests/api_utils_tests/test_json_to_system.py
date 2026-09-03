@@ -3,8 +3,7 @@ import os.path
 from copy import deepcopy
 
 from efootprint.abstract_modeling_classes.source_objects import SourceValue
-from efootprint.api_utils.json_to_system import (
-    json_to_system, compute_classes_generation_order, validate_pattern_journey_relationships)
+from efootprint.api_utils.json_to_system import json_to_system, compute_classes_generation_order
 from efootprint.api_utils.system_to_json import system_to_json
 from efootprint.builders.time_builders import create_random_source_hourly_values
 from efootprint.constants.countries import Countries
@@ -23,19 +22,6 @@ API_UTILS_TEST_DIR = os.path.dirname(os.path.abspath(__file__))
 
 
 class TestJsonToSystem(IntegrationTestBaseClass):
-    def test_raw_pattern_journey_invariants_are_validated_before_hydration(self):
-        malformed_relationships = (
-            {"UsagePattern": {"web": {"usage_journeys": {}}}},
-            {"UsagePattern": {"web": {"usage_journeys": {"journey": {"value": 0}}}}},
-            {"UsagePattern": {"web": {"usage_journeys": {"journey": {"value": float("nan")}}}}},
-            {"UsagePattern": {"web": {"usage_journeys": {"journey": {"value": float("inf")}}}}},
-            {"EdgeUsagePattern": {"edge": {"edge_usage_journeys": []}}},
-            {"EdgeUsagePattern": {"edge": {"edge_usage_journeys": ["journey", "journey"]}}},
-        )
-        for system_dict in malformed_relationships:
-            with self.subTest(system_dict=system_dict), self.assertRaises(ValueError):
-                validate_pattern_journey_relationships(system_dict)
-
     def setUp(self):
         with open(os.path.join(API_UTILS_TEST_DIR, "base_system.json"), "rb") as file:
             self.base_system_dict = json.load(file)

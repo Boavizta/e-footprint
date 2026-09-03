@@ -1,4 +1,3 @@
-import math
 from copy import copy
 from inspect import _empty as empty_annotation, isabstract
 from types import UnionType
@@ -49,25 +48,6 @@ def validate_system_dict_structure(system_dict, valid_class_keys):
                 raise ValueError(
                     f"Invalid JSON structure for `{class_key}.{object_key}`: embedded id is `{object_id}`. "
                     f"Object keys must match their `id`.")
-
-
-def validate_pattern_journey_relationships(system_dict):
-    """Validate plural journey invariants before passive hydration bypasses computed guards."""
-    for pattern_id, pattern in system_dict.get("UsagePattern", {}).items():
-        journeys = pattern.get("usage_journeys")
-        if not isinstance(journeys, dict) or not journeys:
-            raise ValueError(f"UsagePattern '{pattern_id}' requires at least one usage journey")
-        weights = [weight.get("value") if isinstance(weight, dict) else None for weight in journeys.values()]
-        if any(isinstance(weight, bool) or not isinstance(weight, (int, float))
-               or not math.isfinite(weight) or weight <= 0
-               for weight in weights):
-            raise ValueError(f"UsagePattern '{pattern_id}' journey weights must be strictly positive")
-    for pattern_id, pattern in system_dict.get("EdgeUsagePattern", {}).items():
-        journeys = pattern.get("edge_usage_journeys")
-        if not isinstance(journeys, list) or not journeys:
-            raise ValueError(f"EdgeUsagePattern '{pattern_id}' requires at least one edge usage journey")
-        if len(set(journeys)) != len(journeys):
-            raise ValueError(f"EdgeUsagePattern '{pattern_id}' cannot contain duplicate edge usage journeys")
 
 
 def compute_classes_generation_order(efootprint_classes_dict):
@@ -175,6 +155,10 @@ def build_sources_dict_from_system_dict(system_dict):
 def json_to_system(system_dict, efootprint_classes_dict=None):
     """Rebuild a system from its serialized form, without running any computation.
 
+    ``system_dict`` must come from :func:`system_to_json` or a supported version migration. Arbitrary
+    untrusted JSON is not supported: this loader performs the structural checks needed for canonical
+    persistence, not exhaustive schema or domain validation of externally authored payloads.
+
     Loading is version-aware: on an exact ``efootprint_version`` match, stored computed values attach
     as trusted slot caches and the serialized calculation graph reinstalls the dependency edges, so
     later edits invalidate exactly as on a live model. On ANY version mismatch, schema upgrade
@@ -194,7 +178,6 @@ def json_to_system(system_dict, efootprint_classes_dict=None):
     version_matches = file_version == efootprint.__version__
     if not version_matches:
         system_dict = upgrade_system_dict_to_current_version(system_dict, efootprint_classes_dict)
-    validate_pattern_journey_relationships(system_dict)
     # Stored values are only trusted as caches when their dependency edges can be reinstalled: a
     # values-bearing file always carries the calculation-graph section, so its absence means an
     # inputs-only file (nothing to attach anyway).
