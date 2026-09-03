@@ -200,6 +200,8 @@ class TestAttributionPrimitives(TestCase):
         coordinates = [cell.occurrence_coordinate for cell in shared_cells]
 
         self.assertEqual(2, len(shared_cells))
+        self.assertTrue(all(cell.journey == self.edge_journey for cell in shared_cells))
+        self.assertTrue(all(coordinate.journey is None for coordinate in coordinates))
         self.assertEqual(coordinates[0], coordinates[1])
         self.assertIs(
             Job.hourly_avg_occurrences_per_coordinate.sub_slot(self.dual_job, coordinates[0]),

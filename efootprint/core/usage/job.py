@@ -50,9 +50,9 @@ class JobAttributionCell:
 
     @property
     def occurrence_coordinate(self) -> "JobOccurrenceCoordinate":
-        return JobOccurrenceCoordinate(
-            self.up, journey=self.journey if self.step is not None else None,
-            step=self.step, recurrent_server_need=self.rsn)
+        if self.step is not None:
+            return JobOccurrenceCoordinate(self.up, journey=self.journey, step=self.step)
+        return JobOccurrenceCoordinate(self.up, recurrent_server_need=self.rsn)
 
 
 @dataclass(frozen=True)
