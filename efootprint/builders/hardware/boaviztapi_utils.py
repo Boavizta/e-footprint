@@ -181,8 +181,8 @@ def print_archetypes_and_their_configs():
         average_power_unit = impact["verbose"]["avg_power"]["unit"]
 
         print(
-            f"    Impact fabrication compute: {total_gwp_embedded_value - storage_gwp_embedded_value} {total_gwp_embedded_unit},\n"
-            f"    Impact fabrication storage: {storage_gwp_embedded_value} {storage_gwp_embedded_unit},\n"
+            f"    Impact manufacturing compute: {total_gwp_embedded_value - storage_gwp_embedded_value} {total_gwp_embedded_unit},\n"
+            f"    Impact manufacturing storage: {storage_gwp_embedded_value} {storage_gwp_embedded_unit},\n"
             f"    Average power: {round(average_power_value, 1)} {average_power_unit}\n")
 
 

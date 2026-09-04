@@ -27,7 +27,7 @@ class UsagePattern(ModelingObject):
             "Non-empty mapping from each {class:UsageJourney} to its average number of executions per pattern "
             "occurrence. Weights must be strictly positive and do not need to sum to one."),
         "devices": (
-            "Devices that users perform the journey on. Fabrication and energy footprints of each device are "
+            "Devices that users perform the journey on. Manufacturing and use footprints of each device are "
             "weighted by the time the journey occupies on it."),
         "network": (
             "{class:Network} carrying traffic between the user's device and the servers."),

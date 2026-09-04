@@ -47,7 +47,7 @@ class TestStorage(TestCase):
     def setUp(self):
         self.storage_base = Storage(
             "storage_base",
-            carbon_footprint_fabrication_per_storage_capacity=SourceValue(0 * u.kg/u.TB_stored),
+            carbon_footprint_manufacturing_per_storage_capacity=SourceValue(0 * u.kg/u.TB_stored),
             lifespan=SourceValue(0 * u.years),
             storage_capacity=SourceValue(0 * u.TB_stored, Sources.STORAGE_EMBODIED_CARBON_STUDY),
             data_replication_factor=SourceValue(0 * u.dimensionless),
@@ -199,8 +199,8 @@ class TestStorage(TestCase):
             recompute_attribute(self.storage_base, "nb_of_instances")
             self.assertIsInstance(self.storage_base.nb_of_instances, EmptyExplainableObject)
 
-    def test_update_energy_footprint(self):
-        """Test energy_footprint = instances_energy * average_carbon_intensity."""
+    def test_update_use_footprint(self):
+        """Test use_footprint = instances_energy * average_carbon_intensity."""
         instance_energy = create_source_hourly_values_from_list([0.9, 1.8, 2.7], pint_unit=u.kWh)
         server_mock = create_mod_obj_mock(
             Server, "Server", average_carbon_intensity=SourceValue(100 * u.g / u.kWh), storage=self.storage_base)
@@ -210,9 +210,9 @@ class TestStorage(TestCase):
         with patch_attribute(self.storage_base, "instances_energy", instance_energy), \
                 patch.object(Storage, "server", new_callable=PropertyMock) as mock_property:
             mock_property.return_value = server_mock
-            recompute_attribute(self.storage_base, "energy_footprint")
-            self.assertTrue(np.allclose([0.09, 0.18, 0.27], self.storage_base.energy_footprint.magnitude))
-            self.assertEqual(u.kg, self.storage_base.energy_footprint.unit)
+            recompute_attribute(self.storage_base, "use_footprint")
+            self.assertTrue(np.allclose([0.09, 0.18, 0.27], self.storage_base.use_footprint.magnitude))
+            self.assertEqual(u.kg, self.storage_base.use_footprint.unit)
 
     def test_cumulative_storage_need_with_dumps_drops_data_after_storage_duration(self):
         """Test data written at hour h is dumped at h + data_storage_duration."""
@@ -247,7 +247,7 @@ class TestStorage(TestCase):
 
 class TestStorageAttributionAtoms(TestCase):
     """Storage atom builder on a real model with web + edge writes: the retention / baseline stream split
-    sums to the fabrication footprint exactly, each stream conserves through its own weights, and the
+    sums to the manufacturing footprint exactly, each stream conserves through its own weights, and the
     per-cell retention cumulatives sum to the per-job cumulative (cumsum linearity)."""
 
     @classmethod
@@ -304,22 +304,22 @@ class TestStorageAttributionAtoms(TestCase):
         cls.system = System(
             "storage atoms system", [cls.up1, cls.up2], edge_usage_patterns=[cls.edge_up])
 
-    def test_storage_streams_sum_to_fabrication_footprint_exactly(self):
-        """Test retention + baseline == instances_fabrication_footprint (nb_of_instances cancels in each)."""
+    def test_storage_streams_sum_to_manufacturing_footprint_exactly(self):
+        """Test retention + baseline == instances_manufacturing_footprint (nb_of_instances cancels in each)."""
         assert_hourly_quantities_equal(
-            self, self.storage.instances_fabrication_footprint,
-            self.storage.storage_retention_fabrication_footprint
-            + self.storage.storage_baseline_fabrication_footprint)
+            self, self.storage.instances_manufacturing_footprint,
+            self.storage.storage_retention_manufacturing_footprint
+            + self.storage.storage_baseline_manufacturing_footprint)
 
     def test_storage_atoms_conserve_per_stream(self):
-        """Test that Σ atoms recovers the eager fabrication total and that each stream conserves its own
+        """Test that Σ atoms recovers the eager manufacturing total and that each stream conserves its own
         footprint (retention over per-cell cumulative / N weights, baseline over flat occurrence shares)."""
         assert_source_atoms_conserve(
             self, self.storage,
             stream_footprints_by_phase={
                 LifeCyclePhases.MANUFACTURING: {
-                    "retention": self.storage.storage_retention_fabrication_footprint,
-                    "baseline": self.storage.storage_baseline_fabrication_footprint}})
+                    "retention": self.storage.storage_retention_manufacturing_footprint,
+                    "baseline": self.storage.storage_baseline_manufacturing_footprint}})
 
     def test_per_cell_retention_cumulatives_sum_to_per_job_cumulative(self):
         """Test cumsum linearity on the real model: Σ over a job's cells of the per-cell cumulatives equals
@@ -362,7 +362,7 @@ class TestStorageAttributionAtoms(TestCase):
         idle_hour = 5
         self.assertEqual(0, np.append(
             job.hourly_avg_occurrences_across_usage_patterns.magnitude, np.zeros(6))[idle_hour])
-        baseline_footprint = storage.storage_baseline_fabrication_footprint
+        baseline_footprint = storage.storage_baseline_manufacturing_footprint
         self.assertGreater(baseline_footprint.magnitude[idle_hour], 0)
         baseline_atoms_sum = sum_atom_values(
             atom for atom in atoms_of(storage, LifeCyclePhases.MANUFACTURING) if atom.stream == "baseline")
@@ -371,8 +371,8 @@ class TestStorageAttributionAtoms(TestCase):
 
     def test_baseline_equal_share_fallback_conserves_on_zero_traffic_model(self):
         """Test the zero-traffic fallback: with all-zero journey starts and a nonzero base_storage_need the
-        fabrication footprint is nonzero, baseline job weights fall back to equal shares summing to 1 and the
-        baseline atoms (the only nonzero stream) still conserve the fabrication footprint."""
+        manufacturing footprint is nonzero, baseline job weights fall back to equal shares summing to 1 and the
+        baseline atoms (the only nonzero stream) still conserve the manufacturing footprint."""
         storage = Storage.from_defaults("zero traffic storage", base_storage_need=SourceValue(1 * u.TB_stored))
         server = Server.from_defaults("zero traffic storage server", storage=storage)
         job_a = Job.from_defaults(
@@ -390,15 +390,15 @@ class TestStorageAttributionAtoms(TestCase):
             create_source_hourly_values_from_list([0, 0, 0], datetime(2026, 1, 1)))
         System("zero traffic storage system", [up], edge_usage_patterns=[])
 
-        self.assertGreater(storage.instances_fabrication_footprint.sum().magnitude, 0)
+        self.assertGreater(storage.instances_manufacturing_footprint.sum().magnitude, 0)
         shares = storage.baseline_flat_share_per_job
         self.assertEqual([0.5, 0.5], [shares[job].magnitude for job in (job_a, job_b)])
         assert_source_atoms_conserve(
             self, storage,
             stream_footprints_by_phase={
                 LifeCyclePhases.MANUFACTURING: {
-                    "retention": storage.storage_retention_fabrication_footprint,
-                    "baseline": storage.storage_baseline_fabrication_footprint}})
+                    "retention": storage.storage_retention_manufacturing_footprint,
+                    "baseline": storage.storage_baseline_manufacturing_footprint}})
 
     def test_edge_storage_is_not_an_attribution_source(self):
         """Test the EdgeStorage-on-device distinction stays untouched: EdgeStorage is an EdgeComponent, not a

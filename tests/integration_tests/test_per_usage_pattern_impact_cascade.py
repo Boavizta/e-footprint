@@ -48,7 +48,7 @@ class TestPerUsagePatternImpactCascade(TestCase):
     def _neutral_storage(name: str):
         return Storage.from_defaults(
             name,
-            carbon_footprint_fabrication_per_storage_capacity=SourceValue(0 * u.kg / u.TB_stored),
+            carbon_footprint_manufacturing_per_storage_capacity=SourceValue(0 * u.kg / u.TB_stored),
             data_storage_duration=SourceValue(1 * u.hour),
             base_storage_need=SourceValue(0 * u.TB_stored),
         )
@@ -59,7 +59,7 @@ class TestPerUsagePatternImpactCascade(TestCase):
             name,
             server_type=ServerTypes.serverless(),
             storage=storage,
-            carbon_footprint_fabrication=SourceValue(0 * u.kg),
+            carbon_footprint_manufacturing=SourceValue(0 * u.kg),
             power=SourceValue(1000 * u.W),
             idle_power=SourceValue(0 * u.W),
             lifespan=SourceValue(1 * u.year),
@@ -74,11 +74,11 @@ class TestPerUsagePatternImpactCascade(TestCase):
 
     def test_multiple_edge_journeys_count_hardware_once_and_are_order_invariant(self):
         component = EdgeWorkloadComponent.from_defaults(
-            "multi-journey component", carbon_footprint_fabrication_per_unit=SourceValue(20 * u.kg),
+            "multi-journey component", carbon_footprint_manufacturing_per_unit=SourceValue(20 * u.kg),
             power_per_unit=SourceValue(10 * u.W), idle_power_per_unit=SourceValue(1 * u.W),
             lifespan=SourceValue(1 * u.year))
         device = EdgeDevice.from_defaults(
-            "multi-journey device", structure_carbon_footprint_fabrication=SourceValue(10 * u.kg),
+            "multi-journey device", structure_carbon_footprint_manufacturing=SourceValue(10 * u.kg),
             components=[component], lifespan=SourceValue(1 * u.year))
 
         def need(name, value):
@@ -111,11 +111,11 @@ class TestPerUsagePatternImpactCascade(TestCase):
             usage_span=SourceValue(1 * u.hour))
         system = System("multi-journey system", [], [pattern])
 
-        one_journey_fabrication = device.instances_fabrication_footprint_per_usage_pattern[pattern].magnitude.copy()
+        one_journey_manufacturing = device.instances_manufacturing_footprint_per_usage_pattern[pattern].magnitude.copy()
         pattern.edge_usage_journeys = [first, second, third]
         self.assertEqual([first, second, third], system.edge_usage_journeys)
         np.testing.assert_array_equal(
-            one_journey_fabrication, device.instances_fabrication_footprint_per_usage_pattern[pattern].magnitude)
+            one_journey_manufacturing, device.instances_manufacturing_footprint_per_usage_pattern[pattern].magnitude)
         self.assertEqual(2, sum(
             path.nb_occurrences for path in pattern.containment_inventory.component_need_paths
             if path.recurrent_edge_component_need == shared_need))
@@ -129,7 +129,7 @@ class TestPerUsagePatternImpactCascade(TestCase):
         total = system.total_footprint.magnitude.copy()
         matrix = system.impact_repartition_matrix
         fold = node_totals_and_links_in_kg(
-            system, LifeCyclePhases.USAGE, (EdgeDevice, EdgeUsageJourney, EdgeUsagePattern, Country))
+            system, LifeCyclePhases.USE, (EdgeDevice, EdgeUsageJourney, EdgeUsagePattern, Country))
 
         pattern.edge_usage_journeys = [third, second, first]
 
@@ -149,7 +149,7 @@ class TestPerUsagePatternImpactCascade(TestCase):
             [updated_matrix_by_path[path] for path in matrix_by_path],
             rtol=1e-6)
         updated_fold = node_totals_and_links_in_kg(
-            system, LifeCyclePhases.USAGE, (EdgeDevice, EdgeUsageJourney, EdgeUsagePattern, Country))
+            system, LifeCyclePhases.USE, (EdgeDevice, EdgeUsageJourney, EdgeUsagePattern, Country))
         self.assertEqual(len(fold), len(updated_fold))
         for expected_values, updated_values in zip(fold, updated_fold):
             self.assertEqual(expected_values.keys(), updated_values.keys())
@@ -174,7 +174,7 @@ class TestPerUsagePatternImpactCascade(TestCase):
         journey = UsageJourney("shared web journey", [step])
         device = Device.from_defaults(
             "shared laptop",
-            carbon_footprint_fabrication=SourceValue(0 * u.kg),
+            carbon_footprint_manufacturing=SourceValue(0 * u.kg),
             power=SourceValue(1000 * u.W),
             lifespan=SourceValue(1 * u.year),
             fraction_of_usage_time=SourceValue(24 * u.hour / u.day),
@@ -201,7 +201,7 @@ class TestPerUsagePatternImpactCascade(TestCase):
 
         # Per-source split, pinned per pattern so a regression that re-balances between sources while
         # preserving totals would still fail. Device and network usage stays on the pattern's country.
-        per_source = footprint_per_node_per_source(system, UsagePattern, LifeCyclePhases.USAGE)
+        per_source = footprint_per_node_per_source(system, UsagePattern, LifeCyclePhases.USE)
         self.assertAlmostEqual(
             0.2, (per_source[(device, low_carbon_pattern)]
                   + per_source[(network, low_carbon_pattern)]).sum().to(u.kg).magnitude, places=6)
@@ -213,15 +213,15 @@ class TestPerUsagePatternImpactCascade(TestCase):
         self.assertAlmostEqual(0.5, per_source[(server, high_carbon_pattern)].sum().to(u.kg).magnitude, places=6)
         # Aggregate totals.
         self.assertAlmostEqual(
-            0.7, attributed_footprint(low_carbon_pattern, LifeCyclePhases.USAGE).sum().to(u.kg).magnitude, places=6)
+            0.7, attributed_footprint(low_carbon_pattern, LifeCyclePhases.USE).sum().to(u.kg).magnitude, places=6)
         self.assertAlmostEqual(
-            0.9, attributed_footprint(high_carbon_pattern, LifeCyclePhases.USAGE).sum().to(u.kg).magnitude, places=6)
+            0.9, attributed_footprint(high_carbon_pattern, LifeCyclePhases.USE).sum().to(u.kg).magnitude, places=6)
         self.assertAlmostEqual(1.6, system.total_footprint.sum().to(u.kg).magnitude, places=6)
         self.assertAlmostEqual(
             system.total_footprint.sum().to(u.kg).magnitude,
             (
-                attributed_footprint(low_carbon_pattern, LifeCyclePhases.USAGE).sum()
-                + attributed_footprint(high_carbon_pattern, LifeCyclePhases.USAGE).sum()
+                attributed_footprint(low_carbon_pattern, LifeCyclePhases.USE).sum()
+                + attributed_footprint(high_carbon_pattern, LifeCyclePhases.USE).sum()
             ).to(u.kg).magnitude,
             places=6,
         )
@@ -242,7 +242,7 @@ class TestPerUsagePatternImpactCascade(TestCase):
         journey = UsageJourney("shared web journey", [step])
         device = Device.from_defaults(
             "shared laptop",
-            carbon_footprint_fabrication=SourceValue(0 * u.kg),
+            carbon_footprint_manufacturing=SourceValue(0 * u.kg),
             power=SourceValue(1000 * u.W),
             lifespan=SourceValue(1 * u.year),
             fraction_of_usage_time=SourceValue(24 * u.hour / u.day),
@@ -262,7 +262,7 @@ class TestPerUsagePatternImpactCascade(TestCase):
         System("shared web system", [low_carbon_pattern, high_carbon_pattern], edge_usage_patterns=[])
 
         for pattern in (low_carbon_pattern, high_carbon_pattern):
-            magnitudes = np.asarray(attributed_footprint(pattern, LifeCyclePhases.USAGE).magnitude)
+            magnitudes = np.asarray(attributed_footprint(pattern, LifeCyclePhases.USE).magnitude)
             self.assertFalse(
                 np.any(np.isnan(magnitudes)),
                 f"{pattern.name}: NaN in attributed footprint at zero-activity hours",
@@ -286,7 +286,7 @@ class TestPerUsagePatternImpactCascade(TestCase):
         journey = UsageJourney("shared web journey", [step])
         device = Device.from_defaults(
             "shared laptop",
-            carbon_footprint_fabrication=SourceValue(0 * u.kg),
+            carbon_footprint_manufacturing=SourceValue(0 * u.kg),
             power=SourceValue(1000 * u.W),
             lifespan=SourceValue(1 * u.year),
             fraction_of_usage_time=SourceValue(24 * u.hour / u.day),
@@ -307,7 +307,7 @@ class TestPerUsagePatternImpactCascade(TestCase):
             "shared web system", [low_carbon_pattern, high_carbon_pattern], edge_usage_patterns=[])
 
         def read_low_footprint():
-            return attributed_footprint(low_carbon_pattern, LifeCyclePhases.USAGE).sum().to(u.kg).magnitude
+            return attributed_footprint(low_carbon_pattern, LifeCyclePhases.USE).sum().to(u.kg).magnitude
 
         def assert_invalidates(label: str, mutate):
             before = read_low_footprint()
@@ -318,8 +318,8 @@ class TestPerUsagePatternImpactCascade(TestCase):
             # which fails if any stale attribution slot survives the invalidation wave.
             self.assertAlmostEqual(
                 system.total_footprint.sum().to(u.kg).magnitude,
-                (attributed_footprint(low_carbon_pattern, LifeCyclePhases.USAGE).sum()
-                 + attributed_footprint(high_carbon_pattern, LifeCyclePhases.USAGE).sum()).to(u.kg).magnitude,
+                (attributed_footprint(low_carbon_pattern, LifeCyclePhases.USE).sum()
+                 + attributed_footprint(high_carbon_pattern, LifeCyclePhases.USE).sum()).to(u.kg).magnitude,
                 places=6,
                 msg=f"{label}: per-pattern attributed footprints do not sum to system total",
             )
@@ -359,7 +359,7 @@ class TestPerUsagePatternImpactCascade(TestCase):
             UsageJourneyStep("high step", SourceValue(1 * u.min), [shared_job]),
             UsageJourneyStep("bulk step", SourceValue(1 * u.min), [bulk_job])])
         device = Device.from_defaults(
-            "laptop", carbon_footprint_fabrication=SourceValue(0 * u.kg), power=SourceValue(1000 * u.W),
+            "laptop", carbon_footprint_manufacturing=SourceValue(0 * u.kg), power=SourceValue(1000 * u.W),
             lifespan=SourceValue(1 * u.year), fraction_of_usage_time=SourceValue(24 * u.hour / u.day))
         network = Network("shared network", SourceValue(1 * u.kWh / u.GB))
         start_date = datetime(2026, 1, 1)
@@ -377,7 +377,7 @@ class TestPerUsagePatternImpactCascade(TestCase):
         # (only the shared job, 1 GB at 1 kWh/GB, 100 g/kWh) is exactly 0.1 kg and is NOT polluted by the
         # high pattern's bulk traffic. The high pattern carries its own jobs (shared 0.3 + bulk 300 kg)
         # at 300 g/kWh.
-        per_source = footprint_per_node_per_source(system, UsagePattern, LifeCyclePhases.USAGE)
+        per_source = footprint_per_node_per_source(system, UsagePattern, LifeCyclePhases.USE)
         self.assertAlmostEqual(0.1, per_source[(network, low_pattern)].sum().to(u.kg).magnitude, places=6)
         self.assertAlmostEqual(300.3, per_source[(network, high_pattern)].sum().to(u.kg).magnitude, places=4)
         # The shared device is also country-dependent; each pattern carries a nonzero share of it.
@@ -386,9 +386,9 @@ class TestPerUsagePatternImpactCascade(TestCase):
         # Conservation: the system total reconciles with the sum of the patterns' attributed footprints.
         self.assertAlmostEqual(
             system.total_footprint.sum().to(u.kg).magnitude,
-            # All fabrication footprints are set at 0
-            (attributed_footprint(low_pattern, LifeCyclePhases.USAGE).sum()
-             + attributed_footprint(high_pattern, LifeCyclePhases.USAGE).sum()).to(u.kg).magnitude, places=3)
+            # All manufacturing footprints are set at 0
+            (attributed_footprint(low_pattern, LifeCyclePhases.USE).sum()
+             + attributed_footprint(high_pattern, LifeCyclePhases.USE).sum()).to(u.kg).magnitude, places=3)
 
     def test_job_longer_than_journey_renders_diagram_and_spans_run_window(self):
         # A short (1 min) journey triggers a 150 min job whose run window spills two hours past the only
@@ -402,7 +402,7 @@ class TestPerUsagePatternImpactCascade(TestCase):
             compute_needed=SourceValue(1 * u.cpu_core), ram_needed=SourceValue(0 * u.GB_ram))
         journey = UsageJourney("web journey", [UsageJourneyStep("web step", SourceValue(1 * u.min), [job])])
         device = Device.from_defaults(
-            "laptop", carbon_footprint_fabrication=SourceValue(0 * u.kg), power=SourceValue(1000 * u.W),
+            "laptop", carbon_footprint_manufacturing=SourceValue(0 * u.kg), power=SourceValue(1000 * u.W),
             lifespan=SourceValue(1 * u.year), fraction_of_usage_time=SourceValue(24 * u.hour / u.day))
         network = Network("network", SourceValue(1 * u.kWh / u.GB))
         pattern = UsagePattern(
@@ -413,13 +413,13 @@ class TestPerUsagePatternImpactCascade(TestCase):
         ImpactRepartitionSankey(system, aggregation_threshold_percent=1).build()
 
         # A 150 min job starting in hour 0 runs across hours 0, 1 and 2.
-        attributed = np.asarray(attributed_footprint(pattern, LifeCyclePhases.USAGE).to(u.kg).magnitude)
+        attributed = np.asarray(attributed_footprint(pattern, LifeCyclePhases.USE).to(u.kg).magnitude)
         self.assertGreater(float(attributed[0]), 0.0)
         self.assertGreater(float(attributed[1]), 0.0)
         self.assertGreater(float(attributed[2]), 0.0)
         # Conservation hour-by-hour: a single pattern carries every source's full footprint, so its
-        # attribution equals the unrounded source energy footprints hour by hour.
-        source_energy = device.energy_footprint + network.energy_footprint + server.energy_footprint
+        # attribution equals the unrounded source use footprints hour by hour.
+        source_energy = device.use_footprint + network.use_footprint + server.use_footprint
         self.assertTrue(np.allclose(np.asarray(source_energy.to(u.kg).magnitude), attributed, atol=1e-9))
 
     def test_shared_edge_usage_journey_attributes_edge_device_and_recurrent_server_usage_separately(self):
@@ -436,14 +436,14 @@ class TestPerUsagePatternImpactCascade(TestCase):
         )
         workload_component = EdgeWorkloadComponent.from_defaults(
             "edge workload component",
-            carbon_footprint_fabrication_per_unit=SourceValue(0 * u.kg),
+            carbon_footprint_manufacturing_per_unit=SourceValue(0 * u.kg),
             power_per_unit=SourceValue(1000 * u.W),
             idle_power_per_unit=SourceValue(0 * u.W),
             lifespan=SourceValue(1 * u.year),
         )
         edge_device = EdgeDevice.from_defaults(
             "edge device",
-            structure_carbon_footprint_fabrication=SourceValue(0 * u.kg),
+            structure_carbon_footprint_manufacturing=SourceValue(0 * u.kg),
             components=[workload_component],
             lifespan=SourceValue(1 * u.year),
         )
@@ -483,7 +483,7 @@ class TestPerUsagePatternImpactCascade(TestCase):
 
         # Per-source split (edge-device usage stays on the pattern's country; this scenario has no
         # network data transfer).
-        per_source = footprint_per_node_per_source(system, EdgeUsagePattern, LifeCyclePhases.USAGE)
+        per_source = footprint_per_node_per_source(system, EdgeUsagePattern, LifeCyclePhases.USE)
         self.assertAlmostEqual(
             0.1, per_source[(edge_device, low_carbon_pattern)].sum().to(u.kg).magnitude, places=6)
         self.assertAlmostEqual(
@@ -493,15 +493,15 @@ class TestPerUsagePatternImpactCascade(TestCase):
         self.assertAlmostEqual(0.5, per_source[(server, high_carbon_pattern)].sum().to(u.kg).magnitude, places=6)
         # Aggregate totals.
         self.assertAlmostEqual(
-            0.6, attributed_footprint(low_carbon_pattern, LifeCyclePhases.USAGE).sum().to(u.kg).magnitude, places=6)
+            0.6, attributed_footprint(low_carbon_pattern, LifeCyclePhases.USE).sum().to(u.kg).magnitude, places=6)
         self.assertAlmostEqual(
-            0.7, attributed_footprint(high_carbon_pattern, LifeCyclePhases.USAGE).sum().to(u.kg).magnitude, places=6)
+            0.7, attributed_footprint(high_carbon_pattern, LifeCyclePhases.USE).sum().to(u.kg).magnitude, places=6)
         self.assertAlmostEqual(1.3, system.total_footprint.sum().to(u.kg).magnitude, places=6)
         self.assertAlmostEqual(
             system.total_footprint.sum().to(u.kg).magnitude,
             (
-                attributed_footprint(low_carbon_pattern, LifeCyclePhases.USAGE).sum()
-                + attributed_footprint(high_carbon_pattern, LifeCyclePhases.USAGE).sum()
+                attributed_footprint(low_carbon_pattern, LifeCyclePhases.USE).sum()
+                + attributed_footprint(high_carbon_pattern, LifeCyclePhases.USE).sum()
             ).to(u.kg).magnitude,
             places=6,
         )
@@ -524,11 +524,11 @@ class TestPerUsagePatternImpactCascade(TestCase):
 
         def make_edge_device(name):
             workload_component = EdgeWorkloadComponent.from_defaults(
-                f"{name} workload component", carbon_footprint_fabrication_per_unit=SourceValue(0 * u.kg),
+                f"{name} workload component", carbon_footprint_manufacturing_per_unit=SourceValue(0 * u.kg),
                 power_per_unit=SourceValue(0 * u.W), idle_power_per_unit=SourceValue(0 * u.W),
                 lifespan=SourceValue(1 * u.year))
             return EdgeDevice.from_defaults(
-                name, structure_carbon_footprint_fabrication=SourceValue(0 * u.kg),
+                name, structure_carbon_footprint_manufacturing=SourceValue(0 * u.kg),
                 components=[workload_component], lifespan=SourceValue(1 * u.year))
 
         def recurrent_volume():
@@ -558,14 +558,14 @@ class TestPerUsagePatternImpactCascade(TestCase):
         # The network's per-pattern footprint is grid-weighted by each pattern's country: the low pattern
         # (only the shared job, 1 GB at 1 kWh/GB, 100 g/kWh) is exactly 0.1 kg and is NOT polluted by the
         # high pattern's bulk traffic (shared 0.3 + bulk 300 kg at 300 g/kWh).
-        per_source = footprint_per_node_per_source(system, EdgeUsagePattern, LifeCyclePhases.USAGE)
+        per_source = footprint_per_node_per_source(system, EdgeUsagePattern, LifeCyclePhases.USE)
         self.assertAlmostEqual(0.1, per_source[(network, low_pattern)].sum().to(u.kg).magnitude, places=6)
         self.assertAlmostEqual(300.3, per_source[(network, high_pattern)].sum().to(u.kg).magnitude, places=4)
         # Conservation: the system total reconciles with the sum of the patterns' attributed footprints.
         self.assertAlmostEqual(
             system.total_footprint.sum().to(u.kg).magnitude,
-            (attributed_footprint(low_pattern, LifeCyclePhases.USAGE).sum()
-             + attributed_footprint(high_pattern, LifeCyclePhases.USAGE).sum()).to(u.kg).magnitude, places=3)
+            (attributed_footprint(low_pattern, LifeCyclePhases.USE).sum()
+             + attributed_footprint(high_pattern, LifeCyclePhases.USE).sum()).to(u.kg).magnitude, places=3)
 
     def test_edge_job_longer_than_journey_renders_diagram_and_spans_run_window(self):
         # Edge mirror of the long-job test: a 1 h-span edge journey triggers a 150 min server job whose run
@@ -578,11 +578,11 @@ class TestPerUsagePatternImpactCascade(TestCase):
             data_stored=SourceValue(0 * u.GB_stored), request_duration=SourceValue(150 * u.min),
             compute_needed=SourceValue(1 * u.cpu_core), ram_needed=SourceValue(0 * u.GB_ram))
         workload_component = EdgeWorkloadComponent.from_defaults(
-            "edge workload component", carbon_footprint_fabrication_per_unit=SourceValue(0 * u.kg),
+            "edge workload component", carbon_footprint_manufacturing_per_unit=SourceValue(0 * u.kg),
             power_per_unit=SourceValue(1000 * u.W), idle_power_per_unit=SourceValue(0 * u.W),
             lifespan=SourceValue(1 * u.year))
         edge_device = EdgeDevice.from_defaults(
-            "edge device", structure_carbon_footprint_fabrication=SourceValue(0 * u.kg),
+            "edge device", structure_carbon_footprint_manufacturing=SourceValue(0 * u.kg),
             components=[workload_component], lifespan=SourceValue(1 * u.year))
         component_need = RecurrentEdgeComponentNeed(
             "edge workload need", workload_component,
@@ -603,10 +603,10 @@ class TestPerUsagePatternImpactCascade(TestCase):
         ImpactRepartitionSankey(system, aggregation_threshold_percent=1).build()
 
         # A 150 min job starting in hour 0 runs across hours 0, 1 and 2.
-        attributed = np.asarray(attributed_footprint(pattern, LifeCyclePhases.USAGE).to(u.kg).magnitude)
+        attributed = np.asarray(attributed_footprint(pattern, LifeCyclePhases.USE).to(u.kg).magnitude)
         self.assertGreater(float(attributed[0]), 0.0)
         self.assertGreater(float(attributed[1]), 0.0)
         self.assertGreater(float(attributed[2]), 0.0)
         # Conservation: a single pattern carries the device's and the server's full footprints hour by hour.
-        source_energy = edge_device.energy_footprint + server.energy_footprint
+        source_energy = edge_device.use_footprint + server.use_footprint
         self.assertTrue(np.allclose(np.asarray(source_energy.to(u.kg).magnitude), attributed, atol=1e-9))

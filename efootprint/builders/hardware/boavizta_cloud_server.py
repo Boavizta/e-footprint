@@ -53,7 +53,7 @@ class BoaviztaCloudServer(Server):
             "Provider-specific instance type identifier. Must be valid for the chosen "
             "{param:BoaviztaCloudServer.provider}."),
         **{k: v for k, v in Server.param_descriptions.items()
-           if k not in ("compute", "carbon_footprint_fabrication", "power", "ram")},
+           if k not in ("compute", "carbon_footprint_manufacturing", "power", "ram")},
     }
 
     default_values = {
@@ -117,11 +117,11 @@ class BoaviztaCloudServer(Server):
             source=impact_source)
 
     @computed_attribute
-    def carbon_footprint_fabrication(self):
+    def carbon_footprint_manufacturing(self):
         """Embodied carbon of one instance, taken from the Boavizta API response (embedded GWP impact)."""
         return ExplainableQuantity(
             float(self.api_call_response.value["impacts"]["gwp"]["embedded"]["value"]) * u.kg,
-            "Fabrication carbon footprint", left_parent=self.api_call_response,
+            "Manufacturing carbon footprint", left_parent=self.api_call_response,
             operator="data extraction from", source=self.api_call_response.source)
 
     @computed_attribute(guard=True)
@@ -175,9 +175,9 @@ if __name__ == "__main__":
                                     base_ram_consumption=SourceValue(0 * u.GB_ram),
                                     base_compute_consumption=SourceValue(0 * u.cpu_core),
                                     storage=Storage.ssd())
-                for attr_name in ["api_call_response", "carbon_footprint_fabrication", "power", "ram", "compute"]:
+                for attr_name in ["api_call_response", "carbon_footprint_manufacturing", "power", "ram", "compute"]:
                     getattr(cloud_server, attr_name)
                 logger.info(f"{provider} - {instance_type}: Compute {cloud_server.compute} RAM {cloud_server.ram} "
-                            f"CCF {cloud_server.carbon_footprint_fabrication} power {cloud_server.power}.")
+                            f"CCF {cloud_server.carbon_footprint_manufacturing} power {cloud_server.power}.")
             except Exception as e:
                 logger.error(f"Error with provider {provider} and instance type {instance_type}: {e}")

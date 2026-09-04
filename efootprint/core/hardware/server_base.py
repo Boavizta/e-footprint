@@ -73,7 +73,7 @@ def on_premise_provisioned_tier_shares(
 
 
 class ServerBase(InfraHardware, AttributionSource):
-    """Abstract base for the infrastructure hardware that runs {class:Job}s as part of a digital service. Concrete subclasses model on-premise servers ({class:Server}), GPU servers ({class:GPUServer}), and cloud servers with provider-supplied hardware profiles ({class:BoaviztaCloudServer}); each rolls hourly job demand into energy and fabrication footprints according to its {param:ServerBase.server_type}."""
+    """Abstract base for the infrastructure hardware that runs {class:Job}s as part of a digital service. Concrete subclasses model on-premise servers ({class:Server}), GPU servers ({class:GPUServer}), and cloud servers with provider-supplied hardware profiles ({class:BoaviztaCloudServer}); each rolls hourly job demand into energy and manufacturing footprints according to its {param:ServerBase.server_type}."""
 
     @abstractmethod
     def _abc_marker(self):  # private abstract method so that this class is considered abstract
@@ -154,11 +154,11 @@ class ServerBase(InfraHardware, AttributionSource):
         return installable_services
 
 
-    # carbon_footprint_fabrication, power, idle_power, ram and compute are None (and not stored) for
+    # carbon_footprint_manufacturing, power, idle_power, ram and compute are None (and not stored) for
     # subclasses that compute them from other inputs (Boavizta and GPU server builders) — assigning a
     # computed name raises.
     def __init__(self, name: str, server_type: ExplainableObject,
-                 carbon_footprint_fabrication: ExplainableQuantity = None, power: ExplainableQuantity = None,
+                 carbon_footprint_manufacturing: ExplainableQuantity = None, power: ExplainableQuantity = None,
                  lifespan: ExplainableQuantity = None, idle_power: ExplainableQuantity = None,
                  ram: ExplainableQuantity = None, compute: ExplainableQuantity = None,
                  power_usage_effectiveness: ExplainableQuantity = None,
@@ -166,7 +166,7 @@ class ServerBase(InfraHardware, AttributionSource):
                  utilization_rate: ExplainableQuantity = None, base_ram_consumption: ExplainableQuantity = None,
                  base_compute_consumption: ExplainableQuantity = None, storage: Storage = None,
                  fixed_nb_of_instances: ExplainableQuantity | EmptyExplainableObject = None):
-        super().__init__(name, carbon_footprint_fabrication, power, lifespan)
+        super().__init__(name, carbon_footprint_manufacturing, power, lifespan)
         self.server_type = server_type.set_label(f"Server type")
         if idle_power is not None:
             self.idle_power = idle_power.set_label(f"Idle power")
@@ -305,28 +305,28 @@ class ServerBase(InfraHardware, AttributionSource):
         return server_energy.to(u.kWh).set_label(f"Hourly energy consumed by instances")
 
     @computed_attribute
-    def idle_energy_footprint(self):
+    def idle_use_footprint(self):
         """Hourly carbon emissions of the idle baseline energy drawn by all provisioned instances (idle power times PUE times number of instances times grid carbon intensity) — the usage-phase component that rides the provisioned attribution stream."""
-        idle_energy_footprint = (
+        idle_use_footprint = (
                 self.energy_spent_by_one_idle_instance_over_one_hour * self.nb_of_instances
                 * self.average_carbon_intensity)
 
-        return idle_energy_footprint.to(u.kg).set_label(f"Hourly idle energy footprint")
+        return idle_use_footprint.to(u.kg).set_label(f"Hourly idle use footprint")
 
     @computed_attribute
-    def load_energy_footprint(self):
+    def load_use_footprint(self):
         """Hourly carbon emissions of the extra energy drawn while serving load (power above idle times PUE times raw number of instances times grid carbon intensity) — the usage-phase component that rides the dynamic attribution stream."""
-        load_energy_footprint = (
+        load_use_footprint = (
                 self.extra_energy_spent_by_one_fully_active_instance_over_one_hour * self.raw_nb_of_instances
                 * self.average_carbon_intensity)
 
-        return load_energy_footprint.to(u.kg).set_label(f"Hourly load energy footprint")
+        return load_use_footprint.to(u.kg).set_label(f"Hourly load use footprint")
 
     @computed_attribute(serialize=True, purposes={ComputationPurpose.FOOTPRINT})
-    def energy_footprint(self):
-        """Hourly carbon emissions caused by the electricity consumed by the server, equal to the sum of its idle and load energy footprints."""
-        return (self.idle_energy_footprint + self.load_energy_footprint).to(u.kg).set_label(
-            f"Hourly energy footprint")
+    def use_footprint(self):
+        """Hourly carbon emissions caused by the electricity consumed by the server, equal to the sum of its idle and load use footprints."""
+        return (self.idle_use_footprint + self.load_use_footprint).to(u.kg).set_label(
+            f"Hourly use footprint")
 
     def _autoscaling_nb_of_instances(self):
         hour_by_hour_nb_of_instances = self.raw_nb_of_instances.ceil()
@@ -468,7 +468,7 @@ class ServerBase(InfraHardware, AttributionSource):
 
     @computed_structure(transient=True)
     def provisioned_share_per_job(self) -> dict:
-        """Per-job weights for the provisioned stream (fabrication + idle energy, both proportional to
+        """Per-job weights for the provisioned stream (manufacturing + idle energy, both proportional to
         nb_of_instances). On-premise provisions once for the whole period, so the weights are flat scalars from
         the per-tier helper on_premise_provisioned_tier_shares; autoscaling and serverless re-provision hourly,
         so the weights collapse to dynamic_share_per_job."""
@@ -499,15 +499,15 @@ class ServerBase(InfraHardware, AttributionSource):
             for job, share in tier_shares.items()}
 
     def attribution_atoms(self, phase: LifeCyclePhases):
-        """One atom per (stream, job, containment cell): the fabrication phase carries the provisioned stream
-        over instances_fabrication_footprint; the usage phase carries the provisioned stream over
-        idle_energy_footprint plus the dynamic stream over load_energy_footprint. The job weight is the
+        """One atom per (stream, job, containment cell): the manufacturing phase carries the provisioned stream
+        over instances_manufacturing_footprint; the usage phase carries the provisioned stream over
+        idle_use_footprint plus the dynamic stream over load_use_footprint. The job weight is the
         stream's share (provisioned_share_per_job / dynamic_share_per_job) and the cell share is flat for the
         on-premise provisioned stream (always-on: it carries footprint at idle hours) and hourly otherwise."""
         if phase == LifeCyclePhases.MANUFACTURING:
-            streams = [("provisioned", self.instances_fabrication_footprint)]
+            streams = [("provisioned", self.instances_manufacturing_footprint)]
         else:
-            streams = [("provisioned", self.idle_energy_footprint), ("dynamic", self.load_energy_footprint)]
+            streams = [("provisioned", self.idle_use_footprint), ("dynamic", self.load_use_footprint)]
 
         for stream, stream_footprint in streams:
             job_weights = self.provisioned_share_per_job if stream == "provisioned" else self.dynamic_share_per_job

@@ -23,12 +23,12 @@ class TestEdgeStorage(TestCase):
         self.edge_storage = EdgeStorage(
             name="Test EdgeStorage",
             storage_capacity_per_unit=SourceValue(1 * u.TB_stored),
-            carbon_footprint_fabrication_per_storage_capacity=SourceValue(160 * u.kg / u.TB_stored),
+            carbon_footprint_manufacturing_per_storage_capacity=SourceValue(160 * u.kg / u.TB_stored),
             base_storage_need=SourceValue(0 * u.TB_stored),
             lifespan=SourceValue(6 * u.years)
         )
         recompute_attribute(self.edge_storage, "storage_capacity")
-        recompute_attribute(self.edge_storage, "carbon_footprint_fabrication")
+        recompute_attribute(self.edge_storage, "carbon_footprint_manufacturing")
 
     def test_init(self):
         """Test EdgeStorage initialization."""
@@ -37,7 +37,7 @@ class TestEdgeStorage(TestCase):
         self.assertEqual(1 * u.TB_stored, self.edge_storage.storage_capacity.value)
         self.assertEqual(
             160 * u.kg / u.TB_stored,
-            self.edge_storage.carbon_footprint_fabrication_per_storage_capacity.value,
+            self.edge_storage.carbon_footprint_manufacturing_per_storage_capacity.value,
         )
         self.assertEqual(0 * u.TB_stored, self.edge_storage.base_storage_need.value)
         self.assertEqual(6 * u.years, self.edge_storage.lifespan.value)
@@ -51,7 +51,7 @@ class TestEdgeStorage(TestCase):
         self.assertEqual("Custom SSD", ssd.name)
         self.assertEqual(
             160 * u.kg / u.TB_stored,
-            ssd.carbon_footprint_fabrication_per_storage_capacity.value,
+            ssd.carbon_footprint_manufacturing_per_storage_capacity.value,
         )
         self.assertEqual(6 * u.years, ssd.lifespan.value)
         self.assertEqual(1 * u.TB_stored, ssd.storage_capacity.value)
@@ -66,7 +66,7 @@ class TestEdgeStorage(TestCase):
         self.assertEqual(8 * u.years, ssd.lifespan.value)
         self.assertEqual(
             160 * u.kg / u.TB_stored,
-            ssd.carbon_footprint_fabrication_per_storage_capacity.value,
+            ssd.carbon_footprint_manufacturing_per_storage_capacity.value,
         )
 
     def test_hdd_classmethod(self):
@@ -76,7 +76,7 @@ class TestEdgeStorage(TestCase):
         self.assertEqual("Custom HDD", hdd.name)
         self.assertEqual(
             20 * u.kg / u.TB_stored,
-            hdd.carbon_footprint_fabrication_per_storage_capacity.value,
+            hdd.carbon_footprint_manufacturing_per_storage_capacity.value,
         )
         self.assertEqual(4 * u.years, hdd.lifespan.value)
         self.assertEqual(1 * u.TB_stored, hdd.storage_capacity.value)
@@ -89,7 +89,7 @@ class TestEdgeStorage(TestCase):
         self.assertEqual(4 * u.TB_stored, hdd.storage_capacity.value)
         self.assertEqual(
             20 * u.kg / u.TB_stored,
-            hdd.carbon_footprint_fabrication_per_storage_capacity.value,
+            hdd.carbon_footprint_manufacturing_per_storage_capacity.value,
         )
 
     def test_archetypes(self):
@@ -99,31 +99,31 @@ class TestEdgeStorage(TestCase):
         self.assertIn(EdgeStorage.ssd, archetypes)
         self.assertIn(EdgeStorage.hdd, archetypes)
 
-    def test_update_carbon_footprint_fabrication(self):
-        """Test update_carbon_footprint_fabrication calculation."""
+    def test_update_carbon_footprint_manufacturing(self):
+        """Test update_carbon_footprint_manufacturing calculation."""
         with patch_attribute(
             self.edge_storage,
-            "carbon_footprint_fabrication_per_storage_capacity",
+            "carbon_footprint_manufacturing_per_storage_capacity",
             SourceValue(100 * u.kg / u.TB_stored),
         ), patch_attribute(self.edge_storage, "storage_capacity", SourceValue(2 * u.TB_stored)):
-            recompute_attribute(self.edge_storage, "carbon_footprint_fabrication")
+            recompute_attribute(self.edge_storage, "carbon_footprint_manufacturing")
 
             # Formula: 100 kg/TB * 2 TB = 200 kg
-            self.assertAlmostEqual(200, self.edge_storage.carbon_footprint_fabrication.value.magnitude, places=5)
-            self.assertEqual(u.kg, self.edge_storage.carbon_footprint_fabrication.value.units)
+            self.assertAlmostEqual(200, self.edge_storage.carbon_footprint_manufacturing.value.magnitude, places=5)
+            self.assertEqual(u.kg, self.edge_storage.carbon_footprint_manufacturing.value.units)
             self.assertEqual("Carbon footprint",
-                             self.edge_storage.carbon_footprint_fabrication.label)
+                             self.edge_storage.carbon_footprint_manufacturing.label)
 
-    def test_update_carbon_footprint_fabrication_with_nb_of_units(self):
-        """Test update_carbon_footprint_fabrication multiplies by nb_of_units."""
-        self.edge_storage.carbon_footprint_fabrication_per_storage_capacity = SourceValue(100 * u.kg / u.TB_stored)
+    def test_update_carbon_footprint_manufacturing_with_nb_of_units(self):
+        """Test update_carbon_footprint_manufacturing multiplies by nb_of_units."""
+        self.edge_storage.carbon_footprint_manufacturing_per_storage_capacity = SourceValue(100 * u.kg / u.TB_stored)
         self.edge_storage.storage_capacity_per_unit = SourceValue(2 * u.TB_stored)
         self.edge_storage.nb_of_units = SourceValue(3 * u.dimensionless)
         recompute_attribute(self.edge_storage, "storage_capacity")
 
-        recompute_attribute(self.edge_storage, "carbon_footprint_fabrication")
+        recompute_attribute(self.edge_storage, "carbon_footprint_manufacturing")
 
-        self.assertAlmostEqual(600, self.edge_storage.carbon_footprint_fabrication.value.magnitude, places=5)
+        self.assertAlmostEqual(600, self.edge_storage.carbon_footprint_manufacturing.value.magnitude, places=5)
 
     def test_recurrent_edge_storage_needs_raises_for_non_storage_component_need(self):
         """Test recurrent_edge_storage_needs raises when a non-storage component need is linked."""

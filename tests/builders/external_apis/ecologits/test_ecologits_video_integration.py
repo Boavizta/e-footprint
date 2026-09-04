@@ -55,30 +55,30 @@ class TestEcoLogitsVideoIntegration(unittest.TestCase):
         system, api, job = _build_system(duration_s=8)
         try:
             server = api.server
-            self.assertIsInstance(server.instances_fabrication_footprint, ExplainableHourlyQuantities)
+            self.assertIsInstance(server.instances_manufacturing_footprint, ExplainableHourlyQuantities)
             self.assertIsInstance(server.instances_energy, ExplainableHourlyQuantities)
-            self.assertIsInstance(server.energy_footprint, ExplainableHourlyQuantities)
+            self.assertIsInstance(server.use_footprint, ExplainableHourlyQuantities)
 
             self.assertEqual(
-                (1 * u.kg).dimensionality, server.instances_fabrication_footprint.value.dimensionality)
+                (1 * u.kg).dimensionality, server.instances_manufacturing_footprint.value.dimensionality)
             self.assertEqual(
                 (1 * u.kWh).dimensionality, server.instances_energy.value.dimensionality)
             self.assertEqual(
-                (1 * u.kg).dimensionality, server.energy_footprint.value.dimensionality)
+                (1 * u.kg).dimensionality, server.use_footprint.value.dimensionality)
 
-            self.assertTrue((server.instances_fabrication_footprint.magnitude >= 0).all())
+            self.assertTrue((server.instances_manufacturing_footprint.magnitude >= 0).all())
             self.assertTrue((server.instances_energy.magnitude >= 0).all())
-            self.assertTrue((server.energy_footprint.magnitude >= 0).all())
+            self.assertTrue((server.use_footprint.magnitude >= 0).all())
         finally:
             system.self_delete()
 
-    def test_server_energy_footprint_is_monotonic_in_job_duration(self):
+    def test_server_use_footprint_is_monotonic_in_job_duration(self):
         short_system, short_api, _ = _build_system(duration_s=4)
         long_system, long_api, _ = _build_system(duration_s=16)
         try:
-            short_footprint = short_api.server.energy_footprint.magnitude.sum()
-            long_footprint = long_api.server.energy_footprint.magnitude.sum()
-            # Longer per-call duration → larger per-call usage GWP → higher server energy footprint sum.
+            short_footprint = short_api.server.use_footprint.magnitude.sum()
+            long_footprint = long_api.server.use_footprint.magnitude.sum()
+            # Longer per-call duration → larger per-call usage GWP → higher server use footprint sum.
             self.assertGreater(long_footprint, short_footprint)
         finally:
             short_system.self_delete()
@@ -95,15 +95,15 @@ class TestEcoLogitsVideoIntegration(unittest.TestCase):
             server = api.server
             self.assertGreater(job.request_duration.value.to(u.hour).magnitude, 1)
 
-            energy = server.energy_footprint
-            fabrication = server.instances_fabrication_footprint
+            energy = server.use_footprint
+            manufacturing = server.instances_manufacturing_footprint
             self.assertIsInstance(energy, ExplainableHourlyQuantities)
-            self.assertIsInstance(fabrication, ExplainableHourlyQuantities)
+            self.assertIsInstance(manufacturing, ExplainableHourlyQuantities)
 
             # The impact must land in more than one hour bucket, i.e. it spreads over the
             # multi-hour run window instead of collapsing length-1 into the start hour.
             self.assertGreater(int((energy.magnitude > 0).sum()), 1)
-            self.assertGreater(int((fabrication.magnitude > 0).sum()), 1)
+            self.assertGreater(int((manufacturing.magnitude > 0).sum()), 1)
         finally:
             system.self_delete()
 
@@ -127,7 +127,7 @@ class TestEcoLogitsVideoIntegration(unittest.TestCase):
                 job.request_usage_gwp.value, reloaded_job.request_usage_gwp.value)
             self.assertEqual(
                 job.request_embodied_gwp.value, reloaded_job.request_embodied_gwp.value)
-            self.assertNotIsInstance(reloaded_api.server.energy_footprint, EmptyExplainableObject)
+            self.assertNotIsInstance(reloaded_api.server.use_footprint, EmptyExplainableObject)
         finally:
             system.self_delete()
 

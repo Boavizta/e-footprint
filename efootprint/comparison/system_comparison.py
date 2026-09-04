@@ -17,7 +17,7 @@ from efootprint.utils.display import (
 from efootprint.utils.plot_timeseries import get_time_axis
 from efootprint.utils.tools import get_init_signature_params
 
-PHASES = ("energy", "fabrication")
+PHASES = ("use", "manufacturing")
 
 
 @dataclass(frozen=True)
@@ -81,8 +81,8 @@ class TimeSeries:
     """Two systems' hourly footprint aligned on one calendar axis, plus their cumulative sums (kg).
 
     Carries both the combined totals (``values_a``/``values_b``) and the per-phase split
-    (``usage_*``/``fabrication_*``) on the *same* axis, so ``usage + fabrication == values`` hour-by-hour
-    for each system. The per-phase split lets a consumer bucket usage and fabrication exactly per period
+    (``usage_*``/``manufacturing_*``) on the *same* axis, so ``usage + manufacturing == values`` hour-by-hour
+    for each system. The per-phase split lets a consumer bucket usage and manufacturing exactly per period
     (e.g. per year) rather than approximating with a single full-period ratio.
     """
     start_date: datetime
@@ -90,8 +90,8 @@ class TimeSeries:
     values_b: np.ndarray
     usage_a: np.ndarray
     usage_b: np.ndarray
-    fabrication_a: np.ndarray
-    fabrication_b: np.ndarray
+    manufacturing_a: np.ndarray
+    manufacturing_b: np.ndarray
 
     @property
     def hours(self) -> np.ndarray:
@@ -179,11 +179,11 @@ class SystemComparison:
     @property
     def decomposition(self) -> List[DecompositionRow]:
         sums_a = {
-            "energy": self.system_a.total_energy_footprint_sum_over_period,
-            "fabrication": self.system_a.total_fabrication_footprint_sum_over_period}
+            "use": self.system_a.total_use_footprint_sum_over_period,
+            "manufacturing": self.system_a.total_manufacturing_footprint_sum_over_period}
         sums_b = {
-            "energy": self.system_b.total_energy_footprint_sum_over_period,
-            "fabrication": self.system_b.total_fabrication_footprint_sum_over_period}
+            "use": self.system_b.total_use_footprint_sum_over_period,
+            "manufacturing": self.system_b.total_manufacturing_footprint_sum_over_period}
 
         rows = []
         for category in OBJECT_CATEGORIES:
@@ -204,17 +204,17 @@ class SystemComparison:
         total_timeseries_length = len(values_a)
 
         # The per-phase series ride on the same axis as the totals (same common start, same length), so
-        # usage + fabrication reconstructs the total hour-by-hour for each system.
-        usage_a = self._aligned_phase_series(self.system_a, "energy", start_date, total_timeseries_length)
-        usage_b = self._aligned_phase_series(self.system_b, "energy", start_date, total_timeseries_length)
-        fabrication_a = self._aligned_phase_series(
-            self.system_a, "fabrication", start_date, total_timeseries_length)
-        fabrication_b = self._aligned_phase_series(
-            self.system_b, "fabrication", start_date, total_timeseries_length)
+        # usage + manufacturing reconstructs the total hour-by-hour for each system.
+        usage_a = self._aligned_phase_series(self.system_a, "use", start_date, total_timeseries_length)
+        usage_b = self._aligned_phase_series(self.system_b, "use", start_date, total_timeseries_length)
+        manufacturing_a = self._aligned_phase_series(
+            self.system_a, "manufacturing", start_date, total_timeseries_length)
+        manufacturing_b = self._aligned_phase_series(
+            self.system_b, "manufacturing", start_date, total_timeseries_length)
 
         return TimeSeries(
             start_date=start_date, values_a=values_a, values_b=values_b,
-            usage_a=usage_a, usage_b=usage_b, fabrication_a=fabrication_a, fabrication_b=fabrication_b)
+            usage_a=usage_a, usage_b=usage_b, manufacturing_a=manufacturing_a, manufacturing_b=manufacturing_b)
 
     @staticmethod
     def _aligned_phase_series(system, phase: str, axis_start: datetime, axis_length: int) -> np.ndarray:
@@ -222,10 +222,10 @@ class SystemComparison:
 
         Sums the per-category hourly footprints for the phase exactly as ``System.update_total_footprint``
         builds the total, then positions the system's own window inside the shared ``[axis_start, +length]``
-        axis (zero outside it) — so usage + fabrication equals the aligned total per hour.
+        axis (zero outside it) — so usage + manufacturing equals the aligned total per hour.
         """
-        per_category = (system.total_energy_footprints if phase == "energy"
-                        else system.total_fabrication_footprints)
+        per_category = (system.total_use_footprints if phase == "use"
+                        else system.total_manufacturing_footprints)
         phase_total = sum(per_category.values(), start=EmptyExplainableObject())
 
         aligned = np.zeros(axis_length, dtype=np.float32)

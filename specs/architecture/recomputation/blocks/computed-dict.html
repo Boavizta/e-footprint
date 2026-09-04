@@ -12,13 +12,13 @@
 
 <h2 id="declaration">What the declaration creates</h2>
 <pre><code>@computed_dict(keys="jobs")
-def energy_footprint_per_job(self, job):
+def use_footprint_per_job(self, job):
     return self.compute_energy_for(job)</code></pre>
 <div class="diagram"><div class="dtitle">Decorator application</div><div class="n input"><b><code>computed_dict(keys="jobs")</code></b><br><span>Constructs an initially unbound descriptor carrying the key-collection attribute name.</span></div><div class="ar">↓ inherited <code>__call__</code> binds the domain getter</div><div class="n slot"><b><code>computed_dict</code> descriptor</b><br><span>The same object is installed on the class and registers itself as a computed slot surface through <code>__set_name__</code>.</span></div></div>
 <p>The domain getter takes one key in addition to <code>self</code>. The descriptor—not the resulting dict—is stored in the class namespace.</p>
 
 <h2 id="topology">Runtime topology</h2>
-<div class="diagram"><div class="dtitle">One owner with two current jobs</div><div class="n slot"><b>Key-set slot · <code>energy_footprint_per_job</code></b><br><span>Registry key: <code>"energy_footprint_per_job"</code><br>Getter reads <code>self.jobs</code>, synchronizes membership, and pulls every current element slot.</span></div><div class="ar">↓ coordinates</div><div class="three"><div class="n value"><b>Element slot A</b><br><span>Registry key: <code>("energy_footprint_per_job", job_A)</code><br>Runs <code>getter(self, job_A)</code>.</span></div><div class="n value"><b>Element slot B</b><br><span>Registry key: <code>("energy_footprint_per_job", job_B)</code><br>Runs <code>getter(self, job_B)</code>.</span></div><div class="n input"><b>Persistent facade</b><br><span>Stored in <code>self._computed_dict_facades</code>; the same <code>ExplainableObjectDict</code> instance survives recomputation.</span></div></div></div>
+<div class="diagram"><div class="dtitle">One owner with two current jobs</div><div class="n slot"><b>Key-set slot · <code>use_footprint_per_job</code></b><br><span>Registry key: <code>"use_footprint_per_job"</code><br>Getter reads <code>self.jobs</code>, synchronizes membership, and pulls every current element slot.</span></div><div class="ar">↓ coordinates</div><div class="three"><div class="n value"><b>Element slot A</b><br><span>Registry key: <code>("use_footprint_per_job", job_A)</code><br>Runs <code>getter(self, job_A)</code>.</span></div><div class="n value"><b>Element slot B</b><br><span>Registry key: <code>("use_footprint_per_job", job_B)</code><br>Runs <code>getter(self, job_B)</code>.</span></div><div class="n input"><b>Persistent facade</b><br><span>Stored in <code>self._computed_dict_facades</code>; the same <code>ExplainableObjectDict</code> instance survives recomputation.</span></div></div></div>
 <div class="rule"><b>Why the facade persists:</b> downstream code may keep a reference to the returned mapping. Recomputing replaces element caches and synchronizes entries without replacing the facade object itself.</div>
 
 <h2 id="read">What happens on a whole-dict read</h2>
@@ -30,7 +30,7 @@ def energy_footprint_per_job(self, job):
 <li>Each element closure calls <code>getter(instance, key)</code>, attaches the fresh value into the facade, and records calculus dependencies from that value's formula ancestry.</li>
 </ol>
 <pre><code># Conceptual access chain
-device.energy_footprint_per_usage_pattern
+device.use_footprint_per_usage_pattern
   → key_set_slot.pull()
   → current_keys = list(device.usage_patterns)
   → sub_slot(device, pattern_A).pull()

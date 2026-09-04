@@ -16,14 +16,14 @@ class TestInfraHardware(TestCase):
     def setUp(self):
         class InfraHardwareTestClass(InfraHardware):
             default_values = {
-                    "carbon_footprint_fabrication": SourceValue(100 * u.kg),
+                    "carbon_footprint_manufacturing": SourceValue(100 * u.kg),
                     "power": SourceValue(100 * u.W),
                     "lifespan": SourceValue(5 * u.year)
                 }
 
-            def __init__(self, name: str, carbon_footprint_fabrication: ExplainableQuantity,
+            def __init__(self, name: str, carbon_footprint_manufacturing: ExplainableQuantity,
                          power: ExplainableQuantity, lifespan: ExplainableQuantity):
-                super().__init__(name, carbon_footprint_fabrication, power, lifespan)
+                super().__init__(name, carbon_footprint_manufacturing, power, lifespan)
 
             @computed_attribute
             def raw_nb_of_instances(self):
@@ -38,24 +38,24 @@ class TestInfraHardware(TestCase):
                 return create_source_hourly_values_from_list([2, 4], pint_unit=u.kWh)
 
         self.test_infra_hardware = InfraHardwareTestClass(
-            "test_infra_hardware", carbon_footprint_fabrication=SourceValue(120 * u.kg, Sources.USER_DATA),
+            "test_infra_hardware", carbon_footprint_manufacturing=SourceValue(120 * u.kg, Sources.USER_DATA),
             power=SourceValue(2 * u.W, Sources.USER_DATA), lifespan=SourceValue(6 * u.years))
 
-    def test_instances_fabrication_footprint(self):
+    def test_instances_manufacturing_footprint(self):
         recompute_attribute(self.test_infra_hardware, "nb_of_instances")
-        recompute_attribute(self.test_infra_hardware, "instances_fabrication_footprint")
-        self.assertEqual(u.kg, self.test_infra_hardware.instances_fabrication_footprint.unit)
+        recompute_attribute(self.test_infra_hardware, "instances_manufacturing_footprint")
+        self.assertEqual(u.kg, self.test_infra_hardware.instances_manufacturing_footprint.unit)
         self.assertTrue(
             np.allclose([round(2 * 20 / (365.25 * 24), 3), round(3 * 20 / (365.25 * 24), 3)],
-            round(self.test_infra_hardware.instances_fabrication_footprint, 3).magnitude))
+            round(self.test_infra_hardware.instances_manufacturing_footprint, 3).magnitude))
 
-    def test_energy_footprints(self):
+    def test_use_footprints(self):
         attach_input(
             self.test_infra_hardware, "average_carbon_intensity", SourceValue(100 * u.g / u.kWh))
         recompute_attribute(self.test_infra_hardware, "instances_energy")
-        recompute_attribute(self.test_infra_hardware, "energy_footprint")
-        self.assertEqual(u.kg, self.test_infra_hardware.energy_footprint.unit)
+        recompute_attribute(self.test_infra_hardware, "use_footprint")
+        self.assertEqual(u.kg, self.test_infra_hardware.use_footprint.unit)
         self.assertTrue(np.allclose([0.2, 0.4],
-                         self.test_infra_hardware.energy_footprint.magnitude))
+                         self.test_infra_hardware.use_footprint.magnitude))
         del self.test_infra_hardware.average_carbon_intensity
         self.assertIsNone(getattr(self.test_infra_hardware, "average_carbon_intensity", None))

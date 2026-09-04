@@ -65,9 +65,9 @@ class Storage(InfraHardware, AttributionSource):
         "storage_capacity": (
             "Capacity of one storage instance. Used as the divisor when sizing the number of instances "
             "required to hold the cumulative storage need."),
-        "carbon_footprint_fabrication_per_storage_capacity": (
+        "carbon_footprint_manufacturing_per_storage_capacity": (
             "Embodied carbon emitted to manufacture one unit of storage capacity. Multiplied by capacity to "
-            "obtain the per-instance fabrication footprint."),
+            "obtain the per-instance manufacturing footprint."),
         "data_replication_factor": (
             "Multiplier accounting for redundant copies stored on top of the live data, such as a value of 3 "
             "for a triplicated cluster."),
@@ -86,7 +86,7 @@ class Storage(InfraHardware, AttributionSource):
     }
 
     default_values = {
-        "carbon_footprint_fabrication_per_storage_capacity": SourceValue(160 * u.kg / u.TB_stored),
+        "carbon_footprint_manufacturing_per_storage_capacity": SourceValue(160 * u.kg / u.TB_stored),
         "lifespan": SourceValue(6 * u.years),
         "storage_capacity": SourceValue(1 * u.TB_stored),
         "data_replication_factor": SourceValue(3 * u.dimensionless),
@@ -97,7 +97,7 @@ class Storage(InfraHardware, AttributionSource):
     @classmethod
     def ssd(cls, name="Default SSD storage", **kwargs):
         output_args = {
-            "carbon_footprint_fabrication_per_storage_capacity": SourceValue(
+            "carbon_footprint_manufacturing_per_storage_capacity": SourceValue(
                 160 * u.kg / u.TB_stored, Sources.STORAGE_EMBODIED_CARBON_STUDY),
             "lifespan": SourceValue(6 * u.years),
             "storage_capacity": SourceValue(1 * u.TB_stored, Sources.STORAGE_EMBODIED_CARBON_STUDY),
@@ -111,7 +111,7 @@ class Storage(InfraHardware, AttributionSource):
     @classmethod
     def hdd(cls, name="Default HDD storage", **kwargs):
         output_args = {
-            "carbon_footprint_fabrication_per_storage_capacity": SourceValue(
+            "carbon_footprint_manufacturing_per_storage_capacity": SourceValue(
                 20 * u.kg / u.TB_stored, Sources.STORAGE_EMBODIED_CARBON_STUDY),
             "lifespan": SourceValue(4 * u.years),
             "storage_capacity": SourceValue(1 * u.TB_stored, Sources.STORAGE_EMBODIED_CARBON_STUDY),
@@ -127,13 +127,13 @@ class Storage(InfraHardware, AttributionSource):
         return [cls.ssd, cls.hdd]
 
     def __init__(self, name: str, storage_capacity: ExplainableQuantity,
-                 carbon_footprint_fabrication_per_storage_capacity: ExplainableQuantity,
+                 carbon_footprint_manufacturing_per_storage_capacity: ExplainableQuantity,
                  data_replication_factor: ExplainableQuantity, data_storage_duration: ExplainableQuantity,
                  base_storage_need: ExplainableQuantity, lifespan: ExplainableQuantity,
                  fixed_nb_of_instances: ExplainableQuantity | EmptyExplainableObject = None):
         super().__init__(name, power=SourceValue(0 * u.W), lifespan=lifespan)
-        self.carbon_footprint_fabrication_per_storage_capacity = (carbon_footprint_fabrication_per_storage_capacity
-            .set_label(f"Fabrication carbon footprint per storage capacity"))
+        self.carbon_footprint_manufacturing_per_storage_capacity = (carbon_footprint_manufacturing_per_storage_capacity
+            .set_label(f"Manufacturing carbon footprint per storage capacity"))
         self.storage_capacity = storage_capacity.set_label(f"Storage capacity")
         self.data_replication_factor = data_replication_factor.set_label(f"Data replication factor")
         self.data_storage_duration = data_storage_duration.set_label(f"Data storage duration")
@@ -166,10 +166,10 @@ class Storage(InfraHardware, AttributionSource):
             return EmptyExplainableObject()
 
     @computed_attribute
-    def carbon_footprint_fabrication(self):
-        """Embodied carbon of one storage instance, equal to the per-capacity fabrication footprint times the instance's capacity."""
+    def carbon_footprint_manufacturing(self):
+        """Embodied carbon of one storage instance, equal to the per-capacity manufacturing footprint times the instance's capacity."""
         return (
-            self.carbon_footprint_fabrication_per_storage_capacity * self.storage_capacity).set_label(
+            self.carbon_footprint_manufacturing_per_storage_capacity * self.storage_capacity).set_label(
             f"Carbon footprint")
 
     @computed_dict(keys="jobs")
@@ -237,7 +237,7 @@ class Storage(InfraHardware, AttributionSource):
 
     @computed_attribute
     def instances_energy(self):
-        """Hourly energy consumed by storage instances. Currently always empty: storage operating energy is folded into the hosting server's energy footprint rather than tracked separately."""
+        """Hourly energy consumed by storage instances. Currently always empty: storage operating energy is folded into the hosting server's use footprint rather than tracked separately."""
         return EmptyExplainableObject()
 
     # --- Attribution-only stream split and atom builder ---
@@ -252,37 +252,37 @@ class Storage(InfraHardware, AttributionSource):
         ).set_label(f"Job-written cumulative storage need of {self.name}")
 
     @computed_attribute
-    def storage_retention_fabrication_footprint(self):
-        """Retention stream — the share of the fabrication footprint driven by job-written data:
+    def storage_retention_manufacturing_footprint(self):
+        """Retention stream — the share of the manufacturing footprint driven by job-written data:
         F × N / provisioned_capacity, with provisioned_capacity = nb_of_instances × storage_capacity.
         divide_or_fallback(fallback=0) is exact: zero provisioned capacity at an hour implies N == 0 there."""
         if (isinstance(self.nb_of_instances, EmptyExplainableObject)
                 or isinstance(self.job_written_cumulative_storage_need, EmptyExplainableObject)):
-            return EmptyExplainableObject(left_parent=self.instances_fabrication_footprint).set_label(
-                f"{self.name} retention fabrication footprint")
+            return EmptyExplainableObject(left_parent=self.instances_manufacturing_footprint).set_label(
+                f"{self.name} retention manufacturing footprint")
         provisioned_capacity = (self.nb_of_instances * self.storage_capacity).to(u.TB_stored)
         retention_share = divide_or_fallback(
             self.job_written_cumulative_storage_need, provisioned_capacity, fallback=0)
 
-        return (self.instances_fabrication_footprint * retention_share).to(u.kg).set_label(
-            f"{self.name} retention fabrication footprint")
+        return (self.instances_manufacturing_footprint * retention_share).to(u.kg).set_label(
+            f"{self.name} retention manufacturing footprint")
 
     @computed_attribute
-    def storage_baseline_fabrication_footprint(self):
-        """Baseline stream — the rest of the fabrication footprint: F × (unused_storage + base_storage_need)
+    def storage_baseline_manufacturing_footprint(self):
+        """Baseline stream — the rest of the manufacturing footprint: F × (unused_storage + base_storage_need)
         / provisioned_capacity. Since provisioned_capacity = N + unused + base, the two streams sum to F
         exactly (nb_of_instances cancels in each)."""
         if (isinstance(self.nb_of_instances, EmptyExplainableObject)
                 or isinstance(self.full_cumulative_storage_need, EmptyExplainableObject)):
-            return EmptyExplainableObject(left_parent=self.instances_fabrication_footprint).set_label(
-                f"{self.name} baseline fabrication footprint")
+            return EmptyExplainableObject(left_parent=self.instances_manufacturing_footprint).set_label(
+                f"{self.name} baseline manufacturing footprint")
         provisioned_capacity = (self.nb_of_instances * self.storage_capacity).to(u.TB_stored)
         unused_storage = provisioned_capacity - self.full_cumulative_storage_need
         baseline_share = divide_or_fallback(
             (unused_storage + self.base_storage_need).to(u.TB_stored), provisioned_capacity, fallback=0)
 
-        return (self.instances_fabrication_footprint * baseline_share).to(u.kg).set_label(
-            f"{self.name} baseline fabrication footprint")
+        return (self.instances_manufacturing_footprint * baseline_share).to(u.kg).set_label(
+            f"{self.name} baseline manufacturing footprint")
 
     @computed_structure(transient=True)
     def retention_cumulative_per_cell(self) -> dict:
@@ -326,17 +326,17 @@ class Storage(InfraHardware, AttributionSource):
             for job, occurrences in period_occurrences_per_job.items()}
 
     def attribution_atoms(self, phase: LifeCyclePhases):
-        """One atom per (stream, job, containment cell) of the fabrication phase — storage operating energy
+        """One atom per (stream, job, containment cell) of the manufacturing phase — storage operating energy
         is folded into the hosting server, so the usage phase carries no atoms. The retention stream relays
         by hourly per-cell cumulative / N weights (a demand stream: zero held data ⇒ zero footprint); the
         baseline stream relays by flat period-total occurrence shares (always-on: the instances hold their
         unused + base capacity at idle hours). Cells span web steps and edge recurrent server needs, so a
         storage written from both sides splits across both."""
-        if phase == LifeCyclePhases.USAGE or isinstance(self.instances_fabrication_footprint,
+        if phase == LifeCyclePhases.USE or isinstance(self.instances_manufacturing_footprint,
                                                         EmptyExplainableObject):
             return
-        retention_footprint = self.storage_retention_fabrication_footprint
-        baseline_footprint = self.storage_baseline_fabrication_footprint
+        retention_footprint = self.storage_retention_manufacturing_footprint
+        baseline_footprint = self.storage_baseline_manufacturing_footprint
         job_written_need = self.job_written_cumulative_storage_need
         for job in self.jobs:
             job_baseline_share = self.baseline_flat_share_per_job[job]
@@ -354,12 +354,12 @@ class Storage(InfraHardware, AttributionSource):
                     step=cell.step, rsn=cell.rsn,
                     ef=cell.ef,
                     value=retention_value.set_label(
-                        f"{self.name} retention fabrication footprint via {job.name} "
+                        f"{self.name} retention manufacturing footprint via {job.name} "
                         f"in {cell.location_label} ({cell.up.name})"))
                 yield Atom(
                     source=self, stream="baseline", job=job, up=cell.up, journey=cell.journey,
                     step=cell.step, rsn=cell.rsn,
                     ef=cell.ef,
                     value=(baseline_footprint * job_baseline_share * cell.flat_share).to(u.kg).set_label(
-                        f"{self.name} baseline fabrication footprint via {job.name} "
+                        f"{self.name} baseline manufacturing footprint via {job.name} "
                         f"in {cell.location_label} ({cell.up.name})"))

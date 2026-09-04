@@ -93,8 +93,8 @@ class ReactiveCorePurposeHolder(ModelingObject):
         return (self.power * ExplainableQuantity(2 * u.dimensionless, "two")).set_label("Doubled power")
 
     @computed_attribute(purposes={ComputationPurpose.FOOTPRINT})
-    def energy_footprint(self):
-        return self.doubled_power.copy().set_label("Energy footprint")
+    def use_footprint(self):
+        return self.doubled_power.copy().set_label("Use footprint")
 
     @computed_attribute(purposes={ComputationPurpose.FOOTPRINT})
     def unmaterialized_footprint(self):
@@ -204,11 +204,11 @@ class TestComputedAttribute(TestCase):
         unmaterialized tagged output."""
         holder = ReactiveCorePurposeHolder("purpose holder", SourceValue(3 * u.W))
 
-        _ = holder.energy_footprint
+        _ = holder.use_footprint
 
         footprint_slots = computation_slots_for_purpose(holder, ComputationPurpose.FOOTPRINT)
         self.assertEqual(
-            {holder._reactive_slots["doubled_power"], holder._reactive_slots["energy_footprint"]},
+            {holder._reactive_slots["doubled_power"], holder._reactive_slots["use_footprint"]},
             footprint_slots,
         )
 
@@ -216,13 +216,13 @@ class TestComputedAttribute(TestCase):
         """Test a materialized output remains classified while void because invalidation retains its
         dependency topology for the next pull."""
         holder = ReactiveCorePurposeHolder("invalidated holder", SourceValue(3 * u.W))
-        _ = holder.energy_footprint
+        _ = holder.use_footprint
 
         holder.power = SourceValue(4 * u.W)
 
         footprint_slots = computation_slots_for_purpose(holder, ComputationPurpose.FOOTPRINT)
         self.assertEqual(
-            {holder._reactive_slots["doubled_power"], holder._reactive_slots["energy_footprint"]},
+            {holder._reactive_slots["doubled_power"], holder._reactive_slots["use_footprint"]},
             footprint_slots,
         )
 
@@ -232,7 +232,7 @@ class TestComputedAttribute(TestCase):
 
         tagged_outputs = []
         for efootprint_class in ALL_EFOOTPRINT_CLASSES:
-            for attr_name in ("energy_footprint", "instances_fabrication_footprint", "total_footprint"):
+            for attr_name in ("use_footprint", "instances_manufacturing_footprint", "total_footprint"):
                 descriptor = computed_slots(efootprint_class).get(attr_name)
                 if descriptor is not None:
                     tagged_outputs.append((efootprint_class, attr_name))

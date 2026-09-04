@@ -18,7 +18,7 @@
 </div></details>
 
 <h2 id="core">What lives in the domain core</h2><div class="cards">
-<div class="card"><b>Usage</b><div>Patterns, journeys, and jobs that define how systems are used.</div></div><div class="card"><b>Hardware</b><div>Servers, storage, networks, and end-user devices.</div></div><div class="card"><b>Edge</b><div>Devices, components, processes, and groups for fleet modeling.</div></div><div class="card"><b>System</b><div>Top-level container; manages usage patterns and computes total footprint.</div></div></div>
+<div class="card"><b>Use</b><div>Patterns, journeys, and jobs that define how systems are used.</div></div><div class="card"><b>Hardware</b><div>Servers, storage, networks, and end-user devices.</div></div><div class="card"><b>Edge</b><div>Devices, components, processes, and groups for fleet modeling.</div></div><div class="card"><b>System</b><div>Top-level container; manages usage patterns and computes total footprint.</div></div></div>
 <details class="fold"><summary>Framework class map (usually avoid gathering this context for ordinary modeling work)</summary><div class="fbody"><ul>
 <li><b><code>ModelingObject</code></b> — base class with dependency tracking and update logic. All e-footprint objects inherit from this.</li>
 <li><b><code>reactive_core</code> package</b> — <code>graph.py</code> owns slots, dependency recording, and invalidation; <code>computed_slots.py</code> owns the three computed surfaces; <code>reverse_relationships.py</code> owns <code>ReverseCollection</code>/<code>ReverseLink</code>. Its <code>__init__.py</code> preserves one stable public import surface. See <a href="recomputation.html">Recomputation</a>.</li>

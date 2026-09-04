@@ -16,12 +16,12 @@ class TestGPUServer(unittest.TestCase):
     def test_installable_services(self):
         self.assertEqual(GPUServer.installable_services(), [])
 
-    def test_update_carbon_footprint_fabrication(self):
+    def test_update_carbon_footprint_manufacturing(self):
         with patch_attribute(self.gpu_server, "compute", SourceValue(4 * u.gpu)), \
-                patch_attribute(self.gpu_server, "carbon_footprint_fabrication_without_gpu", SourceValue(2000 * u.kg)), \
-                patch_attribute(self.gpu_server, "carbon_footprint_fabrication_per_gpu", SourceValue(250 * u.kg / u.gpu)):
-            recompute_attribute(self.gpu_server, "carbon_footprint_fabrication")
-        self.assertEqual(self.gpu_server.carbon_footprint_fabrication.value, 3000 * u.kg)
+                patch_attribute(self.gpu_server, "carbon_footprint_manufacturing_without_gpu", SourceValue(2000 * u.kg)), \
+                patch_attribute(self.gpu_server, "carbon_footprint_manufacturing_per_gpu", SourceValue(250 * u.kg / u.gpu)):
+            recompute_attribute(self.gpu_server, "carbon_footprint_manufacturing")
+        self.assertEqual(self.gpu_server.carbon_footprint_manufacturing.value, 3000 * u.kg)
 
     def test_update_power(self):
         with patch_attribute(self.gpu_server, "compute", SourceValue(4 * u.gpu)), \

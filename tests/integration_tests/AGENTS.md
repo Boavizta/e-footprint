@@ -42,8 +42,8 @@ all_servers = cls.fixture.get_all(Server)
 first_server = cls.fixture.get_first(Server)
 
 # Auto-initialize footprint tracking
-(cls.initial_footprint, cls.initial_fab_footprints, cls.initial_energy_footprints,
- cls.initial_system_total_fab_footprint, cls.initial_system_total_energy_footprint) = \
+(cls.initial_footprint, cls.initial_fab_footprints, cls.initial_use_footprints,
+ cls.initial_system_total_fab_footprint, cls.initial_system_total_use_footprint) = \
     cls.fixture.initialize_footprints()
 ```
 
@@ -87,7 +87,7 @@ When adding a new modeling class to integration tests:
    ```python
    cls.my_new_object = cls.fixture.get("My Object Name")
    ```
-3. **Footprints are auto-tracked** - no manual changes needed if the object has `energy_footprint` or `instances_fabrication_footprint`
+3. **Footprints are auto-tracked** - no manual changes needed if the object has `use_footprint` or `instances_manufacturing_footprint`
 4. **FromJson variant requires no changes** - it reuses `_setup_from_system()`
 5. **Update `run_test_all_objects_linked_to_system()`** if present - add the new object to the expected list
 

@@ -1,5 +1,5 @@
 {
-    "efootprint_version": "24.0.0",
+    "efootprint_version": "25.0.0",
     "Sources": {
         "Base-ADEME_V19": {
             "id": "Base-ADEME_V19",
@@ -96,10 +96,10 @@
         "Laptop-1": {
             "name": "Laptop 1",
             "id": "Laptop-1",
-            "carbon_footprint_fabrication": {
+            "carbon_footprint_manufacturing": {
                 "value": 156.0,
                 "unit": "kilogram",
-                "label": "Carbon footprint fabrication",
+                "label": "Carbon footprint manufacturing",
                 "source": "Base-ADEME_V19"
             },
             "power": {
@@ -124,10 +124,10 @@
         "Laptop-2": {
             "name": "Laptop 2",
             "id": "Laptop-2",
-            "carbon_footprint_fabrication": {
+            "carbon_footprint_manufacturing": {
                 "value": 156.0,
                 "unit": "kilogram",
-                "label": "Carbon footprint fabrication",
+                "label": "Carbon footprint manufacturing",
                 "source": "Base-ADEME_V19"
             },
             "power": {
@@ -284,10 +284,10 @@
                 "Edge-SSD-storage"
             ],
             "storage": "Edge-SSD-storage",
-            "carbon_footprint_fabrication": {
+            "carbon_footprint_manufacturing": {
                 "value": 60.0,
                 "unit": "kilogram",
-                "label": "Carbon footprint fabrication",
+                "label": "Carbon footprint manufacturing",
                 "source": "hypothesis"
             },
             "power": {
@@ -332,10 +332,10 @@
         "Edge-device-CPU": {
             "name": "Edge device CPU",
             "id": "Edge-device-CPU",
-            "carbon_footprint_fabrication_per_unit": {
+            "carbon_footprint_manufacturing_per_unit": {
                 "value": 0.0,
                 "unit": "kilogram",
-                "label": "Carbon footprint fabrication per unit",
+                "label": "Carbon footprint manufacturing per unit",
                 "source": "hypothesis"
             },
             "nb_of_units": {
@@ -350,10 +350,10 @@
         "Edge-device-RAM": {
             "name": "Edge device RAM",
             "id": "Edge-device-RAM",
-            "carbon_footprint_fabrication_per_unit": {
+            "carbon_footprint_manufacturing_per_unit": {
                 "value": 0.0,
                 "unit": "kilogram",
-                "label": "Carbon footprint fabrication per unit",
+                "label": "Carbon footprint manufacturing per unit",
                 "source": "hypothesis"
             },
             "power_per_unit": {
@@ -380,10 +380,10 @@
         "Edge-SSD-storage": {
             "name": "Edge SSD storage",
             "id": "Edge-SSD-storage",
-            "carbon_footprint_fabrication_per_unit": {
+            "carbon_footprint_manufacturing_per_unit": {
                 "value": 0.0,
                 "unit": "kilogram",
-                "label": "Carbon footprint fabrication per unit",
+                "label": "Carbon footprint manufacturing per unit",
                 "source": "hypothesis"
             },
             "power_per_unit": {
@@ -410,10 +410,10 @@
                 "label": "Number of units",
                 "source": "hypothesis"
             },
-            "carbon_footprint_fabrication_per_storage_capacity": {
+            "carbon_footprint_manufacturing_per_storage_capacity": {
                 "value": 160.0,
                 "unit": "kilogram / terabyte_stored",
-                "label": "Fabrication carbon footprint per unit per storage capacity",
+                "label": "Manufacturing carbon footprint per unit per storage capacity",
                 "source": "hypothesis"
             },
             "storage_capacity_per_unit": {
@@ -743,10 +743,10 @@
         "Server-1": {
             "name": "Server 1",
             "id": "Server-1",
-            "carbon_footprint_fabrication": {
+            "carbon_footprint_manufacturing": {
                 "value": 600.0,
                 "unit": "kilogram",
-                "label": "Carbon footprint fabrication",
+                "label": "Carbon footprint manufacturing",
                 "source": "Base-ADEME_V19"
             },
             "power": {
@@ -829,10 +829,10 @@
         "Server-2": {
             "name": "Server 2",
             "id": "Server-2",
-            "carbon_footprint_fabrication": {
+            "carbon_footprint_manufacturing": {
                 "value": 600.0,
                 "unit": "kilogram",
-                "label": "Carbon footprint fabrication",
+                "label": "Carbon footprint manufacturing",
                 "source": "Base-ADEME_V19"
             },
             "power": {
@@ -915,10 +915,10 @@
         "Server-3": {
             "name": "Server 3",
             "id": "Server-3",
-            "carbon_footprint_fabrication": {
+            "carbon_footprint_manufacturing": {
                 "value": 600.0,
                 "unit": "kilogram",
-                "label": "Carbon footprint fabrication",
+                "label": "Carbon footprint manufacturing",
                 "source": "Base-ADEME_V19"
             },
             "power": {
@@ -1021,10 +1021,10 @@
                 "label": "Fraction of usage time",
                 "source": "hypothesis"
             },
-            "carbon_footprint_fabrication_per_storage_capacity": {
+            "carbon_footprint_manufacturing_per_storage_capacity": {
                 "value": 1.0,
                 "unit": "kilogram / kilobyte_stored",
-                "label": "Fabrication carbon footprint per storage capacity",
+                "label": "Manufacturing carbon footprint per storage capacity",
                 "source": "hypothesis"
             },
             "storage_capacity": {
@@ -1077,10 +1077,10 @@
                 "label": "Fraction of usage time",
                 "source": "hypothesis"
             },
-            "carbon_footprint_fabrication_per_storage_capacity": {
+            "carbon_footprint_manufacturing_per_storage_capacity": {
                 "value": 1.0,
                 "unit": "kilogram / kilobyte_stored",
-                "label": "Fabrication carbon footprint per storage capacity",
+                "label": "Manufacturing carbon footprint per storage capacity",
                 "source": "hypothesis"
             },
             "storage_capacity": {
@@ -1133,10 +1133,10 @@
                 "label": "Fraction of usage time",
                 "source": "hypothesis"
             },
-            "carbon_footprint_fabrication_per_storage_capacity": {
+            "carbon_footprint_manufacturing_per_storage_capacity": {
                 "value": 1.0,
                 "unit": "kilogram / kilobyte_stored",
-                "label": "Fabrication carbon footprint per storage capacity",
+                "label": "Manufacturing carbon footprint per storage capacity",
                 "source": "hypothesis"
             },
             "storage_capacity": {

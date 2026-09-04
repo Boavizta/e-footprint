@@ -11,14 +11,14 @@ BLOOM_PAPER_SOURCE = Source("Estimating the Carbon Footprint of BLOOM", "https:/
 
 
 class GPUServer(ServerBase):
-    """A server whose compute capacity is expressed in GPUs rather than CPU cores, with separate fabrication and power figures for the GPUs and the rest of the chassis."""
+    """A server whose compute capacity is expressed in GPUs rather than CPU cores, with separate manufacturing and power figures for the GPUs and the rest of the chassis."""
 
     def _abc_marker(self):
         pass  # silent override
 
     disambiguation = (
         "Use {class:GPUServer} when {param:GPUServer.compute} is measured in GPUs. Hardware specifications are "
-        "decomposed per-GPU so that varying the GPU count adjusts power, fabrication footprint, and available "
+        "decomposed per-GPU so that varying the GPU count adjusts power, manufacturing footprint, and available "
         "memory consistently. Use {class:Server} for CPU-bound workloads.")
 
     pitfalls = (
@@ -27,18 +27,18 @@ class GPUServer(ServerBase):
 
     param_descriptions = {
         **{k: v for k, v in ServerBase.param_descriptions.items()
-           if k not in ("carbon_footprint_fabrication", "power", "idle_power", "ram")},
+           if k not in ("carbon_footprint_manufacturing", "power", "idle_power", "ram")},
         "gpu_power": (
             "Electrical power drawn by one fully-loaded GPU."),
         "gpu_idle_power": (
             "Electrical power drawn by a GPU that is on but not processing."),
         "ram_per_gpu": (
             "Memory available per GPU. Total instance RAM is derived by multiplying with the GPU count."),
-        "carbon_footprint_fabrication_per_gpu": (
+        "carbon_footprint_manufacturing_per_gpu": (
             "Embodied carbon emitted to manufacture one GPU."),
         "compute": (
             "Number of GPUs in one server instance."),
-        "carbon_footprint_fabrication_without_gpu": (
+        "carbon_footprint_manufacturing_without_gpu": (
             "Embodied carbon of one server chassis excluding GPUs (CPUs, motherboard, chassis)."),
         "base_compute_consumption": (
             "GPU consumed per instance independently of jobs."),
@@ -51,10 +51,10 @@ class GPUServer(ServerBase):
             "gpu_power": SourceValue(400 * u.W / u.gpu, BLOOM_PAPER_SOURCE, "GPU Power"),
             "gpu_idle_power": SourceValue(50 * u.W / u.gpu, BLOOM_PAPER_SOURCE, "GPU idle power"),
             "ram_per_gpu": SourceValue(80 * u.GB_ram / u.gpu, BLOOM_PAPER_SOURCE, label="RAM per GPU"),
-            "carbon_footprint_fabrication_per_gpu": SourceValue(
+            "carbon_footprint_manufacturing_per_gpu": SourceValue(
                 150 * u.kg / u.gpu, BLOOM_PAPER_SOURCE, "Carbon footprint one GPU"),
             "average_carbon_intensity": SourceValue(400 * u.g / u.kWh),
-            "carbon_footprint_fabrication_without_gpu": SourceValue(
+            "carbon_footprint_manufacturing_without_gpu": SourceValue(
             2500 * u.kg, BLOOM_PAPER_SOURCE, "Carbon footprint without GPU"),
             "compute": SourceValue(4 * u.gpu),
             "lifespan": SourceValue(6 * u.year),
@@ -67,9 +67,9 @@ class GPUServer(ServerBase):
     
     def __init__(self, name: str, server_type: ExplainableObject,  gpu_power: ExplainableQuantity,
                  gpu_idle_power: ExplainableQuantity, ram_per_gpu: ExplainableQuantity,
-                 carbon_footprint_fabrication_per_gpu: ExplainableQuantity,
+                 carbon_footprint_manufacturing_per_gpu: ExplainableQuantity,
                  average_carbon_intensity: ExplainableQuantity, compute: ExplainableQuantity,
-                 carbon_footprint_fabrication_without_gpu: ExplainableQuantity, lifespan: ExplainableQuantity,
+                 carbon_footprint_manufacturing_without_gpu: ExplainableQuantity, lifespan: ExplainableQuantity,
                  power_usage_effectiveness: ExplainableQuantity, utilization_rate: ExplainableQuantity,
                  base_compute_consumption: ExplainableQuantity, base_ram_consumption: ExplainableQuantity,
                  storage: Storage, fixed_nb_of_instances: ExplainableQuantity | EmptyExplainableObject = None):
@@ -82,18 +82,18 @@ class GPUServer(ServerBase):
         self.gpu_power = gpu_power.set_label("GPU power")
         self.gpu_idle_power = gpu_idle_power.set_label("GPU idle power")
         self.ram_per_gpu = ram_per_gpu.set_label("RAM per GPU")
-        self.carbon_footprint_fabrication_without_gpu = carbon_footprint_fabrication_without_gpu.set_label(
+        self.carbon_footprint_manufacturing_without_gpu = carbon_footprint_manufacturing_without_gpu.set_label(
             "Carbon footprint without GPU")
-        self.carbon_footprint_fabrication_per_gpu = carbon_footprint_fabrication_per_gpu.set_label(
+        self.carbon_footprint_manufacturing_per_gpu = carbon_footprint_manufacturing_per_gpu.set_label(
             "Carbon footprint one GPU")
 
 
     @computed_attribute
-    def carbon_footprint_fabrication(self):
-        """Embodied carbon of one server instance, equal to the chassis fabrication footprint plus the per-GPU fabrication footprint times the GPU count."""
-        return (self.carbon_footprint_fabrication_without_gpu
-                + self.compute * self.carbon_footprint_fabrication_per_gpu
-                ).set_label("Carbon footprint fabrication")
+    def carbon_footprint_manufacturing(self):
+        """Embodied carbon of one server instance, equal to the chassis manufacturing footprint plus the per-GPU manufacturing footprint times the GPU count."""
+        return (self.carbon_footprint_manufacturing_without_gpu
+                + self.compute * self.carbon_footprint_manufacturing_per_gpu
+                ).set_label("Carbon footprint manufacturing")
 
     @computed_attribute
     def power(self):

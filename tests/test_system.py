@@ -38,7 +38,7 @@ class TestSystem(TestCase):
     def _hourly_kg(values=(1, 2, 3)):
         return create_source_hourly_values_from_list(list(values), pint_unit=u.kg)
 
-    def _base_fabrication_footprints(self):
+    def _base_manufacturing_footprints(self):
         return {
             "Servers": {self.server: self._hourly_kg()},
             "ExternalAPIs": {},
@@ -48,7 +48,7 @@ class TestSystem(TestCase):
             "EdgeDevices": {}
         }
 
-    def _base_energy_footprints(self):
+    def _base_use_footprints(self):
         return {
             "Servers": {self.server: self._hourly_kg()},
             "ExternalAPIs": {},
@@ -70,13 +70,13 @@ class TestSystem(TestCase):
         edge_computer = create_mod_obj_mock(EdgeComputer, name="edge_computer", id="edge_computer_id", systems=[])
         edge_storage = create_mod_obj_mock(EdgeStorage, name="storage_from_edge", id="storage_from_edge_id", systems=[])
         if fab is not None:
-            edge_computer.instances_fabrication_footprint = fab
+            edge_computer.instances_manufacturing_footprint = fab
         if energy is not None:
-            edge_computer.energy_footprint = energy
+            edge_computer.use_footprint = energy
         if storage_fab is not None:
-            edge_storage.instances_fabrication_footprint = storage_fab
+            edge_storage.instances_manufacturing_footprint = storage_fab
         if storage_energy is not None:
-            edge_storage.energy_footprint = storage_energy
+            edge_storage.use_footprint = storage_energy
         edge_computer.storage = edge_storage
         edge_computer.components = [edge_storage]
         return edge_computer, edge_storage
@@ -128,14 +128,14 @@ class TestSystem(TestCase):
         edge_usage_pattern.network = create_mod_obj_mock(Network, name="edge_usage_network", systems=[])
 
         if with_footprints:
-            edge_usage_pattern.instances_fabrication_footprint = pattern_fab or self._hourly_kg()
-            edge_usage_pattern.energy_footprint = pattern_energy or self._hourly_kg()
-            edge_computer.instances_fabrication_footprint = edge_fab or self._hourly_kg(values=(2, 3, 4))
-            edge_computer.energy_footprint = edge_energy or self._hourly_kg(values=(2, 3, 4))
-            edge_storage.instances_fabrication_footprint = self._hourly_kg(values=(1, 1, 1))
-            edge_storage.energy_footprint = self._hourly_kg(values=(1, 1, 1))
-            edge_usage_pattern.network.energy_footprint = network_energy or self._hourly_kg(values=(2, 3, 4))
-            edge_usage_pattern.network.instances_fabrication_footprint = EmptyExplainableObject()
+            edge_usage_pattern.instances_manufacturing_footprint = pattern_fab or self._hourly_kg()
+            edge_usage_pattern.use_footprint = pattern_energy or self._hourly_kg()
+            edge_computer.instances_manufacturing_footprint = edge_fab or self._hourly_kg(values=(2, 3, 4))
+            edge_computer.use_footprint = edge_energy or self._hourly_kg(values=(2, 3, 4))
+            edge_storage.instances_manufacturing_footprint = self._hourly_kg(values=(1, 1, 1))
+            edge_storage.use_footprint = self._hourly_kg(values=(1, 1, 1))
+            edge_usage_pattern.network.use_footprint = network_energy or self._hourly_kg(values=(2, 3, 4))
+            edge_usage_pattern.network.instances_manufacturing_footprint = EmptyExplainableObject()
 
         return {
             "edge_usage_pattern": edge_usage_pattern,
@@ -172,15 +172,15 @@ class TestSystem(TestCase):
         self.usage_pattern.network = self.network
         self.usage_pattern.jobs = [job]
 
-        self.server.instances_fabrication_footprint = self._hourly_kg()
-        self.storage.instances_fabrication_footprint = self._hourly_kg()
-        self.device.instances_fabrication_footprint = self._hourly_kg()
-        self.network.instances_fabrication_footprint = EmptyExplainableObject()
+        self.server.instances_manufacturing_footprint = self._hourly_kg()
+        self.storage.instances_manufacturing_footprint = self._hourly_kg()
+        self.device.instances_manufacturing_footprint = self._hourly_kg()
+        self.network.instances_manufacturing_footprint = EmptyExplainableObject()
 
-        self.server.energy_footprint = self._hourly_kg()
-        self.storage.energy_footprint = self._hourly_kg()
-        self.device.energy_footprint = self._hourly_kg()
-        self.network.energy_footprint = self._hourly_kg()
+        self.server.use_footprint = self._hourly_kg()
+        self.storage.use_footprint = self._hourly_kg()
+        self.device.use_footprint = self._hourly_kg()
+        self.network.use_footprint = self._hourly_kg()
 
         self.system = System(
             "Test system",
@@ -255,18 +255,18 @@ class TestSystem(TestCase):
                 self.system.usage_patterns = [new_up]
                 recompute_attribute(self.system, "total_footprint")
         
-    def test_fabrication_footprints(self):
-        self.assertDictEqual(self._base_fabrication_footprints(), self.system.fabrication_footprints)
+    def test_manufacturing_footprints(self):
+        self.assertDictEqual(self._base_manufacturing_footprints(), self.system.manufacturing_footprints)
 
-    def test_energy_footprints(self):
-        self.assertDictEqual(self._base_energy_footprints(), self.system.energy_footprints)
+    def test_use_footprints(self):
+        self.assertDictEqual(self._base_use_footprints(), self.system.use_footprints)
 
     def test_external_apis_have_their_own_category_in_footprints(self):
         from efootprint.builders.external_apis.external_api_base_class import ExternalAPI
         from efootprint.builders.external_apis.external_api_job_base_class import ExternalAPIJob
         external_api = create_mod_obj_mock(ExternalAPI, name="external_api", systems=[])
-        external_api.instances_fabrication_footprint = self._hourly_kg(values=(4, 4, 4))
-        external_api.energy_footprint = self._hourly_kg(values=(2, 2, 2))
+        external_api.instances_manufacturing_footprint = self._hourly_kg(values=(4, 4, 4))
+        external_api.use_footprint = self._hourly_kg(values=(2, 2, 2))
         external_api.server = MagicMock()
         external_api.server.installed_services = []
         api_job = create_mod_obj_mock(ExternalAPIJob, name="api_job", systems=[])
@@ -274,18 +274,18 @@ class TestSystem(TestCase):
         api_job.server = external_api.server
         self.usage_pattern.jobs = [api_job]
 
-        fab_footprints = self.system.fabrication_footprints
-        energy_footprints = self.system.energy_footprints
+        fab_footprints = self.system.manufacturing_footprints
+        use_footprints = self.system.use_footprints
 
         self.assertIn(external_api, fab_footprints["ExternalAPIs"])
-        self.assertEqual(external_api.instances_fabrication_footprint, fab_footprints["ExternalAPIs"][external_api])
-        self.assertIn(external_api, energy_footprints["ExternalAPIs"])
-        self.assertEqual(external_api.energy_footprint, energy_footprints["ExternalAPIs"][external_api])
+        self.assertEqual(external_api.instances_manufacturing_footprint, fab_footprints["ExternalAPIs"][external_api])
+        self.assertIn(external_api, use_footprints["ExternalAPIs"])
+        self.assertEqual(external_api.use_footprint, use_footprints["ExternalAPIs"][external_api])
 
-        self.assertEqual(external_api.instances_fabrication_footprint, self.system.total_fabrication_footprints["ExternalAPIs"])
-        self.assertEqual(external_api.energy_footprint, self.system.total_energy_footprints["ExternalAPIs"])
+        self.assertEqual(external_api.instances_manufacturing_footprint, self.system.total_manufacturing_footprints["ExternalAPIs"])
+        self.assertEqual(external_api.use_footprint, self.system.total_use_footprints["ExternalAPIs"])
 
-    def test_total_fabrication_footprints(self):
+    def test_total_manufacturing_footprints(self):
         expected_dict = {
             "Servers":
                 self._hourly_kg(),
@@ -297,10 +297,10 @@ class TestSystem(TestCase):
             "Network": EmptyExplainableObject(),
             "EdgeDevices": EmptyExplainableObject()
         }
-        self.assertDictEqual(expected_dict, self.system.total_fabrication_footprints)
+        self.assertDictEqual(expected_dict, self.system.total_manufacturing_footprints)
 
-    def test_total_energy_footprints(self):
-        energy_footprints = self.system.total_energy_footprints
+    def test_total_use_footprints(self):
+        use_footprints = self.system.total_use_footprints
         expected_dict = {
             "Servers":
                 self._hourly_kg(),
@@ -314,19 +314,19 @@ class TestSystem(TestCase):
             "EdgeDevices": EmptyExplainableObject()
         }
 
-        self.assertDictEqual(expected_dict, energy_footprints)
+        self.assertDictEqual(expected_dict, use_footprints)
 
     def test_total_footprint_conserves_fractional_hourly_category_streams(self):
-        """Test the hourly and period total conserve fractional fabrication and energy category streams."""
+        """Test the hourly and period total conserve fractional manufacturing and energy category streams."""
         fractional_footprint = self._hourly_kg(values=(0.000049, 0.000151, 0.000249))
         for obj in (self.server, self.storage, self.device):
-            obj.instances_fabrication_footprint = fractional_footprint.copy()
+            obj.instances_manufacturing_footprint = fractional_footprint.copy()
         for obj in (self.server, self.storage, self.device, self.network):
-            obj.energy_footprint = fractional_footprint.copy()
+            obj.use_footprint = fractional_footprint.copy()
 
         category_total = sum(
-            list(self.system.total_fabrication_footprints.values())
-            + list(self.system.total_energy_footprints.values()),
+            list(self.system.total_manufacturing_footprints.values())
+            + list(self.system.total_use_footprints.values()),
             start=EmptyExplainableObject(),
         ).to(u.kg)
         total_footprint = self.system.total_footprint
@@ -336,7 +336,7 @@ class TestSystem(TestCase):
         self.assertEqual("Total carbon footprint", total_footprint.label)
         self.assertEqual(u.kg, total_footprint.unit)
 
-    def test_fabrication_footprint_sum_over_period(self):
+    def test_manufacturing_footprint_sum_over_period(self):
         test_footprints = {
             "Servers": {self.server: 
                 self._hourly_kg()},
@@ -353,14 +353,14 @@ class TestSystem(TestCase):
             "Network": {self.network: EmptyExplainableObject()},
         }
 
-        with patch.object(System, "fabrication_footprints", new_callable=PropertyMock) as fab_mock:
+        with patch.object(System, "manufacturing_footprints", new_callable=PropertyMock) as fab_mock:
             fab_mock.return_value = test_footprints
-            fabrication_footprint_sum_over_period = self.system.fabrication_footprint_sum_over_period
+            manufacturing_footprint_sum_over_period = self.system.manufacturing_footprint_sum_over_period
             for category in expected_dict:
                 for item in expected_dict[category]:
-                    self.assertEqual(expected_dict[category][item].value, fabrication_footprint_sum_over_period[category][item].value)
+                    self.assertEqual(expected_dict[category][item].value, manufacturing_footprint_sum_over_period[category][item].value)
 
-    def test_energy_footprint_sum_over_period(self):
+    def test_use_footprint_sum_over_period(self):
         test_footprints = {
             "Servers": {self.server: self._hourly_kg()},
             "Storage": {self.storage: self._hourly_kg()},
@@ -374,14 +374,14 @@ class TestSystem(TestCase):
             "Network": {self.network: ExplainableQuantity(6 * u.kg, label="devices")},
         }
 
-        with patch.object(System, "energy_footprints", new_callable=PropertyMock) as eng_mock:
+        with patch.object(System, "use_footprints", new_callable=PropertyMock) as eng_mock:
             eng_mock.return_value = test_footprints
-            energy_footprint_sum_over_period = self.system.energy_footprint_sum_over_period
+            use_footprint_sum_over_period = self.system.use_footprint_sum_over_period
             for category in expected_dict:
                 for item in expected_dict[category]:
-                    self.assertEqual(expected_dict[category][item].value, energy_footprint_sum_over_period[category][item].value)
+                    self.assertEqual(expected_dict[category][item].value, use_footprint_sum_over_period[category][item].value)
 
-    def test_total_fabrication_footprint_sum_over_period(self):
+    def test_total_manufacturing_footprint_sum_over_period(self):
         fab_footprints = {
             "Servers": {"server": self._hourly_kg()},
             "ExternalAPIs": {},
@@ -400,13 +400,13 @@ class TestSystem(TestCase):
             "EdgeDevices": ExplainableQuantity(0 * u.kg, "null value")
         }
 
-        with patch.object(System, "fabrication_footprints", new_callable=PropertyMock) as fab_mock:
+        with patch.object(System, "manufacturing_footprints", new_callable=PropertyMock) as fab_mock:
             fab_mock.return_value = fab_footprints
-            total_fabrication_footprint_sum_over_period = self.system.total_fabrication_footprint_sum_over_period
-            self.assertDictEqual(expected_dict, total_fabrication_footprint_sum_over_period)
+            total_manufacturing_footprint_sum_over_period = self.system.total_manufacturing_footprint_sum_over_period
+            self.assertDictEqual(expected_dict, total_manufacturing_footprint_sum_over_period)
 
-    def test_total_energy_footprint_sum_over_period(self):
-        energy_footprints = {
+    def test_total_use_footprint_sum_over_period(self):
+        use_footprints = {
             "Servers": {"server": self._hourly_kg()},
             "ExternalAPIs": {},
             "Storage": {"storage": self._hourly_kg()},
@@ -424,24 +424,24 @@ class TestSystem(TestCase):
             "EdgeDevices": ExplainableQuantity(0 * u.kg, "null value")
         }
 
-        with patch.object(System, "energy_footprints", new_callable=PropertyMock) as energy_mock:
-            energy_mock.return_value = energy_footprints
-            total_energy_footprint_sum_over_period = self.system.total_energy_footprint_sum_over_period
-            self.assertDictEqual(expected_dict, total_energy_footprint_sum_over_period)
+        with patch.object(System, "use_footprints", new_callable=PropertyMock) as energy_mock:
+            energy_mock.return_value = use_footprints
+            total_use_footprint_sum_over_period = self.system.total_use_footprint_sum_over_period
+            self.assertDictEqual(expected_dict, total_use_footprint_sum_over_period)
 
-    def test_fabrication_footprints_has_as_many_values_as_nb_of_objects_even_if_some_objects_have_same_name(self):
+    def test_manufacturing_footprints_has_as_many_values_as_nb_of_objects_even_if_some_objects_have_same_name(self):
         device = create_mod_obj_mock(
-            Device, name="device", id="device id", instances_fabrication_footprint=SourceValue(1 * u.kg))
+            Device, name="device", id="device id", instances_manufacturing_footprint=SourceValue(1 * u.kg))
         device2 = create_mod_obj_mock(
-            Device, name="device2", id="device2 id", instances_fabrication_footprint=SourceValue(1 * u.kg))
+            Device, name="device2", id="device2 id", instances_manufacturing_footprint=SourceValue(1 * u.kg))
         server = create_mod_obj_mock(Server, name="server", id="server id",
-                                     instances_fabrication_footprint=SourceValue(1 * u.kg))
+                                     instances_manufacturing_footprint=SourceValue(1 * u.kg))
         server2 = create_mod_obj_mock(Server, name="server2", id="server2 id",
-                                      instances_fabrication_footprint=SourceValue(1 * u.kg))
+                                      instances_manufacturing_footprint=SourceValue(1 * u.kg))
         storage = create_mod_obj_mock(Storage, name="storage", id="storage id",
-                                      instances_fabrication_footprint=SourceValue(1 * u.kg))
+                                      instances_manufacturing_footprint=SourceValue(1 * u.kg))
         storage2 = create_mod_obj_mock(Storage, name="storage", id="storage2 id",
-                                       instances_fabrication_footprint=SourceValue(1 * u.kg))
+                                       instances_manufacturing_footprint=SourceValue(1 * u.kg))
 
         system2 = System.__new__(System)
         system2.usage_patterns = []
@@ -451,20 +451,20 @@ class TestSystem(TestCase):
             mock_all.return_value = [device, device2, server, server2, storage, storage2]
             for category in ["Servers", "Storage", "Devices"]:
                 self.assertEqual(
-                    len(list(system2.fabrication_footprints[category].values())), 2,
+                    len(list(system2.manufacturing_footprints[category].values())), 2,
                     f"{category} doesn’t have right len")
 
-    def test_energy_footprints_has_as_many_values_as_nb_of_objects_even_if_some_objects_have_same_name(self):
-        device = create_mod_obj_mock(Device, name="device", id="device id", energy_footprint=SourceValue(1 * u.kg))
-        device2 = create_mod_obj_mock(Device, name="device2", id="device2 id", energy_footprint=SourceValue(1 * u.kg))
-        server = create_mod_obj_mock(Server, name="server", id="server id", energy_footprint=SourceValue(1 * u.kg))
-        server2 = create_mod_obj_mock(Server, name="server2", id="server2 id", energy_footprint=SourceValue(1 * u.kg))
-        storage = create_mod_obj_mock(Storage, name="storage", id="storage id", energy_footprint=SourceValue(1 * u.kg))
+    def test_use_footprints_has_as_many_values_as_nb_of_objects_even_if_some_objects_have_same_name(self):
+        device = create_mod_obj_mock(Device, name="device", id="device id", use_footprint=SourceValue(1 * u.kg))
+        device2 = create_mod_obj_mock(Device, name="device2", id="device2 id", use_footprint=SourceValue(1 * u.kg))
+        server = create_mod_obj_mock(Server, name="server", id="server id", use_footprint=SourceValue(1 * u.kg))
+        server2 = create_mod_obj_mock(Server, name="server2", id="server2 id", use_footprint=SourceValue(1 * u.kg))
+        storage = create_mod_obj_mock(Storage, name="storage", id="storage id", use_footprint=SourceValue(1 * u.kg))
         storage2 = create_mod_obj_mock(
-            Storage, name="storage", id="storage2 id", energy_footprint=SourceValue(1 * u.kg))
-        network = create_mod_obj_mock(Network, name="network", id="network id", energy_footprint=SourceValue(1 * u.kg))
+            Storage, name="storage", id="storage2 id", use_footprint=SourceValue(1 * u.kg))
+        network = create_mod_obj_mock(Network, name="network", id="network id", use_footprint=SourceValue(1 * u.kg))
         network2 = create_mod_obj_mock(
-            Network, name="network2", id="network2 id", energy_footprint=SourceValue(1 * u.kg))
+            Network, name="network2", id="network2 id", use_footprint=SourceValue(1 * u.kg))
 
         system2 = System.__new__(System)
         system2.usage_patterns = []
@@ -474,7 +474,7 @@ class TestSystem(TestCase):
             mock_all.return_value = [device, device2, server, server2, storage, storage2, network, network2]
             for category in ["Servers", "Storage", "Devices", "Network"]:
                 self.assertEqual(
-                    len(list(system2.energy_footprints[category].values())), 2,
+                    len(list(system2.use_footprints[category].values())), 2,
                     f"{category} doesn’t have right len")
 
     def test_footprints_by_category_and_object(self):
@@ -485,17 +485,17 @@ class TestSystem(TestCase):
             "Network": {self.network: ExplainableQuantity(0 * u.kg, "network")}
         }
 
-        energy_footprints = {
+        use_footprints = {
             "Servers": {self.server: ExplainableQuantity(5 * u.kg, "server")},
             "Storage": {self.storage: ExplainableQuantity(5 * u.kg, "storage")},
             "Devices": {self.device: ExplainableQuantity(5 * u.kg, "devices")},
             "Network": {self.network: ExplainableQuantity(5 * u.kg, "network")},
         }
 
-        with patch.object(System, "fabrication_footprint_sum_over_period", new_callable=PropertyMock) as fab_mock,\
-            patch.object(System, "energy_footprint_sum_over_period", new_callable=PropertyMock) as en_mock:
+        with patch.object(System, "manufacturing_footprint_sum_over_period", new_callable=PropertyMock) as fab_mock,\
+            patch.object(System, "use_footprint_sum_over_period", new_callable=PropertyMock) as en_mock:
             fab_mock.return_value = fab_footprints
-            en_mock.return_value = energy_footprints
+            en_mock.return_value = use_footprints
             self.system.plot_footprints_by_category_and_object(
                 filename=os.path.join(root_test_dir, "footprints by category and object unit test.html"))
 
@@ -521,9 +521,9 @@ class TestSystem(TestCase):
         self.assertEqual([storage_from_edge], system.edge_storages)
         self.assertEqual([edge_usage_journey], system.edge_usage_journeys)
 
-    def test_fabrication_footprints_includes_edge_devices(self):
-        expected_dict = self._base_fabrication_footprints()
-        self.assertDictEqual(expected_dict, self.system.fabrication_footprints)
+    def test_manufacturing_footprints_includes_edge_devices(self):
+        expected_dict = self._base_manufacturing_footprints()
+        self.assertDictEqual(expected_dict, self.system.manufacturing_footprints)
 
         edge_computer, edge_storage = self._make_edge_device(
             fab=self._hourly_kg(values=(2, 3, 4)),
@@ -534,14 +534,14 @@ class TestSystem(TestCase):
         base_objects = self.system.all_linked_objects
         with patch.object(System, "all_linked_objects", new_callable=PropertyMock) as mock_all:
             mock_all.return_value = base_objects + [edge_computer]
-            fab_footprints = self.system.fabrication_footprints
+            fab_footprints = self.system.manufacturing_footprints
 
-            expected_dict["EdgeDevices"] = {edge_computer: edge_computer.instances_fabrication_footprint}
+            expected_dict["EdgeDevices"] = {edge_computer: edge_computer.instances_manufacturing_footprint}
             self.assertDictEqual(expected_dict, fab_footprints)
 
-    def test_energy_footprints_includes_edge_devices(self):
-        expected_dict = self._base_energy_footprints()
-        self.assertDictEqual(expected_dict, self.system.energy_footprints)
+    def test_use_footprints_includes_edge_devices(self):
+        expected_dict = self._base_use_footprints()
+        self.assertDictEqual(expected_dict, self.system.use_footprints)
 
         edge_computer, edge_storage = self._make_edge_device(
             energy=self._hourly_kg(values=(2, 3, 4)),
@@ -552,12 +552,12 @@ class TestSystem(TestCase):
 
         with patch.object(System, "edge_devices", new_callable=PropertyMock) as mock_edge_devices:
             mock_edge_devices.return_value = [edge_computer]
-            energy_footprints = self.system.energy_footprints
+            use_footprints = self.system.use_footprints
 
-            expected_dict["EdgeDevices"] = {edge_computer: edge_computer.energy_footprint}
-            self.assertDictEqual(expected_dict, energy_footprints)
+            expected_dict["EdgeDevices"] = {edge_computer: edge_computer.use_footprint}
+            self.assertDictEqual(expected_dict, use_footprints)
 
-    def test_total_fabrication_footprints_includes_edge_devices(self):
+    def test_total_manufacturing_footprints_includes_edge_devices(self):
         edge_computer, edge_storage = self._make_edge_device(
             fab=self._hourly_kg(values=(2, 3, 4)),
             storage_fab=self._hourly_kg(values=(1, 1, 1))
@@ -566,12 +566,12 @@ class TestSystem(TestCase):
         base_objects = self.system.all_linked_objects
         with patch.object(System, "all_linked_objects", new_callable=PropertyMock) as mock_all:
             mock_all.return_value = base_objects + [edge_computer]
-            total_fab_footprints = self.system.total_fabrication_footprints
+            total_fab_footprints = self.system.total_manufacturing_footprints
 
-            self.assertEqual("EdgeDevices total fabrication footprint", total_fab_footprints["EdgeDevices"].label)
-            self.assertEqual(edge_computer.instances_fabrication_footprint, total_fab_footprints["EdgeDevices"])
+            self.assertEqual("EdgeDevices total manufacturing footprint", total_fab_footprints["EdgeDevices"].label)
+            self.assertEqual(edge_computer.instances_manufacturing_footprint, total_fab_footprints["EdgeDevices"])
 
-    def test_total_energy_footprints_includes_edge_devices(self):
+    def test_total_use_footprints_includes_edge_devices(self):
         edge_computer, edge_storage = self._make_edge_device(
             energy=self._hourly_kg(values=(2, 3, 4)),
             storage_energy=self._hourly_kg(values=(1, 1, 1))
@@ -580,12 +580,12 @@ class TestSystem(TestCase):
         base_objects = self.system.all_linked_objects
         with patch.object(System, "all_linked_objects", new_callable=PropertyMock) as mock_all:
             mock_all.return_value = base_objects + [edge_computer]
-            total_energy_footprints = self.system.total_energy_footprints
+            total_use_footprints = self.system.total_use_footprints
 
-            self.assertEqual("EdgeDevices total energy footprint", total_energy_footprints["EdgeDevices"].label)
-            self.assertEqual(edge_computer.energy_footprint, total_energy_footprints["EdgeDevices"])
+            self.assertEqual("EdgeDevices total use footprint", total_use_footprints["EdgeDevices"].label)
+            self.assertEqual(edge_computer.use_footprint, total_use_footprints["EdgeDevices"])
 
-    def test_total_fabrication_footprint_sum_over_period_includes_edge_devices(self):
+    def test_total_manufacturing_footprint_sum_over_period_includes_edge_devices(self):
         expected_dict = {
             "Servers": ExplainableQuantity(6 * u.kg, "null value"),
             "ExternalAPIs": ExplainableQuantity(0 * u.kg, "null value"),
@@ -595,7 +595,7 @@ class TestSystem(TestCase):
             "EdgeDevices": ExplainableQuantity(0 * u.kg, "null value")
         }
 
-        total_fab_sum = self.system.total_fabrication_footprint_sum_over_period
+        total_fab_sum = self.system.total_manufacturing_footprint_sum_over_period
         self.assertDictEqual(expected_dict, total_fab_sum)
 
         edge_computer, edge_storage = self._make_edge_device(
@@ -605,12 +605,12 @@ class TestSystem(TestCase):
 
         with patch.object(System, "edge_devices", new_callable=PropertyMock) as mock_edge_devices:
             mock_edge_devices.return_value = [edge_computer]
-            total_fab_sum = self.system.total_fabrication_footprint_sum_over_period
+            total_fab_sum = self.system.total_manufacturing_footprint_sum_over_period
 
             self.assertIn("EdgeDevices", total_fab_sum)
             self.assertEqual(ExplainableQuantity(9 * u.kg, "sum"), total_fab_sum["EdgeDevices"])
 
-    def test_total_energy_footprint_sum_over_period_includes_edge_computers(self):
+    def test_total_use_footprint_sum_over_period_includes_edge_computers(self):
         expected_dict = {
             "Servers": ExplainableQuantity(6 * u.kg, "null value"),
             "ExternalAPIs": ExplainableQuantity(0 * u.kg, "null value"),
@@ -620,7 +620,7 @@ class TestSystem(TestCase):
             "EdgeDevices": ExplainableQuantity(0 * u.kg, "null value")
         }
 
-        total_energy_sum = self.system.total_energy_footprint_sum_over_period
+        total_energy_sum = self.system.total_use_footprint_sum_over_period
         self.assertDictEqual(expected_dict, total_energy_sum)
 
         edge_computer, edge_storage = self._make_edge_device(
@@ -630,7 +630,7 @@ class TestSystem(TestCase):
 
         with patch.object(System, "edge_devices", new_callable=PropertyMock) as mock_edge_devices:
             mock_edge_devices.return_value = [edge_computer]
-            total_energy_sum = self.system.total_energy_footprint_sum_over_period
+            total_energy_sum = self.system.total_use_footprint_sum_over_period
 
             self.assertIn("EdgeDevices", total_energy_sum)
             self.assertEqual(ExplainableQuantity(9 * u.kg, "sum"), total_energy_sum["EdgeDevices"])
@@ -665,17 +665,17 @@ class TestSystem(TestCase):
         self.assertIn(storage_from_edge, combined_storages)
 
         # Test footprints include both types
-        fab_footprints = system.fabrication_footprints
+        fab_footprints = system.manufacturing_footprints
         self.assertIn("Devices", fab_footprints)
         self.assertIn("EdgeDevices", fab_footprints)
         self.assertIn(self.device, fab_footprints["Devices"])
         self.assertIn(edge_computer, fab_footprints["EdgeDevices"])
 
-        energy_footprints = system.energy_footprints
-        self.assertIn("Devices", energy_footprints)
-        self.assertIn("EdgeDevices", energy_footprints)
-        self.assertIn(self.device, energy_footprints["Devices"])
-        self.assertIn(edge_computer, energy_footprints["EdgeDevices"])
+        use_footprints = system.use_footprints
+        self.assertIn("Devices", use_footprints)
+        self.assertIn("EdgeDevices", use_footprints)
+        self.assertIn(self.device, use_footprints["Devices"])
+        self.assertIn(edge_computer, use_footprints["EdgeDevices"])
 
     def test_get_objects_linked_to_edge_usage_patterns(self):
         edge_setup = self._make_edge_usage_pattern(with_server_need=True, with_job=True)

@@ -120,7 +120,7 @@ class IntegrationTestSimpleSystemBaseClass(IntegrationTestBaseClass):
         self._test_variations_on_obj_inputs(uj_step_1)
         self._test_input_change(
             uj_step_1.user_time_spent, SourceValue(10 * u.min), uj_step_1, "user_time_spent",
-            calculated_attributes_that_should_be_updated=[uj.duration, usage_pattern.devices[0].energy_footprint])
+            calculated_attributes_that_should_be_updated=[uj.duration, usage_pattern.devices[0].use_footprint])
         self._test_variations_on_obj_inputs(
             server, attrs_to_skip=["fraction_of_usage_time", "server_type", "fixed_nb_of_instances"],
             special_mult={
@@ -207,7 +207,7 @@ class IntegrationTestSimpleSystemBaseClass(IntegrationTestBaseClass):
             with self.assertRaises(InsufficientCapacityError):
                 self.storage.fixed_nb_of_instances = SourceValue(1 * u.dimensionless)
 
-    def run_test_make_sure_that_storage_fabrication_footprint_is_linked_to_jobs(self):
+    def run_test_make_sure_that_storage_manufacturing_footprint_is_linked_to_jobs(self):
         from efootprint.core.attribution import footprint_per_node_per_source
         from efootprint.core.lifecycle_phases import LifeCyclePhases
         from efootprint.core.usage.job import JobBase
@@ -322,7 +322,7 @@ class IntegrationTestSimpleSystemBaseClass(IntegrationTestBaseClass):
         new_network = Network.from_defaults("New network with same specs as default")
 
         def post_assertions(test):
-            test.assertEqual(0, test.network.energy_footprint.max().magnitude)
+            test.assertEqual(0, test.network.use_footprint.max().magnitude)
 
         scenario = ObjectLinkScenario(
             name="update_network",
@@ -388,11 +388,11 @@ class IntegrationTestSimpleSystemBaseClass(IntegrationTestBaseClass):
             [elt * 1000 for elt in [12, 23, 41, 55, 68, 12, 23, 26, 43]])
 
         def post_assertions(test):
-            for ancestor in new_network.energy_footprint.direct_ancestors_with_id:
+            for ancestor in new_network.use_footprint.direct_ancestors_with_id:
                 test.assertIsNotNone(ancestor.modeling_obj_container)
 
         def post_reset(test):
-            for ancestor in test.network.energy_footprint.direct_ancestors_with_id:
+            for ancestor in test.network.use_footprint.direct_ancestors_with_id:
                 test.assertIsNotNone(ancestor.modeling_obj_container)
 
         scenario = ObjectLinkScenario(

@@ -50,7 +50,7 @@ The right primitive depends on **who hosts the model**:
   autoscaling, or serverless — none of those change the modeling
   primitive, only its sizing behaviour. {class:GPUServer} currently
   requires the modeler to supply most inputs (GPU type, per-GPU
-  fabrication footprint, per-GPU power); [Boavizta's BoaviztAPI](https://api.boavizta.org/docs)
+  manufacturing footprint, per-GPU power); [Boavizta's BoaviztAPI](https://api.boavizta.org/docs)
   exposes per-GPU data at its `/v1/component/gpu` endpoint, which can
   be fed into {class:GPUServer} by hand today and would be a natural
   source for future archetype helpers — contributions welcome.

@@ -25,7 +25,7 @@ class TestEdgeUsageJourney(TestCase):
     def setUp(self):
         self.mock_edge_device = create_mod_obj_mock(EdgeDevice, name="Mock Device")
         self.mock_edge_device.lifespan = SourceValue(4 * u.year)
-        self.mock_edge_device.energy_footprint_per_usage_pattern = ExplainableObjectDict()
+        self.mock_edge_device.use_footprint_per_usage_pattern = ExplainableObjectDict()
 
         self.mock_edge_need_1 = create_mod_obj_mock(RecurrentEdgeDeviceNeed, name="Mock Need 1")
         self.mock_edge_need_1.edge_device = self.mock_edge_device

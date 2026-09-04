@@ -229,10 +229,10 @@ class TestMinimalSerializationContract(TestCase):
         old_format_dict = system_to_json(self.system, save_computed_state=False)
         old_format_dict["efootprint_version"] = "22.3.0"
         server_dict = next(iter(old_format_dict["Server"].values()))
-        server_dict["energy_footprint"] = {"label": "Energy footprint", "value": 12.0, "unit": "kilogram"}
+        server_dict["use_footprint"] = {"label": "Use footprint", "value": 12.0, "unit": "kilogram"}
 
         upgraded_dict = upgrade_system_dict_to_current_version(json.loads(json.dumps(old_format_dict)))
-        self.assertNotIn("energy_footprint", next(iter(upgraded_dict["Server"].values())))
+        self.assertNotIn("use_footprint", next(iter(upgraded_dict["Server"].values())))
 
         _, flat_obj_dict, _ = json_to_system(json.loads(json.dumps(old_format_dict)))
         loaded_system = flat_obj_dict[self.system.id]
@@ -270,7 +270,7 @@ class TestMinimalSerializationContract(TestCase):
             if efootprint_class is System:
                 self.assertEqual({"total_footprint", "impact_repartition_matrix"}, serialized_names)
             elif issubclass(efootprint_class, AttributionSource):
-                expected = {"energy_footprint", "instances_fabrication_footprint"}
+                expected = {"use_footprint", "instances_manufacturing_footprint"}
                 if issubclass(efootprint_class, EdgeDevice):
                     expected.add("footprint_breakdown_summary")
                 self.assertEqual(expected, serialized_names, efootprint_class.__name__)
@@ -335,8 +335,8 @@ class TestEdgeSystemSerializationContract(TestCase):
         with ComputeCounter() as counter:
             sankey = ImpactRepartitionSankey(loaded_system)
             sankey.build()
-            breakdown = sankey._get_footprint_breakdown_by_source(loaded_device, LifeCyclePhases.USAGE)
+            breakdown = sankey._get_footprint_breakdown_by_source(loaded_device, LifeCyclePhases.USE)
 
         self.assertEqual([], counter.computed_slot_names)
-        self.assertEqual(len(self.live_summary[LifeCyclePhases.USAGE.value]), len(breakdown))
+        self.assertEqual(len(self.live_summary[LifeCyclePhases.USE.value]), len(breakdown))
         self.assertGreater(len(breakdown), 0)

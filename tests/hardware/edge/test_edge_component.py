@@ -33,7 +33,7 @@ class ConcreteEdgeComponent(EdgeComponent):
     """Concrete implementation of EdgeComponent for testing."""
     compatible_root_units = [u.cpu_core]
     default_values = {
-        "carbon_footprint_fabrication_per_unit": SourceValue(20 * u.kg),
+        "carbon_footprint_manufacturing_per_unit": SourceValue(20 * u.kg),
         "power_per_unit": SourceValue(50 * u.W),
         "lifespan": SourceValue(5 * u.year),
         "idle_power_per_unit": SourceValue(10 * u.W),
@@ -49,23 +49,23 @@ class TestEdgeComponent(TestCase):
     def setUp(self):
         self.component = ConcreteEdgeComponent(
             name="Test Component",
-            carbon_footprint_fabrication_per_unit=SourceValue(20 * u.kg),
+            carbon_footprint_manufacturing_per_unit=SourceValue(20 * u.kg),
             power_per_unit=SourceValue(50 * u.W),
             lifespan=SourceValue(5 * u.year),
             idle_power_per_unit=SourceValue(10 * u.W)
         )
-        recompute_attribute(self.component, "carbon_footprint_fabrication")
+        recompute_attribute(self.component, "carbon_footprint_manufacturing")
         recompute_attribute(self.component, "power")
         recompute_attribute(self.component, "idle_power")
 
-    def test_update_dict_element_in_fabrication_footprint_per_edge_device_per_usage_pattern(self):
-        """Test fabrication footprint per edge device calculation for a single pattern."""
+    def test_update_dict_element_in_manufacturing_footprint_per_edge_device_per_usage_pattern(self):
+        """Test manufacturing footprint per edge device calculation for a single pattern."""
         mock_pattern = create_mod_obj_mock(EdgeUsagePattern, name="Test Pattern")
         mock_edge_usage_journey = create_mod_obj_mock(EdgeUsageJourney, "Test Journey")
         mock_pattern.nb_deployments_in_parallel = SourceValue(10 * u.concurrent)
 
         result = recompute_attribute(
-            self.component, "fabrication_footprint_per_edge_device_per_usage_pattern", mock_pattern)
+            self.component, "manufacturing_footprint_per_edge_device_per_usage_pattern", mock_pattern)
 
         # Component intensity: 20 kg / 5 year = 4 kg/year
         # Per hour: 4 kg/year / (365.25 * 24) kg/hour
@@ -92,8 +92,8 @@ class TestEdgeComponent(TestCase):
 
         self.assertTrue(np.allclose(expected_energy, result.value.to(u.Wh).magnitude))
 
-    def test_update_dict_element_in_energy_footprint_per_edge_device_per_usage_pattern(self):
-        """Test energy footprint per edge device calculation for a single pattern."""
+    def test_update_dict_element_in_use_footprint_per_edge_device_per_usage_pattern(self):
+        """Test use footprint per edge device calculation for a single pattern."""
         mock_pattern = create_mod_obj_mock(EdgeUsagePattern, name="Test Pattern")
         mock_country = MagicMock()
         mock_country.average_carbon_intensity = SourceValue(0.5 * u.kg / u.kWh)
@@ -103,30 +103,30 @@ class TestEdgeComponent(TestCase):
         attach_attribute(self.component, "energy_per_edge_device_per_usage_pattern", ExplainableObjectDict(
             {mock_pattern: energy_per_edge_device}))
 
-        result = recompute_attribute(self.component, "energy_footprint_per_edge_device_per_usage_pattern", mock_pattern)
+        result = recompute_attribute(self.component, "use_footprint_per_edge_device_per_usage_pattern", mock_pattern)
 
-        # Energy footprint = [1000, 2000] Wh * 0.5 kg/kWh = [0.5, 1.0] kg
+        # Use footprint = [1000, 2000] Wh * 0.5 kg/kWh = [0.5, 1.0] kg
         expected_footprint = [0.5, 1.0]
 
         self.assertTrue(np.allclose(expected_footprint, result.value.to(u.kg).magnitude))
 
-    def test_update_fabrication_footprint_per_edge_device(self):
-        """Test summing fabrication footprint per edge device across patterns."""
+    def test_update_manufacturing_footprint_per_edge_device(self):
+        """Test summing manufacturing footprint per edge device across patterns."""
         mock_pattern_1 = create_mod_obj_mock(EdgeUsagePattern, name="Pattern 1", id="pattern_1")
         mock_pattern_2 = create_mod_obj_mock(EdgeUsagePattern, name="Pattern 2", id="pattern_2")
 
         footprint_1 = create_source_hourly_values_from_list([10, 20], pint_unit=u.kg)
         footprint_2 = create_source_hourly_values_from_list([5, 10], pint_unit=u.kg)
         attach_attribute(
-            self.component, "fabrication_footprint_per_edge_device_per_usage_pattern", ExplainableObjectDict({
+            self.component, "manufacturing_footprint_per_edge_device_per_usage_pattern", ExplainableObjectDict({
             mock_pattern_1: footprint_1,
             mock_pattern_2: footprint_2
         }))
 
-        recompute_attribute(self.component, "fabrication_footprint_per_edge_device")
+        recompute_attribute(self.component, "manufacturing_footprint_per_edge_device")
 
         # Sum: [10, 20] + [5, 10] = [15, 30]
-        result = self.component.fabrication_footprint_per_edge_device
+        result = self.component.manufacturing_footprint_per_edge_device
         self.assertTrue(np.allclose([15, 30], result.value.to(u.kg).magnitude))
 
     def test_update_energy_per_edge_device(self):
@@ -147,34 +147,34 @@ class TestEdgeComponent(TestCase):
         result = self.component.energy_per_edge_device
         self.assertTrue(np.allclose([150, 300], result.value.to(u.Wh).magnitude))
 
-    def test_update_energy_footprint_per_edge_device(self):
-        """Test summing energy footprint per edge device across patterns."""
+    def test_update_use_footprint_per_edge_device(self):
+        """Test summing use footprint per edge device across patterns."""
         mock_pattern_1 = create_mod_obj_mock(EdgeUsagePattern, name="Pattern 1", id="pattern_1")
         mock_pattern_2 = create_mod_obj_mock(EdgeUsagePattern, name="Pattern 2", id="pattern_2")
 
         footprint_1 = create_source_hourly_values_from_list([1, 2], pint_unit=u.kg)
         footprint_2 = create_source_hourly_values_from_list([0.5, 1], pint_unit=u.kg)
-        attach_attribute(self.component, "energy_footprint_per_edge_device_per_usage_pattern", ExplainableObjectDict({
+        attach_attribute(self.component, "use_footprint_per_edge_device_per_usage_pattern", ExplainableObjectDict({
             mock_pattern_1: footprint_1,
             mock_pattern_2: footprint_2
         }))
 
-        recompute_attribute(self.component, "energy_footprint_per_edge_device")
+        recompute_attribute(self.component, "use_footprint_per_edge_device")
 
         # Sum: [1, 2] + [0.5, 1] = [1.5, 3]
-        result = self.component.energy_footprint_per_edge_device
+        result = self.component.use_footprint_per_edge_device
         self.assertTrue(np.allclose([1.5, 3], result.value.to(u.kg).magnitude))
 
-    def test_update_dict_element_in_fabrication_footprint_per_edge_device_per_usage_pattern_with_nb_of_units(self):
-        """Test nb_of_units multiplies fabrication footprint per edge device."""
+    def test_update_dict_element_in_manufacturing_footprint_per_edge_device_per_usage_pattern_with_nb_of_units(self):
+        """Test nb_of_units multiplies manufacturing footprint per edge device."""
         mock_pattern = create_mod_obj_mock(EdgeUsagePattern, name="Pattern with units")
         mock_edge_usage_journey = create_mod_obj_mock(EdgeUsageJourney, "Journey with units")
         mock_pattern.nb_deployments_in_parallel = SourceValue(2 * u.concurrent)
         self.component.nb_of_units = SourceValue(3 * u.dimensionless)
-        recompute_attribute(self.component, "carbon_footprint_fabrication")
+        recompute_attribute(self.component, "carbon_footprint_manufacturing")
 
         result = recompute_attribute(
-            self.component, "fabrication_footprint_per_edge_device_per_usage_pattern", mock_pattern)
+            self.component, "manufacturing_footprint_per_edge_device_per_usage_pattern", mock_pattern)
 
         expected_footprint = 2 * ((20 / 5) * 3) / (365.25 * 24)
         self.assertAlmostEqual(expected_footprint, result.value.to(u.kg).magnitude, places=5)

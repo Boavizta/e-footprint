@@ -14,9 +14,9 @@ class HardwareBase(ModelingObject):
         pass
 
     param_descriptions = {
-        "carbon_footprint_fabrication": (
+        "carbon_footprint_manufacturing": (
             "Embodied carbon emitted to manufacture one unit of the hardware. Amortised over the lifespan "
-            "when computing the hourly fabrication footprint."),
+            "when computing the hourly manufacturing footprint."),
         "power": (
             "Electrical power drawn by one fully-loaded unit, before applying any datacenter overhead."),
         "lifespan": (
@@ -25,16 +25,16 @@ class HardwareBase(ModelingObject):
             "Fraction of the modeling period during which the hardware is in active use."),
     }
 
-    # carbon_footprint_fabrication and power are None (and not stored) for subclasses that compute
+    # carbon_footprint_manufacturing and power are None (and not stored) for subclasses that compute
     # them from other inputs (e.g. Storage, the Boavizta and GPU server builders) — assigning a
     # computed name raises.
-    def __init__(self, name: str, carbon_footprint_fabrication: ExplainableQuantity = None,
+    def __init__(self, name: str, carbon_footprint_manufacturing: ExplainableQuantity = None,
                  power: ExplainableQuantity = None, lifespan: ExplainableQuantity = None,
                  fraction_of_usage_time: ExplainableQuantity = None):
         super().__init__(name)
-        if carbon_footprint_fabrication is not None:
-            self.carbon_footprint_fabrication = carbon_footprint_fabrication.set_label(
-                f"Carbon footprint fabrication")
+        if carbon_footprint_manufacturing is not None:
+            self.carbon_footprint_manufacturing = carbon_footprint_manufacturing.set_label(
+                f"Carbon footprint manufacturing")
         if power is not None:
             self.power = power.set_label(f"Power")
         self.lifespan = lifespan.set_label(f"Lifespan")

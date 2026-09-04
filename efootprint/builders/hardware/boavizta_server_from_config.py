@@ -102,26 +102,26 @@ class BoaviztaServerFromConfig(ServerBase):
             operator="combined in Boavizta API data with", source=Sources.USER_DATA)
 
     @computed_attribute(guard=True)
-    def carbon_footprint_fabrication(self):
-        total_fabrication_footprint_storage_included = ExplainableQuantity(
+    def carbon_footprint_manufacturing(self):
+        total_manufacturing_footprint_storage_included = ExplainableQuantity(
             self.api_call_response.value["impacts"]["gwp"]["embedded"]["value"] * u.kg,
-            f"Total fabrication footprint storage included",
+            f"Total manufacturing footprint storage included",
             left_parent=self.api_call_response, operator="data extraction from")
 
         storage_spec = self.api_call_response.value["verbose"].get("SSD-1", self.api_call_response.value["verbose"].get("HDD-1", None))
         if storage_spec is None:
             raise ValueError("Both SSD and HDD storage found in the server impact data. This is not implemented yet")
         
-        full_storage_carbon_footprint_fabrication = ExplainableQuantity(
-            storage_spec["impacts"]["gwp"]["embedded"]["value"] * u.kg, f"Total fabrication footprint",
+        full_storage_carbon_footprint_manufacturing = ExplainableQuantity(
+            storage_spec["impacts"]["gwp"]["embedded"]["value"] * u.kg, f"Total manufacturing footprint",
             left_parent=self.api_call_response, operator="data extraction from")
         
-        total_fabrication_footprint_storage_excluded = (
-                total_fabrication_footprint_storage_included - full_storage_carbon_footprint_fabrication)
+        total_manufacturing_footprint_storage_excluded = (
+                total_manufacturing_footprint_storage_included - full_storage_carbon_footprint_manufacturing)
 
-        total_fabrication_footprint_storage_excluded.source = self.impact_source
-        return total_fabrication_footprint_storage_excluded.set_label(
-            f"Fabrication footprint")
+        total_manufacturing_footprint_storage_excluded.source = self.impact_source
+        return total_manufacturing_footprint_storage_excluded.set_label(
+            f"Manufacturing footprint")
         
     @computed_attribute(guard=True)
     def power(self):
@@ -165,7 +165,7 @@ class BoaviztaStorageFromConfig(Storage):
     def __init__(self, name: str, idle_power: ExplainableQuantity, data_replication_factor: ExplainableQuantity,
                  data_storage_duration: ExplainableQuantity, base_storage_need: ExplainableQuantity):
         super().__init__(
-            name, carbon_footprint_fabrication_per_storage_capacity=SourceValue(0 * u.kg / u.TB_stored),
+            name, carbon_footprint_manufacturing_per_storage_capacity=SourceValue(0 * u.kg / u.TB_stored),
             power_per_storage_capacity=SourceValue(0 * u.W / u.TB_stored),
             lifespan=SourceValue(0 * u.year), idle_power=idle_power, storage_capacity=SourceValue(0 * u.TB_stored),
             data_replication_factor=data_replication_factor, data_storage_duration=data_storage_duration, 
@@ -208,16 +208,16 @@ class BoaviztaStorageFromConfig(Storage):
         return nb_units.set_label(f"Fixed number of storage instances")
 
     @computed_attribute
-    def carbon_footprint_fabrication_per_storage_capacity(self):
+    def carbon_footprint_manufacturing_per_storage_capacity(self):
         storage_spec = self.server.api_call_response.value["verbose"][f"{self.storage_type.value}-1"]
-        full_storage_carbon_footprint_fabrication = ExplainableQuantity(
+        full_storage_carbon_footprint_manufacturing = ExplainableQuantity(
             storage_spec["impacts"]["gwp"]["embedded"]["value"] * u.kg, left_parent=self.storage_type,
             source=self.server.impact_source,
-            label=f"Total fabrication footprint")
+            label=f"Total manufacturing footprint")
         
         return (
-                full_storage_carbon_footprint_fabrication / (self.fixed_nb_of_instances * self.storage_capacity)
-        ).set_label(f"Fabrication footprint of one storage instance")
+                full_storage_carbon_footprint_manufacturing / (self.fixed_nb_of_instances * self.storage_capacity)
+        ).set_label(f"Manufacturing footprint of one storage instance")
 
     @computed_attribute
     def power_per_storage_capacity(self):

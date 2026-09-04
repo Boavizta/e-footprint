@@ -59,7 +59,7 @@ class Network(ModelingObject, AttributionSource):
     def jobs(self) -> List["JobBase"]:
         return list(dict.fromkeys(sum([up.jobs for up in self.usage_patterns], start=[])))
 
-    def energy_footprint_for_data_volume_and_usage_pattern(
+    def use_footprint_for_data_volume_and_usage_pattern(
             self, data_volume, usage_pattern: "UsagePattern | EdgeUsagePattern"):
         """Data→carbon physics, the single source of truth for converting a data volume routed through this
         network into emissions: bandwidth_energy_intensity × data_volume × the pattern's grid carbon
@@ -68,39 +68,39 @@ class Network(ModelingObject, AttributionSource):
         return (self.bandwidth_energy_intensity * data_volume).to(u.kWh) \
             * usage_pattern.country.average_carbon_intensity
 
-    def _compute_energy_footprint_for_job_and_usage_pattern(
+    def _compute_use_footprint_for_job_and_usage_pattern(
             self, job: "JobBase", usage_pattern: "UsagePattern | EdgeUsagePattern"):
-        return self.energy_footprint_for_data_volume_and_usage_pattern(
+        return self.use_footprint_for_data_volume_and_usage_pattern(
             job.hourly_data_transferred_per_usage_pattern[usage_pattern], usage_pattern)
 
     @computed_attribute(serialize=True, purposes={ComputationPurpose.FOOTPRINT})
-    def instances_fabrication_footprint(self):
-        """Network fabrication footprint, currently always empty: e-footprint does not account for the embodied carbon of network infrastructure since it is shared across countless services."""
+    def instances_manufacturing_footprint(self):
+        """Network manufacturing footprint, currently always empty: e-footprint does not account for the embodied carbon of network infrastructure since it is shared across countless services."""
         return EmptyExplainableObject()
 
     @computed_dict(keys="jobs")
-    def energy_footprint_per_job(self, job: "JobBase"):
+    def use_footprint_per_job(self, job: "JobBase"):
         """Hourly carbon emissions caused by network traffic, broken down by job. Equal to data transferred times bandwidth energy intensity times the country's grid carbon intensity."""
-        energy_footprint = EmptyExplainableObject()
+        use_footprint = EmptyExplainableObject()
         for usage_pattern in [up for up in job.usage_patterns if up in self.usage_patterns]:
-            energy_footprint += self._compute_energy_footprint_for_job_and_usage_pattern(job, usage_pattern)
+            use_footprint += self._compute_use_footprint_for_job_and_usage_pattern(job, usage_pattern)
 
-        return energy_footprint.to(u.kg).set_label(f"{job.name} network energy footprint")
+        return use_footprint.to(u.kg).set_label(f"{job.name} network use footprint")
 
     @computed_attribute(serialize=True, purposes={ComputationPurpose.FOOTPRINT})
-    def energy_footprint(self):
+    def use_footprint(self):
         """Total hourly carbon emissions caused by network traffic, summed across all jobs that route through this network."""
-        return sum(self.energy_footprint_per_job.values(), start=EmptyExplainableObject()).set_label(
-            f"Hourly energy footprint"
+        return sum(self.use_footprint_per_job.values(), start=EmptyExplainableObject()).set_label(
+            f"Hourly use footprint"
         )
 
     def attribution_atoms(self, phase: LifeCyclePhases):
         """One single-stream atom per (job, containment cell) routed through this network, computed ground-up
         from the cell's data volume (the job's per-(pattern, step) / per-(pattern, RSN) transfer, edge cells
         weighted by their slot multiplicity) converted by the physics fn with CI[up] inside each cell, so
-        patterns with different carbon intensities are never blended. Network fabrication is not modeled, so
+        patterns with different carbon intensities are never blended. Network manufacturing is not modeled, so
         the manufacturing phase carries no atoms. The conversion is linear in the data volume and the per-cell
-        volumes partition the job's per-pattern transfer, so Σ atoms == energy_footprint."""
+        volumes partition the job's per-pattern transfer, so Σ atoms == use_footprint."""
         if phase == LifeCyclePhases.MANUFACTURING:
             return
         for job in self.jobs:
@@ -115,6 +115,6 @@ class Network(ModelingObject, AttributionSource):
                 yield Atom(
                     source=self, stream="single", job=job, up=cell.up, journey=cell.journey, step=cell.step,
                     rsn=cell.rsn, ef=cell.ef,
-                    value=self.energy_footprint_for_data_volume_and_usage_pattern(data_volume, cell.up)
+                    value=self.use_footprint_for_data_volume_and_usage_pattern(data_volume, cell.up)
                     .to(u.kg).set_label(
-                        f"{self.name} energy footprint via {job.name} in {cell.location_label} ({cell.up.name})"))
+                        f"{self.name} use footprint via {job.name} in {cell.location_label} ({cell.up.name})"))

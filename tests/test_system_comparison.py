@@ -174,33 +174,33 @@ class TestSystemComparison(TestCase):
         self.assertAlmostEqual(float(time_series.cumulative_b[-1]), comparison.total_b, places=1)
 
     def test_time_series_per_phase_split_reconstructs_the_total(self):
-        """Test usage + fabrication equals the combined total hour-by-hour on the shared axis, for both
+        """Test usage + manufacturing equals the combined total hour-by-hour on the shared axis, for both
         systems — so a consumer can split each period exactly instead of with a full-period ratio."""
         time_series = self.comparison.time_series
-        for usage, fabrication, total in (
-                (time_series.usage_a, time_series.fabrication_a, time_series.values_a),
-                (time_series.usage_b, time_series.fabrication_b, time_series.values_b)):
+        for usage, manufacturing, total in (
+                (time_series.usage_a, time_series.manufacturing_a, time_series.values_a),
+                (time_series.usage_b, time_series.manufacturing_b, time_series.values_b)):
             self.assertEqual(len(usage), len(total))
-            self.assertEqual(len(fabrication), len(total))
-            self.assertTrue(np.allclose(usage + fabrication, total, atol=1e-2))
+            self.assertEqual(len(manufacturing), len(total))
+            self.assertTrue(np.allclose(usage + manufacturing, total, atol=1e-2))
 
     def test_time_series_per_phase_split_is_per_period_not_a_global_ratio(self):
         """Test the per-phase series carry a genuinely per-period mix: a system whose usage is front-loaded
-        in year 1 and sparse in year 2 has a different usage/fabrication ratio each year, which a single
+        in year 1 and sparse in year 2 has a different usage/manufacturing ratio each year, which a single
         full-period ratio would not reproduce. This is what makes the per-year split exact."""
         # ~14 months: heavy usage early (year 1), a sparse tail in year 2 → non-uniform yearly mix.
         starts = [5] * 4000 + [0] * 5000 + [0.1] * 1000
         system = build_system("front loaded", "fl server", hourly_starts=starts, start="2025-01-01")
         time_series = system.compare_to(system).time_series
 
-        usage_by_year, fabrication_by_year = {}, {}
-        for hour_offset, (usage, fabrication) in enumerate(zip(time_series.usage_a, time_series.fabrication_a)):
+        usage_by_year, manufacturing_by_year = {}, {}
+        for hour_offset, (usage, manufacturing) in enumerate(zip(time_series.usage_a, time_series.manufacturing_a)):
             year = (time_series.start_date + timedelta(hours=hour_offset)).year
             usage_by_year[year] = usage_by_year.get(year, 0.0) + float(usage)
-            fabrication_by_year[year] = fabrication_by_year.get(year, 0.0) + float(fabrication)
+            manufacturing_by_year[year] = manufacturing_by_year.get(year, 0.0) + float(manufacturing)
 
         self.assertEqual({2025, 2026}, set(usage_by_year))
-        share = {year: usage_by_year[year] / (usage_by_year[year] + fabrication_by_year[year])
+        share = {year: usage_by_year[year] / (usage_by_year[year] + manufacturing_by_year[year])
                  for year in usage_by_year}
         # The two years' usage shares differ materially — a global ratio applied to both would be wrong.
         self.assertGreater(abs(share[2025] - share[2026]), 0.05)
@@ -410,7 +410,7 @@ class TestSystemComparison(TestCase):
         from matplotlib import pyplot as plt
         decomposition = [
             DecompositionRow("Network", "energy", Delta(before=1_600_000, after=0)),
-            DecompositionRow("Servers", "fabrication", Delta(before=0, after=500_000)),
+            DecompositionRow("Servers", "manufacturing", Delta(before=0, after=500_000)),
         ]
 
         figure, axes = _plot_decomposition(decomposition, "before", "after", None, (10, 6), False)

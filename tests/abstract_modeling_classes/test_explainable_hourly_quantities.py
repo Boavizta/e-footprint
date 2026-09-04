@@ -306,7 +306,7 @@ class TestExplainableHourlyQuantities(unittest.TestCase):
 
     def test_display_quantity_scales_hourly_series(self):
         hourly_usage = ExplainableHourlyQuantities(
-            Quantity(np.array([1000, 2000], dtype=np.float32), u.W), self.start_date, "Usage")
+            Quantity(np.array([1000, 2000], dtype=np.float32), u.W), self.start_date, "Use")
 
         display_quantity = hourly_usage.display_quantity
 
@@ -341,7 +341,7 @@ class TestExplainableHourlyQuantities(unittest.TestCase):
 
     def test_str_uses_best_display_unit(self):
         hourly_usage = ExplainableHourlyQuantities(
-            Quantity(np.array([1000, 2000], dtype=np.float32), u.W), self.start_date, "Usage")
+            Quantity(np.array([1000, 2000], dtype=np.float32), u.W), self.start_date, "Use")
 
         str_repr = str(hourly_usage)
 

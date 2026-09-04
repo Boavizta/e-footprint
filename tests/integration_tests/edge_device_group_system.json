@@ -1,5 +1,5 @@
 {
-    "efootprint_version": "24.0.0",
+    "efootprint_version": "25.0.0",
     "Sources": {
         "Our-world-in-data-28202429": {
             "id": "Our-world-in-data-28202429",
@@ -97,10 +97,10 @@
                 "label": "Lifespan",
                 "source": "hypothesis"
             },
-            "structure_carbon_footprint_fabrication": {
+            "structure_carbon_footprint_manufacturing": {
                 "value": 50.0,
                 "unit": "kilogram",
-                "label": "Structure fabrication carbon footprint",
+                "label": "Structure manufacturing carbon footprint",
                 "source": "hypothesis"
             },
             "components": [
@@ -113,10 +113,10 @@
         "edge-RAM-component": {
             "name": "edge RAM component",
             "id": "edge-RAM-component",
-            "carbon_footprint_fabrication_per_unit": {
+            "carbon_footprint_manufacturing_per_unit": {
                 "value": 20.0,
                 "unit": "kilogram",
-                "label": "Carbon footprint fabrication per unit",
+                "label": "Carbon footprint manufacturing per unit",
                 "source": "hypothesis"
             },
             "power_per_unit": {
@@ -161,10 +161,10 @@
         "edge-CPU-component": {
             "name": "edge CPU component",
             "id": "edge-CPU-component",
-            "carbon_footprint_fabrication_per_unit": {
+            "carbon_footprint_manufacturing_per_unit": {
                 "value": 20.0,
                 "unit": "kilogram",
-                "label": "Carbon footprint fabrication per unit",
+                "label": "Carbon footprint manufacturing per unit",
                 "source": "hypothesis"
             },
             "power_per_unit": {

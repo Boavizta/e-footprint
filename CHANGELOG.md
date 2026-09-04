@@ -4,6 +4,11 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](http://keepachangelog.com/)
 and this project adheres to [Semantic Versioning](http://semver.org/)
 
+## [V25.0.0]
+
+### Breaking API changes
+- Lifecycle terminology is now `manufacturing` and `use`: code, serialized fields, labels, comparison data, and documentation use names such as `use_footprint` and `manufacturing_footprint`.
+
 ## [V24.0.0]
 
 ### Added
@@ -28,7 +33,7 @@ and this project adheres to [Semantic Versioning](http://semver.org/)
 
 ### Fixed
 - Constant and weekly recurrent quantities now preserve their exact authored values through duplication and JSON round trips, avoiding spurious differences after reopening a model.
-- `System.total_footprint` now preserves full hourly precision, so its period sum exactly matches the combined fabrication and energy category footprints.
+- `System.total_footprint` now preserves full hourly precision, so its period sum exactly matches the combined manufacturing and energy category footprints.
 
 ## [V23.0.0] - 2026-08-31
 
@@ -112,7 +117,7 @@ and this project adheres to [Semantic Versioning](http://semver.org/)
 ## [V22.1.0]
 
 ### Added
-- **`efootprint.comparison` capability.** `system_a.compare_to(system_b)` returns a `SystemComparison` computing the headline footprint totals and their delta (absolute + relative), the per-(category, phase) decomposition (read from each system's `total_energy_/fabrication_footprint_sum_over_period` dicts — category SSOT is `OBJECT_CATEGORIES`, so the bars sum to the headline delta by construction), the two systems' footprint time-series aligned on a shared calendar axis with cumulative sums (carrying both the combined totals and the per-phase usage/fabrication split, so a consumer can bucket each period exactly rather than with a single full-period ratio), and the input diff (objects paired by id first, then by (name, type), emitting changed-attribute rows and "only in A / only in B"). The input diff covers both scalar inputs and the `ExplainableObjectDict` relationship counts (`UsageJourney.uj_steps`, `UsageJourneyStep.jobs`, `RecurrentServerNeed.jobs`, `EdgeDeviceGroup.sub_group_counts` / `edge_device_counts`): each differing key emits a changed row labelled by the dict's `weight_labels` plus the key's name (e.g. "Times per journey (step name)") with the dimensionless counts as the two values, and a key present in only one model surfaces as a count-from-absent row — so a difference consisting only of a changed step/job/device weight is detected. Dict keys are paired id-first then by (name, type), matching the object-level pairing. Ships simple matplotlib notebook plots (`plot_emissions_over_time`, `plot_cumulative_emissions`, `plot_decomposition`). No new modeling logic, no attribution claims — every number is read from already-computed totals.
+- **`efootprint.comparison` capability.** `system_a.compare_to(system_b)` returns a `SystemComparison` computing the headline footprint totals and their delta (absolute + relative), the per-(category, phase) decomposition (read from each system's `total_energy_/manufacturing_footprint_sum_over_period` dicts — category SSOT is `OBJECT_CATEGORIES`, so the bars sum to the headline delta by construction), the two systems' footprint time-series aligned on a shared calendar axis with cumulative sums (carrying both the combined totals and the per-phase usage/manufacturing split, so a consumer can bucket each period exactly rather than with a single full-period ratio), and the input diff (objects paired by id first, then by (name, type), emitting changed-attribute rows and "only in A / only in B"). The input diff covers both scalar inputs and the `ExplainableObjectDict` relationship counts (`UsageJourney.uj_steps`, `UsageJourneyStep.jobs`, `RecurrentServerNeed.jobs`, `EdgeDeviceGroup.sub_group_counts` / `edge_device_counts`): each differing key emits a changed row labelled by the dict's `weight_labels` plus the key's name (e.g. "Times per journey (step name)") with the dimensionless counts as the two values, and a key present in only one model surfaces as a count-from-absent row — so a difference consisting only of a changed step/job/device weight is detected. Dict keys are paired id-first then by (name, type), matching the object-level pairing. Ships simple matplotlib notebook plots (`plot_emissions_over_time`, `plot_cumulative_emissions`, `plot_decomposition`). No new modeling logic, no attribution claims — every number is read from already-computed totals.
 - **Duplication helpers** (`efootprint.comparison.duplication`): `duplicate_system(system)` round-trips a system through JSON to mint a fresh System id while preserving every object id (so the comparison diff can pair by identity); `assign_fresh_system_id(system)` re-ids only the System object.
 
 ## [V22.0.1]
@@ -139,7 +144,7 @@ Attribution-logic revamp: footprint attribution is rebuilt on an atom model. Eve
 
 ### Added
 - The attribution core: `Atom` value object with derived chains, the `node_totals_and_links` fold, `attribution.footprint_per_node` and its per-source variant, `attribution.attributed_footprint(obj, phase)` (skip = hide a level with totals conserved; exclude = filter the source's atoms, totals shrink by exactly its footprint, no rescale).
-- Atom builders on every impact source: Device, ServerBase (binding-resource demand, per-tier provisioned shares on on-premise, idle/load energy split exposed as `idle_energy_footprint` / `load_energy_footprint`), external-API servers (per-request footprints), Storage (retention stream by cumulative held volume + baseline stream by flat occurrence shares), Network, and EdgeDevice (per-component demand shares, equal chassis split, idle-floor energy split).
+- Atom builders on every impact source: Device, ServerBase (binding-resource demand, per-tier provisioned shares on on-premise, idle/load energy split exposed as `idle_use_footprint` / `load_use_footprint`), external-API servers (per-request footprints), Storage (retention stream by cumulative held volume + baseline stream by flat occurrence shares), Network, and EdgeDevice (per-component demand shares, equal chassis split, idle-floor energy split).
 - MRO-based auto-flush of every `cached_property` (`render_cache`, system-wide sweep after every `ModelingUpdate`), replacing the manual flush registry.
 
 ### Changed
@@ -148,7 +153,7 @@ Attribution-logic revamp: footprint attribution is rebuilt on an atom model. Eve
 
 ### Fixed
 - Always-on / zero-occurrence hours no longer drop or double-book footprint: provisioned server capacity, storage baseline, and edge idle floors are attributed by explicit flat or equal shares instead of fallback-0/1 weights.
-- Unused EdgeDevice components are part of the chassis: a component with no needs at a deployed pattern now books its embodied carbon with the deployment (previously booked nowhere) and its fabrication is attributed across the pattern's carriers, so atom sums equal the device footprint unconditionally.
+- Unused EdgeDevice components are part of the chassis: a component with no needs at a deployed pattern now books its embodied carbon with the deployment (previously booked nowhere) and its manufacturing is attributed across the pattern's carriers, so atom sums equal the device footprint unconditionally.
 - Carbon provenance of shared jobs: a job shared across usage patterns in different countries now keeps each pattern's own grid intensity on its country-dependent (network/device) footprint, instead of blending it through a basis proportional to each pattern's overall traffic (web and edge).
 - Jobs longer than their journey: a job whose run window spills past the journey's last start hour now has its full run window attributed to the pattern (and the impact-repartition Sankey builds over it instead of raising), for both web and edge systems.
 - Unknown class names passed to the Sankey's `skipped_impact_repartition_classes` / `excluded_object_types` now raise `ValueError` instead of silently rendering unfiltered.
@@ -191,7 +196,7 @@ Attribution-logic revamp: footprint attribution is rebuilt on an atom model. Eve
 
 ### Fixed
 
-- EdgeUsagePattern attribution KeyError when journey has no jobs: country_dependent_usage_footprint dereferenced network.energy_footprint_per_usage_pattern[self] unconditionally, which KeyErrors when the EdgeUsageJourney has no recurrent server needs (and therefore no jobs registering the pattern in the network dict). Switch to .get(..., EmptyExplainableObject()) and add a comment explaining the no-jobs case. The edge_device side is the inverse: it is always populated for any pattern in the journey, so the safe .get() there was hiding intent — switched to [self] to fail loud on real desyncs.
+- EdgeUsagePattern attribution KeyError when journey has no jobs: country_dependent_usage_footprint dereferenced network.use_footprint_per_usage_pattern[self] unconditionally, which KeyErrors when the EdgeUsageJourney has no recurrent server needs (and therefore no jobs registering the pattern in the network dict). Switch to .get(..., EmptyExplainableObject()) and add a comment explaining the no-jobs case. The edge_device side is the inverse: it is always populated for any pattern in the journey, so the safe .get() there was hiding intent — switched to [self] to fail loud on real desyncs.
 
 ## [21.1.0] - 2026-05-26
 
@@ -234,7 +239,7 @@ Attribution-logic revamp: footprint attribution is rebuilt on an atom model. Eve
   updates, not only on bulk recomputation, so attributed-footprint reads stay consistent after leaf-input mutations.
 - Also flush an impact source's own `attributed_*_footprint(_per_source)` caches when its outgoing repartition is
   rewritten. Previously only the downstream container's cache was flushed, leaving the source's cache referencing the
-  pre-mutation `energy_footprint` / `instances_fabrication_footprint`; the staleness then propagated up through the
+  pre-mutation `use_footprint` / `instances_manufacturing_footprint`; the staleness then propagated up through the
   attribution chain. Gated on `is_impact_source` to keep intermediate objects' still-valid caches intact.
 - `ExplainableHourlyQuantities.__truediv__` no longer double-applies the unit-conversion factor when the two
   operands have different (but dimensionally-compatible) units. The helper `align_temporally_quantity_arrays` was
@@ -244,21 +249,21 @@ Attribution-logic revamp: footprint attribution is rebuilt on an atom model. Eve
   3600x for s/h, etc.). Now matches `__mul__` by passing `equalize_units=False`. This corrects, for example, the
   per-`UsageJourneyStep` repartition produced by `Device.usage_impact_repartition_weights` when steps have
   different `user_time_spent` units, which previously did not sum to 1 across keys.
-- `UsageJourney` / `EdgeUsageJourney` `attributed_energy_footprint_per_usage_pattern` now raises `ValueError`
-  if the neutral remainder (`attributed_energy_footprint − country_dependent total`) is negative at any hour:
+- `UsageJourney` / `EdgeUsageJourney` `attributed_use_footprint_per_usage_pattern` now raises `ValueError`
+  if the neutral remainder (`attributed_use_footprint − country_dependent total`) is negative at any hour:
   this invariant cannot break in a correct attribution chain, and surfacing it loudly avoids silently emitting
   negative neutral-share allocations. Zero-activity hours are handled explicitly so 0/0 doesn't leak NaN into
   per-pattern attribution. The scalar-vs-array zero-total branch is simplified.
 
 ### Changed
 - `UsageJourney` / `EdgeUsageJourney` expose `usage_impact_repartition_weights` as a `@property` returning
-  `fabrication_impact_repartition_weights` (the pure activity-volume weights), instead of routing the usage phase
+  `manufacturing_impact_repartition_weights` (the pure activity-volume weights), instead of routing the usage phase
   through a framework-side fallback. This keeps `_compute_default_impact_repartition_weight` uniform across phases
   and aligns the journey classes with the convention already used by `Network`.
 
 ### Added
-- `ModelingObject.attributed_fabrication_footprint_per_source_resolved` and
-  `attributed_energy_footprint_per_source_resolved` parametrize per-source attribution with
+- `ModelingObject.attributed_manufacturing_footprint_per_source_resolved` and
+  `attributed_use_footprint_per_source_resolved` parametrize per-source attribution with
   `skipped_object_types` and `excluded_object_types`. Default arguments reproduce the cached
   `attributed_*_footprint_per_source` dicts; with arguments, skipped intermediates are traversed through with
   per-parent rescaling (so each parent's flow into a skipped object distributes to its descendants instead of
@@ -305,7 +310,7 @@ Attribution-logic revamp: footprint attribution is rebuilt on an atom model. Eve
 ## [20.0.2] - 2026-04-23
 
 ### Fixed
-- upgrade_version_19_to_20 to handle Network’s bandwidth_energy_intensity and Storage’s carbon_footprint_fabrication_per_storage_capacity.
+- upgrade_version_19_to_20 to handle Network’s bandwidth_energy_intensity and Storage’s carbon_footprint_manufacturing_per_storage_capacity.
 
 ## [20.0.1] - 2026-04-22
 
@@ -320,7 +325,7 @@ Attribution-logic revamp: footprint attribution is rebuilt on an atom model. Eve
 ## [19.0.2] - 2026-04-20
 
 ### Fixed
-- Scale EdgeDevice fabrication and energy footprint breakdowns by total_nb_of_units. fabrication_footprint_breakdown_by_source and energy_footprint_breakdown_by_source previously returned per-single-device values while instances_fabrication_footprint and energy_footprint are totals across all device units. Now each component's share is multiplied by total_nb_of_units, and the structure fabrication share is derived from structure_fabrication_footprint_per_usage_pattern (already scaled). Sum of breakdowns now matches the edge device totals, as asserted by a new integration test in the edge_device_group suite.
+- Scale EdgeDevice manufacturing and use footprint breakdowns by total_nb_of_units. manufacturing_footprint_breakdown_by_source and use_footprint_breakdown_by_source previously returned per-single-device values while instances_manufacturing_footprint and use_footprint are totals across all device units. Now each component's share is multiplied by total_nb_of_units, and the structure manufacturing share is derived from structure_manufacturing_footprint_per_usage_pattern (already scaled). Sum of breakdowns now matches the edge device totals, as asserted by a new integration test in the edge_device_group suite.
 
 ### Changed
 - Set base_compute_consumption default to 0 in EdgeComputer and EdgeCPUComponent.
@@ -367,7 +372,7 @@ Attribution-logic revamp: footprint attribution is rebuilt on an atom model. Eve
 
 ### Fixed
 - Initialize dict-typed calculated attributes as ExplainableObjectDict during JSON reload. When loading a system from JSON without calculated attributes, from_json_dict was initializing all missing calculated attributes as EmptyExplainableObject. For attributes backed by ExplainableObjectDict (detected via update_dict_element_in_ method), this caused TypeError when downstream code checked membership with `in`. Now uses the update_dict_element_in_ convention to initialize those as ExplainableObjectDict instead.
-- Add back fabrication_impact_repartition_weights to Storage calculated attributes. It was wrongly omitted.
+- Add back manufacturing_impact_repartition_weights to Storage calculated attributes. It was wrongly omitted.
 
 ## [17.0.2] - 2026-03-23
 
@@ -379,7 +384,7 @@ Attribution-logic revamp: footprint attribution is rebuilt on an atom model. Eve
 ### Fixed
 - ServiceJob deletion logic. update_dict_element_in_impact_repartition_weights in ServerBase needed to handle the case where the service job’s hourly_avg_occurrences_across_usage_patterns was an EmptyExplainableObject.
 - upgrade_version_16_to_17 to turn RecurrentEdgeComponentNeed pointing to EdgeStorage into RecurrentStorageNeeds,because now EdgeStorage type checking has become stricter.
-- Introduced a distinction between fabrication and usage impact repartition logics. Indeed, the usage repartition logic needs to take into account the electricity carbon intensity of countries, which fabrication repartition logic doesn’t. This change increases substantially the weight of json files when saving a modeling with calculated attributes. This will be addressed in a future release.
+- Introduced a distinction between manufacturing and usage impact repartition logics. Indeed, the usage repartition logic needs to take into account the electricity carbon intensity of countries, which manufacturing repartition logic doesn’t. This change increases substantially the weight of json files when saving a modeling with calculated attributes. This will be addressed in a future release.
 - Fixed Storage impact repartition by attributing equally unused and base storage to jobs. Otherwise, a Storage object not called by any job wouldn’t attribute any impact at all.
 - Various Sankey diagram fixes.
 - New country not recomputed when appending EdgeUsagePattern to system. When computing the modeling objects computation chain for list/object changes, dynamic properties on the container (e.g. System.countries) were evaluated before the change was applied, missing newly discoverable objects. Fix by temporarily applying the new value during chain computation.
@@ -397,7 +402,7 @@ Attribution-logic revamp: footprint attribution is rebuilt on an atom model. Eve
 - Major e-footprint feature: impact attribution throughout the whole object chain. Now the impact of material objects (servers, networks, devices, edge devices, storage) is attributed to all the functional and usage objects that are linked to them (jobs, usage patterns, usage journeys, etc.) and not only to the object itself. This allows for a much more precise impact analysis and for the identification of the most impactful objects in the system, both from a material and a function prospectives.
 
 ### Changed
-- Neglect the energy footprint from storage objects for simplification.
+- Neglect the use footprint from storage objects for simplification.
 - Don’t allow negative data stored for Job object anymore, as it was logically incompatible with the notion of data storage duration on the Storage object side.
 
 ## [16.0.6] - 2026-03-03
@@ -430,7 +435,7 @@ Attribution-logic revamp: footprint attribution is rebuilt on an atom model. Eve
 - ExternalAPI’s self_delete method to delete its server automatically, and EcoLogitsGenAIExternalAPIServer so that it handles the deletion without error (it recomputes before deleting, so must handle case where its external_api is gone).
 
 ### Changed
-- Convert edge components and devices energy footprint to kg.
+- Convert edge components and devices use footprint to kg.
 - Improve EcoLogits calculations auditability by giving them a more precise source, and converting kWh to Wh when values are small.
 
 ## [16.0.1] - 2026-02-12
@@ -554,7 +559,7 @@ Attribution-logic revamp: footprint attribution is rebuilt on an atom model. Eve
   - RAM attributes in ServerBase, EdgeComputer, JobBase classes now use byte_ram units
   - RAM timeseries (hour_by_hour_ram_need, recurrent_ram_needed, unitary_hourly_ram_need_per_usage_pattern) now use byte_ram units
 - Unit mappings defined at base class level automatically apply to all subclasses (e.g., JobBase mappings apply to Job, GPUJob, etc.)
-- Use objects instead of object ids as keys in System fabrication_footprints and energy_footprints dictionaries. This allows for easier object data fetching when plotting.
+- Use objects instead of object ids as keys in System manufacturing_footprints and use_footprints dictionaries. This allows for easier object data fetching when plotting.
 
 ### Added
 - `ModelingObject.is_subclass_of()` method to check class inheritance via Method Resolution Order
@@ -755,7 +760,7 @@ Attribution-logic revamp: footprint attribution is rebuilt on an atom model. Eve
 ## [10.0.7] 2025-04-08
 
 ### Fixed
-- Use ids instead of names in system fabrication and energy footprints propertys to avoid overwrites in cases where several objects have the same name.
+- Use ids instead of names in system manufacturing and use footprints propertys to avoid overwrites in cases where several objects have the same name.
 
 ## [10.0.6] 2025-04-01
 
@@ -800,7 +805,7 @@ Attribution-logic revamp: footprint attribution is rebuilt on an atom model. Eve
 - Make sure version 9 to 10 json upgrade doesn’t break when the json doesn’t have "Hardware" in its keys.
 
 ### Changed
-- round time series in json by default at 3 decimals and remove rounding of devices fabrication footprint in computation.
+- round time series in json by default at 3 decimals and remove rounding of devices manufacturing footprint in computation.
 
 ## [10.0.0] 2025-02-20
 
@@ -923,7 +928,7 @@ Attribution-logic revamp: footprint attribution is rebuilt on an atom model. Eve
 
 ### Fixed
 - Object relationship graph. Now links are shown between objects even if there is an ignored object in the chain of links.
-- Network energy footprint calculation logic. If a job was linked to a usage pattern not linked to the Network, the calculation would raise a KeyError. Now, the Network energy footprint calculation logic only loops on usage patterns common to jobs and Network and can handle such cases.
+- Network use footprint calculation logic. If a job was linked to a usage pattern not linked to the Network, the calculation would raise a KeyError. Now, the Network use footprint calculation logic only loops on usage patterns common to jobs and Network and can handle such cases.
 
 ### Changed
 - Simplify __repr__ method of ModelingObject class to make it return less characters.
@@ -1128,7 +1133,7 @@ Attribution-logic revamp: footprint attribution is rebuilt on an atom model. Eve
 ## [1.1.5] - 2024-01-18
 
 ### Added
-- plot_footprints_by_category_and_object method to the System object, to display the CO2 emission breakdown by object type (server, storage, network, end user devices), emission types (from electricity and from fabrication), and by objects within object types (for example, the share of each server within the servers).
+- plot_footprints_by_category_and_object method to the System object, to display the CO2 emission breakdown by object type (server, storage, network, end user devices), emission types (from electricity and from manufacturing), and by objects within object types (for example, the share of each server within the servers).
 - Default object builders that return a new object each time.
 - Server builders based on the [Boavizta API](https://github.com/Boavizta/boaviztapi).
 

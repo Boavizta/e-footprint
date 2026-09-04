@@ -1,5 +1,5 @@
 {
-    "efootprint_version": "24.0.0",
+    "efootprint_version": "25.0.0",
     "Sources": {
         "Base-ADEME_V19": {
             "id": "Base-ADEME_V19",
@@ -68,10 +68,10 @@
         "Default-laptop": {
             "name": "Default laptop",
             "id": "Default-laptop",
-            "carbon_footprint_fabrication": {
+            "carbon_footprint_manufacturing": {
                 "value": 156.0,
                 "unit": "kilogram",
-                "label": "Carbon footprint fabrication",
+                "label": "Carbon footprint manufacturing",
                 "source": "Base-ADEME_V19"
             },
             "power": {
@@ -221,10 +221,10 @@
         "Default-server": {
             "name": "Default server",
             "id": "Default-server",
-            "carbon_footprint_fabrication": {
+            "carbon_footprint_manufacturing": {
                 "value": 600.0,
                 "unit": "kilogram",
-                "label": "Carbon footprint fabrication",
+                "label": "Carbon footprint manufacturing",
                 "source": "Base-ADEME_V19"
             },
             "power": {
@@ -327,10 +327,10 @@
                 "label": "Fraction of usage time",
                 "source": "hypothesis"
             },
-            "carbon_footprint_fabrication_per_storage_capacity": {
+            "carbon_footprint_manufacturing_per_storage_capacity": {
                 "value": 160.0,
                 "unit": "kilogram / terabyte_stored",
-                "label": "Fabrication carbon footprint per storage capacity",
+                "label": "Manufacturing carbon footprint per storage capacity",
                 "source": "hypothesis"
             },
             "storage_capacity": {

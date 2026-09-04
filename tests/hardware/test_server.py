@@ -49,7 +49,7 @@ class TestServer(TestCase):
         self.server_base = Server(
             "Test server",
             server_type=ServerTypes.on_premise(),
-            carbon_footprint_fabrication=SourceValue(0 * u.kg, Sources.BASE_ADEME_V19),
+            carbon_footprint_manufacturing=SourceValue(0 * u.kg, Sources.BASE_ADEME_V19),
             power=SourceValue(0 * u.W),
             lifespan=SourceValue(0 * u.year),
             idle_power=SourceValue(0 * u.W),
@@ -209,25 +209,25 @@ class TestServer(TestCase):
             self.assertEqual(u.kWh, self.server_base.instances_energy.unit)
             self.assertTrue(np.allclose([0.9, 0, 0.9 + 0.525], self.server_base.instances_energy.magnitude))
 
-    def test_energy_footprints(self):
+    def test_use_footprints(self):
         """Test that the idle footprint scales with nb_of_instances, the load footprint with raw_nb_of_instances,
-        and the energy footprint sums them."""
+        and the use footprint sums them."""
         with patch_attribute(self.server_base, "nb_of_instances", create_source_hourly_values_from_list([1, 0, 2])), \
                 patch_attribute(self.server_base, "raw_nb_of_instances",
                              create_source_hourly_values_from_list([1, 0, 1.5])), \
                 patch_attribute(self.server_base, "power", SourceValue(300 * u.W)), \
                 patch_attribute(self.server_base, "idle_power", SourceValue(50 * u.W)), \
                 patch_attribute(self.server_base, "power_usage_effectiveness", SourceValue(3 * u.dimensionless)):
-            recompute_attribute(self.server_base, "idle_energy_footprint")
-            recompute_attribute(self.server_base, "load_energy_footprint")
-            recompute_attribute(self.server_base, "energy_footprint")
+            recompute_attribute(self.server_base, "idle_use_footprint")
+            recompute_attribute(self.server_base, "load_use_footprint")
+            recompute_attribute(self.server_base, "use_footprint")
 
             # idle energy = 50W * 3 * 1h * nb = [0.15, 0, 0.3] kWh; load = 250W * 3 * 1h * raw = [0.75, 0, 1.125]
             # CI = 100 g/kWh
-            self.assertTrue(np.allclose([0.015, 0, 0.03], self.server_base.idle_energy_footprint.magnitude))
-            self.assertTrue(np.allclose([0.075, 0, 0.1125], self.server_base.load_energy_footprint.magnitude))
-            self.assertTrue(np.allclose([0.09, 0, 0.1425], self.server_base.energy_footprint.magnitude))
-            self.assertEqual(u.kg, self.server_base.energy_footprint.unit)
+            self.assertTrue(np.allclose([0.015, 0, 0.03], self.server_base.idle_use_footprint.magnitude))
+            self.assertTrue(np.allclose([0.075, 0, 0.1125], self.server_base.load_use_footprint.magnitude))
+            self.assertTrue(np.allclose([0.09, 0, 0.1425], self.server_base.use_footprint.magnitude))
+            self.assertEqual(u.kg, self.server_base.use_footprint.unit)
 
     def test_autoscaling_nb_of_instances(self):
         raw_data = [0.5, 1, 1.5, 1.5, 5]
@@ -572,18 +572,18 @@ class TestServerAttributionAtoms(TestCase):
 
     def test_server_atoms_conserve_per_stream_with_web_and_edge_cells(self):
         """Test that Σ atoms per phase equals the eager phase totals and that each stream conserves its own
-        footprint (provisioned over fabrication and idle energy, dynamic over load energy)."""
+        footprint (provisioned over manufacturing and idle energy, dynamic over load energy)."""
         assert_source_atoms_conserve(
             self, self.server,
             stream_footprints_by_phase={
-                LifeCyclePhases.MANUFACTURING: {"provisioned": self.server.instances_fabrication_footprint},
-                LifeCyclePhases.USAGE: {"provisioned": self.server.idle_energy_footprint,
-                                        "dynamic": self.server.load_energy_footprint}})
+                LifeCyclePhases.MANUFACTURING: {"provisioned": self.server.instances_manufacturing_footprint},
+                LifeCyclePhases.USE: {"provisioned": self.server.idle_use_footprint,
+                                        "dynamic": self.server.load_use_footprint}})
 
     def test_dual_side_job_splits_across_web_steps_and_edge_rsns(self):
         """Test that a job triggered both by web steps and by a recurrent server need carries nonzero atoms on
         both sides, for both streams of the usage phase."""
-        usage_atoms = [atom for atom in atoms_of(self.server, LifeCyclePhases.USAGE)
+        usage_atoms = [atom for atom in atoms_of(self.server, LifeCyclePhases.USE)
                        if atom.job == self.dual_job]
         for stream in ("provisioned", "dynamic"):
             web_sum = sum_atom_values(
@@ -604,7 +604,7 @@ class TestServerAttributionAtoms(TestCase):
             0, np.append(cell_occurrences.magnitude, np.zeros(5))[zero_occurrence_hour])
 
         usage_atoms = [
-            atom for atom in atoms_of(self.server, LifeCyclePhases.USAGE)
+            atom for atom in atoms_of(self.server, LifeCyclePhases.USE)
             if atom.job == self.web_only_job and atom.step == self.step_a and atom.up == self.up2]
         dynamic_atom = next(atom for atom in usage_atoms if atom.stream == "dynamic")
         provisioned_atom = next(atom for atom in usage_atoms if atom.stream == "provisioned")
@@ -613,7 +613,7 @@ class TestServerAttributionAtoms(TestCase):
 
     def test_provisioned_atoms_carry_the_idle_footprint_at_idle_server_hours(self):
         """Test that at an hour with zero demand on the whole on-premise server, the dynamic atoms are zero and
-        the provisioned atoms sum to the idle energy footprint, which is nonzero (instances on 24/7)."""
+        the provisioned atoms sum to the idle use footprint, which is nonzero (instances on 24/7)."""
         server = Server.from_defaults(
             "idle hours server", server_type=ServerTypes.on_premise(),
             storage=Storage.from_defaults("idle hours storage"))
@@ -630,12 +630,12 @@ class TestServerAttributionAtoms(TestCase):
 
         idle_hour = 5
         self.assertEqual(0, server.raw_nb_of_instances.magnitude[idle_hour])
-        self.assertGreater(server.idle_energy_footprint.magnitude[idle_hour], 0)
-        usage_atoms = list(atoms_of(server, LifeCyclePhases.USAGE))
+        self.assertGreater(server.idle_use_footprint.magnitude[idle_hour], 0)
+        usage_atoms = list(atoms_of(server, LifeCyclePhases.USE))
         provisioned_sum = sum_atom_values(atom for atom in usage_atoms if atom.stream == "provisioned")
         dynamic_sum = sum_atom_values(atom for atom in usage_atoms if atom.stream == "dynamic")
         self.assertAlmostEqual(
-            server.idle_energy_footprint.magnitude[idle_hour], provisioned_sum.magnitude[idle_hour], places=6)
+            server.idle_use_footprint.magnitude[idle_hour], provisioned_sum.magnitude[idle_hour], places=6)
         self.assertEqual(0, dynamic_sum.magnitude[idle_hour])
 
 

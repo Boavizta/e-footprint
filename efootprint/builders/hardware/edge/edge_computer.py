@@ -19,7 +19,7 @@ class EdgeComputerRAMComponent(EdgeRAMComponent):
     def __init__(self, name: str):
         super().__init__(
             name=name,
-            carbon_footprint_fabrication_per_unit=SourceValue(0 * u.kg),
+            carbon_footprint_manufacturing_per_unit=SourceValue(0 * u.kg),
             power_per_unit=SourceValue(0 * u.W),
             idle_power_per_unit=SourceValue(0 * u.W),
             nb_of_units=SourceValue(1 * u.dimensionless))
@@ -59,7 +59,7 @@ class EdgeComputerCPUComponent(EdgeCPUComponent):
     def __init__(self, name: str):
         super().__init__(
             name=name,
-            carbon_footprint_fabrication_per_unit=SourceValue(0 * u.kg),
+            carbon_footprint_manufacturing_per_unit=SourceValue(0 * u.kg),
             nb_of_units=SourceValue(1 * u.dimensionless))
 
 
@@ -115,7 +115,7 @@ class EdgeComputer(EdgeDevice):
         "embodied carbon. Use {class:EdgeDevice} for fully bespoke hardware.")
 
     param_descriptions = {
-        "carbon_footprint_fabrication": (
+        "carbon_footprint_manufacturing": (
             "Embodied carbon emitted to manufacture one computer."),
         "power": (
             "Electrical power drawn at full load."),
@@ -135,7 +135,7 @@ class EdgeComputer(EdgeDevice):
     }
 
     default_values = {
-        "carbon_footprint_fabrication": SourceValue(60 * u.kg),
+        "carbon_footprint_manufacturing": SourceValue(60 * u.kg),
         "power": SourceValue(30 * u.W),
         "lifespan": SourceValue(6 * u.year),
         "idle_power": SourceValue(5 * u.W),
@@ -145,15 +145,15 @@ class EdgeComputer(EdgeDevice):
         "base_compute_consumption": SourceValue(0 * u.cpu_core),
     }
 
-    def __init__(self, name: str, carbon_footprint_fabrication: ExplainableQuantity,
+    def __init__(self, name: str, carbon_footprint_manufacturing: ExplainableQuantity,
                  power: ExplainableQuantity, lifespan: ExplainableQuantity, idle_power: ExplainableQuantity,
                  ram: ExplainableQuantity, compute: ExplainableQuantity,
                  base_ram_consumption: ExplainableQuantity, base_compute_consumption: ExplainableQuantity,
                  storage: EdgeStorage):
         super().__init__(name=name, components=[], lifespan=lifespan)
         self.storage = storage
-        self.carbon_footprint_fabrication = carbon_footprint_fabrication.set_label(
-            f"Carbon footprint fabrication")
+        self.carbon_footprint_manufacturing = carbon_footprint_manufacturing.set_label(
+            f"Carbon footprint manufacturing")
         self.power = power.set_label(f"Power")
         self.idle_power = idle_power.set_label(f"Idle power")
         self.ram = ram.set_label(f"RAM")
@@ -178,10 +178,10 @@ class EdgeComputer(EdgeDevice):
         return component_needs_changes
 
     @computed_attribute
-    def structure_carbon_footprint_fabrication(self):
-        """Structure fabrication footprint of the computer, copied from the computer's own fabrication footprint since the auto-created sub-components carry no separate fabrication contribution."""
-        return self.carbon_footprint_fabrication.copy().set_label(
-            f"Structure fabrication carbon footprint")
+    def structure_carbon_footprint_manufacturing(self):
+        """Structure manufacturing footprint of the computer, copied from the computer's own manufacturing footprint since the auto-created sub-components carry no separate manufacturing contribution."""
+        return self.carbon_footprint_manufacturing.copy().set_label(
+            f"Structure manufacturing carbon footprint")
 
     def after_init(self):
         if not hasattr(self, "components") or not self.components:

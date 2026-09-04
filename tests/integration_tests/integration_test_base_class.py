@@ -146,24 +146,24 @@ class SystemTestFixture:
         """Auto-initialize footprint tracking dictionaries.
 
         Returns:
-            Tuple of (initial_footprint, initial_fab_footprints, initial_energy_footprints)
+            Tuple of (initial_footprint, initial_fab_footprints, initial_use_footprints)
         """
         initial_footprint = self.system.total_footprint
         initial_fab_footprints = {}
-        initial_energy_footprints = {}
+        initial_use_footprints = {}
 
         for obj in self.system.all_linked_objects:
-            if hasattr(obj, 'energy_footprint'):
-                initial_energy_footprints[obj] = obj.energy_footprint
-            if hasattr(obj, 'instances_fabrication_footprint'):
-                initial_fab_footprints[obj] = obj.instances_fabrication_footprint
-            # Handle UsagePattern special case with devices_fabrication_footprint
-            if hasattr(obj, 'devices_fabrication_footprint'):
-                initial_fab_footprints[obj] = obj.devices_fabrication_footprint
-            if hasattr(obj, 'devices_energy_footprint'):
-                initial_energy_footprints[obj] = obj.devices_energy_footprint
+            if hasattr(obj, 'use_footprint'):
+                initial_use_footprints[obj] = obj.use_footprint
+            if hasattr(obj, 'instances_manufacturing_footprint'):
+                initial_fab_footprints[obj] = obj.instances_manufacturing_footprint
+            # Handle UsagePattern special case with devices_manufacturing_footprint
+            if hasattr(obj, 'devices_manufacturing_footprint'):
+                initial_fab_footprints[obj] = obj.devices_manufacturing_footprint
+            if hasattr(obj, 'devices_use_footprint'):
+                initial_use_footprints[obj] = obj.devices_use_footprint
 
-        return initial_footprint, initial_fab_footprints, initial_energy_footprints
+        return initial_footprint, initial_fab_footprints, initial_use_footprints
 
 
 class IntegrationTestBaseClass(TestCase):
@@ -173,7 +173,7 @@ class IntegrationTestBaseClass(TestCase):
 
     @classmethod
     def setUpClass(cls):
-        cls.initial_energy_footprints = {}
+        cls.initial_use_footprints = {}
         cls.initial_fab_footprints = {}
         cls.ref_json_filename = None
 
@@ -193,7 +193,7 @@ class IntegrationTestBaseClass(TestCase):
             setattr(cls, attr_name, cls.fixture.get(object_name))
 
         # Auto-initialize footprints
-        cls.initial_footprint, cls.initial_fab_footprints, cls.initial_energy_footprints = \
+        cls.initial_footprint, cls.initial_fab_footprints, cls.initial_use_footprints = \
             cls.fixture.initialize_footprints()
 
         cls.ref_json_filename = cls.REF_JSON_FILENAME
@@ -201,11 +201,11 @@ class IntegrationTestBaseClass(TestCase):
     def footprint_has_changed(self, objects_to_test: List[ModelingObject]):
         for obj in objects_to_test:
             try:
-                initial_footprint = self.initial_energy_footprints[obj]
-                new_footprint = obj.energy_footprint
+                initial_footprint = self.initial_use_footprints[obj]
+                new_footprint = obj.use_footprint
                 if obj.class_as_simple_str != "Network":
                     initial_footprint += self.initial_fab_footprints[obj]
-                    new_footprint += obj.instances_fabrication_footprint
+                    new_footprint += obj.instances_manufacturing_footprint
 
                 self.assertNotEqual(initial_footprint, new_footprint)
                 logger.info(
@@ -217,11 +217,11 @@ class IntegrationTestBaseClass(TestCase):
     def footprint_has_not_changed(self, objects_to_test: List[ModelingObject]):
         for obj in objects_to_test:
             try:
-                initial_energy_footprint = round(self.initial_energy_footprints[obj], 3)
+                initial_use_footprint = round(self.initial_use_footprints[obj], 3)
                 if obj.class_as_simple_str != "Network":
                     initial_fab_footprint = round(self.initial_fab_footprints[obj], 3)
-                    self.assertEqual(initial_fab_footprint, round(obj.instances_fabrication_footprint, 3))
-                self.assertEqual(initial_energy_footprint, round(obj.energy_footprint, 3))
+                    self.assertEqual(initial_fab_footprint, round(obj.instances_manufacturing_footprint, 3))
+                self.assertEqual(initial_use_footprint, round(obj.use_footprint, 3))
                 logger.info(f"{obj.name} footprint is the same as in setup")
             except AssertionError:
                 raise AssertionError(f"Footprint has changed for {obj.name}")

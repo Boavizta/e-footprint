@@ -121,8 +121,8 @@ class TestAttributionFold(TestCase):
             assert_source_atoms_conserve(
                 self, device,
                 stream_footprints_by_phase={
-                    LifeCyclePhases.USAGE: {"single": device.energy_footprint},
-                    LifeCyclePhases.MANUFACTURING: {"single": device.instances_fabrication_footprint}})
+                    LifeCyclePhases.USE: {"single": device.use_footprint},
+                    LifeCyclePhases.MANUFACTURING: {"single": device.instances_manufacturing_footprint}})
 
     def test_fold_node_totals_balance_incoming_and_outgoing_links(self):
         """Test that at every node of the full fold, Σ incoming links == node total == Σ outgoing links
@@ -144,9 +144,9 @@ class TestAttributionFold(TestCase):
     def test_kg_fold_matches_quantity_fold_without_allocating_quantities(self):
         """The Sankey-specific fold exposes the matrix's canonical kg scalars unchanged."""
         quantity_totals, quantity_links = node_totals_and_links(
-            self.system, LifeCyclePhases.USAGE, ALL_LEVELS)
+            self.system, LifeCyclePhases.USE, ALL_LEVELS)
         kg_totals, kg_links = node_totals_and_links_in_kg(
-            self.system, LifeCyclePhases.USAGE, ALL_LEVELS)
+            self.system, LifeCyclePhases.USE, ALL_LEVELS)
 
         self.assertTrue(all(isinstance(value, float) for value in (*kg_totals.values(), *kg_links.values())))
         self.assertEqual(quantity_totals.keys(), kg_totals.keys())
@@ -184,7 +184,7 @@ class TestAttributionFold(TestCase):
     def test_column_skip_equals_regrouping_the_full_fold(self):
         """Test that folding with the UsageJourney level hidden preserves the surviving node totals and links
         steps directly to patterns with the values of the atom-level (step, up) regroup."""
-        phase = LifeCyclePhases.USAGE
+        phase = LifeCyclePhases.USE
         visible_levels_without_journey = (Device, UsageJourneyStep, UsagePattern, Country)
         full_node_totals, _ = node_totals_and_links(self.system, phase, ALL_LEVELS)
         skipped_node_totals, skipped_links = node_totals_and_links(
@@ -229,30 +229,30 @@ class TestAttributionFold(TestCase):
 
     def test_footprint_per_node_matches_eager_per_usage_pattern_dicts(self):
         """Test that the per-UsagePattern programmatic read recovers the devices' eager per-pattern dicts."""
-        per_up = footprint_per_node(self.system, UsagePattern, LifeCyclePhases.USAGE)
+        per_up = footprint_per_node(self.system, UsagePattern, LifeCyclePhases.USE)
         assert_hourly_quantities_equal(
             self,
-            self.device.energy_footprint_per_usage_pattern[self.up1]
-            + self.tracked_device.energy_footprint_per_usage_pattern[self.up1],
+            self.device.use_footprint_per_usage_pattern[self.up1]
+            + self.tracked_device.use_footprint_per_usage_pattern[self.up1],
             per_up[self.up1])
         assert_hourly_quantities_equal(
-            self, self.device.energy_footprint_per_usage_pattern[self.up3], per_up[self.up3])
+            self, self.device.use_footprint_per_usage_pattern[self.up3], per_up[self.up3])
 
     def test_footprint_per_node_per_source_separates_sources(self):
         """Test that the per-source variant keys each (source, node) cell with the source's own contribution."""
-        per_up_per_source = footprint_per_node_per_source(self.system, UsagePattern, LifeCyclePhases.USAGE)
+        per_up_per_source = footprint_per_node_per_source(self.system, UsagePattern, LifeCyclePhases.USE)
         assert_hourly_quantities_equal(
-            self, self.device.energy_footprint_per_usage_pattern[self.up1],
+            self, self.device.use_footprint_per_usage_pattern[self.up1],
             per_up_per_source[(self.device, self.up1)])
         assert_hourly_quantities_equal(
-            self, self.tracked_device.energy_footprint_per_usage_pattern[self.up1],
+            self, self.tracked_device.use_footprint_per_usage_pattern[self.up1],
             per_up_per_source[(self.tracked_device, self.up1)])
         self.assertNotIn((self.tracked_device, self.up2), per_up_per_source)
 
     def test_country_groups_usage_patterns_orthogonally_to_journeys(self):
         """Test that a country node sums the per-pattern totals of its patterns across different journeys."""
-        per_up = footprint_per_node(self.system, UsagePattern, LifeCyclePhases.USAGE)
-        per_country = footprint_per_node(self.system, Country, LifeCyclePhases.USAGE)
+        per_up = footprint_per_node(self.system, UsagePattern, LifeCyclePhases.USE)
+        per_country = footprint_per_node(self.system, Country, LifeCyclePhases.USE)
         assert_hourly_quantities_equal(
             self, per_up[self.up1] + per_up[self.up3], per_country[self.low_ci_country])
 
@@ -283,7 +283,7 @@ class TestAttributionFold(TestCase):
         """Test that an input change voids the affected attribution structures through the dependency graph
         — no wholesale wipe — so the next query rebuilds atoms and matrix rows that conserve the new eager
         totals."""
-        phase = LifeCyclePhases.USAGE
+        phase = LifeCyclePhases.USE
         stale_atoms = atoms_of(self.device, phase)
         stale_matrix = self.system.impact_repartition_matrix
         _ = self.step_a.hourly_avg_occurrences_per_usage_coordinate
@@ -294,11 +294,11 @@ class TestAttributionFold(TestCase):
             self.assertFalse(structure_slot(self.system, "impact_repartition_matrix").has_cached_value)
             fresh_atoms = atoms_of(self.device, phase)
             self.assertIsNot(stale_atoms, fresh_atoms)
-            assert_hourly_quantities_equal(self, self.device.energy_footprint, sum_atom_values(fresh_atoms))
+            assert_hourly_quantities_equal(self, self.device.use_footprint, sum_atom_values(fresh_atoms))
             fresh_matrix = self.system.impact_repartition_matrix
             self.assertIsNot(stale_matrix, fresh_matrix)
             self.assertAlmostEqual(
-                self.device.energy_footprint.sum().to(u.kg).magnitude,
+                self.device.use_footprint.sum().to(u.kg).magnitude,
                 sum(row["value"] for row in fresh_matrix
                     if row["source"] == self.device.id and row["phase"] == phase.value),
                 places=4)
@@ -327,17 +327,17 @@ class TestAttributionFold(TestCase):
         for obj, level in ((self.device, Device), (self.step_a, UsageJourneyStep), (self.journey, UsageJourney),
                            (self.up1, UsagePattern), (self.low_ci_country, Country)):
             assert_hourly_quantities_equal(
-                self, footprint_per_node(self.system, level, LifeCyclePhases.USAGE)[obj],
-                attributed_footprint(obj, LifeCyclePhases.USAGE), msg=f"{obj.name} energy delegation mismatch")
+                self, footprint_per_node(self.system, level, LifeCyclePhases.USE)[obj],
+                attributed_footprint(obj, LifeCyclePhases.USE), msg=f"{obj.name} energy delegation mismatch")
             assert_hourly_quantities_equal(
                 self, footprint_per_node(self.system, level, LifeCyclePhases.MANUFACTURING)[obj],
                 attributed_footprint(obj, LifeCyclePhases.MANUFACTURING),
-                msg=f"{obj.name} fabrication delegation mismatch")
+                msg=f"{obj.name} manufacturing delegation mismatch")
 
     def test_attributed_footprint_preserves_exact_hourly_result_and_complete_explanation(self):
         """Test source-wise finalization preserves bytes and metadata while exposing the complete formula."""
-        for phase, label in ((LifeCyclePhases.USAGE, "Attributed energy footprint"),
-                             (LifeCyclePhases.MANUFACTURING, "Attributed fabrication footprint")):
+        for phase, label in ((LifeCyclePhases.USE, "Attributed use footprint"),
+                             (LifeCyclePhases.MANUFACTURING, "Attributed manufacturing footprint")):
             with self.subTest(phase=phase):
                 expected = footprint_per_node(self.system, UsagePattern, phase)[self.up1].set_label(label)
                 expected.finalize_explanation()
@@ -382,7 +382,7 @@ class TestAttributionFold(TestCase):
             patch("efootprint.core.attribution.attribution_sources", return_value=sources),
             patch("efootprint.core.attribution.evict_attribution_source_intermediates"),
         ):
-            result = attributed_footprint(self.up1, LifeCyclePhases.USAGE)
+            result = attributed_footprint(self.up1, LifeCyclePhases.USE)
 
         self.assertEqual(direct_order.magnitude.tobytes(), result.magnitude.tobytes())
 
@@ -415,7 +415,7 @@ class TestAttributionFold(TestCase):
                 side_effect=lambda source_to_evict: events.append(f"evict {source_to_evict.name}"),
             ),
         ):
-            attributed_footprint(self.up1, LifeCyclePhases.USAGE)
+            attributed_footprint(self.up1, LifeCyclePhases.USE)
 
         self.assertEqual(
             ["atoms first", "finalize", "evict first", "atoms second", "finalize", "evict second"], events)
@@ -424,8 +424,8 @@ class TestAttributionFold(TestCase):
         """Test that a system-less object returns a labeled Empty value for both phases."""
         orphan = Device.from_defaults("system-less attribution device")
 
-        for phase, label in ((LifeCyclePhases.USAGE, "Attributed energy footprint"),
-                             (LifeCyclePhases.MANUFACTURING, "Attributed fabrication footprint")):
+        for phase, label in ((LifeCyclePhases.USE, "Attributed use footprint"),
+                             (LifeCyclePhases.MANUFACTURING, "Attributed manufacturing footprint")):
             result = attributed_footprint(orphan, phase)
             self.assertIsInstance(result, EmptyExplainableObject)
             self.assertEqual(label, result.label)
@@ -434,13 +434,13 @@ class TestAttributionFold(TestCase):
         """Test that attributed_footprint reads fresh atoms after a ModelingUpdate and stays consistent with
         footprint_per_node."""
         initial_power = self.device.power
-        before = attributed_footprint(self.up1, LifeCyclePhases.USAGE)
+        before = attributed_footprint(self.up1, LifeCyclePhases.USE)
         try:
             self.device.power = SourceValue(100 * u.W)
-            after = attributed_footprint(self.up1, LifeCyclePhases.USAGE)
+            after = attributed_footprint(self.up1, LifeCyclePhases.USE)
             self.assertNotEqual(before.sum().magnitude, after.sum().magnitude)
             assert_hourly_quantities_equal(
-                self, footprint_per_node(self.system, UsagePattern, LifeCyclePhases.USAGE)[self.up1], after)
+                self, footprint_per_node(self.system, UsagePattern, LifeCyclePhases.USE)[self.up1], after)
         finally:
             self.device.power = initial_power
 

@@ -20,7 +20,7 @@ and canonical query templates — that would be a welcome contribution.
 - **On-disk footprint.** Use {param:Storage.base_storage_need} for
   existing tables and indexes at t=0, {param:Storage.data_storage_duration}
   for retention, {param:Storage.data_replication_factor} for replicas.
-  {class:Storage} already accounts for both the fabrication and the
+  {class:Storage} already accounts for both the manufacturing and the
   operational energy of the persistent volumes; do not model them
   separately.
 - **Query workload.** Use one {class:Job} *per kind of operation*, not

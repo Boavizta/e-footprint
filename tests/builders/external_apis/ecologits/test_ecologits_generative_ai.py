@@ -63,7 +63,7 @@ class TestEcoLogitsGenAIExternalAPI(TestCase):
         return create_mod_obj_mock(
             EcoLogitsGenAIExternalAPIJob, name, request_duration=request_duration, **kwargs)
 
-    def test_update_instances_fabrication_footprint_spreads_embodied_gwp_over_request_duration_collapsing_at_1h(self):
+    def test_update_instances_manufacturing_footprint_spreads_embodied_gwp_over_request_duration_collapsing_at_1h(self):
         """request_duration=1h collapses the spread factor to 1, so the per-hour value reduces to
         request_embodied_gwp times the averaged occurrence series."""
         mock_job1 = self._spread_job(
@@ -75,13 +75,13 @@ class TestEcoLogitsGenAIExternalAPI(TestCase):
 
         set_modeling_obj_containers(self.external_api, [mock_job1, mock_job2])
 
-        recompute_attribute(self.external_api.server, "instances_fabrication_footprint")
+        recompute_attribute(self.external_api.server, "instances_manufacturing_footprint")
 
         expected_value = (10 * 5 + 20 * 3) * u.kg  # 50 + 60 = 110
         self.assertTrue(np.allclose(
-            [expected_value.magnitude] * 24, self.external_api.server.instances_fabrication_footprint.magnitude))
+            [expected_value.magnitude] * 24, self.external_api.server.instances_manufacturing_footprint.magnitude))
 
-    def test_update_instances_fabrication_footprint_spreads_over_request_duration(self):
+    def test_update_instances_manufacturing_footprint_spreads_over_request_duration(self):
         """A 2h request spreads its per-request embodied GWP at half-rate per hour: the per-hour value
         is request_embodied_gwp * (1h / 2h) = 5 kg, times the averaged occurrence series."""
         mock_job = self._spread_job(
@@ -91,18 +91,18 @@ class TestEcoLogitsGenAIExternalAPI(TestCase):
 
         set_modeling_obj_containers(self.external_api, [mock_job])
 
-        recompute_attribute(self.external_api.server, "instances_fabrication_footprint")
+        recompute_attribute(self.external_api.server, "instances_manufacturing_footprint")
 
         self.assertTrue(np.allclose(
-            [10 * 0.5 * 4] * 24, self.external_api.server.instances_fabrication_footprint.magnitude))
+            [10 * 0.5 * 4] * 24, self.external_api.server.instances_manufacturing_footprint.magnitude))
 
-    def test_update_instances_fabrication_footprint_with_no_jobs(self):
-        """Test instances fabrication footprint calculation with no jobs."""
+    def test_update_instances_manufacturing_footprint_with_no_jobs(self):
+        """Test instances manufacturing footprint calculation with no jobs."""
         set_modeling_obj_containers(self.external_api, [])
 
-        recompute_attribute(self.external_api.server, "instances_fabrication_footprint")
+        recompute_attribute(self.external_api.server, "instances_manufacturing_footprint")
 
-        self.assertIsInstance(self.external_api.server.instances_fabrication_footprint, EmptyExplainableObject)
+        self.assertIsInstance(self.external_api.server.instances_manufacturing_footprint, EmptyExplainableObject)
 
     def test_update_instances_energy_spreads_energy_over_request_duration_collapsing_at_1h(self):
         """request_duration=1h collapses the spread factor to 1, so the per-hour value reduces to
@@ -130,7 +130,7 @@ class TestEcoLogitsGenAIExternalAPI(TestCase):
 
         self.assertIsInstance(self.external_api.server.instances_energy, EmptyExplainableObject)
 
-    def test_update_energy_footprint_spreads_usage_gwp_over_request_duration_collapsing_at_1h(self):
+    def test_update_use_footprint_spreads_usage_gwp_over_request_duration_collapsing_at_1h(self):
         """request_duration=1h collapses the spread factor to 1, so the per-hour value reduces to
         request_usage_gwp times the averaged occurrence series."""
         mock_job1 = self._spread_job(
@@ -142,19 +142,19 @@ class TestEcoLogitsGenAIExternalAPI(TestCase):
 
         set_modeling_obj_containers(self.external_api, [mock_job1, mock_job2])
 
-        recompute_attribute(self.external_api.server, "energy_footprint")
+        recompute_attribute(self.external_api.server, "use_footprint")
 
         expected_value = (25 * 6 + 15 * 10) * u.kg  # 150 + 150 = 300
         self.assertTrue(np.allclose(
-            [expected_value.magnitude] * 24, self.external_api.server.energy_footprint.magnitude))
+            [expected_value.magnitude] * 24, self.external_api.server.use_footprint.magnitude))
 
-    def test_update_energy_footprint_with_no_jobs(self):
-        """Test energy footprint calculation with no jobs."""
+    def test_update_use_footprint_with_no_jobs(self):
+        """Test use footprint calculation with no jobs."""
         set_modeling_obj_containers(self.external_api, [])
 
-        recompute_attribute(self.external_api.server, "energy_footprint")
+        recompute_attribute(self.external_api.server, "use_footprint")
 
-        self.assertIsInstance(self.external_api.server.energy_footprint, EmptyExplainableObject)
+        self.assertIsInstance(self.external_api.server.use_footprint, EmptyExplainableObject)
 
     def test_spread_over_request_duration_returns_empty_when_per_request_value_is_empty(self):
         """A job with no usage patterns has an EmptyExplainableObject per-request value and its
@@ -185,8 +185,8 @@ class TestEcoLogitsGenAIExternalAPI(TestCase):
             [100 * 0.5 * 4] * 24, self.external_api.server.instances_energy.magnitude))
 
     def test_attribution_atoms_conserve_eager_phase_totals(self):
-        """Test that Σ of the API server's atoms over each job's cells recovers the eager fabrication and
-        energy footprints (single demand stream, hourly cell shares)."""
+        """Test that Σ of the API server's atoms over each job's cells recovers the eager manufacturing and
+        use footprints (single demand stream, hourly cell shares)."""
         def cell(up_name, hourly_share, flat_share):
             flat_share_quantity = ExplainableQuantity(flat_share * u.dimensionless, f"flat share in {up_name}")
             return JobAttributionCell(
@@ -212,15 +212,15 @@ class TestEcoLogitsGenAIExternalAPI(TestCase):
             attribution_cells=(cell("conserving up 3", 1, 1),))
         set_modeling_obj_containers(self.external_api, [mock_job_1, mock_job_2])
         server = self.external_api.server
-        recompute_attribute(server, "instances_fabrication_footprint")
-        recompute_attribute(server, "energy_footprint")
+        recompute_attribute(server, "instances_manufacturing_footprint")
+        recompute_attribute(server, "use_footprint")
 
         assert_source_atoms_conserve(self, server)
-        fabrication_atoms = list(server.attribution_atoms(LifeCyclePhases.MANUFACTURING))
-        self.assertEqual(3, len(fabrication_atoms))
-        self.assertEqual({"single"}, {atom.stream for atom in fabrication_atoms})
+        manufacturing_atoms = list(server.attribution_atoms(LifeCyclePhases.MANUFACTURING))
+        self.assertEqual(3, len(manufacturing_atoms))
+        self.assertEqual({"single"}, {atom.stream for atom in manufacturing_atoms})
         job_1_up_1_atom = next(
-            atom for atom in fabrication_atoms if atom.job == mock_job_1 and atom.up.name == "conserving up 1")
+            atom for atom in manufacturing_atoms if atom.job == mock_job_1 and atom.up.name == "conserving up 1")
         self.assertTrue(np.allclose([2 * 4 * 0.25] * 24, job_1_up_1_atom.value.magnitude))
 
     def test_provider_list_values_contains_valid_providers(self):

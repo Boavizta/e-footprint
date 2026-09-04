@@ -20,14 +20,14 @@ class TestEdgeCPUComponent(TestCase):
     def setUp(self):
         self.cpu_component = EdgeCPUComponent(
             name="Test CPU",
-            carbon_footprint_fabrication_per_unit=SourceValue(20 * u.kg),
+            carbon_footprint_manufacturing_per_unit=SourceValue(20 * u.kg),
             power_per_unit=SourceValue(50 * u.W),
             lifespan=SourceValue(5 * u.year),
             idle_power_per_unit=SourceValue(10 * u.W),
             compute_per_unit=SourceValue(8 * u.cpu_core),
             base_compute_consumption=SourceValue(1 * u.cpu_core)
         )
-        recompute_attribute(self.cpu_component, "carbon_footprint_fabrication")
+        recompute_attribute(self.cpu_component, "carbon_footprint_manufacturing")
         recompute_attribute(self.cpu_component, "power")
         recompute_attribute(self.cpu_component, "idle_power")
         recompute_attribute(self.cpu_component, "compute")
@@ -35,8 +35,8 @@ class TestEdgeCPUComponent(TestCase):
     def test_init(self):
         """Test EdgeCPUComponent initialization."""
         self.assertEqual("Test CPU", self.cpu_component.name)
-        self.assertEqual(20 * u.kg, self.cpu_component.carbon_footprint_fabrication_per_unit.value)
-        self.assertEqual(20 * u.kg, self.cpu_component.carbon_footprint_fabrication.value)
+        self.assertEqual(20 * u.kg, self.cpu_component.carbon_footprint_manufacturing_per_unit.value)
+        self.assertEqual(20 * u.kg, self.cpu_component.carbon_footprint_manufacturing.value)
         self.assertEqual(50 * u.W, self.cpu_component.power_per_unit.value)
         self.assertEqual(50 * u.W, self.cpu_component.power.value)
         self.assertEqual(5 * u.year, self.cpu_component.lifespan.value)

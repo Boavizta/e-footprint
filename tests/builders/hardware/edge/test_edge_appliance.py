@@ -16,7 +16,7 @@ class TestEdgeAppliance(TestCase):
         """Set up test fixtures."""
         self.edge_device = EdgeAppliance(
             "test edge appliance",
-            carbon_footprint_fabrication=SourceValue(100 * u.kg),
+            carbon_footprint_manufacturing=SourceValue(100 * u.kg),
             power=SourceValue(50 * u.W),
             lifespan=SourceValue(5 * u.year),
             idle_power=SourceValue(5 * u.W))
@@ -24,7 +24,7 @@ class TestEdgeAppliance(TestCase):
     def test_init(self):
         """Test EdgeAppliance initialization."""
         self.assertEqual("test edge appliance", self.edge_device.name)
-        self.assertEqual(100 * u.kg, self.edge_device.carbon_footprint_fabrication.value)
+        self.assertEqual(100 * u.kg, self.edge_device.carbon_footprint_manufacturing.value)
         self.assertEqual(50 * u.W, self.edge_device.power.value)
         self.assertEqual(5 * u.year, self.edge_device.lifespan.value)
         self.assertEqual(5 * u.W, self.edge_device.idle_power.value)

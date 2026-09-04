@@ -29,7 +29,7 @@ class EdgeComponent(ModelingObject):
         pass
 
     param_descriptions = {
-        "carbon_footprint_fabrication_per_unit": (
+        "carbon_footprint_manufacturing_per_unit": (
             "Embodied carbon emitted to manufacture one unit of the component."),
         "power_per_unit": (
             "Electrical power drawn by one fully-loaded unit."),
@@ -44,15 +44,15 @@ class EdgeComponent(ModelingObject):
     # power_per_unit, lifespan and idle_power_per_unit are None (and not stored) for subclasses that
     # compute them from the parent device (the EdgeAppliance and EdgeComputer internal components) —
     # assigning a computed name raises.
-    def __init__(self, name: str, carbon_footprint_fabrication_per_unit: ExplainableQuantity = None,
+    def __init__(self, name: str, carbon_footprint_manufacturing_per_unit: ExplainableQuantity = None,
                  power_per_unit: ExplainableQuantity = None, lifespan: ExplainableQuantity = None,
                  idle_power_per_unit: ExplainableQuantity = None,
                  nb_of_units: ExplainableQuantity | None = None):
         super().__init__(name)
         if nb_of_units is None:
             nb_of_units = SourceValue(1 * u.dimensionless)
-        self.carbon_footprint_fabrication_per_unit = carbon_footprint_fabrication_per_unit.set_label(
-            f"Carbon footprint fabrication per unit")
+        self.carbon_footprint_manufacturing_per_unit = carbon_footprint_manufacturing_per_unit.set_label(
+            f"Carbon footprint manufacturing per unit")
         if power_per_unit is not None:
             self.power_per_unit = power_per_unit.set_label(f"Power per unit")
         if lifespan is not None:
@@ -78,16 +78,16 @@ class EdgeComponent(ModelingObject):
             if path.recurrent_edge_component_need.edge_component == self))
 
     @property
-    def instances_fabrication_footprint(self):
+    def instances_manufacturing_footprint(self):
         if self.edge_device is None:
             return EmptyExplainableObject()
-        return self.edge_device.fabrication_footprint_breakdown_by_source.get(self, EmptyExplainableObject())
+        return self.edge_device.manufacturing_footprint_breakdown_by_source.get(self, EmptyExplainableObject())
 
     @property
-    def energy_footprint(self):
+    def use_footprint(self):
         if self.edge_device is None:
             return EmptyExplainableObject()
-        return self.edge_device.energy_footprint_breakdown_by_source.get(self, EmptyExplainableObject())
+        return self.edge_device.use_footprint_breakdown_by_source.get(self, EmptyExplainableObject())
 
     @computed_dict(keys="edge_usage_patterns")
     @abstractmethod
@@ -101,20 +101,20 @@ class EdgeComponent(ModelingObject):
         raise NotImplementedError
 
     @property
-    def carbon_footprint_fabrication_from_inputs(self) -> ExplainableQuantity:
+    def carbon_footprint_manufacturing_from_inputs(self) -> ExplainableQuantity:
         """Embodied carbon of the component computed from input attributes only — must mirror
-        update_carbon_footprint_fabrication. Read by EdgeDevice to book components with no needs at a deployed
+        update_carbon_footprint_manufacturing. Read by EdgeDevice to book components with no needs at a deployed
         pattern as part of the chassis: such components never enter the calculated-attribute computation chain,
-        so their calculated carbon_footprint_fabrication stays Empty and cannot be read."""
-        return (self.carbon_footprint_fabrication_per_unit * self.nb_of_units).set_label(
-            f"{self.name} carbon footprint fabrication from inputs")
+        so their calculated carbon_footprint_manufacturing stays Empty and cannot be read."""
+        return (self.carbon_footprint_manufacturing_per_unit * self.nb_of_units).set_label(
+            f"{self.name} carbon footprint manufacturing from inputs")
 
     @computed_attribute
-    def carbon_footprint_fabrication(self):
-        """Embodied carbon of one component, equal to the per-unit fabrication footprint times the number of units in the component."""
+    def carbon_footprint_manufacturing(self):
+        """Embodied carbon of one component, equal to the per-unit manufacturing footprint times the number of units in the component."""
         return (
-            self.carbon_footprint_fabrication_per_unit * self.nb_of_units).set_label(
-                f"Carbon footprint fabrication")
+            self.carbon_footprint_manufacturing_per_unit * self.nb_of_units).set_label(
+                f"Carbon footprint manufacturing")
 
     @computed_attribute
     def power(self):
@@ -127,18 +127,18 @@ class EdgeComponent(ModelingObject):
         return (self.idle_power_per_unit * self.nb_of_units).set_label(f"Idle power")
 
     @computed_dict(keys="edge_usage_patterns")
-    def fabrication_footprint_per_edge_device_per_usage_pattern(
+    def manufacturing_footprint_per_edge_device_per_usage_pattern(
             self, usage_pattern: "EdgeUsagePattern"):
-        """Hourly fabrication footprint of one component on one device, broken down by usage pattern. Equal to the component's amortised fabrication intensity times the number of active deployments."""
-        component_fabrication_intensity = self.carbon_footprint_fabrication / self.lifespan
+        """Hourly manufacturing footprint of one component on one device, broken down by usage pattern. Equal to the component's amortised manufacturing intensity times the number of active deployments."""
+        component_manufacturing_intensity = self.carbon_footprint_manufacturing / self.lifespan
         nb_instances = usage_pattern.nb_deployments_in_parallel
 
-        fabrication_footprint_per_edge_device = (
-            nb_instances * component_fabrication_intensity * ExplainableQuantity(1 * u.hour, "one hour"))
+        manufacturing_footprint_per_edge_device = (
+            nb_instances * component_manufacturing_intensity * ExplainableQuantity(1 * u.hour, "one hour"))
 
         return (
-            fabrication_footprint_per_edge_device.to(u.kg).set_label(
-                f"Hourly fabrication footprint per edge device for {usage_pattern.name}")
+            manufacturing_footprint_per_edge_device.to(u.kg).set_label(
+                f"Hourly manufacturing footprint per edge device for {usage_pattern.name}")
         )
 
     @computed_dict(keys="edge_usage_patterns")
@@ -152,22 +152,22 @@ class EdgeComponent(ModelingObject):
             f"Hourly energy consumed by per edge device for {usage_pattern.name}")
 
     @computed_dict(keys="edge_usage_patterns")
-    def energy_footprint_per_edge_device_per_usage_pattern(self, usage_pattern: "EdgeUsagePattern"):
+    def use_footprint_per_edge_device_per_usage_pattern(self, usage_pattern: "EdgeUsagePattern"):
         """Hourly carbon emissions caused by the component's electricity use, broken down by usage pattern. Equal to energy consumption times the country's grid carbon intensity."""
-        energy_footprint = (
+        use_footprint = (
             self.energy_per_edge_device_per_usage_pattern[usage_pattern] * usage_pattern.country.average_carbon_intensity
         )
 
-        return energy_footprint.set_label(
-            f"Energy footprint per edge device for {usage_pattern.name}").to(u.kg)
+        return use_footprint.set_label(
+            f"Use footprint per edge device for {usage_pattern.name}").to(u.kg)
 
     @computed_attribute
-    def fabrication_footprint_per_edge_device(self):
-        """Total hourly fabrication footprint per edge device, summed across all usage patterns this component appears in."""
-        fabrication_footprint_per_edge_device = sum(
-            self.fabrication_footprint_per_edge_device_per_usage_pattern.values(), start=EmptyExplainableObject())
-        return fabrication_footprint_per_edge_device.set_label(
-            "Total fabrication footprint per edge device across usage patterns")
+    def manufacturing_footprint_per_edge_device(self):
+        """Total hourly manufacturing footprint per edge device, summed across all usage patterns this component appears in."""
+        manufacturing_footprint_per_edge_device = sum(
+            self.manufacturing_footprint_per_edge_device_per_usage_pattern.values(), start=EmptyExplainableObject())
+        return manufacturing_footprint_per_edge_device.set_label(
+            "Total manufacturing footprint per edge device across usage patterns")
 
     @computed_attribute
     def energy_per_edge_device(self):
@@ -178,9 +178,9 @@ class EdgeComponent(ModelingObject):
             "Total energy consumed per edge device across usage patterns")
 
     @computed_attribute
-    def energy_footprint_per_edge_device(self):
+    def use_footprint_per_edge_device(self):
         """Total hourly energy-use footprint per edge device, summed across all usage patterns."""
-        energy_footprint = sum(
-            self.energy_footprint_per_edge_device_per_usage_pattern.values(), start=EmptyExplainableObject())
-        return energy_footprint.set_label(
-            "Total energy footprint per edge device across usage patterns")
+        use_footprint = sum(
+            self.use_footprint_per_edge_device_per_usage_pattern.values(), start=EmptyExplainableObject())
+        return use_footprint.set_label(
+            "Total use footprint per edge device across usage patterns")

@@ -146,7 +146,7 @@ def generate_big_system(
                         usage_journeys=[usage_journey],
                         devices=[
                             Device(name=unique(f"device for server {server_index} uj {uj_index} up {up_nb}"),
-                                   carbon_footprint_fabrication=SourceValue(156 * u.kg, source=None),
+                                   carbon_footprint_manufacturing=SourceValue(156 * u.kg, source=None),
                                    power=SourceValue(50 * u.W, source=None),
                                    lifespan=SourceValue(6 * u.year, source=None),
                                    fraction_of_usage_time=SourceValue(7 * u.hour / u.day, source=None))],
@@ -164,7 +164,7 @@ def generate_big_system(
     for edge_usage_pattern_index in range(1, nb_of_edge_usage_patterns + 1):
         edge_storage = EdgeStorage(
             unique(f"Edge SSD storage {edge_usage_pattern_index}"),
-            carbon_footprint_fabrication_per_storage_capacity=SourceValue(160 * u.kg / u.TB_stored),
+            carbon_footprint_manufacturing_per_storage_capacity=SourceValue(160 * u.kg / u.TB_stored),
             lifespan=SourceValue(6 * u.years),
             storage_capacity_per_unit=SourceValue(1 * u.TB_stored),
             base_storage_need=SourceValue(10 * u.GB_stored),
@@ -172,7 +172,7 @@ def generate_big_system(
 
         edge_computer = EdgeComputer(
             unique(f"Default edge device {edge_usage_pattern_index}"),
-            carbon_footprint_fabrication=SourceValue(60 * u.kg),
+            carbon_footprint_manufacturing=SourceValue(60 * u.kg),
             power=SourceValue(30 * u.W),
             lifespan=SourceValue(8 * u.year),
             idle_power=SourceValue(5 * u.W),

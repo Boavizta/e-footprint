@@ -22,20 +22,20 @@ class TestEdgeWorkloadComponent(TestCase):
     def setUp(self):
         self.appliance_component = EdgeWorkloadComponent(
             name="Test Appliance",
-            carbon_footprint_fabrication_per_unit=SourceValue(100 * u.kg),
+            carbon_footprint_manufacturing_per_unit=SourceValue(100 * u.kg),
             power_per_unit=SourceValue(50 * u.W),
             lifespan=SourceValue(5 * u.year),
             idle_power_per_unit=SourceValue(5 * u.W)
         )
-        recompute_attribute(self.appliance_component, "carbon_footprint_fabrication")
+        recompute_attribute(self.appliance_component, "carbon_footprint_manufacturing")
         recompute_attribute(self.appliance_component, "power")
         recompute_attribute(self.appliance_component, "idle_power")
 
     def test_init(self):
         """Test EdgeWorkloadComponent initialization."""
         self.assertEqual("Test Appliance", self.appliance_component.name)
-        self.assertEqual(100 * u.kg, self.appliance_component.carbon_footprint_fabrication_per_unit.value)
-        self.assertEqual(100 * u.kg, self.appliance_component.carbon_footprint_fabrication.value)
+        self.assertEqual(100 * u.kg, self.appliance_component.carbon_footprint_manufacturing_per_unit.value)
+        self.assertEqual(100 * u.kg, self.appliance_component.carbon_footprint_manufacturing.value)
         self.assertEqual(50 * u.W, self.appliance_component.power_per_unit.value)
         self.assertEqual(50 * u.W, self.appliance_component.power.value)
         self.assertEqual(5 * u.year, self.appliance_component.lifespan.value)

@@ -26,7 +26,7 @@ from efootprint.core.attribution import attributed_footprint
 from efootprint.core.lifecycle_phases import LifeCyclePhases
 
 # `system` is your already-built System, with one UsagePattern per tenant
-for phase in (LifeCyclePhases.MANUFACTURING, LifeCyclePhases.USAGE):
+for phase in (LifeCyclePhases.MANUFACTURING, LifeCyclePhases.USE):
     for tenant in system.usage_patterns:
         print(phase.value, tenant.name, attributed_footprint(tenant, phase).sum().to(u.kg))
 ```

@@ -69,7 +69,7 @@ def generate_tribune_system() -> System:
 
     user_devices = Device(
         name="Smartphones et laptops",
-        carbon_footprint_fabrication=SourceValue(120 * u.kg),
+        carbon_footprint_manufacturing=SourceValue(120 * u.kg),
         power=SourceValue(15 * u.W),
         lifespan=SourceValue(5 * u.year),
         fraction_of_usage_time=SourceValue(4 * u.hour / u.day))
@@ -98,14 +98,14 @@ def generate_tribune_system() -> System:
     # --- Flotte IoT terrain : 1 objet agrégé représentant le parc ------------------------------
     iot_storage = EdgeStorage(
         "Stockage embarqué",
-        carbon_footprint_fabrication_per_storage_capacity=SourceValue(160 * u.kg / u.TB_stored),
+        carbon_footprint_manufacturing_per_storage_capacity=SourceValue(160 * u.kg / u.TB_stored),
         lifespan=SourceValue(8 * u.year),
         storage_capacity_per_unit=SourceValue(64 * u.GB_stored),
         base_storage_need=SourceValue(1 * u.GB_stored))
 
     iot_device = EdgeComputer(
         "Capteurs IoT terrain",
-        carbon_footprint_fabrication=SourceValue(45 * u.kg),
+        carbon_footprint_manufacturing=SourceValue(45 * u.kg),
         power=SourceValue(14 * u.W),
         lifespan=SourceValue(8 * u.year),
         idle_power=SourceValue(1 * u.W),

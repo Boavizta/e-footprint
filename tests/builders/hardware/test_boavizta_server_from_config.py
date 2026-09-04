@@ -114,9 +114,9 @@ class TestBoaviztaServerFromConfig(unittest.TestCase):
         self.assertEqual(self.test_server.api_call_response.value, mock_response)
         self.assertIn("api call data", self.test_server.api_call_response.label.lower())
 
-    def test_update_carbon_footprint_fabrication(self):
+    def test_update_carbon_footprint_manufacturing(self):
         """
-        Check that update_carbon_footprint_fabrication calculates properly by subtracting
+        Check that update_carbon_footprint_manufacturing calculates properly by subtracting
         the storage part from the total embedded footprint.
         """
         # Provide an appropriate mock api_call_response:
@@ -137,14 +137,14 @@ class TestBoaviztaServerFromConfig(unittest.TestCase):
             }
         }, label="Mocked response"))
 
-        recompute_attribute(self.test_server, "carbon_footprint_fabrication")
+        recompute_attribute(self.test_server, "carbon_footprint_manufacturing")
 
-        # carbon_footprint_fabrication should be total (500) minus storage portion (200) => 300 kg
+        # carbon_footprint_manufacturing should be total (500) minus storage portion (200) => 300 kg
         self.assertEqual(
-            self.test_server.carbon_footprint_fabrication.value,
+            self.test_server.carbon_footprint_manufacturing.value,
             300.0 * u.kg
         )
-        self.assertIn("Fabrication footprint", self.test_server.carbon_footprint_fabrication.label)
+        self.assertIn("Manufacturing footprint", self.test_server.carbon_footprint_manufacturing.label)
 
     def test_update_power(self):
         """

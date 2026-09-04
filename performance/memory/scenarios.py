@@ -49,11 +49,11 @@ def run_scenario(system: System, scenario: str, retained_results: int = 5) -> Sc
         result = attributed_footprint(edge_patterns[0], LifeCyclePhases.MANUFACTURING)
         return ScenarioResult((result,), float(result.sum().to(u.kg).magnitude))
     if scenario == "attributed-usage":
-        result = attributed_footprint(edge_patterns[0], LifeCyclePhases.USAGE)
+        result = attributed_footprint(edge_patterns[0], LifeCyclePhases.USE)
         return ScenarioResult((result,), float(result.sum().to(u.kg).magnitude))
     if scenario == "retained-attributed-results":
         results = tuple(
-            attributed_footprint(edge_patterns[index % len(edge_patterns)], LifeCyclePhases.USAGE)
+            attributed_footprint(edge_patterns[index % len(edge_patterns)], LifeCyclePhases.USE)
             for index in range(retained_results)
         )
         return ScenarioResult(results, sum(float(result.sum().to(u.kg).magnitude) for result in results))

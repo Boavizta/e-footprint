@@ -65,15 +65,15 @@ class IntegrationTestComplexSystemBaseClass(IntegrationTestBaseClass):
     def generate_complex_system():
         # Give low storage capacity to storages so that changes in jobs are sure to impact their number of instances
         storage_1 = Storage.from_defaults("Default SSD storage 1", storage_capacity=SourceValue(100 * u.kB_stored),
-                                          carbon_footprint_fabrication_per_storage_capacity=SourceValue(1 * u.kg / u.kB_stored))
+                                          carbon_footprint_manufacturing_per_storage_capacity=SourceValue(1 * u.kg / u.kB_stored))
         storage_2 = Storage.from_defaults("Default SSD storage 2", storage_capacity=SourceValue(100 * u.kB_stored),
-                                          carbon_footprint_fabrication_per_storage_capacity=SourceValue(1 * u.kg / u.kB_stored))
+                                          carbon_footprint_manufacturing_per_storage_capacity=SourceValue(1 * u.kg / u.kB_stored))
         server1 = Server.from_defaults("Server 1", storage=storage_1)
         server2 = Server.from_defaults("Server 2", server_type=ServerTypes.on_premise(), storage=storage_2)
         server3 = Server.from_defaults(
             "Server 3", server_type=ServerTypes.serverless(),
             storage=Storage.ssd("Default SSD storage 3", storage_capacity=SourceValue(100 * u.kB_stored),
-                                carbon_footprint_fabrication_per_storage_capacity=SourceValue(1 * u.kg / u.kB_stored)))
+                                carbon_footprint_manufacturing_per_storage_capacity=SourceValue(1 * u.kg / u.kB_stored)))
 
         server1_job1 = Job.from_defaults("server 1 job 1", server=server1)
         uj_step_1 = UsageJourneyStep.from_defaults("UJ step 1", jobs=[server1_job1])
@@ -222,8 +222,8 @@ class IntegrationTestComplexSystemBaseClass(IntegrationTestBaseClass):
             cleanup.callback(setattr, new_up, "hourly_occurrences", new_up.hourly_occurrences)
             new_up.hourly_occurrences = create_source_hourly_values_from_list(
                 [elt * 1000 for elt in [2, 4, 1, 5, 3, 1, 5, 23, 2]])
-            # self.network1.energy_footprint should not have been recomputed, nor its ancestors
-            for elt in self.network1.energy_footprint.direct_ancestors_with_id:
+            # self.network1.use_footprint should not have been recomputed, nor its ancestors
+            for elt in self.network1.use_footprint.direct_ancestors_with_id:
                 self.assertIsNotNone(elt.modeling_obj_container)
 
     def run_test_add_edge_usage_pattern(self):

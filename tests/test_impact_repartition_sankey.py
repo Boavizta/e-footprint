@@ -139,7 +139,7 @@ class TestImpactRepartitionSankeyConservation(TestCase):
                                      msg=f"Leaf nodes don't conserve the system total ({name})")
 
     def test_lifecycle_phase_filter_restricts_to_phase_total(self):
-        """Test that filtering on the manufacturing phase yields exactly the eager fabrication total."""
+        """Test that filtering on the manufacturing phase yields exactly the eager manufacturing total."""
         system = fixture_system("simple")
         sankey = build_sankey(system, lifecycle_phase_filter=LifeCyclePhases.MANUFACTURING)
         self.assert_kg_equal(
@@ -155,14 +155,14 @@ class TestImpactRepartitionSankeyConservation(TestCase):
         baseline_totals = node_totals_by_key(baseline)
         skipped_totals = node_totals_by_key(skipped)
         journey = next(iter(system.usage_patterns[0].usage_journeys))
-        self.assertIn((journey.id, "Usage"), baseline_totals)
-        self.assertNotIn((journey.id, "Usage"), skipped_totals)
+        self.assertIn((journey.id, "Use"), baseline_totals)
+        self.assertNotIn((journey.id, "Use"), skipped_totals)
         for key, value in skipped_totals.items():
             self.assert_kg_equal(baseline_totals[key], value, msg=f"Node {key} changed when skipping UsageJourney")
 
         usage_pattern = system.usage_patterns[0]
         step = list(journey.uj_steps)[0]
-        for phase_context in ("Manufacturing", "Usage"):
+        for phase_context in ("Manufacturing", "Use"):
             up_idx = skipped.node_indices[(usage_pattern.id, phase_context)]
             step_idx = skipped.node_indices[(step.id, phase_context)]
             direct_links = [
@@ -179,7 +179,7 @@ class TestImpactRepartitionSankeyConservation(TestCase):
         baseline = build_sankey(system)
         excluded = build_sankey(system, excluded_object_types=["Device"])
 
-        device_total = (device.instances_fabrication_footprint.sum() + device.energy_footprint.sum()).value
+        device_total = (device.instances_manufacturing_footprint.sum() + device.use_footprint.sum()).value
         self.assert_kg_equal(
             baseline.total_system_value - device_total.to(u.kg).magnitude,
             excluded.total_system_value,
@@ -187,8 +187,8 @@ class TestImpactRepartitionSankeyConservation(TestCase):
 
         baseline_totals = node_totals_by_key(baseline)
         excluded_totals = node_totals_by_key(excluded)
-        self.assertIn((device.id, "Usage"), baseline_totals)
-        self.assertNotIn((device.id, "Usage"), excluded_totals)
+        self.assertIn((device.id, "Use"), baseline_totals)
+        self.assertNotIn((device.id, "Use"), excluded_totals)
         for idx in excluded._leaf_node_indices:
             key = next(k for k, v in excluded.node_indices.items() if v == idx)
             self.assert_kg_equal(
@@ -220,13 +220,13 @@ class TestImpactRepartitionSankeyConservation(TestCase):
         baseline = build_sankey(system)
         excluded = build_sankey(system, excluded_object_types=["ExternalAPI"])
 
-        api_total = (api_server.instances_fabrication_footprint.sum() + api_server.energy_footprint.sum()).value
+        api_total = (api_server.instances_manufacturing_footprint.sum() + api_server.use_footprint.sum()).value
         self.assert_kg_equal(
             baseline.total_system_value - api_total.to(u.kg).magnitude,
             excluded.total_system_value,
         )
-        self.assertIn((api_server.external_api.id, "Usage"), node_totals_by_key(baseline))
-        self.assertNotIn((api_server.external_api.id, "Usage"), node_totals_by_key(excluded))
+        self.assertIn((api_server.external_api.id, "Use"), node_totals_by_key(baseline))
+        self.assertNotIn((api_server.external_api.id, "Use"), node_totals_by_key(excluded))
 
     def test_exclude_edge_storage_removes_only_breakdown_children(self):
         """Test that excluding EdgeStorage (a breakdown-only component, not an atom source) keeps the system
@@ -261,9 +261,9 @@ class TestImpactRepartitionSankeyConservation(TestCase):
         api_server = next(
             obj for obj in attribution_sources(system)
             if obj.class_as_simple_str == "EcoLogitsGenAIExternalAPIServer")
-        self.assertIn((api_server.external_api.id, "Usage"), sankey.node_indices)
-        self.assertNotIn((api_server.id, "Usage"), sankey.node_indices)
-        self.assertIn(("ExternalAPIs", "Usage"), sankey.node_indices)
+        self.assertIn((api_server.external_api.id, "Use"), sankey.node_indices)
+        self.assertNotIn((api_server.id, "Use"), sankey.node_indices)
+        self.assertIn(("ExternalAPIs", "Use"), sankey.node_indices)
 
     def test_edge_device_breakdown_decoration_sums_to_device_totals(self):
         """Test that EdgeDevice leaf nodes carry their EdgeComponent breakdown children and the children sum
@@ -698,10 +698,10 @@ class TestImpactRepartitionSankeyPresentation(TestCase):
         device = system.usage_patterns[0].devices[0]
 
         self.assertNotIn(("phase", "Manufacturing"), sankey.node_indices)
-        self.assertNotIn(("phase", "Usage"), sankey.node_indices)
+        self.assertNotIn(("phase", "Use"), sankey.node_indices)
         self.assertIn((device.id, None), sankey.node_indices)
-        self.assertNotIn((device.id, "Usage"), sankey.node_indices)
-        device_total = (device.instances_fabrication_footprint.sum() + device.energy_footprint.sum()).value
+        self.assertNotIn((device.id, "Use"), sankey.node_indices)
+        device_total = (device.instances_manufacturing_footprint.sum() + device.use_footprint.sum()).value
         device_idx = sankey.node_indices[(device.id, None)]
         self.assertAlmostEqual(
             device_total.to(u.kg).magnitude, sankey.node_total_values[device_idx], places=2)

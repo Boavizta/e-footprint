@@ -15,7 +15,7 @@ class EdgeApplianceComponent(EdgeWorkloadComponent):
     def __init__(self, name: str):
         super().__init__(
             name=name,
-            carbon_footprint_fabrication_per_unit=SourceValue(0 * u.kg),
+            carbon_footprint_manufacturing_per_unit=SourceValue(0 * u.kg),
             nb_of_units=SourceValue(1 * u.dimensionless))
 
 
@@ -53,7 +53,7 @@ class EdgeAppliance(EdgeDevice):
         "RAM, and storage. Use {class:EdgeDevice} for fully bespoke hardware with custom components.")
 
     param_descriptions = {
-        "carbon_footprint_fabrication": (
+        "carbon_footprint_manufacturing": (
             "Embodied carbon emitted to manufacture one appliance."),
         "power": (
             "Electrical power drawn at full workload."),
@@ -63,26 +63,26 @@ class EdgeAppliance(EdgeDevice):
     }
 
     default_values = {
-        "carbon_footprint_fabrication": SourceValue(100 * u.kg),
+        "carbon_footprint_manufacturing": SourceValue(100 * u.kg),
         "power": SourceValue(50 * u.W),
         "lifespan": SourceValue(6 * u.year),
         "idle_power": SourceValue(5 * u.W),
     }
 
-    def __init__(self, name: str, carbon_footprint_fabrication: ExplainableQuantity,
+    def __init__(self, name: str, carbon_footprint_manufacturing: ExplainableQuantity,
                  power: ExplainableQuantity, lifespan: ExplainableQuantity, idle_power: ExplainableQuantity):
         super().__init__(name=name, components=[], lifespan=lifespan)
-        self.carbon_footprint_fabrication = carbon_footprint_fabrication.set_label(
-            f"Carbon footprint fabrication")
+        self.carbon_footprint_manufacturing = carbon_footprint_manufacturing.set_label(
+            f"Carbon footprint manufacturing")
         self.power = power.set_label(f"Power")
         self.idle_power = idle_power.set_label(f"Idle power")
 
 
     @computed_attribute
-    def structure_carbon_footprint_fabrication(self):
-        """Structure fabrication footprint of the appliance, copied from the appliance's own fabrication footprint since there are no separate component fabrication contributions."""
-        return self.carbon_footprint_fabrication.copy().set_label(
-            f"Structure fabrication carbon footprint")
+    def structure_carbon_footprint_manufacturing(self):
+        """Structure manufacturing footprint of the appliance, copied from the appliance's own manufacturing footprint since there are no separate component manufacturing contributions."""
+        return self.carbon_footprint_manufacturing.copy().set_label(
+            f"Structure manufacturing carbon footprint")
 
     def after_init(self):
         if not self.components:

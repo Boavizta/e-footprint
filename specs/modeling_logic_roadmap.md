@@ -43,7 +43,7 @@ consensus that one cannot exist as a ship-once artifact:
    That is exactly the `idle_power` + load model already in `ServerBase`.
 2. So we model a database by **composing existing primitives**: a server
    (`server_type=serverless` for managed/pay-per-use, `autoscaling`/`on_premise` for
-   reserved/self-hosted) + `Storage` (data volume × fabrication × replication) + jobs whose
+   reserved/self-hosted) + `Storage` (data volume × manufacturing × replication) + jobs whose
    resources are supplied directly by the modeler or from measurement. The always-on engine
    capacity is explicit via `idle_power` and `base_ram_consumption`/`base_compute_consumption`.
    Shipped as a how-to; it claims no query-cost model — it just structures the model.

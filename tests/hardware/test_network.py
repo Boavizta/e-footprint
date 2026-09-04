@@ -43,7 +43,7 @@ class TestNetwork(TestCase):
     def setUp(self):
         self.network = Network("Wifi network", SourceValue(0 * u("kWh/GB"), Sources.TRAFICOM_STUDY))
 
-    def test_update_energy_footprint_per_job_uses_country_weighted_network_energy(self):
+    def test_update_use_footprint_per_job_uses_country_weighted_network_energy(self):
         usage_pattern_fr = create_mod_obj_mock(UsagePattern, name="Usage Pattern FR")
         usage_pattern_fr.country = MagicMock()
         usage_pattern_fr.country.average_carbon_intensity = SourceValue(100 * u.g / u.kWh)
@@ -73,13 +73,13 @@ class TestNetwork(TestCase):
                 patch_attribute(self.network, "bandwidth_energy_intensity", SourceValue(1 * u.kWh / u.GB)):
             mock_ups.return_value = [usage_pattern_fr, usage_pattern_us]
 
-            recompute_attribute(self.network, "energy_footprint_per_job")
+            recompute_attribute(self.network, "use_footprint_per_job")
 
-        self.assertTrue(np.allclose([0.2], self.network.energy_footprint_per_job[job_1].magnitude))
-        self.assertTrue(np.allclose([0.5], self.network.energy_footprint_per_job[job_2].magnitude))
-        self.assertEqual(u.kg, self.network.energy_footprint_per_job[job_1].unit)
+        self.assertTrue(np.allclose([0.2], self.network.use_footprint_per_job[job_1].magnitude))
+        self.assertTrue(np.allclose([0.5], self.network.use_footprint_per_job[job_2].magnitude))
+        self.assertEqual(u.kg, self.network.use_footprint_per_job[job_1].unit)
 
-    def test_energy_footprint_for_data_volume_and_usage_pattern_applies_intensity_and_carbon_intensity(self):
+    def test_use_footprint_for_data_volume_and_usage_pattern_applies_intensity_and_carbon_intensity(self):
         """Test the data→carbon physics fn: bandwidth energy intensity × data volume × the pattern's CI."""
         usage_pattern = create_mod_obj_mock(UsagePattern, name="Physics fn usage pattern")
         usage_pattern.country = MagicMock()
@@ -87,13 +87,13 @@ class TestNetwork(TestCase):
         data_volume = create_source_hourly_values_from_list([2, 4], pint_unit=u.GB)
 
         with patch_attribute(self.network, "bandwidth_energy_intensity", SourceValue(1 * u.kWh / u.GB)):
-            footprint = self.network.energy_footprint_for_data_volume_and_usage_pattern(
+            footprint = self.network.use_footprint_for_data_volume_and_usage_pattern(
                 data_volume, usage_pattern).to(u.kg)
 
         # 1 kWh/GB × [2, 4] GB × 100 g/kWh = [0.2, 0.4] kg
         self.assertTrue(np.allclose([0.2, 0.4], footprint.magnitude))
 
-    def test_compute_energy_footprint_for_job_and_usage_pattern_delegates_to_physics_fn(self):
+    def test_compute_use_footprint_for_job_and_usage_pattern_delegates_to_physics_fn(self):
         """Test the per-job method reproduces the physics fn applied to the job's per-pattern data volume."""
         usage_pattern = create_mod_obj_mock(UsagePattern, name="Thin caller usage pattern")
         usage_pattern.country = MagicMock()
@@ -103,25 +103,25 @@ class TestNetwork(TestCase):
         job.hourly_data_transferred_per_usage_pattern = {usage_pattern: job_data}
 
         with patch_attribute(self.network, "bandwidth_energy_intensity", SourceValue(0.5 * u.kWh / u.GB)):
-            per_job_footprint = self.network._compute_energy_footprint_for_job_and_usage_pattern(
+            per_job_footprint = self.network._compute_use_footprint_for_job_and_usage_pattern(
                 job, usage_pattern).to(u.kg)
-            physics_fn_footprint = self.network.energy_footprint_for_data_volume_and_usage_pattern(
+            physics_fn_footprint = self.network.use_footprint_for_data_volume_and_usage_pattern(
                 job_data, usage_pattern).to(u.kg)
 
         self.assertTrue(np.allclose(physics_fn_footprint.magnitude, per_job_footprint.magnitude))
 
-    def test_update_energy_footprint_sums_precomputed_per_job_values(self):
+    def test_update_use_footprint_sums_precomputed_per_job_values(self):
         job_1 = create_mod_obj_mock(JobBase, name="Job 1")
         job_2 = create_mod_obj_mock(JobBase, name="Job 2")
-        attach_attribute(self.network, "energy_footprint_per_job", ExplainableObjectDict({
+        attach_attribute(self.network, "use_footprint_per_job", ExplainableObjectDict({
             job_1: create_source_hourly_values_from_list([0.2, 0.4], pint_unit=u.kg),
             job_2: create_source_hourly_values_from_list([0.3, 0.1], pint_unit=u.kg),
         }))
 
-        recompute_attribute(self.network, "energy_footprint")
+        recompute_attribute(self.network, "use_footprint")
 
-        self.assertEqual(u.kg, self.network.energy_footprint.unit)
-        self.assertTrue(np.allclose([0.5, 0.5], self.network.energy_footprint.magnitude))
+        self.assertEqual(u.kg, self.network.use_footprint.unit)
+        self.assertTrue(np.allclose([0.5, 0.5], self.network.use_footprint.magnitude))
 
 
 class TestNetworkAttributionAtoms(TestCase):
@@ -178,16 +178,16 @@ class TestNetworkAttributionAtoms(TestCase):
             "network atoms system", [cls.low_ci_up, cls.high_ci_up], edge_usage_patterns=[cls.edge_up])
 
     def test_network_atoms_conserve(self):
-        """Test that Σ atoms recovers the eager energy footprint (and the empty fabrication total)."""
+        """Test that Σ atoms recovers the eager use footprint (and the empty manufacturing total)."""
         assert_source_atoms_conserve(self, self.network)
 
     def test_network_atoms_regroup_per_usage_pattern(self):
         """Test that Σ atoms over each pattern's cells recovers the pattern's job traffic converted by the
         physics fn with the pattern's own carbon intensity."""
-        usage_atoms = list(atoms_of(self.network, LifeCyclePhases.USAGE))
+        usage_atoms = list(atoms_of(self.network, LifeCyclePhases.USE))
         for usage_pattern in (self.low_ci_up, self.high_ci_up, self.edge_up):
             expected = sum(
-                (self.network.energy_footprint_for_data_volume_and_usage_pattern(
+                (self.network.use_footprint_for_data_volume_and_usage_pattern(
                     job.hourly_data_transferred_per_usage_pattern[usage_pattern], usage_pattern)
                  for job in usage_pattern.jobs
                  if usage_pattern in job.hourly_data_transferred_per_usage_pattern),
@@ -198,7 +198,7 @@ class TestNetworkAttributionAtoms(TestCase):
     def test_per_cell_carbon_intensity_never_blended(self):
         """Test that two patterns with identical traffic but a ×10 carbon-intensity ratio carry a ×10 atom
         ratio — each cell converts its own data volume with its own pattern's CI."""
-        usage_atoms = list(atoms_of(self.network, LifeCyclePhases.USAGE))
+        usage_atoms = list(atoms_of(self.network, LifeCyclePhases.USE))
         low_ci_sum = sum_atom_values(atom for atom in usage_atoms if atom.up == self.low_ci_up)
         high_ci_sum = sum_atom_values(atom for atom in usage_atoms if atom.up == self.high_ci_up)
         self.assertGreater(low_ci_sum.sum().magnitude, 0)
@@ -206,7 +206,7 @@ class TestNetworkAttributionAtoms(TestCase):
 
     def test_edge_cells_carry_rsn_and_ef_coordinates(self):
         """Test that the dual-side job's edge atoms surface at the (rsn, ef) cell with nonzero value."""
-        edge_atoms = [atom for atom in atoms_of(self.network, LifeCyclePhases.USAGE)
+        edge_atoms = [atom for atom in atoms_of(self.network, LifeCyclePhases.USE)
                       if atom.up == self.edge_up]
         self.assertTrue(edge_atoms)
         for atom in edge_atoms:

@@ -81,11 +81,11 @@ These 6 attributes dominate the file:
 
 | Attribute | Size (MB) |
 | --- | ---: |
-| `fabrication_impact_repartition_weights` | 60.64 |
+| `manufacturing_impact_repartition_weights` | 60.64 |
 | `usage_impact_repartition_weights` | 47.17 |
 | `usage_impact_repartition_weight_sum` | 45.27 |
-| `fabrication_impact_repartition_weight_sum` | 44.35 |
-| `fabrication_impact_repartition` | 13.01 |
+| `manufacturing_impact_repartition_weight_sum` | 44.35 |
+| `manufacturing_impact_repartition` | 13.01 |
 | `usage_impact_repartition` | 12.73 |
 
 Combined:
@@ -97,11 +97,11 @@ Combined:
 
 The explainability graph overhead inside these attributes is small:
 
-- `fabrication_impact_repartition_weights`: 0.33 MB graph payload
+- `manufacturing_impact_repartition_weights`: 0.33 MB graph payload
 - `usage_impact_repartition_weights`: 0.29 MB
 - `usage_impact_repartition_weight_sum`: 0.19 MB
-- `fabrication_impact_repartition_weight_sum`: 0.17 MB
-- `fabrication_impact_repartition`: 0.19 MB
+- `manufacturing_impact_repartition_weight_sum`: 0.17 MB
+- `manufacturing_impact_repartition`: 0.19 MB
 - `usage_impact_repartition`: 0.21 MB
 
 So the repartition issue is specifically about duplicated timeseries values.
@@ -139,7 +139,7 @@ Largest precursor attributes:
 | `hourly_avg_occurrences_per_usage_pattern` | 10.91 |
 | `hourly_data_transferred_per_usage_pattern` | 10.80 |
 | `full_cumulative_storage_need_per_job` | 8.47 |
-| `energy_footprint_per_job` | 7.92 |
+| `use_footprint_per_job` | 7.92 |
 | `job_repartition_weights` | 7.57 |
 | `hourly_avg_occurrences_across_usage_patterns` | 7.49 |
 | `hourly_data_transferred_across_usage_patterns` | 7.41 |
@@ -160,17 +160,17 @@ Largest class-attribute pairs:
 
 | Class / attribute | Size (MB) |
 | --- | ---: |
-| `EdgeComputer.fabrication_impact_repartition_weights` | 18.57 |
+| `EdgeComputer.manufacturing_impact_repartition_weights` | 18.57 |
 | `RecurrentEdgeProcessStorageNeed.total_hourly_need_across_usage_patterns` | 11.43 |
 | `RecurrentEdgeProcessStorageNeed.cumulative_unitary_storage_need_per_usage_pattern` | 10.52 |
 | `Storage.full_cumulative_storage_need_per_job` | 8.47 |
-| `Network.energy_footprint_per_job` | 7.92 |
+| `Network.use_footprint_per_job` | 7.92 |
 | `VideoStreamingJob.hourly_avg_occurrences_per_usage_pattern` | 6.60 |
-| `RecurrentEdgeProcess.fabrication_impact_repartition_weights` | 6.52 |
-| `RecurrentServerNeed.fabrication_impact_repartition_weights` | 6.51 |
-| `RecurrentEdgeProcessStorageNeed.fabrication_impact_repartition_weights` | 6.51 |
-| `RecurrentEdgeProcessRAMNeed.fabrication_impact_repartition_weights` | 6.51 |
-| `RecurrentEdgeProcessCPUNeed.fabrication_impact_repartition_weights` | 6.51 |
+| `RecurrentEdgeProcess.manufacturing_impact_repartition_weights` | 6.52 |
+| `RecurrentServerNeed.manufacturing_impact_repartition_weights` | 6.51 |
+| `RecurrentEdgeProcessStorageNeed.manufacturing_impact_repartition_weights` | 6.51 |
+| `RecurrentEdgeProcessRAMNeed.manufacturing_impact_repartition_weights` | 6.51 |
+| `RecurrentEdgeProcessCPUNeed.manufacturing_impact_repartition_weights` | 6.51 |
 | `RecurrentEdgeProcessCPUNeed.total_hourly_need_across_usage_patterns` | 6.50 |
 | `RecurrentEdgeProcess.usage_impact_repartition_weights` | 6.35 |
 | `RecurrentServerNeed.usage_impact_repartition_weights` | 6.34 |
@@ -178,7 +178,7 @@ Largest class-attribute pairs:
 | `RecurrentEdgeProcessRAMNeed.usage_impact_repartition_weights` | 6.34 |
 | `RecurrentEdgeProcessCPUNeed.usage_impact_repartition_weights` | 6.34 |
 | `EdgeComputer.usage_impact_repartition_weights` | 6.19 |
-| `EdgeComputer.fabrication_impact_repartition` | 5.35 |
+| `EdgeComputer.manufacturing_impact_repartition` | 5.35 |
 | `Network.usage_impact_repartition` | 4.42 |
 
 This confirms that the edge path is a major driver, but web/job/network repartition also contributes significantly.

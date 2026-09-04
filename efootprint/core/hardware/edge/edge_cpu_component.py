@@ -26,7 +26,7 @@ class EdgeCPUComponent(EdgeComponent):
 
     compatible_root_units = [u.cpu_core]
     default_values = {
-        "carbon_footprint_fabrication_per_unit": SourceValue(20 * u.kg),
+        "carbon_footprint_manufacturing_per_unit": SourceValue(20 * u.kg),
         "power_per_unit": SourceValue(15 * u.W),
         "lifespan": SourceValue(6 * u.year),
         "idle_power_per_unit": SourceValue(3 * u.W),
@@ -37,13 +37,13 @@ class EdgeCPUComponent(EdgeComponent):
 
     # compute_per_unit and base_compute_consumption are None (and not stored) for subclasses that
     # compute them from the parent device (EdgeComputerCPUComponent) — assigning a computed name raises.
-    def __init__(self, name: str, carbon_footprint_fabrication_per_unit: ExplainableQuantity = None,
+    def __init__(self, name: str, carbon_footprint_manufacturing_per_unit: ExplainableQuantity = None,
                  power_per_unit: ExplainableQuantity = None, lifespan: ExplainableQuantity = None,
                  idle_power_per_unit: ExplainableQuantity = None, compute_per_unit: ExplainableQuantity = None,
                  base_compute_consumption: ExplainableQuantity = None,
                  nb_of_units: ExplainableQuantity | None = None):
         super().__init__(
-            name, carbon_footprint_fabrication_per_unit, power_per_unit, lifespan, idle_power_per_unit,
+            name, carbon_footprint_manufacturing_per_unit, power_per_unit, lifespan, idle_power_per_unit,
             nb_of_units=nb_of_units)
         if compute_per_unit is not None:
             self.compute_per_unit = compute_per_unit.set_label(f"Compute per unit")

@@ -99,9 +99,9 @@ class TestBoaviztaCloudServer(unittest.TestCase):
         self.assertIn("scaleway", ancestors_str_reprs)
         self.assertIn("dev1-s", ancestors_str_reprs)
 
-    def test_update_carbon_footprint_fabrication(self):
+    def test_update_carbon_footprint_manufacturing(self):
         """
-        Test that update_carbon_footprint_fabrication uses self.api_call_response.value to set the attribute.
+        Test that update_carbon_footprint_manufacturing uses self.api_call_response.value to set the attribute.
         We'll skip calling boaviztapi for simplicity; we'll just patch the existing api_call_response
         to mimic the data we want.
         """
@@ -112,13 +112,13 @@ class TestBoaviztaCloudServer(unittest.TestCase):
         # Provide a pre-populated ExplainableQuantity as if update_api_call_response had run
         attach_attribute(self.test_server, "api_call_response", ExplainableObject(mock_data, "API call response"))
 
-        recompute_attribute(self.test_server, "carbon_footprint_fabrication")
+        recompute_attribute(self.test_server, "carbon_footprint_manufacturing")
         self.assertEqual(
-            self.test_server.carbon_footprint_fabrication.value,
+            self.test_server.carbon_footprint_manufacturing.value,
             123.45 * u.kg
         )
-        self.assertIn("fabrication carbon footprint",
-                      self.test_server.carbon_footprint_fabrication.label.lower())
+        self.assertIn("manufacturing carbon footprint",
+                      self.test_server.carbon_footprint_manufacturing.label.lower())
 
     def test_update_power(self):
         """

@@ -119,9 +119,9 @@ class TestPerformanceGates(TestCase):
         gated_ms = self._measure_nudge_and_read_ms_per_iteration(
             job, new_values, lambda: job.hourly_data_transferred_per_usage_pattern[usage_pattern].sum())
         mid_graph_ms = self._measure_nudge_and_read_ms_per_iteration(
-            job, new_values, lambda: network.energy_footprint_per_job[job].sum(), nb_iterations=300)
+            job, new_values, lambda: network.use_footprint_per_job[job].sum(), nb_iterations=300)
         hub_ms = self._measure_nudge_and_read_ms_per_iteration(
-            job, new_values, lambda: network.energy_footprint.sum(), nb_iterations=300)
+            job, new_values, lambda: network.use_footprint.sum(), nb_iterations=300)
         logger.info(
             f"Nudge-and-read loop gate: {gated_ms:.3f} ms/iteration on the calibration target vs baseline "
             f"{baseline_ms_per_iteration} ms ({baseline_ms_per_iteration / gated_ms:.1f}x, threshold 10x). "

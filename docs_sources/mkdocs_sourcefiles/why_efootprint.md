@@ -69,7 +69,7 @@ Lastly, many ecodesign actions involve changing the way users interact with the 
 
 We now have a framework for thinking about the physicality of our digital service: **digital services must at least be described in terms of usage journeys ({class:UsageJourney}) with their usage information ({class:UsagePattern}). Each user journey is made of steps ({class:UsageJourneyStep}) that make requests ({class:Job}) through a network ({class:Network}), on a server ({class:Server}), possibly saving data to storage ({class:Storage}).** This usage-and-functionality language is also what lets the model speak to tech professionals with a less technical background, not only to architects and developers.
 
-Moreover, it is necessary to take a life cycle analysis approach to understand all aspects of environmental impact from cradle to grave. Here the orders of magnitude show that focusing on the fabrication and run phases of the service is a good first approximation, neglecting transport and end of life.
+Moreover, it is necessary to take a life cycle analysis approach to understand all aspects of environmental impact from cradle to grave. Here the orders of magnitude show that focusing on the manufacturing and run phases of the service is a good first approximation, neglecting transport and end of life.
 
 ## The difference between the model and the modeling
 

@@ -26,7 +26,7 @@ class EdgeRAMComponent(EdgeComponent):
 
     compatible_root_units = [u.bit_ram]
     default_values = {
-        "carbon_footprint_fabrication_per_unit": SourceValue(20 * u.kg),
+        "carbon_footprint_manufacturing_per_unit": SourceValue(20 * u.kg),
         "power_per_unit": SourceValue(10 * u.W),
         "lifespan": SourceValue(6 * u.year),
         "idle_power_per_unit": SourceValue(2 * u.W),
@@ -37,13 +37,13 @@ class EdgeRAMComponent(EdgeComponent):
 
     # ram_per_unit and base_ram_consumption are None (and not stored) for subclasses that compute them
     # from the parent device (EdgeComputerRAMComponent) — assigning a computed name raises.
-    def __init__(self, name: str, carbon_footprint_fabrication_per_unit: ExplainableQuantity = None,
+    def __init__(self, name: str, carbon_footprint_manufacturing_per_unit: ExplainableQuantity = None,
                  power_per_unit: ExplainableQuantity = None, lifespan: ExplainableQuantity = None,
                  idle_power_per_unit: ExplainableQuantity = None, ram_per_unit: ExplainableQuantity = None,
                  base_ram_consumption: ExplainableQuantity = None,
                  nb_of_units: ExplainableQuantity | None = None):
         super().__init__(
-            name, carbon_footprint_fabrication_per_unit, power_per_unit, lifespan, idle_power_per_unit,
+            name, carbon_footprint_manufacturing_per_unit, power_per_unit, lifespan, idle_power_per_unit,
             nb_of_units=nb_of_units)
         if ram_per_unit is not None:
             self.ram_per_unit = ram_per_unit.set_label(f"RAM per unit").to(u.GB_ram)

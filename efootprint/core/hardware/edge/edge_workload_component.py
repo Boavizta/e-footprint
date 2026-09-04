@@ -25,19 +25,19 @@ class EdgeWorkloadComponent(EdgeComponent):
 
     compatible_root_units = [u.concurrent]
     default_values = {
-        "carbon_footprint_fabrication_per_unit": SourceValue(100 * u.kg),
+        "carbon_footprint_manufacturing_per_unit": SourceValue(100 * u.kg),
         "power_per_unit": SourceValue(50 * u.W),
         "lifespan": SourceValue(6 * u.year),
         "idle_power_per_unit": SourceValue(5 * u.W),
         "nb_of_units": SourceValue(1 * u.dimensionless),
     }
 
-    def __init__(self, name: str, carbon_footprint_fabrication_per_unit: ExplainableQuantity = None,
+    def __init__(self, name: str, carbon_footprint_manufacturing_per_unit: ExplainableQuantity = None,
                  power_per_unit: ExplainableQuantity = None, lifespan: ExplainableQuantity = None,
                  idle_power_per_unit: ExplainableQuantity = None,
                  nb_of_units: ExplainableQuantity | None = None):
         super().__init__(
-            name, carbon_footprint_fabrication_per_unit, power_per_unit, lifespan, idle_power_per_unit,
+            name, carbon_footprint_manufacturing_per_unit, power_per_unit, lifespan, idle_power_per_unit,
             nb_of_units=nb_of_units)
 
 

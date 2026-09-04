@@ -39,7 +39,7 @@ ecologits_input_hypotheses = [elt for elt in ECOLOGITS_UNIT_MAPPING if elt not i
 
 
 class EcoLogitsGenAIExternalAPIServer(EcoLogitsExternalAPIServerBase):
-    """Virtual server backing an {class:EcoLogitsGenAIExternalAPI}. Aggregates the per-request fabrication and energy footprints emitted by the underlying EcoLogits model into hourly footprints."""
+    """Virtual server backing an {class:EcoLogitsGenAIExternalAPI}. Aggregates the per-request manufacturing and use footprints emitted by the underlying EcoLogits model into hourly footprints."""
 
     param_descriptions = {}
 

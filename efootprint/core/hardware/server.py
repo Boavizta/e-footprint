@@ -9,7 +9,7 @@ from efootprint.core.hardware.server_base import ServerBase, ServerTypes
 
 
 class Server(ServerBase):
-    """A physical or virtual machine with CPU and RAM that runs jobs as part of a digital service. Resource use is computed from the jobs it hosts and rolled up into an hourly energy and fabrication footprint."""
+    """A physical or virtual machine with CPU and RAM that runs jobs as part of a digital service. Resource use is computed from the jobs it hosts and rolled up into an hourly energy and manufacturing footprint."""
 
     def _abc_marker(self):
         pass  # silent override
@@ -18,7 +18,7 @@ class Server(ServerBase):
         "Use {class:Server} for CPU-bound workloads with manually defined hardware specifications. "
         "Use {class:GPUServer} for GPU-bound workloads such as model training or inference. "
         "Use {class:BoaviztaCloudServer} for cloud instances whose hardware specifications and "
-        "fabrication footprint should be looked up automatically from Boavizta reference data.")
+        "manufacturing footprint should be looked up automatically from Boavizta reference data.")
 
     param_descriptions = {
         **ServerBase.param_descriptions,
@@ -33,7 +33,7 @@ class Server(ServerBase):
 
     default_values =  {
             "server_type": ServerTypes.autoscaling(),
-            "carbon_footprint_fabrication": SourceValue(600 * u.kg, Sources.BASE_ADEME_V19),
+            "carbon_footprint_manufacturing": SourceValue(600 * u.kg, Sources.BASE_ADEME_V19),
             "power": SourceValue(300 * u.W),
             "lifespan": SourceValue(6 * u.year),
             "idle_power": SourceValue(50 * u.W),
@@ -50,7 +50,7 @@ class Server(ServerBase):
     # The hardware-spec params default to None like ServerBase's because BoaviztaCloudServer subclasses
     # Server and computes them from the Boavizta API response.
     def __init__(self, name: str, server_type: ExplainableObject,
-                 carbon_footprint_fabrication: ExplainableQuantity = None, power: ExplainableQuantity = None,
+                 carbon_footprint_manufacturing: ExplainableQuantity = None, power: ExplainableQuantity = None,
                  lifespan: ExplainableQuantity = None, idle_power: ExplainableQuantity = None,
                  ram: ExplainableQuantity = None, compute: ExplainableQuantity = None,
                  power_usage_effectiveness: ExplainableQuantity = None,
@@ -59,6 +59,6 @@ class Server(ServerBase):
                  base_compute_consumption: ExplainableQuantity = None, storage: Storage = None,
                  fixed_nb_of_instances: ExplainableQuantity | EmptyExplainableObject = None):
         super().__init__(
-            name, server_type, carbon_footprint_fabrication, power, lifespan, idle_power, ram, compute,
+            name, server_type, carbon_footprint_manufacturing, power, lifespan, idle_power, ram, compute,
             power_usage_effectiveness, average_carbon_intensity, utilization_rate, base_ram_consumption,
             base_compute_consumption, storage, fixed_nb_of_instances)

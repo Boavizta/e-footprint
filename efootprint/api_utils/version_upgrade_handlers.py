@@ -810,6 +810,34 @@ def upgrade_version_23_to_24(system_dict, efootprint_classes_dict=None):
         "and renamed occurrence/deployment fields.")
     return system_dict
 
+def upgrade_version_24_to_25(system_dict, efootprint_classes_dict=None):
+    """Version 25 adopts manufacturing/use lifecycle terminology throughout serialized models."""
+    replacements = (
+        ("energy_footprints", "use_footprints"),
+        ("energy_footprint", "use_footprint"),
+        ("Energy footprints", "Use footprints"),
+        ("Energy footprint", "Use footprint"),
+        ("energy footprints", "use footprints"),
+        ("energy footprint", "use footprint"),
+        ("FABRICATION", "MANUFACTURING"),
+        ("Fabrication", "Manufacturing"),
+        ("fabrication", "manufacturing"),
+    )
+
+    def rename(value):
+        if isinstance(value, dict):
+            return {rename(key): rename(item) for key, item in value.items()}
+        if isinstance(value, list):
+            return [rename(item) for item in value]
+        if isinstance(value, str):
+            for old, new in replacements:
+                value = value.replace(old, new)
+        return value
+
+    system_dict = rename(system_dict)
+    logger.info("Upgraded system dict from version 24 to 25: renamed lifecycle terminology.")
+    return system_dict
+
 
 VERSION_UPGRADE_HANDLERS = {
     9: upgrade_version_9_to_10,
@@ -827,4 +855,5 @@ VERSION_UPGRADE_HANDLERS = {
     21: upgrade_version_21_to_22,
     22: upgrade_version_22_to_23,
     23: upgrade_version_23_to_24,
+    24: upgrade_version_24_to_25,
 }

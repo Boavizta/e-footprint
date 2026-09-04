@@ -24,7 +24,7 @@ class ExternalAPIServer(ModelingObject, AttributionSource):
 
     @computed_attribute(serialize=True, purposes={ComputationPurpose.FOOTPRINT})
     @abstractmethod
-    def instances_fabrication_footprint(self):
+    def instances_manufacturing_footprint(self):
         pass
 
     @computed_attribute
@@ -34,7 +34,7 @@ class ExternalAPIServer(ModelingObject, AttributionSource):
 
     @computed_attribute(serialize=True, purposes={ComputationPurpose.FOOTPRINT})
     @abstractmethod
-    def energy_footprint(self):
+    def use_footprint(self):
         pass
 
     @abstractmethod
@@ -98,16 +98,16 @@ class ExternalAPI(ModelingObject):
         return self.modeling_obj_containers
 
     @property
-    def instances_fabrication_footprint(self) -> ExplainableHourlyQuantities:
-        return self.server.instances_fabrication_footprint
+    def instances_manufacturing_footprint(self) -> ExplainableHourlyQuantities:
+        return self.server.instances_manufacturing_footprint
 
     @property
     def instances_energy(self) -> ExplainableHourlyQuantities:
         return self.server.instances_energy
 
     @property
-    def energy_footprint(self) -> ExplainableHourlyQuantities:
-        return self.server.energy_footprint
+    def use_footprint(self) -> ExplainableHourlyQuantities:
+        return self.server.use_footprint
 
     def self_delete(self):
         super().self_delete()

@@ -17,11 +17,11 @@ if TYPE_CHECKING:
 
 
 class Device(HardwareBase, AttributionSource):
-    """End-user hardware (smartphone, laptop, set-top box, screen) on which a {class:UsageJourney} is performed. Contributes both fabrication and electricity-use emissions to each {class:UsagePattern} that runs on it."""
+    """End-user hardware (smartphone, laptop, set-top box, screen) on which a {class:UsageJourney} is performed. Contributes both manufacturing and electricity-use emissions to each {class:UsagePattern} that runs on it."""
 
     pitfalls = (
         "{param:Device.fraction_of_usage_time} is used to compute effective usage lifespan by multiplying with device "
-        "lifespan in years. This effective usage lifespan is then used to compute fabrication amortization.")
+        "lifespan in years. This effective usage lifespan is then used to compute manufacturing amortization.")
 
     interactions = (
         "Pass a list of {class:Device}s to {param:UsagePattern.devices}. Use the archetype helpers "
@@ -37,7 +37,7 @@ class Device(HardwareBase, AttributionSource):
     }
 
     default_values =  {
-            "carbon_footprint_fabrication": SourceValue(150 * u.kg),
+            "carbon_footprint_manufacturing": SourceValue(150 * u.kg),
             "power": SourceValue(50 * u.W),
             "lifespan": SourceValue(6 * u.year),
             "fraction_of_usage_time": SourceValue(7 * u.hour / u.day)
@@ -46,7 +46,7 @@ class Device(HardwareBase, AttributionSource):
     @classmethod
     def smartphone(cls, name="Default smartphone", **kwargs):
         output_args = {
-            "carbon_footprint_fabrication": SourceValue(30 * u.kg, Sources.BASE_ADEME_V19),
+            "carbon_footprint_manufacturing": SourceValue(30 * u.kg, Sources.BASE_ADEME_V19),
             "power": SourceValue(1 * u.W),
             "lifespan": SourceValue(3 * u.year),
             "fraction_of_usage_time": SourceValue(3.6 * u.hour / u.day, Sources.STATE_OF_MOBILE_2022)
@@ -59,7 +59,7 @@ class Device(HardwareBase, AttributionSource):
     @classmethod
     def laptop(cls, name="Default laptop", **kwargs):
         output_args = {
-            "carbon_footprint_fabrication": SourceValue(156 * u.kg, Sources.BASE_ADEME_V19),
+            "carbon_footprint_manufacturing": SourceValue(156 * u.kg, Sources.BASE_ADEME_V19),
             "power": SourceValue(50 * u.W),
             "lifespan": SourceValue(6 * u.year),
             "fraction_of_usage_time": SourceValue(7 * u.hour / u.day, Sources.STATE_OF_MOBILE_2022)
@@ -72,7 +72,7 @@ class Device(HardwareBase, AttributionSource):
     @classmethod
     def box(cls, name="Default box", **kwargs):
         output_args = {
-            "carbon_footprint_fabrication": SourceValue(78 * u.kg, Sources.BASE_ADEME_V19),
+            "carbon_footprint_manufacturing": SourceValue(78 * u.kg, Sources.BASE_ADEME_V19),
             "power": SourceValue(10 * u.W),
             "lifespan": SourceValue(6 * u.year),
             "fraction_of_usage_time": SourceValue(24 * u.hour / u.day)
@@ -85,7 +85,7 @@ class Device(HardwareBase, AttributionSource):
     @classmethod
     def screen(cls, name="Default screen", **kwargs):
         output_args = {
-            "carbon_footprint_fabrication": SourceValue(222 * u.kg, Sources.BASE_ADEME_V19),
+            "carbon_footprint_manufacturing": SourceValue(222 * u.kg, Sources.BASE_ADEME_V19),
             "power": SourceValue(30 * u.W),
             "lifespan": SourceValue(6 * u.year),
             "fraction_of_usage_time": SourceValue(7 * u.hour / u.day)
@@ -99,9 +99,9 @@ class Device(HardwareBase, AttributionSource):
     def archetypes(cls):
         return [cls.smartphone, cls.laptop, cls.box, cls.screen]
 
-    def __init__(self, name: str, carbon_footprint_fabrication: ExplainableQuantity, power: ExplainableQuantity,
+    def __init__(self, name: str, carbon_footprint_manufacturing: ExplainableQuantity, power: ExplainableQuantity,
                  lifespan: ExplainableQuantity, fraction_of_usage_time: ExplainableQuantity):
-        super().__init__(name, carbon_footprint_fabrication, power, lifespan, fraction_of_usage_time)
+        super().__init__(name, carbon_footprint_manufacturing, power, lifespan, fraction_of_usage_time)
 
 
     @property
@@ -124,7 +124,7 @@ class Device(HardwareBase, AttributionSource):
 
 
     @computed_dict(keys="usage_patterns")
-    def energy_footprint_per_usage_pattern(self, usage_pattern: "UsagePattern"):
+    def use_footprint_per_usage_pattern(self, usage_pattern: "UsagePattern"):
         """Hourly carbon emissions caused by the device's electricity use, broken down by usage pattern. Equal to the energy spent by concurrent journeys times the country's grid carbon intensity."""
         energy_spent_over_one_full_hour_by_one_device = self.power * ExplainableQuantity(1 * u.hour, "one full hour")
         instances_energy = (
@@ -136,32 +136,32 @@ class Device(HardwareBase, AttributionSource):
         ).to(u.kg).set_label(f"Usage footprint for {usage_pattern.name}")
 
     @computed_attribute(serialize=True, purposes={ComputationPurpose.FOOTPRINT})
-    def energy_footprint(self):
+    def use_footprint(self):
         """Total hourly carbon emissions caused by the device's electricity use, summed across all usage patterns that run on this device."""
         return sum(
-            self.energy_footprint_per_usage_pattern.values(), start=EmptyExplainableObject()
-        ).set_label(f"Devices energy footprint")
+            self.use_footprint_per_usage_pattern.values(), start=EmptyExplainableObject()
+        ).set_label(f"Devices use footprint")
 
     @property
-    def device_fabrication_footprint_over_one_hour(self):
-        return (self.carbon_footprint_fabrication * ExplainableQuantity(1 * u.hour, "one hour")
+    def device_manufacturing_footprint_over_one_hour(self):
+        return (self.carbon_footprint_manufacturing * ExplainableQuantity(1 * u.hour, "one hour")
                 / (self.lifespan * self.fraction_of_usage_time)).to(u.g).set_label(
-            "Fabrication footprint over one hour")
+            "Manufacturing footprint over one hour")
 
     @computed_dict(keys="usage_patterns")
-    def instances_fabrication_footprint_per_usage_pattern(self, usage_pattern: "UsagePattern"):
-        """Hourly fabrication-phase emissions of all devices in use, broken down by usage pattern. Equal to one device's hourly amortised embodied carbon (lifespan and usage-time-adjusted) multiplied by the number of journeys concurrently in progress."""
+    def instances_manufacturing_footprint_per_usage_pattern(self, usage_pattern: "UsagePattern"):
+        """Hourly manufacturing-phase emissions of all devices in use, broken down by usage pattern. Equal to one device's hourly amortised embodied carbon (lifespan and usage-time-adjusted) multiplied by the number of journeys concurrently in progress."""
         return (
             self.nb_journeys_in_parallel_per_usage_pattern[usage_pattern]
-            * self.device_fabrication_footprint_over_one_hour).to(u.kg).set_label(
-            f"Fabrication footprint for {usage_pattern.name}")
+            * self.device_manufacturing_footprint_over_one_hour).to(u.kg).set_label(
+            f"Manufacturing footprint for {usage_pattern.name}")
 
     @computed_attribute(serialize=True, purposes={ComputationPurpose.FOOTPRINT})
-    def instances_fabrication_footprint(self):
-        """Total hourly fabrication-phase emissions of all devices in use, summed across all usage patterns that run on this device."""
+    def instances_manufacturing_footprint(self):
+        """Total hourly manufacturing-phase emissions of all devices in use, summed across all usage patterns that run on this device."""
         return sum(
-            self.instances_fabrication_footprint_per_usage_pattern.values(), start=EmptyExplainableObject()
-        ).set_label(f"Devices fabrication footprint")
+            self.instances_manufacturing_footprint_per_usage_pattern.values(), start=EmptyExplainableObject()
+        ).set_label(f"Devices manufacturing footprint")
 
     def attribution_atoms(self, phase: LifeCyclePhases):
         """One atom per (step, up) cell of the device's patterns — no shares: each cell is computed ground-up
@@ -169,26 +169,26 @@ class Device(HardwareBase, AttributionSource):
         the step's times-per-journey weight).
 
         USAGE        atom = (power × 1h) × occupancy(step, up) × up.country.average_carbon_intensity
-        FABRICATION  atom = device_fabrication_footprint_over_one_hour × occupancy(step, up)
+        MANUFACTURING  atom = device_manufacturing_footprint_over_one_hour × occupancy(step, up)
 
         Since occupancies summed over a journey's steps tile nb_usage_journeys_in_parallel, Σ over a
-        pattern's steps recovers energy_footprint_per_usage_pattern[up] /
-        instances_fabrication_footprint_per_usage_pattern[up], and Σ over all atoms the eager phase totals.
+        pattern's steps recovers use_footprint_per_usage_pattern[up] /
+        instances_manufacturing_footprint_per_usage_pattern[up], and Σ over all atoms the eager phase totals.
         """
         energy_over_one_occupied_hour = (
             self.power * ExplainableQuantity(1 * u.hour, "one full hour")).to(u.kWh)
-        fabrication_over_one_occupied_hour = self.device_fabrication_footprint_over_one_hour
+        manufacturing_over_one_occupied_hour = self.device_manufacturing_footprint_over_one_hour
         for usage_pattern in self.usage_patterns:
             for journey in usage_pattern.usage_journeys:
                 from efootprint.core.usage.usage_journey_step import UsageJourneyStepCoordinate
                 coordinate = UsageJourneyStepCoordinate(usage_pattern, journey)
                 for uj_step in journey.uj_steps:
                     occupancy = uj_step.hourly_avg_occurrences_per_usage_coordinate[coordinate]
-                    if phase == LifeCyclePhases.USAGE:
+                    if phase == LifeCyclePhases.USE:
                         value = (energy_over_one_occupied_hour * occupancy
                                  * usage_pattern.country.average_carbon_intensity)
                     else:
-                        value = fabrication_over_one_occupied_hour * occupancy
+                        value = manufacturing_over_one_occupied_hour * occupancy
                     yield Atom(
                         source=self, stream="single", up=usage_pattern, journey=journey, step=uj_step,
                         value=value.to(u.kg).set_label(

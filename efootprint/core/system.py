@@ -31,7 +31,7 @@ from efootprint.core.attribution import attribution_sources, evict_attribution_s
 
 
 class System(ModelingObject):
-    """Top-level container of an e-footprint model. Aggregates one or more {class:UsagePattern}s and {class:EdgeUsagePattern}s and exposes the total fabrication and energy footprint of the modeled digital service."""
+    """Top-level container of an e-footprint model. Aggregates one or more {class:UsagePattern}s and {class:EdgeUsagePattern}s and exposes the total manufacturing and use footprint of the modeled digital service."""
 
     interactions = (
         "Construct {class:System} last, once all {class:UsagePattern} and {class:EdgeUsagePattern} objects "
@@ -201,27 +201,27 @@ class System(ModelingObject):
         return result
 
     @property
-    def fabrication_footprints(self) -> Dict[str, Dict[str, ExplainableHourlyQuantities]]:
-        return {category: {obj: obj.instances_fabrication_footprint for obj in objs
-                           if hasattr(obj, "instances_fabrication_footprint")}
+    def manufacturing_footprints(self) -> Dict[str, Dict[str, ExplainableHourlyQuantities]]:
+        return {category: {obj: obj.instances_manufacturing_footprint for obj in objs
+                           if hasattr(obj, "instances_manufacturing_footprint")}
                 for category, objs in self._objects_by_category().items()}
 
     @property
-    def energy_footprints(self) -> Dict[str, Dict[str, ExplainableHourlyQuantities]]:
-        return {category: {obj: obj.energy_footprint for obj in objs if hasattr(obj, "energy_footprint")}
+    def use_footprints(self) -> Dict[str, Dict[str, ExplainableHourlyQuantities]]:
+        return {category: {obj: obj.use_footprint for obj in objs if hasattr(obj, "use_footprint")}
                 for category, objs in self._objects_by_category().items()}
 
     @property
-    def total_fabrication_footprints(self) -> Dict[str, ExplainableHourlyQuantities]:
+    def total_manufacturing_footprints(self) -> Dict[str, ExplainableHourlyQuantities]:
         return {category: sum(objs.values(), start=EmptyExplainableObject()).to(u.kg).set_label(
-            f"{category} total fabrication footprint")
-            for category, objs in self.fabrication_footprints.items()}
+            f"{category} total manufacturing footprint")
+            for category, objs in self.manufacturing_footprints.items()}
 
     @property
-    def total_energy_footprints(self) -> Dict[str, ExplainableHourlyQuantities]:
+    def total_use_footprints(self) -> Dict[str, ExplainableHourlyQuantities]:
         return {category: sum(objs.values(), start=EmptyExplainableObject()).to(u.kg).set_label(
-            f"{category} total energy footprint")
-            for category, objs in self.energy_footprints.items()}
+            f"{category} total use footprint")
+            for category, objs in self.use_footprints.items()}
 
     @staticmethod
     def sum_and_remove_empty_explainable_object(expl_obj):
@@ -232,64 +232,64 @@ class System(ModelingObject):
         return tmp_sum
 
     @property
-    def fabrication_footprint_sum_over_period(self) -> Dict[str, Dict[ModelingObject, ExplainableQuantity]]:
+    def manufacturing_footprint_sum_over_period(self) -> Dict[str, Dict[ModelingObject, ExplainableQuantity]]:
         fab_footprints_sum = {}
-        for category_key, category_dict in self.fabrication_footprints.items():
+        for category_key, category_dict in self.manufacturing_footprints.items():
             fab_footprints_sum[category_key] = {
                 obj_key: self.sum_and_remove_empty_explainable_object(obj_value).to(u.kg).set_label(
-                    f"{obj_key.name} fabrication footprints summed over modeling period")
+                    f"{obj_key.name} manufacturing footprints summed over modeling period")
                 for obj_key, obj_value in category_dict.items()
             }
 
         return fab_footprints_sum
 
     @property
-    def energy_footprint_sum_over_period(self) -> Dict[str, Dict[ModelingObject, ExplainableQuantity]]:
-        energy_footprints_sum = {}
-        for key, dict_value in self.energy_footprints.items():
-            energy_footprints_sum[key] = {
+    def use_footprint_sum_over_period(self) -> Dict[str, Dict[ModelingObject, ExplainableQuantity]]:
+        use_footprints_sum = {}
+        for key, dict_value in self.use_footprints.items():
+            use_footprints_sum[key] = {
                 obj_key: self.sum_and_remove_empty_explainable_object(obj_value).to(u.kg).set_label(
-                    f"{obj_key.name} energy footprints summed over modeling period")
+                    f"{obj_key.name} use footprints summed over modeling period")
                 for obj_key, obj_value in dict_value.items()
             }
 
-        return energy_footprints_sum
+        return use_footprints_sum
 
     @property
-    def total_fabrication_footprint_sum_over_period(self) -> Dict[str, ExplainableQuantity]:
+    def total_manufacturing_footprint_sum_over_period(self) -> Dict[str, ExplainableQuantity]:
         fab_footprints = {
             object_category: self.sum_and_remove_empty_explainable_object(category_value).to(u.kg).set_label(
-                f"{object_category} total fabrication footprints summed over modeling period")
-            for object_category, category_value in self.total_fabrication_footprints.items()
+                f"{object_category} total manufacturing footprints summed over modeling period")
+            for object_category, category_value in self.total_manufacturing_footprints.items()
         }
 
         return ExplainableObjectDict(fab_footprints)
 
     @property
-    def total_energy_footprint_sum_over_period(self) -> Dict[str, ExplainableQuantity]:
-        energy_footprints = {
+    def total_use_footprint_sum_over_period(self) -> Dict[str, ExplainableQuantity]:
+        use_footprints = {
             object_category: self.sum_and_remove_empty_explainable_object(category_value).to(u.kg).set_label(
-                f"{object_category} total energy footprints summed over modeling period")
-            for object_category, category_value in self.total_energy_footprints.items()
+                f"{object_category} total use footprints summed over modeling period")
+            for object_category, category_value in self.total_use_footprints.items()
         }
 
-        return ExplainableObjectDict(energy_footprints)
+        return ExplainableObjectDict(use_footprints)
 
     @computed_attribute(serialize=True, purposes={ComputationPurpose.FOOTPRINT})
     def total_footprint(self):
-        """Total system carbon footprint as an hourly timeseries, summing fabrication and energy footprints across every category of object (servers, storages, devices, networks, edge components)."""
+        """Total system carbon footprint as an hourly timeseries, summing manufacturing and use footprints across every category of object (servers, storages, devices, networks, edge components)."""
         # Relationship edits can change containment after construction, so validate again at the footprint boundary.
         self.check_no_object_to_link_is_already_linked_to_another_system()
-        # Snapshot the category breakdown once. Without this, `self.fabrication_footprints` and
-        # `self.energy_footprints` each rebuild `_objects_by_category()` (which walks `all_linked_objects`
-        # and re-derives jobs/servers/etc. from scratch), and the `for key in self.fabrication_footprints`
+        # Snapshot the category breakdown once. Without this, `self.manufacturing_footprints` and
+        # `self.use_footprints` each rebuild `_objects_by_category()` (which walks `all_linked_objects`
+        # and re-derives jobs/servers/etc. from scratch), and the `for key in self.manufacturing_footprints`
         # iteration would do it a third time. Each rebuild costs ~3 ms on a system of ~200 objects.
         categories = self._objects_by_category()
-        fab = {category: [obj.instances_fabrication_footprint for obj in objs
-                          if hasattr(obj, "instances_fabrication_footprint")]
+        fab = {category: [obj.instances_manufacturing_footprint for obj in objs
+                          if hasattr(obj, "instances_manufacturing_footprint")]
                for category, objs in categories.items()}
-        energy = {category: [obj.energy_footprint for obj in objs
-                             if hasattr(obj, "energy_footprint")]
+        energy = {category: [obj.use_footprint for obj in objs
+                             if hasattr(obj, "use_footprint")]
                   for category, objs in categories.items()}
         total_footprint = sum(
             [sum(fab[key]) + sum(energy[key]) for key in fab],
@@ -371,8 +371,8 @@ class System(ModelingObject):
         import plotly.express as px
         import plotly
 
-        fab_footprints = self.fabrication_footprint_sum_over_period
-        energy_footprints = self.energy_footprint_sum_over_period
+        fab_footprints = self.manufacturing_footprint_sum_over_period
+        use_footprints = self.use_footprint_sum_over_period
 
         rows_as_dicts = []
         total_footprint_sum_display = self.total_footprint.sum().display_quantity
@@ -382,9 +382,9 @@ class System(ModelingObject):
 
         for category in fab_footprints:
             fab_objects = sorted(fab_footprints[category].items(), key=lambda x: x[0].name)
-            energy_objects = sorted(energy_footprints[category].items(), key=lambda x: x[0].name)
+            energy_objects = sorted(use_footprints[category].items(), key=lambda x: x[0].name)
 
-            for objs, color in zip([energy_objects, fab_objects], ["Electricity", "Fabrication"]):
+            for objs, color in zip([energy_objects, fab_objects], ["Electricity", "Manufacturing"]):
                 for object, expl_quantity in objs:
                     display_quantity = expl_quantity.display_quantity
                     amount_str = display_quantity_as_str(display_quantity)
@@ -412,9 +412,9 @@ class System(ModelingObject):
         )
 
         # Legend placement logic
-        total_energy_servers = sum(energy_footprints["Servers"].values(), start=0)
+        total_energy_servers = sum(use_footprints["Servers"].values(), start=0)
         total_fab_servers = sum(fab_footprints["Servers"].values(), start=0)
-        total_energy_devices = sum(energy_footprints["Devices"].values(), start=0)
+        total_energy_devices = sum(use_footprints["Devices"].values(), start=0)
         total_fab_devices = sum(fab_footprints["Devices"].values(), start=0)
 
         if (total_energy_servers + total_fab_servers) > (total_energy_devices + total_fab_devices):
@@ -434,7 +434,7 @@ class System(ModelingObject):
         total_by_cat_type = df.groupby(["Category", "Type"])[value_colname].sum()
 
         for (category, source_type), height_val in total_by_cat_type.items():
-            x_shift = 30 if source_type == 'Fabrication' else -30
+            x_shift = 30 if source_type == 'Manufacturing' else -30
             percentage = int((height_val / total_co2) * 100)
 
             fig.add_annotation(

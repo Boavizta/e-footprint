@@ -9,7 +9,7 @@ The fleet is described in two passes.
 
 A single deployed unit is an {class:EdgeDevice}: a chassis with
 embodied carbon, plus a list of {class:EdgeComponent}s that carry their
-own fabrication and operational impact. The available component types
+own manufacturing and operational impact. The available component types
 are {class:EdgeRAMComponent}, {class:EdgeCPUComponent},
 {class:EdgeStorage}, and {class:EdgeWorkloadComponent}, the last being
 a linear whole-device utilisation curve used when the internal
@@ -29,7 +29,7 @@ a given country (see {doc:usage_edge_index}). The total count of any
 single device is the unrolled group multiplicity times the deployment
 count from the pattern.
 
-The fabrication and operational footprint of the fleet — typically
+The manufacturing and operational footprint of the fleet — typically
 the dominant output of an edge model — comes out of this combination.
 
 New to this paradigm? Start with {doc:web_vs_edge} for the mental model

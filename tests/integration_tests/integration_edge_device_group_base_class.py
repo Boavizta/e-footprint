@@ -200,18 +200,18 @@ class IntegrationEdgeDeviceGroupBaseClass(IntegrationTestBaseClass):
         self.assertGreater(float(str(total).split()[0]), 0)
 
     def run_test_breakdown_by_source_sums_to_edge_device_totals(self):
-        """Σ fabrication/energy breakdowns must equal instances_fabrication_footprint / energy_footprint."""
-        fabrication_breakdown_sum = sum(
-            self.edge_device.fabrication_footprint_breakdown_by_source.values(), start=EmptyExplainableObject())
+        """Σ manufacturing/energy breakdowns must equal instances_manufacturing_footprint / use_footprint."""
+        manufacturing_breakdown_sum = sum(
+            self.edge_device.manufacturing_footprint_breakdown_by_source.values(), start=EmptyExplainableObject())
         self.assertTrue(np.allclose(
-            self.edge_device.instances_fabrication_footprint.value.to(u.kg).magnitude,
-            fabrication_breakdown_sum.value.to(u.kg).magnitude,
+            self.edge_device.instances_manufacturing_footprint.value.to(u.kg).magnitude,
+            manufacturing_breakdown_sum.value.to(u.kg).magnitude,
         ))
 
         energy_breakdown_sum = sum(
-            self.edge_device.energy_footprint_breakdown_by_source.values(), start=EmptyExplainableObject())
+            self.edge_device.use_footprint_breakdown_by_source.values(), start=EmptyExplainableObject())
         self.assertTrue(np.allclose(
-            self.edge_device.energy_footprint.value.to(u.kg).magnitude,
+            self.edge_device.use_footprint.value.to(u.kg).magnitude,
             energy_breakdown_sum.value.to(u.kg).magnitude,
         ))
 

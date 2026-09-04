@@ -278,6 +278,6 @@ def attributed_footprint(obj: ModelingObject, phase: LifeCyclePhases):
                     total += atom.value
             total.finalize_explanation()
             evict_attribution_source_intermediates(source)
-    label = ("Attributed fabrication footprint" if phase is LifeCyclePhases.MANUFACTURING
-             else "Attributed energy footprint")
+    label = ("Attributed manufacturing footprint" if phase is LifeCyclePhases.MANUFACTURING
+             else "Attributed use footprint")
     return total.to(u.kg).set_label(label)

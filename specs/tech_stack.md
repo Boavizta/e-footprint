@@ -23,7 +23,7 @@
 ## Domain integrations
 
 - **EcoLogits** (`>=0.11,<0.12`) — emission factors for LLM workloads (used by `EcoLogitsGenAIExternalAPI` builders).
-- **Boavizta API** (`>=2,<3`) — server fabrication footprint (used by `BoaviztaCloudServer`); planned expansion to water and rare-earth metals.
+- **Boavizta API** (`>=2,<3`) — server manufacturing footprint (used by `BoaviztaCloudServer`); planned expansion to water and rare-earth metals.
 
 ## Tooling
 

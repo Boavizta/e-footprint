@@ -27,6 +27,6 @@ This folder replaces the former single-file `specs/architecture.md`. Its complet
 | [`recomputation.html`](recomputation.html) | Pull-based engine, reactive slots, dependency recording, invalidation, eager outputs, guards, rollback. Technical zooms: [`recomputation/blocks/computed-attribute.html`](recomputation/blocks/computed-attribute.html) for decorator → descriptor → per-instance dispatch, and [`recomputation/blocks/reactive-slot.html`](recomputation/blocks/reactive-slot.html) for slot identity, cache state, dependency edges, pull, and invalidation. |
 | [`relationships.html`](relationships.html) | Direct/list/dict links, traversal SSOT, reverse links, `ExplainableObjectDict` input semantics |
 | [`persistence.html`](persistence.html) | Minimal JSON contract, cached slots and graph topology, version-aware loading, sources |
-| [`attribution.html`](attribution.html) | Atom model, folds, conservation, relay weights, reactive projection caches, edge fabrication |
+| [`attribution.html`](attribution.html) | Atom model, folds, conservation, relay weights, reactive projection caches, edge manufacturing |
 | [`comparison-and-display.html`](comparison-and-display.html) | System comparison, duplication, Pint/display boundary, doc-as-code metadata |
 | [`glossary.html`](glossary.html) | Canonical definitions for advanced Python and recomputation vocabulary; source for bottom-drawer term definitions |

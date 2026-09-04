@@ -65,7 +65,7 @@ _sorted_provider_names = sorted({slug.split("/", 1)[0] for slug in _MODELS_INFO}
 
 
 class EcoLogitsVideoGenExternalAPIServer(EcoLogitsExternalAPIServerBase):
-    """Virtual server backing an {class:EcoLogitsVideoGenExternalAPI}. Aggregates per-request fabrication and energy footprints emitted by the underlying EcoLogits video model into hourly footprints."""
+    """Virtual server backing an {class:EcoLogitsVideoGenExternalAPI}. Aggregates per-request manufacturing and use footprints emitted by the underlying EcoLogits video model into hourly footprints."""
 
     param_descriptions = {}
 

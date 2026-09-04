@@ -39,7 +39,7 @@ class ImpactRepartitionSankey:
     NODE_THICKNESS_PX = 20
     _FIXED_KEY_COLORS = {
         "__system__": "rgba(100,100,100,0.8)",
-        "__fabrication__": "rgba(180,80,80,0.8)",
+        "__manufacturing__": "rgba(180,80,80,0.8)",
         "__energy__": "rgba(80,120,180,0.8)",
     }
 
@@ -219,7 +219,7 @@ class ImpactRepartitionSankey:
     def _get_phases(self) -> list[LifeCyclePhases]:
         if self.lifecycle_phase_filter is not None:
             return [self.lifecycle_phase_filter]
-        return [LifeCyclePhases.MANUFACTURING, LifeCyclePhases.USAGE]
+        return [LifeCyclePhases.MANUFACTURING, LifeCyclePhases.USE]
 
     def _get_phase_context(self, phase: LifeCyclePhases) -> str | None:
         if self.skip_phase_footprint_split:
@@ -390,7 +390,7 @@ class ImpactRepartitionSankey:
         phase_parents = {}
         if not self.skip_phase_footprint_split and len(phases) > 1:
             for phase in phases:
-                color_key = "__fabrication__" if phase == LifeCyclePhases.MANUFACTURING else "__energy__"
+                color_key = "__manufacturing__" if phase == LifeCyclePhases.MANUFACTURING else "__energy__"
                 phase_idx = self._add_node(phase.value, ("phase", phase.value), color_key=color_key)
                 self._node_columns[phase_idx] = current_column_index
                 self._add_flow_to_node(root_idx, phase_idx, phase_totals[phase])

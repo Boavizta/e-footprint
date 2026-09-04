@@ -15,11 +15,11 @@ class TestEdgeComputer(TestCase):
         self.mock_storage = MagicMock(spec=EdgeStorage)
         self.mock_storage.edge_usage_patterns = []
         self.mock_storage.id = "mock_storage_id"
-        self.mock_storage.carbon_footprint_fabrication = SourceValue(100 * u.kg)
+        self.mock_storage.carbon_footprint_manufacturing = SourceValue(100 * u.kg)
         self.mock_storage.power = SourceValue(20 * u.W)
         self.edge_computer = EdgeComputer(
             name="Test EdgeComputer",
-            carbon_footprint_fabrication=SourceValue(60 * u.kg),
+            carbon_footprint_manufacturing=SourceValue(60 * u.kg),
             power=SourceValue(30 * u.W),
             lifespan=SourceValue(8 * u.year),
             idle_power=SourceValue(5 * u.W),
@@ -33,13 +33,13 @@ class TestEdgeComputer(TestCase):
     def test_init(self):
         """Test EdgeComputer initialization and property delegation."""
         self.assertEqual("Test EdgeComputer", self.edge_computer.name)
-        # structure_carbon_footprint_fabrication is defined at EdgeDevice level
-        self.assertIn("Structure fabrication carbon footprint",
-                      self.edge_computer.structure_carbon_footprint_fabrication.label)
-        # Computed as a copy of the computer's own fabrication footprint input.
+        # structure_carbon_footprint_manufacturing is defined at EdgeDevice level
+        self.assertIn("Structure manufacturing carbon footprint",
+                      self.edge_computer.structure_carbon_footprint_manufacturing.label)
+        # Computed as a copy of the computer's own manufacturing footprint input.
         self.assertEqual(
-            self.edge_computer.carbon_footprint_fabrication.value,
-            self.edge_computer.structure_carbon_footprint_fabrication.value)
+            self.edge_computer.carbon_footprint_manufacturing.value,
+            self.edge_computer.structure_carbon_footprint_manufacturing.value)
 
         # Properties delegate to components
         self.assertEqual(30 * u.W, self.edge_computer.power.value)

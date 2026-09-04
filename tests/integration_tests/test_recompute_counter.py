@@ -105,8 +105,8 @@ class TestRecomputeCounter(TestCase):
         transient_names_by_source = (
             (system.servers[0], ("binding_demand_per_job", "dynamic_share_per_job", "provisioned_share_per_job")),
             (system.edge_devices[0], (
-                "demand_share_per_need_and_pattern", "fabrication_pool_share_per_carrier_and_pattern",
-                "fabrication_atom_value_per_need_and_pattern", "energy_atom_value_per_need_and_pattern")),
+                "demand_share_per_need_and_pattern", "manufacturing_pool_share_per_carrier_and_pattern",
+                "manufacturing_atom_value_per_need_and_pattern", "energy_atom_value_per_need_and_pattern")),
             (system.storages[0], ("retention_cumulative_per_cell", "baseline_flat_share_per_job")),
         )
         for source, transient_names in transient_names_by_source:
@@ -126,7 +126,7 @@ class TestRecomputeCounter(TestCase):
             _ = system.impact_repartition_matrix
         self.assertEqual(
             {
-                f"instances_fabrication_footprint of {edited_server.id}",
+                f"instances_manufacturing_footprint of {edited_server.id}",
                 f"binding_demand_per_job of {edited_server.id}",
                 f"dynamic_share_per_job of {edited_server.id}",
                 f"provisioned_share_per_job of {edited_server.id}",
@@ -147,11 +147,11 @@ class TestRecomputeCounter(TestCase):
             LifeCyclePhases.MANUFACTURING: (
                 (system.servers[0], server_transients),
                 (system.edge_devices[0], (
-                    "demand_share_per_need_and_pattern", "fabrication_pool_share_per_carrier_and_pattern",
-                    "fabrication_atom_value_per_need_and_pattern")),
+                    "demand_share_per_need_and_pattern", "manufacturing_pool_share_per_carrier_and_pattern",
+                    "manufacturing_atom_value_per_need_and_pattern")),
                 (system.storages[0], ("retention_cumulative_per_cell", "baseline_flat_share_per_job")),
             ),
-            LifeCyclePhases.USAGE: (
+            LifeCyclePhases.USE: (
                 (system.servers[0], server_transients),
                 (system.edge_devices[0], (
                     "demand_share_per_need_and_pattern", "energy_atom_value_per_need_and_pattern")),

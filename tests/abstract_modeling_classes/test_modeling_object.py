@@ -482,8 +482,8 @@ class TestValidationAttributes(unittest.TestCase):
         """Test that validation_attributes filters only _validation suffixed attributes."""
         obj = ModelingObjectForTesting("test")
         with patch.object(type(obj), "calculated_attributes", new_callable=PropertyMock,
-                          return_value=["lifespan_validation", "energy_footprint",
-                                        "component_needs_edge_device_validation", "fabrication_footprint"]):
+                          return_value=["lifespan_validation", "use_footprint",
+                                        "component_needs_edge_device_validation", "manufacturing_footprint"]):
             self.assertEqual(["lifespan_validation", "component_needs_edge_device_validation"],
                              obj.validation_attributes)
 
@@ -491,18 +491,18 @@ class TestValidationAttributes(unittest.TestCase):
         """Test that calculated_attributes_without_validations excludes _validation suffixed attributes."""
         obj = ModelingObjectForTesting("test")
         with patch.object(type(obj), "calculated_attributes", new_callable=PropertyMock,
-                          return_value=["lifespan_validation", "energy_footprint",
-                                        "component_needs_edge_device_validation", "fabrication_footprint"]):
-            self.assertEqual(["energy_footprint", "fabrication_footprint"],
+                          return_value=["lifespan_validation", "use_footprint",
+                                        "component_needs_edge_device_validation", "manufacturing_footprint"]):
+            self.assertEqual(["use_footprint", "manufacturing_footprint"],
                              obj.calculated_attributes_without_validations)
 
     def test_no_validation_attributes_returns_empty_list(self):
         """Test that validation_attributes returns empty list when no validations exist."""
         obj = ModelingObjectForTesting("test")
         with patch.object(type(obj), "calculated_attributes", new_callable=PropertyMock,
-                          return_value=["energy_footprint", "fabrication_footprint"]):
+                          return_value=["use_footprint", "manufacturing_footprint"]):
             self.assertEqual([], obj.validation_attributes)
-            self.assertEqual(["energy_footprint", "fabrication_footprint"],
+            self.assertEqual(["use_footprint", "manufacturing_footprint"],
                              obj.calculated_attributes_without_validations)
 
 

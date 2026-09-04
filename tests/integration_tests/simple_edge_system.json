@@ -1,5 +1,5 @@
 {
-    "efootprint_version": "24.0.0",
+    "efootprint_version": "25.0.0",
     "Sources": {
         "Our-world-in-data-28202429": {
             "id": "Our-world-in-data-28202429",
@@ -123,10 +123,10 @@
                 "Edge-SSD-storage"
             ],
             "storage": "Edge-SSD-storage",
-            "carbon_footprint_fabrication": {
+            "carbon_footprint_manufacturing": {
                 "value": 60.0,
                 "unit": "kilogram",
-                "label": "Carbon footprint fabrication",
+                "label": "Carbon footprint manufacturing",
                 "source": "hypothesis"
             },
             "power": {
@@ -171,10 +171,10 @@
         "Edge-computer-CPU": {
             "name": "Edge computer CPU",
             "id": "Edge-computer-CPU",
-            "carbon_footprint_fabrication_per_unit": {
+            "carbon_footprint_manufacturing_per_unit": {
                 "value": 0.0,
                 "unit": "kilogram",
-                "label": "Carbon footprint fabrication per unit",
+                "label": "Carbon footprint manufacturing per unit",
                 "source": "hypothesis"
             },
             "nb_of_units": {
@@ -189,10 +189,10 @@
         "Edge-computer-RAM": {
             "name": "Edge computer RAM",
             "id": "Edge-computer-RAM",
-            "carbon_footprint_fabrication_per_unit": {
+            "carbon_footprint_manufacturing_per_unit": {
                 "value": 0.0,
                 "unit": "kilogram",
-                "label": "Carbon footprint fabrication per unit",
+                "label": "Carbon footprint manufacturing per unit",
                 "source": "hypothesis"
             },
             "power_per_unit": {
@@ -219,10 +219,10 @@
         "Edge-SSD-storage": {
             "name": "Edge SSD storage",
             "id": "Edge-SSD-storage",
-            "carbon_footprint_fabrication_per_unit": {
+            "carbon_footprint_manufacturing_per_unit": {
                 "value": 0.0,
                 "unit": "kilogram",
-                "label": "Carbon footprint fabrication per unit",
+                "label": "Carbon footprint manufacturing per unit",
                 "source": "hypothesis"
             },
             "power_per_unit": {
@@ -249,10 +249,10 @@
                 "label": "Number of units",
                 "source": "hypothesis"
             },
-            "carbon_footprint_fabrication_per_storage_capacity": {
+            "carbon_footprint_manufacturing_per_storage_capacity": {
                 "value": 160.0,
                 "unit": "kilogram / terabyte_stored",
-                "label": "Fabrication carbon footprint per unit per storage capacity",
+                "label": "Manufacturing carbon footprint per unit per storage capacity",
                 "source": "hypothesis"
             },
             "storage_capacity_per_unit": {
@@ -312,10 +312,10 @@
                 "label": "Lifespan",
                 "source": "hypothesis"
             },
-            "structure_carbon_footprint_fabrication": {
+            "structure_carbon_footprint_manufacturing": {
                 "value": 50.0,
                 "unit": "kilogram",
-                "label": "Structure fabrication carbon footprint",
+                "label": "Structure manufacturing carbon footprint",
                 "source": "hypothesis"
             },
             "components": [
@@ -329,10 +329,10 @@
         "edge-RAM-component": {
             "name": "edge RAM component",
             "id": "edge-RAM-component",
-            "carbon_footprint_fabrication_per_unit": {
+            "carbon_footprint_manufacturing_per_unit": {
                 "value": 20.0,
                 "unit": "kilogram",
-                "label": "Carbon footprint fabrication per unit",
+                "label": "Carbon footprint manufacturing per unit",
                 "source": "hypothesis"
             },
             "power_per_unit": {
@@ -377,10 +377,10 @@
         "edge-CPU-component": {
             "name": "edge CPU component",
             "id": "edge-CPU-component",
-            "carbon_footprint_fabrication_per_unit": {
+            "carbon_footprint_manufacturing_per_unit": {
                 "value": 20.0,
                 "unit": "kilogram",
-                "label": "Carbon footprint fabrication per unit",
+                "label": "Carbon footprint manufacturing per unit",
                 "source": "hypothesis"
             },
             "power_per_unit": {
@@ -425,10 +425,10 @@
         "edge-workload-component": {
             "name": "edge workload component",
             "id": "edge-workload-component",
-            "carbon_footprint_fabrication_per_unit": {
+            "carbon_footprint_manufacturing_per_unit": {
                 "value": 100.0,
                 "unit": "kilogram",
-                "label": "Carbon footprint fabrication per unit",
+                "label": "Carbon footprint manufacturing per unit",
                 "source": "hypothesis"
             },
             "power_per_unit": {

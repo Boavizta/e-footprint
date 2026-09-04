@@ -169,7 +169,7 @@ class IntegrationTestSimpleEdgeSystemBaseClass(IntegrationTestBaseClass):
                 "base_storage_need",
                 "power_per_unit",
                 "idle_power_per_unit",
-                "carbon_footprint_fabrication_per_unit",
+                "carbon_footprint_manufacturing_per_unit",
             ],
         )
         self._test_variations_on_obj_inputs(
@@ -312,8 +312,8 @@ class IntegrationTestSimpleEdgeSystemBaseClass(IntegrationTestBaseClass):
         new_edge_storage = self.edge_storage.copy_with()
 
         def post_reset(test):
-            test.assertEqual(0, new_edge_storage.instances_fabrication_footprint.magnitude)
-            test.assertEqual(0, new_edge_storage.energy_footprint.magnitude)
+            test.assertEqual(0, new_edge_storage.instances_manufacturing_footprint.magnitude)
+            test.assertEqual(0, new_edge_storage.use_footprint.magnitude)
 
         scenario = ObjectLinkScenario(
             name="update_edge_storage",

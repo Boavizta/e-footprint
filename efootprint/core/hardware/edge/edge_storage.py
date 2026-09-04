@@ -40,7 +40,7 @@ class EdgeStorage(EdgeComponent):
     param_descriptions = {
         "storage_capacity_per_unit": (
             "Storage capacity provided by one unit. Total capacity is this value times {param:EdgeStorage.nb_of_units}."),
-        "carbon_footprint_fabrication_per_storage_capacity": (
+        "carbon_footprint_manufacturing_per_storage_capacity": (
             "Embodied carbon emitted to manufacture one unit of storage capacity."),
         "base_storage_need": (
             "Storage permanently occupied independently of recurring needs (system files, baseline assets)."),
@@ -52,7 +52,7 @@ class EdgeStorage(EdgeComponent):
 
     compatible_root_units = [u.bit_stored]
     default_values = {
-        "carbon_footprint_fabrication_per_storage_capacity": SourceValue(160 * u.kg / u.TB_stored),
+        "carbon_footprint_manufacturing_per_storage_capacity": SourceValue(160 * u.kg / u.TB_stored),
         "lifespan": SourceValue(6 * u.years),
         "nb_of_units": SourceValue(1 * u.dimensionless),
         "storage_capacity_per_unit": SourceValue(1 * u.TB_stored),
@@ -62,7 +62,7 @@ class EdgeStorage(EdgeComponent):
     @classmethod
     def ssd(cls, name="Default SSD storage", **kwargs):
         output_args = {
-            "carbon_footprint_fabrication_per_storage_capacity": SourceValue(
+            "carbon_footprint_manufacturing_per_storage_capacity": SourceValue(
                 160 * u.kg / u.TB_stored, Sources.STORAGE_EMBODIED_CARBON_STUDY),
             "lifespan": SourceValue(6 * u.years),
             "storage_capacity_per_unit": SourceValue(1 * u.TB_stored, Sources.STORAGE_EMBODIED_CARBON_STUDY),
@@ -74,7 +74,7 @@ class EdgeStorage(EdgeComponent):
     @classmethod
     def hdd(cls, name="Default HDD storage", **kwargs):
         output_args = {
-            "carbon_footprint_fabrication_per_storage_capacity": SourceValue(
+            "carbon_footprint_manufacturing_per_storage_capacity": SourceValue(
                 20 * u.kg / u.TB_stored, Sources.STORAGE_EMBODIED_CARBON_STUDY),
             "lifespan": SourceValue(4 * u.years),
             "storage_capacity_per_unit": SourceValue(1 * u.TB_stored, Sources.STORAGE_EMBODIED_CARBON_STUDY),
@@ -88,15 +88,15 @@ class EdgeStorage(EdgeComponent):
         return [cls.ssd, cls.hdd]
 
     def __init__(self, name: str, storage_capacity_per_unit: ExplainableQuantity,
-                 carbon_footprint_fabrication_per_storage_capacity: ExplainableQuantity,
+                 carbon_footprint_manufacturing_per_storage_capacity: ExplainableQuantity,
                  base_storage_need: ExplainableQuantity, lifespan: ExplainableQuantity,
                  nb_of_units: ExplainableQuantity | None = None):
         super().__init__(
-            name, carbon_footprint_fabrication_per_unit=SourceValue(0 * u.kg), power_per_unit=SourceValue(0 * u.W),
+            name, carbon_footprint_manufacturing_per_unit=SourceValue(0 * u.kg), power_per_unit=SourceValue(0 * u.W),
             lifespan=lifespan, idle_power_per_unit=SourceValue(0 * u.W), nb_of_units=nb_of_units)
-        self.carbon_footprint_fabrication_per_storage_capacity = (
-            carbon_footprint_fabrication_per_storage_capacity.set_label(
-                f"Fabrication carbon footprint per unit per storage capacity"))
+        self.carbon_footprint_manufacturing_per_storage_capacity = (
+            carbon_footprint_manufacturing_per_storage_capacity.set_label(
+                f"Manufacturing carbon footprint per unit per storage capacity"))
         self.storage_capacity_per_unit = storage_capacity_per_unit.set_label(
             f"Storage capacity per unit")
         self.base_storage_need = base_storage_need.set_label("Initial storage need")
@@ -130,17 +130,17 @@ class EdgeStorage(EdgeComponent):
             f"Storage capacity")
 
     @property
-    def carbon_footprint_fabrication_from_inputs(self):
-        """Embodied carbon from input attributes only — mirrors update_carbon_footprint_fabrication
+    def carbon_footprint_manufacturing_from_inputs(self):
+        """Embodied carbon from input attributes only — mirrors update_carbon_footprint_manufacturing
         (per-capacity footprint × per-unit capacity × number of units). See EdgeComponent for why."""
-        return (self.carbon_footprint_fabrication_per_storage_capacity * self.storage_capacity_per_unit
-                * self.nb_of_units).set_label(f"{self.name} carbon footprint fabrication from inputs")
+        return (self.carbon_footprint_manufacturing_per_storage_capacity * self.storage_capacity_per_unit
+                * self.nb_of_units).set_label(f"{self.name} carbon footprint manufacturing from inputs")
 
     @computed_attribute
-    def carbon_footprint_fabrication(self):
-        """Embodied carbon of the storage component, equal to per-capacity fabrication footprint times the total capacity."""
+    def carbon_footprint_manufacturing(self):
+        """Embodied carbon of the storage component, equal to per-capacity manufacturing footprint times the total capacity."""
         return (
-            self.carbon_footprint_fabrication_per_storage_capacity
+            self.carbon_footprint_manufacturing_per_storage_capacity
             * self.storage_capacity
         ).set_label(f"Carbon footprint")
 

@@ -27,11 +27,11 @@ from tests.utils import recompute_attribute
 
 
 class TestDevice(TestCase):
-    def test_update_energy_footprint_sums_over_usage_patterns(self):
-        """Test energy footprint sums precomputed per-usage-pattern values."""
+    def test_update_use_footprint_sums_over_usage_patterns(self):
+        """Test use footprint sums precomputed per-usage-pattern values."""
         device = Device(
             "Test device",
-            carbon_footprint_fabrication=SourceValue(1 * u.kg),
+            carbon_footprint_manufacturing=SourceValue(1 * u.kg),
             power=SourceValue(1000 * u.W),  # 1 kWh over 1 hour
             lifespan=SourceValue(1 * u.year),
             fraction_of_usage_time=SourceValue(1 * u.hour / u.day),
@@ -53,21 +53,21 @@ class TestDevice(TestCase):
         set_modeling_obj_containers(device, [usage_pattern_1, usage_pattern_2])
 
         recompute_attribute(device, "nb_journeys_in_parallel_per_usage_pattern")
-        recompute_attribute(device, "energy_footprint_per_usage_pattern")
-        recompute_attribute(device, "energy_footprint")
+        recompute_attribute(device, "use_footprint_per_usage_pattern")
+        recompute_attribute(device, "use_footprint")
 
         self.assertIn("nb_journeys_in_parallel_per_usage_pattern", device.calculated_attributes)
         self.assertTrue(np.allclose(
             [1, 2, 3],
             device.nb_journeys_in_parallel_per_usage_pattern[usage_pattern_1].magnitude))
-        self.assertEqual(u.kg, device.energy_footprint.unit)
-        self.assertTrue(np.allclose([0.1, 0.4, 0.3], device.energy_footprint.magnitude))
+        self.assertEqual(u.kg, device.use_footprint.unit)
+        self.assertTrue(np.allclose([0.1, 0.4, 0.3], device.use_footprint.magnitude))
 
-    def test_update_instances_fabrication_footprint_sums_over_usage_patterns(self):
-        """Test fabrication footprint distributes fabrication over lifespan and usage time."""
+    def test_update_instances_manufacturing_footprint_sums_over_usage_patterns(self):
+        """Test manufacturing footprint distributes manufacturing over lifespan and usage time."""
         device = Device(
             "Test device",
-            carbon_footprint_fabrication=SourceValue(365.25 * 24 * u.kg),
+            carbon_footprint_manufacturing=SourceValue(365.25 * 24 * u.kg),
             power=SourceValue(1 * u.W),
             lifespan=SourceValue(1 * u.year),
             fraction_of_usage_time=SourceValue(12 * u.hour / u.day),
@@ -86,16 +86,16 @@ class TestDevice(TestCase):
 
         set_modeling_obj_containers(device, [usage_pattern_1, usage_pattern_2])
 
-        recompute_attribute(device, "instances_fabrication_footprint_per_usage_pattern")
-        recompute_attribute(device, "instances_fabrication_footprint")
+        recompute_attribute(device, "instances_manufacturing_footprint_per_usage_pattern")
+        recompute_attribute(device, "instances_manufacturing_footprint")
 
-        self.assertEqual(u.kg, device.instances_fabrication_footprint_per_usage_pattern[usage_pattern_1].unit)
+        self.assertEqual(u.kg, device.instances_manufacturing_footprint_per_usage_pattern[usage_pattern_1].unit)
         self.assertTrue(np.allclose(
-            [2, 4, 6], device.instances_fabrication_footprint_per_usage_pattern[usage_pattern_1].magnitude))
+            [2, 4, 6], device.instances_manufacturing_footprint_per_usage_pattern[usage_pattern_1].magnitude))
         self.assertTrue(np.allclose(
-            [0, 2, 0], device.instances_fabrication_footprint_per_usage_pattern[usage_pattern_2].magnitude))
-        self.assertEqual(u.kg, device.instances_fabrication_footprint.unit)
-        self.assertTrue(np.allclose([2, 6, 6], device.instances_fabrication_footprint.magnitude))
+            [0, 2, 0], device.instances_manufacturing_footprint_per_usage_pattern[usage_pattern_2].magnitude))
+        self.assertEqual(u.kg, device.instances_manufacturing_footprint.unit)
+        self.assertTrue(np.allclose([2, 6, 6], device.instances_manufacturing_footprint.magnitude))
 
 
 class TestDeviceAttributionAtoms(TestCase):
@@ -109,7 +109,7 @@ class TestDeviceAttributionAtoms(TestCase):
         cls.journey = UsageJourney("device atoms journey", [cls.step_short, cls.step_long])
         cls.device = Device(
             "device atoms laptop",
-            carbon_footprint_fabrication=SourceValue(150 * u.kg),
+            carbon_footprint_manufacturing=SourceValue(150 * u.kg),
             power=SourceValue(50 * u.W),
             lifespan=SourceValue(6 * u.year),
             fraction_of_usage_time=SourceValue(7 * u.hour / u.day))
@@ -134,19 +134,19 @@ class TestDeviceAttributionAtoms(TestCase):
     def test_device_atoms_conserve_per_usage_pattern(self):
         """Test that Σ atoms over a pattern's steps recovers the per-pattern eager dicts, both phases."""
         for usage_pattern in (self.low_ci_up, self.high_ci_up):
-            usage_atoms = [a for a in atoms_of(self.device, LifeCyclePhases.USAGE) if a.up == usage_pattern]
+            usage_atoms = [a for a in atoms_of(self.device, LifeCyclePhases.USE) if a.up == usage_pattern]
             assert_hourly_quantities_equal(
-                self, self.device.energy_footprint_per_usage_pattern[usage_pattern],
+                self, self.device.use_footprint_per_usage_pattern[usage_pattern],
                 sum_atom_values(usage_atoms))
-            fabrication_atoms = [
+            manufacturing_atoms = [
                 a for a in atoms_of(self.device, LifeCyclePhases.MANUFACTURING) if a.up == usage_pattern]
             assert_hourly_quantities_equal(
-                self, self.device.instances_fabrication_footprint_per_usage_pattern[usage_pattern],
-                sum_atom_values(fabrication_atoms))
+                self, self.device.instances_manufacturing_footprint_per_usage_pattern[usage_pattern],
+                sum_atom_values(manufacturing_atoms))
 
     def test_device_usage_atoms_carry_per_pattern_carbon_intensity(self):
         """Test that each usage cell is occupancy × power × its own pattern's CI — never a blend."""
-        for atom in atoms_of(self.device, LifeCyclePhases.USAGE):
+        for atom in atoms_of(self.device, LifeCyclePhases.USE):
             occupancy = atom.step.hourly_avg_occurrences_per_usage_coordinate[
                 UsageJourneyStepCoordinate(atom.up, atom.journey)]
             expected = (occupancy * self.device.power
@@ -156,7 +156,7 @@ class TestDeviceAttributionAtoms(TestCase):
 
     def test_device_atoms_enumerate_one_cell_per_step_and_pattern(self):
         """Test the cell enumeration: one atom per (step, up), step coordinate set, no job/edge coordinates."""
-        usage_atoms = list(atoms_of(self.device, LifeCyclePhases.USAGE))
+        usage_atoms = list(atoms_of(self.device, LifeCyclePhases.USE))
         self.assertEqual(
             {(self.step_short.id, self.low_ci_up.id), (self.step_short.id, self.high_ci_up.id),
              (self.step_long.id, self.low_ci_up.id), (self.step_long.id, self.high_ci_up.id)},

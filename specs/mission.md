@@ -20,7 +20,7 @@ The library is open-source and hosted within the [Boavizta](https://boavizta.org
 
 ## In scope (today)
 
-- **Lifecycle phases:** fabrication and usage of servers, storage, network (usage only), end-user devices, and edge devices.
+- **Lifecycle phases:** manufacturing and usage of servers, storage, network (usage only), end-user devices, and edge devices.
 - **Two paradigms:**
   - *Web (demand-driven):* hourly demand → infrastructure footprint.
   - *Edge (deployment-driven):* number of deployed units × per-unit behaviour → fleet footprint.

@@ -17,14 +17,14 @@ class TestEdgeRAMComponent(TestCase):
     def setUp(self):
         self.ram_component = EdgeRAMComponent(
             name="Test RAM",
-            carbon_footprint_fabrication_per_unit=SourceValue(10 * u.kg),
+            carbon_footprint_manufacturing_per_unit=SourceValue(10 * u.kg),
             power_per_unit=SourceValue(0 * u.W),
             lifespan=SourceValue(5 * u.year),
             idle_power_per_unit=SourceValue(0 * u.W),
             ram_per_unit=SourceValue(16 * u.GB_ram),
             base_ram_consumption=SourceValue(2 * u.GB_ram)
         )
-        recompute_attribute(self.ram_component, "carbon_footprint_fabrication")
+        recompute_attribute(self.ram_component, "carbon_footprint_manufacturing")
         recompute_attribute(self.ram_component, "power")
         recompute_attribute(self.ram_component, "idle_power")
         recompute_attribute(self.ram_component, "ram")
@@ -32,8 +32,8 @@ class TestEdgeRAMComponent(TestCase):
     def test_init(self):
         """Test EdgeRAMComponent initialization."""
         self.assertEqual("Test RAM", self.ram_component.name)
-        self.assertEqual(10 * u.kg, self.ram_component.carbon_footprint_fabrication_per_unit.value)
-        self.assertEqual(10 * u.kg, self.ram_component.carbon_footprint_fabrication.value)
+        self.assertEqual(10 * u.kg, self.ram_component.carbon_footprint_manufacturing_per_unit.value)
+        self.assertEqual(10 * u.kg, self.ram_component.carbon_footprint_manufacturing.value)
         self.assertEqual(0 * u.W, self.ram_component.power_per_unit.value)
         self.assertEqual(0 * u.W, self.ram_component.power.value)
         self.assertEqual(5 * u.year, self.ram_component.lifespan.value)

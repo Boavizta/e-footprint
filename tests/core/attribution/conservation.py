@@ -33,8 +33,8 @@ def assert_hourly_quantities_equal(test_case, expected, actual, msg=None):
 
 
 def eager_phase_footprint(source, phase: LifeCyclePhases):
-    return (source.instances_fabrication_footprint if phase == LifeCyclePhases.MANUFACTURING
-            else source.energy_footprint)
+    return (source.instances_manufacturing_footprint if phase == LifeCyclePhases.MANUFACTURING
+            else source.use_footprint)
 
 
 def sum_atom_values(source_atoms):
