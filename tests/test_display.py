@@ -100,6 +100,11 @@ class TestDisplayUtils(unittest.TestCase):
         self.assertEqual(4.5 * u.MWh, format_quantity_for_display(4500 * u.kWh))
         self.assertEqual(1.23 * u.kg, format_quantity_for_display(1.2345 * u.kg))
 
+    def test_format_quantity_for_display_preserves_integer_digits_above_one_thousand(self):
+        """Large fixed-unit values round fractions without replacing integer digits with zeroes."""
+        self.assertEqual(1235 * u.cpu_core, format_quantity_for_display(1234.56 * u.cpu_core))
+        self.assertEqual(-1235 * u.cpu_core, format_quantity_for_display(-1234.56 * u.cpu_core))
+
     def test_format_quantity_for_display_keeps_special_unit_types(self):
         """Test display formatting keeps occurrence, concurrent, byte, and byte_ram unit families."""
         self.assertEqual(2.0 * u.koccurrence, format_quantity_for_display(2000 * u.occurrence))
@@ -120,6 +125,14 @@ class TestDisplayUtils(unittest.TestCase):
 
         self.assertEqual(u.tonne, formatted.units)
         np.testing.assert_allclose(np.array([0.0, -1.23e-5, -12.3], dtype=np.float32), formatted.magnitude)
+
+    def test_format_quantity_for_display_preserves_integer_digits_in_arrays(self):
+        """The large-value rule applies independently to every array element."""
+        formatted = format_quantity_for_display(
+            np.array([1.23456, 1234.56, -1234.56], dtype=np.float64) * u.cpu_core
+        )
+
+        np.testing.assert_allclose(np.array([1.23, 1235.0, -1235.0]), formatted.magnitude)
 
     def test_format_quantity_for_display_does_not_mutate_input_quantity(self):
         """Test display formatting returns a new quantity without mutating the input."""
@@ -165,6 +178,10 @@ class TestDisplayUtils(unittest.TestCase):
         formatted = [format_display_number(value) for value in values]
 
         self.assertEqual(["0.412", "0.825", "1.65", "2.06", "3.3", "4.95"], formatted)
+
+    def test_format_display_number_uses_thousands_separators(self):
+        self.assertEqual("1,235", format_display_number(1235))
+        self.assertEqual("-1,235.5", format_display_number(-1235.5))
 
 
 if __name__ == "__main__":

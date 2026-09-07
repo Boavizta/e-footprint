@@ -57,6 +57,11 @@ def best_display_unit(quantity: Quantity) -> Unit:
 def _round_to_sig_figs(value: float, sig_figs: int = 3) -> float:
     if value == 0:
         return 0.0
+    # Do not replace a meaningful integer digit with a zero.  Above 1,000 the
+    # display convention therefore keeps the integer part and rounds only the
+    # fractional part.
+    if abs(value) >= 1000:
+        return round(value)
     digits = sig_figs - int(math.floor(math.log10(abs(value)))) - 1
     return round(value, digits)
 
@@ -70,7 +75,10 @@ def _round_array_to_sig_figs(values: np.ndarray, sig_figs: int = 3) -> np.ndarra
     nonzero_values = values[nonzero_mask].astype(np.float64, copy=False)
     digits = sig_figs - np.floor(np.log10(np.abs(nonzero_values))).astype(np.int64) - 1
     scale = np.power(10.0, digits)
-    rounded[nonzero_mask] = np.round(nonzero_values * scale) / scale
+    rounded_values = np.round(nonzero_values * scale) / scale
+    large_value_mask = np.abs(nonzero_values) >= 1000
+    rounded_values[large_value_mask] = np.round(nonzero_values[large_value_mask])
+    rounded[nonzero_mask] = rounded_values
     return rounded
 
 
@@ -97,7 +105,9 @@ def human_readable_unit(unit: Unit) -> str:
 
 
 def format_display_number(value: float) -> str:
-    return np.format_float_positional(value, trim="-")
+    formatted = np.format_float_positional(value, trim="-")
+    integer_part, decimal_separator, fractional_part = formatted.partition(".")
+    return f"{int(integer_part):,}{decimal_separator}{fractional_part}"
 
 def display_quantity_as_str(quantity: Quantity, sig_figs: int = 3) -> str:
     formatted_quantity = format_quantity_for_display(quantity, sig_figs)
