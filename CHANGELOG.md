@@ -6,8 +6,11 @@ and this project adheres to [Semantic Versioning](http://semver.org/)
 
 ## [V25.0.0]
 
-### Breaking API changes
+### Changed
 - Lifecycle terminology is now `manufacturing` and `use`: code, serialized fields, labels, comparison data, and documentation use names such as `use_footprint` and `manufacturing_footprint`.
+- Harmonized carbon-equivalent notation to CO2-eq.
+- Preserve integer digits in display rounding.
+- Added units up to Tera in display rounding unit list, for mass, energy and power. In particular, kt, Mt, Gt and Tt have been introduced.
 
 ## [V24.0.0]
 
