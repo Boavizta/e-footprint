@@ -415,11 +415,11 @@ class TestSystemComparison(TestCase):
 
         figure, axes = _plot_decomposition(decomposition, "before", "after", None, (10, 6), False)
 
-        self.assertEqual("t CO2 difference", axes.get_xlabel())
-        self.assertEqual([-1600, 500], [bar.get_width() for bar in axes.patches])
-        self.assertEqual(["-1600 t", "500 t"], [text.get_text() for text in axes.texts])
+        self.assertEqual("kt CO2 difference", axes.get_xlabel())
+        np.testing.assert_allclose([-1.6, 0.5], [bar.get_width() for bar in axes.patches])
+        self.assertEqual(["-1.6 kt", "0.5 kt"], [text.get_text() for text in axes.texts])
         self.assertEqual(
-            "Footprint difference by category and phase (after − before)\nTotal: -1100 t CO2-eq",
+            "Footprint difference by category and phase (after − before)\nTotal: -1.1 kt CO2-eq",
             axes.get_title())
         plt.close(figure)
 

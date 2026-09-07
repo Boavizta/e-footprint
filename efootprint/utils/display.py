@@ -7,7 +7,7 @@ from pint import Quantity, Unit
 from efootprint.constants.units import u
 
 UNIT_FAMILIES: list[Sequence[Unit]] = [
-    [u.mg, u.g, u.kg, u.tonne, u.Mtonne, u.Gtonne, u.Ttonne],
+    [u.mg, u.g, u.kg, u.tonne, u.ktonne, u.Mtonne, u.Gtonne, u.Ttonne],
     [u.mWh, u.Wh, u.kWh, u.MWh, u.GWh, u.TWh],
     [u.mW, u.W, u.kW, u.MW, u.GW, u.TW],
     [u.ms, u.s, u.minute, u.hour, u.day, u.year],
