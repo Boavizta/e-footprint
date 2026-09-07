@@ -2174,10 +2174,10 @@
       <ul class="md-nav__list">
         
           <li class="md-nav__item">
-  <a href="#instances_fabrication_footprint" class="md-nav__link">
+  <a href="#instances_manufacturing_footprint" class="md-nav__link">
     <span class="md-ellipsis">
       
-        instances_fabrication_footprint
+        instances_manufacturing_footprint
       
     </span>
   </a>
@@ -2196,10 +2196,10 @@
 </li>
         
           <li class="md-nav__item">
-  <a href="#energy_footprint" class="md-nav__link">
+  <a href="#use_footprint" class="md-nav__link">
     <span class="md-ellipsis">
       
-        energy_footprint
+        use_footprint
       
     </span>
   </a>
@@ -3431,10 +3431,10 @@
       <ul class="md-nav__list">
         
           <li class="md-nav__item">
-  <a href="#instances_fabrication_footprint" class="md-nav__link">
+  <a href="#instances_manufacturing_footprint" class="md-nav__link">
     <span class="md-ellipsis">
       
-        instances_fabrication_footprint
+        instances_manufacturing_footprint
       
     </span>
   </a>
@@ -3453,10 +3453,10 @@
 </li>
         
           <li class="md-nav__item">
-  <a href="#energy_footprint" class="md-nav__link">
+  <a href="#use_footprint" class="md-nav__link">
     <span class="md-ellipsis">
       
-        energy_footprint
+        use_footprint
       
     </span>
   </a>
@@ -3486,7 +3486,7 @@
 
 
 <h1 id="ecologitsvideogenexternalapiserver">EcoLogitsVideoGenExternalAPIServer</h1>
-<p>Virtual server backing an <a href="../EcoLogitsVideoGenExternalAPI/">EcoLogitsVideoGenExternalAPI</a>. Aggregates per-request fabrication and energy footprints emitted by the underlying EcoLogits video model into hourly footprints.</p>
+<p>Virtual server backing an <a href="../EcoLogitsVideoGenExternalAPI/">EcoLogitsVideoGenExternalAPI</a>. Aggregates per-request manufacturing and use footprints emitted by the underlying EcoLogits video model into hourly footprints.</p>
 <h2 id="params">Params</h2>
 <h3 id="name">name</h3>
 <p>A human readable description of the object.</p>
@@ -3495,9 +3495,9 @@
 <li><a href="../EcoLogitsVideoGenExternalAPI/">EcoLogitsVideoGenExternalAPI</a></li>
 </ul>
 <h2 id="calculated-attributes">Calculated attributes</h2>
-<h3 id="instances_fabrication_footprint">instances_fabrication_footprint</h3>
-<p>Hourly fabrication-phase footprint of the model server: each job's per-request embodied GWP spread over its request_duration (per-request * 1h / request_duration * hourly average occurrences across usage patterns), summed over jobs.  </p>
-<p>Example value: 26298 values from 2025-01-01 00:00:00+00:00 to 2028-01-01 18:00:00+00:00: first=193 g, last=64.2 g, mean=107 g, min=21.4 g, max=193 g, std=55.4 g  </p>
+<h3 id="instances_manufacturing_footprint">instances_manufacturing_footprint</h3>
+<p>Hourly manufacturing-phase footprint of the model server: each job's per-request embodied GWP spread over its request_duration (per-request * 1h / request_duration * hourly average occurrences across usage patterns), summed over jobs.  </p>
+<p>Example value: 26298 values from 2025-01-01 00:00:00+00:00 to 2028-01-01 18:00:00+00:00: first=193 g, last=85.6 g, mean=107 g, min=21.4 g, max=193 g, std=55.3 g  </p>
 <p>Depends directly on:  </p>
 <ul>
 <li><a href="../EcoLogitsVideoGenExternalAPIJob/#hourly_avg_occurrences_across_usage_patterns">Hourly average occurrences across usage patterns</a></li>
@@ -3538,7 +3538,7 @@
         </center>
         <style type="text/css">
 
-             #mynetwork_2880de {
+             #mynetwork_674238 {
                  width: 760px;
                  height: 300px;
                  background-color: #ffffff;
@@ -3560,7 +3560,7 @@
         <div class="card" style="width: 100%">
 
 
-            <div id="mynetwork_2880de" class="card-body"></div>
+            <div id="mynetwork_674238" class="card-body"></div>
         </div>
 
 
@@ -3590,13 +3590,13 @@
 
               // This method is responsible for drawing the graph, returns the drawn network
               function drawGraph() {
-                  var container = document.getElementById('mynetwork_2880de');
+                  var container = document.getElementById('mynetwork_674238');
 
 
 
                   // parsing and collecting nodes and edges from the python
-                  nodes = new vis.DataSet([{"color": null, "id": "Instances fabrication footprint for sora-2-pro", "label": "Instances\nfabrication\nfootprint for\nsora-2-pro", "shape": "dot", "size": 15, "title": "Instances fabrication footprint for sora-2-pro\n=\nHourly average occurrences across usage patterns * (Ecologits\nrequest_embodied_gwp for sora-2-pro * one hour / Ecologits generation_latency\nfor sora-2-pro)\n=\n26298 values from 2025-01-01 00:00:00+00:00 to 2028-01-01 18:00:00+00:00:\nfirst=0.568 , last=0.189 , mean=0.315 , min=0.0631 , max=0.568 , std=0.163 *\n(21.4 g * 1 h / 3.79 min)\n=\n26298 values from 2025-01-01 00:00:00+00:00 to 2028-01-01 18:00:00+00:00:\nfirst=193 g, last=64.2 g, mean=107 g, min=21.4 g, max=193 g, std=55.4 g", "x": 0.0, "y": 1350}, {"color": null, "id": "Hourly average occurrences across usage patterns", "label": "Hourly average\noccurrences across\nusage patterns", "shape": "dot", "size": 15, "title": "Hourly average occurrences across usage patterns\n=\nAverage hourly occurrences in usage pattern\n=\n26298 values from 2025-01-01 00:00:00+00:00 to 2028-01-01 18:00:00+00:00:\nfirst=0.568 , last=0.189 , mean=0.315 , min=0.0631 , max=0.568 , std=0.163\n=\n26298 values from 2025-01-01 00:00:00+00:00 to 2028-01-01 18:00:00+00:00:\nfirst=0.568 , last=0.189 , mean=0.315 , min=0.0631 , max=0.568 , std=0.163", "x": -450.0, "y": 1200}, {"color": null, "id": "Ecologits request_embodied_gwp for sora-2-pro", "label": "Ecologits\nrequest_embodied_gwp\nfor sora-2-pro", "shape": "dot", "size": 15, "title": "Ecologits request_embodied_gwp for sora-2-pro\n=\nextraction (Ecologits video impacts)\n=\nextraction ({\u0027video_width\u0027: 1280.0, \u0027video_height\u0027: 720.0, \u0027video_frames...)\n=\n21.4 g", "x": 450.0, "y": 1200}, {"color": null, "id": "Ecologits generation_latency for sora-2-pro", "label": "Ecologits\ngeneration_latency\nfor sora-2-pro", "shape": "dot", "size": 15, "title": "Ecologits generation_latency for sora-2-pro\n=\nduplicate (Ecologits generation_latency for sora-2-pro)\n=\nduplicate (3.79 min)\n=\n3.79 min", "x": -225.0, "y": 750}]);
-                  edges = new vis.DataSet([{"arrows": "to", "from": "Hourly average occurrences across usage patterns", "to": "Instances fabrication footprint for sora-2-pro"}, {"arrows": "to", "from": "Ecologits request_embodied_gwp for sora-2-pro", "to": "Instances fabrication footprint for sora-2-pro"}, {"arrows": "to", "from": "Ecologits generation_latency for sora-2-pro", "to": "Instances fabrication footprint for sora-2-pro"}]);
+                  nodes = new vis.DataSet([{"color": null, "id": "Instances manufacturing footprint for sora-2-pro", "label": "Instances\nmanufacturing\nfootprint for\nsora-2-pro", "shape": "dot", "size": 15, "title": "Instances manufacturing footprint for sora-2-pro\n=\nHourly average occurrences across usage patterns * (Ecologits\nrequest_embodied_gwp for sora-2-pro * one hour / Ecologits generation_latency\nfor sora-2-pro)\n=\n26298 values from 2025-01-01 00:00:00+00:00 to 2028-01-01 18:00:00+00:00:\nfirst=0.568 , last=0.253 , mean=0.316 , min=0.0631 , max=0.568 , std=0.163 *\n(21.4 g * 1 h / 3.79 min)\n=\n26298 values from 2025-01-01 00:00:00+00:00 to 2028-01-01 18:00:00+00:00:\nfirst=193 g, last=85.6 g, mean=107 g, min=21.4 g, max=193 g, std=55.3 g", "x": 0.0, "y": 1350}, {"color": null, "id": "Hourly average occurrences across usage patterns", "label": "Hourly average\noccurrences across\nusage patterns", "shape": "dot", "size": 15, "title": "Hourly average occurrences across usage patterns\n=\nAverage hourly occurrences in usage pattern\n=\n26298 values from 2025-01-01 00:00:00+00:00 to 2028-01-01 18:00:00+00:00:\nfirst=0.568 , last=0.253 , mean=0.316 , min=0.0631 , max=0.568 , std=0.163\n=\n26298 values from 2025-01-01 00:00:00+00:00 to 2028-01-01 18:00:00+00:00:\nfirst=0.568 , last=0.253 , mean=0.316 , min=0.0631 , max=0.568 , std=0.163", "x": -450.0, "y": 1200}, {"color": null, "id": "Ecologits request_embodied_gwp for sora-2-pro", "label": "Ecologits\nrequest_embodied_gwp\nfor sora-2-pro", "shape": "dot", "size": 15, "title": "Ecologits request_embodied_gwp for sora-2-pro\n=\nextraction (Ecologits video impacts)\n=\nextraction ({\u0027video_width\u0027: 1280.0, \u0027video_height\u0027: 720.0, \u0027video_frames...)\n=\n21.4 g", "x": 450.0, "y": 1200}, {"color": null, "id": "Ecologits generation_latency for sora-2-pro", "label": "Ecologits\ngeneration_latency\nfor sora-2-pro", "shape": "dot", "size": 15, "title": "Ecologits generation_latency for sora-2-pro\n=\nduplicate (Ecologits generation_latency for sora-2-pro)\n=\nduplicate (3.79 min)\n=\n3.79 min", "x": -225.0, "y": 750}]);
+                  edges = new vis.DataSet([{"arrows": "to", "from": "Hourly average occurrences across usage patterns", "to": "Instances manufacturing footprint for sora-2-pro"}, {"arrows": "to", "from": "Ecologits request_embodied_gwp for sora-2-pro", "to": "Instances manufacturing footprint for sora-2-pro"}, {"arrows": "to", "from": "Ecologits generation_latency for sora-2-pro", "to": "Instances manufacturing footprint for sora-2-pro"}]);
 
                   nodeColors = {};
                   allNodes = nodes.get({ returnType: "Object" });
@@ -3661,10 +3661,10 @@
     </body>
 </html>
 
-<p>You can also visit the <a href='../calculus_graphs/Generative_AI_video_model_server_instances_fabrication_footprint.html' target='_blank'>link to Instances fabrication footprint for sora-2-pro’s full calculation graph</a>.</p>
+<p>You can also visit the <a href='../calculus_graphs/Generative_AI_video_model_server_instances_manufacturing_footprint.html' target='_blank'>link to Instances manufacturing footprint for sora-2-pro’s full calculation graph</a>.</p>
 <h3 id="instances_energy">instances_energy</h3>
 <p>Hourly energy consumed by the model server: each job's per-request energy spread over its request_duration (per-request * 1h / request_duration * hourly average occurrences across usage patterns), summed over jobs.  </p>
-<p>Example value: 26298 values from 2025-01-01 00:00:00+00:00 to 2028-01-01 18:00:00+00:00: first=4.6 kWh, last=1.53 kWh, mean=2.55 kWh, min=511 Wh, max=4.6 kWh, std=1.32 kWh  </p>
+<p>Example value: 26298 values from 2025-01-01 00:00:00+00:00 to 2028-01-01 18:00:00+00:00: first=4.6 kWh, last=2.04 kWh, mean=2.55 kWh, min=511 Wh, max=4.6 kWh, std=1.32 kWh  </p>
 <p>Depends directly on:  </p>
 <ul>
 <li><a href="../EcoLogitsVideoGenExternalAPIJob/#hourly_avg_occurrences_across_usage_patterns">Hourly average occurrences across usage patterns</a></li>
@@ -3705,7 +3705,7 @@
         </center>
         <style type="text/css">
 
-             #mynetwork_42b196 {
+             #mynetwork_145696 {
                  width: 760px;
                  height: 300px;
                  background-color: #ffffff;
@@ -3727,7 +3727,7 @@
         <div class="card" style="width: 100%">
 
 
-            <div id="mynetwork_42b196" class="card-body"></div>
+            <div id="mynetwork_145696" class="card-body"></div>
         </div>
 
 
@@ -3757,12 +3757,12 @@
 
               // This method is responsible for drawing the graph, returns the drawn network
               function drawGraph() {
-                  var container = document.getElementById('mynetwork_42b196');
+                  var container = document.getElementById('mynetwork_145696');
 
 
 
                   // parsing and collecting nodes and edges from the python
-                  nodes = new vis.DataSet([{"color": null, "id": "Instances energy for sora-2-pro", "label": "Instances energy for\nsora-2-pro", "shape": "dot", "size": 15, "title": "Instances energy for sora-2-pro\n=\nHourly average occurrences across usage patterns * (Ecologits request_energy for\nsora-2-pro * one hour / Ecologits generation_latency for sora-2-pro)\n=\n26298 values from 2025-01-01 00:00:00+00:00 to 2028-01-01 18:00:00+00:00:\nfirst=0.568 , last=0.189 , mean=0.315 , min=0.0631 , max=0.568 , std=0.163 *\n(511 Wh * 1 h / 3.79 min)\n=\n26298 values from 2025-01-01 00:00:00+00:00 to 2028-01-01 18:00:00+00:00:\nfirst=4.6 kWh, last=1.53 kWh, mean=2.55 kWh, min=511 Wh, max=4.6 kWh, std=1.32\nkWh", "x": 0.0, "y": 1350}, {"color": null, "id": "Hourly average occurrences across usage patterns", "label": "Hourly average\noccurrences across\nusage patterns", "shape": "dot", "size": 15, "title": "Hourly average occurrences across usage patterns\n=\nAverage hourly occurrences in usage pattern\n=\n26298 values from 2025-01-01 00:00:00+00:00 to 2028-01-01 18:00:00+00:00:\nfirst=0.568 , last=0.189 , mean=0.315 , min=0.0631 , max=0.568 , std=0.163\n=\n26298 values from 2025-01-01 00:00:00+00:00 to 2028-01-01 18:00:00+00:00:\nfirst=0.568 , last=0.189 , mean=0.315 , min=0.0631 , max=0.568 , std=0.163", "x": -450.0, "y": 1200}, {"color": null, "id": "Ecologits request_energy for sora-2-pro", "label": "Ecologits\nrequest_energy for\nsora-2-pro", "shape": "dot", "size": 15, "title": "Ecologits request_energy for sora-2-pro\n=\nextraction (Ecologits video impacts)\n=\nextraction ({\u0027video_width\u0027: 1280.0, \u0027video_height\u0027: 720.0, \u0027video_frames...)\n=\n511 Wh", "x": 450.0, "y": 1200}, {"color": null, "id": "Ecologits generation_latency for sora-2-pro", "label": "Ecologits\ngeneration_latency\nfor sora-2-pro", "shape": "dot", "size": 15, "title": "Ecologits generation_latency for sora-2-pro\n=\nduplicate (Ecologits generation_latency for sora-2-pro)\n=\nduplicate (3.79 min)\n=\n3.79 min", "x": -225.0, "y": 750}]);
+                  nodes = new vis.DataSet([{"color": null, "id": "Instances energy for sora-2-pro", "label": "Instances energy for\nsora-2-pro", "shape": "dot", "size": 15, "title": "Instances energy for sora-2-pro\n=\nHourly average occurrences across usage patterns * (Ecologits request_energy for\nsora-2-pro * one hour / Ecologits generation_latency for sora-2-pro)\n=\n26298 values from 2025-01-01 00:00:00+00:00 to 2028-01-01 18:00:00+00:00:\nfirst=0.568 , last=0.253 , mean=0.316 , min=0.0631 , max=0.568 , std=0.163 *\n(511 Wh * 1 h / 3.79 min)\n=\n26298 values from 2025-01-01 00:00:00+00:00 to 2028-01-01 18:00:00+00:00:\nfirst=4.6 kWh, last=2.04 kWh, mean=2.55 kWh, min=511 Wh, max=4.6 kWh, std=1.32\nkWh", "x": 0.0, "y": 1350}, {"color": null, "id": "Hourly average occurrences across usage patterns", "label": "Hourly average\noccurrences across\nusage patterns", "shape": "dot", "size": 15, "title": "Hourly average occurrences across usage patterns\n=\nAverage hourly occurrences in usage pattern\n=\n26298 values from 2025-01-01 00:00:00+00:00 to 2028-01-01 18:00:00+00:00:\nfirst=0.568 , last=0.253 , mean=0.316 , min=0.0631 , max=0.568 , std=0.163\n=\n26298 values from 2025-01-01 00:00:00+00:00 to 2028-01-01 18:00:00+00:00:\nfirst=0.568 , last=0.253 , mean=0.316 , min=0.0631 , max=0.568 , std=0.163", "x": -450.0, "y": 1200}, {"color": null, "id": "Ecologits request_energy for sora-2-pro", "label": "Ecologits\nrequest_energy for\nsora-2-pro", "shape": "dot", "size": 15, "title": "Ecologits request_energy for sora-2-pro\n=\nextraction (Ecologits video impacts)\n=\nextraction ({\u0027video_width\u0027: 1280.0, \u0027video_height\u0027: 720.0, \u0027video_frames...)\n=\n511 Wh", "x": 450.0, "y": 1200}, {"color": null, "id": "Ecologits generation_latency for sora-2-pro", "label": "Ecologits\ngeneration_latency\nfor sora-2-pro", "shape": "dot", "size": 15, "title": "Ecologits generation_latency for sora-2-pro\n=\nduplicate (Ecologits generation_latency for sora-2-pro)\n=\nduplicate (3.79 min)\n=\n3.79 min", "x": -225.0, "y": 750}]);
                   edges = new vis.DataSet([{"arrows": "to", "from": "Hourly average occurrences across usage patterns", "to": "Instances energy for sora-2-pro"}, {"arrows": "to", "from": "Ecologits request_energy for sora-2-pro", "to": "Instances energy for sora-2-pro"}, {"arrows": "to", "from": "Ecologits generation_latency for sora-2-pro", "to": "Instances energy for sora-2-pro"}]);
 
                   nodeColors = {};
@@ -3829,9 +3829,9 @@
 </html>
 
 <p>You can also visit the <a href='../calculus_graphs/Generative_AI_video_model_server_instances_energy.html' target='_blank'>link to Instances energy for sora-2-pro’s full calculation graph</a>.</p>
-<h3 id="energy_footprint">energy_footprint</h3>
+<h3 id="use_footprint">use_footprint</h3>
 <p>Hourly energy-use footprint of the model server: each job's per-request usage GWP spread over its request_duration (per-request * 1h / request_duration * hourly average occurrences across usage patterns), summed over jobs.  </p>
-<p>Example value: 26298 values from 2025-01-01 00:00:00+00:00 to 2028-01-01 18:00:00+00:00: first=1.77 kg, last=589 g, mean=981 g, min=196 g, max=1.77 kg, std=508 g  </p>
+<p>Example value: 26298 values from 2025-01-01 00:00:00+00:00 to 2028-01-01 18:00:00+00:00: first=1.77 kg, last=785 g, mean=982 g, min=196 g, max=1.77 kg, std=507 g  </p>
 <p>Depends directly on:  </p>
 <ul>
 <li><a href="../EcoLogitsVideoGenExternalAPIJob/#hourly_avg_occurrences_across_usage_patterns">Hourly average occurrences across usage patterns</a></li>
@@ -3872,7 +3872,7 @@
         </center>
         <style type="text/css">
 
-             #mynetwork_9a952a {
+             #mynetwork_c16c17 {
                  width: 760px;
                  height: 300px;
                  background-color: #ffffff;
@@ -3894,7 +3894,7 @@
         <div class="card" style="width: 100%">
 
 
-            <div id="mynetwork_9a952a" class="card-body"></div>
+            <div id="mynetwork_c16c17" class="card-body"></div>
         </div>
 
 
@@ -3924,13 +3924,13 @@
 
               // This method is responsible for drawing the graph, returns the drawn network
               function drawGraph() {
-                  var container = document.getElementById('mynetwork_9a952a');
+                  var container = document.getElementById('mynetwork_c16c17');
 
 
 
                   // parsing and collecting nodes and edges from the python
-                  nodes = new vis.DataSet([{"color": null, "id": "Energy footprint for sora-2-pro", "label": "Energy footprint for\nsora-2-pro", "shape": "dot", "size": 15, "title": "Energy footprint for sora-2-pro\n=\nHourly average occurrences across usage patterns * (Ecologits request_usage_gwp\nfor sora-2-pro * one hour / Ecologits generation_latency for sora-2-pro)\n=\n26298 values from 2025-01-01 00:00:00+00:00 to 2028-01-01 18:00:00+00:00:\nfirst=0.568 , last=0.189 , mean=0.315 , min=0.0631 , max=0.568 , std=0.163 *\n(196 g * 1 h / 3.79 min)\n=\n26298 values from 2025-01-01 00:00:00+00:00 to 2028-01-01 18:00:00+00:00:\nfirst=1.77 kg, last=589 g, mean=981 g, min=196 g, max=1.77 kg, std=508 g", "x": 0.0, "y": 1350}, {"color": null, "id": "Hourly average occurrences across usage patterns", "label": "Hourly average\noccurrences across\nusage patterns", "shape": "dot", "size": 15, "title": "Hourly average occurrences across usage patterns\n=\nAverage hourly occurrences in usage pattern\n=\n26298 values from 2025-01-01 00:00:00+00:00 to 2028-01-01 18:00:00+00:00:\nfirst=0.568 , last=0.189 , mean=0.315 , min=0.0631 , max=0.568 , std=0.163\n=\n26298 values from 2025-01-01 00:00:00+00:00 to 2028-01-01 18:00:00+00:00:\nfirst=0.568 , last=0.189 , mean=0.315 , min=0.0631 , max=0.568 , std=0.163", "x": -450.0, "y": 1200}, {"color": null, "id": "Ecologits request_usage_gwp for sora-2-pro", "label": "Ecologits\nrequest_usage_gwp\nfor sora-2-pro", "shape": "dot", "size": 15, "title": "Ecologits request_usage_gwp for sora-2-pro\n=\nextraction (Ecologits video impacts)\n=\nextraction ({\u0027video_width\u0027: 1280.0, \u0027video_height\u0027: 720.0, \u0027video_frames...)\n=\n196 g", "x": 450.0, "y": 1200}, {"color": null, "id": "Ecologits generation_latency for sora-2-pro", "label": "Ecologits\ngeneration_latency\nfor sora-2-pro", "shape": "dot", "size": 15, "title": "Ecologits generation_latency for sora-2-pro\n=\nduplicate (Ecologits generation_latency for sora-2-pro)\n=\nduplicate (3.79 min)\n=\n3.79 min", "x": -225.0, "y": 750}]);
-                  edges = new vis.DataSet([{"arrows": "to", "from": "Hourly average occurrences across usage patterns", "to": "Energy footprint for sora-2-pro"}, {"arrows": "to", "from": "Ecologits request_usage_gwp for sora-2-pro", "to": "Energy footprint for sora-2-pro"}, {"arrows": "to", "from": "Ecologits generation_latency for sora-2-pro", "to": "Energy footprint for sora-2-pro"}]);
+                  nodes = new vis.DataSet([{"color": null, "id": "Use footprint for sora-2-pro", "label": "Use footprint for\nsora-2-pro", "shape": "dot", "size": 15, "title": "Use footprint for sora-2-pro\n=\nHourly average occurrences across usage patterns * (Ecologits request_usage_gwp\nfor sora-2-pro * one hour / Ecologits generation_latency for sora-2-pro)\n=\n26298 values from 2025-01-01 00:00:00+00:00 to 2028-01-01 18:00:00+00:00:\nfirst=0.568 , last=0.253 , mean=0.316 , min=0.0631 , max=0.568 , std=0.163 *\n(196 g * 1 h / 3.79 min)\n=\n26298 values from 2025-01-01 00:00:00+00:00 to 2028-01-01 18:00:00+00:00:\nfirst=1.77 kg, last=785 g, mean=982 g, min=196 g, max=1.77 kg, std=507 g", "x": 0.0, "y": 1350}, {"color": null, "id": "Hourly average occurrences across usage patterns", "label": "Hourly average\noccurrences across\nusage patterns", "shape": "dot", "size": 15, "title": "Hourly average occurrences across usage patterns\n=\nAverage hourly occurrences in usage pattern\n=\n26298 values from 2025-01-01 00:00:00+00:00 to 2028-01-01 18:00:00+00:00:\nfirst=0.568 , last=0.253 , mean=0.316 , min=0.0631 , max=0.568 , std=0.163\n=\n26298 values from 2025-01-01 00:00:00+00:00 to 2028-01-01 18:00:00+00:00:\nfirst=0.568 , last=0.253 , mean=0.316 , min=0.0631 , max=0.568 , std=0.163", "x": -450.0, "y": 1200}, {"color": null, "id": "Ecologits request_usage_gwp for sora-2-pro", "label": "Ecologits\nrequest_usage_gwp\nfor sora-2-pro", "shape": "dot", "size": 15, "title": "Ecologits request_usage_gwp for sora-2-pro\n=\nextraction (Ecologits video impacts)\n=\nextraction ({\u0027video_width\u0027: 1280.0, \u0027video_height\u0027: 720.0, \u0027video_frames...)\n=\n196 g", "x": 450.0, "y": 1200}, {"color": null, "id": "Ecologits generation_latency for sora-2-pro", "label": "Ecologits\ngeneration_latency\nfor sora-2-pro", "shape": "dot", "size": 15, "title": "Ecologits generation_latency for sora-2-pro\n=\nduplicate (Ecologits generation_latency for sora-2-pro)\n=\nduplicate (3.79 min)\n=\n3.79 min", "x": -225.0, "y": 750}]);
+                  edges = new vis.DataSet([{"arrows": "to", "from": "Hourly average occurrences across usage patterns", "to": "Use footprint for sora-2-pro"}, {"arrows": "to", "from": "Ecologits request_usage_gwp for sora-2-pro", "to": "Use footprint for sora-2-pro"}, {"arrows": "to", "from": "Ecologits generation_latency for sora-2-pro", "to": "Use footprint for sora-2-pro"}]);
 
                   nodeColors = {};
                   allNodes = nodes.get({ returnType: "Object" });
@@ -3995,7 +3995,7 @@
     </body>
 </html>
 
-<p>You can also visit the <a href='../calculus_graphs/Generative_AI_video_model_server_energy_footprint.html' target='_blank'>link to Energy footprint for sora-2-pro’s full calculation graph</a>.</p>
+<p>You can also visit the <a href='../calculus_graphs/Generative_AI_video_model_server_use_footprint.html' target='_blank'>link to Use footprint for sora-2-pro’s full calculation graph</a>.</p>
 
 
 

@@ -1680,10 +1680,10 @@
 </li>
         
           <li class="md-nav__item">
-  <a href="#carbon_footprint_fabrication_per_unit" class="md-nav__link">
+  <a href="#carbon_footprint_manufacturing_per_unit" class="md-nav__link">
     <span class="md-ellipsis">
       
-        carbon_footprint_fabrication_per_unit
+        carbon_footprint_manufacturing_per_unit
       
     </span>
   </a>
@@ -1763,10 +1763,10 @@
       <ul class="md-nav__list">
         
           <li class="md-nav__item">
-  <a href="#carbon_footprint_fabrication" class="md-nav__link">
+  <a href="#carbon_footprint_manufacturing" class="md-nav__link">
     <span class="md-ellipsis">
       
-        carbon_footprint_fabrication
+        carbon_footprint_manufacturing
       
     </span>
   </a>
@@ -1796,10 +1796,10 @@
 </li>
         
           <li class="md-nav__item">
-  <a href="#fabrication_footprint_per_edge_device" class="md-nav__link">
+  <a href="#manufacturing_footprint_per_edge_device" class="md-nav__link">
     <span class="md-ellipsis">
       
-        fabrication_footprint_per_edge_device
+        manufacturing_footprint_per_edge_device
       
     </span>
   </a>
@@ -1818,10 +1818,10 @@
 </li>
         
           <li class="md-nav__item">
-  <a href="#energy_footprint_per_edge_device" class="md-nav__link">
+  <a href="#use_footprint_per_edge_device" class="md-nav__link">
     <span class="md-ellipsis">
       
-        energy_footprint_per_edge_device
+        use_footprint_per_edge_device
       
     </span>
   </a>
@@ -3515,10 +3515,10 @@
 </li>
         
           <li class="md-nav__item">
-  <a href="#carbon_footprint_fabrication_per_unit" class="md-nav__link">
+  <a href="#carbon_footprint_manufacturing_per_unit" class="md-nav__link">
     <span class="md-ellipsis">
       
-        carbon_footprint_fabrication_per_unit
+        carbon_footprint_manufacturing_per_unit
       
     </span>
   </a>
@@ -3598,10 +3598,10 @@
       <ul class="md-nav__list">
         
           <li class="md-nav__item">
-  <a href="#carbon_footprint_fabrication" class="md-nav__link">
+  <a href="#carbon_footprint_manufacturing" class="md-nav__link">
     <span class="md-ellipsis">
       
-        carbon_footprint_fabrication
+        carbon_footprint_manufacturing
       
     </span>
   </a>
@@ -3631,10 +3631,10 @@
 </li>
         
           <li class="md-nav__item">
-  <a href="#fabrication_footprint_per_edge_device" class="md-nav__link">
+  <a href="#manufacturing_footprint_per_edge_device" class="md-nav__link">
     <span class="md-ellipsis">
       
-        fabrication_footprint_per_edge_device
+        manufacturing_footprint_per_edge_device
       
     </span>
   </a>
@@ -3653,10 +3653,10 @@
 </li>
         
           <li class="md-nav__item">
-  <a href="#energy_footprint_per_edge_device" class="md-nav__link">
+  <a href="#use_footprint_per_edge_device" class="md-nav__link">
     <span class="md-ellipsis">
       
-        energy_footprint_per_edge_device
+        use_footprint_per_edge_device
       
     </span>
   </a>
@@ -3692,7 +3692,7 @@
 <h2 id="params">Params</h2>
 <h3 id="name">name</h3>
 <p>A human readable description of the object.</p>
-<h3 id="carbon_footprint_fabrication_per_unit">carbon_footprint_fabrication_per_unit</h3>
+<h3 id="carbon_footprint_manufacturing_per_unit">carbon_footprint_manufacturing_per_unit</h3>
 <p>Embodied carbon emitted to manufacture one unit of the component.</p>
 <p>Unit: kilogram.</p>
 <h3 id="power_per_unit">power_per_unit</h3>
@@ -3709,12 +3709,12 @@
 <p>Unit: dimensionless.</p>
 <h2 id="backwards-links">Backwards links</h2>
 <h2 id="calculated-attributes">Calculated attributes</h2>
-<h3 id="carbon_footprint_fabrication">carbon_footprint_fabrication</h3>
-<p>Embodied carbon of one component, equal to the per-unit fabrication footprint times the number of units in the component.  </p>
+<h3 id="carbon_footprint_manufacturing">carbon_footprint_manufacturing</h3>
+<p>Embodied carbon of one component, equal to the per-unit manufacturing footprint times the number of units in the component.  </p>
 <p>Example value: 80 kg  </p>
 <p>Depends directly on:  </p>
 <ul>
-<li><a href="./#carbon_footprint_fabrication_per_unit">Carbon footprint fabrication per unit</a></li>
+<li><a href="./#carbon_footprint_manufacturing_per_unit">Carbon footprint manufacturing per unit</a></li>
 <li><a href="./#nb_of_units">Number of units</a>  </li>
 </ul>
 <p>through the following calculations:  </p>
@@ -3751,7 +3751,7 @@
         </center>
         <style type="text/css">
 
-             #mynetwork_3b0628 {
+             #mynetwork_f340f6 {
                  width: 760px;
                  height: 300px;
                  background-color: #ffffff;
@@ -3773,7 +3773,7 @@
         <div class="card" style="width: 100%">
 
 
-            <div id="mynetwork_3b0628" class="card-body"></div>
+            <div id="mynetwork_f340f6" class="card-body"></div>
         </div>
 
 
@@ -3803,13 +3803,13 @@
 
               // This method is responsible for drawing the graph, returns the drawn network
               function drawGraph() {
-                  var container = document.getElementById('mynetwork_3b0628');
+                  var container = document.getElementById('mynetwork_f340f6');
 
 
 
                   // parsing and collecting nodes and edges from the python
-                  nodes = new vis.DataSet([{"color": null, "id": "Carbon footprint fabrication", "label": "Carbon footprint\nfabrication", "shape": "dot", "size": 15, "title": "Carbon footprint fabrication\n=\nCarbon footprint fabrication per unit * Number of units\n=\n80 kg * 1\n=\n80 kg", "x": 0.0, "y": 300}, {"color": null, "id": "Carbon footprint fabrication per unit", "label": "Carbon footprint\nfabrication per unit", "shape": "dot", "size": 15, "title": "Carbon footprint fabrication per unit = 80 kg", "x": -75.0, "y": 150}, {"color": "darkred", "id": "Number of units", "label": "Number of units", "shape": "dot", "size": 15, "title": "Number of units = 1", "x": 75.0, "y": 150}]);
-                  edges = new vis.DataSet([{"arrows": "to", "from": "Carbon footprint fabrication per unit", "to": "Carbon footprint fabrication"}, {"arrows": "to", "from": "Number of units", "to": "Carbon footprint fabrication"}]);
+                  nodes = new vis.DataSet([{"color": null, "id": "Carbon footprint manufacturing", "label": "Carbon footprint\nmanufacturing", "shape": "dot", "size": 15, "title": "Carbon footprint manufacturing\n=\nCarbon footprint manufacturing per unit * Number of units\n=\n80 kg * 1\n=\n80 kg", "x": 0.0, "y": 300}, {"color": null, "id": "Carbon footprint manufacturing per unit", "label": "Carbon footprint\nmanufacturing per\nunit", "shape": "dot", "size": 15, "title": "Carbon footprint manufacturing per unit = 80 kg", "x": -75.0, "y": 150}, {"color": "darkred", "id": "Number of units", "label": "Number of units", "shape": "dot", "size": 15, "title": "Number of units = 1", "x": 75.0, "y": 150}]);
+                  edges = new vis.DataSet([{"arrows": "to", "from": "Carbon footprint manufacturing per unit", "to": "Carbon footprint manufacturing"}, {"arrows": "to", "from": "Number of units", "to": "Carbon footprint manufacturing"}]);
 
                   nodeColors = {};
                   allNodes = nodes.get({ returnType: "Object" });
@@ -3874,7 +3874,7 @@
     </body>
 </html>
 
-<p>You can also visit the <a href='../calculus_graphs/edge_workload_component_carbon_footprint_fabrication.html' target='_blank'>link to Carbon footprint fabrication’s full calculation graph</a>.</p>
+<p>You can also visit the <a href='../calculus_graphs/edge_workload_component_carbon_footprint_manufacturing.html' target='_blank'>link to Carbon footprint manufacturing’s full calculation graph</a>.</p>
 <h3 id="power">power</h3>
 <p>Power drawn by one fully-loaded component, equal to per-unit power times the number of units.  </p>
 <p>Example value: 40 W  </p>
@@ -3917,7 +3917,7 @@
         </center>
         <style type="text/css">
 
-             #mynetwork_5f25f5 {
+             #mynetwork_626323 {
                  width: 760px;
                  height: 300px;
                  background-color: #ffffff;
@@ -3939,7 +3939,7 @@
         <div class="card" style="width: 100%">
 
 
-            <div id="mynetwork_5f25f5" class="card-body"></div>
+            <div id="mynetwork_626323" class="card-body"></div>
         </div>
 
 
@@ -3969,7 +3969,7 @@
 
               // This method is responsible for drawing the graph, returns the drawn network
               function drawGraph() {
-                  var container = document.getElementById('mynetwork_5f25f5');
+                  var container = document.getElementById('mynetwork_626323');
 
 
 
@@ -4083,7 +4083,7 @@
         </center>
         <style type="text/css">
 
-             #mynetwork_674f56 {
+             #mynetwork_1651ec {
                  width: 760px;
                  height: 300px;
                  background-color: #ffffff;
@@ -4105,7 +4105,7 @@
         <div class="card" style="width: 100%">
 
 
-            <div id="mynetwork_674f56" class="card-body"></div>
+            <div id="mynetwork_1651ec" class="card-body"></div>
         </div>
 
 
@@ -4135,7 +4135,7 @@
 
               // This method is responsible for drawing the graph, returns the drawn network
               function drawGraph() {
-                  var container = document.getElementById('mynetwork_674f56');
+                  var container = document.getElementById('mynetwork_1651ec');
 
 
 
@@ -4207,8 +4207,8 @@
 </html>
 
 <p>You can also visit the <a href='../calculus_graphs/edge_workload_component_idle_power.html' target='_blank'>link to Idle power’s full calculation graph</a>.</p>
-<h3 id="fabrication_footprint_per_edge_device">fabrication_footprint_per_edge_device</h3>
-<p>Total hourly fabrication footprint per edge device, summed across all usage patterns this component appears in.  </p>
+<h3 id="manufacturing_footprint_per_edge_device">manufacturing_footprint_per_edge_device</h3>
+<p>Total hourly manufacturing footprint per edge device, summed across all usage patterns this component appears in.  </p>
 <p>Example value: no value  </p>
 <p>Depends directly on:  </p>
 <ul>
@@ -4248,7 +4248,7 @@
         </center>
         <style type="text/css">
 
-             #mynetwork_bc03cc {
+             #mynetwork_2287e0 {
                  width: 760px;
                  height: 300px;
                  background-color: #ffffff;
@@ -4270,7 +4270,7 @@
         <div class="card" style="width: 100%">
 
 
-            <div id="mynetwork_bc03cc" class="card-body"></div>
+            <div id="mynetwork_2287e0" class="card-body"></div>
         </div>
 
 
@@ -4300,12 +4300,12 @@
 
               // This method is responsible for drawing the graph, returns the drawn network
               function drawGraph() {
-                  var container = document.getElementById('mynetwork_bc03cc');
+                  var container = document.getElementById('mynetwork_2287e0');
 
 
 
                   // parsing and collecting nodes and edges from the python
-                  nodes = new vis.DataSet([{"color": null, "id": "Total fabrication footprint per edge device across usage patterns", "label": "Total fabrication\nfootprint per edge\ndevice across usage\npatterns", "shape": "dot", "size": 15, "title": "Total fabrication footprint per edge device across usage patterns = no value", "x": 0.0, "y": 150}]);
+                  nodes = new vis.DataSet([{"color": null, "id": "Total manufacturing footprint per edge device across usage patterns", "label": "Total manufacturing\nfootprint per edge\ndevice across usage\npatterns", "shape": "dot", "size": 15, "title": "Total manufacturing footprint per edge device across usage patterns = no value", "x": 0.0, "y": 150}]);
                   edges = new vis.DataSet([]);
 
                   nodeColors = {};
@@ -4371,7 +4371,7 @@
     </body>
 </html>
 
-<p>You can also visit the <a href='../calculus_graphs/edge_workload_component_fabrication_footprint_per_edge_device.html' target='_blank'>link to Total fabrication footprint per edge device across usage patterns’s full calculation graph</a>.</p>
+<p>You can also visit the <a href='../calculus_graphs/edge_workload_component_manufacturing_footprint_per_edge_device.html' target='_blank'>link to Total manufacturing footprint per edge device across usage patterns’s full calculation graph</a>.</p>
 <h3 id="energy_per_edge_device">energy_per_edge_device</h3>
 <p>Total hourly energy consumed per edge device, summed across all usage patterns.  </p>
 <p>Example value: no value  </p>
@@ -4413,7 +4413,7 @@
         </center>
         <style type="text/css">
 
-             #mynetwork_54410c {
+             #mynetwork_4e3a30 {
                  width: 760px;
                  height: 300px;
                  background-color: #ffffff;
@@ -4435,7 +4435,7 @@
         <div class="card" style="width: 100%">
 
 
-            <div id="mynetwork_54410c" class="card-body"></div>
+            <div id="mynetwork_4e3a30" class="card-body"></div>
         </div>
 
 
@@ -4465,7 +4465,7 @@
 
               // This method is responsible for drawing the graph, returns the drawn network
               function drawGraph() {
-                  var container = document.getElementById('mynetwork_54410c');
+                  var container = document.getElementById('mynetwork_4e3a30');
 
 
 
@@ -4537,7 +4537,7 @@
 </html>
 
 <p>You can also visit the <a href='../calculus_graphs/edge_workload_component_energy_per_edge_device.html' target='_blank'>link to Total energy consumed per edge device across usage patterns’s full calculation graph</a>.</p>
-<h3 id="energy_footprint_per_edge_device">energy_footprint_per_edge_device</h3>
+<h3 id="use_footprint_per_edge_device">use_footprint_per_edge_device</h3>
 <p>Total hourly energy-use footprint per edge device, summed across all usage patterns.  </p>
 <p>Example value: no value  </p>
 <p>Depends directly on:  </p>
@@ -4578,7 +4578,7 @@
         </center>
         <style type="text/css">
 
-             #mynetwork_a9ab5d {
+             #mynetwork_1f4f0a {
                  width: 760px;
                  height: 300px;
                  background-color: #ffffff;
@@ -4600,7 +4600,7 @@
         <div class="card" style="width: 100%">
 
 
-            <div id="mynetwork_a9ab5d" class="card-body"></div>
+            <div id="mynetwork_1f4f0a" class="card-body"></div>
         </div>
 
 
@@ -4630,12 +4630,12 @@
 
               // This method is responsible for drawing the graph, returns the drawn network
               function drawGraph() {
-                  var container = document.getElementById('mynetwork_a9ab5d');
+                  var container = document.getElementById('mynetwork_1f4f0a');
 
 
 
                   // parsing and collecting nodes and edges from the python
-                  nodes = new vis.DataSet([{"color": null, "id": "Total energy footprint per edge device across usage patterns", "label": "Total energy\nfootprint per edge\ndevice across usage\npatterns", "shape": "dot", "size": 15, "title": "Total energy footprint per edge device across usage patterns = no value", "x": 0.0, "y": 150}]);
+                  nodes = new vis.DataSet([{"color": null, "id": "Total use footprint per edge device across usage patterns", "label": "Total use footprint\nper edge device\nacross usage\npatterns", "shape": "dot", "size": 15, "title": "Total use footprint per edge device across usage patterns = no value", "x": 0.0, "y": 150}]);
                   edges = new vis.DataSet([]);
 
                   nodeColors = {};
@@ -4701,7 +4701,7 @@
     </body>
 </html>
 
-<p>You can also visit the <a href='../calculus_graphs/edge_workload_component_energy_footprint_per_edge_device.html' target='_blank'>link to Total energy footprint per edge device across usage patterns’s full calculation graph</a>.</p>
+<p>You can also visit the <a href='../calculus_graphs/edge_workload_component_use_footprint_per_edge_device.html' target='_blank'>link to Total use footprint per edge device across usage patterns’s full calculation graph</a>.</p>
 
 
 

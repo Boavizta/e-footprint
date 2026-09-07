@@ -1,0 +1,155 @@
+<html>
+    <head>
+        <meta charset="utf-8">
+        
+            <script src="lib/bindings/utils.js"></script>
+            <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/vis-network/9.1.2/dist/dist/vis-network.min.css" integrity="sha512-WgxfT5LWjfszlPHXRmBWHkV2eceiWTOBvrKCNbdgDYTHrT2AeLCGbF4sZlZw3UMN3WtL0tGUoIAKsu8mllg/XA==" crossorigin="anonymous" referrerpolicy="no-referrer" />
+            <script src="https://cdnjs.cloudflare.com/ajax/libs/vis-network/9.1.2/dist/vis-network.min.js" integrity="sha512-LnvoEWDFrqGHlHmDD2101OrLcbsfkrzoSpvtSQtxK3RMnRV0eOkhhBN2dXHKRrUU8p2DGRTk35n4O8nWSVe1mQ==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
+            
+        
+<center>
+<h1></h1>
+</center>
+
+<!-- <link rel="stylesheet" href="../node_modules/vis/dist/vis.min.css" type="text/css" />
+<script type="text/javascript" src="../node_modules/vis/dist/vis.js"> </script>-->
+        <link
+          href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.0-beta3/dist/css/bootstrap.min.css"
+          rel="stylesheet"
+          integrity="sha384-eOJMYsd53ii+scO/bJGFsiCZc+5NDVN2yr8+0RDqr0Ql0h+rP48ckxlpbzKgwra6"
+          crossorigin="anonymous"
+        />
+        <script
+          src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.0-beta3/dist/js/bootstrap.bundle.min.js"
+          integrity="sha384-JEW9xMcG8R+pH31jmWH6WWP0WintQrMb4s7ZOdauHnUtxwoG2vI5DkLtS3qm9Ekf"
+          crossorigin="anonymous"
+        ></script>
+
+
+        <center>
+          <h1></h1>
+        </center>
+        <style type="text/css">
+
+             #mynetwork_aa9728 {
+                 width: 760px;
+                 height: 300px;
+                 background-color: #ffffff;
+                 border: 1px solid lightgray;
+                 position: relative;
+                 float: left;
+             }
+
+             
+
+             
+
+             
+        </style>
+    </head>
+
+
+    <body>
+        <div class="card" style="width: 100%">
+            
+            
+            <div id="mynetwork_aa9728" class="card-body"></div>
+        </div>
+
+        
+        
+
+        <script type="text/javascript">
+
+              // initialize global variables.
+              var edges;
+              var nodes;
+              var allNodes;
+              var allEdges;
+              var nodeColors;
+              var originalNodes;
+              var network;
+              var container;
+              var options, data;
+              var filter = {
+                  item : '',
+                  property : '',
+                  value : []
+              };
+
+              
+
+              
+
+              // This method is responsible for drawing the graph, returns the drawn network
+              function drawGraph() {
+                  var container = document.getElementById('mynetwork_aa9728');
+
+                  
+
+                  // parsing and collecting nodes and edges from the python
+                  nodes = new vis.DataSet([{"color": null, "id": "Hourly use footprint", "label": "Hourly use footprint", "shape": "dot", "size": 15, "title": "Hourly use footprint\n=\nHourly idle use footprint + Hourly load use footprint\n=\n105192 values from 2025-01-01 00:00:00+00:00 to 2037-01-01 00:00:00+00:00:\nfirst=6 g, last=6 g, mean=90.9 g, min=6 g, max=180 g, std=50.7 g + 105192 values\nfrom 2025-01-01 00:00:00+00:00 to 2037-01-01 00:00:00+00:00: first=39.9 mg,\nlast=0.0258 mg, mean=439 g, min=0.0258 mg, max=879 g, std=254 g\n=\n105192 values from 2025-01-01 00:00:00+00:00 to 2037-01-01 00:00:00+00:00:\nfirst=6.04 g, last=6 g, mean=530 g, min=6 g, max=1.06 kg, std=304 g", "x": 0.0, "y": 1800}, {"color": null, "id": "Hourly idle use footprint", "label": "Hourly idle use\nfootprint", "shape": "dot", "size": 15, "title": "Hourly idle use footprint\n=\nHourly number of instances * Idle power * PUE * one hour * Average carbon\nintensity of electricity\n=\n105192 values from 2025-01-01 00:00:00+00:00 to 2037-01-01 00:00:00+00:00:\nfirst=1 , last=1 , mean=15.1 , min=1 , max=30 , std=8.46 * 50 W * 1.2 * 1 h *\n100 g/kWh\n=\n105192 values from 2025-01-01 00:00:00+00:00 to 2037-01-01 00:00:00+00:00:\nfirst=6 g, last=6 g, mean=90.9 g, min=6 g, max=180 g, std=50.7 g", "x": -712.5, "y": 1650}, {"color": null, "id": "Hourly load use footprint", "label": "Hourly load use\nfootprint", "shape": "dot", "size": 15, "title": "Hourly load use footprint\n=\nHourly raw number of instances * (Power - Idle power) * PUE * one hour * Average\ncarbon intensity of electricity\n=\n105192 values from 2025-01-01 00:00:00+00:00 to 2037-01-01 00:00:00+00:00:\nfirst=0.00133 , last=0.00000086 , mean=14.6 , min=0.00000086 , max=29.3 ,\nstd=8.45 * (300 W - 50 W) * 1.2 * 1 h * 100 g/kWh\n=\n105192 values from 2025-01-01 00:00:00+00:00 to 2037-01-01 00:00:00+00:00:\nfirst=39.9 mg, last=0.0258 mg, mean=439 g, min=0.0258 mg, max=879 g, std=254 g", "x": 712.5, "y": 1650}]);
+                  edges = new vis.DataSet([{"arrows": "to", "from": "Hourly idle use footprint", "to": "Hourly use footprint"}, {"arrows": "to", "from": "Hourly load use footprint", "to": "Hourly use footprint"}]);
+
+                  nodeColors = {};
+                  allNodes = nodes.get({ returnType: "Object" });
+                  for (nodeId in allNodes) {
+                    nodeColors[nodeId] = allNodes[nodeId].color;
+                  }
+                  allEdges = edges.get({ returnType: "Object" });
+                  // adding nodes and edges to the graph
+                  data = {nodes: nodes, edges: edges};
+
+                  var options = {
+    "configure": {
+        "enabled": false
+    },
+    "edges": {
+        "color": {
+            "inherit": true
+        },
+        "smooth": {
+            "enabled": true,
+            "type": "dynamic"
+        }
+    },
+    "interaction": {
+        "dragNodes": true,
+        "hideEdgesOnDrag": false,
+        "hideNodesOnDrag": false
+    },
+    "physics": {
+        "enabled": false,
+        "stabilization": {
+            "enabled": true,
+            "fit": true,
+            "iterations": 1000,
+            "onlyDynamicEdges": false,
+            "updateInterval": 50
+        }
+    }
+};
+
+                  
+
+
+                  
+
+                  network = new vis.Network(container, data, options);
+
+                  
+
+                  
+
+                  
+
+
+                  
+
+                  return network;
+
+              }
+              drawGraph();
+        </script>
+    </body>
+</html>

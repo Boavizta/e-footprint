@@ -3603,7 +3603,7 @@
 <h3 id="usage_journeys">usage_journeys</h3>
 <p>Non-empty mapping from each <a href="../UsageJourney/">UsageJourney</a> to its average number of executions per pattern occurrence. Weights must be strictly positive and do not need to sum to one.</p>
 <h3 id="devices">devices</h3>
-<p>Devices that users perform the journey on. Fabrication and energy footprints of each device are weighted by the time the journey occupies on it.</p>
+<p>Devices that users perform the journey on. Manufacturing and use footprints of each device are weighted by the time the journey occupies on it.</p>
 <p>A list of <a href="../Device/">Devices</a>.</p>
 <h3 id="network">network</h3>
 <p><a href="../Network/">Network</a> carrying traffic between the user's device and the servers.</p>
@@ -3660,7 +3660,7 @@
         </center>
         <style type="text/css">
 
-             #mynetwork_2053b6 {
+             #mynetwork_666047 {
                  width: 760px;
                  height: 300px;
                  background-color: #ffffff;
@@ -3682,7 +3682,7 @@
         <div class="card" style="width: 100%">
 
 
-            <div id="mynetwork_2053b6" class="card-body"></div>
+            <div id="mynetwork_666047" class="card-body"></div>
         </div>
 
 
@@ -3712,7 +3712,7 @@
 
               // This method is responsible for drawing the graph, returns the drawn network
               function drawGraph() {
-                  var container = document.getElementById('mynetwork_2053b6');
+                  var container = document.getElementById('mynetwork_666047');
 
 
 
@@ -3786,7 +3786,7 @@
 <p>You can also visit the <a href='../calculus_graphs/usage_pattern_usage_journeys_validation.html' target='_blank'>link to no value’s full calculation graph</a>.</p>
 <h3 id="utc_hourly_occurrences">utc_hourly_occurrences</h3>
 <p>Hourly pattern occurrences converted from the country's local timezone to UTC.  </p>
-<p>Example value: 26298 values from 2025-01-01 00:00:00+00:00 to 2028-01-01 18:00:00+00:00: first=9 , last=3 , mean=5 , min=1 , max=9 , std=2.59   </p>
+<p>Example value: 26298 values from 2025-01-01 00:00:00+00:00 to 2028-01-01 18:00:00+00:00: first=9 , last=4 , mean=5 , min=1 , max=9 , std=2.58   </p>
 <p>Depends directly on:  </p>
 <ul>
 <li><a href="./#hourly_occurrences">Hourly nb of pattern occurrences</a></li>
@@ -3826,7 +3826,7 @@
         </center>
         <style type="text/css">
 
-             #mynetwork_8ed17d {
+             #mynetwork_ce312f {
                  width: 760px;
                  height: 300px;
                  background-color: #ffffff;
@@ -3848,7 +3848,7 @@
         <div class="card" style="width: 100%">
 
 
-            <div id="mynetwork_8ed17d" class="card-body"></div>
+            <div id="mynetwork_ce312f" class="card-body"></div>
         </div>
 
 
@@ -3878,12 +3878,12 @@
 
               // This method is responsible for drawing the graph, returns the drawn network
               function drawGraph() {
-                  var container = document.getElementById('mynetwork_8ed17d');
+                  var container = document.getElementById('mynetwork_ce312f');
 
 
 
                   // parsing and collecting nodes and edges from the python
-                  nodes = new vis.DataSet([{"color": null, "id": "Hourly nb of pattern occurrences (UTC)", "label": "Hourly nb of pattern\noccurrences (UTC)", "shape": "dot", "size": 15, "title": "Hourly nb of pattern occurrences (UTC)\n=\nHourly nb of pattern occurrences converted to UTC from Timezone\n=\n26298 values from 2025-01-01 00:00:00 to 2028-01-01 18:00:00: first=3 , last=7 ,\nmean=5 , min=1 , max=9 , std=2.59 converted to UTC from Europe/Paris\n=\n26298 values from 2025-01-01 00:00:00+00:00 to 2028-01-01 18:00:00+00:00:\nfirst=9 , last=3 , mean=5 , min=1 , max=9 , std=2.59", "x": 0.0, "y": 300}, {"color": null, "id": "Hourly nb of pattern occurrences", "label": "Hourly nb of pattern\noccurrences", "shape": "dot", "size": 15, "title": "Hourly nb of pattern occurrences = 26298 values from 2025-01-01 00:00:00 to\n2028-01-01 18:00:00: first=3 , last=7 , mean=5 , min=1 , max=9 , std=2.59", "x": -75.0, "y": 150}, {"color": "gold", "id": "Timezone", "label": "Timezone", "shape": "dot", "size": 15, "title": "Timezone = Europe/Paris", "x": 75.0, "y": 150}]);
+                  nodes = new vis.DataSet([{"color": null, "id": "Hourly nb of pattern occurrences (UTC)", "label": "Hourly nb of pattern\noccurrences (UTC)", "shape": "dot", "size": 15, "title": "Hourly nb of pattern occurrences (UTC)\n=\nHourly nb of pattern occurrences converted to UTC from Timezone\n=\n26298 values from 2025-01-01 00:00:00 to 2028-01-01 18:00:00: first=4 , last=5 ,\nmean=5 , min=1 , max=9 , std=2.58 converted to UTC from Europe/Paris\n=\n26298 values from 2025-01-01 00:00:00+00:00 to 2028-01-01 18:00:00+00:00:\nfirst=9 , last=4 , mean=5 , min=1 , max=9 , std=2.58", "x": 0.0, "y": 300}, {"color": null, "id": "Hourly nb of pattern occurrences", "label": "Hourly nb of pattern\noccurrences", "shape": "dot", "size": 15, "title": "Hourly nb of pattern occurrences = 26298 values from 2025-01-01 00:00:00 to\n2028-01-01 18:00:00: first=4 , last=5 , mean=5 , min=1 , max=9 , std=2.58", "x": -75.0, "y": 150}, {"color": "gold", "id": "Timezone", "label": "Timezone", "shape": "dot", "size": 15, "title": "Timezone = Europe/Paris", "x": 75.0, "y": 150}]);
                   edges = new vis.DataSet([{"arrows": "to", "from": "Hourly nb of pattern occurrences", "to": "Hourly nb of pattern occurrences (UTC)"}, {"arrows": "to", "from": "Timezone", "to": "Hourly nb of pattern occurrences (UTC)"}]);
 
                   nodeColors = {};

@@ -31,7 +31,7 @@
         </center>
         <style type="text/css">
 
-             #mynetwork_212b3f {
+             #mynetwork_527aba {
                  width: 760px;
                  height: 300px;
                  background-color: #ffffff;
@@ -53,7 +53,7 @@
         <div class="card" style="width: 100%">
             
             
-            <div id="mynetwork_212b3f" class="card-body"></div>
+            <div id="mynetwork_527aba" class="card-body"></div>
         </div>
 
         
@@ -83,12 +83,12 @@
 
               // This method is responsible for drawing the graph, returns the drawn network
               function drawGraph() {
-                  var container = document.getElementById('mynetwork_212b3f');
+                  var container = document.getElementById('mynetwork_527aba');
 
                   
 
                   // parsing and collecting nodes and edges from the python
-                  nodes = new vis.DataSet([{"color": null, "id": "Data transferred for claude-opus-4-5", "label": "Data transferred for\nclaude-opus-4-5", "shape": "dot", "size": 15, "title": "Data transferred for claude-opus-4-5\n=\nBytes per token * Output token count for claude-opus-4-5\n=\n5 B * 1000\n=\n5 kB", "x": 0.0, "y": 300}, {"color": "darkred", "id": "Output token count for claude-opus-4-5", "label": "Output token count\nfor claude-opus-4-5", "shape": "dot", "size": 15, "title": "Output token count for claude-opus-4-5 = 1000", "x": 0.0, "y": 150}]);
+                  nodes = new vis.DataSet([{"color": null, "id": "Data transferred for claude-opus-4-5", "label": "Data transferred for\nclaude-opus-4-5", "shape": "dot", "size": 15, "title": "Data transferred for claude-opus-4-5\n=\nBytes per token * Output token count for claude-opus-4-5\n=\n5 B * 1,000\n=\n5 kB", "x": 0.0, "y": 300}, {"color": "darkred", "id": "Output token count for claude-opus-4-5", "label": "Output token count\nfor claude-opus-4-5", "shape": "dot", "size": 15, "title": "Output token count for claude-opus-4-5 = 1,000", "x": 0.0, "y": 150}]);
                   edges = new vis.DataSet([{"arrows": "to", "from": "Output token count for claude-opus-4-5", "to": "Data transferred for claude-opus-4-5"}]);
 
                   nodeColors = {};
