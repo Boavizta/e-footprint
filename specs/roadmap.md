@@ -29,7 +29,7 @@ calculus-methodology evolution. Decided 2026-07-02 during pull-based-computation
 
 ### Boavizta API expansion
 
-Currently used for server manufacturing (`BoaviztaCloudServer`). Planned expansion to **water (WUE)** and **rare-earth metals**. Will require new modeling primitives to carry multi-impact footprints alongside CO₂-eq.
+Currently used for server manufacturing (`BoaviztaCloudServer`). Planned expansion to **water (WUE)** and **rare-earth metals**. Will require new modeling primitives to carry multi-impact footprints alongside CO2-eq.
 
 ### Lean base install — optional heavy dependencies (memory optimization)
 

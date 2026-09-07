@@ -2,7 +2,7 @@
 
 ## What e-footprint is
 
-A Python toolkit for modeling the environmental impact of digital services, with a strong focus on **carbon footprint** (CO₂-eq) across the full lifecycle of digital infrastructure.
+A Python toolkit for modeling the environmental impact of digital services, with a strong focus on **carbon footprint** (CO2-eq) across the full lifecycle of digital infrastructure.
 
 It uses a **declarative modeling approach**: users describe the system (servers, storage, network, devices, usage patterns), and the library automatically computes — and incrementally recomputes — the impact whenever any input changes, with full explainability of the calculation graph.
 

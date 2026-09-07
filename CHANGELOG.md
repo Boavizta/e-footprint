@@ -426,7 +426,7 @@ Attribution-logic revamp: footprint attribution is rebuilt on an atom model. Eve
 ## [16.0.3] - 2026-02-20
 
 ### Changed
-- In EcoLogitsGenAIExternalAPIJob, set unit of EcoLogits calculated attributes to gCO2eq instead of kgCO2eq when values are small, to improve auditability of results.
+- In EcoLogitsGenAIExternalAPIJob, set unit of EcoLogits calculated attributes to gCO2-eq instead of kgCO2-eq when values are small, to improve auditability of results.
 
 ## [16.0.2] - 2026-02-19
 

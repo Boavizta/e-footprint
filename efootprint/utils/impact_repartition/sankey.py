@@ -623,13 +623,13 @@ class ImpactRepartitionSankey:
             pct = self.get_percentage_of_total(node_value)
             if idx in self.aggregated_node_members:
                 members_str = "<br>".join(
-                    f"{label}: {self.format_value_in_root_unit(member_value)} CO2eq"
+                    f"{label}: {self.format_value_in_root_unit(member_value)} CO2-eq"
                     for label, member_value in self.aggregated_node_members[idx]
                 )
                 node_hover.append(
-                    f"{self.full_node_labels[idx]}<br>{amount_str} CO2eq ({pct:.1f}%)<br><br>Aggregated objects:<br>{members_str}")
+                    f"{self.full_node_labels[idx]}<br>{amount_str} CO2-eq ({pct:.1f}%)<br><br>Aggregated objects:<br>{members_str}")
                 continue
-            node_hover.append(f"{self.full_node_labels[idx]}<br>{amount_str} CO2eq ({pct:.1f}%)")
+            node_hover.append(f"{self.full_node_labels[idx]}<br>{amount_str} CO2-eq ({pct:.1f}%)")
         return node_hover
 
     def _build_link_labels(self) -> list[str]:
@@ -656,7 +656,7 @@ class ImpactRepartitionSankey:
             source_idx = resolve_visible(self.link_sources[link_idx], incoming_by_target)
             target_idx = resolve_visible(self.link_targets[link_idx], outgoing_by_source)
             link_labels.append(
-                f"{self.full_node_labels[source_idx]} → {self.full_node_labels[target_idx]}<br>{amount_str} CO2eq ({pct:.1f}%)")
+                f"{self.full_node_labels[source_idx]} → {self.full_node_labels[target_idx]}<br>{amount_str} CO2-eq ({pct:.1f}%)")
         return link_labels
 
     def _column_x_left(self, column: int) -> float:
@@ -748,7 +748,7 @@ class ImpactRepartitionSankey:
                 )
             title = (
                 f"{self.system.name} {lifecycle_info}impact repartition{excluded_classes_info}: "
-                f"{self.format_value_in_root_unit(self._total_system_value)} CO2eq"
+                f"{self.format_value_in_root_unit(self._total_system_value)} CO2-eq"
             )
 
         node_hover = self._build_hover_labels()

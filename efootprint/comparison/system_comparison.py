@@ -510,7 +510,7 @@ def _plot_decomposition(decomposition, label_a, label_b, filepath, figsize, plt_
     if rows:
         formatted_total = format_quantity_for_display(sum(row.delta.absolute for row in rows) * u.kg)
         total_in_display_unit = formatted_total.to(display_unit).magnitude
-        title += f"\nTotal: {format_display_number(total_in_display_unit)} {unit_label} CO₂e"
+        title += f"\nTotal: {format_display_number(total_in_display_unit)} {unit_label} CO2-eq"
     ax.set_title(title)
     ax.set_xlabel(f"{unit_label} CO2 difference")
 

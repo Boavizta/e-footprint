@@ -419,7 +419,7 @@ class TestSystemComparison(TestCase):
         self.assertEqual([-1600, 500], [bar.get_width() for bar in axes.patches])
         self.assertEqual(["-1600 t", "500 t"], [text.get_text() for text in axes.texts])
         self.assertEqual(
-            "Footprint difference by category and phase (after − before)\nTotal: -1100 t CO₂e",
+            "Footprint difference by category and phase (after − before)\nTotal: -1100 t CO2-eq",
             axes.get_title())
         plt.close(figure)
 

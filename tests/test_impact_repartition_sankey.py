@@ -651,7 +651,7 @@ class TestImpactRepartitionSankeyPresentation(TestCase):
         self.assertEqual(3, len(link_labels))
         self.assertEqual(1, len(set(link_labels)))
         self.assertTrue(all(label.startswith("Source → Target<br>") for label in link_labels))
-        self.assertTrue(all(label.endswith("CO2eq (100.0%)") for label in link_labels))
+        self.assertTrue(all(label.endswith("CO2-eq (100.0%)") for label in link_labels))
 
     def test_format_value_in_root_unit_rounds_before_rendering(self):
         """Test Sankey string formatting keeps display rounding and trims trailing zeros."""

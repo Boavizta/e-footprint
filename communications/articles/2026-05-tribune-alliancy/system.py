@@ -161,5 +161,5 @@ if __name__ == "__main__":
     system_to_json(system, save_calculated_attributes=False, output_filepath=output_path)
     print(f"Système exporté : {output_path}")
     total_kg = float(system.total_footprint.value.sum().magnitude)
-    print(f"Empreinte cumulée sur {NB_YEARS} ans : {total_kg / 1000:.1f} t CO₂eq "
+    print(f"Empreinte cumulée sur {NB_YEARS} ans : {total_kg / 1000:.1f} t CO2-eq "
           f"({total_kg / NB_YEARS / 1000:.1f} t/an en moyenne)")

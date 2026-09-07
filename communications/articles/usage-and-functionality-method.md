@@ -67,7 +67,7 @@ The structured input shape pays off twice on the output side.
 
 #### Impact repartition to functional objects
 
-Every gram of CO₂eq the model computes is **attributed back** to the functional objects that caused it:
+Every gram of CO2-eq the model computes is **attributed back** to the functional objects that caused it:
 - A specific journey step.
 - A specific job's server-time.
 - A specific device fleet's manufacturing.
@@ -135,6 +135,6 @@ The shape — usage journeys, functionalities, volumes, geographies — is what 
 - [ ] Sankey diagrams: decide hosting (embed in mkdocs companion page; PNG screenshot in the blog post; link to interactive HTML).
 - [ ] Confirm EcoLogits canonical URL at publication time.
 - [ ] §3 example: pick a clean volume-geography contrast (e.g., same service deployed in coal-grid vs hydro-grid region — order-of-magnitude difference).
-- [ ] §5 audit example: pick one calculated value and trace its full derivation chain end-to-end (e.g., *"journey X emits Y kg CO₂eq"* → server-time formula → electricity-mix factor → BoaviztAPI hardware fab data).
+- [ ] §5 audit example: pick one calculated value and trace its full derivation chain end-to-end (e.g., *"journey X emits Y kg CO2-eq"* → server-time formula → electricity-mix factor → BoaviztAPI hardware fab data).
 - [ ] §6: confirm with Boavizta whether to mention any other ecosystem dependencies (carbon-intensity grids data, etc.).
 - [ ] Decide whether to include a small inline usage-journey table or keep prose-only.
