@@ -7,12 +7,12 @@ from pint import Quantity, Unit
 from efootprint.constants.units import u
 
 UNIT_FAMILIES: list[Sequence[Unit]] = [
-    [u.mg, u.g, u.kg, u.tonne],
-    [u.mWh, u.Wh, u.kWh, u.MWh, u.GWh],
-    [u.mW, u.W, u.kW, u.MW, u.GW],
+    [u.mg, u.g, u.kg, u.tonne, u.Mtonne, u.Gtonne, u.Ttonne],
+    [u.mWh, u.Wh, u.kWh, u.MWh, u.GWh, u.TWh],
+    [u.mW, u.W, u.kW, u.MW, u.GW, u.TW],
     [u.ms, u.s, u.minute, u.hour, u.day, u.year],
-    [u.occurrence, u.koccurrence, u.Moccurrence, u.Goccurrence],
-    [u.concurrent, u.kconcurrent, u.Mconcurrent, u.Gconcurrent],
+    [u.occurrence, u.koccurrence, u.Moccurrence, u.Goccurrence, u.Toccurrence],
+    [u.concurrent, u.kconcurrent, u.Mconcurrent, u.Gconcurrent, u.Tconcurrent],
     [u.byte, u.kB, u.MB, u.GB, u.TB],
     [u.byte_ram, u.kB_ram, u.MB_ram, u.GB_ram, u.TB_ram],
     [u.byte_stored, u.kB_stored, u.MB_stored, u.GB_stored, u.TB_stored],
