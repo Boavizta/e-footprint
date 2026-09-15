@@ -84,7 +84,31 @@ Candidate functional units:
 - one active modeling session composed of a stated mix of operations; and
 - the complete hosted service over one to three years.
 
-The service-level result should be shown for several traffic trajectories. e-footprint currently has little traffic, so a single forecast would create false precision.
+The service-level result should be shown for several traffic trajectories. e-footprint has no representative usage
+evidence yet, so a single forecast would create false precision.
+
+## Usage story and benchmark portfolio
+
+The study will separate **benchmark operations**, which can be measured reproducibly, from **usage sessions**, whose
+mix and future volume remain assumptions. This lets the traffic projection change without changing the underlying
+performance evidence.
+
+The four initial session types are:
+
+1. **Explore an example:** select a maintained template, open results, then inspect a cold and warm Sankey.
+2. **Build and refine a model:** load a model, save several structural or assumption changes, revisit results, audit
+   selected values and export the model.
+3. **Compare an alternative:** duplicate or import a second model, edit it and open the comparison dashboard.
+4. **Audit and reuse a model:** import a model, inspect sources and derivations, export its sources, then save the model
+   or workspace.
+
+The reusable benchmark atoms underneath those sessions are hydration, import/load, a saved mutation, standard results,
+cold attribution/Sankey, warm attribution refinement, comparison, audit and export. Landing-only traffic and the idle
+production baseline remain visible but separate. Prospective product journeys are excluded until they ship.
+
+The canonical counts, provisional low/expected/high launch trajectories, fixture portfolio, deployment constraints and
+measurement rules live in the companion interface reference:
+[`specs/e-footprint-modeling/README.md`](../../../../e-footprint-interface/specs/e-footprint-modeling/README.md).
 
 ## Evidence and benchmark discipline
 
@@ -158,5 +182,6 @@ After the talk, participants should be able to:
 - [`../../strategy.md`](../../strategy.md) — audiences, channel boundaries and core narrative.
 - [`../ecodesign-strategies-article.md`](../ecodesign-strategies-article.md) — best practices, measurement and modeling framing.
 - [`../usage-and-functionality-method.md`](../usage-and-functionality-method.md) — usage-centered modeling method.
+- [`../../../../e-footprint-interface/specs/e-footprint-modeling/README.md`](../../../../e-footprint-interface/specs/e-footprint-modeling/README.md) — canonical interface usage story, benchmark operations and launch traffic cases.
 - [`../../../docs_sources/mkdocs_sourcefiles/why_efootprint.md`](../../../docs_sources/mkdocs_sourcefiles/why_efootprint.md) — canonical “why e-footprint?” explanation.
 - Interface performance evidence and memory experiments live in the companion `e-footprint-interface` repository; link individual results when the study selects its canonical benchmarks.
