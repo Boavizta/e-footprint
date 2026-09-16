@@ -13,7 +13,8 @@ from efootprint.abstract_modeling_classes.modeling_object import ModelingObject
 from efootprint.all_classes_in_order import OBJECT_CATEGORIES
 from efootprint.constants.units import u
 from efootprint.utils.display import (
-    best_display_unit, format_display_number, format_quantity_for_display, human_readable_unit)
+    best_display_unit, display_quantity_as_str, format_display_number, format_quantity_for_display,
+    human_readable_unit)
 from efootprint.utils.plot_timeseries import get_time_axis
 from efootprint.utils.tools import get_init_signature_params
 
@@ -114,11 +115,12 @@ def _attribute_value_str(explainable_object: ExplainableObject) -> Optional[str]
     value = getattr(explainable_object, "value", None)
     if value is None:
         return None
-    # Scalars read straight off the value (e.g. "300.0 watt"). Array-valued inputs (hourly / recurrent
+    # Scalars use the same magnitude-aware units and rounding as other human-facing values. Array-valued
+    # inputs (hourly / recurrent
     # quantities) render via their wrapper's compact __str__ ("<N> values in <unit>: [first 10 / last 10]")
     # rather than dumping the full numpy array.
     if isinstance(explainable_object, ExplainableQuantity):
-        return str(value)
+        return display_quantity_as_str(value)
     return str(explainable_object)
 
 

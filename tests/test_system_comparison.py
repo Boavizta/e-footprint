@@ -213,8 +213,22 @@ class TestSystemComparison(TestCase):
         changed = [row for row in diff.changed if row.attribute == "power"]
         self.assertEqual(1, len(changed))
         self.assertEqual("Server", changed[0].object_class)
-        self.assertEqual("300.0 watt", changed[0].value_a)
-        self.assertEqual("500.0 watt", changed[0].value_b)
+        self.assertEqual("300 W", changed[0].value_a)
+        self.assertEqual("500 W", changed[0].value_b)
+
+    def test_input_diff_uses_readable_units_and_rounding_for_scalar_quantities(self):
+        """Scalar inputs use display formatting instead of exposing raw floating-point magnitudes."""
+        server_a = next(o for o in self.system_a.all_linked_objects if isinstance(o, Server))
+        server_b = next(o for o in self.system_b.all_linked_objects if isinstance(o, Server))
+        server_a.power = SourceValue(78.67387319345119 * u.W)
+        server_b.power = SourceValue(47.204323916070706 * u.W)
+
+        changed = [row for row in self.system_a.compare_to(self.system_b).input_diff.changed
+                   if row.attribute == "power"]
+
+        self.assertEqual(1, len(changed))
+        self.assertEqual("78.7 W", changed[0].value_a)
+        self.assertEqual("47.2 W", changed[0].value_b)
 
     def test_input_diff_matches_by_id_first(self):
         """Test renaming an object in B still pairs it by id (no spurious only-in entries)."""
@@ -240,8 +254,8 @@ class TestSystemComparison(TestCase):
         changed = [row for row in diff.changed if row.attribute == "power"]
         self.assertEqual(1, len(changed))
         self.assertEqual("Server", changed[0].object_class)
-        self.assertEqual("300.0 watt", changed[0].value_a)
-        self.assertEqual("500.0 watt", changed[0].value_b)
+        self.assertEqual("300 W", changed[0].value_a)
+        self.assertEqual("500 W", changed[0].value_b)
 
     def test_input_diff_surfaces_a_changed_usage_journey_step_weight(self):
         """Test a difference consisting ONLY of a changed dict-relationship count (a uj_steps weight) is
