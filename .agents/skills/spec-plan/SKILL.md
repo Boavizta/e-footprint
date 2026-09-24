@@ -1,131 +1,139 @@
 ---
 name: spec-plan
-description: Use after the user approves a spec.html to write or refine the corresponding plan.html. Second stage of the four-stage spec-driven workflow. Plan answers HOW the spec becomes code; respects the architecture hub. Still no code execution.
+description: Write or refine plan.html after a feature spec is approved. Build an interaction-led, code-grounded implementation plan with linked file navigation. Planning only; no application implementation or task generation.
 ---
 
 # spec-plan
 
-You are about to write or refine a plan for a feature whose spec is approved. Do NOT write any code yet. The output is `specs/features/<feature-name>/plan.html` — either created fresh, or refined in place if a draft already exists (e.g. when `spec-specify` produced one because the kickoff was design-rich).
+Help the reviewer picture the smallest justified code change, with little interpretive effort.
+The reviewer already knows the spec: the plan is a high-level code review of proposed changes,
+not another product explanation.
 
-## Process
+Output: `specs/features/<feature-name>/plan.html` in the driving repository. Keep the plan
+self-contained and editable throughout review. Planning may include read-only code inspection
+and scoped local diagnostics; do not implement application changes or generate tasks.
 
-1. **Confirm which feature** with the user. The corresponding `specs/features/<feature-name>/spec.html` must exist and be approved.
+## Ground the plan before writing
 
-2. **Check whether `plan.html` already exists.**
-   - **If yes:** treat it as a draft to refine, **not** replace. Read it alongside the spec. Identify (a) gaps the spec implies but the plan doesn't cover, (b) plan content that's stale relative to the spec (e.g. capabilities the spec dropped), (c) anything that violates the owning pages under `architecture/` or `constitution.md`, (d) implementation-level content that drifted into the spec and should move down to the plan. Surface this delta as a punch list to the user *before* editing. Apply changes via `Edit`, preserving the existing structure. Use AskUserQuestion for any material decision the existing plan doesn't settle.
-   - **If no:** draft fresh, following the template below. Use AskUserQuestion for material decisions (which approach, where to put a new module, etc.).
+- Resolve the feature and driving repository from the conversation and workspace workflow.
+  Read the approved `spec.html`, any existing plan and relevant review decisions. Ask only if
+  the feature or approval is genuinely unclear; do not restart an established review.
+- Read the repository's `AGENTS.md`, constitution and architecture entry point, then the owning
+  documentation for affected paths. Follow the actual layout: some repositories use
+  `specs/architecture/index.html`, others `specs/architecture.md`. Do not assume either exists.
+  Flag architectural deviations; constitutional changes require explicit approval through the
+  constitutional workflow, not an incidental plan paragraph.
+- Trace the relevant existing code and tests, including success, error, cancellation, rendering
+  and persistence behavior where the proposed change touches them. Documentation alone is not
+  evidence of what an endpoint, hook or browser handler currently does.
+- Look for existing mechanisms before proposing abstractions. Explain a refactor through:
+  what happens today; what is extracted or changed and who uses it; what genuinely new behavior
+  it enables. Preserve unrelated behavior.
+- Ask about material unresolved decisions with a concrete scenario grounded in the current
+  code or approved scope. Separate observations, proposals and uncertainties. Do not manufacture
+  edge cases to force a product decision.
 
-3. **Read `specs/architecture/index.html`, the owning architecture pages it routes to, and `specs/constitution.md`.** The plan must respect them. If it requires deviating from architecture, the deviation is called out explicitly with rationale.
+## Audit complexity before human review
 
-4. **Save the file** at `specs/features/<feature-name>/plan.html`.
+For each added abstraction, state store, queue, synchronization step, validation or recovery
+mechanism, identify the agreed behavior it serves and compare it with a smaller extension of
+existing code. Remove mechanisms with no demonstrated need.
 
-5. **Tell the user** the plan is ready and wait for their review. Do not proceed to tasks.
+In particular:
 
-## Authoring conventions (HTML)
+- Do not duplicate existing validation or introduce protections solely for hypothetical stale
+  or hand-crafted requests. A “defense in depth” label is not a justification. Preserve existing
+  security protections and domain invariants; explain any necessary new check through its
+  concrete role in the supported workflow.
+- Check which UI surfaces actually exist or remain visible before proposing refresh, draft
+  preservation or background synchronization. Distinguish error presentation from edit retention.
+- Do not infer a generic framework from one shared helper, or a second data model from information
+  already owned elsewhere. Share the smallest useful mechanism.
+- Keep required feature work separate from unrelated reliability improvements. Surface confirmed
+  bugs with evidence and ownership; park deferred concerns using the user's backlog convention,
+  rather than making them feature prerequisites. Do not implement fixes during planning.
 
-The plan is a **single self-contained `.html` file** — same rules as the spec (see `spec-specify`):
+This is a check on the agent's reasoning, not a mandatory audit section in the rendered plan.
+It does not universally forbid queues, drafts or defensive checks: their cost must earn its place
+in the actual feature.
 
-- **Classless / semantic markup** with the `<style>` block from the template. No per-element `class=`, no Tailwind / Bootstrap / React / CDN.
-- **Inline everything:** one `<style>` block, no external stylesheet, no `<script src=…>`. Renders with no network.
-- **Collapsible sections use native `<details>/<summary>`** — no JavaScript.
-- Use an inline `<svg>` for a module / data-flow diagram instead of an ASCII sketch when a diagram helps.
-- Keep the standard affected-modules table note-first in visual emphasis: use fixed 27% / 13% / 60%
-  widths for module, change type, and note, and allow long module paths to wrap.
+## Reading order and content
 
-When refining an existing draft (Process step 2), preserve this structure and edit in place.
+Use the following shape, scaled to the feature rather than a fixed number of sections:
 
-## Template
+1. **Shared data, if it changes.** Show significant new or extended structures before the
+   interactions that need them. Include concrete fields, central return types, identity and
+   ownership where relevant. Do not invent a structure just to fill this section.
+2. **Follow interactions through the code.** Organize by user action or functional flow, not
+   technical layer. For a library-only feature, follow the caller's operation. Name the entry
+   point, changed calls/data and visible or returned result. Introduce shared helpers with their
+   first consumer, then link back.
+3. **Implementation sequence and verification.** Keep dependency order distinct from reading
+   order. Name independently useful steps and any approved ride-along refactor. Map important
+   behavior and regression risks to existing test layers; do not enumerate helper-internal
+   assertions or duplicate library tests without a concrete reason.
+4. **Material decisions only.** Keep risks, alternatives, migrations, documentation changes and
+   unresolved questions where they help review. Omit empty sections, generic reassurance and
+   unchanged rules. Keep actual review decisions visible, not hidden as agent-only detail.
 
-```html
-<!DOCTYPE html>
-<html lang="en">
-<head>
-<meta charset="utf-8">
-<meta name="viewport" content="width=device-width, initial-scale=1">
-<title><Feature title> — Implementation plan</title>
-<style>
-  body { font-family: system-ui, -apple-system, sans-serif; line-height: 1.6;
-         max-width: 52rem; margin: 2rem auto; padding: 0 1.2rem; color: #1a1a1a; }
-  h1 { border-bottom: 2px solid #e0e0e0; padding-bottom: .3rem; }
-  h2 { margin-top: 2rem; }
-  .status { color: #666; font-size: .9rem; }
-  table { border-collapse: collapse; width: 100%; margin: 1rem 0; table-layout: fixed; }
-  th, td { border: 1px solid #ccc; padding: .4rem .6rem; text-align: left; vertical-align: top; }
-  th { background: #f5f5f5; }
-  th:nth-child(1), td:nth-child(1) { width: 27%; overflow-wrap: anywhere; }
-  th:nth-child(2), td:nth-child(2) { width: 13%; }
-  th:nth-child(3), td:nth-child(3) { width: 60%; }
-  code { background: #f4f4f4; padding: .1rem .35rem; border-radius: 3px; font-size: .9em; }
-  details { margin: .6rem 0; border: 1px solid #e0e0e0; border-radius: 6px; padding: .4rem .8rem; }
-  summary { cursor: pointer; font-weight: 600; }
-</style>
-</head>
-<body>
+Within the walkthrough:
 
-<h1><Feature title> — Implementation plan</h1>
-<p class="status">Status: Plan — under review · <YYYY-MM-DD> · Spec: <a href="spec.html">spec.html</a></p>
+- Title each code block with its owning file. Split multi-file snippets; label payload examples
+  as payloads and name their producer/consumer. Mark existing versus proposed code.
+- Show important structure changes and their callers, not opaque type names or callbacks without
+  a home. Keep sketches short enough to reveal the contract rather than simulate implementation.
+- Distinguish browser feedback, server processing and persistence; name the particular operation
+  instead of “the save use case”. Describe rendering at the interaction that causes it.
+- State a consistent path base and identify paths outside it and cross-repository ownership.
+  Link to existing code when useful; link proposed files to their file-tree entry instead.
+- Every sentence should convey a change, constraint, necessary rationale or decision. Omit
+  ordinary behavior and spec repetition. Prefer concrete vocabulary over terms that suggest
+  machinery that does not exist. Clarification should replace confusing prose, not accumulate it.
+- Examples illustrate generic mechanisms unless explicitly declared exceptions. Do not turn
+  a product example or this review's particular implementation choices into universal rules.
 
-<section>
-  <h2>1. Approach</h2>
-  <p>One- or two-paragraph summary of how the spec becomes code. Name the key abstractions or files.
-  An inline <code>&lt;svg&gt;</code> module / data-flow diagram goes here when it helps.</p>
-</section>
+## HTML review surface
 
-<section>
-  <h2>2. Affected modules</h2>
-  <table>
-    <thead><tr><th>Module / file</th><th>Change type</th><th>Note</th></tr></thead>
-    <tbody>
-      <tr><td><code>efootprint/...</code></td><td>new / modified</td><td>...</td></tr>
-    </tbody>
-  </table>
-</section>
+For a new plan or an authorized format refresh, read and adapt
+[the HTML starter](assets/plan.html). It contains the review layout, not a prescribed architecture.
+Replace its uppercase placeholders and authoring prompts; remove unused sample sections and
+update navigation, file mappings and highlight selectors together.
 
-<section>
-  <h2>3. Cross-cutting concerns</h2>
-  <ul>
-    <li><strong>Tests:</strong> what test layers (unit / integration / e2e) are affected, and what the new coverage looks like at a glance.</li>
-    <li><strong>Migrations:</strong> if JSON schema or DB schema change, identify the migration path.</li>
-    <li><strong>Docs:</strong> what owning architecture pages or other spec files (<code>conventions.md</code>, etc.) need to follow.</li>
-  </ul>
-</section>
+- Use a linked reading-order navigation and collapsible filesystem-like changed-file tree,
+  not an affected-files table. Mark new, modified, renamed or removed files; include a short
+  purpose and links back to the relevant interactions. Highlight files associated with the
+  selected step. List changed files, not every referenced dependency.
+- Put code relationships or sequence diagrams beside the interaction they explain. Link
+  relevant nodes to files/steps and label what arrows mean. Never use an arrow merely to separate
+  filenames. No mandatory overview diagram; non-code visuals are welcome when they clarify
+  something prose or a small table cannot.
+- Keep semantic HTML, one inline style block, native `details/summary`, and no frameworks,
+  external assets or scripts. Use inline SVG when useful. The starter's IDs/data attributes and
+  CSS anchor highlighting support navigation without JavaScript.
+- Preserve readable long paths, file-labelled code, keyboard focus, narrow-screen flow and print
+  layout. Use tables for compact comparisons or verification, not as the default file overview.
+  A small feature should not inherit the full visual density of a large cross-repository plan.
 
-<section>
-  <h2>4. Risks</h2>
-  <ul>
-    <li>Risk 1 — what could go wrong, mitigation.</li>
-    <li>Risk 2 — ...</li>
-  </ul>
-</section>
+## Iteration and handoff
 
-<section>
-  <h2>5. Alternatives considered</h2>
-  <ul>
-    <li>Alternative A — why rejected.</li>
-    <li>Alternative B — why rejected.</li>
-  </ul>
-</section>
+- Refine existing plans in place. Preserve accepted decisions and the user's reviewed layout;
+  do not replace the document wholesale to impose the starter. Briefly state meaningful changes
+  before editing. Discussion-only requests are not permission to edit.
+- When a decision changes, synchronize the walkthrough, snippets, changed-file tree, verification
+  and affected spec statements. Update the spec only for agreed capability changes, not to smuggle
+  implementation details into it. Remove obsolete machinery everywhere it was described.
+- Record recurring review feedback when requested, but do not automatically rewrite the skill
+  during feature review. Generalize lessons only when the user authorizes that update.
+- Before handoff, check HTML IDs/anchors, local links, file labels and agreement between snippets,
+  prose and file-tree entries. Inspect the rendered layout when an available, permitted viewer
+  supports it; otherwise disclose that visual verification was not performed. Do not claim
+  planned application tests have run.
+- Report the plan path, substantive changes and remaining decisions concisely. Wait for review;
+  do not advance to `spec-tasks` or implementation without authorization.
 
-<section>
-  <h2>6. Constitutional notes</h2>
-  <p>If the plan touches anything mentioned in constitution §1–§4, note it here. If anything in §4
-  is being relaxed, that's a constitutional amendment — stop and use <code>update-constitution</code> first.</p>
-</section>
+## Maintaining this skill
 
-<section>
-  <h2>7. Open questions</h2>
-  <ul><li>Should be resolved before tasks are emitted.</li></ul>
-</section>
-
-</body>
-</html>
-```
-
-## After writing
-
-Tell the user:
-
-- Path of the new plan file.
-- A one-paragraph summary of the approach.
-- Any constitutional / architectural notes worth flagging.
-- The next step: human review, then `spec-tasks`.
+The library repository's `.agents/skills/spec-plan/` is canonical; the interface copy is a mirror.
+When editing the skill itself, synchronize both instructions and assets. Keep reusable instructions
+here and layout boilerplate in the starter, rather than copying a feature's entire review history
+into the skill.

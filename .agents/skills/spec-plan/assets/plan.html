@@ -1,0 +1,257 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>FEATURE_TITLE — Implementation plan</title>
+<style>
+  :root { color-scheme: light; --ink: #21312f; --muted: #5e706e; --line: #dbe4df;
+    --paper: #fff; --bg: #f5f7f3; --accent: #176751; --soft: #eaf3ed; }
+  * { box-sizing: border-box; }
+  html { scroll-behavior: smooth; scroll-padding-top: 1.5rem; }
+  body { margin: 0; font: 16px/1.6 system-ui, -apple-system, sans-serif;
+    color: var(--ink); background: var(--bg); }
+  a { color: var(--accent); text-underline-offset: .18em; }
+  a:hover { text-decoration-thickness: 2px; }
+  :is(a, summary):focus-visible { outline: 3px solid #3974b3; outline-offset: 4px; }
+  body > a { position: absolute; left: 1rem; top: -5rem; z-index: 5;
+    background: var(--paper); padding: .7rem; }
+  body > a:focus { top: 1rem; }
+  #layout { display: grid; grid-template-columns: 22rem minmax(0, 64rem); gap: 2rem;
+    max-width: 92rem; margin: auto; padding: 2rem 1.5rem 5rem; }
+  #sidebar { position: sticky; top: 1rem; align-self: start; max-height: calc(100vh - 2rem);
+    overflow: auto; overscroll-behavior: contain; padding-right: .5rem; }
+  #navigation { font-size: .85rem; padding-bottom: .6rem; }
+  #navigation > p:first-child { text-transform: uppercase; letter-spacing: .1em;
+    font-size: .72rem; font-weight: 700; color: var(--accent); }
+  #navigation ol { list-style: none; padding: 0; }
+  #navigation li a { display: block; padding: .35rem .5rem; border-radius: .3rem; }
+  #navigation li a:hover { background: var(--soft); }
+  main { min-width: 0; }
+  header > p:first-child, small, figcaption, [data-reading-note] { color: var(--muted); }
+  h1 { font-size: clamp(1.8rem, 3vw, 2.4rem); line-height: 1.2; letter-spacing: -.03em; }
+  h2 { font-size: 1.4rem; line-height: 1.3; }
+  h3 { font-size: 1.08rem; margin: 1.5rem 0 .4rem; }
+  p, ul, ol { margin: .6rem 0 1rem; }
+  li { margin: .3rem 0; }
+  main > section { margin-top: 2rem; padding-top: 1rem; border-top: 1px solid var(--line); }
+  main p { max-width: 76ch; }
+  [data-reading-note], [data-files] { font-size: .83rem; }
+  [data-files] > span { color: var(--muted); }
+  [data-step] > h3 > a { color: inherit; text-decoration: none; }
+  [data-step]:is(:target, :has(:target)) { border-left: 3px solid var(--accent); padding-left: .8rem; }
+  code { background: #eef2ef; padding: .08rem .25rem; border-radius: 3px;
+    font: .86em/1.5 ui-monospace, SFMono-Regular, Consolas, monospace; overflow-wrap: anywhere; }
+  pre { overflow: auto; padding: 1rem; border: 1px solid var(--line); border-radius: .5rem;
+    background: #f8faf7; font: .86rem/1.6 ui-monospace, SFMono-Regular, Consolas, monospace; }
+  pre code { background: none; padding: 0; font: inherit; overflow-wrap: normal; }
+  [data-code] { margin: 1rem 0; }
+  [data-code-file] { display: flex; flex-wrap: wrap; gap: .2rem .8rem; align-items: baseline;
+    margin: 0; padding: .45rem .8rem; border: 1px solid var(--line); border-bottom: 0;
+    border-radius: .5rem .5rem 0 0; background: #eef2ef; font-size: .8rem; }
+  [data-code-file] code { background: none; padding: 0; font-size: 1em; }
+  [data-code] pre { margin: 0; border-radius: 0 0 .5rem .5rem; }
+  [data-comparison] { display: grid; grid-template-columns: 1fr 1fr; gap: 1rem; }
+  [data-comparison] > * { min-width: 0; }
+  details { border: 1px solid var(--line); border-radius: .5rem; padding: .7rem 1rem;
+    background: var(--paper); margin: .7rem 0; }
+  summary { cursor: pointer; font-weight: 650; }
+  #modules h2 { font-size: 1.05rem; }
+  #modules > p { font-size: .76rem; color: var(--muted); }
+  #change-tree { padding: .7rem; border: 1px solid var(--line); border-radius: .6rem;
+    background: var(--paper); font-size: .8rem; }
+  #change-tree details { border: 0; background: none; padding: .2rem 0 .2rem .6rem; margin: .25rem 0; }
+  #change-tree > details { padding-left: 0; }
+  #change-tree ul { list-style: none; border-left: 1px solid var(--line); margin: .25rem 0 .25rem .35rem;
+    padding: 0 0 0 .7rem; }
+  #change-tree li { padding: .3rem; border-radius: .3rem; }
+  #change-tree li:target { outline: 2px solid var(--accent); outline-offset: 2px; }
+  #change-tree li > small { display: block; margin-top: .2rem; }
+  [data-change] { font-size: .65rem; font-weight: 700; text-transform: uppercase;
+    border-radius: .25rem; padding: .1rem .3rem; background: #eef2ef; color: var(--muted); }
+  [data-change="new"] { color: var(--accent); background: var(--soft); }
+  [data-change="renamed"] { color: #285e91; background: #edf4fb; }
+  [data-change="removed"] { color: #963939; background: #fff0ed; }
+  [data-reading-links] { margin-left: .3rem; font-size: .7rem; }
+  figure { margin: 1rem 0; padding: 1rem; background: var(--paper); border: 1px solid var(--line); }
+  figure > div, [data-table-scroll] { overflow-x: auto; }
+  svg { display: block; width: 100%; height: auto; }
+  figcaption { font-size: .82rem; margin-top: .6rem; }
+  table { width: 100%; border-collapse: collapse; font-size: .88rem; }
+  th, td { text-align: left; vertical-align: top; border-bottom: 1px solid var(--line); padding: .65rem; }
+  th { background: var(--soft); }
+  #phases { list-style: none; padding: 0; display: grid; grid-template-columns: 1fr 1fr; gap: .7rem; }
+  #phases li { margin: 0; padding: .9rem; background: var(--paper); border: 1px solid var(--line); border-radius: .5rem; }
+  #phases strong, #phases small { display: block; }
+
+  /* One mapping per reading step; update these selectors with section IDs and data-steps.
+     Space-separated data-steps lets one file participate in multiple interactions. */
+  body:has(#shared-data:target, #shared-data :target, #change-tree :target[data-steps~="shared-data"])
+    #change-tree li[data-steps~="shared-data"] { background: var(--soft); }
+  body:has(#shared-data:target, #shared-data :target, #change-tree :target[data-steps~="shared-data"])
+    #navigation a[href="#shared-data"] { background: var(--soft); font-weight: 700; }
+  body:has(#action-a:target, #action-a :target, #change-tree :target[data-steps~="action-a"])
+    #change-tree li[data-steps~="action-a"] { background: var(--soft); }
+  body:has(#action-a:target, #action-a :target, #change-tree :target[data-steps~="action-a"])
+    #navigation a[href="#action-a"] { background: var(--soft); font-weight: 700; }
+  body:has(#action-b:target, #action-b :target, #change-tree :target[data-steps~="action-b"])
+    #change-tree li[data-steps~="action-b"] { background: var(--soft); }
+  body:has(#action-b:target, #action-b :target, #change-tree :target[data-steps~="action-b"])
+    #navigation a[href="#action-b"] { background: var(--soft); font-weight: 700; }
+
+  @media (max-width: 1100px) {
+    #layout { grid-template-columns: 18rem minmax(0, 1fr); gap: 1.2rem; }
+    [data-comparison] { grid-template-columns: 1fr; }
+  }
+  @media (max-width: 850px) {
+    #layout { display: flex; flex-direction: column; padding: 1rem; }
+    #sidebar { display: contents; }
+    #navigation { order: 0; }
+    #navigation ol { display: flex; flex-wrap: wrap; gap: .25rem; }
+    main { order: 1; }
+    #modules { order: 2; }
+    #phases { grid-template-columns: 1fr; }
+  }
+  @media (prefers-reduced-motion: reduce) { html { scroll-behavior: auto; } }
+  @media print {
+    body { background: white; font-size: 10pt; }
+    #layout { display: flex; flex-direction: column; padding: 0; }
+    #sidebar { display: contents; }
+    #navigation, body > a { display: none; }
+    main { order: 0; }
+    #modules { order: 1; break-before: page; }
+    details::details-content { content-visibility: visible; display: block; }
+    [data-code], figure, tr { break-inside: avoid; }
+    pre { white-space: pre-wrap; overflow-wrap: anywhere; }
+    figure > div, [data-table-scroll] { overflow: visible; }
+  }
+</style>
+</head>
+<body>
+<!-- Starter only: replace uppercase placeholders and authoring prompts.
+     Remove unused sections, sample files and corresponding navigation/CSS mappings.
+     Paths in code titles are relative to PATH_BASE; real file hrefs are relative to the output plan.
+     Keep proposed-file links internal. Duplicate repository groups for cross-repository changes. -->
+<a href="#main">Skip to plan</a>
+<div id="layout">
+<aside id="sidebar" aria-label="Reading order and changed files">
+  <nav id="navigation" aria-label="Reading order">
+    <p>Reading order</p>
+    <ol>
+      <li><a href="#shared-data">1.1 · Shared data</a></li>
+      <li><a href="#action-a">1.2 · ACTION_A</a></li>
+      <li><a href="#action-b">1.3 · ACTION_B</a></li>
+    </ol>
+    <p><a href="#delivery">Delivery &amp; verification</a> · <a href="#decisions">Review decisions</a></p>
+  </nav>
+  <section id="modules">
+    <h2>Changed files</h2>
+    <p>Select a reading step to highlight its files. Numbered links return to the walkthrough.</p>
+    <div id="change-tree">
+      <details open>
+        <summary>REPO_NAME / PATH_BASE</summary>
+        <details open>
+          <summary>MODULE/</summary>
+          <ul>
+            <li id="file-a" data-steps="shared-data action-a">
+              <code>FILE_A</code> <span data-change="modified">Modified</span>
+              <span data-reading-links><a href="#shared-data">1.1</a> · <a href="#action-a">1.2</a></span>
+              <small>Describe the concrete change; link this filename to existing code.</small>
+            </li>
+          </ul>
+        </details>
+        <details open>
+          <summary>OTHER_MODULE/</summary>
+          <ul>
+            <li id="file-b" data-steps="action-a action-b">
+              <code>FILE_B</code> <span data-change="new">New</span>
+              <span data-reading-links><a href="#action-a">1.2</a> · <a href="#action-b">1.3</a></span>
+              <small>Describe the responsibility; this proposed file has no source link yet.</small>
+            </li>
+          </ul>
+        </details>
+      </details>
+    </div>
+  </section>
+</aside>
+
+<main id="main">
+  <header>
+    <p>Plan · under review · YYYY-MM-DD</p>
+    <h1>FEATURE_TITLE — implementation plan</h1>
+    <p><a href="spec.html">Approved spec</a> · <a href="#modules">Changed files</a></p>
+  </header>
+
+  <section id="walkthrough">
+    <h2>1. Follow the interactions through the code</h2>
+    <p data-reading-note>Proposed changes, not implemented code. Paths below are relative to
+      <code>PATH_BASE/</code>; identify other repositories explicitly.</p>
+
+    <article id="shared-data" data-step>
+      <h3><a href="#shared-data">1.1 · Shared data: CONTRACT_NAME</a></h3>
+      <p data-files><span>Files</span> <a href="#file-a"><code>MODULE/FILE_A</code></a></p>
+      <p>Show the important new or extended structure, who owns it and who consumes it.
+        Remove this section when no shared data changes.</p>
+      <div data-code>
+        <p data-code-file><a href="#file-a"><code>MODULE/FILE_A</code></a>
+          <small>Proposed change to existing structure</small></p>
+        <pre><code>CONTRACT_SKETCH</code></pre>
+      </div>
+    </article>
+
+    <article id="action-a" data-step>
+      <h3><a href="#action-a">1.2 · ACTION_A</a></h3>
+      <p data-files><span>Files</span>
+        <a href="#file-a"><code>MODULE/FILE_A</code></a> ·
+        <a href="#file-b"><code>OTHER_MODULE/FILE_B</code></a></p>
+      <p>Start at the user's action or caller operation. Identify the existing entry point,
+        the proposed change and the resulting UI or returned value.</p>
+      <h4>Refactor the existing path</h4>
+      <p>Explain what is reused or extracted, who calls it, and the new behavior.
+        Keep unchanged error handling implicit unless the change depends on it.</p>
+      <div data-code>
+        <p data-code-file><a href="#file-b"><code>OTHER_MODULE/FILE_B</code></a>
+          <small>Proposed call sequence</small></p>
+        <pre><code>CALL_SEQUENCE</code></pre>
+      </div>
+      <!-- Optional local diagram: label call/data/event arrows and link nodes to file entries.
+           No generic feature-overview diagram is required. -->
+    </article>
+
+    <article id="action-b" data-step>
+      <h3><a href="#action-b">1.3 · ACTION_B</a></h3>
+      <p data-files><span>Files</span> <a href="#file-b"><code>OTHER_MODULE/FILE_B</code></a></p>
+      <p>Describe the next interaction. Link to the shared mechanism above instead of repeating it.
+        Where relevant, distinguish browser feedback, server processing and persistence.</p>
+    </article>
+  </section>
+
+  <section id="delivery">
+    <h2>2. Delivery and verification</h2>
+    <h3>Implementation sequence</h3>
+    <ol id="phases">
+      <li><strong>A · FIRST_DELIVERY_STEP</strong>Concrete independently useful change.
+        <small>State dependencies only where they affect ordering.</small></li>
+      <li><strong>B · NEXT_DELIVERY_STEP</strong>Concrete follow-on change.
+        <small>Reading order need not match delivery order.</small></li>
+    </ol>
+    <h3>Verification map</h3>
+    <div data-table-scroll>
+      <table>
+        <thead><tr><th scope="col">Behavior / risk</th><th scope="col">Critical assertion</th><th scope="col">Existing test layer</th></tr></thead>
+        <tbody><tr><td>AGREED_BEHAVIOR</td><td>Observable result, not a helper-internal call count.</td><td>TEST_LOCATION</td></tr></tbody>
+      </table>
+    </div>
+    <p>Coverage above is planned, not executed.</p>
+    <!-- Add concrete migration or documentation work here if needed; omit generic compliance prose. -->
+  </section>
+
+  <section id="decisions">
+    <h2>3. Decisions for review</h2>
+    <p>Keep only material risks, alternatives or unresolved choices, supported by a concrete scenario.
+      State the recommendation and tradeoff. Remove this section and its navigation link if none remain.</p>
+  </section>
+</main>
+</div>
+</body>
+</html>
