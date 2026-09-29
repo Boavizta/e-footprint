@@ -6,6 +6,10 @@ and this project adheres to [Semantic Versioning](http://semver.org/)
 
 ## [Unreleased]
 
+### Changed
+
+- Development workflow: verified task briefs, durable review handoffs, scoped agent roles, synchronized shared tooling, and local Claude/Codex usage accounting.
+
 ### Fixed
 - System-comparison input diffs now use readable display units and rounding for scalar quantities.
 

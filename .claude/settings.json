@@ -1,0 +1,28 @@
+{
+  "hooks": {
+    "SessionStart": [
+      {
+        "hooks": [
+          {
+            "type": "command",
+            "command": "cd \"$CLAUDE_PROJECT_DIR\" && mkdir -p ai-usage/.local && python3 ai-usage/usage.py collect >> ai-usage/.local/hook.log 2>&1",
+            "async": true,
+            "timeout": 120
+          }
+        ]
+      }
+    ],
+    "SessionEnd": [
+      {
+        "hooks": [
+          {
+            "type": "command",
+            "command": "cd \"$CLAUDE_PROJECT_DIR\" && mkdir -p ai-usage/.local && python3 ai-usage/usage.py collect >> ai-usage/.local/hook.log 2>&1",
+            "async": true,
+            "timeout": 120
+          }
+        ]
+      }
+    ]
+  }
+}

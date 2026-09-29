@@ -38,8 +38,8 @@ For full setup, see [`INSTALL.md`](INSTALL.md). For release, see [`RELEASE_PROCE
 
 Feature work follows four stages, each gated by your review:
 
-1. **Specify** — write `specs/features/<name>/spec.md` (problem, scope, success criteria). Skill: `spec-specify`.
-2. **Plan** — write `plan.md` (approach, affected modules, risks). Skill: `spec-plan`.
+1. **Specify** — write `specs/features/<name>/spec.html` (problem, scope, success criteria). Skill: `spec-specify`.
+2. **Plan** — write `plan.html` (approach, affected modules, risks). Skill: `spec-plan`.
 3. **Tasks** — write `tasks.md` (ordered, independently-shippable steps). Skill: `spec-tasks`.
 4. **Implement** — execute one task at a time, respecting constitution gates. Skill: `task-implement`.
 
@@ -61,3 +61,8 @@ Prefix your commit messages with the relevant tag among [FIX], [REFACTO], [ADD],
 ## Parked: Docker Hub publish
 
 Publishing the Docker image to Docker Hub was judged premature (2026-07-01) and parked. The `Dockerfile` itself landed (local `docker build`/`docker run` works, no registry needed) but `.github/workflows/docker-publish.yml` and the Docker Hub prose in `README.md`/`RELEASE_PROCESS.md` were removed. **Revisit in October 2026** — re-read `specs/features/packaging-and-dx/spec.html` (Task 3) before re-adding the publish workflow.
+
+## Shared agent tooling
+
+Workflow roles, synchronization and private usage collection: [`specs/agent-tooling.md`](specs/agent-tooling.md).
+Repository-specific skill adaptations: [`.agents/repository.md`](.agents/repository.md).

@@ -1,0 +1,45 @@
+{
+  "as_of": "2026-09-29",
+  "sources": {
+    "openai_api": "https://developers.openai.com/api/docs/pricing",
+    "codex_credits": "https://learn.chatgpt.com/docs/pricing",
+    "claude": "Pretext ai-usage/lib/pricing.ts, commit b39702e7; imported factors, not independently reverified"
+  },
+  "models": {
+    "gpt-6-sol": {
+      "input": 2,
+      "cached": 0.2,
+      "write": 2.5,
+      "output": 10,
+      "credits_input": 50,
+      "credits_cached": 5,
+      "credits_output": 250,
+      "fast_multiplier": 2
+    },
+    "gpt-6-astra": {
+      "input": 10,
+      "cached": 1,
+      "write": 12.5,
+      "output": 50,
+      "credits_input": 250,
+      "credits_cached": 25,
+      "credits_output": 1250,
+      "fast_multiplier": 2
+    },
+    "claude-opus-5-5": {
+      "input": 4,
+      "cached": 0.2,
+      "write": 5,
+      "write_1h": 8,
+      "output": 20,
+      "fast_multiplier": 2
+    },
+    "claude-fable-5-1": {
+      "input": 10,
+      "cached": 0.25,
+      "write": 12.5,
+      "write_1h": 20,
+      "output": 50
+    }
+  }
+}

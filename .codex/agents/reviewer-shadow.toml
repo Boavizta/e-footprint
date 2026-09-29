@@ -1,0 +1,8 @@
+name = "reviewer-shadow"
+description = "Optional bounded experiment: an independent read-only second review."
+model = "gpt-6-sol"
+model_reasoning_effort = "high"
+sandbox_mode = "read-only"
+developer_instructions = """
+Read .agents/roles/reviewer-shadow.md and .agents/repository.md in the working repository and follow that role. Role configuration and usage registration are documented in specs/agent-tooling.md.
+"""

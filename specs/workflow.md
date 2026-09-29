@@ -1,112 +1,86 @@
-# Spec-driven workflow
+# Spec-driven development workflow
 
-This file is **canonical in e-footprint**. The version in `e-footprint-interface/specs/workflow.md` is a mirror — keep them identical.
+Canonical in e-footprint, synchronized unchanged into e-footprint-interface. Repository-specific
+architecture, gates and review-risk surfaces live in `.agents/repository.md`; runtime roles,
+synchronization and local usage collection are described in `specs/agent-tooling.md`.
 
-When updating: edit this file, then copy it over the interface mirror.
+## Scope and ownership
 
----
+Features follow specify → plan → tasks → implement, with human approval between design stages,
+then explicit archive after shipping. A user's clear request to implement an already agreed
+change is authorization; do not manufacture another approval gate.
 
-## When to use this workflow
+Small fixes, local refactors and investigations may go directly to work. A conversational bug
+batch uses `bug-fixes`: evidence-backed diagnostics plus one task list replace spec/plan. The
+normal implement/review/archive steps still apply. This workflow does not authorize deployments,
+publication, destructive operations or paid external actions beyond the user's actual grants.
 
-For **features that ship**: any change that adds capability, refactors a substantial pattern, or affects the user experience.
+Library-only and library-driven changes live under the library's `specs/features/<feature>/`.
+Interface-driven and other interface/cross-repo changes live in the interface. Cross-repo work
+has ONE task list in the driving repo, with explicit repository ownership and dependencies.
 
-Exempt:
+## 1. Specify
 
-- Bug fixes that don't introduce a pattern.
-- Small refactors with no API surface change.
-- Investigations and design exploration. Live freely under `archives/investigations/` or in scratch files.
+`spec-specify` writes self-contained `spec.html`: problem, audience, scope, success criteria and
+open product decisions. It is not an implementation design. After approval, start planning in a
+fresh session from the approved document; preserve a design-rich kickoff's draft plan for refinement.
 
-A conversational batch of bugs is a structured exemption: `bug-fixes` replaces the specify/plan stages with one evidence-backed diagnostic per report and a shared `tasks.md`. Its tasks then use the normal implement, review, and archive stages. A single small bug normally goes straight to diagnosis and implementation without a feature folder.
+## 2. Plan
 
-## The four stages
+`spec-plan` writes/refines `plan.html` as an anticipated code review. Ground it in current code,
+follow user interactions or library caller operations, show changed structures/contracts, and
+provide linked changed-file navigation. Separate reading order from delivery dependencies and
+map important behavior to verification. Keep the existing level of architectural explanation;
+link owning pages where helpful, without adding a teaching section.
 
-**Document formats.** `spec` and `plan` are authored as **self-contained HTML** (`spec.html`, `plan.html`) — they are write-once review documents where mockups, diagrams, tables, and collapsible sections aid review; the `spec-specify` / `spec-plan` skills carry the template (classless CSS inlined, no frameworks/CDNs). `tasks` stays **Markdown** (`tasks.md`): it is a living checklist edited as tasks are marked done, where clean one-line diffs matter more than rich rendering. A bug batch has `tasks.md` plus Markdown files under `diagnostics/`, with no spec or plan. These working records are committed during the feature's life and deleted at archive (stage 5); durable insight is promoted to the live reference specs.
+Review and approve the plan, then start tasks in a fresh session. Missing decisions in the
+persisted documents must be resolved instead of inferred from another session's memory.
 
-### 1. Specify
+## 3. Tasks and briefs
 
-**Output:** `specs/features/<feature-name>/spec.html`.
+`spec-tasks` produces a concise `tasks.md` overview and `briefs/task-N.md` for implementers.
+Tasks are review-sized behavioral increments with acceptance, ownership, dependencies and risk.
+Briefs verify symbols, reusable mechanisms, earlier-task effects, invariants and exact checks.
+From three tasks upward, independent brief writers may work in parallel on their own files.
 
-A spec answers:
+Gaps found during grounding become explicit proposed plan amendments. The user approves changes
+to the reviewed design before plan/tasks/briefs are synchronized. Approve task ordering and
+completeness before implementation. Named runs keep large features manageable.
 
-- What problem are we solving? Who for?
-- Success criteria (testable).
-- Scope: what's in / out.
-- Open questions (will resolve in plan).
+## 4. Implement and review
 
-A spec does **not** prescribe code structure. It is read-only against the existing codebase.
+`task-implement` implements one task, runs required gates and writes a committed handoff with
+implementation commit(s), tested revisions, deviations and doubts. `task-review` reads the actual
+range first, then the handoff. It chooses LIGHT/STANDARD/FULL from the diff and local risk surfaces.
+Review tier controls exploration, not quality gates.
 
-Skill: `spec-specify` walks you through a template.
+`feature-implement` supervises an approved run: independent implementer and reviewer, scoped fixes,
+recorded judgements, bounded retry/escalation, and parking of blocked tasks plus their dependents.
+It continues independent authorized work. It never treats unknown validation or missing evidence
+as success. Preserve pre-existing work and other sessions' file ownership.
 
-**Gate:** human reviews and approves the spec before plan starts.
+Run records distinguish prerequisites that block subsequent work, deployment-only prerequisites,
+and later human validation. Consequential reversible implementation choices are logged within the
+approved design; product/contract or constitutional changes need the decision that governs them.
 
-### 2. Plan
+Finish with a global review of cumulative cross-task/cross-repo changes, the consolidated
+`CHANGELOG.md` entry in each affected repo, and all applicable final gates. Do not transfer
+Pretext's deferred-review-validation exception into these constitutions. Collect and report local
+usage, actual role models and incomplete coverage. A five-run shadow-review comparison is opt-in
+and ends in a decision; it is not a permanent second reviewer.
 
-**Output:** `specs/features/<feature-name>/plan.html`.
+## 5. Archive
 
-A plan answers:
+Invoke `feature-archive` explicitly after shipping and resolving gates. Promote durable insight
+into owning architecture pages, conventions, testing, design/published docs as appropriate.
+Park actionable unfinished work with enough context to survive deletion. Update roadmap/changelog,
+then delete the committed feature working set, including briefs, handoffs and run logs.
+Git history is the archive; do not create a redundant per-feature summary. Never automatically
+retire migration or serialization-upgrade tests as a side effect of archiving.
 
-- Approach: how does the spec become code?
-- Affected modules and files.
-- Risks and alternatives considered.
-- Cross-cutting concerns (tests, migrations, docs).
+## Maintenance
 
-The plan respects the owning pages under `specs/architecture/` (start at `specs/architecture/index.html`). If it requires deviating from architecture, the deviation is called out and resolved before the plan ships.
-
-Skill: `spec-plan` walks you through a template.
-
-**Gate:** human reviews and approves the plan before tasks are emitted.
-
-### 3. Tasks
-
-**Output:** `specs/features/<feature-name>/tasks.md`.
-
-A tasks file lists:
-
-- Ordered, independently-shippable steps.
-- For each step: files to touch, tests to add, acceptance criteria.
-
-Each task should be small enough to ship as one PR.
-
-Skill: `spec-tasks` walks you through a template.
-
-**Gate:** human reviews task ordering and completeness before implementation begins.
-
-### 4. Implement
-
-For each task in `tasks.md`:
-
-1. Implement.
-2. Run quality gates from `specs/constitution.md`.
-3. Mark the task done in `tasks.md` and commit.
-4. Run `task-review` on the commit — review findings with the agent, address what's worth fixing before moving on.
-5. Open PR titled `[<feature-name>] <task summary>`.
-
-Each task ships independently. The feature is complete when all tasks are done.
-
-Skills: `task-implement` picks up a task and executes it. `task-review` reviews the resulting commit. For a bug batch, both read the task's linked diagnostic in place of spec and plan. Or run `feature-implement` to orchestrate the whole `tasks.md` end to end — it loops over tasks, spawning the implement and review sub-agents and pausing once per task for your decisions. When `feature-implement` drives the loop, it defers the CHANGELOG gate: each task skips it, and the supervisor writes one consolidated `## [Unreleased]` entry once every task is done, rather than one fragment per task.
-
-### 5. Archive
-
-**Output:** the `specs/features/<feature-name>/` folder is deleted. **No archive summary file is ever written** — git history preserves the original spec / plan / tasks if anyone ever needs them, and a per-feature summary only duplicates the code or the live reference specs.
-
-When all tasks have shipped:
-
-1. **Promote durable insight into the live reference docs first — and keep them up to date.** Read the available intent records (spec / plan, or bug diagnostics). Any decision, convention, or constraint that a future contributor or agent would need to make a sound call belongs in the live reference specs (`architecture/` / `conventions.md` / `testing.md`), never in an archive nobody reads. Most of this should already have happened during implementation; this step is the final check that the reference docs reflect reality. This is the whole point of archiving: once the durable parts live where they belong, the feature folder is disposable.
-2. **Delete `specs/features/<feature-name>/`** (including any untracked `spec.html` / `plan.html` — a tracked-files delete leaves those behind). Git history preserves everything.
-3. **Confirm `CHANGELOG.md` has an `## [Unreleased]` entry** for the feature. `feature-implement` normally already wrote it at the end of the loop; add one now only if it's missing.
-
-For cross-repo features, this happens in the driving repo (same rule as the feature folder).
-
-Skill: `feature-archive` drives this stage. Invoke it explicitly when the feature has shipped and you are ready — it is not auto-chained from `feature-implement`.
-
-## Skills location
-
-Skills live at `.agents/skills/` in each repo. `.claude/skills` is a compatibility symlink. Canonical versions are in e-footprint; mirrors in e-footprint-interface.
-
-## Investigations and ad-hoc work
-
-Use the `archives/investigations/` folder. No spec required. When the investigation produces a feature decision, that decision can become the spec for a new feature.
-
-## Constitution amendments
-
-Constitutional changes use the `update-constitution` skill. They go in their own commit, separate from feature work. See `specs/constitution.md` §5.
+Skills are committed under `.agents/skills/`; `.claude/skills` is a compatibility symlink.
+Shared files are explicitly synchronized; local references stay local. Every repository remains
+independently usable. Update affected documentation with the pattern it describes. Constitutional
+changes use `update-constitution` and remain separate from ordinary feature changes.

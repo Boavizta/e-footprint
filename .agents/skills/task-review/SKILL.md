@@ -1,21 +1,27 @@
 ---
 name: task-review
-description: Review the last commit for complexity, dead code, missed invariants, test quality, and broader code quality opportunities. Returns a numbered findings list for discussion — does not implement fixes. Use after task-implement completes a task.
+description: Review a task's explicit commit range for correctness, complexity, invariant ownership and test quality. Choose LIGHT, STANDARD or FULL from the diff; report before editing.
 ---
 
 # task-review
 
-You are reviewing the diff of the last commit. You are a critic, not a fixer. Your output is a numbered list of findings for the user to discuss and prioritise. Do not touch any file.
+Review first; edit only after an explicit follow-up fix brief. Read `.agents/repository.md` for local risk surfaces and standards.
 
-## Process
+1. Identify the task and exact implementation range from the supervisor or handoff metadata. For standalone last-commit review use `git show HEAD` only when it is the requested implementation commit. Handoff and bookkeeping commits may follow it. Cross-repo tasks have one range per repo.
+2. Read the actual diffs before the implementer's narrative. Inspect source size separately from tests/docs, while still reviewing the tests and docs.
+3. Choose the highest applicable tier:
 
-1. **Identify the task.** The user will tell you the feature name and task. Read `tasks.md`. For a normal feature, read `spec.html` and `plan.html`; for a bug-fix batch with neither, read the selected task's linked diagnostic instead. If neither source of intent exists, stop.
+| Tier | Trigger | Depth |
+|---|---|---|
+| FULL | Repository-specific high-risk surface; changed invariant enforcement; `Risk: high`; missing handoff; exceptionally broad change (roughly >1,000 source lines or >25 source files) | Trace affected invariants, callers, consumers and cross-repo contracts; load relevant spec/plan and standards fully. |
+| LIGHT | All: at most about 120 source lines and 5 source files; contained copy/style/docs/test change; no new public contract, dependency, persistence or state transition | Diff, task and handoff; follow an evidence-backed concern farther when needed. |
+| STANDARD | Other changes | Relevant plan/spec sections, standards and adjacent code mapped by the handoff. |
 
-2. **Get the diff.** Run `git show HEAD` to obtain the full diff of the last commit.
+You may raise the tier with a reason, never lower it below a triggered rule. Tier controls exploration, not validation requirements. No fixed quota of findings.
 
-3. **Load standards.** Read `specs/constitution.md` and `specs/conventions.md`.
+4. Read the handoff as a map and verify claims you rely on. Investigate doubts. For normal features consult the approved spec/plan; for bug batches the linked diagnostic supplies intent.
+5. Apply the checklist at the chosen depth:
 
-4. **Analyse against this checklist:**
 
    - **Complexity** — recursive traversal, multi-layer indirection, or private helpers that could be a flat loop or direct inline logic.
    - **Dead defensive code** — code guarding hypothetical cases not grounded in real data or an enforced invariant.
@@ -28,13 +34,8 @@ You are reviewing the diff of the last commit. You are a critic, not a fixer. Yo
    - **Convention violation** — anything contradicting `constitution.md` or `conventions.md`.
    - **Code quality / boy scout** — concrete problems in touched or adjacent code worth improving regardless of the task: poor naming, un-Pythonic patterns, structural awkwardness, or circumvolutions forced by the existing code shape. Surface observed defects and smells even if the task itself is clean; do not propose protection against hypothetical callers or unreachable states.
 
-5. **Report findings.** For each finding, output:
 
-   ```
-   #N [Category] file:line — one sentence describing the problem.
-   Direction: one sentence on the high-level approach to resolve it (no code).
-   ```
+6. Return `Tier: ... — triggering rule`, then numbered findings: category, repository/path:line, supported failure/consequence, recommended resolution, and `EVIDENT-FIX` or `STRUCTURING-DECISION` with a reason. Include real alternatives for material design choices. If clean, say so without inventing concerns.
+7. Wait for decisions. If asked to apply fixes, use the same context, group related changes, run affected checks and the required gates, and write cross-task leads under the handoff's `For the global review`. Record the tested final revision. Never include another session's changes in a fix commit.
 
-   If nothing is found, output "LGTM — no findings." and stop.
-
-6. **Wait.** Do not implement anything. The user will decide which findings to address, defer, or reject.
+The global review is always FULL but focuses on cumulative seams, duplicated helpers, superseded early work, contract mismatches and documentation drift. Start with handoff leads and diff statistics; inspect the cumulative diff where warranted instead of repeating every task review.

@@ -10,7 +10,7 @@ Run a diagnosis-only session for a batch of bug reports. The output is a self-co
 Keep the roles separate:
 
 - The main agent owns intake, user decisions, task synthesis, and ordering. Read the reference docs needed to assess findings, but preserve context by delegating product-code investigation.
-- Diagnostic sub-agents investigate one bug each. They may edit only their assigned diagnostic file; product code remains read-only.
+- The `diagnostician` role investigates one bug per sub-agent. They may edit only their assigned diagnostic file; product code remains read-only.
 
 If the batch contains only one or two small bugs, suggest diagnosing and fixing them directly with `task-implement`-style discipline instead of creating a batch workspace.
 
@@ -31,7 +31,8 @@ If the batch contains only one or two small bugs, suggest diagnosing and fixing 
 
 3. Load the driving repository's `specs/constitution.md`, `specs/conventions.md`, `specs/testing.md`, and architecture entry point:
    - `e-footprint`: `specs/architecture/index.html`, then the owning pages.
-   - `e-footprint-interface`: `specs/architecture.md`.
+   - `e-footprint-interface`: `specs/architecture/index.html`, then the owning pages.
+   Read `.agents/repository.md` in each affected repository.
 4. For cross-repository reports, also load the companion repository's constitution and relevant architecture pages. Use the library as the source of truth for modeling behavior.
 
 ## Diagnose each report
@@ -110,6 +111,8 @@ Keep every task usable from cold context and compatible with `task-implement` an
 - <Observable result>
 
 **Depends on:** none | Task N
+
+**Risk:** normal | high — concrete reason
 ```
 
 Task numbers follow arrival order and remain stable. Put uncertainty, user validation, or a required cross-repository dependency directly in the task rather than relying on conversation history.
@@ -133,3 +136,6 @@ Hand off each planned run to a fresh `feature-implement` session. The linked dia
 - Do not accept an uncited root-cause claim or silently preserve a disproven user hypothesis.
 - Do not use destructive operations to prove a diagnosis. Move such confirmation into a staged task and surface the gate.
 - Do not create duplicate working sets across repositories for a cross-repository batch.
+
+Role configuration, telemetry and gate classification follow `specs/agent-tooling.md` and
+`feature-implement`. Preserve missing-evidence gates rather than guessing a diagnosis.

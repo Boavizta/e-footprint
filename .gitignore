@@ -23,3 +23,10 @@ litellm-commands.md
 .slingshot
 *.lprof
 !ai_skills/**
+
+# Private development telemetry and synchronization/configuration sources
+ai-usage/.local/
+!.agent-tooling-sync.json
+!ai-usage/config.json
+!ai-usage/prices.json
+!.claude/settings.json

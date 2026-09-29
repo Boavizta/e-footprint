@@ -1,11 +1,15 @@
 ---
 name: spec-specify
-description: Use when the user wants to start a new feature in this repo. Walks the agent through writing specs/features/<feature-name>/spec.html — the first stage of the four-stage spec-driven workflow (specify → plan → tasks → implement). Read-only on code. May also draft plan.html in the same pass when the kickoff is design-rich.
+description: Start a new feature specification as spec.html, covering capability, scope and success criteria. Read-only on application code; existing kickoff design decisions may be captured in a draft plan for later review in a fresh planning session.
 ---
 
 # spec-specify
 
 You are about to start a new feature spec. Do NOT write any code or modify any source files. The primary output is `specs/features/<feature-name>/spec.html`. When the kickoff is design-rich (see Process step 3), you also draft `plan.html` in the same pass so design detail is not lost.
+
+Read `.agents/repository.md` and use the collection/binding commands in `specs/agent-tooling.md`
+at stage start and close-out, attributing this session to the driving repo, feature and `specify`
+stage. Report missing telemetry without blocking specification work.
 
 ## What goes where
 
@@ -150,3 +154,6 @@ Tell the user clearly:
 - If a plan was drafted: a one-sentence note that it captured design content from the kickoff conversation and will be refined in the `spec-plan` stage.
 - Any open questions surfaced during drafting.
 - The next step: human review, then `spec-plan`.
+
+After spec approval, hand off to `spec-plan` in a fresh session using the committed documents.
+Any draft plan captures decisions for later refinement; it does not bypass plan approval.

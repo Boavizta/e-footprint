@@ -13,14 +13,24 @@ Output: `specs/features/<feature-name>/plan.html` in the driving repository. Kee
 self-contained and editable throughout review. Planning may include read-only code inspection
 and scoped local diagnostics; do not implement application changes or generate tasks.
 
+Start this stage in a fresh session from the approved spec and any existing plan. A decision
+missing from those documents is a gap to resolve, not a reason to infer it from an earlier chat.
+Refine an existing draft in place. Read `.agents/repository.md` for local adaptations.
+Use the collection/binding commands in `specs/agent-tooling.md` at stage start and close-out;
+attribute this session to the driving repo, feature and `plan` stage. Missing telemetry is reported,
+not a reason to stop planning.
+
+Vincent knows the architecture: link the owning page where a change relies on it, without adding
+an architecture-teaching block or repeating established patterns.
+
 ## Ground the plan before writing
 
 - Resolve the feature and driving repository from the conversation and workspace workflow.
   Read the approved `spec.html`, any existing plan and relevant review decisions. Ask only if
   the feature or approval is genuinely unclear; do not restart an established review.
 - Read the repository's `AGENTS.md`, constitution and architecture entry point, then the owning
-  documentation for affected paths. Follow the actual layout: some repositories use
-  `specs/architecture/index.html`, others `specs/architecture.md`. Do not assume either exists.
+  documentation for affected paths. Both repositories use `specs/architecture/index.html`;
+  consult `.agents/repository.md` if a documentation transition is still in progress.
   Flag architectural deviations; constitutional changes require explicit approval through the
   constitutional workflow, not an incidental plan paragraph.
 - Trace the relevant existing code and tests, including success, error, cancellation, rendering
@@ -122,6 +132,8 @@ update navigation, file mappings and highlight selectors together.
 - When a decision changes, synchronize the walkthrough, snippets, changed-file tree, verification
   and affected spec statements. Update the spec only for agreed capability changes, not to smuggle
   implementation details into it. Remove obsolete machinery everywhere it was described.
+- Task decomposition may return proposed plan amendments with code evidence. Apply only accepted
+  design changes, then synchronize affected tasks and briefs; do not hide design changes in tasks.
 - Record recurring review feedback when requested, but do not automatically rewrite the skill
   during feature review. Generalize lessons only when the user authorizes that update.
 - Before handoff, check HTML IDs/anchors, local links, file labels and agreement between snippets,
@@ -129,7 +141,8 @@ update navigation, file mappings and highlight selectors together.
   supports it; otherwise disclose that visual verification was not performed. Do not claim
   planned application tests have run.
 - Report the plan path, substantive changes and remaining decisions concisely. Wait for review;
-  do not advance to `spec-tasks` or implementation without authorization.
+  do not advance to `spec-tasks` or implementation without authorization. After approval, hand off
+  to `spec-tasks` in a fresh session.
 
 ## Maintaining this skill
 

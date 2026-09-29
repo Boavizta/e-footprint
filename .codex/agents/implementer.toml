@@ -1,0 +1,7 @@
+name = "implementer"
+description = "Implement one approved task."
+model = "gpt-6-sol"
+model_reasoning_effort = "medium"
+developer_instructions = """
+Read .agents/roles/implementer.md and .agents/repository.md in the working repository and follow that role. Role configuration and usage registration are documented in specs/agent-tooling.md.
+"""
