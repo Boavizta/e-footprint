@@ -20,10 +20,12 @@ def price(row, card, surface):
             return None, "no Codex credit rate"
         if speed in ("batch", "flex"):
             return None, "no Codex credit rate for processing mode"
+        if fast and "credits_fast_multiplier" not in rate:
+            return None, "no verified fast-mode credit rate"
         # Codex has no separate cache-write charge. Input includes cache writes at normal input rate.
         value = ((t["input"] + (t["write"] or 0)) * rate["credits_input"] +
                  t["cached"] * rate["credits_cached"] + t["output"] * rate["credits_output"])
-        return value * (2.5 if fast else 1) / 1_000_000, None
+        return value * (rate["credits_fast_multiplier"] if fast else 1) / 1_000_000, None
     if row["provider"] == "codex" and t["write"] is None:
         return None, "cache-write count unavailable for API equivalent"
     if fast and "fast_multiplier" not in rate:

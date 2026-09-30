@@ -26,9 +26,9 @@ def token(n, total, *, inp=100, cached=60, write=20, output=10):
     return record("event_msg", {"type": "token_count", "info": {"total_token_usage": {"total_tokens": total}, "last_token_usage": u}}, n)
 
 
-def codex(session="session", parent=None):
+def codex(session="session", parent=None, *, model="gpt-6-sol"):
     return [record("session_meta", {"id": session, "cwd": "/project", "parent_thread_id": parent, "cli_version": "fixture"}),
-            record("turn_context", {"model": "gpt-6-sol", "effort": "medium", "turn_id": "turn-1"})]
+            record("turn_context", {"model": model, "effort": "medium", "turn_id": "turn-1"})]
 
 
 def claude(n, output, request="req"):
@@ -149,7 +149,24 @@ class UsageTests(unittest.TestCase):
         row["context_band"] = "long"
         row["speed"] = "fast"
         self.assertAlmostEqual(price(row, self.card, "api")[0], ((40+12+50)*2 + 100*1.5)*2/1e6)
-        self.assertAlmostEqual(price(row, self.card, "credits")[0], (2000+300+2500)*2.5/1e6)
+        self.assertAlmostEqual(price(row, self.card, "credits")[0], (2000+300+2500)*2/1e6)
+
+    def test_sol_6_1_usage_uses_its_own_cache_rates(self):
+        row = parse(self.file(codex(model="gpt-6.1-sol") + [token(1, 110)]), "codex")[1][0]
+        self.assertEqual(row["model"], "gpt-6.1-sol")
+        self.assertAlmostEqual(price(row, self.card, "api")[0], (40+6+50+100)/1e6)
+        self.assertAlmostEqual(price(row, self.card, "credits")[0], (2000+150+2500)/1e6)
+        row["context_band"] = "long"
+        row["speed"] = "fast"
+        self.assertAlmostEqual(price(row, self.card, "api")[0], ((40+6+50)*2 + 100*1.5)*2/1e6)
+        self.assertAlmostEqual(price(row, self.card, "credits")[0], (2000+150+2500)*2/1e6)
+
+    def test_missing_credit_fast_rate_is_not_inferred_from_api_rate(self):
+        row = parse(self.file(codex(model="gpt-6.1-sol") + [token(1, 110)]), "codex")[1][0]
+        row["speed"] = "fast"
+        del self.card["models"]["gpt-6.1-sol"]["credits_fast_multiplier"]
+        self.assertEqual(price(row, self.card, "credits"), (None, "no verified fast-mode credit rate"))
+        self.assertIsNotNone(price(row, self.card, "api")[0])
 
     def test_missing_price_or_writes_never_silently_free(self):
         row = parse(self.file(codex() + [token(1, 110, write=None)]), "codex")[1][0]

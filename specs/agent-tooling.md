@@ -33,11 +33,11 @@ expansion: shared instructions read the repository's small local reference at ru
 
 | Role | Codex | Effort | Claude Code equivalent |
 |---|---|---|---|
-| implementer | gpt-6-sol | medium | claude-opus-5-5[1m] |
+| implementer | gpt-6.1-sol | medium | claude-opus-5-5[1m] |
 | implementer-hard | gpt-6-astra | high | claude-fable-5-1[1m] |
 | reviewer | gpt-6-astra | high | claude-fable-5-1[1m] |
-| diagnostician | gpt-6-astra | high | claude-fable-5-1[1m] |
-| reviewer-shadow (optional experiment) | gpt-6-sol | high | claude-opus-5-5[1m] |
+| diagnostician | gpt-6.1-sol | high | claude-fable-5-1[1m] |
+| reviewer-shadow (optional experiment) | gpt-6.1-sol | high | claude-opus-5-5[1m] |
 
 The supervisor/planning session preferably uses Astra/high (Fable/high in Claude). These are
 starting configurations, not equivalent capability or effort scales proven across providers.
@@ -162,10 +162,14 @@ an invented historical price. Retain old cards if historical comparisons matter 
 with `report --prices PATH`. Models match exact IDs after only documented decorations are removed;
 unknown prices produce an incomplete subtotal with counts/reasons, never a complete-looking zero.
 
-The 2026-09-29 OpenAI rates come from [API pricing](https://developers.openai.com/api/docs/pricing)
-and [Codex credits](https://learn.chatgpt.com/docs/pricing). API-equivalent token pricing applies
-context bands (>272K), cache writes and Fast/Batch/Flex multipliers. Codex credits have no separate
-cache-write charge and use their own Fast multiplier. When processing mode is absent, reports
+The 2026-09-30 OpenAI rate card includes [GPT-6.1 Sol](https://developers.openai.com/api/docs/models/gpt-6.1-sol),
+using [API pricing](https://developers.openai.com/api/docs/pricing) and
+[Codex credits](https://learn.chatgpt.com/docs/pricing). Earlier model IDs retain separate rates
+for recorded usage. API-equivalent token pricing applies context bands (>272K), cache writes and
+Fast/Batch/Flex multipliers. Codex credits have no separate cache-write charge. Their Fast multiplier
+is 2× for purchased credits and Enterprise pay-as-you-go; the 2.5× included-subscription usage
+multiplier is not a credit rate. Fast multipliers are stored separately for each pricing surface.
+When processing mode is absent, reports
 assume Standard and count those assumptions explicitly; the observed Codex logs do not expose
 this setting. Known unsupported regional conditions remain unpriced. API-equivalent reports omit
 provider-side tool charges and are not invoices or subscription quota measurements. Claude factors

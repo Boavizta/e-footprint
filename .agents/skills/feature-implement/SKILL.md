@@ -17,7 +17,7 @@ does not create a human approval gate. User intervention is exceptional.
 - Read the approved spec/plan (or linked bug diagnostics), tasks, constitution and relevant architecture pages. Check that acceptance and dependencies are usable without inventing product decisions. Keep a single working set in the driving repo.
 - Record starting commits and existing dirty files in every affected repo. Agree file ownership with parallel work; commit only exact owned paths. A shared checkout need not become globally clean.
 - Keep consequential decisions in the plan using the format below. Keep task status and any unresolved prerequisites in `tasks.md`. Do not create judgement files, gate journals, or replacement bookkeeping files.
-- Use configured roles: Sol/medium implementer; Astra/high hard implementer and reviewer. The supervisor is preferably Astra/high. Respect explicit user model choices; report actual configuration instead of claiming a role pin worked. See `specs/agent-tooling.md` for Claude equivalents and runtime dispatch.
+- Use configured roles: GPT-6.1 Sol/medium implementer; Astra/high hard implementer and reviewer. The supervisor is preferably Astra/high. Respect explicit user model choices; report actual configuration instead of claiming a role pin worked. See `specs/agent-tooling.md` for Claude equivalents and runtime dispatch.
 - Collect local usage and register this session/each subagent with the feature, owner, stage, run, role and task where its runtime exposes an ID. Missing telemetry never blocks implementation and is reported as missing.
 
 ## Per-task loop
@@ -74,7 +74,7 @@ routine blockers instead of turning them into a history of successful checks.
 
 ## Optional bounded shadow-review experiment
 
-Only run when the user explicitly requests the experiment or approves its feature-local protocol. Compare Astra/high with Sol/high on identical immutable task ranges, starting independently with the same brief and no access to the other's findings. Shadow only the initial task review, not fixes or global review. Limit to five named runs, then stop for a decision; never make the second review permanent by accident.
+Only run when the user explicitly requests the experiment or approves its feature-local protocol. Compare Astra/high with GPT-6.1 Sol/high on identical immutable task ranges, starting independently with the same brief and no access to the other's findings. Shadow only the initial task review, not fixes or global review. Limit to five named runs, then stop for a decision; never make the second review permanent by accident.
 
 For this experiment, keep both initial reviews read-only until their findings are captured;
 then let the primary reviewer apply the scoped fixes. This preserves the common comparison state.
