@@ -48,6 +48,18 @@ A task consuming a hard predecessor's established mechanism does not inherit its
 planning can reduce uncertainty without making an intrinsically difficult mechanism easy.
 Assign tiers independently, with no target distribution; do not split tasks just to fit a model.
 
+Justify the tier by the remaining implementation difficulty, not by restating delivered behavior.
+For `hard`, identify the specific reasoning or coordination challenge: what the plan, existing
+mechanisms and preceding tasks already solve, what remains to work out, and why that remaining
+work is technically demanding. Required behavior, invariants and failure consequences alone are
+not a justification. Keep the reason to one or two sentences, grounded in verified code or the
+brief's account of planned dependencies; use the existing brief for supporting detail.
+
+“Not yet investigated” does not establish difficulty. Resolve straightforward code questions
+during brief preparation, correct stale assumptions, then classify. If a material unknown cannot
+be resolved during preparation, describe the specific uncertainty and why it is difficult to
+settle; do not default to `hard` merely because the relevant code has not been read.
+
 Routing is easy → `implementer-easy`, standard → `implementer`, hard → `implementer-hard`;
 model/effort settings live in `specs/agent-tooling.md`. Review depth is independently chosen by
 `task-review` from the actual changes and local review surfaces. An easy task may require FULL
