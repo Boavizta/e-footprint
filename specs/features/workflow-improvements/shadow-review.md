@@ -12,7 +12,7 @@ API and credit ratios identified separately. `Unknown` is distinct from zero.
 
 | # | Driving repo / feature · writer session | State · runs/tasks covered | Consequential findings: both / Sol missed / Astra missed | Noise: Astra / Sol | Initial cost ratios: API / credits | Initial active-time ratio |
 |---|---|---|---|---|---|---|
-| 1 | [e-footprint-interface / simplified-inputs](../../../../e-footprint-interface/specs/features/simplified-inputs/tasks.md) · `01a0f282-6cc2-7352-81c4-93d8c71d40b1` | OBSERVING · Run A complete, tasks 1–5 paired; Run B tasks 6–8 paired, final review pending; Run C pending | 10 / 3 / 3 | 0 / 0 | 0.156 / 0.152 | 0.975 |
+| 1 | [e-footprint-interface / simplified-inputs](../../../../e-footprint-interface/specs/features/simplified-inputs/tasks.md) · `01a0f282-6cc2-7352-81c4-93d8c71d40b1` | OBSERVING · Run A complete, tasks 1–5 paired; Run B complete, tasks 6–8 paired; Run C pending | 10 / 3 / 3 | 0 / 0 | 0.156 / 0.152 | 0.975 |
 
 ## Supporting evidence
 
@@ -104,6 +104,12 @@ from the composite panel submission and dependency checkbox locks being overwrit
 settlement (P2). Astra alone found a same-bookmark membership save erasing a failed help draft (P2).
 All three were accepted and corrected in `753c63d94baa46599c06e2e530247803a8ded214`.
 No unsupported suggestions.
+
+Global browser validation additionally exposed expanded panel controls covering the adjacent bookmark's
+click target, missed by both Task 8 initial passes. The existing absolute-positioned disclosure was
+replaced with normal-flow panel layout in `b336dfb98427f79ab24d177ccc55fbee794c25ec`.
+This identifies a visual integration coverage limit of the read-only initial passes; the unpaired global
+review and its corrections are excluded from paired measurements.
 
 | Task | Reviewer · native session | Actual model / effort | Initial input / cache read / cache write / output | Active minutes | API-equivalent USD | Codex credits |
 |---|---|---|---|---|---|---|
