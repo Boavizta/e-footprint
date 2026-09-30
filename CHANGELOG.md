@@ -8,6 +8,7 @@ and this project adheres to [Semantic Versioning](http://semver.org/)
 
 ### Changed
 
+- Task decomposition now presents proposed plan amendments directly in `plan.html` with searchable `PLAN-UPDATE` tags, a linked index, and explicit decision status.
 - Development workflow: verified task briefs, durable review handoffs, scoped agent roles, synchronized shared tooling, and local Claude/Codex usage accounting.
 
 ### Fixed

@@ -6,6 +6,7 @@ Write `briefs/task-<n>.md` beside `tasks.md`, committed with it. Verify against 
 # Task N — title
 Written YYYY-MM-DD against repository/commit(s): ...
 Plan: linked sections. Task: linked entry.
+Status: under review / provisional — pending linked PLAN-UPDATE proposal(s).
 
 ## Start here
 - symbol — repository/path — why.
@@ -32,4 +33,7 @@ Related work that belongs elsewhere.
 Hypotheses and how to settle them, or none.
 ```
 
-Keep to about one or two screens. A brief is a map, not a second plan; proposed design changes go back to the main agent for the plan-amendment list.
+Keep to about one or two screens. A brief is a map, not a second plan; proposed design changes go
+back to the coordinator for tagged callouts in `plan.html`. The coordinator assigns amendment IDs.
+Link any pending proposals the brief depends on and keep it provisional until they are resolved;
+do not present a proposed design as approved implementation instructions.

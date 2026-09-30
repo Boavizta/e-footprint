@@ -132,8 +132,11 @@ update navigation, file mappings and highlight selectors together.
 - When a decision changes, synchronize the walkthrough, snippets, changed-file tree, verification
   and affected spec statements. Update the spec only for agreed capability changes, not to smuggle
   implementation details into it. Remove obsolete machinery everywhere it was described.
-- Task decomposition may return proposed plan amendments with code evidence. Apply only accepted
-  design changes, then synchronize affected tasks and briefs; do not hide design changes in tasks.
+- Task decomposition records proposed amendments beside affected passages in `plan.html`, using
+  the `spec-tasks` review format: visible `[PLAN-UPDATE-01] — PROPOSED` callouts and a linked index.
+  Preserve their stable IDs and the approved design while decisions are pending. Apply accepted
+  changes to the plan, synchronize affected tasks/briefs, and mark the callouts ACCEPTED.
+  Amendment decisions and task approval can happen in the same review.
 - Record recurring review feedback when requested, but do not automatically rewrite the skill
   during feature review. Generalize lessons only when the user authorizes that update.
 - Before handoff, check HTML IDs/anchors, local links, file labels and agreement between snippets,

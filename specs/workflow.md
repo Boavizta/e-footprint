@@ -43,9 +43,12 @@ Tasks are review-sized behavioral increments with acceptance, ownership, depende
 Briefs verify symbols, reusable mechanisms, earlier-task effects, invariants and exact checks.
 From three tasks upward, independent brief writers may work in parallel on their own files.
 
-Gaps found during grounding become explicit proposed plan amendments. The user approves changes
-to the reviewed design before plan/tasks/briefs are synchronized. Approve task ordering and
-completeness before implementation. Named runs keep large features manageable.
+Gaps found during grounding become visible `[PLAN-UPDATE-01] — PROPOSED` callouts beside affected
+passages in `plan.html`, with stable IDs and a small linked index near the top. Search `PLAN-UPDATE`
+to find them. `tasks.md` links to the proposals; affected tasks and briefs remain provisional while
+decisions are pending. The approved design stays intact until acceptance, then the plan/tasks/briefs
+are synchronized and the callout is marked ACCEPTED. Amendments, task ordering and completeness
+can be approved in the same review before implementation. Named runs keep large features manageable.
 
 ## 4. Implement and review
 
