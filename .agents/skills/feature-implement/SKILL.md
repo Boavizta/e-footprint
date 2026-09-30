@@ -17,13 +17,13 @@ does not create a human approval gate. User intervention is exceptional.
 - Read the approved spec/plan (or linked bug diagnostics), tasks, constitution and relevant architecture pages. Check that acceptance and dependencies are usable without inventing product decisions. Keep a single working set in the driving repo.
 - Record starting commits and existing dirty files in every affected repo. Agree file ownership with parallel work; commit only exact owned paths. A shared checkout need not become globally clean.
 - Keep consequential decisions in the plan using the format below. Keep task status and any unresolved prerequisites in `tasks.md`. Do not create judgement files, gate journals, or replacement bookkeeping files.
-- Use configured roles: GPT-6.1 Sol/medium implementer; Astra/high hard implementer and reviewer. The supervisor is preferably Astra/high. Respect explicit user model choices; report actual configuration instead of claiming a role pin worked. See `specs/agent-tooling.md` for Claude equivalents and runtime dispatch.
+- Use configured roles: GPT-6 Luna/high easy implementer; GPT-6.1 Sol/medium standard implementer; Astra/high hard implementer and reviewer. The supervisor is preferably Astra/high. Respect explicit user model choices; report actual configuration instead of claiming a role pin worked. See `specs/agent-tooling.md` for Claude equivalents and runtime dispatch.
 - Collect local usage and register this session/each subagent with the feature, owner, stage, run, role and task where its runtime exposes an ID. Missing telemetry never blocks implementation and is reported as missing.
 - Check `.agents/repository.md` for an active workflow experiment and read its shared protocol before enrolling this feature. An ACTIVE approved protocol supplies experiment authorization; respect its feature count and stopping rule without asking again per run.
 
 ## Per-task loop
 
-1. Spawn `implementer` for exactly one task, or `implementer-hard` for a concrete high-risk task. Supply task/brief paths, repository roots, dependency changes, owned file boundaries and role instructions. Defer the consolidated changelog to the supervisor. Require implementation commits, a minimal handoff, and any consequential decisions or unresolved concerns.
+1. Spawn exactly one task's implementation role from its `Implementation` tier: easy → `implementer-easy`, standard → `implementer`, hard → `implementer-hard`. Use the [difficulty rules](../spec-tasks/SKILL.md#implementation-difficulty); if the tier is missing, legacy, or contradicted by new evidence, reassess and update it with a brief reason. Review-risk surfaces and predecessor tiers do not automatically require a stronger implementer. Supply task/brief paths, repository roots, dependency changes, owned file boundaries and role instructions. Defer the consolidated changelog to the supervisor. Require implementation commits, a minimal handoff, and any consequential decisions or unresolved concerns.
 2. Spawn an independent `reviewer` over the explicit implementation range(s), not whatever `HEAD` happens to be after handoff commits. Give the same intent and handoff path, and authorize evident scoped corrections in the same assignment. For an enrolled shadow comparison, use the read-only initial passes below before granting fix authority. The reviewer chooses its depth, applies routine fixes, and returns only material choices or unresolved concerns alongside the final commit range.
 3. Resolve the material choices yourself within the approved outcomes. Resume the reviewer for fixes needing that direction. Capture only consequential decisions in the plan; no routine-fix inventory or review-tier log. Continue without requesting user approval for ordinary implementation choices.
 4. Keep check execution with the implementer and reviewer. Use their completion status and outstanding concerns to decide whether the task is complete; resume the responsible agent for missing checks or in-scope failures. Keep unresolved failures or unavailable required checks explicit. Do not copy passing test results, command transcripts or resolved routine fixes into plans, handoffs, reports or logs.
@@ -52,7 +52,13 @@ relevant task in `tasks.md`; do not manufacture another document.
 
 ## Recovery and decisions
 
-Resume the same agent once for a diagnosed scoped failure. If implementation difficulty remains, escalate once to `implementer-hard` with the failed attempt's evidence. A missing dependency or wrong plan is not fixed by spending more reasoning.
+Resume the same agent once for a diagnosed scoped failure. If the task exceeds its implementation
+tier, move to the appropriate stronger role using the existing work and concrete failure or
+complexity evidence: easy normally moves to `implementer`; use `implementer-hard` when the remaining
+work meets the hard criteria. Update the task's tier and reason. Do not cycle through repeated
+attempts at the same tier or require a failed attempt before correcting a clearly wrong tier.
+Each stronger tier gets at most one escalation attempt. A missing dependency or wrong plan is
+not fixed by spending more reasoning.
 
 If still blocked, park that task and its transitive dependents in `tasks.md`, record what is needed and continue independent tasks. Keep completed work and preserve unrelated dirty files. Never label a failed or unverified change complete.
 

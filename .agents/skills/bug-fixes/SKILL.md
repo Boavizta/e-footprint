@@ -91,6 +91,8 @@ A `PLAUSIBLE` diagnosis is allowed when local evidence cannot prove a device-, b
 ## Task format
 
 Keep every task usable from cold context and compatible with `task-implement` and `feature-implement`:
+classify remaining work using [implementation difficulty](../spec-tasks/SKILL.md#implementation-difficulty),
+accounting for the completed diagnosis rather than the bug's impact.
 
 ```markdown
 ## Task N — <short title>
@@ -112,7 +114,7 @@ Keep every task usable from cold context and compatible with `task-implement` an
 
 **Depends on:** none | Task N
 
-**Risk:** normal | high — concrete reason
+**Implementation:** easy | standard | hard — brief reason
 ```
 
 Task numbers follow arrival order and remain stable. Put uncertainty, user validation, or a required cross-repository dependency directly in the task rather than relying on conversation history.

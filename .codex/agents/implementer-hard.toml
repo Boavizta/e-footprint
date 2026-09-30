@@ -1,5 +1,5 @@
 name = "implementer-hard"
-description = "Implement a high-risk task or one bounded escalation."
+description = "Implement an intrinsically difficult task or one bounded escalation."
 model = "gpt-6-astra"
 model_reasoning_effort = "high"
 developer_instructions = """

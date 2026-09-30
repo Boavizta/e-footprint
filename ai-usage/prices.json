@@ -3,10 +3,22 @@
   "sources": {
     "openai_api": "https://developers.openai.com/api/docs/pricing",
     "gpt-6.1-sol": "https://developers.openai.com/api/docs/models/gpt-6.1-sol",
+    "gpt-6-luna": "https://developers.openai.com/api/docs/models/gpt-6-luna",
     "codex_credits": "https://learn.chatgpt.com/docs/pricing",
     "claude": "Imported factors; not independently verified against provider pricing"
   },
   "models": {
+    "gpt-6-luna": {
+      "input": 0.1,
+      "cached": 0.01,
+      "write": 0.125,
+      "output": 0.5,
+      "credits_input": 2.5,
+      "credits_cached": 0.25,
+      "credits_output": 12.5,
+      "credits_fast_multiplier": 2,
+      "fast_multiplier": 2
+    },
     "gpt-6.1-sol": {
       "input": 2,
       "cached": 0.1,

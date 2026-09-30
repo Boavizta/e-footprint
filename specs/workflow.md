@@ -39,7 +39,9 @@ persisted documents must be resolved instead of inferred from another session's 
 ## 3. Tasks and briefs
 
 `spec-tasks` produces a concise `tasks.md` overview and `briefs/task-N.md` for implementers.
-Tasks are review-sized behavioral increments with acceptance, ownership, dependencies and risk.
+Tasks are review-sized behavioral increments with acceptance, ownership, dependencies and
+`Implementation: easy | standard | hard`. Difficulty describes the work remaining after preparation;
+review depth follows the actual change independently. See `spec-tasks` for classification rules.
 Briefs verify symbols, reusable mechanisms, earlier-task effects, invariants and exact checks.
 The same agent writes every brief in dependency order, then checks that dependent tasks' assumptions
 match their predecessors' planned outputs. It completes the full preparation pass autonomously,

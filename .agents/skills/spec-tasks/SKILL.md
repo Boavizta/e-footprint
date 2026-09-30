@@ -24,11 +24,34 @@ cannot wait for the final review. A pending amendment alone does not interrupt t
 
 1. Identify the driving repo and approved documents. Read the delivery/verification sequence separately from the plan's reading order.
 2. Enumerate atomic changes privately, then aggregate into independently reviewable tasks. Keep abstractions with their first consumer and tests; split at useful behavioral milestones rather than directory boundaries. Aim for 2–5 tasks when that fits; larger features may have named runs with explicit dependencies. Do not force arbitrary counts.
-3. Give every task a goal, plan links, repository ownership, files, tests, acceptance, dependencies, and `Risk: normal` or `Risk: high — reason`. High means delicate invariant enforcement, data migration, security change, a new cross-cutting mechanism, or unresolved root cause; size alone is not risk.
+3. Give every task a goal, plan links, repository ownership, files, tests, acceptance, dependencies, and `Implementation: easy | standard | hard — brief reason`, using the difficulty rules below. Finalize the tier after grounding the brief.
 4. Write every brief yourself in task dependency order using [the template](references/brief.md). Distinguish existing code from what preceding tasks will introduce: interfaces, helpers, ownership and validation assumptions. Keep product code and shared application state unchanged.
 5. Check all briefs together: code pointers must be verified, and each dependent task's assumptions must match its predecessors' planned outputs. Put any proposed amendments in `plan.html` using the review format below. Keep the approved design intact while proposals are pending; mark affected tasks and briefs provisional and link them to the decisions they need. Complete the full set before asking for amendment decisions.
 6. Classify any outstanding checks: blocks later implementation, blocks deployment only, or can be checked after the run. Evidence-dependent work ships only its evidence-collection stage until the evidence exists. Include the environment/build against which a check must run.
 7. Commit the working set when requested, stage exact files, and present the complete overview and briefs with links to the plan's amendment index when present. The user can review all proposals and approve them with the task breakdown in one pass. Implementation begins after approval, in a fresh session.
+
+## Implementation difficulty
+
+Classify the work remaining for the implementer after accounting for the approved plan, verified
+brief, existing helpers and preceding tasks' outputs. Use one `Implementation` field with a short,
+concrete reason; replace legacy `Risk` labels when reassessing, rather than mapping them mechanically.
+
+| Tier | Remaining implementation work |
+|---|---|
+| easy | Clear, bounded transformation or known-cause fix with little design judgment and explicit acceptance checks. A systematic rename can qualify across many files or repositories when its mapping and semantic boundaries are clear. |
+| standard | Default: ordinary feature work or integration of established mechanisms, requiring normal implementation judgment within the prepared design. |
+| hard | An intrinsically difficult mechanism or substantial technical uncertainty remains: for example, designing coupled state transitions, changing transaction/rollback semantics, or resolving a genuinely unknown cause. Name the particular challenge that remains despite preparation. |
+
+Consequences of a bug, a sensitive path, file count, cross-repository breadth, or a long test list
+do not by themselves raise implementation difficulty. Breadth determines verification coverage.
+A task consuming a hard predecessor's established mechanism does not inherit its tier. Detailed
+planning can reduce uncertainty without making an intrinsically difficult mechanism easy.
+Assign tiers independently, with no target distribution; do not split tasks just to fit a model.
+
+Routing is easy → `implementer-easy`, standard → `implementer`, hard → `implementer-hard`;
+model/effort settings live in `specs/agent-tooling.md`. Review depth is independently chosen by
+`task-review` from the actual changes and local review surfaces. An easy task may require FULL
+review; every tier retains applicable constitution gates and independent review.
 
 ## Plan amendments for review
 
@@ -74,7 +97,7 @@ Spec: [spec.html](spec.html) · Plan: [plan.html](plan.html)
 Status: under review
 
 ## Overview
-| Task | Delivered behavior | Plan section | Repository | Risk |
+| Task | Delivered behavior | Plan section | Repository | Implementation |
 |---|---|---|---|---|
 
 ## Plan amendments to review
@@ -90,7 +113,7 @@ Files touched: ...
 Tests: ...
 Acceptance: ...
 Depends on: ...
-Risk: normal / high — reason
+Implementation: easy / standard / hard — brief reason
 
 ## Runs and gates
 Order, cross-repo dependencies, required evidence, deployment prerequisites.

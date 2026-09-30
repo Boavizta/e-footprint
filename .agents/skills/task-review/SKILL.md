@@ -15,11 +15,14 @@ apply those in the same pass. A standalone review stays read-only unless fixes w
 
 | Tier | Trigger | Depth |
 |---|---|---|
-| FULL | Repository-specific high-risk surface; changed invariant enforcement; `Risk: high`; missing handoff; exceptionally broad change (roughly >1,000 source lines or >25 source files) | Trace affected invariants, callers, consumers and cross-repo contracts; load relevant spec/plan and standards fully. |
+| FULL | Repository-specific high-risk surface; changed invariant enforcement; missing handoff; exceptionally broad change (roughly >1,000 source lines or >25 source files) | Trace affected invariants, callers, consumers and cross-repo contracts; load relevant spec/plan and standards fully. |
 | LIGHT | All: at most about 120 source lines and 5 source files; contained copy/style/docs/test change; no new public contract, dependency, persistence or state transition | Diff, task and handoff; follow an evidence-backed concern farther when needed. |
 | STANDARD | Other changes | Relevant plan/spec sections, standards and adjacent code mapped by the handoff. |
 
 You may raise the tier with a reason, never lower it below a triggered rule. Tier controls exploration, not validation requirements. No fixed quota of findings.
+
+Implementation difficulty and model choice do not determine review depth. An `Implementation: easy`
+task can require FULL review; assess the actual diff and affected contracts independently.
 
 4. Read the handoff as a map and verify claims you rely on. Investigate doubts. For normal features consult the approved spec/plan; for bug batches the linked diagnostic supplies intent.
 5. Apply the checklist at the chosen depth:

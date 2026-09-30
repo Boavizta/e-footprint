@@ -1,0 +1,7 @@
+name = "implementer-easy"
+description = "Implement a well-defined transformation or known-cause fix."
+model = "gpt-6-luna"
+model_reasoning_effort = "high"
+developer_instructions = """
+Read .agents/roles/implementer-easy.md and .agents/repository.md in the working repository and follow that role. Role configuration and usage registration are documented in specs/agent-tooling.md.
+"""

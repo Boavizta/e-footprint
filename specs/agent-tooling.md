@@ -33,6 +33,7 @@ expansion: shared instructions read the repository's small local reference at ru
 
 | Role | Codex | Effort | Claude Code equivalent |
 |---|---|---|---|
+| implementer-easy | gpt-6-luna | high | claude-opus-5-5[1m] (medium) |
 | implementer | gpt-6.1-sol | medium | claude-opus-5-5[1m] |
 | implementer-hard | gpt-6-astra | high | claude-fable-5-1[1m] |
 | reviewer | gpt-6-astra | high | claude-fable-5-1[1m] |
@@ -42,6 +43,13 @@ expansion: shared instructions read the repository's small local reference at ru
 The supervisor/planning session preferably uses Astra/high (Fable/high in Claude). These are
 starting configurations, not equivalent capability or effort scales proven across providers.
 An explicit user model choice overrides the default workflow recommendation.
+
+`Implementation: easy | standard | hard` selects the corresponding implementer role using the
+[difficulty rules](../.agents/skills/spec-tasks/SKILL.md#implementation-difficulty). Standard is the
+default; easy covers well-defined transformations and known-cause fixes, including broad mechanical
+renames. Review depth and required checks remain independent. Claude's easy role retains the
+standard Opus/medium configuration; the smaller-model tier is currently configured for Codex.
+Luna/high follows the [Codex subagent starting guidance](https://learn.chatgpt.com/docs/agent-configuration/subagents).
 
 Portable role instructions live in `.agents/roles/`; `.codex/agents/*.toml` and
 `.claude/agents/*.md` are thin runtime adapters. When a Codex runtime exposes only a generic
@@ -167,7 +175,8 @@ an invented historical price. Retain old cards if historical comparisons matter 
 with `report --prices PATH`. Models match exact IDs after only documented decorations are removed;
 unknown prices produce an incomplete subtotal with counts/reasons, never a complete-looking zero.
 
-The 2026-09-30 OpenAI rate card includes [GPT-6.1 Sol](https://developers.openai.com/api/docs/models/gpt-6.1-sol),
+The 2026-09-30 OpenAI rate card includes [GPT-6.1 Sol](https://developers.openai.com/api/docs/models/gpt-6.1-sol)
+and [GPT-6 Luna](https://developers.openai.com/api/docs/models/gpt-6-luna),
 using [API pricing](https://developers.openai.com/api/docs/pricing) and
 [Codex credits](https://learn.chatgpt.com/docs/pricing). Earlier model IDs retain separate rates
 for recorded usage. API-equivalent token pricing applies context bands (>272K), cache writes and

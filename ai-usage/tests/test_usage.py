@@ -168,6 +168,16 @@ class UsageTests(unittest.TestCase):
         self.assertEqual(price(row, self.card, "credits"), (None, "no verified fast-mode credit rate"))
         self.assertIsNotNone(price(row, self.card, "api")[0])
 
+    def test_luna_usage_is_priced_on_both_surfaces(self):
+        row = parse(self.file(codex(model="gpt-6-luna") + [token(1, 110)]), "codex")[1][0]
+        self.assertEqual(row["model"], "gpt-6-luna")
+        self.assertAlmostEqual(price(row, self.card, "api")[0], (2 + .6 + 2.5 + 5)/1e6)
+        self.assertAlmostEqual(price(row, self.card, "credits")[0], (100 + 15 + 125)/1e6)
+        row["context_band"] = "long"
+        row["speed"] = "fast"
+        self.assertAlmostEqual(price(row, self.card, "api")[0], ((2 + .6 + 2.5)*2 + 5*1.5)*2/1e6)
+        self.assertAlmostEqual(price(row, self.card, "credits")[0], (100 + 15 + 125)*2/1e6)
+
     def test_missing_price_or_writes_never_silently_free(self):
         row = parse(self.file(codex() + [token(1, 110, write=None)]), "codex")[1][0]
         self.assertIsNone(price(row, self.card, "api")[0])
@@ -308,6 +318,29 @@ class UsageTests(unittest.TestCase):
             row.update(owner="e-footprint",feature="feature",role="implementer",task=n+1)
         result = summarize(rows,{run["id"]:run},self.card,"api")
         self.assertEqual([t["agent_seconds"] for t in result["tasks"]],[120,120])
+
+    def test_easy_implementation_and_escalation_count_as_two_attempts(self):
+        rows, runs = [], {}
+        for role, model in (("implementer-easy", "gpt-6-luna"), ("implementer", "gpt-6.1-sol"),
+                            ("reviewer", "gpt-6-astra")):
+            events = codex(role, "main", model=model)
+            events += [token(1, 110), record("event_msg", {"type": "task_complete"}, 2)]
+            if role == "implementer-easy":
+                events[1]["payload"]["effort"] = "high"
+                events += [record("event_msg", {"type": "task_started", "turn_id": "two"}, 3),
+                           token(4, 220), record("event_msg", {"type": "task_complete"}, 5)]
+            run, measured = parse(self.file(events, role + ".jsonl"), "codex")
+            for row in measured:
+                row.update(owner="e-footprint", feature="feature", role=role, task=1)
+            rows.extend(measured)
+            runs[run["id"]] = run
+        result = summarize(rows, runs, self.card, "api")
+        self.assertEqual(result["tasks"][0]["implementation_attempts"], 2)
+        easy = result["by_role"]["implementer-easy"]
+        self.assertEqual(easy["requests"], 2)
+        self.assertEqual(easy["efforts"], ["high"])
+        self.assertGreater(easy["follow_up_known_amount"], 0)
+        self.assertEqual(easy["unpriced_requests"], 0)
 
 
 if __name__ == "__main__":

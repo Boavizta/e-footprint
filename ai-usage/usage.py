@@ -333,7 +333,7 @@ def summarize(rows, runs, card, surface):
     for key, data in sorted(tasks.items(), key=lambda x: str(x[0])):
         task_rows = [r for r in rows if (r["owner"], r.get("feature"), r.get("run"), r.get("task")) == key]
         sessions = {r["session"] for r in task_rows}
-        impls = {r["session"] for r in task_rows if r["role"] in ("implementer", "implementer-hard")}
+        impls = {r["session"] for r in task_rows if r["role"] in ("implementer-easy", "implementer", "implementer-hard")}
         active = 0
         incomplete_spans = 0
         for session in sessions:
