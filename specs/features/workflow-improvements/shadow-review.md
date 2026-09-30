@@ -12,7 +12,7 @@ API and credit ratios identified separately. `Unknown` is distinct from zero.
 
 | # | Driving repo / feature · writer session | State · runs/tasks covered | Consequential findings: both / Sol missed / Astra missed | Noise: Astra / Sol | Initial cost ratios: API / credits | Initial active-time ratio |
 |---|---|---|---|---|---|---|
-| 1 | [e-footprint-interface / simplified-inputs](../../../../e-footprint-interface/specs/features/simplified-inputs/tasks.md) · `01a0f282-6cc2-7352-81c4-93d8c71d40b1` | OBSERVING · Run A complete, tasks 1–5 paired; Run B tasks 6–7 paired, task 8 in progress; Run C pending | 8 / 2 / 3 | 0 / 0 | 0.158 / 0.154 | 1.013 |
+| 1 | [e-footprint-interface / simplified-inputs](../../../../e-footprint-interface/specs/features/simplified-inputs/tasks.md) · `01a0f282-6cc2-7352-81c4-93d8c71d40b1` | OBSERVING · Run A complete, tasks 1–5 paired; Run B tasks 6–8 paired, final review pending; Run C pending | 10 / 3 / 3 | 0 / 0 | 0.156 / 0.152 | 0.975 |
 
 ## Supporting evidence
 
@@ -96,7 +96,14 @@ Sol alone found a delayed Configure response being parked across a model switch 
 All four were accepted and corrected in `c95b11bb2e69856522e64d00c7a66d82e64f1c73`.
 The bounded form transport choice is recorded in
 [IMPL-DECISION-05](../../../../e-footprint-interface/specs/features/simplified-inputs/plan.html#impl-decision-05).
-No unsupported suggestions. Task 8 remains in progress.
+No unsupported suggestions.
+
+Task 8: interface `5cfe21b02f228beb3272afafa4826112b48f3049..3f0b344b05749088c8397d1469bd582e804dd1f9`.
+Both independent initial passes were read-only, FULL. Both found nested Storage creation settings omitted
+from the composite panel submission and dependency checkbox locks being overwritten during mutation-guard
+settlement (P2). Astra alone found a same-bookmark membership save erasing a failed help draft (P2).
+All three were accepted and corrected in `753c63d94baa46599c06e2e530247803a8ded214`.
+No unsupported suggestions.
 
 | Task | Reviewer · native session | Actual model / effort | Initial input / cache read / cache write / output | Active minutes | API-equivalent USD | Codex credits |
 |---|---|---|---|---|---|---|
@@ -104,6 +111,8 @@ No unsupported suggestions. Task 8 remains in progress.
 | 6 | Shadow · `01a0f28d-4b72-7610-af93-c322893c0e44` | gpt-6.1-sol / high | 1,191 / 1,519,222 / 135,128 / 9,498 | 3.580 | 0.587104 | 12.988505 |
 | 7 | Primary · `01a0f2c5-67e1-76f2-819d-6ddf64ed6d9c` | gpt-6-astra / high | 821 / 3,265,645 / 163,509 / 13,590 | 6.072 | 5.997218 | 139.711125 |
 | 7 | Shadow · `01a0f2c5-8d4a-71b0-8af8-472e88018be7` | gpt-6.1-sol / high | 727 / 3,109,395 / 176,681 / 16,597 | 5.976 | 0.920066 | 20.793138 |
+| 8 | Primary · `01a0f2e8-aa54-7f22-b08e-adeabef72fcb` | gpt-6-astra / high | 750 / 2,676,004 / 129,580 / 10,490 | 4.534 | 4.827754 | 112.595100 |
+| 8 | Shadow · `01a0f2e8-d4e1-70a2-b764-aa0cb925e59c` | gpt-6.1-sol / high | 869 / 2,169,975 / 159,697 / 9,509 | 3.595 | 0.713068 | 15.830488 |
 
 Price-card date: 2026-09-30. Measurements merge both repository ledgers and select only collector turn 0;
 primary fixes and global review are excluded. Standard processing mode is assumed because logs do not expose it.
