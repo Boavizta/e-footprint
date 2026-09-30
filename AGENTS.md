@@ -36,7 +36,9 @@ For full setup, see [`INSTALL.md`](INSTALL.md). For release, see [`RELEASE_PROCE
 
 ## Spec-driven workflow at a glance
 
-Feature work follows four stages, each gated by your review:
+Feature work follows four stages. Review the spec, plan and tasks before implementation;
+an authorized `feature-implement` run then completes implementation and reviews autonomously,
+recording only consequential decisions in context in the plan.
 
 1. **Specify** — write `specs/features/<name>/spec.html` (problem, scope, success criteria). Skill: `spec-specify`.
 2. **Plan** — write `plan.html` (approach, affected modules, risks). Skill: `spec-plan`.

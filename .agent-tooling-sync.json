@@ -43,20 +43,20 @@
   "hashes": {
     ".agents/roles/diagnostician.md": "18d350ee12066d717c8e26f2bb657ddfd731dcdb3bdf9f8c3dec853549315bfe",
     ".agents/roles/implementer-hard.md": "87f4000f8eb7c0e25b6ab897be47c0affddf3596a98c34be4e5b09a2ad77b640",
-    ".agents/roles/implementer.md": "04c17e5c9d5ff963affce4e03b69305e2f7cee3b06ded9078dfc59f9e97807a1",
+    ".agents/roles/implementer.md": "a72dc9ca157673d2c8e9330c10073636a1f430ae27d7e345a38dc4d0ef763ffb",
     ".agents/roles/reviewer-shadow.md": "b3f2ab6849b884faf884e26c4d76d35a9fafd35d060c619bc2355274bab5d31d",
-    ".agents/roles/reviewer.md": "28abd6abc3eb2a5c658a2cf6e81fee222c8d66492b32ccdb026a5ad23eef5be3",
+    ".agents/roles/reviewer.md": "7709eaf63b81b46b06ea4d2dad322ecd38cfbe12dde1f59442f4b1e23e9b9e1e",
     ".agents/skills/bug-fixes/SKILL.md": "16ae9d54e5ff26e2e172306ad9607736ebf7e816fe3bca926fbe9c77af29e190",
-    ".agents/skills/feature-archive/SKILL.md": "9fa46ba2bb06fcebc2b73b0fd91ccc7d74558f7600f8b7f67b49b324037b3057",
-    ".agents/skills/feature-implement/SKILL.md": "c423f28a7857f66f2d7a1bf87b77fb2ac3e4e7de7ad660203d0ec19553af7868",
-    ".agents/skills/spec-plan/SKILL.md": "2dcdf5156f4851d85e6fc9a8c0fa04e4ab5e762d540d189bfa51e4462a4c86eb",
+    ".agents/skills/feature-archive/SKILL.md": "547ce7350ca60528ca8189568929819cbb31d5f1a19f9352b6d96604c86063a7",
+    ".agents/skills/feature-implement/SKILL.md": "9d376baef4b3b1f4a4acb875aacb57c86c374220957c4922a10d142198bbddad",
+    ".agents/skills/spec-plan/SKILL.md": "30738b92d136ffbe80976353d0381a0d277062b9cd69b9781519f55167e3829d",
     ".agents/skills/spec-plan/assets/plan.html": "8926765164fdc2b85ba28bd5e468c2bab122a233f830d5119b463ab672d096ce",
     ".agents/skills/spec-specify/SKILL.md": "32e33667a29c190cc223503d0a34ad10847165ad22111b62305d3b4bb352cfec",
     ".agents/skills/spec-tasks/SKILL.md": "13fca075f1467df5d086105b6f003d981953ea5b895b4abb8456d481bc8f9986",
     ".agents/skills/spec-tasks/references/brief.md": "32ec1f9947d2d692637e8a3f961f7dfae39fa7d50f3e7bd9f1fd19b63589171f",
-    ".agents/skills/task-implement/SKILL.md": "cd651b311e1ac491a81b182b3b8446185fe73bebb0d33dd67b5648408298aa9d",
-    ".agents/skills/task-implement/references/handoff.md": "39e15b316f8fd8834a8418c6465701a953f03e4bded667d72a8d9427b64e01e2",
-    ".agents/skills/task-review/SKILL.md": "37c43fc2e80f4bdadd3084a682c54abb23379273933e7f840f25760ef7358308",
+    ".agents/skills/task-implement/SKILL.md": "714f48988ef83e2bee61515c0e978a168ee7975a935163f39cf83849c6e16d65",
+    ".agents/skills/task-implement/references/handoff.md": "9e6d35f90c3093ee273a2925786a80c6098745bd493fbc9059dd665a86525a45",
+    ".agents/skills/task-review/SKILL.md": "99ba735de04b38bad4e1949a4cd8d0c8dd7a8d437f9d5ad8e95947831db25fe3",
     ".agents/skills/update-constitution/SKILL.md": "cce7955fff229287ab339ab21d331b922d5ac83f6d23e154cd77b32fca8743ea",
     ".claude/agents/diagnostician.md": "e17d8b6a713414475f1a68702a17b06ccfc7c93416d9bbc1e6fdcc76e54e169d",
     ".claude/agents/implementer-hard.md": "95b3304bdc808832d93e35023b48d69d58289818c6bdacbc6d0f7d5cc7d47cff",
@@ -77,7 +77,7 @@
     "ai-usage/tests/test_usage.py": "1169cb0d78a6c079356737645e4d32b31a395781ef754dfd07d6e4893432202c",
     "ai-usage/usage.py": "783c3154227a7f69c9c5ba8aa106c4e5f9d49153258816072b56fe4899199ffd",
     "scripts/sync_agent_tooling.py": "3fe7841551cd2a45b07e73c57066b8bd415d33b9665afbd2443673c6e8696b12",
-    "specs/agent-tooling.md": "1ddd98cb2741b7cccb5b35cbaf91092af832c2f2b9e77c12b855cdccdb5e0992",
-    "specs/workflow.md": "2102577f2cef75f4a475820b4d0784c714402c689022975f7fe641db59b01c11"
+    "specs/agent-tooling.md": "c87ae1b3c081e68d1c0eee157a6b4dfcb2ce35449872c4f9e06cda1398e9bd92",
+    "specs/workflow.md": "171d268c6b5cf0c5be1c330e44f0533d8d7293e1a97e6ca5cdfab2261acc64a8"
   }
 }

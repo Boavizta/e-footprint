@@ -63,6 +63,15 @@ use plain unnamed subagents so role effort is not lost to teammate inheritance. 
 that Claude-specific naming workaround to Codex. Stable session bindings below are preferred
 where labels cannot carry the owner, run or runtime identity reliably.
 
+## Implementation review
+
+An authorized feature run completes implementation and reviews autonomously. The plan carries
+only consequential choices, tagged `IMPL-DECISION`; task status and unresolved prerequisites stay
+in `tasks.md`. Minimal handoffs give agents exact commit ranges and material review pointers.
+Routine fixes and successful test results are omitted from review artifacts and reports; required
+checks still run, and unresolved failures remain visible. No separate judgement or gate journals.
+See `feature-implement` for the decision format and exceptional interruption conditions.
+
 ## Local usage collection
 
 ```sh

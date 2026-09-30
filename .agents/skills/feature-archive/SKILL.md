@@ -14,8 +14,8 @@ You are archiving a **shipped** feature — the final stage of the spec-driven w
 1. **Confirm the feature and that it has shipped.** Read `specs/features/<feature-name>/tasks.md`; every task must be marked done. If any task is unshipped, stop and surface it — do not archive a half-done feature.
 2. **Confirm the user wants to archive now.** Archiving deletes the spec folder, so it is normally done once the work has merged / you are satisfied it is final. If that is unclear, ask before deleting.
 
-Read `.agents/repository.md` for documentation destinations. Resolve outstanding judgements,
-evidence and validation gates before deletion. Promote or explicitly park actionable unfinished
+Read `.agents/repository.md` for documentation destinations. Resolve pending plan decisions,
+missing evidence and required checks before deletion. Promote or explicitly park actionable unfinished
 work with enough context to survive deletion. Do not retire migration/serialization tests merely
 because their feature is archived. Commit briefs/handoffs with the working set; they leave with it.
 

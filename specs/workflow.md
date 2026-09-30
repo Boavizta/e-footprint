@@ -57,24 +57,29 @@ report “No plan changes proposed” with the completed task breakdown and brie
 
 ## 4. Implement and review
 
-`task-implement` implements one task, runs required gates and writes a committed handoff with
-implementation commit(s), tested revisions, deviations and doubts. `task-review` reads the actual
-range first, then the handoff. It chooses LIGHT/STANDARD/FULL from the diff and local risk surfaces.
-Review tier controls exploration, not quality gates.
+An approved `feature-implement` run proceeds end-to-end through implementation, independent review,
+corrections and global review. The supervisor resolves technical choices within the agreed outcomes;
+user intervention is reserved for major blockers, necessary changes to agreed product scope or
+constitutional rules, and operations outside existing authority. Continue independent work when
+a task must be parked, preserving pre-existing changes and other sessions' ownership.
 
-`feature-implement` supervises an approved run: independent implementer and reviewer, scoped fixes,
-recorded judgements, bounded retry/escalation, and parking of blocked tasks plus their dependents.
-It continues independent authorized work. It never treats unknown validation or missing evidence
-as success. Preserve pre-existing work and other sessions' file ownership.
+`task-implement` runs required gates and writes a minimal committed handoff with implementation
+ranges, useful review pointers and material unresolved concerns. `task-review` reads the actual
+diff first and chooses LIGHT/STANDARD/FULL internally. Feature-review assignments authorize evident
+scoped fixes in the same pass; standalone review remains read-only unless fixes are requested.
+Review depth does not waive quality gates.
 
-Run records distinguish prerequisites that block subsequent work, deployment-only prerequisites,
-and later human validation. Consequential reversible implementation choices are logged within the
-approved design; product/contract or constitutional changes need the decision that governs them.
+Consequential decisions update the relevant plan text with visible `[IMPL-DECISION-01] — APPLIED`
+callouts and a linked index; use PROPOSED only for exceptional decisions requiring the user's
+authority. A bug batch without a plan uses the same tags beside the affected tasks. Routine fixes,
+ordinary choices and successful test results do not need annotations or reports. No judgement
+files or gate journals: `tasks.md` holds status and outstanding blockers/prerequisites only,
+distinguishing code blockers, deployment-only conditions and later human checks.
 
-Finish with a global review of cumulative cross-task/cross-repo changes, the consolidated
-`CHANGELOG.md` entry in each affected repo, and all applicable final gates. Do not transfer
-Pretext's deferred-review-validation exception into these constitutions. Collect and report local
-usage, actual role models and incomplete coverage. A five-run shadow-review comparison is opt-in
+Finish with global review, the consolidated changelog for delivered behavior, and all applicable
+final checks. Unresolved failures and unavailable required checks remain explicit; never treat
+them as success. The user receives the delivered outcome, any consequential decisions in the plan,
+outstanding exceptions and a compact usage summary. A five-run shadow-review comparison is opt-in
 and ends in a decision; it is not a permanent second reviewer.
 
 ## 5. Archive
@@ -82,7 +87,7 @@ and ends in a decision; it is not a permanent second reviewer.
 Invoke `feature-archive` explicitly after shipping and resolving gates. Promote durable insight
 into owning architecture pages, conventions, testing, design/published docs as appropriate.
 Park actionable unfinished work with enough context to survive deletion. Update roadmap/changelog,
-then delete the committed feature working set, including briefs, handoffs and run logs.
+then delete the committed feature working set, including briefs and minimal handoffs.
 Git history is the archive; do not create a redundant per-feature summary. Never automatically
 retire migration or serialization-upgrade tests as a side effect of archiving.
 

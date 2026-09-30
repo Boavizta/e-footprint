@@ -137,6 +137,9 @@ update navigation, file mappings and highlight selectors together.
   Preserve their stable IDs and the approved design while decisions are pending. Apply accepted
   changes to the plan, synchronize affected tasks/briefs, and mark the callouts ACCEPTED.
   Amendment decisions and task approval can happen in the same review.
+- During an authorized implementation run, consequential technical decisions use the
+  `feature-implement` format: update the owning plan passage and add an `IMPL-DECISION` callout.
+  Keep ordinary fixes and successful test results out of the plan.
 - Record recurring review feedback when requested, but do not automatically rewrite the skill
   during feature review. Generalize lessons only when the user authorizes that update.
 - Before handoff, check HTML IDs/anchors, local links, file labels and agreement between snippets,

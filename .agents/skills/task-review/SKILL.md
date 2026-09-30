@@ -1,11 +1,13 @@
 ---
 name: task-review
-description: Review a task's explicit commit range for correctness, complexity, invariant ownership and test quality. Choose LIGHT, STANDARD or FULL from the diff; report before editing.
+description: Review a task's explicit commit range for correctness, complexity, invariant ownership and test quality. Apply scoped corrections when authorized; otherwise return actionable findings.
 ---
 
 # task-review
 
-Review first; edit only after an explicit follow-up fix brief. Read `.agents/repository.md` for local risk surfaces and standards.
+Read `.agents/repository.md` for local risk surfaces and standards. Inspect the assigned change
+before editing. A `feature-implement` assignment normally authorizes evident scoped fixes up front;
+apply those in the same pass. A standalone review stays read-only unless fixes were requested.
 
 1. Identify the task and exact implementation range from the supervisor or handoff metadata. For standalone last-commit review use `git show HEAD` only when it is the requested implementation commit. Handoff and bookkeeping commits may follow it. Cross-repo tasks have one range per repo.
 2. Read the actual diffs before the implementer's narrative. Inspect source size separately from tests/docs, while still reviewing the tests and docs.
@@ -35,7 +37,7 @@ You may raise the tier with a reason, never lower it below a triggered rule. Tie
    - **Code quality / boy scout** — concrete problems in touched or adjacent code worth improving regardless of the task: poor naming, un-Pythonic patterns, structural awkwardness, or circumvolutions forced by the existing code shape. Surface observed defects and smells even if the task itself is clean; do not propose protection against hypothetical callers or unreachable states.
 
 
-6. Return `Tier: ... — triggering rule`, then numbered findings: category, repository/path:line, supported failure/consequence, recommended resolution, and `EVIDENT-FIX` or `STRUCTURING-DECISION` with a reason. Include real alternatives for material design choices. If clean, say so without inventing concerns.
-7. Wait for decisions. If asked to apply fixes, use the same context, group related changes, run affected checks and the required gates, and write cross-task leads under the handoff's `For the global review`. Record the tested final revision. Never include another session's changes in a fix commit.
+6. With fix authority, apply evident corrections and report only unresolved findings or material choices to the supervisor, with location, consequence, evidence and a proposed resolution. A `STRUCTURING-DECISION` needs the supervisor's judgement, not automatically the user's approval. In review-only mode, return actionable findings with the same evidence. Do not manufacture concerns or persist a review-tier log.
+7. Resume for choices needing the supervisor's direction. Group related edits, run affected checks and required gates, and return the final implementation range. Add only material cross-task concerns or decision links to the handoff; omit resolved routine fixes and passing test results. Surface unresolved failures or unavailable required checks. Never include another session's changes in a fix commit.
 
 The global review is always FULL but focuses on cumulative seams, duplicated helpers, superseded early work, contract mismatches and documentation drift. Start with handoff leads and diff statistics; inspect the cumulative diff where warranted instead of repeating every task review.
