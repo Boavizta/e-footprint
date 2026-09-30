@@ -175,8 +175,9 @@ an invented historical price. Retain old cards if historical comparisons matter 
 with `report --prices PATH`. Models match exact IDs after only documented decorations are removed;
 unknown prices produce an incomplete subtotal with counts/reasons, never a complete-looking zero.
 
-The 2026-09-30 OpenAI rate card includes [GPT-6.1 Sol](https://developers.openai.com/api/docs/models/gpt-6.1-sol)
-and [GPT-6 Luna](https://developers.openai.com/api/docs/models/gpt-6-luna),
+The 2026-09-30 OpenAI rate card includes [GPT-6.1 Sol](https://developers.openai.com/api/docs/models/gpt-6.1-sol),
+[GPT-6 Luna](https://developers.openai.com/api/docs/models/gpt-6-luna),
+and [GPT-5.6 Luna](https://developers.openai.com/api/docs/models/gpt-5.6-luna), including recorded automatic approval-review usage,
 using [API pricing](https://developers.openai.com/api/docs/pricing) and
 [Codex credits](https://learn.chatgpt.com/docs/pricing). Earlier model IDs retain separate rates
 for recorded usage. API-equivalent token pricing applies context bands (>272K), cache writes and

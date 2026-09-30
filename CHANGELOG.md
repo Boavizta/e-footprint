@@ -14,6 +14,7 @@ and this project adheres to [Semantic Versioning](http://semver.org/)
 - Development workflow: verified task briefs, durable review handoffs, scoped agent roles, synchronized shared tooling, and local Claude/Codex usage accounting.
 
 ### Fixed
+- Local usage accounting now prices `gpt-5.6-luna` requests, including automatic approval reviews, on both API-equivalent and Codex-credit surfaces.
 - Conditional validation retains every dependent sharing a controller.
 - Input validation and transaction updates distinguish authored state from numerical equality: empty/zero transitions and timeseries builder settings are applied and validated even when numerical values compare equal.
 - System-comparison input diffs now use readable display units and rounding for scalar quantities.

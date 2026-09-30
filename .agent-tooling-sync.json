@@ -77,13 +77,13 @@
     ".codex/agents/reviewer.toml": "fa394882dc3dc43adc5347f574057e32490fae266e0f76999b69e6eccd093e5b",
     "ai-usage/README.md": "f972b7bd78a6643b2f62df3b1feac1bd20f98f744a2d7af168bd9ace1ed0ee16",
     "ai-usage/adapters.py": "e50dabfee24ed3d5124c33336c1ebc7b55338e90bf0c8babc4dcb37ded5b5f46",
-    "ai-usage/prices.json": "c2893f21d9e47e8f4b13fd4752645a269771748e475906073f7c31bb58357c99",
+    "ai-usage/prices.json": "b9ce9b1c776f40bcc091459ec746b7e3204810bf77823e841a1bb055100d6c19",
     "ai-usage/pricing.py": "85956760bbeaa5b7a9fc2a51979a865598db35b8277cb7095447517c461f050b",
     "ai-usage/tests/test_sync.py": "b2b5d5e02a141b67338e59def6cc7429f1b081e536edba7c951629d90aba18ca",
     "ai-usage/tests/test_usage.py": "37198bfcbefde1b59e4f03a45e054aa0f26b54c66e12dd031ae691d7b595418c",
     "ai-usage/usage.py": "9d1b5adff636f87fa62864bb988c8307e670a48c4d292488f13a6ca81982c60a",
     "scripts/sync_agent_tooling.py": "3fe7841551cd2a45b07e73c57066b8bd415d33b9665afbd2443673c6e8696b12",
-    "specs/agent-tooling.md": "f794d56f5f6073995504ce809c592b2e59c9cdc4783a279e06d07c08843c961b",
+    "specs/agent-tooling.md": "a526ddd6022169c801a24fc5a85e65e408a234ab4d4dc37e553ddf971baf695d",
     "specs/workflow.md": "bb9478f80eb2756c7da5be39ddc3316f610478bd4c548f46fc00f6b45774effa"
   }
 }
