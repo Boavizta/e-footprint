@@ -12,6 +12,7 @@ API and credit ratios identified separately. `Unknown` is distinct from zero.
 
 | # | Driving repo / feature · writer session | State · runs/tasks covered | Consequential findings: both / Sol missed / Astra missed | Noise: Astra / Sol | Initial cost ratios: API / credits | Initial active-time ratio |
 |---|---|---|---|---|---|---|
+| 1 | [e-footprint-interface / simplified-inputs](../../../../e-footprint-interface/specs/features/simplified-inputs/tasks.md) · `01a0f1e1-c424-73d2-836e-f3323fa15723` | OBSERVING · Run A in progress | Unknown | Unknown | Unknown / Unknown | Unknown |
 
 ## Supporting evidence
 
