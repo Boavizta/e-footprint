@@ -48,7 +48,7 @@
     ".agents/roles/reviewer.md": "7709eaf63b81b46b06ea4d2dad322ecd38cfbe12dde1f59442f4b1e23e9b9e1e",
     ".agents/skills/bug-fixes/SKILL.md": "16ae9d54e5ff26e2e172306ad9607736ebf7e816fe3bca926fbe9c77af29e190",
     ".agents/skills/feature-archive/SKILL.md": "547ce7350ca60528ca8189568929819cbb31d5f1a19f9352b6d96604c86063a7",
-    ".agents/skills/feature-implement/SKILL.md": "9d376baef4b3b1f4a4acb875aacb57c86c374220957c4922a10d142198bbddad",
+    ".agents/skills/feature-implement/SKILL.md": "f85a9876d8eb2223908a20e0d1d23d03b902415e29968f9908a5b57ab209fe78",
     ".agents/skills/spec-plan/SKILL.md": "30738b92d136ffbe80976353d0381a0d277062b9cd69b9781519f55167e3829d",
     ".agents/skills/spec-plan/assets/plan.html": "8926765164fdc2b85ba28bd5e468c2bab122a233f830d5119b463ab672d096ce",
     ".agents/skills/spec-specify/SKILL.md": "32e33667a29c190cc223503d0a34ad10847165ad22111b62305d3b4bb352cfec",
@@ -56,7 +56,7 @@
     ".agents/skills/spec-tasks/references/brief.md": "32ec1f9947d2d692637e8a3f961f7dfae39fa7d50f3e7bd9f1fd19b63589171f",
     ".agents/skills/task-implement/SKILL.md": "714f48988ef83e2bee61515c0e978a168ee7975a935163f39cf83849c6e16d65",
     ".agents/skills/task-implement/references/handoff.md": "9e6d35f90c3093ee273a2925786a80c6098745bd493fbc9059dd665a86525a45",
-    ".agents/skills/task-review/SKILL.md": "99ba735de04b38bad4e1949a4cd8d0c8dd7a8d437f9d5ad8e95947831db25fe3",
+    ".agents/skills/task-review/SKILL.md": "6c361ba54b1a01a5be28e627cd3f5a59306da6c4f01a7935cd41360f5a4072a0",
     ".agents/skills/update-constitution/SKILL.md": "cce7955fff229287ab339ab21d331b922d5ac83f6d23e154cd77b32fca8743ea",
     ".claude/agents/diagnostician.md": "e17d8b6a713414475f1a68702a17b06ccfc7c93416d9bbc1e6fdcc76e54e169d",
     ".claude/agents/implementer-hard.md": "95b3304bdc808832d93e35023b48d69d58289818c6bdacbc6d0f7d5cc7d47cff",
@@ -78,6 +78,6 @@
     "ai-usage/usage.py": "783c3154227a7f69c9c5ba8aa106c4e5f9d49153258816072b56fe4899199ffd",
     "scripts/sync_agent_tooling.py": "3fe7841551cd2a45b07e73c57066b8bd415d33b9665afbd2443673c6e8696b12",
     "specs/agent-tooling.md": "6d7bbf391f7031ea8188b3318db71272cc79745274043c34631b87d4311057b6",
-    "specs/workflow.md": "171d268c6b5cf0c5be1c330e44f0533d8d7293e1a97e6ca5cdfab2261acc64a8"
+    "specs/workflow.md": "a909da4c699ffde8ce3274d5b00173a0733c7fb9e1e817f1a62a10c9713f3941"
   }
 }

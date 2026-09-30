@@ -67,7 +67,8 @@ a task must be parked, preserving pre-existing changes and other sessions' owner
 ranges, useful review pointers and material unresolved concerns. `task-review` reads the actual
 diff first and chooses LIGHT/STANDARD/FULL internally. Feature-review assignments authorize evident
 scoped fixes in the same pass; standalone review remains read-only unless fixes are requested.
-Review depth does not waive quality gates.
+Review depth does not waive quality gates. The implementer and reviewer execute checks; the
+supervisor tracks completion and routes missing checks or failures back to the responsible agent.
 
 Consequential decisions update the relevant plan text with visible `[IMPL-DECISION-01] — APPLIED`
 callouts and a linked index; use PROPOSED only for exceptional decisions requiring the user's
@@ -76,8 +77,9 @@ ordinary choices and successful test results do not need annotations or reports.
 files or gate journals: `tasks.md` holds status and outstanding blockers/prerequisites only,
 distinguishing code blockers, deployment-only conditions and later human checks.
 
-Finish with global review, the consolidated changelog for delivered behavior, and all applicable
-final checks. Unresolved failures and unavailable required checks remain explicit; never treat
+Finish with global review and the consolidated changelog for delivered behavior. The global
+reviewer owns final checks, including cross-repository integration, reusing completed checks that
+still cover the final changes. Unresolved failures and unavailable required checks remain explicit; never treat
 them as success. The user receives the delivered outcome, any consequential decisions in the plan,
 outstanding exceptions and a compact usage summary. A five-run shadow-review comparison is opt-in
 and ends in a decision; it is not a permanent second reviewer.
