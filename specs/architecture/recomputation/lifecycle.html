@@ -126,9 +126,10 @@ S_utc._calculus_dependencies == {S_starts, S_timezone}  # topology retained</cod
 
 <h2 id="invalidation">Deletion wave and partial state</h2>
 <p><code>ModelingObject.__setattr__</code> routes live writes through <code>ModelingUpdate</code>, which normalizes list, dict, and modeling-object links and skips equal changes before applying relationship bookkeeping. The walkthrough above follows both a numerical edit and a relationship edit through that transaction.</p>
-<p>Transaction no-op detection distinguishes <code>EmptyExplainableObject</code> from explicit zero: optional input
-absence and a fixed zero may select different behavior and must invalidate and validate normally. Their arithmetic
-equality is unchanged.</p>
+<p><code>input_values_match()</code> owns authored-input equality for transaction no-op detection and allowed-value
+validation. It distinguishes <code>EmptyExplainableObject</code> from explicit zero and preserves timeseries builder
+or <code>form_inputs</code> changes even when their computed arrays are equal. Optional absence, a fixed zero, and
+different authored projections must invalidate and validate normally; arithmetic equality is unchanged.</p>
 <div class="diagram"><div class="dtitle">Why voidness cannot stop a wave</div><div class="cols"><div><div class="n input"><b>Changed input</b></div><div class="ar">↓ wave</div><div class="n slot"><b>Void intermediate</b><br><span>May already have no cached value after a minimal reload.</span></div><div class="ar">↓ wave must continue</div><div class="n value"><b>Cached serialized output</b><br><span>Must be dropped or it becomes stale.</span></div></div><div><div class="n guard"><b>Wave marker, not voidness</b><br><span>A marked slot means its dependents have already been marked by this or an earlier sound wave. A fresh dependent cache can only arise after pulling through the dependency, which clears the marker.</span></div></div></div></div>
 <p><code>invalidate(*slots)</code> deletes cached values from changed slots and every transitive dependent. Its one-bit <code>wave_passed</code> marker prunes repeated traversal. A void slot cannot prune: the normal persisted shape can have cached outputs below valueless intermediates. This is why serialized dependency topology matters; see <a href="../persistence.html">Persistence</a>.</p>
 

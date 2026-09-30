@@ -10,6 +10,7 @@ from IPython.display import HTML
 
 from efootprint.abstract_modeling_classes.explainable_quantity import ExplainableQuantity
 from efootprint.abstract_modeling_classes.empty_explainable_object import EmptyExplainableObject
+from efootprint.abstract_modeling_classes.input_values import input_values_match
 from efootprint.abstract_modeling_classes.utils import css_escape
 from efootprint.logger import logger
 from efootprint.abstract_modeling_classes.object_linked_to_modeling_obj import ObjectLinkedToModelingObjBase
@@ -407,13 +408,14 @@ class ModelingObject(metaclass=ABCAfterInitMeta):
 
     def check_belonging_to_authorized_values(self, name, input_value, attributes_with_depending_values):
         if name in self.list_values:
-            if input_value not in self.list_values[name]:
+            if not any(input_values_match(input_value, allowed) for allowed in self.list_values[name]):
                 raise ValueError(
                     f"Value {input_value} for attribute {name} is not in the list of possible values: "
                     f"{[elt.value for elt in self.list_values[name]]}")
 
         if name in self.conditional_list_values:
             conditional_attr_name = self.conditional_list_values[name]['depends_on']
+            branches = self.conditional_list_values[name]["conditional_list_values"]
             # depends_on may be a dotted path (e.g. "external_api.model_name") to reach an attribute on a related object
             conditional_value = self
             for part in conditional_attr_name.split("."):
@@ -423,22 +425,22 @@ class ModelingObject(metaclass=ABCAfterInitMeta):
             if conditional_value is None:
                 raise ValueError(f"Value for attribute {conditional_attr_name} is not set but required for checking "
                                  f"validity of {name}")
-            if (conditional_value in self.conditional_list_values[name]["conditional_list_values"]
-                    and input_value not in
-                    self.conditional_list_values[name]["conditional_list_values"][conditional_value]):
+            if (conditional_value in branches
+                    and not any(input_values_match(input_value, allowed) for allowed in
+                                branches[conditional_value])):
                 raise ValueError(
                     f"Value {input_value} for attribute {name} is not in the list of possible values for "
                     f"{conditional_attr_name} {conditional_value}: "
-                    f"{self.conditional_list_values[name]['conditional_list_values'][conditional_value]}")
+                    f"{branches[conditional_value]}")
 
         if name in attributes_with_depending_values:
             for dependent_attribute in attributes_with_depending_values[name]:
                 dependent_attribute_value = getattr(self, dependent_attribute, None)
+                branches = self.conditional_list_values[dependent_attribute]["conditional_list_values"]
                 if (dependent_attribute_value is not None
-                        and input_value
-                        in self.conditional_list_values[dependent_attribute]["conditional_list_values"]
-                        and dependent_attribute_value not in
-                        self.conditional_list_values[dependent_attribute]["conditional_list_values"][input_value]):
+                        and input_value in branches
+                        and not any(input_values_match(dependent_attribute_value, allowed) for allowed in
+                                    branches[input_value])):
                     raise ValueError(
                         f"Setting {name} as {input_value} is not possible because {dependent_attribute_value}"
                         f" is not in the list of possible values for {dependent_attribute} "
@@ -446,7 +448,7 @@ class ModelingObject(metaclass=ABCAfterInitMeta):
                         f"\nYou might want to use the ModelingUpdate object to be able to change both inputs "
                         f"at the same time."
                         f"\nList of possible values for {input_value}:"
-                        f"\n{self.conditional_list_values[dependent_attribute]['conditional_list_values'][input_value]}"
+                        f"\n{branches[input_value]}"
                     )
 
     @property

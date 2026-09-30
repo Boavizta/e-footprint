@@ -3,6 +3,7 @@ from unittest.mock import MagicMock, PropertyMock
 
 from efootprint.abstract_modeling_classes.contextual_modeling_object_attribute import ContextualModelingObjectAttribute
 from efootprint.abstract_modeling_classes.empty_explainable_object import EmptyExplainableObject
+from efootprint.abstract_modeling_classes.explainable_hourly_quantities import ExplainableHourlyQuantities
 from efootprint.abstract_modeling_classes.list_linked_to_modeling_obj import ListLinkedToModelingObj
 from efootprint.abstract_modeling_classes.modeling_update import ModelingUpdate
 from efootprint.abstract_modeling_classes.object_linked_to_modeling_obj import ObjectLinkedToModelingObj
@@ -10,13 +11,67 @@ from efootprint.abstract_modeling_classes.reactive_core import ReactiveSlot
 from efootprint.abstract_modeling_classes.source_objects import SourceObject, SourceValue
 from efootprint.api_utils.json_to_system import json_to_system
 from efootprint.api_utils.system_to_json import system_to_json
+from efootprint.builders.timeseries import ExplainableHourlyQuantitiesFromFormInputs
+from efootprint.constants.countries import Countries
 from efootprint.constants.units import u
 from efootprint.core.hardware.server import Server
 from efootprint.core.hardware.server_base import ServerTypes
 from efootprint.core.hardware.storage import Storage
+from efootprint.core.hardware.network import Network
+from efootprint.core.usage.usage_journey import UsageJourney
+from efootprint.core.usage.usage_pattern import UsagePattern
 
 
 class TestModelingUpdate(unittest.TestCase):
+    def test_conditional_empty_choice_rejects_zero_and_accepts_reconciled_batch(self):
+        """Test zero is invalid for an empty-only count, through dependent and controller edits."""
+        server = Server.from_defaults("Conditional count", storage=Storage.from_defaults("Conditional storage"))
+        original_count = server.fixed_nb_of_instances
+        with self.assertRaisesRegex(ValueError, "not in the list"):
+            ModelingUpdate([[original_count, SourceValue(0 * u.concurrent)]])
+        self.assertIs(server.fixed_nb_of_instances, original_count)
+
+        ModelingUpdate([[server.server_type, ServerTypes.on_premise()],
+                        [server.fixed_nb_of_instances, SourceValue(0 * u.concurrent)]])
+        original_type, original_count = server.server_type, server.fixed_nb_of_instances
+        with self.assertRaisesRegex(ValueError, "not in the list"):
+            ModelingUpdate([[original_type, ServerTypes.autoscaling()]])
+        self.assertIs(server.server_type, original_type)
+        self.assertIs(server.fixed_nb_of_instances, original_count)
+
+        empty = EmptyExplainableObject()
+        update = ModelingUpdate([[server.server_type, ServerTypes.autoscaling()], [original_count, empty]])
+        self.assertEqual(len(update.changes_list), 2)
+        self.assertIs(server.fixed_nb_of_instances, empty)
+
+    def test_equal_timeseries_keep_authored_changes_and_builder_transitions(self):
+        """Test equal hourly arrays retain changed form inputs and raw/builder transitions."""
+        form_inputs = {
+            "start_date": "2025-01-01", "modeling_duration_value": 1, "modeling_duration_unit": "month",
+            "initial_volume": 1000, "initial_volume_timespan": "month",
+            "net_growth_rate_in_percentage": 0, "net_growth_rate_timespan": "year",
+        }
+        series = ExplainableHourlyQuantitiesFromFormInputs(form_inputs)
+        pattern = UsagePattern(
+            "Authored timeseries", {UsageJourney("Empty journey", {}): 1}, [],
+            Network.from_defaults("Timeseries network"), Countries.FRANCE(), series)
+        changed_inputs = {**form_inputs, "net_growth_rate_timespan": "month"}
+        changed = ExplainableHourlyQuantitiesFromFormInputs(changed_inputs)
+        raw = ExplainableHourlyQuantities(series.value.copy(), series.start_date, label="Raw timeseries")
+        for replacement in (changed, raw, ExplainableHourlyQuantitiesFromFormInputs(changed_inputs)):
+            with self.subTest(builder=type(replacement).__name__):
+                self.assertEqual(pattern.hourly_occurrences, replacement)
+                update = ModelingUpdate([[pattern.hourly_occurrences, replacement]])
+                self.assertEqual(len(update.changes_list), 1)
+                self.assertIs(pattern.hourly_occurrences, replacement)
+                _, restored, _ = json_to_system(system_to_json(pattern, save_computed_state=False))
+                self.assertEqual(restored[pattern.id].hourly_occurrences.to_json(), replacement.to_json())
+
+        current = pattern.hourly_occurrences
+        update = ModelingUpdate([[current, ExplainableHourlyQuantitiesFromFormInputs(changed_inputs)]])
+        self.assertEqual(update.changes_list, [])
+        self.assertIs(pattern.hourly_occurrences, current)
+
     def test_optional_zero_and_empty_are_distinct_changes_and_round_trip(self):
         """Test explicit zero and omitted Server counts survive edits and serialization in both directions."""
         server = Server.from_defaults("Optional count", storage=Storage.from_defaults("Storage"),
