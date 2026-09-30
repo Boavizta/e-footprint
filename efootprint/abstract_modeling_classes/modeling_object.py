@@ -176,10 +176,7 @@ class ModelingObject(metaclass=ABCAfterInitMeta):
     def attributes_with_depending_values(cls):
         output_dict = {}
         for dependent_attribute, dependent_attribute_dependencies in cls.conditional_list_values.items():
-            if dependent_attribute not in output_dict:
-                output_dict[dependent_attribute_dependencies["depends_on"]] = [dependent_attribute]
-            else:
-                output_dict[dependent_attribute_dependencies["depends_on"]].append(dependent_attribute)
+            output_dict.setdefault(dependent_attribute_dependencies["depends_on"], []).append(dependent_attribute)
 
         return output_dict
 

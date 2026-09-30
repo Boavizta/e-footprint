@@ -107,6 +107,39 @@ class SignatureValidationModel(ModelingObject):
         return []
 
 
+class SharedControllerValidationModel(ModelingObject):
+    first_compatible = SourceObject("first-compatible")
+    second_compatible = SourceObject("second-compatible")
+    conditional_list_values = {
+        "first": {
+            "depends_on": "controller",
+            "conditional_list_values": {
+                SourceObject("original"): [first_compatible],
+                SourceObject("invalidates-first"): [SourceObject("other-first")],
+                SourceObject("invalidates-second"): [first_compatible],
+            },
+        },
+        "second": {
+            "depends_on": "controller",
+            "conditional_list_values": {
+                SourceObject("original"): [second_compatible],
+                SourceObject("invalidates-first"): [second_compatible],
+                SourceObject("invalidates-second"): [SourceObject("other-second")],
+            },
+        },
+    }
+
+    def __init__(self, name, controller: SourceObject, first: SourceObject, second: SourceObject):
+        super().__init__(name)
+        self.controller = controller
+        self.first = first
+        self.second = second
+
+    @property
+    def systems(self):
+        return []
+
+
 class UnresolvableSignatureModel(ModelingObject):
     def __init__(self, name, value: "MissingSignatureType"):
         super().__init__(name)
@@ -240,6 +273,25 @@ class TestModelingObject(unittest.TestCase):
         mod_obj = ModelingObjectForTesting("test mod obj", mod_obj_input1=attr1, mod_obj_input2=attr2)
 
         self.assertEqual([attr1, attr2], mod_obj.mod_obj_attributes)
+
+    def test_shared_controller_dependents_are_all_checked_by_modeling_update(self):
+        model = SharedControllerValidationModel(
+            "shared controller",
+            SourceObject("original"),
+            SourceObject("first-compatible"),
+            SourceObject("second-compatible"),
+        )
+
+        self.assertEqual(
+            {"controller": ["first", "second"]},
+            model.attributes_with_depending_values(),
+        )
+
+        for candidate, invalid_dependent in (("invalidates-first", "first"), ("invalidates-second", "second")):
+            with self.subTest(invalid_dependent=invalid_dependent):
+                with self.assertRaisesRegex(ValueError, invalid_dependent):
+                    ModelingUpdate([[model.controller, SourceObject(candidate)]])
+                self.assertEqual("original", model.controller.value)
 
     def test_mod_obj_attributes_includes_structural_dict_keys(self):
         attr1 = MagicMock(spec=ModelingObject)
