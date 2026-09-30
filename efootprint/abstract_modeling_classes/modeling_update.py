@@ -94,7 +94,10 @@ class ModelingUpdate:
                     f" got {old_value} of type {type(old_value)} trying to be set to an object "
                     f"of type {type(new_value)}")
 
-            values_are_equal = old_value == new_value
+            # Empty and explicit zero are equal in arithmetic, but select different optional-input behavior.
+            same_presence = isinstance(old_value, EmptyExplainableObject) == isinstance(
+                new_value, EmptyExplainableObject)
+            values_are_equal = same_presence and old_value == new_value
             if values_are_equal and isinstance(old_value, dict) and isinstance(new_value, dict):
                 # dict equality ignores key order, but order is meaningful for ExplainableObjectDicts
                 # (e.g. usage journey step order), so a pure reorder is a real change, not a no-op.

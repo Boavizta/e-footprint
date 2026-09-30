@@ -2,13 +2,51 @@ import unittest
 from unittest.mock import MagicMock, PropertyMock
 
 from efootprint.abstract_modeling_classes.contextual_modeling_object_attribute import ContextualModelingObjectAttribute
+from efootprint.abstract_modeling_classes.empty_explainable_object import EmptyExplainableObject
 from efootprint.abstract_modeling_classes.list_linked_to_modeling_obj import ListLinkedToModelingObj
 from efootprint.abstract_modeling_classes.modeling_update import ModelingUpdate
 from efootprint.abstract_modeling_classes.object_linked_to_modeling_obj import ObjectLinkedToModelingObj
 from efootprint.abstract_modeling_classes.reactive_core import ReactiveSlot
+from efootprint.abstract_modeling_classes.source_objects import SourceObject, SourceValue
+from efootprint.api_utils.json_to_system import json_to_system
+from efootprint.api_utils.system_to_json import system_to_json
+from efootprint.constants.units import u
+from efootprint.core.hardware.server import Server
+from efootprint.core.hardware.server_base import ServerTypes
+from efootprint.core.hardware.storage import Storage
 
 
 class TestModelingUpdate(unittest.TestCase):
+    def test_optional_zero_and_empty_are_distinct_changes_and_round_trip(self):
+        """Test explicit zero and omitted Server counts survive edits and serialization in both directions."""
+        server = Server.from_defaults("Optional count", storage=Storage.from_defaults("Storage"),
+                                      server_type=ServerTypes.on_premise())
+        for new_value in (SourceValue(0 * u.concurrent), EmptyExplainableObject()):
+            self.assertEqual(server.fixed_nb_of_instances, new_value)
+            update = ModelingUpdate([[server.fixed_nb_of_instances, new_value]])
+            self.assertEqual(len(update.changes_list), 1)
+            self.assertIs(server.fixed_nb_of_instances, new_value)
+            _, restored, _ = json_to_system(system_to_json(server, save_computed_state=False))
+            self.assertEqual(isinstance(restored[server.id].fixed_nb_of_instances, EmptyExplainableObject),
+                             isinstance(new_value, EmptyExplainableObject))
+
+        empty = server.fixed_nb_of_instances
+        update = ModelingUpdate([[empty, EmptyExplainableObject()]])
+        self.assertEqual(update.changes_list, [])
+        self.assertIs(server.fixed_nb_of_instances, empty)
+
+    def test_optional_presence_change_rolls_back_with_rejected_sibling(self):
+        """Test a rejected batch restores the original optional-count object and sibling."""
+        server = Server.from_defaults(
+            "Rollback count", storage=Storage.from_defaults("Rollback storage"),
+            server_type=ServerTypes.on_premise(), fixed_nb_of_instances=SourceValue(0 * u.concurrent))
+        original = server.fixed_nb_of_instances
+        server_type = server.server_type
+        with self.assertRaisesRegex(ValueError, "not in the list"):
+            ModelingUpdate([[original, EmptyExplainableObject()], [server_type, SourceObject("unknown")]])
+        self.assertIs(server.fixed_nb_of_instances, original)
+        self.assertIs(server.server_type, server_type)
+
     def test_default_pulls_guards_but_leaves_ordinary_invalidated_slots_void(self):
         """Test the default update validates guards without eagerly pulling ordinary computations."""
         pulls = []
