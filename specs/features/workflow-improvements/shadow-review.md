@@ -12,7 +12,7 @@ API and credit ratios identified separately. `Unknown` is distinct from zero.
 
 | # | Driving repo / feature · writer session | State · runs/tasks covered | Consequential findings: both / Sol missed / Astra missed | Noise: Astra / Sol | Initial cost ratios: API / credits | Initial active-time ratio |
 |---|---|---|---|---|---|---|
-| 1 | [e-footprint-interface / simplified-inputs](../../../../e-footprint-interface/specs/features/simplified-inputs/tasks.md) · `01a0f1e1-c424-73d2-836e-f3323fa15723` | OBSERVING · Run A, tasks 1–3 paired | 2 / 0 / 0 | 0 / 0 | 0.184 / 0.180 | 1.089 |
+| 1 | [e-footprint-interface / simplified-inputs](../../../../e-footprint-interface/specs/features/simplified-inputs/tasks.md) · `01a0f1e1-c424-73d2-836e-f3323fa15723` | OBSERVING · Run A, tasks 1–4 paired | 3 / 0 / 1 | 0 / 0 | 0.258 / 0.254 | 1.692 |
 
 ## Supporting evidence
 
@@ -49,14 +49,21 @@ Minor copy differences do not constitute consequential misses. No unsupported su
 | 2 | Shadow · `01a0f21c-9251-7bd3-89e2-a2856682777b` | gpt-6.1-sol / high | 366 / 363,387 / 44,084 / 3,235 | 1.013 | 0.179631 | 3.939717 |
 | 3 | Primary · `01a0f223-9b28-7052-af62-5cbd5f1e764b` | gpt-6-astra / high | 602 / 870,942 / 90,552 / 4,105 | 1.687 | 2.214112 | 49.693300 |
 | 3 | Shadow · `01a0f223-b6f9-7ed1-af21-a73f2bd8b9b8` | gpt-6.1-sol / high | 764 / 1,203,319 / 90,759 / 6,181 | 2.062 | 0.410567 | 9.129698 |
+| 4 | Shadow · `01a0f22b-e4d2-7e01-8485-0086187b4f50` | gpt-6.1-sol / high | 1,073 / 1,923,003 / 94,820 / 9,322 | 3.218 | 0.524716 | 11.932657 |
 
 Task 2: library `ac2b44d1..99962fad`; Task 3: interface `bcd306eb..7fc193b1`.
 Each pair used independent, read-only FULL initial passes with no consequential findings or noise.
 
+Task 4: interface `9e94e06d..8e881aaab1e5f1ca964f05e2edc3c0fd88c6f510`; both initial passes FULL.
+Both found complete definitions retaining addresses of disconnected objects lost by System-only copying/reminting.
+Accepted correction follows [IMPL-DECISION-02](../../../../e-footprint-interface/specs/features/simplified-inputs/plan.html#impl-decision-02).
+Sol alone found the P1 rejected-import recovery path publishing incoming settings onto the old model when Redis is absent;
+its supported isolated reproduction was accepted for correction by the primary reviewer. No unsupported suggestions.
+
 Price-card date: 2026-09-30. Measurements use only collector turn 0; primary fixes and global review
 are excluded. Standard processing mode is assumed because logs do not expose it. Shadow amounts
 are experiment overhead. Current evidence covers the semantic rename, framework validation and domain catalog;
-the remaining persistence/edit tasks are not yet observed. The feature slot stays open for Runs B–C.
+persistence adds one consequential Sol-only finding; atomic edits are not yet observed. The feature slot stays open for Runs B–C.
 
 </details>
 
