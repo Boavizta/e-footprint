@@ -2,13 +2,13 @@
 
 Two decoupled concepts:
 
-- ``HowToTemplate`` — a loadable reference ``System`` (serialized JSON) that backs
-  the interface's template picker.
+- ``HowToExample`` — a loadable reference ``System`` (serialized JSON) that backs
+  the interface's example picker.
 - ``HowToGuide`` — a how-to documentation page. Each guide references the
-  ``template_id`` of the scenario it walks through; several guides can share one
-  template (the database and server-to-server guides both read the ``ecommerce``
+  ``example_id`` of the scenario it walks through; several guides can share one
+  example (the database and server-to-server guides both read the ``ecommerce``
   scenario from different angles), which is why a guide is not the same thing as a
-  template.
+  example.
 """
 from dataclasses import dataclass
 from pathlib import Path
@@ -17,7 +17,7 @@ HERE = Path(__file__).parent
 
 
 @dataclass(frozen=True)
-class HowToTemplate:
+class HowToExample:
     id: str
     name: str
     description: str
@@ -25,8 +25,8 @@ class HowToTemplate:
     category: str = "how_to"
 
 
-HOW_TO_TEMPLATES: tuple[HowToTemplate, ...] = (
-    HowToTemplate(
+HOW_TO_EXAMPLES: tuple[HowToExample, ...] = (
+    HowToExample(
         id="machine_learning_workflow",
         name="Machine learning workflow",
         description="Training on a {class:GPUServer} plus recurrent inference jobs.",
@@ -40,7 +40,7 @@ class HowToGuide:
     id: str
     name: str
     doc_path: str
-    template_id: str  # the picker template the guide walks through (guides may share one)
+    example_id: str  # the picker example the guide walks through (guides may share one)
 
 
 HOW_TO_GUIDES: tuple[HowToGuide, ...] = (
@@ -48,18 +48,18 @@ HOW_TO_GUIDES: tuple[HowToGuide, ...] = (
         id="machine_learning_workflow",
         name="How to model a machine learning workflow",
         doc_path="machine_learning_workflow.md",
-        template_id="machine_learning_workflow",
+        example_id="machine_learning_workflow",
     ),
     HowToGuide(
         id="database_modeling",
         name="How to model a database",
         doc_path="database_modeling.md",
-        template_id="ecommerce",
+        example_id="ecommerce",
     ),
     HowToGuide(
         id="server_to_server_interaction",
         name="How to model server-to-server interaction",
         doc_path="server_to_server_interaction.md",
-        template_id="ecommerce",
+        example_id="ecommerce",
     ),
 )

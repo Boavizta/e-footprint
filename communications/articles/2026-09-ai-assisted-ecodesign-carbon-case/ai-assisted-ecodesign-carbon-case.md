@@ -95,7 +95,7 @@ performance evidence.
 
 The four initial session types are:
 
-1. **Explore an example:** select a maintained template, open results, then inspect a cold and warm Sankey.
+1. **Explore an example:** select a maintained example, open results, then inspect a cold and warm Sankey.
 2. **Build and refine a model:** load a model, save several structural or assumption changes, revisit results, audit
    selected values and export the model.
 3. **Compare an alternative:** duplicate or import a second model, edit it and open the comparison dashboard.

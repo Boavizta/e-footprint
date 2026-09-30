@@ -1,7 +1,7 @@
 # How to model serverless / per-invocation workloads
 
 > Load this scenario in the e-footprint interface:
-> [E-commerce web/database scenario]({{ config.extra.interface_base_url }}/template/ecommerce/)
+> [E-commerce web/database scenario]({{ config.extra.interface_base_url }}/example/ecommerce/)
 
 Functions-as-a-service (AWS Lambda, Cloud Run, edge functions) and other
 pay-per-invocation backends have no first-class primitive in e-footprint,

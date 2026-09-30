@@ -1,4 +1,4 @@
-"""Build the ``machine_learning_workflow`` how-to template.
+"""Build the ``machine_learning_workflow`` how-to example.
 
 Mirrors the Python sketch in ``machine_learning_workflow.md``: two
 {class:UsagePattern} sharing a country and {class:Network}, one driving a
@@ -86,5 +86,5 @@ def build_system() -> System:
 
 
 if __name__ == "__main__":
-    from efootprint.modeling_templates.how_to._authoring import _write_template
-    _write_template("machine_learning_workflow", build_system)
+    from efootprint.modeling_examples.how_to._authoring import _write_example
+    _write_example("machine_learning_workflow", build_system)

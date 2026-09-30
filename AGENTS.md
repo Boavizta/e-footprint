@@ -12,6 +12,7 @@ This file orients agents and contributors. It is intentionally short. Substance 
 | If you need... | Read |
 |---|---|
 | Architecture and core patterns (modeling structure, ExplainableObject, dependency graph) | `specs/architecture/index.html` |
+| Ready-made modeling examples and guides | `efootprint/modeling_examples/` and `specs/architecture/layers-and-modeling.html` |
 | Code style, modeling refactor preferences, agent behaviour rules | `specs/conventions.md` |
 | Testing patterns and what TO / NOT TO test | `specs/testing.md` |
 | Tech stack and version bounds | `specs/tech_stack.md` |

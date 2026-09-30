@@ -1,7 +1,7 @@
 # How to model a machine-learning workflow
 
 > Load this scenario in the e-footprint interface:
-> [Machine learning workflow]({{ config.extra.interface_base_url }}/template/machine_learning_workflow/)
+> [Machine learning workflow]({{ config.extra.interface_base_url }}/example/machine_learning_workflow/)
 
 ## The two phases
 

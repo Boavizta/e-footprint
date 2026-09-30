@@ -8,7 +8,7 @@ installed-services mechanism, would bundle a sensible engine baseline
 and canonical query templates — that would be a welcome contribution.
 
 > Load this scenario in the e-footprint interface:
-> [E-commerce web/database scenario]({{ config.extra.interface_base_url }}/template/ecommerce/)
+> [E-commerce web/database scenario]({{ config.extra.interface_base_url }}/example/ecommerce/)
 
 ## How a database maps onto the primitives
 

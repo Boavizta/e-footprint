@@ -1,4 +1,4 @@
-"""Build the ``ecommerce`` introductory template.
+"""Build the ``ecommerce`` introductory example.
 
 A shopping journey served by a web application server calling a database server.
 This scenario backs the interface's e-commerce starter and the database /
@@ -115,5 +115,5 @@ def build_system() -> System:
 
 
 if __name__ == "__main__":
-    from efootprint.modeling_templates.introductory._authoring import _write_template
-    _write_template("ecommerce", build_system)
+    from efootprint.modeling_examples.introductory._authoring import _write_example
+    _write_example("ecommerce", build_system)

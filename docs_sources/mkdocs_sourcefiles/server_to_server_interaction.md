@@ -1,7 +1,7 @@
 # How to model server-to-server interaction
 
 > Load this scenario in the e-footprint interface:
-> [E-commerce web/database scenario]({{ config.extra.interface_base_url }}/template/ecommerce/)
+> [E-commerce web/database scenario]({{ config.extra.interface_base_url }}/example/ecommerce/)
 
 ## How e-footprint models inter-server calls
 

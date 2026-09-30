@@ -1,4 +1,4 @@
-"""Registry of introductory modeling templates shipped with the library."""
+"""Registry of introductory modeling examples shipped with the library."""
 from dataclasses import dataclass
 from pathlib import Path
 
@@ -6,14 +6,14 @@ HERE = Path(__file__).parent
 
 
 @dataclass(frozen=True)
-class IntroductoryTemplate:
+class IntroductoryExample:
     id: str
     json_path: Path
     category: str = "introductory"
 
 
-INTRODUCTORY_TEMPLATES: tuple[IntroductoryTemplate, ...] = (
-    IntroductoryTemplate(
+INTRODUCTORY_EXAMPLES: tuple[IntroductoryExample, ...] = (
+    IntroductoryExample(
         id="ecommerce",
         json_path=HERE / "ecommerce.json",
     ),

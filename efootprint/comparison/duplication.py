@@ -10,7 +10,7 @@ def assign_fresh_system_id(system) -> "System":
     """Re-id the System object in place with an id distinct from its current one, leaving every other
     object's id untouched.
 
-    Backs the workspace distinct-system-id invariant for the non-duplicate paths (import / template /
+    Backs the workspace distinct-system-id invariant for the non-duplicate paths (import / example /
     workspace import), where two slots must not hold the same system id while object ids stay shared.
     The new id is always different from the old one — under the name-as-id convention a fresh uuid suffix
     keeps it distinct even when the system name is unchanged (e.g. a duplicate that keeps its name).
