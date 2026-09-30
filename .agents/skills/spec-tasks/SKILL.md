@@ -101,12 +101,24 @@ decision and rationale so it does not compete with the updated plan text. For a 
 mark **REJECTED**, retain a brief reason, and align affected tasks/briefs with the unchanged design.
 A task remains provisional until all amendments it depends on are resolved.
 
+## Tasks file layout
+
+Put the implementation runs immediately after the title, spec/plan links and overall status,
+before the task overview and individual tasks. For each run, show its name, delivered milestone,
+linked task numbers in execution order, and prerequisites, including earlier runs or cross-repo
+dependencies. Every task belongs to one run. For a single-run feature, show one row; do not split
+work merely to fill the table. Keep the run sequence here rather than repeating it at the bottom.
+
 Use this shape, omitting empty optional sections:
 
 ```markdown
 # Feature — tasks
 Spec: [spec.html](spec.html) · Plan: [plan.html](plan.html)
 Status: under review
+
+## Implementation runs
+| Run | Delivered milestone | Tasks in execution order | Prerequisites |
+|---|---|---|---|
 
 ## Overview
 | Task | Delivered behavior | Plan section | Repository | Implementation |
@@ -127,8 +139,8 @@ Acceptance: ...
 Depends on: ...
 Implementation: easy / standard / hard — brief reason
 
-## Runs and gates
-Order, cross-repo dependencies, required evidence, deployment prerequisites.
+## Gates and prerequisites
+Outstanding required evidence, deployment prerequisites and their verification environment.
 ```
 
 Usage attribution: `specs/agent-tooling.md`. Attribute the brief-writing cost to the tasks stage; include it when evaluating downstream savings.
