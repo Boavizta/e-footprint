@@ -12,7 +12,7 @@ API and credit ratios identified separately. `Unknown` is distinct from zero.
 
 | # | Driving repo / feature · writer session | State · runs/tasks covered | Consequential findings: both / Sol missed / Astra missed | Noise: Astra / Sol | Initial cost ratios: API / credits | Initial active-time ratio |
 |---|---|---|---|---|---|---|
-| 1 | [e-footprint-interface / simplified-inputs](../../../../e-footprint-interface/specs/features/simplified-inputs/tasks.md) · `01a0f282-6cc2-7352-81c4-93d8c71d40b1` | OBSERVING · Run A complete, tasks 1–5 paired; Run B complete, tasks 6–8 paired; Run C pending | 10 / 3 / 3 | 0 / 0 | 0.156 / 0.152 | 0.975 |
+| 1 | [e-footprint-interface / simplified-inputs](../../../../e-footprint-interface/specs/features/simplified-inputs/tasks.md) · `01a0f333-986f-7100-b00f-853bcc5ab71d` | COMPLETE · Runs A–C, tasks 1–10 paired | 14 / 4 / 3 | 0 / 0 | 0.155 / 0.151 | 0.882 |
 
 ## Supporting evidence
 
@@ -123,6 +123,46 @@ review and its corrections are excluded from paired measurements.
 Price-card date: 2026-09-30. Measurements merge both repository ledgers and select only collector turn 0;
 primary fixes and global review are excluded. Standard processing mode is assumed because logs do not expose it.
 Shadow amounts are experiment overhead. The feature slot remains open for Run C.
+
+</details>
+
+<details>
+<summary>e-footprint-interface / simplified-inputs — Run C</summary>
+
+Task 9: interface `0a1d6e8c4196ab2d7de28ae230976365f58bada2..6cf746bee16a00e3ee5ffc1935541838aebf1974`;
+Task 10: interface `72aa659469990424cf091e766efc086a35223ebd..5463ada91d2d5c4bf33091d637cc8d70dbc2927e`.
+The library did not change in Run C (`b03a48ce32afe61b7a92b081fa61741e0c515cff`).
+Both pairs were independent, read-only FULL initial reviews with the requested models and efforts.
+
+Task 9: both found conditional selects missing their accepted choices (P1) and accepted form baselines
+captured while mutation controls remained disabled (P2). Astra alone found custom-source Name → Link
+navigation prematurely applying and closing the editor (P2). All were corrected in `156f33e8`.
+
+Task 10: both found that saving a timeseries value could erase failed same-field provenance (P2).
+Both identified the export gesture starting on mouse press rather than activation (P2): Astra reproduced
+right-click downloading, while Sol reproduced a fast save followed by a duplicate original click.
+These are one underlying event-order issue, corrected with the provenance issue in `12bfe447`.
+No unsupported suggestions from either reviewer.
+
+Global review then found that Add → Duplicate replaced the whole workspace shell and discarded a failed
+draft on a surviving model, a cumulative seam missed by both initial Task 10 passes. The same recovery
+rule now covers supported shell replacements in `62ae1bec`; see
+[IMPL-DECISION-08](../../../../e-footprint-interface/specs/features/simplified-inputs/plan.html#impl-decision-08).
+This unpaired global finding is excluded from the paired counts and costs.
+
+| Task | Reviewer · native session | Actual model / effort | Initial input / cache read / cache write / output | Active minutes | API-equivalent USD | Codex credits |
+|---|---|---|---|---|---|---|
+| 9 | Primary · `01a0f341-e36c-79c3-9231-844c0d29211f` | gpt-6-astra / high | 875 / 2,926,100 / 156,034 / 8,959 | 5.959 | 5.333225 | 123.578500 |
+| 9 | Shadow · `01a0f341-f44c-7e62-9b4a-4a7e15534806` | gpt-6.1-sol / high | 449 / 3,274,268 / 154,150 / 10,289 | 3.644 | 0.816590 | 18.487870 |
+| 10 | Primary · `01a0f36c-b6c7-7c11-8cfc-61f2bb464841` | gpt-6-astra / high | 446 / 1,724,797 / 137,994 / 7,590 | 5.029 | 3.833682 | 87.217425 |
+| 10 | Shadow · `01a0f36c-cfba-7b63-bd63-81ed2aeb4722` | gpt-6.1-sol / high | 434 / 1,462,360 / 134,060 / 9,086 | 3.613 | 0.573114 | 12.652100 |
+
+Price-card date: 2026-09-30. Measurements use only collector turn 0, excluding primary fixes and
+global review; shadow cost is experiment overhead. Standard processing mode is assumed because logs
+do not expose it. Across all ten paired tasks, Sol's initial reviews used 0.155× the API-equivalent
+amount, 0.151× Codex credits and 0.882× active time of Astra's; finding coverage includes
+four Sol misses, three Astra misses and shared later global misses. The feature's approved runs are
+complete, so its experiment slot closes; the five-feature protocol remains ACTIVE.
 
 </details>
 
