@@ -1,23 +1,34 @@
 ---
 name: spec-tasks
-description: Decompose an approved plan into review-sized tasks, verified implementer briefs, and explicit plan-amendment proposals. Planning only; use a fresh session.
+description: Prepare a task breakdown and verified briefs autonomously in one fresh session, collecting any plan-amendment proposals for a single review. Planning only.
 ---
 
 # spec-tasks
 
 Start in a fresh session from the approved spec and plan, plus `.agents/repository.md`. If decisions exist only in conversation, make the gap explicit. For a bug batch use `bug-fixes` and its diagnostics instead.
-Collect and bind this session and brief writers using `specs/agent-tooling.md`, with the driving
+Collect and bind this session using `specs/agent-tooling.md`, with the driving
 repo, feature and `tasks` stage. Collect again at close-out; report missing telemetry without blocking work.
 
 `tasks.md` is the user's concise overview; `briefs/task-<n>.md` is the implementer's code map. Keep the plan as the reviewed design. Finding a gap while decomposing never authorizes silently redesigning it.
 
+One agent owns the complete task breakdown, all briefs and any plan-amendment callouts in this
+session. Work autonomously through the full preparation pass, collecting ordinary design questions
+as proposals for one combined review at the end. Resolve routine decomposition choices within the
+approved plan yourself. Continue preparing affected tasks under clearly labelled provisional
+assumptions linked to their proposal IDs; acceptance remains pending until the user's review.
+
+Interrupt only for a major blocker: missing required documents/code, or a fundamental scope
+contradiction that prevents a coherent, reviewable working set even with explicit provisional
+assumptions. First complete any unaffected preparation, then explain what is missing and why it
+cannot wait for the final review. A pending amendment alone does not interrupt this pass.
+
 1. Identify the driving repo and approved documents. Read the delivery/verification sequence separately from the plan's reading order.
 2. Enumerate atomic changes privately, then aggregate into independently reviewable tasks. Keep abstractions with their first consumer and tests; split at useful behavioral milestones rather than directory boundaries. Aim for 2–5 tasks when that fits; larger features may have named runs with explicit dependencies. Do not force arbitrary counts.
 3. Give every task a goal, plan links, repository ownership, files, tests, acceptance, dependencies, and `Risk: normal` or `Risk: high — reason`. High means delicate invariant enforcement, data migration, security change, a new cross-cutting mechanism, or unresolved root cause; size alone is not risk.
-4. Write a verified brief using [the template](references/brief.md). For three or more tasks, delegate one `brief-writer` per task, within available concurrency. Give each the whole decomposition, its task and relevant plan sections. Writers own separate briefs and do not change code or shared application state. For fewer tasks, write the briefs directly.
-5. Reconcile their pointers and dependency assumptions. Put proposed amendments in `plan.html` using the review format below. Keep the approved design intact while proposals are pending; mark affected tasks and briefs provisional and link them to the decisions they need.
+4. Write every brief yourself in task dependency order using [the template](references/brief.md). Distinguish existing code from what preceding tasks will introduce: interfaces, helpers, ownership and validation assumptions. Keep product code and shared application state unchanged.
+5. Check all briefs together: code pointers must be verified, and each dependent task's assumptions must match its predecessors' planned outputs. Put any proposed amendments in `plan.html` using the review format below. Keep the approved design intact while proposals are pending; mark affected tasks and briefs provisional and link them to the decisions they need. Complete the full set before asking for amendment decisions.
 6. Classify any outstanding checks: blocks later implementation, blocks deployment only, or can be checked after the run. Evidence-dependent work ships only its evidence-collection stage until the evidence exists. Include the environment/build against which a check must run.
-7. Commit the working set when requested, stage exact files, and present the overview with links to the plan's amendment index. The user can approve amendments and the task breakdown in the same review. Implementation begins after approval, in a fresh session.
+7. Commit the working set when requested, stage exact files, and present the complete overview and briefs with links to the plan's amendment index when present. The user can review all proposals and approve them with the task breakdown in one pass. Implementation begins after approval, in a fresh session.
 
 ## Plan amendments for review
 
@@ -27,8 +38,11 @@ Increment the number for new proposals and keep IDs stable during review. Keep t
 enclosing section visible so Ctrl+F `PLAN-UPDATE` works in the rendered plan.
 
 Add a small linked index near the top of the plan, anchored as `plan-updates`, showing each
-proposal's number, short title and status. Preserve the existing plan layout. Omit the index and
-callouts when there are no proposals; do not add empty placeholders to a feature plan.
+proposal's number, short title and status. Preserve the existing plan layout. Create an index and
+callouts only for actual proposals; do not add empty placeholders to a feature plan.
+Zero proposed plan changes is a valid outcome: leave `plan.html` unchanged, omit the amendments
+section from `tasks.md`, and state “No plan changes proposed” in the handoff. Do not manufacture
+amendments to fill the review format.
 
 Each proposed callout follows this shape, with concrete content and real links:
 
@@ -43,8 +57,8 @@ Each proposed callout follows this shape, with concrete content and real links:
 ```
 
 `tasks.md` links to these callouts and identifies provisional tasks; the proposal explanation
-lives in the plan. Brief writers return findings to the coordinator, who owns plan edits and
-amendment IDs. Pending proposals are not implementation instructions.
+lives in the plan. Assign amendment IDs consistently across the plan, tasks and briefs as you
+prepare the working set. Pending proposals are not implementation instructions.
 
 After explicit acceptance, integrate the change into the plan and synchronize affected tasks
 and briefs, then mark the callout and index **ACCEPTED**. Shorten the accepted callout to the
@@ -82,4 +96,4 @@ Risk: normal / high — reason
 Order, cross-repo dependencies, required evidence, deployment prerequisites.
 ```
 
-Role setup and usage attribution: `specs/agent-tooling.md`. Attribute the brief-writing cost to the tasks stage; include it when evaluating downstream savings.
+Usage attribution: `specs/agent-tooling.md`. Attribute the brief-writing cost to the tasks stage; include it when evaluating downstream savings.

@@ -41,7 +41,10 @@ persisted documents must be resolved instead of inferred from another session's 
 `spec-tasks` produces a concise `tasks.md` overview and `briefs/task-N.md` for implementers.
 Tasks are review-sized behavioral increments with acceptance, ownership, dependencies and risk.
 Briefs verify symbols, reusable mechanisms, earlier-task effects, invariants and exact checks.
-From three tasks upward, independent brief writers may work in parallel on their own files.
+The same agent writes every brief in dependency order, then checks that dependent tasks' assumptions
+match their predecessors' planned outputs. It completes the full preparation pass autonomously,
+collecting proposals for one combined review. Only a major blocker that prevents a coherent working
+set even with explicit provisional assumptions warrants interruption; finish unaffected work first.
 
 Gaps found during grounding become visible `[PLAN-UPDATE-01] — PROPOSED` callouts beside affected
 passages in `plan.html`, with stable IDs and a small linked index near the top. Search `PLAN-UPDATE`
@@ -49,6 +52,8 @@ to find them. `tasks.md` links to the proposals; affected tasks and briefs remai
 decisions are pending. The approved design stays intact until acceptance, then the plan/tasks/briefs
 are synchronized and the callout is marked ACCEPTED. Amendments, task ordering and completeness
 can be approved in the same review before implementation. Named runs keep large features manageable.
+No plan amendments is also a valid result: leave the plan unchanged, omit amendment sections and
+report “No plan changes proposed” with the completed task breakdown and briefs.
 
 ## 4. Implement and review
 

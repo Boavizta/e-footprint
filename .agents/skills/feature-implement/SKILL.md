@@ -12,7 +12,7 @@ Supervise the approved tasks; delegate implementation and independent review. Re
 - Read the approved spec/plan (or linked bug diagnostics), tasks, constitution and relevant architecture pages. Check that acceptance and dependencies are usable without inventing product decisions. Keep a single working set in the driving repo.
 - Record starting commits and existing dirty files in every affected repo. Agree file ownership with parallel work; commit only exact owned paths. A shared checkout need not become globally clean.
 - Start committed `run-<label>-judgements.md` and `run-<label>-gates.md` (or unprefixed names for a single run). Record consequential decisions as they happen, not from memory at close-out.
-- Use configured roles: Sol/medium implementer; Astra/high hard implementer, reviewer and diagnostician; Sol/high brief writer. The supervisor is preferably Astra/high. Respect explicit user model choices; report actual configuration instead of claiming a role pin worked. See `specs/agent-tooling.md` for Claude equivalents and runtime dispatch.
+- Use configured roles: Sol/medium implementer; Astra/high hard implementer, reviewer and diagnostician. The supervisor is preferably Astra/high. Respect explicit user model choices; report actual configuration instead of claiming a role pin worked. See `specs/agent-tooling.md` for Claude equivalents and runtime dispatch.
 - Collect local usage and register this session/each subagent with the feature, owner, stage, run, role and task where its runtime exposes an ID. Missing telemetry never blocks implementation and is reported as missing.
 
 ## Per-task loop

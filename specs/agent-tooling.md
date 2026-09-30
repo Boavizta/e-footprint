@@ -34,7 +34,6 @@ expansion: shared instructions read the repository's small local reference at ru
 | Role | Codex | Effort | Claude Code equivalent |
 |---|---|---|---|
 | implementer | gpt-6-sol | medium | claude-opus-5-5[1m] |
-| brief-writer | gpt-6-sol | high | claude-opus-5-5[1m] |
 | implementer-hard | gpt-6-astra | high | claude-fable-5-1[1m] |
 | reviewer | gpt-6-astra | high | claude-fable-5-1[1m] |
 | diagnostician | gpt-6-astra | high | claude-fable-5-1[1m] |
@@ -53,11 +52,12 @@ The normal reviewer can apply approved fixes on resume; the shadow must remain r
 
 Use a fresh context for specification → plan → tasks and for each implementation run. This is a
 handoff convention, not authority to create new user-owned Codex tasks without a request.
-Read independent files in batches. Brief writers may run concurrently on separate output files;
-implementation remains ordered by task dependencies. Never share stateful test suites or mutable
+Read independent files in batches. Task preparation stays in one session: the same agent writes
+the overview and every brief in dependency order, then presents any plan proposals together.
+Implementation remains ordered by task dependencies. Never share stateful test suites or mutable
 application databases between parallel agents.
 
-Label delegated work `<feature>--impl-task-N`, `--review-task-N`, `--brief-task-N`,
+Label delegated work `<feature>--impl-task-N`, `--review-task-N`,
 `--diag-<bug>`, `--review-global` or `--gate-full`. In Claude place the label in the description;
 use plain unnamed subagents so role effort is not lost to teammate inheritance. Do not transfer
 that Claude-specific naming workaround to Codex. Stable session bindings below are preferred

@@ -33,7 +33,8 @@ Related work that belongs elsewhere.
 Hypotheses and how to settle them, or none.
 ```
 
-Keep to about one or two screens. A brief is a map, not a second plan; proposed design changes go
-back to the coordinator for tagged callouts in `plan.html`. The coordinator assigns amendment IDs.
+Keep to about one or two screens. Write briefs in task dependency order and check assumptions
+against preceding tasks' planned outputs. A brief is a map, not a second plan; record any proposed
+design change once as a tagged callout in `plan.html`, then continue preparing the full working set.
 Link any pending proposals the brief depends on and keep it provisional until they are resolved;
 do not present a proposed design as approved implementation instructions.
