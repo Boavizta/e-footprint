@@ -12,7 +12,7 @@ API and credit ratios identified separately. `Unknown` is distinct from zero.
 
 | # | Driving repo / feature · writer session | State · runs/tasks covered | Consequential findings: both / Sol missed / Astra missed | Noise: Astra / Sol | Initial cost ratios: API / credits | Initial active-time ratio |
 |---|---|---|---|---|---|---|
-| 1 | [e-footprint-interface / simplified-inputs](../../../../e-footprint-interface/specs/features/simplified-inputs/tasks.md) · `01a0f1e1-c424-73d2-836e-f3323fa15723` | OBSERVING · Run A complete, tasks 1–5 paired; Runs B–C pending | 5 / 0 / 1 | 0 / 0 | 0.169 / 0.165 | 1.109 |
+| 1 | [e-footprint-interface / simplified-inputs](../../../../e-footprint-interface/specs/features/simplified-inputs/tasks.md) · `01a0f282-6cc2-7352-81c4-93d8c71d40b1` | OBSERVING · Run A complete, tasks 1–5 paired; Run B task 6 paired, tasks 7–8 in progress; Run C pending | 6 / 1 / 2 | 0 / 0 | 0.160 / 0.156 | 1.025 |
 
 ## Supporting evidence
 
@@ -73,6 +73,29 @@ Price-card date: 2026-09-30. Measurements merge both repository ledgers and use 
 are excluded. Standard processing mode is assumed because logs do not expose it. Shadow amounts
 are experiment overhead. Current evidence covers the semantic rename, framework validation, domain catalog, persistence
 and atomic edits. Persistence adds one consequential Sol-only finding; browser authoring/consumption remain unobserved. The feature slot stays open for Runs B–C.
+
+</details>
+
+<details>
+<summary>e-footprint-interface / simplified-inputs — Run B</summary>
+
+Task 6: interface `0f6f64659d2bcaeff847d99dafd41dc9caeea347..71696aae1570b6d6f36333ee2577b3df53935dcd`.
+Both independent initial passes were read-only, FULL. Both found saved Sankey diagrams after the first
+losing their automatic initialization under the new mutation guard (P2). Astra alone found GET-based
+object deletion bypassing serialization (P1); Sol alone found export anchors retaining browser-native
+navigation during saves (P2). All three were accepted and corrected in `0481af00923dfeab5c93a901ccf6a103905803aa`.
+The deliberate saved-diagram read/write separation is recorded in
+[IMPL-DECISION-04](../../../../e-footprint-interface/specs/features/simplified-inputs/plan.html#impl-decision-04).
+No unsupported suggestions. Tasks 7–8 remain in progress.
+
+| Task | Reviewer · native session | Actual model / effort | Initial input / cache read / cache write / output | Active minutes | API-equivalent USD | Codex credits |
+|---|---|---|---|---|---|---|
+| 6 | Primary · `01a0f28d-0f0f-78e2-951a-ddfc2ff91e64` | gpt-6-astra / high | 459 / 2,146,560 / 146,340 / 9,530 | 4.408 | 4.456900 | 102.276250 |
+| 6 | Shadow · `01a0f28d-4b72-7610-af93-c322893c0e44` | gpt-6.1-sol / high | 1,191 / 1,519,222 / 135,128 / 9,498 | 3.580 | 0.587104 | 12.988505 |
+
+Price-card date: 2026-09-30. Measurements merge both repository ledgers and select only collector turn 0;
+primary fixes and global review are excluded. Standard processing mode is assumed because logs do not expose it.
+Shadow amounts are experiment overhead. The feature slot remains open for Run C.
 
 </details>
 
