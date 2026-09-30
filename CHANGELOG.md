@@ -8,11 +8,14 @@ and this project adheres to [Semantic Versioning](http://semver.org/)
 
 ### Changed
 
+- Ready-made modeling templates are now Examples: use `efootprint.modeling_examples`, `get_example`, and `load_example_system`; scenario IDs, data, and guide associations are preserved.
 - Feature implementation now proceeds through reviews autonomously, records consequential choices in the plan with `IMPL-DECISION` tags, and omits judgement journals, routine-fix inventories and successful-test reports.
 - Task decomposition runs autonomously in one session, writes briefs in dependency order, and presents any plan amendments together in `plan.html` using searchable `PLAN-UPDATE` tags. No plan amendments is a valid outcome.
 - Development workflow: verified task briefs, durable review handoffs, scoped agent roles, synchronized shared tooling, and local Claude/Codex usage accounting.
 
 ### Fixed
+- Conditional validation retains every dependent sharing a controller.
+- Input validation and transaction updates distinguish authored state from numerical equality: empty/zero transitions and timeseries builder settings are applied and validated even when numerical values compare equal.
 - System-comparison input diffs now use readable display units and rounding for scalar quantities.
 
 ## [V25.0.0]
