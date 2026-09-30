@@ -169,8 +169,8 @@ cache-write charge and use their own Fast multiplier. When processing mode is ab
 assume Standard and count those assumptions explicitly; the observed Codex logs do not expose
 this setting. Known unsupported regional conditions remain unpriced. API-equivalent reports omit
 provider-side tool charges and are not invoices or subscription quota measurements. Claude factors
-are imported from Pretext's dated rate card with that provenance
-recorded; refresh them before relying on a new model's estimate. No cost or carbon estimate is
+are imported and have not been independently verified against provider pricing; refresh them
+before relying on a new model's estimate. No cost or carbon estimate is
 stored as a raw fact. Environmental factors and uncertainty belong in a separately documented
 model over these measurements.
 
