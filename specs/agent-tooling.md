@@ -72,6 +72,11 @@ Routine fixes and successful test results are omitted from review artifacts and 
 checks still run, and unresolved failures remain visible. No separate judgement or gate journals.
 See `feature-implement` for the decision format and exceptional interruption conditions.
 
+The active shadow-review protocol is linked from `.agents/repository.md`. Its enrollment and
+evidence stay in the main library checkout, outside the synchronization manifest. Supervisors
+in both repositories use that single five-feature record. Only consequential comparison evidence
+and aggregate measurements belong there; it does not restore routine judgement or gate logs.
+
 ## Local usage collection
 
 ```sh

@@ -48,7 +48,7 @@
     ".agents/roles/reviewer.md": "7709eaf63b81b46b06ea4d2dad322ecd38cfbe12dde1f59442f4b1e23e9b9e1e",
     ".agents/skills/bug-fixes/SKILL.md": "16ae9d54e5ff26e2e172306ad9607736ebf7e816fe3bca926fbe9c77af29e190",
     ".agents/skills/feature-archive/SKILL.md": "547ce7350ca60528ca8189568929819cbb31d5f1a19f9352b6d96604c86063a7",
-    ".agents/skills/feature-implement/SKILL.md": "5bccbe5e83d18bf90955ed70d14abef18cc7bf29e3af7e8cdd43f7a1d446f26d",
+    ".agents/skills/feature-implement/SKILL.md": "01ba0072f899439059e3715f725a37f902d29f3a0768e395eb3ccb07a94219e9",
     ".agents/skills/spec-plan/SKILL.md": "30738b92d136ffbe80976353d0381a0d277062b9cd69b9781519f55167e3829d",
     ".agents/skills/spec-plan/assets/plan.html": "8926765164fdc2b85ba28bd5e468c2bab122a233f830d5119b463ab672d096ce",
     ".agents/skills/spec-specify/SKILL.md": "32e33667a29c190cc223503d0a34ad10847165ad22111b62305d3b4bb352cfec",
@@ -77,7 +77,7 @@
     "ai-usage/tests/test_usage.py": "7a8dc6db5a377ca457a0594a47e4e5672be866f63d0523222a3da36757011fab",
     "ai-usage/usage.py": "783c3154227a7f69c9c5ba8aa106c4e5f9d49153258816072b56fe4899199ffd",
     "scripts/sync_agent_tooling.py": "3fe7841551cd2a45b07e73c57066b8bd415d33b9665afbd2443673c6e8696b12",
-    "specs/agent-tooling.md": "91d246ea8e48ee33a430354db7514a930b79b5dd84b727e622e0a619038f119f",
-    "specs/workflow.md": "a909da4c699ffde8ce3274d5b00173a0733c7fb9e1e817f1a62a10c9713f3941"
+    "specs/agent-tooling.md": "4e5b604b8d11ffff6bd92bd3b38d3e02126b2635e1eceef37f2d91093cbb070f",
+    "specs/workflow.md": "0a0d05790812b99299d1b33131b1b876b2148f5010f1bc495d19e6d200017840"
   }
 }

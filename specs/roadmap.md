@@ -6,7 +6,12 @@ For **modeling-method questions** — where modeling something *well* needs scie
 
 ## Active streams
 
-None currently — the tutorial-and-documentation overhaul (cross-repo), SSOT metadata in classes, and the modeling templates public API all shipped and were archived. See `git log` for the shipped commits and the "Not yet wired" note below for one loose end.
+### Workflow improvements — shadow-review observation
+
+The [approved protocol](features/workflow-improvements/tasks.md) observes Astra/high and
+GPT-6.1 Sol/high over the next five distinct features across both repositories, then stops
+for a review-policy decision. [Progress and evidence](features/workflow-improvements/shadow-review.md)
+are maintained by the feature supervisors.
 
 ### Not yet wired: `mkdocs build --strict` in CI
 

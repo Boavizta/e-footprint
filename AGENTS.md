@@ -68,3 +68,4 @@ Publishing the Docker image to Docker Hub was judged premature (2026-07-01) and 
 
 Workflow roles, synchronization and private usage collection: [`specs/agent-tooling.md`](specs/agent-tooling.md).
 Repository-specific skill adaptations: [`.agents/repository.md`](.agents/repository.md).
+`feature-implement` also follows the active experiment linked there, using one shared five-feature observation record.

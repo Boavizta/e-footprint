@@ -19,11 +19,12 @@ does not create a human approval gate. User intervention is exceptional.
 - Keep consequential decisions in the plan using the format below. Keep task status and any unresolved prerequisites in `tasks.md`. Do not create judgement files, gate journals, or replacement bookkeeping files.
 - Use configured roles: GPT-6.1 Sol/medium implementer; Astra/high hard implementer and reviewer. The supervisor is preferably Astra/high. Respect explicit user model choices; report actual configuration instead of claiming a role pin worked. See `specs/agent-tooling.md` for Claude equivalents and runtime dispatch.
 - Collect local usage and register this session/each subagent with the feature, owner, stage, run, role and task where its runtime exposes an ID. Missing telemetry never blocks implementation and is reported as missing.
+- Check `.agents/repository.md` for an active workflow experiment and read its shared protocol before enrolling this feature. An ACTIVE approved protocol supplies experiment authorization; respect its feature count and stopping rule without asking again per run.
 
 ## Per-task loop
 
 1. Spawn `implementer` for exactly one task, or `implementer-hard` for a concrete high-risk task. Supply task/brief paths, repository roots, dependency changes, owned file boundaries and role instructions. Defer the consolidated changelog to the supervisor. Require implementation commits, a minimal handoff, and any consequential decisions or unresolved concerns.
-2. Spawn an independent `reviewer` over the explicit implementation range(s), not whatever `HEAD` happens to be after handoff commits. Give the same intent and handoff path, and authorize evident scoped corrections in the same assignment. The reviewer chooses its depth, applies routine fixes, and returns only material choices or unresolved concerns alongside the final commit range.
+2. Spawn an independent `reviewer` over the explicit implementation range(s), not whatever `HEAD` happens to be after handoff commits. Give the same intent and handoff path, and authorize evident scoped corrections in the same assignment. For an enrolled shadow comparison, use the read-only initial passes below before granting fix authority. The reviewer chooses its depth, applies routine fixes, and returns only material choices or unresolved concerns alongside the final commit range.
 3. Resolve the material choices yourself within the approved outcomes. Resume the reviewer for fixes needing that direction. Capture only consequential decisions in the plan; no routine-fix inventory or review-tier log. Continue without requesting user approval for ordinary implementation choices.
 4. Keep check execution with the implementer and reviewer. Use their completion status and outstanding concerns to decide whether the task is complete; resume the responsible agent for missing checks or in-scope failures. Keep unresolved failures or unavailable required checks explicit. Do not copy passing test results, command transcripts or resolved routine fixes into plans, handoffs, reports or logs.
 5. Update task status and any actual blockers; commit exact owned files and continue. Keep user updates focused on meaningful progress or exceptions, with no per-task success checklist. Add handoff leads only for material cross-task concerns.
@@ -70,13 +71,21 @@ routine blockers instead of turning them into a history of successful checks.
 - Run a fresh `reviewer` on both repositories' cumulative feature/run ranges, with the same authority for evident scoped fixes. Assign it final validation, including cross-repository integration and any checks needed after its corrections. Reuse completed checks that still cover the final changes; additional runs need a relevant change, failure or coverage gap. Start with any material handoff leads and diff statistics; resolve consequential findings without a routine user checkpoint.
 - Write a consolidated `CHANGELOG.md` entry for the delivered behavior in each affected repo. Resolve outstanding validation through the responsible agent before closing the run. Surface only unresolved failures or unavailable required checks, with enough context to act.
 - Collect usage again and give a compact feature/run summary, separating API-equivalent estimates from Codex credits and identifying material coverage gaps or model deviations. Detailed breakdowns remain available through the usage tool. The closing snapshot is not an exact final invoice.
+- For an enrolled feature, update its shared experiment row and evidence across runs. Close its slot only under the protocol's feature-completion rule; the last closing supervisor stops the experiment and writes the recommendation. Keep routine experiment progress out of the user summary.
 - Commit the final working set. Report the delivered outcome, link to the plan's decision index when present, and list only outstanding blockers or parked work. Omit routine fixes, successful test results and a duplicate decision narrative. Suggest explicit `feature-archive` after shipping and resolution of outstanding work. Do not merge, deploy, archive, or create a new user task merely because the loop ended.
 
-## Optional bounded shadow-review experiment
+## Bounded shadow-review experiment
 
-Only run when the user explicitly requests the experiment or approves its feature-local protocol. Compare Astra/high with GPT-6.1 Sol/high on identical immutable task ranges, starting independently with the same brief and no access to the other's findings. Shadow only the initial task review, not fixes or global review. Limit to five named runs, then stop for a decision; never make the second review permanent by accident.
+Run only within the approved protocol linked from `.agents/repository.md`, or another experiment
+explicitly requested by the user. The shared protocol owns enrollment and the stopping rule;
+never start a separate counter in the observed feature or replace a closed sample silently.
 
-For this experiment, keep both initial reviews read-only until their findings are captured;
-then let the primary reviewer apply the scoped fixes. This preserves the common comparison state.
+For enrolled tasks, compare Astra/high with GPT-6.1 Sol/high on identical immutable ranges and
+the same brief, using independent contexts without the other's findings. Both initial passes
+are read-only, including no stateful suites or shared-cache writes. Capture both results before
+resuming the primary reviewer with supported corrections from either pass. Global review stays
+on Astra and is not shadowed. A failed shadow does not block normal review.
 
-The shadow is read-only and may not run stateful suites or shared-cache writers. A failed shadow does not block normal review. Record reviewer IDs, tiers, matched findings, approved material misses, useful shadow-only findings, noise, durations and INITIAL-review cost (not the primary reviewer's later fix work). Act on a genuine shadow-only defect through normal triage. Book experiment cost separately. Use evidence about misses and completed-task cost to decide whether to keep, split or change the reviewer role.
+Record the protocol's compact evidence in its shared observation file. Compare initial review
+turns only, separate shadow overhead, and keep missing coverage explicit. Consequential product
+decisions still belong in the plan; routine fixes and passing checks need no experiment log.

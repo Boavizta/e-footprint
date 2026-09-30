@@ -81,8 +81,10 @@ Finish with global review and the consolidated changelog for delivered behavior.
 reviewer owns final checks, including cross-repository integration, reusing completed checks that
 still cover the final changes. Unresolved failures and unavailable required checks remain explicit; never treat
 them as success. The user receives the delivered outcome, any consequential decisions in the plan,
-outstanding exceptions and a compact usage summary. A five-run shadow-review comparison is opt-in
-and ends in a decision; it is not a permanent second reviewer.
+outstanding exceptions and a compact usage summary. The approved shadow-review experiment is
+linked from `.agents/repository.md`: one shared record covers five distinct features across both
+repositories and all their implementation runs. It stops for a decision after those features
+close; it does not create a permanent second reviewer.
 
 ## 5. Archive
 
