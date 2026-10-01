@@ -11,8 +11,3 @@ This file is local to this repository; the synchronization script never overwrit
 - Documentation promotion: owning pages under `specs/architecture/`, conventions, testing and published documentation. Keep `CHANGELOG.md` and the roadmap accurate.
 
 Workflow/tooling instructions and commands: `specs/agent-tooling.md`.
-
-## Active workflow experiment
-
-At `feature-implement` setup, read the [five-feature shadow-review protocol](../specs/features/workflow-improvements/tasks.md).
-Use the record in this repository's main checkout, including when implementing from a worktree.

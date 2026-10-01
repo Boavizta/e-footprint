@@ -36,9 +36,8 @@ expansion: shared instructions read the repository's small local reference at ru
 | implementer-easy | gpt-6-luna | high | claude-opus-5-5[1m] (medium) |
 | implementer | gpt-6.1-sol | medium | claude-opus-5-5[1m] |
 | implementer-hard | gpt-6-astra | high | claude-fable-5-1[1m] |
-| reviewer | gpt-6-astra | high | claude-fable-5-1[1m] |
+| reviewer | gpt-6.1-sol | high | claude-fable-5-1[1m] |
 | diagnostician | gpt-6.1-sol | high | claude-fable-5-1[1m] |
-| reviewer-shadow (optional experiment) | gpt-6.1-sol | high | claude-opus-5-5[1m] |
 
 The supervisor/planning session preferably uses Astra/high (Fable/high in Claude). These are
 starting configurations, not equivalent capability or effort scales proven across providers.
@@ -56,7 +55,7 @@ Portable role instructions live in `.agents/roles/`; `.codex/agents/*.toml` and
 spawn tool, pass the configured model/effort explicitly and the role instructions in the brief.
 If a runtime cannot apply a requested setting, report it and use the user's permitted alternative;
 never claim an unobserved model pin worked. A role description is not a tool permission boundary.
-The normal reviewer can apply approved fixes on resume; the shadow must remain read-only.
+The same configured reviewer role handles per-task and global reviews and can apply approved fixes.
 
 Use a fresh context for specification → plan → tasks and for each implementation run. This is a
 handoff convention, not authority to create new user-owned Codex tasks without a request.
@@ -80,10 +79,8 @@ Routine fixes and successful test results are omitted from review artifacts and 
 checks still run, and unresolved failures remain visible. No separate judgement or gate journals.
 See `feature-implement` for the decision format and exceptional interruption conditions.
 
-The active shadow-review protocol is linked from `.agents/repository.md`. Its enrollment and
-evidence stay in the main library checkout, outside the synchronization manifest. Supervisors
-in both repositories use that single five-feature record. Only consequential comparison evidence
-and aggregate measurements belong there; it does not restore routine judgement or gate logs.
+The retired Astra/Sol shadow-review comparison and its early-stop decision are recorded in the
+library's `specs/features/workflow-improvements/shadow-review.md`.
 
 ## Local usage collection
 

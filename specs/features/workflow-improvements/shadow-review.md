@@ -1,7 +1,8 @@
 # Shadow-review observations
 
-Protocol and activation state: [`tasks.md`](tasks.md). Primary: GPT-6 Astra/high.
-Shadow: GPT-6.1 Sol/high. Five distinct feature slots across both repositories.
+Historical protocol and closure: [`tasks.md`](tasks.md). During the trial, the primary was
+GPT-6 Astra/high and the shadow was GPT-6.1 Sol/high. The user ended the trial on 2026-10-01
+after one completed feature, before the planned five-feature sample.
 
 ## Features
 
@@ -161,12 +162,19 @@ Price-card date: 2026-09-30. Measurements use only collector turn 0, excluding p
 global review; shadow cost is experiment overhead. Standard processing mode is assumed because logs
 do not expose it. Across all ten paired tasks, Sol's initial reviews used 0.155× the API-equivalent
 amount, 0.151× Codex credits and 0.882× active time of Astra's; finding coverage includes
-four Sol misses, three Astra misses and shared later global misses. The feature's approved runs are
-complete, so its experiment slot closes; the five-feature protocol remains ACTIVE.
+four Sol misses, three Astra misses and shared later global misses. The feature's approved runs and
+its experiment slot are complete.
 
 </details>
 
-## Recommendation
+## Decision
 
-Written once all five feature rows close, following Task 2. Until the user decides, Astra
-remains the primary reviewer and the experiment does not enroll additional features.
+On 2026-10-01, the user ended the experiment after this one completed feature and selected
+GPT-6.1 Sol/high for both per-task and global Codex reviews. The ten paired initial task reviews
+found 14 consequential issues in both passes, four missed by Sol and three missed by Astra.
+Neither reviewer made unsupported suggestions. Sol used 0.155× the API-equivalent amount,
+0.151× Codex credits and 0.882× active time of Astra on those paired initial passes.
+
+Sol did not perform correction turns or global review in this trial. End-to-end quality and
+global-review cost under Sol therefore remain unmeasured. This is an explicit user policy
+decision based on a smaller sample than the planned five features, not a five-feature finding.

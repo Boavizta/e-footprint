@@ -1,6 +1,10 @@
 # Workflow improvements — shadow-review experiment
 
-**Status: ACTIVE** · Authorized 2026-09-30.
+**Status: CLOSED** · Authorized 2026-09-30; ended early by user decision 2026-10-01.
+
+The original five-feature protocol below is retained as a historical record. Its enrollment
+and paired-review instructions are inactive. The user selected GPT-6.1 Sol/high for all Codex
+review roles, including global review, after one completed feature.
 
 Observe the next five distinct features to decide whether GPT-6.1 Sol/high can take over
 ordinary per-task reviews from GPT-6 Astra/high. This is a bounded workflow investigation;
@@ -8,8 +12,8 @@ the observation itself needs no product implementation or additional SDD stages.
 
 ## Task 1 — Observe five features
 
-**Status: In progress.** Enrollment, progress and evidence live in
-[`shadow-review.md`](shadow-review.md). Its feature rows are the single source of the count.
+**Status: Stopped after one completed feature at the user's request.** Enrollment, progress
+and evidence are preserved in [`shadow-review.md`](shadow-review.md).
 
 ### Enrollment and stopping
 
@@ -87,8 +91,8 @@ without shadowing and surface that coverage gap; do not start an independent cou
 
 ## Task 2 — Recommend a review policy
 
-**Status: Pending Task 1.** The supervisor closing the fifth feature writes the recommendation
-in [`shadow-review.md`](shadow-review.md#recommendation) and presents it once to the user.
+**Status: Complete by user decision 2026-10-01.** The comparison, evidence limits and final
+policy are recorded in [`shadow-review.md`](shadow-review.md#decision).
 
 Compare findings by severity and risk surface, plus paired initial-review time, token and cost
 ratios. Show per-feature results so a large feature does not silently outweigh the others.
@@ -104,6 +108,6 @@ Recommend one of:
 - **Retain Astra** when consequential misses, noise or insufficient coverage leave the switch
   unsupported. Sparse evidence is not a reason to extend the experiment automatically.
 
-Global review remains on Astra in all three options. The user decides the lasting policy.
-After that decision, apply the agreed role/routing changes, synchronize the shared tooling,
-remove the active-experiment pointers, and mark this protocol `CLOSED`. Archive only when asked.
+The original options above presumed global review would stay on Astra. The user's final decision
+also moves global Codex review to GPT-6.1 Sol/high. Shared tooling is synchronized and the active
+experiment pointers have been removed. Archive only when asked.

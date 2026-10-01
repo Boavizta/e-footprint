@@ -6,13 +6,6 @@ For **modeling-method questions** — where modeling something *well* needs scie
 
 ## Active streams
 
-### Workflow improvements — shadow-review observation
-
-The [approved protocol](features/workflow-improvements/tasks.md) observes Astra/high and
-GPT-6.1 Sol/high over the next five distinct features across both repositories, then stops
-for a review-policy decision. [Progress and evidence](features/workflow-improvements/shadow-review.md)
-are maintained by the feature supervisors.
-
 ### Not yet wired: `mkdocs build --strict` in CI
 
 SSOT metadata content (`param_descriptions`, docstrings, `tests/test_descriptions.py`) shipped, and `mkdocs build --strict` runs clean locally (verified 2026-07-01) — but the follow-up step, wiring it into `.github/workflows/ci.yml`, was never done. Just add the step; no doc fixes needed first.
@@ -60,6 +53,7 @@ Prerequisites: measure the actual RAM win before committing; introduce the optio
 
 ## Stable / not in flight
 
+- The [Astra/Sol shadow-review experiment](features/workflow-improvements/shadow-review.md) ended early by user decision; Codex task and global reviews use GPT-6.1 Sol/high.
 - Core modeling primitives (`Server`, `Storage`, `Network`, `UsageJourney`, `Job`, `EdgeDevice`, etc.).
 - JSON serialization layer.
 - Explainability / dependency graph layer.
