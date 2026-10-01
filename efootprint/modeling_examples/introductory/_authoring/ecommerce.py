@@ -98,20 +98,27 @@ def build_system() -> System:
         "Check out", jobs=[submit_order, write_order])
     journey = UsageJourney("Shopping journey", uj_steps=[browse_step, cart_step, checkout_step])
 
-    usage_pattern = UsagePattern(
-        "Daily shoppers", [journey], [Device.laptop()], Network.wifi_network(),
+    shopper_volume = {
+        "start_date": "2025-01-01",
+        "modeling_duration_value": 3,
+        "modeling_duration_unit": "year",
+        "initial_volume": 1800000,
+        "initial_volume_timespan": "year",
+        "net_growth_rate_in_percentage": 8,
+        "net_growth_rate_timespan": "year",
+    }
+    laptop = Device.laptop()
+    wifi = Network.wifi_network()
+    france_shoppers = UsagePattern(
+        "Daily shoppers in France", [journey], [laptop], wifi,
         Countries.FRANCE(),
-        ExplainableHourlyQuantitiesFromFormInputs({
-            "start_date": "2025-01-01",
-            "modeling_duration_value": 3,
-            "modeling_duration_unit": "year",
-            "initial_volume": 1800000,
-            "initial_volume_timespan": "year",
-            "net_growth_rate_in_percentage": 8,
-            "net_growth_rate_timespan": "year",
-        }, source=Sources.USER_DATA))
+        ExplainableHourlyQuantitiesFromFormInputs(shopper_volume, source=Sources.USER_DATA))
+    us_shoppers = UsagePattern(
+        "Daily shoppers in the US", [journey], [laptop], wifi,
+        Countries.UNITED_STATES(),
+        ExplainableHourlyQuantitiesFromFormInputs(shopper_volume, source=Sources.USER_DATA))
 
-    return System("E-commerce web and database system", [usage_pattern], edge_usage_patterns=[])
+    return System("E-commerce web and database system", [france_shoppers, us_shoppers], edge_usage_patterns=[])
 
 
 if __name__ == "__main__":

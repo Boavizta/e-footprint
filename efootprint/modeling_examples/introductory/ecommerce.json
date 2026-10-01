@@ -37,15 +37,16 @@
             "name": "E-commerce web and database system",
             "id": "E-commerce-web-and-database-system",
             "usage_patterns": [
-                "Daily-shoppers"
+                "Daily-shoppers-in-France",
+                "Daily-shoppers-in-the-US"
             ],
             "edge_usage_patterns": []
         }
     },
     "UsagePattern": {
-        "Daily-shoppers": {
-            "name": "Daily shoppers",
-            "id": "Daily-shoppers",
+        "Daily-shoppers-in-France": {
+            "name": "Daily shoppers in France",
+            "id": "Daily-shoppers-in-France",
             "hourly_occurrences": {
                 "form_inputs": {
                     "start_date": "2025-01-01",
@@ -72,6 +73,36 @@
             ],
             "network": "Default-wifi-network",
             "country": "France"
+        },
+        "Daily-shoppers-in-the-US": {
+            "name": "Daily shoppers in the US",
+            "id": "Daily-shoppers-in-the-US",
+            "hourly_occurrences": {
+                "form_inputs": {
+                    "start_date": "2025-01-01",
+                    "modeling_duration_value": 3,
+                    "modeling_duration_unit": "year",
+                    "initial_volume": 1800000,
+                    "initial_volume_timespan": "year",
+                    "net_growth_rate_in_percentage": 8,
+                    "net_growth_rate_timespan": "year"
+                },
+                "label": "Hourly nb of pattern occurrences",
+                "source": "user_data"
+            },
+            "usage_journeys": {
+                "Shopping-journey": {
+                    "value": 1.0,
+                    "unit": "dimensionless",
+                    "label": "Journeys per pattern occurrence",
+                    "source": "hypothesis"
+                }
+            },
+            "devices": [
+                "Default-laptop"
+            ],
+            "network": "Default-wifi-network",
+            "country": "United-States"
         }
     },
     "Device": {
@@ -130,6 +161,23 @@
             },
             "timezone": {
                 "zone": "Europe/Paris",
+                "label": "Timezone",
+                "source": "user_data"
+            }
+        },
+        "United-States": {
+            "name": "United States",
+            "id": "United-States",
+            "short_name": "USA",
+            "average_carbon_intensity": {
+                "value": 383.0,
+                "unit": "gram / kilowatt_hour",
+                "label": "Average carbon intensity",
+                "source": "Our-world-in-data-28202429",
+                "confidence": "high"
+            },
+            "timezone": {
+                "zone": "America/New_York",
                 "label": "Timezone",
                 "source": "user_data"
             }

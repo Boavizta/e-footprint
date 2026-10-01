@@ -39,6 +39,7 @@ and this project adheres to [Semantic Versioning](http://semver.org/)
 - A library-native `performance/memory` laboratory profiles multi-journey and shared-child models without Django, with deterministic checks proving web caches grow with actual journey paths and edge caches with distinct pattern/need pairs rather than Cartesian combinations.
 
 ### Changed
+- The introductory e-commerce template now has equal-volume shopper patterns in France and the US, making country electricity-intensity differences visible in impact breakdowns.
 - Traversal, comparison, explainability, and impact attribution retain journey identity when lower-level steps, functions, jobs, or needs are shared. Membership and weight changes remain visible, and attribution and Sankey totals stay conservative.
 
 ### Fixed
