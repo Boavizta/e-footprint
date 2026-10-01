@@ -43,6 +43,7 @@ and this project adheres to [Semantic Versioning](http://semver.org/)
 - Traversal, comparison, explainability, and impact attribution retain journey identity when lower-level steps, functions, jobs, or needs are shared. Membership and weight changes remain visible, and attribution and Sankey totals stay conservative.
 
 ### Fixed
+- The legacy V23 migration smoke test skips when its local, gitignored big-system fixture is absent or has been regenerated at a newer schema version.
 - Web journey relationships reject non-finite weights, and aggregate edge results no longer depend on edge-usage-journey order.
 - V24 migration marks renamed web occurrence and edge deployment-start series with the correct `occurrence` unit, keeping migrated models valid through round trips and interface validation.
 
