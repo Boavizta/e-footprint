@@ -6,7 +6,7 @@ This document captures the communication strategy agreed by the three actors inv
 - **Michalina Chwastyk** — Boavizta volunteer responsible for communication and member of the board of directors. Represents the non-profit that hosts e-footprint in its open-source ecosystem.
 - **Clémence Knaébel** — Publicis Sapient sustainability director. Develops a consulting offer around e-footprint with Vincent.
 
-It is the source of truth for all subsequent communication work. Editorial pacing lives in [`editorial-calendar.csv`](./editorial-calendar.csv); piece drafts live in `articles/` and `linkedin/posts/` here, or in the interface repo's `communications/` folder when the subject is an interface feature.
+It is the source of truth for all subsequent communication work. Editorial pacing lives in [`editorial-calendar.csv`](./editorial-calendar.csv); article drafts live here or in the interface repo according to their subject. All LinkedIn posts and videos are authored in the interface repo's `communications/` folder.
 
 ---
 

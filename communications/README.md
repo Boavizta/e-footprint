@@ -11,22 +11,22 @@ This folder is the brand-level home for e-footprint communications:
   - `messaging-one-pager.md` — the shared narrative in one page (*what we say*: thesis, three differentiating messages, ready-to-use phrasings). All downstream pieces cite it rather than restate it.
   - `pitch-deck-outline.md` — *(planned)* outline for the shared 10-slide deck.
 - **Editorial calendar** — `editorial-calendar.csv`. Single pipeline view across both repos.
-- **Tool/method content** — articles and LinkedIn posts whose subject is the tool, the method, or the underlying modeling concepts. Lives in `articles/` and `linkedin/posts/`.
+- **Tool/method articles** — articles whose subject is the tool, the method, or the underlying modeling concepts. Lives in `articles/`.
 - **Conference tracker** — `conferences/submissions.md`. CFP targets and submission status.
 
-Interface-feature content (UI announcements, release notes, screenshots-and-walkthroughs articles) lives in the interface repo at `e-footprint-interface/communications/`. The editorial calendar here references both.
+All LinkedIn post and video authoring, including tool and method highlights, lives in the interface repo at `e-footprint-interface/communications/`. Interface-feature articles and release notes live there too. The editorial calendar here references both repositories.
 
 ## Where things go
 
 | Subject of the piece | Repo |
 |---|---|
-| Tool, method, modeling concepts (web vs edge, user journeys, simulation) | `e-footprint/communications/` |
+| Tool and method articles (web vs edge, user journeys, simulation) | `e-footprint/communications/` |
 | Brand, strategy, messaging | `e-footprint/communications/` |
 | Editorial calendar (single source) | `e-footprint/communications/editorial-calendar.csv` |
-| Interface UI features, walkthroughs, release notes | `e-footprint-interface/communications/` |
+| All LinkedIn posts and videos; interface UI features, walkthroughs, release notes | `e-footprint-interface/communications/` |
 | PS-branded client case studies | **Not in either repo.** PS-owned, lives in PS systems. |
 
-Default rule for ambiguous pieces: wherever the dominant subject lives.
+For ambiguous articles, use the repository where the dominant subject lives. LinkedIn posts and videos always belong in the interface repository.
 
 ## Channels referenced
 

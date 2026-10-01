@@ -25,4 +25,4 @@ After validation, draft a concise post that tells the supplied story and explain
 
 Read the latest draft before every revision, especially after the author edits it. Preserve wording and structure they explicitly favor, and change only what their feedback calls for. Treat maintainer experience as their account; ground technical mechanisms and numerical claims in the project. Never claim a feature is the first or only one of its kind without support.
 
-Save the video outline and post in the owning repository's `communications/linkedin/` area when working in a checkout. Interface feature pieces belong in the interface repository; cross-repo modeling facts may need the companion library. Follow a specified worktree. Recording, editing, and publication are separate tasks.
+Save video outlines and posts in the interface repository's `communications/linkedin/` area, the single LinkedIn authoring home. Cross-repo modeling facts may need the companion library. Follow a specified worktree. Recording, editing, and publication are separate tasks.
