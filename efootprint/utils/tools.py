@@ -1,10 +1,40 @@
 from time import perf_counter
 
+from dataclasses import dataclass
 from functools import lru_cache
 from inspect import signature
-from typing import get_type_hints
+from typing import Annotated, get_args, get_origin, get_type_hints
+
+from pint import Unit
 
 from efootprint.logger import logger
+
+
+@dataclass(frozen=True)
+class InputUnit:
+    """Expected unit for a quantity input without a quantity class default."""
+    unit: Unit
+
+
+def get_expected_input_unit(cls, param_name):
+    """Resolve a quantity default's unit, then quantity-member annotation metadata."""
+    from efootprint.abstract_modeling_classes.explainable_quantity import ExplainableQuantity
+
+    default_value = cls.default_values.get(param_name)
+    if isinstance(default_value, ExplainableQuantity):
+        return default_value.value.units
+
+    annotation = get_type_hints(cls.__init__, include_extras=True).get(param_name)
+    members = (annotation,) if get_origin(annotation) is Annotated else get_args(annotation)
+    for member in members:
+        if get_origin(member) is Annotated:
+            quantity_type, *metadata = get_args(member)
+            if isinstance(quantity_type, type) and issubclass(quantity_type, ExplainableQuantity):
+                for item in metadata:
+                    if isinstance(item, InputUnit):
+                        return item.unit
+    raise TypeError(f"No expected unit declared for {cls.__name__}.{param_name}: "
+                    "provide a quantity default or InputUnit annotation metadata")
 
 
 @lru_cache(maxsize=None)

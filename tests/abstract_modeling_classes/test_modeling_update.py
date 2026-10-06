@@ -1,10 +1,13 @@
 import unittest
-from unittest.mock import MagicMock, PropertyMock
+from typing import Annotated, get_args, get_type_hints
+from unittest.mock import MagicMock, PropertyMock, patch
 
 from efootprint.abstract_modeling_classes.contextual_modeling_object_attribute import ContextualModelingObjectAttribute
 from efootprint.abstract_modeling_classes.empty_explainable_object import EmptyExplainableObject
 from efootprint.abstract_modeling_classes.explainable_hourly_quantities import ExplainableHourlyQuantities
+from efootprint.abstract_modeling_classes.explainable_quantity import ExplainableQuantity
 from efootprint.abstract_modeling_classes.list_linked_to_modeling_obj import ListLinkedToModelingObj
+from efootprint.abstract_modeling_classes.modeling_object import ModelingObject
 from efootprint.abstract_modeling_classes.modeling_update import ModelingUpdate
 from efootprint.abstract_modeling_classes.object_linked_to_modeling_obj import ObjectLinkedToModelingObj
 from efootprint.abstract_modeling_classes.reactive_core import ReactiveSlot
@@ -12,17 +15,108 @@ from efootprint.abstract_modeling_classes.source_objects import SourceObject, So
 from efootprint.api_utils.json_to_system import json_to_system
 from efootprint.api_utils.system_to_json import system_to_json
 from efootprint.builders.timeseries import ExplainableHourlyQuantitiesFromFormInputs
+from efootprint.builders.hardware.boavizta_cloud_server import BoaviztaCloudServer
+from efootprint.builders.hardware.boavizta_server_from_config import BoaviztaServerFromConfig
 from efootprint.constants.countries import Countries
 from efootprint.constants.units import u
 from efootprint.core.hardware.server import Server
-from efootprint.core.hardware.server_base import ServerTypes
+from efootprint.core.hardware.server_base import ServerBase, ServerTypes
+from efootprint.core.hardware.gpu_server import GPUServer
 from efootprint.core.hardware.storage import Storage
 from efootprint.core.hardware.network import Network
 from efootprint.core.usage.usage_journey import UsageJourney
 from efootprint.core.usage.usage_pattern import UsagePattern
+from efootprint.utils.tools import InputUnit, get_expected_input_unit, get_init_signature_params
+
+
+class OptionalDuration(ModelingObject):
+    def __init__(self, name: str, duration: Annotated[ExplainableQuantity, InputUnit(u.hour)] | EmptyExplainableObject):
+        super().__init__(name)
+        self.duration = duration
+
+
+class DefaultUnitOptionalDuration(OptionalDuration):
+    default_values = {"duration": SourceValue(1 * u.watt)}
+
+
+class UndeclaredOptionalQuantity(ModelingObject):
+    default_values = {"quantity": SourceValue(1 * u.watt)}
+
+    def __init__(self, name: str, quantity: ExplainableQuantity | EmptyExplainableObject):
+        super().__init__(name)
+        self.quantity = quantity
+
+
+class SignedOptionalDuration(OptionalDuration):
+    @classmethod
+    def attributes_that_can_have_negative_values(cls):
+        return ["duration"]
 
 
 class TestModelingUpdate(unittest.TestCase):
+    def test_optional_quantity_updates_validate_units_and_sign(self):
+        """Compatible units and empty edits work; invalid edits retain the attached value."""
+        model = OptionalDuration("Optional duration", EmptyExplainableObject())
+        for replacement in (SourceValue(2 * u.day), SourceValue(0 * u.minute), EmptyExplainableObject()):
+            ModelingUpdate([[model.duration, replacement]])
+            self.assertIs(model.duration, replacement)
+        for replacement, error in ((SourceValue(1 * u.watt), "not homogeneous"),
+                                   (SourceValue(-1 * u.hour), "negative")):
+            original = model.duration
+            with self.subTest(value=replacement), self.assertRaisesRegex(ValueError, error):
+                ModelingUpdate([[original, replacement]])
+            self.assertIs(model.duration, original)
+
+        signed = SignedOptionalDuration("Signed duration", EmptyExplainableObject())
+        negative = SourceValue(-1 * u.hour)
+        ModelingUpdate([[signed.duration, negative]])
+        self.assertIs(signed.duration, negative)
+
+    def test_optional_quantity_default_unit_takes_priority_over_metadata(self):
+        model = DefaultUnitOptionalDuration("Default unit", EmptyExplainableObject())
+        self.assertEqual(get_expected_input_unit(type(model), "duration"), u.watt)
+        value = SourceValue(1 * u.kilowatt)
+        ModelingUpdate([[model.duration, value]])
+        self.assertIs(model.duration, value)
+        with self.assertRaisesRegex(ValueError, "not homogeneous"):
+            ModelingUpdate([[value, SourceValue(1 * u.hour)]])
+        self.assertIs(model.duration, value)
+
+    def test_missing_optional_unit_rejects_quantity_and_empty_updates(self):
+        model = UndeclaredOptionalQuantity("Undeclared unit", SourceValue(1 * u.watt))
+        for defaults in ({}, {"quantity": EmptyExplainableObject()}):
+            with patch.object(UndeclaredOptionalQuantity, "default_values", defaults):
+                for replacement in (SourceValue(2 * u.watt), EmptyExplainableObject()):
+                    original = model.quantity
+                    with self.subTest(defaults=defaults, value=replacement):
+                        with self.assertRaisesRegex(TypeError, "UndeclaredOptionalQuantity.quantity"):
+                            ModelingUpdate([[original, replacement]])
+                    self.assertIs(model.quantity, original)
+
+    def test_all_count_constructors_expose_metadata_and_plain_runtime_types(self):
+        for cls in (ServerBase, Server, GPUServer, Storage, BoaviztaCloudServer, BoaviztaServerFromConfig):
+            with self.subTest(cls=cls.__name__):
+                self.assertEqual(get_expected_input_unit(cls, "fixed_nb_of_instances"), u.concurrent)
+                runtime_members = get_args(get_init_signature_params(cls)["fixed_nb_of_instances"].annotation)
+                self.assertIn(ExplainableQuantity, runtime_members)
+                self.assertIn(EmptyExplainableObject, runtime_members)
+                declared = get_type_hints(cls.__init__, include_extras=True)["fixed_nb_of_instances"]
+                self.assertIn(Annotated[ExplainableQuantity, InputUnit(u.concurrent)], get_args(declared))
+                if cls in (BoaviztaCloudServer, BoaviztaServerFromConfig):
+                    self.assertIn(type(None), runtime_members)
+
+    def test_count_updates_reject_incompatible_units_and_negative_values(self):
+        for model in (Storage.from_defaults("Count storage"),
+                      Server.from_defaults("Count server", storage=Storage.from_defaults("Server storage"),
+                                           server_type=ServerTypes.on_premise())):
+            for replacement, error in ((SourceValue(1 * u.watt), "not homogeneous"),
+                                       (SourceValue(-1 * u.concurrent), "negative")):
+                original = model.fixed_nb_of_instances
+                with self.subTest(cls=type(model).__name__, value=replacement):
+                    with self.assertRaisesRegex(ValueError, error):
+                        ModelingUpdate([[original, replacement]])
+                self.assertIs(model.fixed_nb_of_instances, original)
+
     def test_conditional_empty_choice_rejects_zero_and_accepts_reconciled_batch(self):
         """Test zero is invalid for an empty-only count, through dependent and controller edits."""
         server = Server.from_defaults("Conditional count", storage=Storage.from_defaults("Conditional storage"))

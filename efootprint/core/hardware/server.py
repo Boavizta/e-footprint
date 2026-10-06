@@ -1,5 +1,6 @@
 from efootprint.abstract_modeling_classes.explainable_object_base_class import ExplainableObject
 from efootprint.abstract_modeling_classes.explainable_quantity import ExplainableQuantity
+from efootprint.core.hardware.hardware_base import InstanceCountQuantity
 from efootprint.abstract_modeling_classes.empty_explainable_object import EmptyExplainableObject
 from efootprint.constants.sources import Sources
 from efootprint.abstract_modeling_classes.source_objects import SourceValue
@@ -57,7 +58,7 @@ class Server(ServerBase):
                  average_carbon_intensity: ExplainableQuantity = None,
                  utilization_rate: ExplainableQuantity = None, base_ram_consumption: ExplainableQuantity = None,
                  base_compute_consumption: ExplainableQuantity = None, storage: Storage = None,
-                 fixed_nb_of_instances: ExplainableQuantity | EmptyExplainableObject = None):
+                 fixed_nb_of_instances: InstanceCountQuantity | EmptyExplainableObject = None):
         super().__init__(
             name, server_type, carbon_footprint_manufacturing, power, lifespan, idle_power, ram, compute,
             power_usage_effectiveness, average_carbon_intensity, utilization_rate, base_ram_consumption,

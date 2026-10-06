@@ -21,7 +21,7 @@ from efootprint.abstract_modeling_classes.reactive_core import (
 from efootprint.utils.graph_tools import WIDTH, HEIGHT, add_unique_id_to_mynetwork
 from efootprint.utils.object_relationships_graphs import build_object_relationships_graph, \
     USAGE_PATTERN_VIEW_CLASSES_TO_IGNORE
-from efootprint.utils.tools import get_init_signature_params
+from efootprint.utils.tools import get_expected_input_unit, get_init_signature_params
 from efootprint.constants.units import u
 
 if TYPE_CHECKING:
@@ -375,7 +375,18 @@ class ModelingObject(metaclass=ABCAfterInitMeta):
         from efootprint.abstract_modeling_classes.explainable_recurrent_quantities import \
             ExplainableRecurrentQuantities
 
-        if not isinstance(annotation, type):
+        expected_unit = None
+        if get_origin(annotation) in (Union, UnionType):
+            members = get_args(annotation)
+            if (EmptyExplainableObject not in members
+                    or not any(isinstance(member, type) and issubclass(member, ExplainableQuantity)
+                               for member in members)):
+                return
+            expected_unit = get_expected_input_unit(type(self), name)
+            if not isinstance(input_value, ExplainableQuantity):
+                return
+            annotation = ExplainableQuantity
+        elif not isinstance(annotation, type):
             return
         is_scalar_quantity = issubclass(annotation, ExplainableQuantity)
         is_recurrent_quantity = issubclass(annotation, ExplainableRecurrentQuantities)
@@ -385,11 +396,12 @@ class ModelingObject(metaclass=ABCAfterInitMeta):
             return
 
         default_value = self.default_values.get(name)
-        if (is_scalar_quantity and default_value is not None
-                and input_value.value.dimensionality != default_value.value.dimensionality):
+        if expected_unit is None and is_scalar_quantity and default_value is not None:
+            expected_unit = default_value.value.units
+        if expected_unit is not None and input_value.value.dimensionality != expected_unit.dimensionality:
             raise ValueError(
                 f"Value {input_value} for attribute {name} is not homogeneous to "
-                f"{default_value.value.units} ({default_value.value.dimensionality})")
+                f"{expected_unit} ({expected_unit.dimensionality})")
         if np.any(input_value.magnitude < 0) and name not in self.attributes_that_can_have_negative_values():
             raise ValueError(f"Value {input_value} for attribute {name} should be positive but is negative")
 

@@ -9,7 +9,7 @@ from efootprint.abstract_modeling_classes.explainable_object_dict import Explain
 from efootprint.constants.sources import Sources
 from efootprint.core.attribution import Atom, AttributionSource
 from efootprint.core.hardware.infra_hardware import InfraHardware
-from efootprint.core.hardware.hardware_base import InsufficientCapacityError
+from efootprint.core.hardware.hardware_base import InsufficientCapacityError, InstanceCountQuantity
 from efootprint.abstract_modeling_classes.explainable_hourly_quantities import (
     ExplainableHourlyQuantities, divide_or_fallback)
 from efootprint.abstract_modeling_classes.explainable_quantity import ExplainableQuantity
@@ -130,7 +130,7 @@ class Storage(InfraHardware, AttributionSource):
                  carbon_footprint_manufacturing_per_storage_capacity: ExplainableQuantity,
                  data_replication_factor: ExplainableQuantity, data_storage_duration: ExplainableQuantity,
                  base_storage_need: ExplainableQuantity, lifespan: ExplainableQuantity,
-                 fixed_nb_of_instances: ExplainableQuantity | EmptyExplainableObject = None):
+                 fixed_nb_of_instances: InstanceCountQuantity | EmptyExplainableObject = None):
         super().__init__(name, power=SourceValue(0 * u.W), lifespan=lifespan)
         self.carbon_footprint_manufacturing_per_storage_capacity = (carbon_footprint_manufacturing_per_storage_capacity
             .set_label(f"Manufacturing carbon footprint per storage capacity"))

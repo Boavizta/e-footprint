@@ -1,6 +1,7 @@
 from efootprint.abstract_modeling_classes.explainable_dict import ExplainableDict
 from efootprint.abstract_modeling_classes.explainable_object_base_class import Source, ExplainableObject
 from efootprint.abstract_modeling_classes.explainable_quantity import ExplainableQuantity
+from efootprint.core.hardware.hardware_base import InstanceCountQuantity
 from efootprint.abstract_modeling_classes.empty_explainable_object import EmptyExplainableObject
 from efootprint.abstract_modeling_classes.source_objects import SourceValue
 from efootprint.builders.hardware.boaviztapi_utils import call_boaviztapi
@@ -39,7 +40,7 @@ class BoaviztaServerFromConfig(ServerBase):
                  idle_power: ExplainableQuantity, power_usage_effectiveness: ExplainableQuantity,
                  utilization_rate: ExplainableQuantity, base_ram_consumption: ExplainableQuantity,
                  base_compute_consumption: ExplainableQuantity, storage: Storage,
-                 fixed_nb_of_instances: ExplainableQuantity | EmptyExplainableObject | None = None):
+                 fixed_nb_of_instances: InstanceCountQuantity | EmptyExplainableObject | None = None):
         super().__init__(
             name, server_type=server_type, lifespan=lifespan, idle_power=idle_power,
             power_usage_effectiveness=power_usage_effectiveness,

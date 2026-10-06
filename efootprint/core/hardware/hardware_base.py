@@ -1,9 +1,14 @@
 from abc import abstractmethod
-from typing import List
+from typing import Annotated, List
 
 from efootprint.abstract_modeling_classes.empty_explainable_object import EmptyExplainableObject
 from efootprint.abstract_modeling_classes.explainable_quantity import ExplainableQuantity
 from efootprint.abstract_modeling_classes.modeling_object import ModelingObject
+from efootprint.constants.units import u
+from efootprint.utils.tools import InputUnit
+
+
+InstanceCountQuantity = Annotated[ExplainableQuantity, InputUnit(u.concurrent)]
 
 
 class HardwareBase(ModelingObject):

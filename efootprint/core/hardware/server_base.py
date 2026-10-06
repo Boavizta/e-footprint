@@ -12,7 +12,7 @@ from efootprint.abstract_modeling_classes.explainable_quantity import Explainabl
 from efootprint.abstract_modeling_classes.empty_explainable_object import EmptyExplainableObject
 from efootprint.core.attribution import Atom, AttributionSource
 from efootprint.core.hardware.infra_hardware import InfraHardware
-from efootprint.core.hardware.hardware_base import InsufficientCapacityError
+from efootprint.core.hardware.hardware_base import InsufficientCapacityError, InstanceCountQuantity
 from efootprint.core.lifecycle_phases import LifeCyclePhases
 from efootprint.abstract_modeling_classes.source_objects import SOURCE_VALUE_DEFAULT_NAME, SourceObject
 from efootprint.constants.units import u
@@ -165,7 +165,7 @@ class ServerBase(InfraHardware, AttributionSource):
                  average_carbon_intensity: ExplainableQuantity = None,
                  utilization_rate: ExplainableQuantity = None, base_ram_consumption: ExplainableQuantity = None,
                  base_compute_consumption: ExplainableQuantity = None, storage: Storage = None,
-                 fixed_nb_of_instances: ExplainableQuantity | EmptyExplainableObject = None):
+                 fixed_nb_of_instances: InstanceCountQuantity | EmptyExplainableObject = None):
         super().__init__(name, carbon_footprint_manufacturing, power, lifespan)
         self.server_type = server_type.set_label(f"Server type")
         if idle_power is not None:
