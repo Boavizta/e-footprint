@@ -45,6 +45,13 @@ not a file inventory or a copy of task checks. Include a rejected review suggest
 retaining the existing design is itself consequential. Link to the decision from tasks or handoffs
 when needed; do not duplicate its explanation. The supervisor owns these plan edits.
 
+When several functions or repositories participate, map each distinct change from its previous
+behavior to its current behavior at the named call site; separate a shared helper from the callers
+that use it. Say which path actually failed and which already handled the case, so one broad claim
+does not imply every path had the same bug. Use short paragraphs or bullets when that makes the
+mapping easier to review. For a superseded decision, name the specific mismatch that ended and
+any generic mechanism that remains.
+
 Check every APPLIED claim against the final code, especially whether a helper reads, copies, or
 derives its inputs. Distinguish implemented behavior from a possible cleanup or remaining gap;
 label the latter explicitly when material. Use specific titles in the index so a reviewer can
