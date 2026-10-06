@@ -35,10 +35,20 @@ visible, expanded **`[IMPL-DECISION-01] — APPLIED`** callout with anchor `impl
 Use stable, increasing IDs across the feature's runs, and a small linked index near the top with
 anchor `impl-decisions`. Ctrl+F `IMPL-DECISION` must find the visible callouts.
 
-Keep each callout short: the choice made or retained, why it matters (evidence and trade-off),
-and the run/task plus a useful code or commit link. Include a rejected review suggestion only when
-retaining the existing design is itself a consequential choice. Link to the decision from tasks or
-handoffs when needed; do not duplicate its explanation. The supervisor owns these plan edits.
+Make each callout self-contained for plan review. State whether it fixes a pre-existing defect,
+fills a plan gap, changes behavior introduced by this feature, or retains a contested design;
+describe the concrete failure or constraint and why the choice matters. Link the affected files
+and name the key functions or methods. Explain what changed along the code path and its observable
+effect, including relevant state or metadata that is preserved, remapped, or discarded. Give the
+run/task and the decisive evidence or trade-off. Keep this focused on the consequential choice,
+not a file inventory or a copy of task checks. Include a rejected review suggestion only when
+retaining the existing design is itself consequential. Link to the decision from tasks or handoffs
+when needed; do not duplicate its explanation. The supervisor owns these plan edits.
+
+Check every APPLIED claim against the final code, especially whether a helper reads, copies, or
+derives its inputs. Distinguish implemented behavior from a possible cleanup or remaining gap;
+label the latter explicitly when material. Use specific titles in the index so a reviewer can
+identify the issue without opening every callout.
 
 `APPLIED` is the normal state after implementation. Reserve **PROPOSED** for exceptional decisions
 that actually require the user's authority; keep the current design intact while those are pending.
