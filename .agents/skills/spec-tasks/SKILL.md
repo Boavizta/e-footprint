@@ -23,7 +23,7 @@ assumptions. First complete any unaffected preparation, then explain what is mis
 cannot wait for the final review. A pending amendment alone does not interrupt this pass.
 
 1. Identify the driving repo and approved documents. Read the delivery/verification sequence separately from the plan's reading order.
-2. Enumerate atomic changes privately, then aggregate into independently reviewable tasks. Keep abstractions with their first consumer and tests; split at useful behavioral milestones rather than directory boundaries. Aim for 2–5 tasks when that fits; larger features may have named runs with explicit dependencies. Do not force arbitrary counts.
+2. Enumerate atomic changes privately, then aggregate into independently reviewable tasks. Keep abstractions with their first consumer and tests; split at useful behavioral milestones rather than directory boundaries. Aim for 2–5 tasks when that fits; do not force arbitrary counts. Default to one implementation run for fewer than six tasks. Split a smaller feature into runs only for a concrete boundary, such as a user-validated gate or an evidence outcome that must be reviewed before later tasks proceed; ordinary task dependencies and cross-repo ownership do not justify separate runs. Larger features may have named runs with explicit dependencies.
 3. Give every task a goal, plan links, repository ownership, files, tests, acceptance, dependencies, and `Implementation: easy | standard | hard — brief reason`, using the difficulty rules below. Finalize the tier after grounding the brief.
 4. Write every brief yourself in task dependency order using [the template](references/brief.md). Distinguish existing code from what preceding tasks will introduce: interfaces, helpers, ownership and validation assumptions. Keep product code and shared application state unchanged.
 5. Check all briefs together: code pointers must be verified, and each dependent task's assumptions must match its predecessors' planned outputs. Put any proposed amendments in `plan.html` using the review format below. Keep the approved design intact while proposals are pending; mark affected tasks and briefs provisional and link them to the decisions they need. Complete the full set before asking for amendment decisions.
@@ -107,7 +107,7 @@ Put the implementation runs immediately after the title, spec/plan links and ove
 before the task overview and individual tasks. For each run, show its name, delivered milestone,
 linked task numbers in execution order, and prerequisites, including earlier runs or cross-repo
 dependencies. Every task belongs to one run. For a single-run feature, show one row; do not split
-work merely to fill the table. Keep the run sequence here rather than repeating it at the bottom.
+work merely to fill the table. If a feature with fewer than six tasks needs multiple runs, state the concrete boundary in the run prerequisites. Keep the run sequence here rather than repeating it at the bottom.
 
 Use this shape, omitting empty optional sections:
 
