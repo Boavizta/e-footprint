@@ -29,15 +29,15 @@ from tests.utils import recompute_attribute
 class TestEcoLogitsGenAIExternalAPI(TestCase):
     def setUp(self):
         self.start_date = datetime(2026, 1, 1)
-        self.provider = SourceObject("mistralai")
-        self.model_name = SourceObject("open-mistral-7b")
+        self.provider = SourceObject("openai")
+        self.model_name = SourceObject("gpt-4o")
         self.external_api = EcoLogitsGenAIExternalAPI(
             name="Test EcoLogits API", provider=self.provider, model_name=self.model_name)
 
     def test_initialization_sets_provider_and_model_name(self):
         """Test that initialization correctly sets provider and model_name."""
-        self.assertEqual(self.external_api.provider.value, "mistralai")
-        self.assertEqual(self.external_api.model_name.value, "open-mistral-7b")
+        self.assertEqual(self.external_api.provider.value, "openai")
+        self.assertEqual(self.external_api.model_name.value, "gpt-4o")
 
     def test_compatible_jobs(self):
         """Test that compatible_jobs returns the correct job class."""
@@ -322,8 +322,8 @@ class TestEcoLogitsGenAIExternalAPIJob(TestCase):
     def test_create_2_ecologits_external_api_jobs_then_delete_them(self):
         """Test creating two jobs linked to the same external API, then deleting them."""
         external_api = EcoLogitsGenAIExternalAPI(
-            name="Test EcoLogits API for Jobs deletion", provider=SourceObject("mistralai"),
-            model_name=SourceObject("open-mistral-7b"))
+            name="Test EcoLogits API for Jobs deletion", provider=SourceObject("openai"),
+            model_name=SourceObject("gpt-4o"))
         job1 = EcoLogitsGenAIExternalAPIJob(
             name="Test Job 1", external_api=external_api, output_token_count=SourceValue(500 * u.dimensionless))
         job2 = EcoLogitsGenAIExternalAPIJob(
