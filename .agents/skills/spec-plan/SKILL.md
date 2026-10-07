@@ -113,6 +113,10 @@ update navigation, file mappings and highlight selectors together.
   not an affected-files table. Mark new, modified, renamed or removed files; include a short
   purpose and links back to the relevant interactions. Highlight files associated with the
   selected step. List changed files, not every referenced dependency.
+- Make the entire left navigation and changed-file column collapsible with a keyboard-accessible
+  native `details/summary` control. When collapsed, shrink its layout column to a narrow visible
+  reopen control so the plan gains width beside an editor. Keep the control reachable above the
+  content at narrow viewport widths, and expand the changed-file tree for print.
 - Put code relationships or sequence diagrams beside the interaction they explain. Link
   relevant nodes to files/steps and label what arrows mean. Never use an arrow merely to separate
   filenames. No mandatory overview diagram; non-code visuals are welcome when they clarify

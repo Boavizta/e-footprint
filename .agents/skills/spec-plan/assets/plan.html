@@ -19,8 +19,21 @@
   body > a:focus { top: 1rem; }
   #layout { display: grid; grid-template-columns: 22rem minmax(0, 64rem); gap: 2rem;
     max-width: 92rem; margin: auto; padding: 2rem 1.5rem 5rem; }
+  #layout:has(#sidebar:not([open])) { grid-template-columns: 2.75rem minmax(0, 64rem); }
   #sidebar { position: sticky; top: 1rem; align-self: start; max-height: calc(100vh - 2rem);
-    overflow: auto; overscroll-behavior: contain; padding-right: .5rem; }
+    overflow: auto; overscroll-behavior: contain; padding: 0 .5rem 0 0;
+    border: 0; border-radius: 0; background: transparent; margin: 0; }
+  #sidebar:not([open]) { overflow: visible; padding-right: 0; }
+  #sidebar > summary { position: sticky; top: 0; z-index: 2; list-style: none; display: flex;
+    align-items: center; gap: .4rem; width: max-content; max-width: 100%; margin: 0 0 .7rem;
+    padding: .3rem .55rem; border: 1px solid var(--line); border-radius: .4rem;
+    background: var(--paper); color: var(--accent); font-size: .8rem; }
+  #sidebar > summary::-webkit-details-marker { display: none; }
+  #sidebar > summary::before { content: "☰"; font-size: 1.1rem; line-height: 1; }
+  #sidebar:not([open]) > summary { width: 2.75rem; height: 2.75rem; justify-content: center;
+    margin-bottom: 0; padding: 0; }
+  #sidebar:not([open]) > summary span { position: absolute; width: 1px; height: 1px;
+    overflow: hidden; clip-path: inset(50%); white-space: nowrap; }
   #navigation { font-size: .85rem; padding-bottom: .6rem; }
   #navigation > p:first-child { text-transform: uppercase; letter-spacing: .1em;
     font-size: .72rem; font-weight: 700; color: var(--accent); }
@@ -105,21 +118,19 @@
   }
   @media (max-width: 850px) {
     #layout { display: flex; flex-direction: column; padding: 1rem; }
-    #sidebar { display: contents; }
-    #navigation { order: 0; }
+    #sidebar { position: static; max-height: min(45vh, 24rem); padding: 0; width: 100%; }
+    #sidebar:not([open]) { width: 2.75rem; }
     #navigation ol { display: flex; flex-wrap: wrap; gap: .25rem; }
-    main { order: 1; }
-    #modules { order: 2; }
     #phases { grid-template-columns: 1fr; }
   }
   @media (prefers-reduced-motion: reduce) { html { scroll-behavior: auto; } }
   @media print {
     body { background: white; font-size: 10pt; }
     #layout { display: flex; flex-direction: column; padding: 0; }
-    #sidebar { display: contents; }
-    #navigation, body > a { display: none; }
+    #sidebar, #sidebar:not([open]) { order: 1; position: static; width: 100%; max-height: none; overflow: visible; }
+    #navigation, body > a, #sidebar > summary { display: none; }
     main { order: 0; }
-    #modules { order: 1; break-before: page; }
+    #modules { break-before: page; }
     details::details-content { content-visibility: visible; display: block; }
     [data-code], figure, tr { break-inside: avoid; }
     pre { white-space: pre-wrap; overflow-wrap: anywhere; }
@@ -134,7 +145,8 @@
      Keep proposed-file links internal. Duplicate repository groups for cross-repository changes. -->
 <a href="#main">Skip to plan</a>
 <div id="layout">
-<aside id="sidebar" aria-label="Reading order and changed files">
+<details id="sidebar" aria-label="Reading order and changed files" open>
+  <summary title="Show or hide navigation and changed files"><span>Navigation and changed files</span></summary>
   <nav id="navigation" aria-label="Reading order">
     <p>Reading order</p>
     <ol>
@@ -173,7 +185,7 @@
       </details>
     </div>
   </section>
-</aside>
+</details>
 
 <main id="main">
   <header>

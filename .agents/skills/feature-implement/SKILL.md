@@ -67,6 +67,12 @@ is already reviewing `plan.html` in place, the script's
 `--in-place` option can update it temporarily; run `--restore --in-place` and verify no local
 absolute paths remain before committing that plan. Do not commit the generated review copy.
 
+Keep the plan's left reading-order and changed-file column collapsible during review. Use the
+native `details/summary` pattern in `spec-plan/assets/plan.html`: collapsing it should leave a
+narrow visible control and give the walkthrough more width beside an editor. Check that the
+control stays reachable at narrow widths, works by keyboard, and does not hide the file tree in
+print. When editing an older plan, preserve its existing navigation and decision anchors.
+
 `APPLIED` is the normal state after implementation. Reserve **PROPOSED** for exceptional decisions
 that actually require the user's authority; keep the current design intact while those are pending.
 When accepted and implemented, integrate the change and mark it APPLIED. If rejected, remove the
