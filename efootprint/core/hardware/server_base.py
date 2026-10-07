@@ -362,7 +362,7 @@ class ServerBase(InfraHardware, AttributionSource):
                 nb_of_instances = ExplainableHourlyQuantities(
                     nb_of_instances_np, self.raw_nb_of_instances.start_date,f"Hourly number of instances",
                     left_parent=self.raw_nb_of_instances, right_parent=self.fixed_nb_of_instances,
-                    operator="depending on not being empty")
+                    operator="depending empty state")
 
         return nb_of_instances.generate_explainable_object_with_logical_dependency(
             self.server_type).set_label(f"Hourly number of instances")
