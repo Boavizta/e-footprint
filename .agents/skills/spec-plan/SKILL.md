@@ -59,6 +59,9 @@ In particular:
   preservation or background synchronization. Distinguish error presentation from edit retention.
 - Do not infer a generic framework from one shared helper, or a second data model from information
   already owned elsewhere. Share the smallest useful mechanism.
+- Do not automatically add recovery for failures inside a failure handler. Such paths add more
+  branches and failure states; require a concrete supported scenario and user benefit before
+  planning them. Let ordinary error handling cover exceptional secondary failures.
 - Keep required feature work separate from unrelated reliability improvements. Surface confirmed
   bugs with evidence and ownership; park deferred concerns using the user's backlog convention,
   rather than making them feature prerequisites. Do not implement fixes during planning.
@@ -95,7 +98,13 @@ Within the walkthrough:
 - Distinguish browser feedback, server processing and persistence; name the particular operation
   instead of “the save use case”. Describe rendering at the interaction that causes it.
 - State a consistent path base and identify paths outside it and cross-repository ownership.
-  Link to existing code when useful; link proposed files to their file-tree entry instead.
+  Make every reference to existing code in the plan clickable through the reviewer's editor,
+  including identifiers in prose, tables, callouts and file summaries. Use `vscode://file/`
+  links to absolute paths, and include the line where a named function or class starts. When
+  describing a specific branch, event handler, persistence check or other logic, link to the
+  first line of that implementation, not merely to the file or a nearby caller. Keep proposed
+  files linked to their file-tree entry until they exist. Distinguish illustrative pseudocode,
+  UI copy and protocol values from existing code rather than presenting them as source links.
 - Every sentence should convey a change, constraint, necessary rationale or decision. Omit
   ordinary behavior and spec repetition. Prefer concrete vocabulary over terms that suggest
   machinery that does not exist. Clarification should replace confusing prose, not accumulate it.
@@ -147,9 +156,11 @@ update navigation, file mappings and highlight selectors together.
 - Record recurring review feedback when requested, but do not automatically rewrite the skill
   during feature review. Generalize lessons only when the user authorizes that update.
 - Before handoff, check HTML IDs/anchors, local links, file labels and agreement between snippets,
-  prose and file-tree entries. Inspect the rendered layout when an available, permitted viewer
-  supports it; otherwise disclose that visual verification was not performed. Do not claim
-  planned application tests have run.
+  prose and file-tree entries. Audit all code-styled mentions outside illustrative sketches:
+  no existing identifier or implementation detail should remain unlinked, and every source
+  link should resolve to the intended file and line. Inspect the rendered layout when an
+  available, permitted viewer supports it; otherwise disclose that visual verification was
+  not performed. Do not claim planned application tests have run.
 - Report the plan path, substantive changes and remaining decisions concisely. Wait for review;
   do not advance to `spec-tasks` or implementation without authorization. After approval, hand off
   to `spec-tasks` in a fresh session.
