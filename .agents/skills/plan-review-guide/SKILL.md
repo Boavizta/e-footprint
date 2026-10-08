@@ -39,6 +39,10 @@ architecture document, implementation report or chronological narrative.
   verified line/column targets, portable `data-review-source-href` attributes and the existing
   click/right-click menu. Put links on the existing words or identifiers; avoid appending file
   inventories. Each distinct code artifact gets its own target when locations differ.
+- For behavior within a script, link the implementing function, event handler or branch with
+  a verified line target. When the trigger and action live at different locations, link both
+  on the matching prose. Reserve whole-script links for file-level references; they do not
+  replace precise pointers for behavioral claims.
 - Mark a passage or section **Implemented as planned** only when its claims match the final
   code. Mixed sections need passage-level distinctions: implemented with a linked decision,
   unfinished, or requiring supervisor resolution. Preserve existing decision statuses; code
