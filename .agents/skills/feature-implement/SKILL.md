@@ -20,13 +20,22 @@ does not create a human approval gate. User intervention is exceptional.
 - Use configured roles: GPT-6 Luna/high easy implementer; GPT-6.1 Sol/medium standard implementer; Astra/high hard implementer; GPT-6.1 Sol/high per-task and global reviewer. The supervisor is preferably Astra/high. Respect explicit user model choices; report actual configuration instead of claiming a role pin worked. See `specs/agent-tooling.md` for Claude equivalents and runtime dispatch.
 - Collect local usage and register this session/each subagent with the feature, owner, stage, run, role and task where its runtime exposes an ID. Missing telemetry never blocks implementation and is reported as missing.
 
+## Completion-driven supervision
+
+This run is autonomous. While an implementer or reviewer works, continue only useful independent
+supervisor-owned work; otherwise wait for its handoff or an actionable request. Do not poll the
+agent, checkout or clock merely to produce progress reports, and do not ask agents for routine
+progress messages. Use an event wait rather than repeated short status checks. If the runtime
+requires periodic user updates, use a bounded event wait and the minimum update needed without
+separate clock checks. Surface consequential progress, exceptions and the final outcome.
+
 ## Per-task loop
 
 1. Spawn exactly one task's implementation role from its `Implementation` tier: easy → `implementer-easy`, standard → `implementer`, hard → `implementer-hard`. Use the [difficulty rules](../spec-tasks/SKILL.md#implementation-difficulty); if the tier is missing, legacy, or contradicted by new evidence, reassess and update it with a brief reason. Review-risk surfaces and predecessor tiers do not automatically require a stronger implementer. Supply task/brief paths, repository roots, dependency changes, owned file boundaries and role instructions. Defer the consolidated changelog to the supervisor. Require implementation commits, a minimal handoff, and any consequential decisions or unresolved concerns.
 2. Spawn an independent `reviewer` over the explicit implementation range(s), not whatever `HEAD` happens to be after handoff commits. Give the same intent and handoff path, and authorize evident scoped corrections in the same assignment. The reviewer chooses its depth, applies routine fixes, and returns only material choices or unresolved concerns alongside the final commit range.
 3. Resolve the material choices yourself within the approved outcomes. Resume the reviewer for fixes needing that direction. Capture only consequential decisions in the plan; no routine-fix inventory or review-tier log. Continue without requesting user approval for ordinary implementation choices.
 4. Keep check execution with the implementer and reviewer. Use their completion status and outstanding concerns to decide whether the task is complete; resume the responsible agent for missing checks or in-scope failures. Keep unresolved failures or unavailable required checks explicit. Do not copy passing test results, command transcripts or resolved routine fixes into plans, handoffs, reports or logs.
-5. Update task status and any actual blockers; commit exact owned files and continue. Keep user updates focused on meaningful progress or exceptions, with no per-task success checklist. Add handoff leads only for material cross-task concerns.
+5. Update task status and any actual blockers; commit exact owned files and continue. Add handoff leads only for material cross-task concerns; no per-task success checklist.
 
 ## Consequential decisions in the plan
 
