@@ -10,7 +10,7 @@ The reviewer already knows the spec: the plan is a high-level code review of pro
 not another product explanation.
 
 Output: `specs/features/<feature-name>/plan.html` in the driving repository. Keep the plan
-self-contained and editable throughout review. Planning may include read-only code inspection
+content self-contained and editable throughout review. Planning may include read-only code inspection
 and scoped local diagnostics; do not implement application changes or generate tasks.
 
 Start this stage in a fresh session from the approved spec and any existing plan. A decision
@@ -99,8 +99,9 @@ Within the walkthrough:
   instead of “the save use case”. Describe rendering at the interaction that causes it.
 - State a consistent path base and identify paths outside it and cross-repository ownership.
   Make every reference to existing code in the plan clickable through the reviewer's editor,
-  including identifiers in prose, tables, callouts and file summaries. Use `vscode://file/`
-  links to absolute paths, and include the line where a named function or class starts. When
+  including identifiers in prose, tables, callouts and file summaries. Follow
+  [the shared plan-link convention](references/plan-review-links.md), including its click/right-click
+  behavior and refresh step. Include the line where a named function or class starts. When
   describing a specific branch, event handler, persistence check or other logic, link to the
   first line of that implementation, not merely to the file or a nearby caller. Keep proposed
   files linked to their file-tree entry until they exist. Distinguish illustrative pseudocode,
@@ -130,9 +131,9 @@ update navigation, file mappings and highlight selectors together.
   relevant nodes to files/steps and label what arrows mean. Never use an arrow merely to separate
   filenames. No mandatory overview diagram; non-code visuals are welcome when they clarify
   something prose or a small table cannot.
-- Keep semantic HTML, one inline style block, native `details/summary`, and no frameworks,
-  external assets or scripts. Use inline SVG when useful. The starter's IDs/data attributes and
-  CSS anchor highlighting support navigation without JavaScript.
+- Keep semantic HTML, one inline style block, native `details/summary`, and no frameworks.
+  Include only the shared `specs/review-links.js` for the source-link menu; use inline SVG when useful.
+  The starter's IDs/data attributes and CSS anchor highlighting work without JavaScript.
 - Preserve readable long paths, file-labelled code, keyboard focus, narrow-screen flow and print
   layout. Use tables for compact comparisons or verification, not as the default file overview.
   A small feature should not inherit the full visual density of a large cross-repository plan.
@@ -158,7 +159,8 @@ update navigation, file mappings and highlight selectors together.
 - Before handoff, check HTML IDs/anchors, local links, file labels and agreement between snippets,
   prose and file-tree entries. Audit all code-styled mentions outside illustrative sketches:
   no existing identifier or implementation detail should remain unlinked, and every source
-  link should resolve to the intended file and line. Inspect the rendered layout when an
+  link should resolve to the intended file and line. Refresh plan links as described in
+  [the shared convention](references/plan-review-links.md). Inspect the rendered layout when an
   available, permitted viewer supports it; otherwise disclose that visual verification was
   not performed. Do not claim planned application tests have run.
 - Report the plan path, substantive changes and remaining decisions concisely. Wait for review;

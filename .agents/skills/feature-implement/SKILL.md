@@ -57,15 +57,9 @@ derives its inputs. Distinguish implemented behavior from a possible cleanup or 
 label the latter explicitly when material. Use specific titles in the index so a reviewer can
 identify the issue without opening every callout.
 
-For local HTML plan review, make every direct link to an existing file open that file in VS Code;
-keep `#` links within the plan. Use this skill's `scripts/vscode_review_links.py` with a plan
-path and `--output /private/tmp/<feature>-plan-vscode.html` to produce a review copy with static `vscode://file//...`
-links. Point to a relevant line where known. The browser may not run inline link-rewriting scripts
-for a local file, so the review copy needs actual deep-link `href` values. Keep the canonical plan's
-relative links for portability; a relative `#L98` fragment becomes a VS Code line link. If the user
-is already reviewing `plan.html` in place, the script's
-`--in-place` option can update it temporarily; run `--restore --in-place` and verify no local
-absolute paths remain before committing that plan. Do not commit the generated review copy.
+For every `IMPL-DECISION` and changed plan passage, follow
+[the shared plan-link convention](../spec-plan/references/plan-review-links.md) for source links,
+the right-click diff menu and link refresh. The supervisor owns these plan edits.
 
 Keep the plan's left reading-order and changed-file column collapsible during review. Use the
 native `details/summary` pattern in `spec-plan/assets/plan.html`: collapsing it should leave a

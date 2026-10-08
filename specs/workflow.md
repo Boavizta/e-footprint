@@ -32,6 +32,8 @@ follow user interactions or library caller operations, show changed structures/c
 provide linked changed-file navigation. Separate reading order from delivery dependencies and
 map important behavior to verification. Keep the existing level of architectural explanation;
 link owning pages where helpful, without adding a teaching section.
+Source-file links and the right-click diff menu follow `spec-plan/references/plan-review-links.md`
+throughout later plan amendments and implementation decisions.
 
 Review and approve the plan, then start tasks in a fresh session. Missing decisions in the
 persisted documents must be resolved instead of inferred from another session's memory.

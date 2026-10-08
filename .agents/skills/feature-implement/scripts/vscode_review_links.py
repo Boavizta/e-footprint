@@ -49,29 +49,26 @@ def rewrite(source: str, plan_dir: Path, restore: bool) -> tuple[str, int, list[
             count += 1
             return HREF.sub(f'href="{escape(original, quote=True)}"', tag, count=1)
 
-        if source_match is not None:
+        original = (unescape(source_match.group(1)) if source_match is not None
+                    else original_from_vscode(href, plan_dir) if href.startswith("vscode://")
+                    else href)
+        url = urlsplit(original)
+        if url.scheme or original.startswith("#") or url.query:
             return tag
-        if href.startswith("vscode://"):
-            original = original_from_vscode(href, plan_dir)
-            vscode_href = href
-        else:
-            url = urlsplit(href)
-            if url.scheme or href.startswith("#") or url.query:
-                return tag
-            location = LINE_FRAGMENT.fullmatch(url.fragment) if url.fragment else None
-            if url.fragment and location is None:
-                return tag
-            path = (plan_dir / unquote(url.path)).resolve()
-            if not path.is_file():
-                missing.append(href)
-                return tag
-            original = href
-            vscode_href = "vscode://file/" + quote(str(path), safe="/")
-            if location is not None:
-                vscode_href += f":{location.group(1)}:{location.group(2) or '1'}"
+        location = LINE_FRAGMENT.fullmatch(url.fragment) if url.fragment else None
+        if url.fragment and location is None:
+            return tag
+        path = (plan_dir / unquote(url.path)).resolve()
+        if not path.is_file():
+            missing.append(original)
+            return tag
+        vscode_href = "vscode://file/" + quote(str(path), safe="/")
+        if location is not None:
+            vscode_href += f":{location.group(1)}:{location.group(2) or '1'}"
 
         tag = HREF.sub(f'href="{escape(vscode_href, quote=True)}"', tag, count=1)
-        tag = tag[:-1] + f' data-review-source-href="{escape(original, quote=True)}">'
+        if source_match is None:
+            tag = tag[:-1] + f' data-review-source-href="{escape(original, quote=True)}">'
         count += 1
         return tag
 

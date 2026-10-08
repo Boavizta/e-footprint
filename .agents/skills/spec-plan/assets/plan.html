@@ -14,6 +14,12 @@
   a { color: var(--accent); text-underline-offset: .18em; }
   a:hover { text-decoration-thickness: 2px; }
   :is(a, summary):focus-visible { outline: 3px solid #3974b3; outline-offset: 4px; }
+  #review-link-menu { position: fixed; z-index: 20; min-width: 12rem; padding: .3rem;
+    border: 1px solid var(--line); border-radius: .5rem; background: var(--paper);
+    box-shadow: 0 .5rem 1.5rem #21312f30; font-size: .85rem; }
+  #review-link-menu[hidden] { display: none; }
+  #review-link-menu a { display: block; padding: .35rem .55rem; border-radius: .3rem; text-decoration: none; }
+  #review-link-menu a:hover, #review-link-menu a:focus { background: var(--soft); }
   body > a { position: absolute; left: 1rem; top: -5rem; z-index: 5;
     background: var(--paper); padding: .7rem; }
   body > a:focus { top: 1rem; }
@@ -125,6 +131,7 @@
   }
   @media (prefers-reduced-motion: reduce) { html { scroll-behavior: auto; } }
   @media print {
+    #review-link-menu { display: none; }
     body { background: white; font-size: 10pt; }
     #layout { display: flex; flex-direction: column; padding: 0; }
     #sidebar, #sidebar:not([open]) { order: 1; position: static; width: 100%; max-height: none; overflow: visible; }
@@ -158,7 +165,7 @@
   </nav>
   <section id="modules">
     <h2>Changed files</h2>
-    <p>Select a reading step to highlight its files. Numbered links return to the walkthrough.</p>
+    <p>Select a reading step to highlight its files. Click a linked file to open it in VS Code, or right-click it for a diff against <code>main</code>. Numbered links return to the walkthrough.</p>
     <div id="change-tree">
       <details open>
         <summary>REPO_NAME / PATH_BASE</summary>
@@ -265,5 +272,6 @@
   </section>
 </main>
 </div>
+<script src="../../review-links.js" defer></script>
 </body>
 </html>

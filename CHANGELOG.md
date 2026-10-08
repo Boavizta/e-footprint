@@ -8,6 +8,7 @@ and this project adheres to [Semantic Versioning](http://semver.org/)
 
 ### Changed
 
+- Shared plan skills now use one source-link convention for VS Code opening and right-click diffs across new plans, plan amendments and implementation decisions.
 - Optional fixed instance counts now declare their expected unit and validate compatible, nonnegative values while still allowing an unset count.
 - Codex per-task and global reviews now use GPT-6.1 Sol/high; the paired Astra/Sol shadow-review experiment ended early after one feature by user decision.
 - Ready-made modeling templates are now Examples: use `efootprint.modeling_examples`, `get_example`, and `load_example_system`; scenario IDs, data, and guide associations are preserved.

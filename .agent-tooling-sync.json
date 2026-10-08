@@ -9,8 +9,10 @@
     ".agents/skills/bug-fixes/SKILL.md",
     ".agents/skills/feature-archive/SKILL.md",
     ".agents/skills/feature-implement/SKILL.md",
+    ".agents/skills/feature-implement/scripts/vscode_review_links.py",
     ".agents/skills/spec-plan/SKILL.md",
     ".agents/skills/spec-plan/assets/plan.html",
+    ".agents/skills/spec-plan/references/plan-review-links.md",
     ".agents/skills/spec-specify/SKILL.md",
     ".agents/skills/spec-tasks/SKILL.md",
     ".agents/skills/spec-tasks/references/brief.md",
@@ -38,6 +40,7 @@
     "ai-usage/usage.py",
     "scripts/sync_agent_tooling.py",
     "specs/agent-tooling.md",
+    "specs/review-links.js",
     "specs/workflow.md"
   ],
   "hashes": {
@@ -48,11 +51,13 @@
     ".agents/roles/reviewer.md": "7709eaf63b81b46b06ea4d2dad322ecd38cfbe12dde1f59442f4b1e23e9b9e1e",
     ".agents/skills/bug-fixes/SKILL.md": "ecbd1c63090c526b1fe3d7a58295d804e44e260fe00537f38e736bfd8ced0e8e",
     ".agents/skills/feature-archive/SKILL.md": "547ce7350ca60528ca8189568929819cbb31d5f1a19f9352b6d96604c86063a7",
-    ".agents/skills/feature-implement/SKILL.md": "356fd19aa1cc7fa2b32c89d9beb3704a5c15d4e9eec61a8c465b9356a1db797b",
-    ".agents/skills/spec-plan/SKILL.md": "30738b92d136ffbe80976353d0381a0d277062b9cd69b9781519f55167e3829d",
-    ".agents/skills/spec-plan/assets/plan.html": "8926765164fdc2b85ba28bd5e468c2bab122a233f830d5119b463ab672d096ce",
-    ".agents/skills/spec-specify/SKILL.md": "32e33667a29c190cc223503d0a34ad10847165ad22111b62305d3b4bb352cfec",
-    ".agents/skills/spec-tasks/SKILL.md": "1668e15216307bb93f2ae5c40b20287c86ad7ccd359c78d40f51a0f239b2610e",
+    ".agents/skills/feature-implement/SKILL.md": "7f784260c39caddb41902bdf48b9ae5d61191f428c278e41f33c01087f23cb22",
+    ".agents/skills/feature-implement/scripts/vscode_review_links.py": "0baa5042be167dc8a0d40630c7cebee2fed8d08dcfba74370ecd6d4640e2de83",
+    ".agents/skills/spec-plan/SKILL.md": "6a14dd2e4dafc1ca743d777536a3f5fc6348bd79180b199436580c923afec290",
+    ".agents/skills/spec-plan/assets/plan.html": "5aca831a97eb3879fa5853ecba2803466e6532715b084e09e9d286745e00df82",
+    ".agents/skills/spec-plan/references/plan-review-links.md": "ccc6048c4f2261e98e0e72c25d0d3e30b4647339baff32b2fdc8af3bd4f174a3",
+    ".agents/skills/spec-specify/SKILL.md": "e985145b56cbdc96afdda71dec93191907a14983a4d5534f162d3ad78d3218f8",
+    ".agents/skills/spec-tasks/SKILL.md": "295633d27f2f5f296bcf6f0e6eef6212b93edf491b68dd5f4dc1bfb420a34a7b",
     ".agents/skills/spec-tasks/references/brief.md": "32ec1f9947d2d692637e8a3f961f7dfae39fa7d50f3e7bd9f1fd19b63589171f",
     ".agents/skills/task-implement/SKILL.md": "714f48988ef83e2bee61515c0e978a168ee7975a935163f39cf83849c6e16d65",
     ".agents/skills/task-implement/references/handoff.md": "9e6d35f90c3093ee273a2925786a80c6098745bd493fbc9059dd665a86525a45",
@@ -78,6 +83,7 @@
     "ai-usage/usage.py": "9d1b5adff636f87fa62864bb988c8307e670a48c4d292488f13a6ca81982c60a",
     "scripts/sync_agent_tooling.py": "3fe7841551cd2a45b07e73c57066b8bd415d33b9665afbd2443673c6e8696b12",
     "specs/agent-tooling.md": "228ee8bf36a4f8baeb9b96cb57e9d038732d69be6b3122fd08cb1e7177e3597f",
-    "specs/workflow.md": "54870fae82ef2490f977d063a24f01d7fb9efbe80f1885bb91ca62df3a77c664"
+    "specs/review-links.js": "435d48ff035471affbd0b8da62911dedf29d78a68dd6c2ef98cfcb13c5d9508e",
+    "specs/workflow.md": "5904fa61c1bbe6a93276df585ebd76d41e01523ed5a6892e383b7c1696bc1b69"
   }
 }

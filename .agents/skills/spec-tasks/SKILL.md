@@ -67,6 +67,8 @@ review; every tier retains applicable constitution gates and independent review.
 
 ## Plan amendments for review
 
+When adding or resolving a `PLAN-UPDATE`, follow [the shared plan-link convention](../spec-plan/references/plan-review-links.md).
+
 Put each proposal beside the affected passage in `plan.html`, in a visually distinct, expanded
 callout. Its visible heading is **`[PLAN-UPDATE-01] — PROPOSED`**, with anchor `plan-update-01`.
 Increment the number for new proposals and keep IDs stable during review. Keep the label and its
