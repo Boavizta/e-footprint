@@ -90,6 +90,13 @@ them as success. The user receives the delivered outcome, any consequential deci
 outstanding exceptions and a compact usage summary. The configured `reviewer` role handles both
 per-task and global review; see [`agent-tooling.md`](agent-tooling.md).
 
+After global review and corrections, `plan-review-guide` converts the existing plan into the
+final review guide before the final commit and handoff. Preserve the reviewed structure and
+examples, link matching claims to actual implementation, and integrate supervisor-resolved
+decisions beside their owning passages. The Luna/medium documentation agent reports uncertain
+claims to the supervisor; it does not resolve material departures from the plan. Partial runs
+leave unfinished passages explicit; bug batches without a plan do not create one for this step.
+
 ## 5. Archive
 
 Invoke `feature-archive` explicitly after shipping and resolving gates. Promote durable insight

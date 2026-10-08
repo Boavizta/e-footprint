@@ -38,6 +38,7 @@ expansion: shared instructions read the repository's small local reference at ru
 | implementer-hard | gpt-6-astra | high | claude-fable-5-1[1m] |
 | reviewer | gpt-6.1-sol | high | claude-fable-5-1[1m] |
 | diagnostician | gpt-6.1-sol | high | claude-fable-5-1[1m] |
+| plan-review-guide | gpt-6-luna | medium | claude-opus-5-5[1m] (medium) |
 
 The supervisor/planning session preferably uses Astra/high (Fable/high in Claude). These are
 starting configurations, not equivalent capability or effort scales proven across providers.
@@ -56,6 +57,11 @@ spawn tool, pass the configured model/effort explicitly and the role instruction
 If a runtime cannot apply a requested setting, report it and use the user's permitted alternative;
 never claim an unobserved model pin worked. A role description is not a tool permission boundary.
 The same configured reviewer role handles per-task and global reviews and can apply approved fixes.
+The plan-review-guide role performs the final documentation pass after global review and corrections;
+it preserves the approved plan and adds implementation evidence. The supervisor owns consequential
+decisions and checks changed claims. Substantial unresolved tracing escalates to the standard
+implementer; see [the skill](../.agents/skills/plan-review-guide/SKILL.md). Luna/medium is the initial
+default for this bounded role, subject to correction effort observed in use.
 
 Use a fresh context for specification → plan → tasks and for each implementation run. This is a
 handoff convention, not authority to create new user-owned Codex tasks without a request.
@@ -65,7 +71,7 @@ Implementation remains ordered by task dependencies. Never share stateful test s
 application databases between parallel agents.
 
 Label delegated work `<feature>--impl-task-N`, `--review-task-N`,
-`--diag-<bug>`, `--review-global` or `--gate-full`. In Claude place the label in the description;
+`--diag-<bug>`, `--review-global`, `--plan-review-guide` or `--gate-full`. In Claude place the label in the description;
 use plain unnamed subagents so role effort is not lost to teammate inheritance. Do not transfer
 that Claude-specific naming workaround to Codex. Stable session bindings below are preferred
 where labels cannot carry the owner, run or runtime identity reliably.

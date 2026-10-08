@@ -8,6 +8,7 @@ and this project adheres to [Semantic Versioning](http://semver.org/)
 
 ### Changed
 
+- Feature close-out now delegates a plan review guide to Luna/medium: preserve the approved plan, link implemented claims to actual code, and consolidate decisions under supervisor ownership.
 - Plan decision guidance now requires an individual source-line link for every cited code artifact, including in plan amendments and implementation decisions.
 - Plan skills now use one shared amber index and visible callout format for plan amendments and implementation decisions.
 - Shared plan skills now use one source-link convention for VS Code opening and right-click diffs across new plans, plan amendments and implementation decisions.
