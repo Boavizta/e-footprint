@@ -5,7 +5,7 @@ description: Complete an approved feature or bug-batch run autonomously through 
 
 # feature-implement
 
-Supervise the approved tasks; delegate implementation and independent review. Read `.agents/repository.md`, `task-implement`, `task-review` and `specs/agent-tooling.md` once. Resolve the feature/run from the request; use the first unfinished run when unambiguous. Do not ask again for authority already supplied.
+Supervise the approved tasks; delegate implementation and independent review. Read `.agents/repository.md` and the role/usage sections needed from `specs/agent-tooling.md` once. Implementers and reviewers read their own detailed skills; consult `task-implement` or `task-review` yourself only for a material workflow question. Resolve the feature/run from the request; use the first unfinished run when unambiguous. Do not ask again for authority already supplied.
 
 An approved run is authorization to proceed end-to-end through task implementation, fixes and
 global review. Own technical trade-offs within the agreed outcomes, including internal interface
@@ -14,11 +14,11 @@ does not create a human approval gate. User intervention is exceptional.
 
 ## Setup
 
-- Read the approved spec/plan (or linked bug diagnostics), tasks, constitution and relevant architecture pages. Check that acceptance and dependencies are usable without inventing product decisions. Keep a single working set in the driving repo.
+- Read the constitution, task overview and only the approved spec/plan or bug-diagnostic passages and architecture pages needed for the active task. Follow further references when a material decision needs them; leave detailed code tracing to the assigned agents. Check that acceptance and dependencies are usable without inventing product decisions. Keep a single working set in the driving repo.
 - Record starting commits and existing dirty files in every affected repo. Agree file ownership with parallel work; commit only exact owned paths. A shared checkout need not become globally clean.
 - Keep consequential decisions in the plan using the format below. Keep task status and any unresolved prerequisites in `tasks.md`. Do not create judgement files, gate journals, or replacement bookkeeping files.
 - Use configured roles: GPT-6 Luna/high easy implementer; GPT-6.1 Sol/medium standard implementer; Astra/high hard implementer; GPT-6.1 Sol/high per-task and global reviewer. The supervisor is preferably Astra/high. Respect explicit user model choices; report actual configuration instead of claiming a role pin worked. See `specs/agent-tooling.md` for Claude equivalents and runtime dispatch.
-- Collect local usage and register this session/each subagent with the feature, owner, stage, run, role and task where its runtime exposes an ID. Missing telemetry never blocks implementation and is reported as missing.
+- Collect local usage at run start and register this session/each subagent with the feature, owner, stage, run, role and task where its runtime exposes an ID. Do not repeatedly collect or report usage during an unchanged run; missing telemetry never blocks implementation and is reported as missing.
 
 ## Completion-driven supervision
 
@@ -35,11 +35,13 @@ separate clock checks. Surface consequential progress, exceptions and the final 
 2. Spawn an independent `reviewer` over the explicit implementation range(s), not whatever `HEAD` happens to be after handoff commits. Give the same intent and handoff path, and authorize evident scoped corrections in the same assignment. The reviewer chooses its depth, applies routine fixes, and returns only material choices or unresolved concerns alongside the final commit range.
 3. Resolve the material choices yourself within the approved outcomes. Resume the reviewer for fixes needing that direction. Capture only consequential decisions in the plan; no routine-fix inventory or review-tier log. Continue without requesting user approval for ordinary implementation choices.
 4. Keep check execution with the implementer and reviewer. Use their completion status and outstanding concerns to decide whether the task is complete; resume the responsible agent for missing checks or in-scope failures. Keep unresolved failures or unavailable required checks explicit. Do not copy passing test results, command transcripts or resolved routine fixes into plans, handoffs, reports or logs.
-5. Update task status and any actual blockers; commit exact owned files and continue. Add handoff leads only for material cross-task concerns; no per-task success checklist.
+5. Update task status and any actual blockers. Commit supervisor-owned updates with the next substantive change or at close-out instead of making status-only commits. Add handoff leads only for material cross-task concerns; no per-task success checklist.
+
+Use the implementer's handoff and explicit commit range to dispatch review, then the reviewer's final range and outstanding concerns to decide the next step. The reviewer owns full source tracing. Inspect diff statistics and narrow hunks only when a material choice or an APPLIED plan claim requires direct evidence; do not duplicate completed review or reload whole plans, skills and unrelated dirty diffs at every handoff.
 
 ## Consequential decisions in the plan
 
-Update the relevant plan passage or snippet to reflect the implemented design. Beside it, add a
+Once consequential choices have stabilized, update their relevant plan passages together to reflect the implemented design. Beside each, add a
 visible **`[IMPL-DECISION-01] — APPLIED`** callout with anchor `impl-decision-01`, following the
 [shared decision index and callout format](../spec-plan/references/plan-decision-callouts.md).
 Use stable, increasing IDs across the feature's runs, and a small linked index near the top with
@@ -69,7 +71,8 @@ identify the issue without opening every callout.
 
 For every `IMPL-DECISION` and changed plan passage, follow
 [the shared plan-link convention](../spec-plan/references/plan-review-links.md) for source links,
-the right-click diff menu and link refresh. The supervisor owns these plan edits.
+the right-click diff menu and link refresh. Refresh review links after the consolidated plan edit,
+unless a link problem requires another pass. The supervisor owns these plan edits.
 
 Keep the plan's left reading-order and changed-file column collapsible during review. Use the
 native `details/summary` pattern in `spec-plan/assets/plan.html`: collapsing it should leave a
@@ -112,5 +115,5 @@ routine blockers instead of turning them into a history of successful checks.
 
 - Run a fresh `reviewer` on both repositories' cumulative feature/run ranges, with the same authority for evident scoped fixes. Assign it final validation, including cross-repository integration and any checks needed after its corrections. Reuse completed checks that still cover the final changes; additional runs need a relevant change, failure or coverage gap. Start with any material handoff leads and diff statistics; resolve consequential findings without a routine user checkpoint.
 - Write a consolidated `CHANGELOG.md` entry for the delivered behavior in each affected repo. Resolve outstanding validation through the responsible agent before closing the run. Surface only unresolved failures or unavailable required checks, with enough context to act.
-- Collect usage again and give a compact feature/run summary, separating API-equivalent estimates from Codex credits and identifying material coverage gaps or model deviations. Include costs by task type (role) and agent type (actual model/effort combination), with shared overhead separate; when shadows ran, briefly assess their finding coverage, cost and time against the primary reviewer. The closing snapshot is not an exact final invoice.
+- Collect usage at close-out and give a compact feature/run summary, separating API-equivalent estimates from Codex credits and identifying material coverage gaps or model deviations. Include costs by task type (role) and agent type (actual model/effort combination), with shared overhead separate; when shadows ran, briefly assess their finding coverage, cost and time against the primary reviewer. The closing snapshot is not an exact final invoice.
 - Commit the final working set. Report the delivered outcome, link to the plan's decision index when present, and list only outstanding blockers or parked work. Omit routine fixes, successful test results and a duplicate decision narrative. Suggest explicit `feature-archive` after shipping and resolution of outstanding work. Do not merge, deploy, archive, or create a new user task merely because the loop ended.
