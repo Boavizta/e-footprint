@@ -17,4 +17,13 @@ Implement only the selected task. Read `.agents/repository.md`, the constitution
 
 Under `feature-implement`, surface blockers to the supervisor. Standalone, surface load-bearing product/contract, missing-authority or unexplained validation blockers to the user. Never reset, stash, or discard pre-existing work to make a tree look clean.
 
+## Interface no-response boundary
+
+For `e-footprint-interface`, request-with-no-response UX belongs to the parked
+`specs/backlog/network-interruption-message/problem.md` item. A task scoped to HTTP responses
+must not add timeout/abort-specific messages, per-field reload or retry behavior, or tests that
+establish a new no-response policy. Preserve existing generic request handling and surface any
+regression this task causes; defer new network-interruption UX until an approved task promotes
+that backlog item.
+
 Role setup and usage attribution: `specs/agent-tooling.md`.
