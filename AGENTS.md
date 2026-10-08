@@ -22,7 +22,7 @@ This file orients agents and contributors. It is intentionally short. Substance 
 | Lifecycle-phase and "embodied" definitions (sourced, digital/ICT scope) | `docs_sources/mkdocs_sourcefiles/environmental_footprint_definitions.md` |
 | The spec-driven workflow (specify → plan → tasks → implement) | `specs/workflow.md` |
 | Active feature work | `specs/features/<feature-name>/` |
-| VS Code links and right-click diffs in feature plans | `.agents/skills/spec-plan/references/plan-review-links.md` |
+| Feature plan links, decision indexes and callouts | `.agents/skills/spec-plan/references/plan-review-links.md` and `.agents/skills/spec-plan/references/plan-decision-callouts.md` |
 | Past investigations and dated decisions | `archives/` |
 
 ## Dev commands

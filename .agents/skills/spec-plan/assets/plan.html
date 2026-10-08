@@ -6,7 +6,8 @@
 <title>FEATURE_TITLE — Implementation plan</title>
 <style>
   :root { color-scheme: light; --ink: #21312f; --muted: #5e706e; --line: #dbe4df;
-    --paper: #fff; --bg: #f5f7f3; --accent: #176751; --soft: #eaf3ed; }
+    --paper: #fff; --bg: #f5f7f3; --accent: #176751; --soft: #eaf3ed;
+    --blue: #285e91; --blue-bg: #edf4fb; --amber: #835219; --amber-bg: #fff5e5; }
   * { box-sizing: border-box; }
   html { scroll-behavior: smooth; scroll-padding-top: 1.5rem; }
   body { margin: 0; font: 16px/1.6 system-ui, -apple-system, sans-serif;
@@ -92,6 +93,10 @@
   [data-change="renamed"] { color: #285e91; background: #edf4fb; }
   [data-change="removed"] { color: #963939; background: #fff0ed; }
   [data-reading-links] { margin-left: .3rem; font-size: .7rem; }
+  aside[data-note] { border-left: 3px solid var(--blue); background: var(--blue-bg);
+    padding: .8rem 1rem; border-radius: 0 .5rem .5rem 0; margin: 1rem 0; font-size: .92rem; }
+  aside[data-note="review"] { border-color: var(--amber); background: var(--amber-bg); }
+  aside[data-note] p { margin: .3rem 0; }
   figure { margin: 1rem 0; padding: 1rem; background: var(--paper); border: 1px solid var(--line); }
   figure > div, [data-table-scroll] { overflow-x: auto; }
   svg { display: block; width: 100%; height: auto; }

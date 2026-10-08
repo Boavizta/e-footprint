@@ -30,7 +30,7 @@ If you can't write a sentence without naming a file, class, or method, it's plan
 
    For any user-facing surface, **embed a clickable HTML mockup or an inline SVG of the interaction / data flow** in §4 rather than describing it in prose. Showing the experience is the main reason the spec is HTML — prefer a concrete artifact the user can look at and react to over a paragraph that approximates it.
 
-5. **Draft the plan (if step 3 triggered it).** Follow the `spec-plan` template and its [plan-link convention](../spec-plan/references/plan-review-links.md), including the source-link menu. The plan is explicitly marked as a draft and the user is invited to refine it during the `spec-plan` stage (which is now a refinement pass — see that skill).
+5. **Draft the plan (if step 3 triggered it).** Follow the `spec-plan` template and its [plan-link convention](../spec-plan/references/plan-review-links.md), including the source-link menu. If the draft records a plan decision, use the [shared callout format](../spec-plan/references/plan-decision-callouts.md). The plan is explicitly marked as a draft and the user is invited to refine it during the `spec-plan` stage (which is now a refinement pass — see that skill).
 
 6. **Self-check.** Re-read the spec. For each bullet in §3, ask: *is this a capability the user experiences, or a how-we-build-it decision?* If the latter, move it to `plan.html`.
 

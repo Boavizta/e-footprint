@@ -80,6 +80,8 @@ authority. A bug batch without a plan uses the same tags beside the affected tas
 ordinary choices and successful test results do not need annotations or reports. No judgement
 files or gate journals: `tasks.md` holds status and outstanding blockers/prerequisites only,
 distinguishing code blockers, deployment-only conditions and later human checks.
+Both plan-amendment and implementation-decision indexes and callouts use the shared
+`spec-plan/references/plan-decision-callouts.md` presentation.
 
 Finish with global review and the consolidated changelog for delivered behavior. The global
 reviewer owns final checks, including cross-repository integration, reusing completed checks that

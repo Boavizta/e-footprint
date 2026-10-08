@@ -134,6 +134,9 @@ update navigation, file mappings and highlight selectors together.
 - Keep semantic HTML, one inline style block, native `details/summary`, and no frameworks.
   Include only the shared `specs/review-links.js` for the source-link menu; use inline SVG when useful.
   The starter's IDs/data attributes and CSS anchor highlighting work without JavaScript.
+- For plan amendments and implementation decisions, use the shared
+  [decision index and callout format](references/plan-decision-callouts.md). Keep decisions visible
+  beside the passages they affect; other disclosures may still use `details/summary`.
 - Preserve readable long paths, file-labelled code, keyboard focus, narrow-screen flow and print
   layout. Use tables for compact comparisons or verification, not as the default file overview.
   A small feature should not inherit the full visual density of a large cross-repository plan.
@@ -147,12 +150,13 @@ update navigation, file mappings and highlight selectors together.
   and affected spec statements. Update the spec only for agreed capability changes, not to smuggle
   implementation details into it. Remove obsolete machinery everywhere it was described.
 - Task decomposition records proposed amendments beside affected passages in `plan.html`, using
-  the `spec-tasks` review format: visible `[PLAN-UPDATE-01] — PROPOSED` callouts and a linked index.
+  the `spec-tasks` content rules and [shared callout format](references/plan-decision-callouts.md).
   Preserve their stable IDs and the approved design while decisions are pending. Apply accepted
   changes to the plan, synchronize affected tasks/briefs, and mark the callouts ACCEPTED.
   Amendment decisions and task approval can happen in the same review.
 - During an authorized implementation run, consequential technical decisions use the
-  `feature-implement` format: update the owning plan passage and add an `IMPL-DECISION` callout.
+  `feature-implement` content rules and shared callout format: update the owning plan passage
+  and add an `IMPL-DECISION` callout.
   Keep ordinary fixes and successful test results out of the plan.
 - Record recurring review feedback when requested, but do not automatically rewrite the skill
   during feature review. Generalize lessons only when the user authorizes that update.

@@ -31,7 +31,8 @@ does not create a human approval gate. User intervention is exceptional.
 ## Consequential decisions in the plan
 
 Update the relevant plan passage or snippet to reflect the implemented design. Beside it, add a
-visible, expanded **`[IMPL-DECISION-01] — APPLIED`** callout with anchor `impl-decision-01`.
+visible **`[IMPL-DECISION-01] — APPLIED`** callout with anchor `impl-decision-01`, following the
+[shared decision index and callout format](../spec-plan/references/plan-decision-callouts.md).
 Use stable, increasing IDs across the feature's runs, and a small linked index near the top with
 anchor `impl-decisions`. Ctrl+F `IMPL-DECISION` must find the visible callouts.
 

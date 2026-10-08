@@ -67,10 +67,12 @@ review; every tier retains applicable constitution gates and independent review.
 
 ## Plan amendments for review
 
-When adding or resolving a `PLAN-UPDATE`, follow [the shared plan-link convention](../spec-plan/references/plan-review-links.md).
+When adding or resolving a `PLAN-UPDATE`, follow the shared
+[plan-link convention](../spec-plan/references/plan-review-links.md) and
+[decision callout format](../spec-plan/references/plan-decision-callouts.md).
 
-Put each proposal beside the affected passage in `plan.html`, in a visually distinct, expanded
-callout. Its visible heading is **`[PLAN-UPDATE-01] — PROPOSED`**, with anchor `plan-update-01`.
+Put each proposal beside the affected passage in `plan.html`. Its visible heading is
+**`[PLAN-UPDATE-01] — PROPOSED`**, with anchor `plan-update-01`.
 Increment the number for new proposals and keep IDs stable during review. Keep the label and its
 enclosing section visible so Ctrl+F `PLAN-UPDATE` works in the rendered plan.
 
@@ -81,17 +83,8 @@ Zero proposed plan changes is a valid outcome: leave `plan.html` unchanged, omit
 section from `tasks.md`, and state “No plan changes proposed” in the handoff. Do not manufacture
 amendments to fill the review format.
 
-Each proposed callout follows this shape, with concrete content and real links:
-
-```html
-<aside id="plan-update-01">
-  <p><strong>[PLAN-UPDATE-01] — PROPOSED</strong></p>
-  <p><strong>Current plan:</strong> The approved decision this would change.</p>
-  <p><strong>Proposed change:</strong> The precise replacement or addition.</p>
-  <p><strong>Why:</strong> Linked code evidence and the relevant trade-off.</p>
-  <p><strong>Affected tasks:</strong> Links to the affected tasks.</p>
-</aside>
-```
+Each proposed callout states the current plan, the precise proposed change, why it is needed
+with linked code evidence and trade-offs, and the affected tasks. Use the shared HTML format.
 
 `tasks.md` links to these callouts and identifies provisional tasks; the proposal explanation
 lives in the plan. Assign amendment IDs consistently across the plan, tasks and briefs as you
