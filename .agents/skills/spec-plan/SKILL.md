@@ -163,7 +163,8 @@ update navigation, file mappings and highlight selectors together.
 - Before handoff, check HTML IDs/anchors, local links, file labels and agreement between snippets,
   prose and file-tree entries. Audit all code-styled mentions outside illustrative sketches:
   no existing identifier or implementation detail should remain unlinked, and every source
-  link should resolve to the intended file and line. Refresh plan links as described in
+  link should resolve to the intended file and line. Apply the shared decision callout's
+  code-artifact audit to every plan amendment and implementation decision. Refresh plan links as described in
   [the shared convention](references/plan-review-links.md). Inspect the rendered layout when an
   available, permitted viewer supports it; otherwise disclose that visual verification was
   not performed. Do not claim planned application tests have run.

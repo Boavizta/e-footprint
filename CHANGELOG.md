@@ -8,6 +8,7 @@ and this project adheres to [Semantic Versioning](http://semver.org/)
 
 ### Changed
 
+- Plan decision guidance now requires an individual source-line link for every cited code artifact, including in plan amendments and implementation decisions.
 - Plan skills now use one shared amber index and visible callout format for plan amendments and implementation decisions.
 - Shared plan skills now use one source-link convention for VS Code opening and right-click diffs across new plans, plan amendments and implementation decisions.
 - Optional fixed instance counts now declare their expected unit and validate compatible, nonnegative values while still allowing an unset count.

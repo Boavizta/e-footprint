@@ -33,3 +33,9 @@ aside[data-note] p { margin: .3rem 0; }
 ```
 
 Other disclosure sections may still use `details/summary`. Keep empty decision indexes and placeholder callouts out of the plan.
+
+## Code evidence links
+
+In every decision callout, give each existing code artifact its own deep VS Code link to the exact definition or relevant call site. Audit function and method names, classes, exception types, fields, variables, event names and protocol headers, whether they appear in `<code>` or ordinary prose. Include `:line:column` in the `vscode://file/` URL and the matching `#Lline:column` in `data-review-source-href`; follow the [source-link convention](plan-review-links.md). Do not put two named symbols under one link if they live at different lines. For a built-in type or a removed symbol with no current definition, link the concrete project call site or regression that supports the claim rather than inventing a location.
+
+Before handoff, inspect every inline `<code>` element in `aside[id^="plan-update-"]` and `aside[id^="impl-decision-"]`: each code artifact must be inside its own file link with a verified line. Keep illustrative snippets and UI copy distinct from existing code references. Check existing links too; a nearby class or function is not a substitute for the named symbol's line.

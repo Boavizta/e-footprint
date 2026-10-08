@@ -67,7 +67,8 @@ any generic mechanism that remains.
 Check every APPLIED claim against the final code, especially whether a helper reads, copies, or
 derives its inputs. Distinguish implemented behavior from a possible cleanup or remaining gap;
 label the latter explicitly when material. Use specific titles in the index so a reviewer can
-identify the issue without opening every callout.
+identify the issue without opening every callout. Audit each callout's code artifacts and exact
+line links using the shared decision format before committing it.
 
 For every `IMPL-DECISION` and changed plan passage, follow
 [the shared plan-link convention](../spec-plan/references/plan-review-links.md) for source links,

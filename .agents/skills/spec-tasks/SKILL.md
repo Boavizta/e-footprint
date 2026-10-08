@@ -84,7 +84,8 @@ section from `tasks.md`, and state “No plan changes proposed” in the handoff
 amendments to fill the review format.
 
 Each proposed callout states the current plan, the precise proposed change, why it is needed
-with linked code evidence and trade-offs, and the affected tasks. Use the shared HTML format.
+with linked code evidence and trade-offs, and the affected tasks. Use the shared HTML format and
+its code-artifact link audit before handoff.
 
 `tasks.md` links to these callouts and identifies provisional tasks; the proposal explanation
 lives in the plan. Assign amendment IDs consistently across the plan, tasks and briefs as you
