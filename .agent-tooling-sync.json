@@ -52,7 +52,7 @@
     ".agents/roles/reviewer.md": "7709eaf63b81b46b06ea4d2dad322ecd38cfbe12dde1f59442f4b1e23e9b9e1e",
     ".agents/skills/bug-fixes/SKILL.md": "ecbd1c63090c526b1fe3d7a58295d804e44e260fe00537f38e736bfd8ced0e8e",
     ".agents/skills/feature-archive/SKILL.md": "547ce7350ca60528ca8189568929819cbb31d5f1a19f9352b6d96604c86063a7",
-    ".agents/skills/feature-implement/SKILL.md": "ca63e92e81da52948b241fe9e2aae6e0b32a428c54674420a04fca4e0282129c",
+    ".agents/skills/feature-implement/SKILL.md": "5e277b5c0d12aab248aa44b652dbd2fbd44244b0cad337222b4852352cd0a7c1",
     ".agents/skills/feature-implement/scripts/vscode_review_links.py": "0baa5042be167dc8a0d40630c7cebee2fed8d08dcfba74370ecd6d4640e2de83",
     ".agents/skills/spec-plan/SKILL.md": "efb2f6ae7e52723d5ba7d28c0354abc1b4002a81cc44699d71d92e6790ef02f1",
     ".agents/skills/spec-plan/assets/plan.html": "d0fe26fed9137f30c1c6e94e4dea10d0ac23947b4baa13f2d5015a417297b8da",

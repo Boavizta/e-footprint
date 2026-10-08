@@ -31,8 +31,8 @@ separate clock checks. Surface consequential progress, exceptions and the final 
 
 ## Per-task loop
 
-1. Spawn exactly one task's implementation role from its `Implementation` tier: easy → `implementer-easy`, standard → `implementer`, hard → `implementer-hard`. Use the [difficulty rules](../spec-tasks/SKILL.md#implementation-difficulty); if the tier is missing, legacy, or contradicted by new evidence, reassess and update it with a brief reason. Review-risk surfaces and predecessor tiers do not automatically require a stronger implementer. Supply task/brief paths, repository roots, dependency changes, owned file boundaries and role instructions. Defer the consolidated changelog to the supervisor. Require implementation commits, a minimal handoff, and any consequential decisions or unresolved concerns.
-2. Spawn an independent `reviewer` over the explicit implementation range(s), not whatever `HEAD` happens to be after handoff commits. Give the same intent and handoff path, and authorize evident scoped corrections in the same assignment. The reviewer chooses its depth, applies routine fixes, and returns only material choices or unresolved concerns alongside the final commit range.
+1. Spawn exactly one task's implementation role from its `Implementation` tier: easy → `implementer-easy`, standard → `implementer`, hard → `implementer-hard`. Use the [difficulty rules](../spec-tasks/SKILL.md#implementation-difficulty); if the tier is missing, legacy, or contradicted by new evidence, reassess and update it with a brief reason. Review-risk surfaces and predecessor tiers do not automatically require a stronger implementer. Supply task/brief paths, repository roots, dependency changes, owned file boundaries and role instructions. Defer the consolidated changelog to the supervisor. Require implementation commits, a minimal handoff, and leads on newly discovered pre-existing defects, substantial lasting complexity or unresolved concerns.
+2. Spawn an independent `reviewer` over the explicit implementation range(s), not whatever `HEAD` happens to be after handoff commits. Give the same intent and handoff path, and authorize evident scoped corrections in the same assignment. The reviewer chooses its depth, applies routine fixes, and returns material plan differences, newly discovered pre-existing defects, substantial lasting complexity or unresolved concerns alongside the final commit range.
 3. Resolve the material choices yourself within the approved outcomes. Resume the reviewer for fixes needing that direction. A reviewer's `STRUCTURING-DECISION` label calls for your judgement, not automatically a plan update. Capture only material differences from the approved plan; no routine-fix inventory or review-tier log. Continue without requesting user approval for ordinary implementation choices.
 4. Keep check execution with the implementer and reviewer. Use their completion status and outstanding concerns to decide whether the task is complete; resume the responsible agent for missing checks or in-scope failures. Keep unresolved failures or unavailable required checks explicit. Do not copy passing test results, command transcripts or resolved routine fixes into plans, handoffs, reports or logs.
 5. Update task status and any actual blockers. Commit supervisor-owned updates with the next substantive change or at close-out instead of making status-only commits. Add handoff leads only for material cross-task concerns; no per-task success checklist.
@@ -41,13 +41,16 @@ Use the implementer's handoff and explicit commit range to dispatch review, then
 
 ## Consequential decisions in the plan
 
-Compare the final reviewed implementation with the approved spec/plan and accepted amendments,
-not with intermediate task commits. Add a callout only when the final behavior, contract or
-architectural approach materially differs from what the approved plan led the user to expect.
-Judge the intended outcome, not incidental implementation wording. A fix that restores the
-approved behavior after an implementation or review regression is routine, even if it changes
-an earlier commit or adds a regression test. Keep ordinary plan prose accurate where needed,
-without promoting that fix to an `IMPL-DECISION`.
+Compare the final reviewed implementation with the approved spec/plan, accepted amendments and
+starting code, not only with intermediate task commits. Add a callout when the final behavior,
+contract or architectural approach materially differs from what the approved plan led the user
+to expect; when the run fixes a newly discovered pre-existing defect not already covered by the
+plan; or when an internal fix leaves substantial ongoing complexity even though the approved
+outcome is preserved. Such complexity includes a new cross-layer contract, state mechanism or
+reconciliation path that future maintainers must understand. Explain its cost and why it was
+accepted. Judge the intended outcome, not incidental implementation wording. A small fix that
+restores approved behavior after an implementation or review regression remains routine; keep
+ordinary plan prose accurate without promoting that fix to an `IMPL-DECISION`.
 
 Once consequential choices have stabilized, update their relevant plan passages together to reflect the implemented design. Beside each, add a
 visible **`[IMPL-DECISION-01] — APPLIED`** callout with anchor `impl-decision-01`, following the
@@ -55,9 +58,10 @@ visible **`[IMPL-DECISION-01] — APPLIED`** callout with anchor `impl-decision-
 Use stable, increasing IDs across the feature's runs, and a small linked index near the top with
 anchor `impl-decisions`. Ctrl+F `IMPL-DECISION` must find the visible callouts.
 
-Make each callout self-contained for plan review. State the material difference from the approved
-plan and whether it fills a plan gap, changes its promised behavior or contract, or retains a
-contested design; describe the concrete failure or constraint and why the choice matters. Link the affected files
+Make each callout self-contained for plan review. State whether it records a material plan
+difference, a newly discovered pre-existing defect or substantial lasting complexity; describe
+the concrete failure or constraint and why the choice matters. For complexity, name the added
+mechanism and maintenance trade-off even when behavior still matches the plan. Link the affected files
 and name the key functions or methods. Explain what changed along the code path and its observable
 effect, including relevant state or metadata that is preserved, remapped, or discarded. Give the
 run/task and the decisive evidence or trade-off. Keep this focused on the consequential choice,
@@ -94,8 +98,8 @@ that actually require the user's authority; keep the current design intact while
 When accepted and implemented, integrate the change and mark it APPLIED. If rejected, remove the
 proposal; keep a concise APPLIED callout only if the decision to retain the design merits review.
 
-Do not annotate routine fixes, including regressions introduced and repaired within this run,
-passing checks or ordinary choices. If there are no consequential
+Do not annotate small routine fixes, including regressions introduced and repaired within this
+run without substantial lasting complexity, passing checks or ordinary choices. If there are no consequential
 decisions, add no callouts or index. For a bug batch without a plan, use the same tags beside the
 relevant task in `tasks.md`; do not manufacture another document.
 
