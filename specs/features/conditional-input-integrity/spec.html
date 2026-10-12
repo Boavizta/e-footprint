@@ -11,7 +11,7 @@
   h2 { margin-top: 2rem; }
   header p, figcaption, small { color: #555; }
   a { color: #176751; text-underline-offset: .15em; }
-  :is(a, summary, select):focus-visible { outline: 3px solid #285e91; outline-offset: 3px; }
+  :is(a, summary):focus-visible { outline: 3px solid #285e91; outline-offset: 3px; }
   table { border-collapse: collapse; width: 100%; margin: 1rem 0; }
   th, td { border: 1px solid #ccc; padding: .5rem .65rem; text-align: left; vertical-align: top; }
   th { background: #f5f5f5; }
@@ -22,7 +22,6 @@
   svg { display: block; min-width: 660px; width: 100%; height: auto; }
   figcaption { font-size: .9rem; margin-top: .7rem; }
   blockquote { border-left: 3px solid #c98c34; background: #fff5e5; margin: 1rem 0; padding: .5rem 1rem; }
-  select { display: block; width: min(100%, 27rem); padding: .5rem; margin-top: .4rem; }
   @media print { body { max-width: none; font-size: 10pt; } figure, tr { break-inside: avoid; } }
 </style>
 </head>
@@ -31,7 +30,7 @@
   <h1>Conditional input integrity</h1>
   <p>Status: Spec — under review · 2026-10-12</p>
   <p>Library-driven feature spanning e-footprint and e-footprint-interface.
-    <a href="plan.html">Draft plan from the kickoff discussion</a>.</p>
+    Target library release: 26.0.0. <a href="plan.html">Draft plan from the kickoff discussion</a>.</p>
 </header>
 
 <section id="problem">
@@ -56,7 +55,9 @@
   <ol>
     <li><strong>Valid state after every accepted change.</strong> A library change that would leave
       an affected conditional input invalid fails with an actionable error identifying the affected
-      object/input and constraint. The previous inputs, relationships and computed state remain coherent.</li>
+      object and input, unsupported value, controlling choice and allowed choices (or the absence of
+      any allowed choice). The error explains which inputs need compatible corrections. The previous
+      inputs, relationships and computed state remain coherent.</li>
     <li><strong>Both sources of invalidation are covered.</strong> Protection applies when a controlling
       value changes and when any object relationship along its dependency path is replaced. It covers
       shared controllers, dependency chains and paths through several related objects.</li>
@@ -71,9 +72,8 @@
       submitted by the caller is rejected rather than silently overwritten. Automatic replacements
       preserve the dependent input's label and provenance. Rejected interface edits publish no
       value, relationship, provenance or result changes.</li>
-    <li><strong>Accurate display.</strong> Accepted values, available options and saved values agree
-      after editing and reloading. An already-invalid stored selection is visibly invalid; opening
-      its editor never presents another value as though that value had been saved.</li>
+    <li><strong>Accurate display after accepted edits.</strong> Accepted values, available options
+      and saved values agree after editing and reloading a valid snapshot.</li>
     <li><strong>Reusable rules.</strong> Library callers and interface consumers can obtain dependency
       relationships and allowed choices, including choices under a proposed batch, from the same
       authoritative rules used for validation.</li>
@@ -83,6 +83,11 @@
     <li><strong>Bounded work.</strong> Validation and option discovery target affected dependency paths
       and inputs. Adding unrelated modelings or unrelated objects does not cause those objects' inputs
       or calculations to be visited. Every job actually affected by a shared API change is checked.</li>
+    <li><strong>Narrow upgrade of historical files.</strong> Version 26 upgrades older snapshots
+      through the existing version-migration process. Video jobs whose saved resolution is unsupported
+      by their linked API's AI model receive the first allowed resolution when a compatible choice
+      exists. Supported resolutions, relationships, labels, provenance and other authored inputs remain
+      unchanged. This also covers disconnected video jobs present in the file.</li>
   </ol>
 </section>
 
@@ -95,18 +100,24 @@
       <li>Shared dependency and allowed-choice information for library validation, editor repair,
         field options and Simplified inputs selection requirements.</li>
       <li>Automatic dependent repair and feedback in normal editing, aligned with Simplified inputs.</li>
-      <li>Accurate rendering of unsupported saved choices and preserved existing provenance behavior.</li>
+      <li>Consistent display of accepted choices and preserved existing provenance behavior.</li>
       <li>Regression coverage of video API choices and generic examples independent of that catalog.</li>
+      <li>Release as library version 26.0.0, including a narrowly targeted upgrade of incompatible
+        video-job resolutions in older snapshots.</li>
     </ul>
   </details>
   <details><summary>Out of scope</summary>
     <ul>
       <li>New video models, resolution catalogs or environmental calculation formulas.</li>
       <li>A new normal-editor control for redirecting jobs to another API; the library operation is covered.</li>
-      <li>Implicit automatic correction by the library or changes to authored inputs merely on reading them.</li>
+      <li>Implicit automatic correction of live library changes or changes to authored inputs merely
+        on reading them. The explicitly scoped historical-file upgrade is the exception.</li>
       <li>New dependency expression syntax, arbitrary constraint programming or collection wildcard paths.</li>
       <li>A redesign of Simplified inputs, its eligible input kinds, inclusion policy or stored configuration.</li>
       <li>A general rewrite of the calculation engine, persistence formats or composite editing workflows.</li>
+      <li>Import-wide conditional revalidation, validation added to footprint calculations, special
+        recovery UI, or a general repair framework for historical files. Only the known video-job
+        resolution defect receives an upgrade correction.</li>
     </ul>
   </details>
 </section>
@@ -171,18 +182,11 @@
         <td>The edit is rejected with an explanation. The explicit resolution is not silently replaced.</td></tr>
       <tr><td>A library caller redirects a 1080p job to that API without correcting the resolution.</td>
         <td>The operation fails and preserves the original API link and resolution.</td></tr>
+      <tr><td>An older exported modeling contains the incompatible 1080p job resolution.</td>
+        <td>The normal version upgrade to 26 selects 480p, the first allowed resolution. The job
+        editor displays that corrected saved value without a special recovery panel.</td></tr>
     </tbody>
   </table>
-  <figure>
-    <label for="invalid-choice">Resolution on an already-invalid modeling</label>
-    <select id="invalid-choice" aria-describedby="invalid-choice-note">
-      <option selected disabled>1080p — unavailable for the selected AI model</option>
-      <option>480p</option><option>720p</option>
-    </select>
-    <p id="invalid-choice-note">The stored value stays visible until the user chooses and saves
-      a correction. This sketch illustrates truthful display; the loading and Results behavior
-      for already-invalid files remains an open question below.</p>
-  </figure>
 </section>
 
 <section id="constraints">
@@ -198,8 +202,11 @@
       empty branch allows no value. Preserve authored-input equality, including absence versus zero.</li>
     <li>A valid standalone object must receive the same protection as an object linked into a System.
       Ordinary footprint calculations are not a prerequisite for input validation.</li>
+    <li>Conditional validation for live changes remains at the transactional update boundary.
+      Import uses the existing version-upgrade mechanism, not a separate global conditional-validation pass.</li>
     <li>Existing valid JSON snapshots and Simplified inputs configuration continue to round-trip.
-      Any necessary schema change follows the existing migration process; no schema change is assumed.</li>
+      Version 26 adds the narrowly scoped upgrade without changing the snapshot structure. Existing
+      version-mismatch behavior must prevent old computed results from being trusted for corrected inputs.</li>
     <li>The <a href="../../../../e-footprint-interface/specs/features/simplified-inputs/spec.html">Simplified inputs spec</a>
       remains the reference for selection, provenance and save feedback. This feature extends equivalent
       conditional-value behavior to normal editing without expanding Simplified inputs eligibility.</li>
@@ -208,10 +215,8 @@
 
 <section id="questions">
   <h2>6. Open questions</h2>
-  <p><strong>Already-invalid saved files.</strong> Earlier normal edits can have produced an invalid
-    snapshot. Should loading reject it with a precise error, or allow correction while blocking
-    affected Results until the inputs are repaired? Silent normalization is excluded. This decision
-    is needed before the load/computation acceptance cases can be finalized.</p>
+  <p>No unresolved capability-level questions remain. Version 26 includes the small historical
+    video-resolution migration; generic import validation and special recovery behavior are excluded.</p>
   <p>Registration, cache lifecycle and exact library query contracts are design questions recorded
     in the draft plan for the planning stage.</p>
 </section>
@@ -219,7 +224,7 @@
 <section id="resume">
   <h2>7. Resuming from cold context</h2>
   <ol>
-    <li>Read this spec and resolve its open product question during review.</li>
+    <li>Read this spec, including the version 26 upgrade scope, during review.</li>
     <li>After spec approval, refine <a href="plan.html">the draft plan</a> in a fresh planning session.
       It preserves the reproduced failures and design proposals; it is not approved implementation work.</li>
     <li>Read the <a href="../../architecture/index.html">library architecture index</a> and the

@@ -154,6 +154,8 @@
   body:has(#forms:target, #forms :target) #change-tree li[data-steps~="forms"] { background: var(--soft); }
   body:has(#relationship-edit:target) #navigation a[href="#relationship-edit"],
   body:has(#forms:target) #navigation a[href="#forms"] { background: var(--soft); font-weight: 700; }
+  body:has(#upgrade:target, #upgrade :target) #change-tree li[data-steps~="upgrade"] { background: var(--soft); }
+  body:has(#upgrade:target) #navigation a[href="#upgrade"] { background: var(--soft); font-weight: 700; }
 </style>
 </head>
 <body>
@@ -169,6 +171,7 @@
       <li><a href="#relationship-edit">3 · Replace a relationship</a></li>
       <li><a href="#interface-edit">4 · Save in either editor</a></li>
       <li><a href="#forms">5 · Configure and render choices</a></li>
+      <li><a href="#upgrade">6 · Upgrade older files to version 26</a></li>
     </ol>
     <p><a href="#delivery">Delivery &amp; verification</a> · <a href="#decisions">Planning questions</a></p>
   </nav>
@@ -177,7 +180,8 @@
     <p>The list is provisional. Click existing files to open them in VS Code; right-click for a diff against main. New filenames link to this tree until implemented.</p>
     <div id="change-tree">
       <details open><summary>e-footprint / framework and tests</summary><ul><li id="file-rules" data-steps="dependencies library-edit relationship-edit forms"><a href="#file-rules"><code>efootprint/abstract_modeling_classes/conditional_inputs.py</code></a> <span data-change="new">New</span><span data-reading-links><a href="#dependencies">dependencies</a> · <a href="#library-edit">library edit</a> · <a href="#relationship-edit">relationship edit</a> · <a href="#forms">forms</a></span><small>Proposed home for derived descriptors, path resolution, affected-input discovery and candidate-aware choices; filename remains provisional.</small></li><li id="file-object" data-steps="dependencies library-edit relationship-edit"><a href="vscode://file//Users/vinville/dev/e-footprint-full/e-footprint/efootprint/abstract_modeling_classes/modeling_object.py" data-review-source-href="../../../efootprint/abstract_modeling_classes/modeling_object.py"><code>efootprint/abstract_modeling_classes/modeling_object.py</code></a> <span data-change="modified">Modified</span><span data-reading-links><a href="#dependencies">dependencies</a> · <a href="#library-edit">library edit</a> · <a href="#relationship-edit">relationship edit</a></span><small>Share existing choice validation; integrate generic registration without importing builders.</small></li><li id="file-update" data-steps="library-edit relationship-edit"><a href="vscode://file//Users/vinville/dev/e-footprint-full/e-footprint/efootprint/abstract_modeling_classes/modeling_update.py" data-review-source-href="../../../efootprint/abstract_modeling_classes/modeling_update.py"><code>efootprint/abstract_modeling_classes/modeling_update.py</code></a> <span data-change="modified">Modified</span><span data-reading-links><a href="#library-edit">library edit</a> · <a href="#relationship-edit">relationship edit</a></span><small>Validate all affected conditional inputs against the final batch inside rollback.</small></li><li id="file-rule-tests" data-steps="dependencies library-edit relationship-edit"><a href="#file-rule-tests"><code>tests/abstract_modeling_classes/test_conditional_inputs.py</code></a> <span data-change="new">New</span><span data-reading-links><a href="#dependencies">dependencies</a> · <a href="#library-edit">library edit</a> · <a href="#relationship-edit">relationship edit</a></span><small>Generic descriptors, multiple path hops, active links, inheritance and bounded discovery.</small></li><li id="file-update-tests" data-steps="library-edit relationship-edit"><a href="vscode://file//Users/vinville/dev/e-footprint-full/e-footprint/tests/abstract_modeling_classes/test_modeling_object.py" data-review-source-href="../../../tests/abstract_modeling_classes/test_modeling_object.py"><code>tests/abstract_modeling_classes/test_modeling_object.py</code></a> <span data-change="modified">Modified</span><span data-reading-links><a href="#library-edit">library edit</a> · <a href="#relationship-edit">relationship edit</a></span><small>Direct assignment, valid batches, rejected batches and cold objects.</small></li></ul></details>
-      <details open><summary>e-footprint-interface / editing and forms</summary><ul><li id="file-editor-service" data-steps="interface-edit"><a href="#file-editor-service"><code>model_builder/domain/services/input_editing.py</code></a> <span data-change="new">New</span><span data-reading-links><a href="#interface-edit">interface edit</a></span><small>Proposed shared reconciliation orchestration; editor policy stays outside the library.</small></li><li id="file-factory" data-steps="interface-edit"><a href="vscode://file//Users/vinville/dev/e-footprint-full/e-footprint-interface/model_builder/domain/object_factory.py" data-review-source-href="../../../../e-footprint-interface/model_builder/domain/object_factory.py"><code>model_builder/domain/object_factory.py</code></a> <span data-change="modified">Modified</span><span data-reading-links><a href="#interface-edit">interface edit</a></span><small>Retain form conversion and provenance handling; connect normal edits to shared reconciliation.</small></li><li id="file-simplified-edit" data-steps="interface-edit"><a href="vscode://file//Users/vinville/dev/e-footprint-full/e-footprint-interface/model_builder/application/use_cases/simplified_inputs.py" data-review-source-href="../../../../e-footprint-interface/model_builder/application/use_cases/simplified_inputs.py"><code>model_builder/application/use_cases/simplified_inputs.py</code></a> <span data-change="modified">Modified</span><span data-reading-links><a href="#interface-edit">interface edit</a></span><small>Consume the shared orchestration and expose affected fields/notices.</small></li><li id="file-normal-edit" data-steps="interface-edit"><a href="vscode://file//Users/vinville/dev/e-footprint-full/e-footprint-interface/model_builder/application/use_cases/edit_object.py" data-review-source-href="../../../../e-footprint-interface/model_builder/application/use_cases/edit_object.py"><code>model_builder/application/use_cases/edit_object.py</code></a> <span data-change="modified">Modified</span><span data-reading-links><a href="#interface-edit">interface edit</a></span><small>Propagate automatic changes and preserve one final persistence boundary.</small></li><li id="file-catalog" data-steps="forms"><a href="vscode://file//Users/vinville/dev/e-footprint-full/e-footprint-interface/model_builder/domain/services/simplified_inputs.py" data-review-source-href="../../../../e-footprint-interface/model_builder/domain/services/simplified_inputs.py"><code>model_builder/domain/services/simplified_inputs.py</code></a> <span data-change="modified">Modified</span><span data-reading-links><a href="#forms">forms</a></span><small>Use library dependency descriptions; keep eligibility and inclusion policy here.</small></li><li id="file-path" data-steps="forms"><a href="vscode://file//Users/vinville/dev/e-footprint-full/e-footprint-interface/model_builder/domain/conditional_inputs.py" data-review-source-href="../../../../e-footprint-interface/model_builder/domain/conditional_inputs.py"><code>model_builder/domain/conditional_inputs.py</code></a> <span data-change="removed">Removed</span><span data-reading-links><a href="#forms">forms</a></span><small>Remove this duplicate resolver after migrating its consumers; no compatibility shim.</small></li><li id="file-form" data-steps="forms"><a href="vscode://file//Users/vinville/dev/e-footprint-full/e-footprint-interface/model_builder/adapters/forms/form_field_generator.py" data-review-source-href="../../../../e-footprint-interface/model_builder/adapters/forms/form_field_generator.py"><code>model_builder/adapters/forms/form_field_generator.py</code></a> <span data-change="modified">Modified</span><span data-reading-links><a href="#forms">forms</a></span><small>Use shared allowed-choice queries for direct, dotted and candidate reference options.</small></li><li id="file-select" data-steps="forms"><a href="vscode://file//Users/vinville/dev/e-footprint-full/e-footprint-interface/model_builder/templates/model_builder/side_panels/dynamic_form_fields/select_str_input.html" data-review-source-href="../../../../e-footprint-interface/model_builder/templates/model_builder/side_panels/dynamic_form_fields/select_str_input.html"><code>model_builder/templates/model_builder/side_panels/dynamic_form_fields/select_str_input.html</code></a> <span data-change="modified">Modified</span><span data-reading-links><a href="#forms">forms</a></span><small>Keep unsupported stored choices visibly invalid instead of displaying the first option.</small></li><li id="file-integration" data-steps="interface-edit forms"><a href="vscode://file//Users/vinville/dev/e-footprint-full/e-footprint-interface/tests/integration/test_simplified_inputs.py" data-review-source-href="../../../../e-footprint-interface/tests/integration/test_simplified_inputs.py"><code>tests/integration/test_simplified_inputs.py</code></a> <span data-change="modified">Modified</span><span data-reading-links><a href="#interface-edit">interface edit</a> · <a href="#forms">forms</a></span><small>Editor parity, retained provenance, explicit conflicts and zero persistence on rejection.</small></li></ul></details>
+      <details open><summary>e-footprint / version upgrade</summary><ul><li id="file-upgrades" data-steps="upgrade"><a href="vscode://file//Users/vinville/dev/e-footprint-full/e-footprint/efootprint/api_utils/version_upgrade_handlers.py" data-review-source-href="../../../efootprint/api_utils/version_upgrade_handlers.py"><code>efootprint/api_utils/version_upgrade_handlers.py</code></a> <span data-change="modified">Modified</span><span data-reading-links><a href="#upgrade">upgrade</a></span><small>Add the proposed 25→26 handler for unsupported video-job resolutions; register it in the existing handler map.</small></li><li id="file-upgrade-tests" data-steps="upgrade"><a href="vscode://file//Users/vinville/dev/e-footprint-full/e-footprint/tests/api_utils_tests/test_version_upgrade_handlers.py" data-review-source-href="../../../tests/api_utils_tests/test_version_upgrade_handlers.py"><code>tests/api_utils_tests/test_version_upgrade_handlers.py</code></a> <span data-change="modified">Modified</span><span data-reading-links><a href="#upgrade">upgrade</a></span><small>Cover valid and incompatible resolutions, metadata retention, disconnected jobs and loading older snapshots into version 26.</small></li><li id="file-version" data-steps="upgrade"><a href="vscode://file//Users/vinville/dev/e-footprint-full/e-footprint/efootprint/version.py" data-review-source-href="../../../efootprint/version.py"><code>efootprint/version.py</code></a> <span data-change="modified">Modified</span><span data-reading-links><a href="#upgrade">upgrade</a></span><small>Advance the library version to 26.0.0 during implementation.</small></li><li id="file-package" data-steps="upgrade"><a href="vscode://file//Users/vinville/dev/e-footprint-full/e-footprint/pyproject.toml" data-review-source-href="../../../pyproject.toml"><code>pyproject.toml</code></a> <span data-change="modified">Modified</span><span data-reading-links><a href="#upgrade">upgrade</a></span><small>Align package version with the library release during implementation.</small></li></ul></details>
+      <details open><summary>e-footprint-interface / editing and forms</summary><ul><li id="file-editor-service" data-steps="interface-edit"><a href="#file-editor-service"><code>model_builder/domain/services/input_editing.py</code></a> <span data-change="new">New</span><span data-reading-links><a href="#interface-edit">interface edit</a></span><small>Proposed shared reconciliation orchestration; editor policy stays outside the library.</small></li><li id="file-factory" data-steps="interface-edit"><a href="vscode://file//Users/vinville/dev/e-footprint-full/e-footprint-interface/model_builder/domain/object_factory.py" data-review-source-href="../../../../e-footprint-interface/model_builder/domain/object_factory.py"><code>model_builder/domain/object_factory.py</code></a> <span data-change="modified">Modified</span><span data-reading-links><a href="#interface-edit">interface edit</a></span><small>Retain form conversion and provenance handling; connect normal edits to shared reconciliation.</small></li><li id="file-simplified-edit" data-steps="interface-edit"><a href="vscode://file//Users/vinville/dev/e-footprint-full/e-footprint-interface/model_builder/application/use_cases/simplified_inputs.py" data-review-source-href="../../../../e-footprint-interface/model_builder/application/use_cases/simplified_inputs.py"><code>model_builder/application/use_cases/simplified_inputs.py</code></a> <span data-change="modified">Modified</span><span data-reading-links><a href="#interface-edit">interface edit</a></span><small>Consume the shared orchestration and expose affected fields/notices.</small></li><li id="file-normal-edit" data-steps="interface-edit"><a href="vscode://file//Users/vinville/dev/e-footprint-full/e-footprint-interface/model_builder/application/use_cases/edit_object.py" data-review-source-href="../../../../e-footprint-interface/model_builder/application/use_cases/edit_object.py"><code>model_builder/application/use_cases/edit_object.py</code></a> <span data-change="modified">Modified</span><span data-reading-links><a href="#interface-edit">interface edit</a></span><small>Propagate automatic changes and preserve one final persistence boundary.</small></li><li id="file-catalog" data-steps="forms"><a href="vscode://file//Users/vinville/dev/e-footprint-full/e-footprint-interface/model_builder/domain/services/simplified_inputs.py" data-review-source-href="../../../../e-footprint-interface/model_builder/domain/services/simplified_inputs.py"><code>model_builder/domain/services/simplified_inputs.py</code></a> <span data-change="modified">Modified</span><span data-reading-links><a href="#forms">forms</a></span><small>Use library dependency descriptions; keep eligibility and inclusion policy here.</small></li><li id="file-path" data-steps="forms"><a href="vscode://file//Users/vinville/dev/e-footprint-full/e-footprint-interface/model_builder/domain/conditional_inputs.py" data-review-source-href="../../../../e-footprint-interface/model_builder/domain/conditional_inputs.py"><code>model_builder/domain/conditional_inputs.py</code></a> <span data-change="removed">Removed</span><span data-reading-links><a href="#forms">forms</a></span><small>Remove this duplicate resolver after migrating its consumers; no compatibility shim.</small></li><li id="file-form" data-steps="forms"><a href="vscode://file//Users/vinville/dev/e-footprint-full/e-footprint-interface/model_builder/adapters/forms/form_field_generator.py" data-review-source-href="../../../../e-footprint-interface/model_builder/adapters/forms/form_field_generator.py"><code>model_builder/adapters/forms/form_field_generator.py</code></a> <span data-change="modified">Modified</span><span data-reading-links><a href="#forms">forms</a></span><small>Use shared allowed-choice queries for direct, dotted and candidate reference options.</small></li><li id="file-integration" data-steps="interface-edit forms"><a href="vscode://file//Users/vinville/dev/e-footprint-full/e-footprint-interface/tests/integration/test_simplified_inputs.py" data-review-source-href="../../../../e-footprint-interface/tests/integration/test_simplified_inputs.py"><code>tests/integration/test_simplified_inputs.py</code></a> <span data-change="modified">Modified</span><span data-reading-links><a href="#interface-edit">interface edit</a> · <a href="#forms">forms</a></span><small>Editor parity, retained provenance, explicit conflicts and zero persistence on rejection.</small></li></ul></details>
     </div>
   </section>
 </details>
@@ -192,9 +196,10 @@
     Proposed API and module names are sketches, not existing contracts.</p>
 </header>
 <aside id="plan-updates" data-note="review">
-  <p><strong>Kickoff design proposals for review</strong></p>
+  <p><strong>Kickoff decisions and design proposals</strong></p>
   <p><a href="#plan-update-01">[PLAN-UPDATE-01] Derive a static reverse index — PROPOSED</a></p>
   <p><a href="#plan-update-02">[PLAN-UPDATE-02] Library rejection and shared editor repair — PROPOSED</a></p>
+  <p><a href="#plan-update-03">[PLAN-UPDATE-03] Version 26 migration; transaction-only validation — ACCEPTED</a></p>
 </aside>
 
 <section id="dependencies" data-step>
@@ -253,7 +258,9 @@ Example: video API / model_name
     Use one shared choice-validation implementation for directly changed values and unchanged affected dependents.</p>
   <p>A rejected batch uses <a href="vscode://file//Users/vinville/dev/e-footprint-full/e-footprint/efootprint/abstract_modeling_classes/modeling_update.py:181:1" data-review-source-href="../../../efootprint/abstract_modeling_classes/modeling_update.py#L181:1"><code>rollback()</code></a>
     and restores inputs and relationships before recomputing the existing eager boundary. Validate before footprint guards run on an
-    invalid final combination. Valid batches can change Provider, Model and every necessary Resolution together, in any input order.</p>
+    invalid final combination. Valid batches can change Provider, Model and every necessary Resolution together, in any input order.
+    Conditional failures must identify the affected object/input, unsupported value, controlling choice and allowed values,
+    including a clear explanation when no value is allowed. Use existing error presentation rather than a new recovery workflow.</p>
   <p>This input validation must work for standalone objects and cold objects. It cannot depend on dependency edges learned by
     footprint getters. Preserve <a href="vscode://file//Users/vinville/dev/e-footprint-full/e-footprint/efootprint/abstract_modeling_classes/modeling_update.py:169:1" data-review-source-href="../../../efootprint/abstract_modeling_classes/modeling_update.py#L169:1"><code>pull_eagerly()</code></a>
     for other guards instead of substituting a video-specific computed guard for generic conditional validation.</p>
@@ -315,9 +322,51 @@ Example: video API / model_name
   <p>Current mismatch: the <a href="vscode://file//Users/vinville/dev/e-footprint-full/e-footprint-interface/model_builder/adapters/forms/form_field_generator.py:413:1" data-review-source-href="../../../../e-footprint-interface/model_builder/adapters/forms/form_field_generator.py#L413:1"><code>resolved-options branch</code></a>
     filters away unsupported resolutions, while <a href="vscode://file//Users/vinville/dev/e-footprint-full/e-footprint-interface/model_builder/templates/model_builder/side_panels/dynamic_form_fields/select_str_input.html:9:1" data-review-source-href="../../../../e-footprint-interface/model_builder/templates/model_builder/side_panels/dynamic_form_fields/select_str_input.html#L9:1"><code>select_str_input.html</code></a>
     marks no option selected. Native selection then displays the first option despite a different stored value.
-    Render an unsupported saved choice explicitly as invalid instead; do not alter model inputs during rendering.</p>
-  <p>The loading and Results policy for already-invalid snapshots is unresolved in the spec. Its final choice may add persistence/load
-    or Results paths to this file tree during planning. Do not silently validate it by assuming every successfully computed footprint is valid.</p>
+    Prevent newly introduced incompatible states through transaction validation and editor reconciliation;
+    verify that accepted states render their saved choice without adding an invalid-file widget.</p>
+</section>
+
+<section id="upgrade" data-step>
+  <h2>6 · Upgrade older files to version 26</h2>
+  <aside id="plan-update-03" data-note="review">
+    <p><strong>[PLAN-UPDATE-03] — ACCEPTED</strong></p>
+    <p>Ship this feature as library version 26.0.0 and add a narrow 25→26 migration for incompatible
+      historical video-job resolutions. Live conditional validation belongs in
+      <a href="vscode://file//Users/vinville/dev/e-footprint-full/e-footprint/efootprint/abstract_modeling_classes/modeling_update.py:17:1" data-review-source-href="../../../efootprint/abstract_modeling_classes/modeling_update.py#L17:1"><code>ModelingUpdate</code></a>;
+      do not add a global import validation pass, footprint-time conditional validation or special recovery UI.</p>
+    <p>Automatic dependent updates during normal and simplified edits remain in scope. The migration is a
+      version-bound correction of the known legacy defect, not implicit repair during ordinary library updates.</p>
+  </aside>
+  <p>The current <a href="vscode://file//Users/vinville/dev/e-footprint-full/e-footprint/efootprint/api_utils/json_to_system.py:117:1" data-review-source-href="../../../efootprint/api_utils/json_to_system.py#L117:1"><code>upgrade_system_dict_to_current_version()</code></a>
+    dispatches handlers across major versions. Add the proposed handler to
+    <a href="vscode://file//Users/vinville/dev/e-footprint-full/e-footprint/efootprint/api_utils/version_upgrade_handlers.py:842:1" data-review-source-href="../../../efootprint/api_utils/version_upgrade_handlers.py#L842:1"><code>VERSION_UPGRADE_HANDLERS</code></a>
+    with key 25, and advance <a href="vscode://file//Users/vinville/dev/e-footprint-full/e-footprint/efootprint/version.py:1:1" data-review-source-href="../../../efootprint/version.py#L1:1"><code>efootprint/version.py</code></a>
+    and <a href="vscode://file//Users/vinville/dev/e-footprint-full/e-footprint/pyproject.toml:8:1" data-review-source-href="../../../pyproject.toml#L8:1"><code>pyproject.toml</code></a> to 26.0.0 during implementation.</p>
+  <div data-code>
+    <p data-code-file><a href="#file-upgrades"><code>efootprint/api_utils/version_upgrade_handlers.py</code></a>
+      <small>Proposed handler contract; not implemented</small></p>
+    <pre><code>upgrade_version_25_to_26(system_dict, efootprint_classes_dict=None)
+    for each serialized video job:
+        resolve its linked API and saved AI model
+        obtain that model's allowed resolutions from the class metadata
+        keep a supported resolution unchanged
+        otherwise, if compatible options exist, replace only its value
+            with the first allowed resolution
+    return system_dict</code></pre>
+  </div>
+  <p>Operate on serialized inputs using the supplied class registry and existing conditional-choice metadata.
+    Do not hydrate temporary model graphs or hard-code the EcoLogits resolution catalog. Iterate the serialized video-job
+    collection directly so disconnected jobs receive the same correction. Preserve labels, source references, confidence,
+    comments, API relationships, valid values and other inputs. The handler does not repair provider/model pairs or arbitrary malformed JSON.</p>
+  <p>The existing <a href="vscode://file//Users/vinville/dev/e-footprint-full/e-footprint/efootprint/api_utils/json_to_system.py:155:1" data-review-source-href="../../../efootprint/api_utils/json_to_system.py#L155:1"><code>json_to_system()</code></a>
+    uses version mismatch to stop trusting old computed caches and retains eligible values as a historical baseline.
+    Reuse that behavior so calculations use repaired inputs; do not add another cache-clearing or import recovery mechanism.</p>
+  <p>Files from earlier supported releases reach this handler through the existing upgrade chain.
+    Version 26 files do not rerun it. The snapshot structure remains unchanged; the new major release carries
+    the specific input correction and hardened mutation behavior.</p>
+  <p>Align the interface's publishable dependency with version 26 before merging the coordinated implementation.
+    Preserve the current editable dependency and pre-existing lockfile edits during local development.
+    Release preparation does not authorize package publication or deployment.</p>
 </section>
 
 <section id="delivery">
@@ -330,8 +379,10 @@ Example: video API / model_name
       <small>Depends on A. Preserve public operations and valid snapshot round-trips.</small></li>
     <li><strong>C · Shared editor repair — interface</strong>Use one repair service in normal and simplified edits, with explicit-choice handling, provenance and feedback.
       <small>Depends on A and B; preserve the existing editable library dependency during local development.</small></li>
-    <li><strong>D · Consumer migration and truthful display — interface</strong>Reuse library queries in selection and forms; resolve the already-invalid snapshot policy.
-      <small>Run focused regressions and both repositories' required gates after scope and plan approval.</small></li>
+    <li><strong>D · Consumer migration and accepted-state display — interface</strong>Reuse library queries in selection and forms; verify saved choices after successful edits.
+      <small>Depends on A and C; no historical-file widget or import-wide validation.</small></li>
+    <li><strong>E · Version 26 and narrow upgrade — library, then interface dependency</strong>Add the 25→26 handler and release metadata; verify older files load with corrected resolutions and fresh computed state.
+      <small>Use the shared choice semantics from A. Complete coordinated checks before merging; publication remains separate.</small></li>
   </ol>
   <h3>Verification map</h3>
   <div data-table-scroll><table>
@@ -343,13 +394,15 @@ Example: video API / model_name
       <tr><td>Bounded discovery</td><td>No unrelated owner validation or computed getters; required shared-job fan-out is linear in affected jobs.</td><td>Library instrumentation on relevant operations; avoid flaky timing thresholds.</td></tr>
       <tr><td>Normal/simplified editor parity</td><td>Same final values and provenance; explicit conflicts and empty branches publish nothing; retained values refresh choices.</td><td><a href="vscode://file//Users/vinville/dev/e-footprint-full/e-footprint-interface/tests/integration/test_simplified_inputs.py:128:1" data-review-source-href="../../../../e-footprint-interface/tests/integration/test_simplified_inputs.py#L128:1"><code>existing integration coverage</code></a> extended for both paths.</td></tr>
       <tr><td>Branch semantics and equality</td><td>Missing versus empty branch, absence versus zero, same-value provenance patches and authored timeseries remain correct.</td><td>Existing library and interface regressions.</td></tr>
-      <tr><td>Displayed selection and feedback</td><td>Saved choices match displayed choices; unsupported values stay visibly invalid; automatic job changes are explained.</td><td>Form unit tests and one focused browser flow for normal API edits.</td></tr>
+      <tr><td>Displayed selection and feedback</td><td>Accepted saved choices match displayed choices; automatic job changes are explained.</td><td>Form unit tests and one focused browser flow for normal API edits.</td></tr>
+      <tr><td>Informative rejection</td><td>The error identifies the affected owner/input, unsupported value, controller and allowed choices; no partial state is published.</td><td>Library regressions and existing interface error presentation.</td></tr>
+      <tr><td>Version 25→26 upgrade</td><td>Keep supported resolutions; fix only incompatible ones; preserve metadata and links; include disconnected jobs; compute from repaired inputs instead of trusting old totals.</td><td><a href="vscode://file//Users/vinville/dev/e-footprint-full/e-footprint/tests/api_utils_tests/test_version_upgrade_handlers.py:20:1" data-review-source-href="../../../tests/api_utils_tests/test_version_upgrade_handlers.py#L20:1"><code>version-upgrade tests</code></a> plus a focused import round-trip.</td></tr>
       <tr><td>Declaration lifecycle</td><td>Valid dotted declarations derive their reverse descriptions; unresolved paths fail clearly; cache does not miss newly registered types.</td><td>Library declaration tests, including test-time metadata changes.</td></tr>
     </tbody>
   </table></div>
   <p>These checks are planned, not executed. Reuse existing rollback, branch and provenance tests rather than reproducing their implementation in new tests.</p>
-  <p>Expected persistence change: none. Verify that derived caches remain runtime state and that existing snapshots round-trip.
-    If planning establishes a schema change, add its migration and version gate explicitly.</p>
+  <p>Target release: 26.0.0, with a registered 25→26 input-correction handler and no snapshot-structure change.
+    Verify that derived caches remain runtime state, valid old snapshots retain authored inputs, and corrected old snapshots recompute under the existing version-mismatch contract.</p>
   <p>Update the owning library validation/relationship documentation and interface forms/editing documentation when implementing.
     Both repositories receive their own changelog entries. The future tasks.md lives only here and identifies repository ownership.</p>
 </section>
@@ -357,8 +410,6 @@ Example: video API / model_name
 <section id="decisions">
   <h2>Planning questions</h2>
   <ul>
-    <li><strong>Invalid existing snapshots:</strong> resolve the spec's reject-load versus allow-correction outcome first;
-      then trace its loading and Results consequences. Avoid silently repairing authored values on load.</li>
     <li><strong>Registration and cache scope:</strong> choose the smallest generic registration mechanism. Confirm inherited and
       polymorphic constructor paths, test-time metadata changes, and dynamic class import behavior without introducing a concrete-builder import.</li>
     <li><strong>Candidate and affected-input contract:</strong> finalize input identity and result shapes shared by validation,
@@ -366,7 +417,7 @@ Example: video API / model_name
     <li><strong>Normal edit integration:</strong> trace notices, affected field refresh and composite pre-edit hooks before fixing module boundaries.
       The provisional service filename is not an approved architecture choice.</li>
   </ul>
-  <p>No approved design decisions, tasks, briefs, application edits or application test runs are produced by this specification stage.</p>
+  <p>The version 26 migration and transaction-only validation boundary are accepted. Other design proposals still need planning review; no tasks, briefs, application edits or application test runs are produced by this specification stage.</p>
 </section>
 </main>
 </div>
