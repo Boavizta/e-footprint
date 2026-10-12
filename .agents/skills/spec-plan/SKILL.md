@@ -96,13 +96,17 @@ in the actual feature.
 
 Use the following shape, scaled to the feature rather than a fixed number of sections:
 
-1. **Shared data, if it changes.** Show significant new or extended structures before the
-   interactions that need them. Include concrete fields, central return types, identity and
-   ownership where relevant. Do not invent a structure just to fill this section.
-2. **Follow interactions through the code.** Organize by user action or functional flow, not
-   technical layer. For a library-only feature, follow the caller's operation. Name the entry
-   point, changed calls/data and visible or returned result. Introduce shared helpers with their
-   first consumer, then link back.
+1. **Shared data, if it changes.** Start with materially new or changed data structures needed
+   by the following interactions. Show their concrete shape, identity and ownership. Existing
+   metadata can be read directly; explaining it does not require a wrapper or new data model.
+   Omit this opening section when no shared data changes.
+2. **Follow interactions through the code.** After the shared data, organize by user action or
+   library caller operation. Follow its entry point, changed calls, validation, persistence and
+   visible or returned result where relevant. Introduce a helper when its first caller invokes
+   it, explaining its owning module and meaningful inputs/outputs in that flow; later flows
+   link back. Avoid standalone inventories of implementation functions or query contracts.
+   A dedicated contract section is appropriate when the contract itself is the feature's main
+   review subject, such as a new public API or integration protocol; still connect it to callers.
 3. **Implementation sequence and verification.** Keep dependency order distinct from reading
    order. Name independently useful steps and any approved ride-along refactor. Map important
    behavior and regression risks to existing test layers; do not enumerate helper-internal
@@ -116,7 +120,11 @@ Within the walkthrough:
 - Title each code block with its owning file. Split multi-file snippets; label payload examples
   as payloads and name their producer/consumer. Mark existing versus proposed code.
 - Show important structure changes and their callers, not opaque type names or callbacks without
-  a home. Keep sketches short enough to reveal the contract rather than simulate implementation.
+  a home. At a helper's first call site, name the function, its definition module, caller and
+  execution boundary (for example, class definition, instance creation or Save). Reuse function
+  names in the explanation instead of ambiguous substitutes such as “the query” or “the resolver”.
+  Show concrete inputs/outputs when they clarify the change; keep sketches short enough to reveal
+  the contract rather than simulate implementation.
 - Distinguish browser feedback, server processing and persistence; name the particular operation
   instead of “the save use case”. Describe rendering at the interaction that causes it.
 - State a consistent path base and identify paths outside it and cross-repository ownership.
