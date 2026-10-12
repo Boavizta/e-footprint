@@ -18,6 +18,19 @@ For the broader **communication-target audience map** — peer-credibility commu
 
 The library is open-source and hosted within the [Boavizta](https://boavizta.org/) ecosystem.
 
+## Eco-design and feature choices
+
+The project itself is eco-designed and complexity-aware. Prioritize capabilities people actually use
+and keep functionality and implementation lean, simple, maintainable and frugal. Before adding a
+convenience, weigh its expected frequency and user benefit against the complexity it introduces.
+Prefer existing controls or explicit user actions when the extra effort is negligible and avoids
+additional coordination. State unverified usage assumptions; rare but consequential correctness needs
+still deserve protection.
+
+Code simplicity supports maintenance but does not establish environmental savings. Consider runtime
+work, computation, storage and transfers separately when relevant, and ground resource-impact claims
+in evidence.
+
 ## In scope (today)
 
 - **Lifecycle phases:** manufacturing and usage of servers, storage, network (usage only), end-user devices, and edge devices.

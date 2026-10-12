@@ -4,6 +4,7 @@ This file is local to this repository; the synchronization script never overwrit
 
 - Architecture entry point: `specs/architecture/index.html`; read the index, then only the owning pages. The interface uses the same entry-point convention.
 - Standards: `specs/constitution.md`, `specs/conventions.md`, `specs/testing.md`. These remain authoritative; the shared skills do not weaken their gates.
+- Feature shaping: apply [the mission's eco-design and feature priorities](../specs/mission.md#eco-design-and-feature-choices) before fixing scope. Prefer lean capabilities and negligible extra user effort over complex convenience machinery; preserve modeling correctness and assess runtime/resource costs separately.
 - Modeling truth lives here. Preserve units, explainability, dependency invalidation, transaction rollback, and serialization contracts. Do not add compatibility branches for hypothetical consumers.
 - Validation: `MPLBACKEND=Agg poetry run pytest`; documentation changes affecting the published docs use `poetry run mkdocs build --strict` where configured. Apply the constitution's conditional round-trip, schema-migration, registry and changelog gates.
 - FULL review surfaces: `efootprint/abstract_modeling_classes/`, `efootprint/api_utils/`, footprint/unit/attribution calculations, schema migrations, and changes to library/interface contracts. A path sets review depth, not automatically implementation difficulty.

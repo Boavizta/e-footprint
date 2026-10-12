@@ -18,21 +18,47 @@ stage. Report missing telemetry without blocking specification work.
 
 If you can't write a sentence without naming a file, class, or method, it's plan content.
 
+## Feature shaping
+
+Before writing success criteria or a UX mockup, apply the project's priorities from `specs/mission.md`
+and `.agents/repository.md` to the proposed scope. For interactions or capabilities with a meaningful
+complexity tradeoff, assess:
+
+- **Frequency and value:** who benefits, how often, and how much? Distinguish evidence from assumptions;
+  do not invent usage or latency figures when frequency is unknown.
+- **Simpler interaction:** could an existing control, explicit action or manual retry deliver the outcome
+  with negligible extra user effort? Compare against adding the convenience, not only different ways to build it.
+- **Likely complexity:** does the convenience imply remembered intent, queues, automatic continuation,
+  draft preservation, extra states or coordination between interactions? Use known context to flag the
+  likely cost; leave implementation details and uncertain mechanisms for `plan.html` or `spec-plan`.
+- **Recommendation:** include, simplify or omit the behavior, explaining the marginal user benefit and
+  cost. Keep this proportional to the feature; no numerical scoring or separate assessment artifact is needed.
+
+Separate correctness requirements from interaction conveniences. Rare but consequential failures may
+justify substantial work; rarity alone is not a reason to weaken correctness. Respect explicit user
+decisions, and surface material unresolved scope tradeoffs before treating a polished interaction as a
+requirement. Where the project favors leanness, recommend a simple explicit action over additional
+coordination for a small convenience. Simpler code is a maintenance benefit, not evidence by itself of
+lower environmental impact; assess likely runtime/resource work separately when relevant.
+
+Record consequential capability tradeoffs and frequency assumptions briefly in the problem, scope or
+open questions of `spec.html`; put technical cost explanations in the draft plan when one is needed.
+
 ## Process
 
 1. **Confirm the feature name** with the user (kebab-case, descriptive). If the slot already exists at `specs/features/<feature-name>/`, stop and ask whether to overwrite or pick a different name.
 
-2. **Read `specs/mission.md` and `specs/constitution.md`** before drafting. The spec must be in scope per `mission.md` and respect `constitution.md`. If it isn't, surface the conflict before writing.
+2. **Read `specs/mission.md` and `specs/constitution.md`** before drafting. The spec must be in scope per `mission.md`, apply its feature and resource priorities and the local guidance in `.agents/repository.md`, and respect `constitution.md`. If it isn't, surface the conflict before writing.
 
 3. **Classify accumulated context.** Audit the prior conversation for design-level signals: file paths, class/method names, parameter defaults, refactor instructions, citations of existing-code patterns to copy, decisions made about provider/model splits, where-things-live, internal vs external parameters, etc. If load-bearing design content is already in the conversation, drafting only `spec.html` will either (a) discard that content or (b) leak it into the spec. In that case, produce **both** `spec.html` and a draft `plan.html` in this same pass. Tell the user explicitly that you're producing two files and why. If the conversation is purely capability-framed, draft only `spec.html`.
 
-4. **Draft the spec** following the template below. Use AskUserQuestion for any unclear *capability-level* question (audience, user outcome, in/out scope). Do not invent answers. Do **not** ask design-level questions here — those go to `spec-plan`. If the user volunteers a design decision, capture it for `plan.html` instead of folding it into the spec.
+4. **Shape the scope, then draft the spec.** Apply the feature-shaping check above before success criteria or mockups make a convenience look mandatory. Follow the template below. Use AskUserQuestion for any unclear *capability-level* question (audience, user outcome, in/out scope). Do not invent answers. Do **not** ask design-level questions here — those go to `spec-plan`. If the user volunteers a design decision, capture it for `plan.html` instead of folding it into the spec.
 
    For any user-facing surface, **embed a clickable HTML mockup or an inline SVG of the interaction / data flow** in §4 rather than describing it in prose. Showing the experience is the main reason the spec is HTML — prefer a concrete artifact the user can look at and react to over a paragraph that approximates it.
 
 5. **Draft the plan (if step 3 triggered it).** Follow the `spec-plan` template and its [plan-link convention](../spec-plan/references/plan-review-links.md), including the source-link menu. If the draft records a plan decision, use the [shared callout format](../spec-plan/references/plan-decision-callouts.md). The plan is explicitly marked as a draft and the user is invited to refine it during the `spec-plan` stage (which is now a refinement pass — see that skill).
 
-6. **Self-check.** Re-read the spec. For each bullet in §3, ask: *is this a capability the user experiences, or a how-we-build-it decision?* If the latter, move it to `plan.html`.
+6. **Self-check.** Re-read the spec. For each bullet in §3, ask: *is this a capability the user experiences, or a how-we-build-it decision?* If the latter, move it to `plan.html`. Check that success criteria and mockups reflect the chosen tradeoffs rather than reintroducing conveniences omitted during feature shaping.
 
 7. **Save the file(s).**
 
@@ -83,6 +109,7 @@ The spec is a **single self-contained `.html` file** — openable offline, share
     <li>What user problem does this solve?</li>
     <li>Who experiences it (user persona, frequency, severity)?</li>
     <li>Why is it worth solving now?</li>
+    <li>Briefly explain consequential scope tradeoffs and identify any unverified frequency assumptions.</li>
   </ul>
 </section>
 

@@ -5,7 +5,7 @@ This file orients agents and contributors. It is intentionally short. Substance 
 ## Read this first
 
 1. **`specs/constitution.md`** — the project's immutable rules. Every change respects them.
-2. **`specs/mission.md`** — what e-footprint is and isn't.
+2. **`specs/mission.md`** — scope, audience, and eco-design priorities for weighing user value against complexity.
 
 ## Where things live
 
