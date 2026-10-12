@@ -60,9 +60,9 @@
     ".agents/skills/feature-implement/SKILL.md": "834d832049f2d234119518ad35baeba821d5aaad1e57b9e46eda0ebc0903cdc9",
     ".agents/skills/feature-implement/scripts/vscode_review_links.py": "0baa5042be167dc8a0d40630c7cebee2fed8d08dcfba74370ecd6d4640e2de83",
     ".agents/skills/plan-review-guide/SKILL.md": "0c55d7108febd16f9a1439513cbd2570457bd646350a50989e1e516c663d92fb",
-    ".agents/skills/spec-plan/SKILL.md": "efb2f6ae7e52723d5ba7d28c0354abc1b4002a81cc44699d71d92e6790ef02f1",
+    ".agents/skills/spec-plan/SKILL.md": "4eebfc64e04ec8e8adf767367d021ff26acdef4bd7187e5ccde5bb22d611836c",
     ".agents/skills/spec-plan/assets/plan.html": "d0fe26fed9137f30c1c6e94e4dea10d0ac23947b4baa13f2d5015a417297b8da",
-    ".agents/skills/spec-plan/references/plan-decision-callouts.md": "8949768d5a82cfb754f480c8106624d6adcc54e6f991cdfe842d85db09e26dbf",
+    ".agents/skills/spec-plan/references/plan-decision-callouts.md": "53b1c5cd5695a320653aa01e9749b86e3ad427d1299af889a8f579e4a8d04036",
     ".agents/skills/spec-plan/references/plan-review-links.md": "ccc6048c4f2261e98e0e72c25d0d3e30b4647339baff32b2fdc8af3bd4f174a3",
     ".agents/skills/spec-specify/SKILL.md": "1f5679624ad2c80f48bc1f2c72fba5872f961d97d390adf292021a685e4409f6",
     ".agents/skills/spec-tasks/SKILL.md": "74bebee0351304e2ec31e233201a668c291ba8d9278d78073b65a0ff638bfc3f",
@@ -94,6 +94,6 @@
     "scripts/sync_agent_tooling.py": "3fe7841551cd2a45b07e73c57066b8bd415d33b9665afbd2443673c6e8696b12",
     "specs/agent-tooling.md": "1df25273c9008e80e52dff598a811c0ae0f544784bfaddb7f71b25fc32df9204",
     "specs/review-links.js": "435d48ff035471affbd0b8da62911dedf29d78a68dd6c2ef98cfcb13c5d9508e",
-    "specs/workflow.md": "5370b102c47ee633b2d86e49fdbaac7bef9b6531afc901eb792cc36a2228f13e"
+    "specs/workflow.md": "79978b198adc491157019fd3bbf4ec9e1ee6d9e84d9ecafa1ec673fb8b4b6019"
   }
 }

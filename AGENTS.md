@@ -44,7 +44,7 @@ an authorized `feature-implement` run then completes implementation and reviews 
 recording only consequential decisions in context in the plan.
 
 1. **Specify** — write `specs/features/<name>/spec.html` (problem, scope, success criteria). Skill: `spec-specify`.
-2. **Plan** — write `plan.html` (approach, affected modules, risks). Skill: `spec-plan`.
+2. **Plan** — write `plan.html` (approach, affected modules, risks); surface code-grounded spec simplifications for review. Skill: `spec-plan`.
 3. **Tasks** — write `tasks.md` (ordered, independently-shippable steps). Skill: `spec-tasks`.
 4. **Implement** — execute one task at a time, respecting constitution gates. Skill: `task-implement`.
 

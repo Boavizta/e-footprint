@@ -35,6 +35,13 @@ link owning pages where helpful, without adding a teaching section.
 Source-file links and the right-click diff menu follow `spec-plan/references/plan-review-links.md`
 throughout later plan amendments and implementation decisions.
 
+When code grounding reveals substantial complexity that a small behavior change could remove,
+surface a spec-change proposal beside the affected plan passage using the existing `PLAN-UPDATE`
+callouts. Link the spec clause and code evidence, explain the user tradeoff and recommendation,
+and preserve the approved spec while pending. Continue unaffected planning, mark dependent passages
+provisional, and present proposals together with the plan for review. Accepted capability changes
+update the spec and plan together; rejected proposals retain the approved requirement.
+
 Review and approve the plan, then start tasks in a fresh session. Missing decisions in the
 persisted documents must be resolved instead of inferred from another session's memory.
 

@@ -1,6 +1,6 @@
 # Plan decision callouts
 
-Use this presentation for every `PLAN-UPDATE` and `IMPL-DECISION` in `plan.html`. The `spec-tasks` and `feature-implement` skills own when to record a decision, its status and its required explanation; this reference owns the shared HTML presentation.
+Use this presentation for every `PLAN-UPDATE` and `IMPL-DECISION` in `plan.html`. The `spec-plan`, `spec-tasks` and `feature-implement` skills own when to record a decision, its status and its required explanation; this reference owns the shared HTML presentation.
 
 Put a compact, linked index just after the plan header, only when that decision type exists. Give each decision its own row with the full searchable tag, a short specific title and current status. Use `id="plan-updates"` or `id="impl-decisions"`:
 

@@ -28,7 +28,7 @@ an architecture-teaching block or repeating established patterns.
 - Resolve the feature and driving repository from the conversation and workspace workflow.
   Read the approved `spec.html`, any existing plan and relevant review decisions. Ask only if
   the feature or approval is genuinely unclear; do not restart an established review.
-- Read the repository's `AGENTS.md`, constitution and architecture entry point, then the owning
+- Read the repository's `AGENTS.md`, mission, constitution and architecture entry point, then the owning
   documentation for affected paths. Both repositories use `specs/architecture/index.html`;
   consult `.agents/repository.md` if a documentation transition is still in progress.
   Flag architectural deviations; constitutional changes require explicit approval through the
@@ -39,15 +39,37 @@ an architecture-teaching block or repeating established patterns.
 - Look for existing mechanisms before proposing abstractions. Explain a refactor through:
   what happens today; what is extracted or changed and who uses it; what genuinely new behavior
   it enables. Preserve unrelated behavior.
-- Ask about material unresolved decisions with a concrete scenario grounded in the current
-  code or approved scope. Separate observations, proposals and uncertainties. Do not manufacture
-  edge cases to force a product decision.
+- Ground material unresolved decisions in a concrete scenario from the current code or approved
+  scope. Separate observations, proposals and uncertainties; collect ordinary scope questions for
+  plan review as described below. Do not manufacture edge cases to force a product decision.
 
 ## Audit complexity before human review
 
+Treat the approved spec as scope already shaped by the mission's leanness preference during
+`spec-specify`. Planning grounds those choices in actual code and supported interactions, where
+new costs or simpler alternatives may become apparent. Look for newly discovered complexity traps
+or opportunities where a small behavior change removes substantial implementation cost. Revisit
+agreed tradeoffs when new evidence changes their balance; surface proposals for review rather
+than silently changing the spec or routinely reopening settled product decisions.
+
 For each added abstraction, state store, queue, synchronization step, validation or recovery
 mechanism, identify the agreed behavior it serves and compare it with a smaller extension of
-existing code. Remove mechanisms with no demonstrated need.
+existing code. Remove mechanisms with no demonstrated need. Apply the project's feature and resource
+priorities from its mission and `.agents/repository.md`.
+
+Also look for requirements whose implementation cost could be substantially reduced by a small
+behavior change. When traced code or necessary proposed mechanisms reveal such an opportunity,
+actively recommend it for review: identify the affected spec clause, show the complexity it causes,
+and compare the smallest behavior change with implementing the approved requirement. Explain which
+states, coordination, persistence or recovery mechanisms would disappear; a difficult implementation
+or a line-count estimate alone does not justify changing scope.
+
+Assess the actual user cost, including expected frequency, benefit, failure severity and accessibility.
+Distinguish evidence from assumptions and unknowns; do not invent usage figures or savings. A short
+spec edit may have large behavioral consequences. Preserve correctness, security and domain invariants;
+rare but consequential needs may justify substantial complexity. Separate maintenance benefits from
+runtime/resource effects when relevant. Keep a consequential recommendation visible beside the
+affected interaction using the proposal guidance below; no separate audit document or new stage is needed.
 
 In particular:
 
@@ -146,9 +168,22 @@ update navigation, file mappings and highlight selectors together.
 - Refine existing plans in place. Preserve accepted decisions and the user's reviewed layout;
   do not replace the document wholesale to impose the starter. Briefly state meaningful changes
   before editing. Discussion-only requests are not permission to edit.
+- Record discovered spec simplifications as `[PLAN-UPDATE-01] — PROPOSED` callouts beside the
+  affected plan passage, using the [shared index and callout format](references/plan-decision-callouts.md).
+  Give each proposal a stable ID; continue the existing numbering if proposals already exist.
+  Include the linked spec clause, precise current/proposed behavior, linked code evidence for the
+  complexity removed, user tradeoffs, recommendation and material uncertainties. Label spec changes
+  explicitly so the reviewer can distinguish them from implementation choices within approved scope.
+  Keep the approved spec and accepted design intact while pending, and mark dependent plan passages
+  provisional wherever they rely on the proposed behavior. Continue unaffected planning and present
+  meaningful proposals together with the plan for review. Interrupt only when a fundamental scope
+  contradiction prevents a coherent reviewable plan even with explicit provisional assumptions;
+  complete unaffected work first. Do not manufacture proposals to fill the format.
 - When a decision changes, synchronize the walkthrough, snippets, changed-file tree, verification
   and affected spec statements. Update the spec only for agreed capability changes, not to smuggle
-  implementation details into it. Remove obsolete machinery everywhere it was described.
+  implementation details into it. For an accepted spec proposal, update the spec and plan together
+  and mark its callout/index ACCEPTED. For a rejected proposal, mark it REJECTED with a brief reason
+  and align the plan with the unchanged requirement. Remove obsolete machinery everywhere it was described.
 - Task decomposition records proposed amendments beside affected passages in `plan.html`, using
   the `spec-tasks` content rules and [shared callout format](references/plan-decision-callouts.md).
   Preserve their stable IDs and the approved design while decisions are pending. Apply accepted
