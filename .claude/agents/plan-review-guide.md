@@ -1,7 +1,7 @@
 ---
 name: plan-review-guide
 description: Convert an implemented plan into a code-linked review guide while preserving its reviewed structure.
-model: claude-opus-5-5[1m]
+model: claude-haiku-5-5
 effort: medium
 ---
 

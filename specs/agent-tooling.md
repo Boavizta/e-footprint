@@ -31,25 +31,25 @@ expansion: shared instructions read the repository's small local reference at ru
 
 ## Agent roles
 
-| Role | Codex | Effort | Claude Code equivalent |
+| Role | Effort | Codex | Claude Code |
 |---|---|---|---|
-| implementer-easy | gpt-6-luna | high | claude-opus-5-5[1m] (medium) |
-| implementer | gpt-6.1-sol | medium | claude-opus-5-5[1m] |
-| implementer-hard | gpt-6-astra | high | claude-fable-5-1[1m] |
-| reviewer | gpt-6.1-sol | high | claude-fable-5-1[1m] |
-| diagnostician | gpt-6.1-sol | high | claude-fable-5-1[1m] |
-| plan-review-guide | gpt-6-luna | medium | claude-opus-5-5[1m] (medium) |
+| implementer-easy | high | gpt-6-luna | claude-haiku-5-5 |
+| implementer | medium | gpt-6.1-sol | claude-opus-5-5[1m] |
+| implementer-hard | high | gpt-6-astra | claude-fable-5-1[1m] |
+| reviewer | high | gpt-6.1-sol | claude-opus-5-5[1m] |
+| diagnostician | high | gpt-6.1-sol | claude-opus-5-5[1m] |
+| plan-review-guide | medium | gpt-6-luna | claude-haiku-5-5 |
 
-The supervisor/planning session preferably uses Astra/high (Fable/high in Claude). These are
-starting configurations, not equivalent capability or effort scales proven across providers.
-An explicit user model choice overrides the default workflow recommendation.
+Model tiers map across runtimes as Astra = Fable, Sol = Opus, Luna = Haiku, with the same effort;
+role decisions made on one runtime apply to both. This table and the runtime adapters are the only
+places that name provider models: skills, role instructions and workflow documents refer to the
+agent definitions. The supervisor/planning session preferably uses the `implementer-hard`
+configuration. An explicit user model choice overrides the default workflow recommendation.
 
 `Implementation: easy | standard | hard` selects the corresponding implementer role using the
 [difficulty rules](../.agents/skills/spec-tasks/SKILL.md#implementation-difficulty). Standard is the
 default; easy covers well-defined transformations and known-cause fixes, including broad mechanical
-renames. Review depth and required checks remain independent. Claude's easy role retains the
-standard Opus/medium configuration; the smaller-model tier is currently configured for Codex.
-Luna/high follows the [Codex subagent starting guidance](https://learn.chatgpt.com/docs/agent-configuration/subagents).
+renames. Review depth and required checks remain independent. The easy tier's high effort follows the [Codex subagent starting guidance](https://learn.chatgpt.com/docs/agent-configuration/subagents).
 
 Portable role instructions live in `.agents/roles/`; `.codex/agents/*.toml` and
 `.claude/agents/*.md` are thin runtime adapters. When a Codex runtime exposes only a generic
@@ -60,7 +60,7 @@ The same configured reviewer role handles per-task and global reviews and can ap
 The plan-review-guide role performs the final documentation pass after global review and corrections;
 it preserves the approved plan and adds implementation evidence. The supervisor owns consequential
 decisions and checks changed claims. Substantial unresolved tracing escalates to the standard
-implementer; see [the skill](../.agents/skills/plan-review-guide/SKILL.md). Luna/medium is the initial
+implementer; see [the skill](../.agents/skills/plan-review-guide/SKILL.md). Its small-model tier is the initial
 default for this bounded role, subject to correction effort observed in use.
 
 Use a fresh context for specification → plan → tasks and for each implementation run. This is a
@@ -191,7 +191,8 @@ When processing mode is absent, reports
 assume Standard and count those assumptions explicitly; the observed Codex logs do not expose
 this setting. Known unsupported regional conditions remain unpriced. API-equivalent reports omit
 provider-side tool charges and are not invoices or subscription quota measurements. Claude factors
-are imported and have not been independently verified against provider pricing; refresh them
+are imported and have not been independently verified against provider pricing, except Claude Haiku 5.5: its two rate cards (split at a 100K-token prompt, stored as
+`long_prompt` in `prices.json`) follow the published input/output rates and cache multipliers. Refresh them
 before relying on a new model's estimate. No cost or carbon estimate is
 stored as a raw fact. Environmental factors and uncertainty belong in a separately documented
 model over these measurements.

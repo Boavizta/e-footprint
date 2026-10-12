@@ -6,7 +6,8 @@
     "gpt-6-luna": "https://developers.openai.com/api/docs/models/gpt-6-luna",
     "gpt-5.6-luna": "https://developers.openai.com/api/docs/models/gpt-5.6-luna",
     "codex_credits": "https://learn.chatgpt.com/docs/pricing",
-    "claude": "Imported factors; not independently verified against provider pricing"
+    "claude": "Imported factors; not independently verified against provider pricing",
+    "claude-haiku-5-5": "Claude API model reference cached 2026-10-06; pricing page https://platform.claude.com/docs/en/about-claude/pricing not re-fetched"
   },
   "models": {
     "gpt-6-luna": {
@@ -78,6 +79,21 @@
       "write": 12.5,
       "write_1h": 20,
       "output": 50
+    },
+    "claude-haiku-5-5": {
+      "input": 0.1,
+      "cached": 0.01,
+      "write": 0.125,
+      "write_1h": 0.2,
+      "output": 0.5,
+      "long_prompt": {
+        "above": 100000,
+        "input": 0.5,
+        "cached": 0.05,
+        "write": 0.625,
+        "write_1h": 1,
+        "output": 2.5
+      }
     }
   }
 }

@@ -1,7 +1,7 @@
 ---
 name: reviewer
 description: Independently review a task or cumulative feature change.
-model: claude-fable-5-1[1m]
+model: claude-opus-5-5[1m]
 effort: high
 ---
 

@@ -8,6 +8,10 @@ def price(row, card, surface):
     rate = card["models"].get(model)
     if not rate:
         return None, "unknown model"
+    band = rate.get("long_prompt")
+    if band and row["context"] > band["above"]:
+        # The whole request moves to the model's second rate card, not only the tokens past the threshold.
+        rate = {**rate, **band}
     t = row["tokens"]
     if row.get("region") not in (None, "global", "not_available"):
         return None, "regional pricing unavailable"

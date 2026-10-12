@@ -178,6 +178,14 @@ class UsageTests(unittest.TestCase):
         self.assertAlmostEqual(price(row, self.card, "api")[0], ((2 + .6 + 2.5)*2 + 5*1.5)*2/1e6)
         self.assertAlmostEqual(price(row, self.card, "credits")[0], (100 + 15 + 125)*2/1e6)
 
+    def test_haiku_prompt_over_threshold_uses_its_second_rate_card(self):
+        record = claude(1, 10)
+        record["message"]["model"] = "claude-haiku-5-5"
+        row = parse(self.file([record]), "claude")[1][0]
+        self.assertAlmostEqual(price(row, self.card, "api")[0], (10*.1 + 60*.01 + 20*.2 + 10*.5)/1e6)
+        row["context"] = 100001
+        self.assertAlmostEqual(price(row, self.card, "api")[0], (10*.5 + 60*.05 + 20*1 + 10*2.5)/1e6)
+
     def test_missing_price_or_writes_never_silently_free(self):
         row = parse(self.file(codex() + [token(1, 110, write=None)]), "codex")[1][0]
         self.assertIsNone(price(row, self.card, "api")[0])
