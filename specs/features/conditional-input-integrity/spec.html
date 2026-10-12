@@ -1,0 +1,232 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Conditional input integrity — Spec</title>
+<style>
+  body { font-family: system-ui, -apple-system, sans-serif; line-height: 1.6;
+    max-width: 56rem; margin: 2rem auto; padding: 0 1.2rem; color: #1a1a1a; }
+  h1 { border-bottom: 2px solid #e0e0e0; padding-bottom: .3rem; }
+  h2 { margin-top: 2rem; }
+  header p, figcaption, small { color: #555; }
+  a { color: #176751; text-underline-offset: .15em; }
+  :is(a, summary, select):focus-visible { outline: 3px solid #285e91; outline-offset: 3px; }
+  table { border-collapse: collapse; width: 100%; margin: 1rem 0; }
+  th, td { border: 1px solid #ccc; padding: .5rem .65rem; text-align: left; vertical-align: top; }
+  th { background: #f5f5f5; }
+  details { margin: .6rem 0; border: 1px solid #ddd; border-radius: 6px; padding: .4rem .8rem; }
+  summary { cursor: pointer; font-weight: 600; }
+  figure { border: 1px solid #dbe4df; background: #f8faf7; border-radius: 8px; padding: 1rem; margin: 1rem 0; }
+  figure > div { overflow-x: auto; }
+  svg { display: block; min-width: 660px; width: 100%; height: auto; }
+  figcaption { font-size: .9rem; margin-top: .7rem; }
+  blockquote { border-left: 3px solid #c98c34; background: #fff5e5; margin: 1rem 0; padding: .5rem 1rem; }
+  select { display: block; width: min(100%, 27rem); padding: .5rem; margin-top: .4rem; }
+  @media print { body { max-width: none; font-size: 10pt; } figure, tr { break-inside: avoid; } }
+</style>
+</head>
+<body>
+<header>
+  <h1>Conditional input integrity</h1>
+  <p>Status: Spec — under review · 2026-10-12</p>
+  <p>Library-driven feature spanning e-footprint and e-footprint-interface.
+    <a href="plan.html">Draft plan from the kickoff discussion</a>.</p>
+</header>
+
+<section id="problem">
+  <h2>1. Problem and audience</h2>
+  <p>A valid input can become invalid when another input changes. For example, changing a video
+    API's AI model can invalidate the resolutions of jobs using that API. Redirecting a job to a
+    different API can produce the same problem.</p>
+  <p>Today, normal editing can save that incompatible combination. Reopening the job editor shows
+    a supported resolution even though a different, unsupported resolution remains stored. Results
+    can calculate successfully from that unsupported combination, so neither apparent correction
+    nor successful computation proves that the modeling is valid.</p>
+  <p>Simplified inputs already repairs dependent choices across objects. Normal editing and direct
+    library changes do not have equivalent protection. The interface also interprets dependency
+    rules independently in several places, increasing the risk of inconsistent behavior.</p>
+  <p>This affects model authors changing providers or AI models, colleagues adapting a modeling
+    through Simplified inputs, and Python callers changing inputs or object relationships. The
+    immediate risk is silently calculating an environmental footprint for an unsupported combination.</p>
+</section>
+
+<section id="success">
+  <h2>2. Success criteria</h2>
+  <ol>
+    <li><strong>Valid state after every accepted change.</strong> A library change that would leave
+      an affected conditional input invalid fails with an actionable error identifying the affected
+      object/input and constraint. The previous inputs, relationships and computed state remain coherent.</li>
+    <li><strong>Both sources of invalidation are covered.</strong> Protection applies when a controlling
+      value changes and when any object relationship along its dependency path is replaced. It covers
+      shared controllers, dependency chains and paths through several related objects.</li>
+    <li><strong>Whole-batch validation.</strong> A caller can submit a controller and all necessary
+      dependent corrections together. Acceptance depends on the final combination, independent of
+      submission order; no valid batch is rejected for an intermediate state.</li>
+    <li><strong>Consistent editor repair.</strong> Normal and simplified edits retain dependent values
+      that remain valid. Otherwise they choose the first allowed option in the declared order and
+      explain each automatic change. Controller and dependent changes save together. A branch with
+      no allowed choice rejects the complete edit.</li>
+    <li><strong>Explicit choices remain explicit.</strong> A conflicting dependent value expressly
+      submitted by the caller is rejected rather than silently overwritten. Automatic replacements
+      preserve the dependent input's label and provenance. Rejected interface edits publish no
+      value, relationship, provenance or result changes.</li>
+    <li><strong>Accurate display.</strong> Accepted values, available options and saved values agree
+      after editing and reloading. An already-invalid stored selection is visibly invalid; opening
+      its editor never presents another value as though that value had been saved.</li>
+    <li><strong>Reusable rules.</strong> Library callers and interface consumers can obtain dependency
+      relationships and allowed choices, including choices under a proposed batch, from the same
+      authoritative rules used for validation.</li>
+    <li><strong>No dependence on calculation history.</strong> The same edit has the same validation
+      outcome before any Results have been computed and after loading a valid inputs-only or cached
+      snapshot. A valid replacement relationship becomes the relationship used by later validation.</li>
+    <li><strong>Bounded work.</strong> Validation and option discovery target affected dependency paths
+      and inputs. Adding unrelated modelings or unrelated objects does not cause those objects' inputs
+      or calculations to be visited. Every job actually affected by a shared API change is checked.</li>
+  </ol>
+</section>
+
+<section id="scope">
+  <h2>3. Scope</h2>
+  <details open><summary>In scope</summary>
+    <ul>
+      <li>Generic enforcement of the existing conditional-choice rules within and between objects.</li>
+      <li>Direct Python input changes, explicit batches and replacement of relationships along a dependency path.</li>
+      <li>Shared dependency and allowed-choice information for library validation, editor repair,
+        field options and Simplified inputs selection requirements.</li>
+      <li>Automatic dependent repair and feedback in normal editing, aligned with Simplified inputs.</li>
+      <li>Accurate rendering of unsupported saved choices and preserved existing provenance behavior.</li>
+      <li>Regression coverage of video API choices and generic examples independent of that catalog.</li>
+    </ul>
+  </details>
+  <details><summary>Out of scope</summary>
+    <ul>
+      <li>New video models, resolution catalogs or environmental calculation formulas.</li>
+      <li>A new normal-editor control for redirecting jobs to another API; the library operation is covered.</li>
+      <li>Implicit automatic correction by the library or changes to authored inputs merely on reading them.</li>
+      <li>New dependency expression syntax, arbitrary constraint programming or collection wildcard paths.</li>
+      <li>A redesign of Simplified inputs, its eligible input kinds, inclusion policy or stored configuration.</li>
+      <li>A general rewrite of the calculation engine, persistence formats or composite editing workflows.</li>
+    </ul>
+  </details>
+</section>
+
+<section id="experience">
+  <h2>4. UX / interface</h2>
+  <figure>
+    <div>
+      <svg viewBox="0 0 820 350" role="img" aria-labelledby="flow-title flow-description">
+        <title id="flow-title">Conditional change outcomes</title>
+        <desc id="flow-description">A normal save or simplified edit retains valid choices and repairs
+          invalid ones, then saves everything together or rejects the edit if a correction is impossible.
+          A Python caller must submit its own corrections in the same batch or receive an error.</desc>
+        <defs><marker id="arrow" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse">
+          <path d="M0 0 L10 5 L0 10z" fill="#65766b"/></marker></defs>
+        <g font-family="system-ui, sans-serif" font-size="14" fill="#21312f">
+          <rect x="12" y="20" width="224" height="102" rx="8" fill="#edf4fb" stroke="#bdcedd"/>
+          <text x="25" y="44" font-weight="600">Change provider or AI model</text>
+          <text x="25" y="72">Normal edit: Save</text>
+          <text x="25" y="97">Simplified inputs: save change</text>
+          <path d="M236 72 H268" stroke="#65766b" marker-end="url(#arrow)"/>
+          <rect x="276" y="20" width="240" height="102" rx="8" fill="#fff" stroke="#c6d3ca"/>
+          <text x="289" y="44" font-weight="600">Review all affected choices</text>
+          <text x="289" y="72">Keep choices that remain valid</text>
+          <text x="289" y="97">Repair other invalid choices</text>
+          <path d="M516 72 H548" stroke="#65766b" marker-end="url(#arrow)"/>
+          <rect x="556" y="20" width="252" height="102" rx="8" fill="#eaf3ed" stroke="#b5cbbd"/>
+          <text x="569" y="44" font-weight="600">Save together</text>
+          <text x="569" y="72">Show each automatic replacement</text>
+          <text x="569" y="97">Results use the accepted choices</text>
+          <path d="M396 122 V149 H548" fill="none" stroke="#65766b" marker-end="url(#arrow)"/>
+          <rect x="556" y="135" width="252" height="65" rx="8" fill="#fff2e9" stroke="#d4b398"/>
+          <text x="569" y="160" font-weight="600">No compatible correction?</text>
+          <text x="569" y="185">Reject; keep saved state</text>
+          <rect x="12" y="235" width="224" height="91" rx="8" fill="#edf4fb" stroke="#bdcedd"/>
+          <text x="25" y="262" font-weight="600">Python caller submits a batch</text>
+          <text x="25" y="289">Controller only, or controller</text>
+          <text x="25" y="311">with dependent corrections</text>
+          <path d="M236 279 H268" stroke="#65766b" marker-end="url(#arrow)"/>
+          <rect x="276" y="235" width="240" height="91" rx="8" fill="#fff" stroke="#c6d3ca"/>
+          <text x="289" y="262" font-weight="600">Validate the final combination</text>
+          <text x="289" y="289">Accept a compatible batch</text>
+          <text x="289" y="311">Reject an incompatible batch</text>
+          <path d="M516 279 H548" stroke="#65766b" marker-end="url(#arrow)"/>
+          <rect x="556" y="235" width="252" height="91" rx="8" fill="#fff" stroke="#c6d3ca"/>
+          <text x="569" y="262" font-weight="600">Predictable outcome</text>
+          <text x="569" y="289">Accept values, or return an error</text>
+          <text x="569" y="311">with the previous state restored</text>
+        </g>
+      </svg>
+    </div>
+    <figcaption>The existing save gestures stay the same. The library enforces validity;
+      editors make their automatic corrections visible.</figcaption>
+  </figure>
+  <table>
+    <thead><tr><th scope="col">Example</th><th scope="col">Accepted outcome</th></tr></thead>
+    <tbody>
+      <tr><td>Two jobs use the same API: one at 720p, the other at 1080p. The new AI model allows
+        480p then 720p.</td><td>The 720p job retains its resolution. The 1080p job changes to 480p.
+        Both resolutions and the API's choice are saved together; a notice names the changed job.</td></tr>
+      <tr><td>A user explicitly submits 1080p with an AI model that only supports 480p and 720p.</td>
+        <td>The edit is rejected with an explanation. The explicit resolution is not silently replaced.</td></tr>
+      <tr><td>A library caller redirects a 1080p job to that API without correcting the resolution.</td>
+        <td>The operation fails and preserves the original API link and resolution.</td></tr>
+    </tbody>
+  </table>
+  <figure>
+    <label for="invalid-choice">Resolution on an already-invalid modeling</label>
+    <select id="invalid-choice" aria-describedby="invalid-choice-note">
+      <option selected disabled>1080p — unavailable for the selected AI model</option>
+      <option>480p</option><option>720p</option>
+    </select>
+    <p id="invalid-choice-note">The stored value stays visible until the user chooses and saves
+      a correction. This sketch illustrates truthful display; the loading and Results behavior
+      for already-invalid files remains an open question below.</p>
+  </figure>
+</section>
+
+<section id="constraints">
+  <h2>5. Constraints</h2>
+  <ul>
+    <li>Respect the <a href="../../constitution.md">library constitution</a> and the
+      <a href="../../../../e-footprint-interface/specs/constitution.md">interface constitution</a>:
+      modeling validity belongs to the library; editor policy and persistence orchestration belong
+      to the interface. No new framework dependency on concrete builders or interface code.</li>
+    <li>Keep one authoritative declaration of each conditional rule. Adding a dependency must not
+      require a matching handwritten declaration on the controller.</li>
+    <li>Preserve existing missing-branch behavior: no declared branch is unrestricted; a declared
+      empty branch allows no value. Preserve authored-input equality, including absence versus zero.</li>
+    <li>A valid standalone object must receive the same protection as an object linked into a System.
+      Ordinary footprint calculations are not a prerequisite for input validation.</li>
+    <li>Existing valid JSON snapshots and Simplified inputs configuration continue to round-trip.
+      Any necessary schema change follows the existing migration process; no schema change is assumed.</li>
+    <li>The <a href="../../../../e-footprint-interface/specs/features/simplified-inputs/spec.html">Simplified inputs spec</a>
+      remains the reference for selection, provenance and save feedback. This feature extends equivalent
+      conditional-value behavior to normal editing without expanding Simplified inputs eligibility.</li>
+  </ul>
+</section>
+
+<section id="questions">
+  <h2>6. Open questions</h2>
+  <p><strong>Already-invalid saved files.</strong> Earlier normal edits can have produced an invalid
+    snapshot. Should loading reject it with a precise error, or allow correction while blocking
+    affected Results until the inputs are repaired? Silent normalization is excluded. This decision
+    is needed before the load/computation acceptance cases can be finalized.</p>
+  <p>Registration, cache lifecycle and exact library query contracts are design questions recorded
+    in the draft plan for the planning stage.</p>
+</section>
+
+<section id="resume">
+  <h2>7. Resuming from cold context</h2>
+  <ol>
+    <li>Read this spec and resolve its open product question during review.</li>
+    <li>After spec approval, refine <a href="plan.html">the draft plan</a> in a fresh planning session.
+      It preserves the reproduced failures and design proposals; it is not approved implementation work.</li>
+    <li>Read the <a href="../../architecture/index.html">library architecture index</a> and the
+      <a href="../../../../e-footprint-interface/specs/architecture/index.html">interface architecture index</a>,
+      then their owning pages for validation, relationships, forms and persistence.</li>
+    <li>Use one future task list in this feature folder, with explicit ownership for both repositories.</li>
+  </ol>
+</section>
+</body>
+</html>

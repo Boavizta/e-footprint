@@ -1,0 +1,375 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Conditional input integrity — Draft plan</title>
+<style>
+  :root { color-scheme: light; --ink: #21312f; --muted: #5e706e; --line: #dbe4df;
+    --paper: #fff; --bg: #f5f7f3; --accent: #176751; --soft: #eaf3ed;
+    --blue: #285e91; --blue-bg: #edf4fb; --amber: #835219; --amber-bg: #fff5e5; }
+  * { box-sizing: border-box; }
+  html { scroll-behavior: smooth; scroll-padding-top: 1.5rem; }
+  body { margin: 0; font: 16px/1.6 system-ui, -apple-system, sans-serif;
+    color: var(--ink); background: var(--bg); }
+  a { color: var(--accent); text-underline-offset: .18em; }
+  a:hover { text-decoration-thickness: 2px; }
+  :is(a, summary):focus-visible { outline: 3px solid #3974b3; outline-offset: 4px; }
+  #review-link-menu { position: fixed; z-index: 20; min-width: 12rem; padding: .3rem;
+    border: 1px solid var(--line); border-radius: .5rem; background: var(--paper);
+    box-shadow: 0 .5rem 1.5rem #21312f30; font-size: .85rem; }
+  #review-link-menu[hidden] { display: none; }
+  #review-link-menu a { display: block; padding: .35rem .55rem; border-radius: .3rem; text-decoration: none; }
+  #review-link-menu a:hover, #review-link-menu a:focus { background: var(--soft); }
+  body > a { position: absolute; left: 1rem; top: -5rem; z-index: 5;
+    background: var(--paper); padding: .7rem; }
+  body > a:focus { top: 1rem; }
+  #layout { display: grid; grid-template-columns: 22rem minmax(0, 64rem); gap: 2rem;
+    max-width: 92rem; margin: auto; padding: 2rem 1.5rem 5rem; }
+  #layout:has(#sidebar:not([open])) { grid-template-columns: 2.75rem minmax(0, 64rem); }
+  #sidebar { position: sticky; top: 1rem; align-self: start; max-height: calc(100vh - 2rem);
+    overflow: auto; overscroll-behavior: contain; padding: 0 .5rem 0 0;
+    border: 0; border-radius: 0; background: transparent; margin: 0; }
+  #sidebar:not([open]) { overflow: visible; padding-right: 0; }
+  #sidebar > summary { position: sticky; top: 0; z-index: 2; list-style: none; display: flex;
+    align-items: center; gap: .4rem; width: max-content; max-width: 100%; margin: 0 0 .7rem;
+    padding: .3rem .55rem; border: 1px solid var(--line); border-radius: .4rem;
+    background: var(--paper); color: var(--accent); font-size: .8rem; }
+  #sidebar > summary::-webkit-details-marker { display: none; }
+  #sidebar > summary::before { content: "☰"; font-size: 1.1rem; line-height: 1; }
+  #sidebar:not([open]) > summary { width: 2.75rem; height: 2.75rem; justify-content: center;
+    margin-bottom: 0; padding: 0; }
+  #sidebar:not([open]) > summary span { position: absolute; width: 1px; height: 1px;
+    overflow: hidden; clip-path: inset(50%); white-space: nowrap; }
+  #navigation { font-size: .85rem; padding-bottom: .6rem; }
+  #navigation > p:first-child { text-transform: uppercase; letter-spacing: .1em;
+    font-size: .72rem; font-weight: 700; color: var(--accent); }
+  #navigation ol { list-style: none; padding: 0; }
+  #navigation li a { display: block; padding: .35rem .5rem; border-radius: .3rem; }
+  #navigation li a:hover { background: var(--soft); }
+  main { min-width: 0; }
+  header > p:first-child, small, figcaption, [data-reading-note] { color: var(--muted); }
+  h1 { font-size: clamp(1.8rem, 3vw, 2.4rem); line-height: 1.2; letter-spacing: -.03em; }
+  h2 { font-size: 1.4rem; line-height: 1.3; }
+  h3 { font-size: 1.08rem; margin: 1.5rem 0 .4rem; }
+  p, ul, ol { margin: .6rem 0 1rem; }
+  li { margin: .3rem 0; }
+  main > section { margin-top: 2rem; padding-top: 1rem; border-top: 1px solid var(--line); }
+  main p { max-width: 76ch; }
+  [data-reading-note], [data-files] { font-size: .83rem; }
+  [data-files] > span { color: var(--muted); }
+  [data-step] > h3 > a { color: inherit; text-decoration: none; }
+  [data-step]:is(:target, :has(:target)) { border-left: 3px solid var(--accent); padding-left: .8rem; }
+  code { background: #eef2ef; padding: .08rem .25rem; border-radius: 3px;
+    font: .86em/1.5 ui-monospace, SFMono-Regular, Consolas, monospace; overflow-wrap: anywhere; }
+  pre { overflow: auto; padding: 1rem; border: 1px solid var(--line); border-radius: .5rem;
+    background: #f8faf7; font: .86rem/1.6 ui-monospace, SFMono-Regular, Consolas, monospace; }
+  pre code { background: none; padding: 0; font: inherit; overflow-wrap: normal; }
+  [data-code] { margin: 1rem 0; }
+  [data-code-file] { display: flex; flex-wrap: wrap; gap: .2rem .8rem; align-items: baseline;
+    margin: 0; padding: .45rem .8rem; border: 1px solid var(--line); border-bottom: 0;
+    border-radius: .5rem .5rem 0 0; background: #eef2ef; font-size: .8rem; }
+  [data-code-file] { max-width: none; }
+  [data-code-file] code { background: none; padding: 0; font-size: 1em; }
+  [data-code] pre { margin: 0; border-radius: 0 0 .5rem .5rem; }
+  [data-comparison] { display: grid; grid-template-columns: 1fr 1fr; gap: 1rem; }
+  [data-comparison] > * { min-width: 0; }
+  details { border: 1px solid var(--line); border-radius: .5rem; padding: .7rem 1rem;
+    background: var(--paper); margin: .7rem 0; }
+  summary { cursor: pointer; font-weight: 650; }
+  #modules h2 { font-size: 1.05rem; }
+  #modules > p { font-size: .76rem; color: var(--muted); }
+  #change-tree { padding: .7rem; border: 1px solid var(--line); border-radius: .6rem;
+    background: var(--paper); font-size: .8rem; }
+  #change-tree details { border: 0; background: none; padding: .2rem 0 .2rem .6rem; margin: .25rem 0; }
+  #change-tree > details { padding-left: 0; }
+  #change-tree ul { list-style: none; border-left: 1px solid var(--line); margin: .25rem 0 .25rem .35rem;
+    padding: 0 0 0 .7rem; }
+  #change-tree li { padding: .3rem; border-radius: .3rem; }
+  #change-tree li:target { outline: 2px solid var(--accent); outline-offset: 2px; }
+  #change-tree li > small { display: block; margin-top: .2rem; }
+  [data-change] { font-size: .65rem; font-weight: 700; text-transform: uppercase;
+    border-radius: .25rem; padding: .1rem .3rem; background: #eef2ef; color: var(--muted); }
+  [data-change="new"] { color: var(--accent); background: var(--soft); }
+  [data-change="renamed"] { color: #285e91; background: #edf4fb; }
+  [data-change="removed"] { color: #963939; background: #fff0ed; }
+  [data-reading-links] { margin-left: .3rem; font-size: .7rem; }
+  aside[data-note] { border-left: 3px solid var(--blue); background: var(--blue-bg);
+    padding: .8rem 1rem; border-radius: 0 .5rem .5rem 0; margin: 1rem 0; font-size: .92rem; }
+  aside[data-note="review"] { border-color: var(--amber); background: var(--amber-bg); }
+  aside[data-note] p { margin: .3rem 0; }
+  figure { margin: 1rem 0; padding: 1rem; background: var(--paper); border: 1px solid var(--line); }
+  figure > div, [data-table-scroll] { overflow-x: auto; }
+  svg { display: block; width: 100%; height: auto; }
+  figcaption { font-size: .82rem; margin-top: .6rem; }
+  table { width: 100%; border-collapse: collapse; font-size: .88rem; }
+  th, td { text-align: left; vertical-align: top; border-bottom: 1px solid var(--line); padding: .65rem; }
+  th { background: var(--soft); }
+  #phases { list-style: none; padding: 0; display: grid; grid-template-columns: 1fr 1fr; gap: .7rem; }
+  #phases li { margin: 0; padding: .9rem; background: var(--paper); border: 1px solid var(--line); border-radius: .5rem; }
+  #phases strong, #phases small { display: block; }
+
+  /* One mapping per reading step; update these selectors with section IDs and data-steps.
+     Space-separated data-steps lets one file participate in multiple interactions. */
+  body:has(#dependencies:target, #dependencies :target, #change-tree :target[data-steps~="dependencies"])
+    #change-tree li[data-steps~="dependencies"] { background: var(--soft); }
+  body:has(#dependencies:target, #dependencies :target, #change-tree :target[data-steps~="dependencies"])
+    #navigation a[href="#dependencies"] { background: var(--soft); font-weight: 700; }
+  body:has(#library-edit:target, #library-edit :target, #change-tree :target[data-steps~="library-edit"])
+    #change-tree li[data-steps~="library-edit"] { background: var(--soft); }
+  body:has(#library-edit:target, #library-edit :target, #change-tree :target[data-steps~="library-edit"])
+    #navigation a[href="#library-edit"] { background: var(--soft); font-weight: 700; }
+  body:has(#interface-edit:target, #interface-edit :target, #change-tree :target[data-steps~="interface-edit"])
+    #change-tree li[data-steps~="interface-edit"] { background: var(--soft); }
+  body:has(#interface-edit:target, #interface-edit :target, #change-tree :target[data-steps~="interface-edit"])
+    #navigation a[href="#interface-edit"] { background: var(--soft); font-weight: 700; }
+
+  @media (max-width: 1100px) {
+    #layout { grid-template-columns: 18rem minmax(0, 1fr); gap: 1.2rem; }
+    [data-comparison] { grid-template-columns: 1fr; }
+  }
+  @media (max-width: 850px) {
+    #layout { display: flex; flex-direction: column; padding: 1rem; }
+    #sidebar { position: static; max-height: min(45vh, 24rem); padding: 0; width: 100%; }
+    #sidebar:not([open]) { width: 2.75rem; }
+    #navigation ol { display: flex; flex-wrap: wrap; gap: .25rem; }
+    #phases { grid-template-columns: 1fr; }
+  }
+  @media (prefers-reduced-motion: reduce) { html { scroll-behavior: auto; } }
+  @media print {
+    #review-link-menu { display: none; }
+    body { background: white; font-size: 10pt; }
+    #layout { display: flex; flex-direction: column; padding: 0; }
+    #sidebar, #sidebar:not([open]) { order: 1; position: static; width: 100%; max-height: none; overflow: visible; }
+    #navigation, body > a, #sidebar > summary { display: none; }
+    main { order: 0; }
+    #modules { break-before: page; }
+    details::details-content { content-visibility: visible; display: block; }
+    [data-code], figure, tr { break-inside: avoid; }
+    pre { white-space: pre-wrap; overflow-wrap: anywhere; }
+    figure > div, [data-table-scroll] { overflow: visible; }
+  }
+
+  body:has(#relationship-edit:target, #relationship-edit :target) #change-tree li[data-steps~="relationship-edit"],
+  body:has(#forms:target, #forms :target) #change-tree li[data-steps~="forms"] { background: var(--soft); }
+  body:has(#relationship-edit:target) #navigation a[href="#relationship-edit"],
+  body:has(#forms:target) #navigation a[href="#forms"] { background: var(--soft); font-weight: 700; }
+</style>
+</head>
+<body>
+<a href="#main">Skip to plan</a>
+<div id="layout">
+<details id="sidebar" aria-label="Reading order and proposed changed files" open>
+  <summary title="Show or hide navigation and changed files"><span>Navigation and changed files</span></summary>
+  <nav id="navigation" aria-label="Reading order">
+    <p>Reading order</p>
+    <ol>
+      <li><a href="#dependencies">1 · Shared dependency descriptions</a></li>
+      <li><a href="#library-edit">2 · Change a library input</a></li>
+      <li><a href="#relationship-edit">3 · Replace a relationship</a></li>
+      <li><a href="#interface-edit">4 · Save in either editor</a></li>
+      <li><a href="#forms">5 · Configure and render choices</a></li>
+    </ol>
+    <p><a href="#delivery">Delivery &amp; verification</a> · <a href="#decisions">Planning questions</a></p>
+  </nav>
+  <section id="modules">
+    <h2>Proposed changed files</h2>
+    <p>The list is provisional. Click existing files to open them in VS Code; right-click for a diff against main. New filenames link to this tree until implemented.</p>
+    <div id="change-tree">
+      <details open><summary>e-footprint / framework and tests</summary><ul><li id="file-rules" data-steps="dependencies library-edit relationship-edit forms"><a href="#file-rules"><code>efootprint/abstract_modeling_classes/conditional_inputs.py</code></a> <span data-change="new">New</span><span data-reading-links><a href="#dependencies">dependencies</a> · <a href="#library-edit">library edit</a> · <a href="#relationship-edit">relationship edit</a> · <a href="#forms">forms</a></span><small>Proposed home for derived descriptors, path resolution, affected-input discovery and candidate-aware choices; filename remains provisional.</small></li><li id="file-object" data-steps="dependencies library-edit relationship-edit"><a href="vscode://file//Users/vinville/dev/e-footprint-full/e-footprint/efootprint/abstract_modeling_classes/modeling_object.py" data-review-source-href="../../../efootprint/abstract_modeling_classes/modeling_object.py"><code>efootprint/abstract_modeling_classes/modeling_object.py</code></a> <span data-change="modified">Modified</span><span data-reading-links><a href="#dependencies">dependencies</a> · <a href="#library-edit">library edit</a> · <a href="#relationship-edit">relationship edit</a></span><small>Share existing choice validation; integrate generic registration without importing builders.</small></li><li id="file-update" data-steps="library-edit relationship-edit"><a href="vscode://file//Users/vinville/dev/e-footprint-full/e-footprint/efootprint/abstract_modeling_classes/modeling_update.py" data-review-source-href="../../../efootprint/abstract_modeling_classes/modeling_update.py"><code>efootprint/abstract_modeling_classes/modeling_update.py</code></a> <span data-change="modified">Modified</span><span data-reading-links><a href="#library-edit">library edit</a> · <a href="#relationship-edit">relationship edit</a></span><small>Validate all affected conditional inputs against the final batch inside rollback.</small></li><li id="file-rule-tests" data-steps="dependencies library-edit relationship-edit"><a href="#file-rule-tests"><code>tests/abstract_modeling_classes/test_conditional_inputs.py</code></a> <span data-change="new">New</span><span data-reading-links><a href="#dependencies">dependencies</a> · <a href="#library-edit">library edit</a> · <a href="#relationship-edit">relationship edit</a></span><small>Generic descriptors, multiple path hops, active links, inheritance and bounded discovery.</small></li><li id="file-update-tests" data-steps="library-edit relationship-edit"><a href="vscode://file//Users/vinville/dev/e-footprint-full/e-footprint/tests/abstract_modeling_classes/test_modeling_object.py" data-review-source-href="../../../tests/abstract_modeling_classes/test_modeling_object.py"><code>tests/abstract_modeling_classes/test_modeling_object.py</code></a> <span data-change="modified">Modified</span><span data-reading-links><a href="#library-edit">library edit</a> · <a href="#relationship-edit">relationship edit</a></span><small>Direct assignment, valid batches, rejected batches and cold objects.</small></li></ul></details>
+      <details open><summary>e-footprint-interface / editing and forms</summary><ul><li id="file-editor-service" data-steps="interface-edit"><a href="#file-editor-service"><code>model_builder/domain/services/input_editing.py</code></a> <span data-change="new">New</span><span data-reading-links><a href="#interface-edit">interface edit</a></span><small>Proposed shared reconciliation orchestration; editor policy stays outside the library.</small></li><li id="file-factory" data-steps="interface-edit"><a href="vscode://file//Users/vinville/dev/e-footprint-full/e-footprint-interface/model_builder/domain/object_factory.py" data-review-source-href="../../../../e-footprint-interface/model_builder/domain/object_factory.py"><code>model_builder/domain/object_factory.py</code></a> <span data-change="modified">Modified</span><span data-reading-links><a href="#interface-edit">interface edit</a></span><small>Retain form conversion and provenance handling; connect normal edits to shared reconciliation.</small></li><li id="file-simplified-edit" data-steps="interface-edit"><a href="vscode://file//Users/vinville/dev/e-footprint-full/e-footprint-interface/model_builder/application/use_cases/simplified_inputs.py" data-review-source-href="../../../../e-footprint-interface/model_builder/application/use_cases/simplified_inputs.py"><code>model_builder/application/use_cases/simplified_inputs.py</code></a> <span data-change="modified">Modified</span><span data-reading-links><a href="#interface-edit">interface edit</a></span><small>Consume the shared orchestration and expose affected fields/notices.</small></li><li id="file-normal-edit" data-steps="interface-edit"><a href="vscode://file//Users/vinville/dev/e-footprint-full/e-footprint-interface/model_builder/application/use_cases/edit_object.py" data-review-source-href="../../../../e-footprint-interface/model_builder/application/use_cases/edit_object.py"><code>model_builder/application/use_cases/edit_object.py</code></a> <span data-change="modified">Modified</span><span data-reading-links><a href="#interface-edit">interface edit</a></span><small>Propagate automatic changes and preserve one final persistence boundary.</small></li><li id="file-catalog" data-steps="forms"><a href="vscode://file//Users/vinville/dev/e-footprint-full/e-footprint-interface/model_builder/domain/services/simplified_inputs.py" data-review-source-href="../../../../e-footprint-interface/model_builder/domain/services/simplified_inputs.py"><code>model_builder/domain/services/simplified_inputs.py</code></a> <span data-change="modified">Modified</span><span data-reading-links><a href="#forms">forms</a></span><small>Use library dependency descriptions; keep eligibility and inclusion policy here.</small></li><li id="file-path" data-steps="forms"><a href="vscode://file//Users/vinville/dev/e-footprint-full/e-footprint-interface/model_builder/domain/conditional_inputs.py" data-review-source-href="../../../../e-footprint-interface/model_builder/domain/conditional_inputs.py"><code>model_builder/domain/conditional_inputs.py</code></a> <span data-change="removed">Removed</span><span data-reading-links><a href="#forms">forms</a></span><small>Remove this duplicate resolver after migrating its consumers; no compatibility shim.</small></li><li id="file-form" data-steps="forms"><a href="vscode://file//Users/vinville/dev/e-footprint-full/e-footprint-interface/model_builder/adapters/forms/form_field_generator.py" data-review-source-href="../../../../e-footprint-interface/model_builder/adapters/forms/form_field_generator.py"><code>model_builder/adapters/forms/form_field_generator.py</code></a> <span data-change="modified">Modified</span><span data-reading-links><a href="#forms">forms</a></span><small>Use shared allowed-choice queries for direct, dotted and candidate reference options.</small></li><li id="file-select" data-steps="forms"><a href="vscode://file//Users/vinville/dev/e-footprint-full/e-footprint-interface/model_builder/templates/model_builder/side_panels/dynamic_form_fields/select_str_input.html" data-review-source-href="../../../../e-footprint-interface/model_builder/templates/model_builder/side_panels/dynamic_form_fields/select_str_input.html"><code>model_builder/templates/model_builder/side_panels/dynamic_form_fields/select_str_input.html</code></a> <span data-change="modified">Modified</span><span data-reading-links><a href="#forms">forms</a></span><small>Keep unsupported stored choices visibly invalid instead of displaying the first option.</small></li><li id="file-integration" data-steps="interface-edit forms"><a href="vscode://file//Users/vinville/dev/e-footprint-full/e-footprint-interface/tests/integration/test_simplified_inputs.py" data-review-source-href="../../../../e-footprint-interface/tests/integration/test_simplified_inputs.py"><code>tests/integration/test_simplified_inputs.py</code></a> <span data-change="modified">Modified</span><span data-reading-links><a href="#interface-edit">interface edit</a> · <a href="#forms">forms</a></span><small>Editor parity, retained provenance, explicit conflicts and zero persistence on rejection.</small></li></ul></details>
+    </div>
+  </section>
+</details>
+<main id="main">
+<header>
+  <p>Draft plan from specification kickoff · 2026-10-12 · Not approved</p>
+  <h1>Conditional input integrity</h1>
+  <p><a href="vscode://file//Users/vinville/dev/e-footprint-full/e-footprint/specs/features/conditional-input-integrity/spec.html" data-review-source-href="spec.html">Spec under review</a> · <a href="#modules">Proposed changed files</a></p>
+  <p>This document preserves the reproduced failures and design proposals from the discussion.
+    Refine it in a fresh spec-plan session after spec approval. It does not authorize tasks or implementation.</p>
+  <p data-reading-note>Library source paths below are relative to e-footprint; interface ownership is identified explicitly.
+    Proposed API and module names are sketches, not existing contracts.</p>
+</header>
+<aside id="plan-updates" data-note="review">
+  <p><strong>Kickoff design proposals for review</strong></p>
+  <p><a href="#plan-update-01">[PLAN-UPDATE-01] Derive a static reverse index — PROPOSED</a></p>
+  <p><a href="#plan-update-02">[PLAN-UPDATE-02] Library rejection and shared editor repair — PROPOSED</a></p>
+</aside>
+
+<section id="dependencies" data-step>
+  <h2>1 · Shared dependency descriptions</h2>
+  <p>Keep <a href="vscode://file//Users/vinville/dev/e-footprint-full/e-footprint/efootprint/abstract_modeling_classes/modeling_object.py:174:1" data-review-source-href="../../../efootprint/abstract_modeling_classes/modeling_object.py#L174:1"><code>conditional_list_values</code></a>
+    as the authoritative declaration. The existing <a href="vscode://file//Users/vinville/dev/e-footprint-full/e-footprint/efootprint/utils/tools.py:41:1" data-review-source-href="../../../efootprint/utils/tools.py#L41:1"><code>get_init_signature_params()</code></a>
+    resolves constructor annotations and already caches them. Derive dependency descriptions from those declarations and annotations;
+    each description identifies a dependent input, its controller type/attribute, and the relationship path between them.</p>
+  <div data-code>
+    <p data-code-file><a href="#file-rules"><code>efootprint/abstract_modeling_classes/conditional_inputs.py</code></a>
+      <small>Proposed conceptual descriptor; exact names to be refined</small></p>
+    <pre><code>controller_type: type
+controller_attribute: str
+dependent_type: type
+dependent_attribute: str
+relationship_path: tuple[str, ...]
+
+Example: video API / model_name
+    → video job / resolution
+    through ("external_api",)</code></pre>
+  </div>
+  <p>Build lookups for the final controlling attribute and every relationship segment that can redirect the path.
+    A controller change resolves only the active referring objects prescribed by those descriptions. Longer paths reverse
+    only their named hops; they do not continue into unrelated ancestors. Same-object dependencies use the same contract.</p>
+  <p>The existing <a href="vscode://file//Users/vinville/dev/e-footprint-full/e-footprint/efootprint/abstract_modeling_classes/contextual_modeling_object_attribute.py:6:1" data-review-source-href="../../../efootprint/abstract_modeling_classes/contextual_modeling_object_attribute.py#L6:1"><code>ContextualModelingObjectAttribute</code></a>
+    carries its referring owner and attribute. Use active relationship bindings, excluding detached wrappers.
+    Do not add a persistent per-model subscription index unless planning shows that existing backlinks cannot satisfy bounded discovery.</p>
+  <aside id="plan-update-01" data-note="review">
+    <p><strong>[PLAN-UPDATE-01] — PROPOSED</strong></p>
+    <p>Cache derived class descriptions, without holding model instances or duplicating declarations on controllers.
+      Resolve actual dependents from current relationships during edits. Generic framework registration must handle subclass
+      declarations and invalidate cached descriptions when registered metadata changes; do not import the concrete class catalog into the framework.</p>
+    <p>This replaces the earlier broad reverse-ancestor traversal proposal. A shared API still requires checking every affected job;
+      the improvement is avoiding unrelated paths and repeated interpretation of class metadata.</p>
+  </aside>
+  <p>Expose a small shared surface for path resolution, controller/dependent discovery, and allowed values under candidate changes.
+    The candidate query must follow proposed relationship replacements and proposed controller values without mutating the live graph.</p>
+  <p>Reuse <a href="vscode://file//Users/vinville/dev/e-footprint-full/e-footprint/efootprint/abstract_modeling_classes/input_values.py:6:1" data-review-source-href="../../../efootprint/abstract_modeling_classes/input_values.py#L6:1"><code>input_values_match()</code></a>.
+    Preserve the existing branch semantics: a missing branch is unrestricted, an empty branch permits no values,
+    and option order is the declared order. A library input reference should identify the actual object and constructor attribute;
+    adapt it to interface IDs rather than moving the interface's catalog or configuration into the framework.</p>
+</section>
+
+<section id="library-edit" data-step>
+  <h2>2 · Change a library input</h2>
+  <p>Current evidence: changing an API from OpenAI / sora-2-pro to ByteDance / seedance-1.0 while retaining a job at 1080p
+    succeeds. A fresh impact calculation also succeeds. These are local diagnostics from 2026-10-12, not guarantees about future catalog contents.</p>
+  <p><a href="vscode://file//Users/vinville/dev/e-footprint-full/e-footprint/efootprint/abstract_modeling_classes/modeling_update.py:17:1" data-review-source-href="../../../efootprint/abstract_modeling_classes/modeling_update.py#L17:1"><code>ModelingUpdate</code></a>
+    currently calls <a href="vscode://file//Users/vinville/dev/e-footprint-full/e-footprint/efootprint/abstract_modeling_classes/modeling_object.py:421:1" data-review-source-href="../../../efootprint/abstract_modeling_classes/modeling_object.py#L421:1"><code>check_belonging_to_authorized_values()</code></a>
+    only for <a href="vscode://file//Users/vinville/dev/e-footprint-full/e-footprint/efootprint/abstract_modeling_classes/modeling_update.py:198:1" data-review-source-href="../../../efootprint/abstract_modeling_classes/modeling_update.py#L198:1"><code>new_sourcevalues</code></a>.
+    Its <a href="vscode://file//Users/vinville/dev/e-footprint-full/e-footprint/efootprint/abstract_modeling_classes/modeling_object.py:177:1" data-review-source-href="../../../efootprint/abstract_modeling_classes/modeling_object.py#L177:1"><code>attributes_with_depending_values()</code></a>
+    is class-local, so the API's change never checks an unchanged job resolution.</p>
+  <p>Capture changed input addresses before old values detach. Discover conditional dependents through the shared descriptors,
+    apply the complete batch, and validate affected inputs against the final state within the existing
+    <a href="vscode://file//Users/vinville/dev/e-footprint-full/e-footprint/efootprint/abstract_modeling_classes/modeling_update.py:40:1" data-review-source-href="../../../efootprint/abstract_modeling_classes/modeling_update.py#L40:1"><code>transaction try/rollback boundary</code></a>.
+    Use one shared choice-validation implementation for directly changed values and unchanged affected dependents.</p>
+  <p>A rejected batch uses <a href="vscode://file//Users/vinville/dev/e-footprint-full/e-footprint/efootprint/abstract_modeling_classes/modeling_update.py:181:1" data-review-source-href="../../../efootprint/abstract_modeling_classes/modeling_update.py#L181:1"><code>rollback()</code></a>
+    and restores inputs and relationships before recomputing the existing eager boundary. Validate before footprint guards run on an
+    invalid final combination. Valid batches can change Provider, Model and every necessary Resolution together, in any input order.</p>
+  <p>This input validation must work for standalone objects and cold objects. It cannot depend on dependency edges learned by
+    footprint getters. Preserve <a href="vscode://file//Users/vinville/dev/e-footprint-full/e-footprint/efootprint/abstract_modeling_classes/modeling_update.py:169:1" data-review-source-href="../../../efootprint/abstract_modeling_classes/modeling_update.py#L169:1"><code>pull_eagerly()</code></a>
+    for other guards instead of substituting a video-specific computed guard for generic conditional validation.</p>
+</section>
+
+<section id="relationship-edit" data-step>
+  <h2>3 · Replace a relationship</h2>
+  <p>Current evidence: assigning a new API to a warmed video job retains its unsupported 1080p resolution and computes fresh impacts.
+    Type checking runs through <a href="vscode://file//Users/vinville/dev/e-footprint-full/e-footprint/efootprint/abstract_modeling_classes/modeling_update.py:61:1" data-review-source-href="../../../efootprint/abstract_modeling_classes/modeling_update.py#L61:1"><code>parse_changes_list()</code></a>,
+    but the modeling-object replacement is absent from the explainable-value validation loop.</p>
+  <p>Index the relationship segment as a trigger. Replacing the API link must validate the job's resolution against the new API's
+    model, even when neither API model is changed. For longer paths, replacing an intermediate relationship has the same effect.</p>
+  <p>Candidate queries and final-state validation must agree when one batch changes an API model and redirects jobs.
+    Detached old links must not remain validation targets. Subsequent changes to the old API must not validate redirected jobs,
+    while subsequent changes to the new API must find them. Keep the existing
+    <a href="vscode://file//Users/vinville/dev/e-footprint-full/e-footprint/efootprint/abstract_modeling_classes/modeling_update.py:124:1" data-review-source-href="../../../efootprint/abstract_modeling_classes/modeling_update.py#L124:1"><code>collect_newly_linked_mod_objs()</code></a>
+    guard behavior for genuinely newly attached objects.</p>
+  <p>No new job-redirection control is proposed in the interface. Direct library assignment and explicit batched replacement are supported operations.</p>
+</section>
+
+<section id="interface-edit" data-step>
+  <h2>4 · Save in either editor</h2>
+  <p>Today <a href="vscode://file//Users/vinville/dev/e-footprint-full/e-footprint-interface/model_builder/domain/object_factory.py:159:1" data-review-source-href="../../../../e-footprint-interface/model_builder/domain/object_factory.py#L159:1"><code>prepare_input_changes()</code></a>
+    converts submitted fields and preserves omitted provenance. Normal editing invokes
+    <a href="vscode://file//Users/vinville/dev/e-footprint-full/e-footprint-interface/model_builder/domain/object_factory.py:263:1" data-review-source-href="../../../../e-footprint-interface/model_builder/domain/object_factory.py#L263:1"><code>edit_object_from_parsed_data()</code></a>
+    for one owner; only <a href="vscode://file//Users/vinville/dev/e-footprint-full/e-footprint-interface/model_builder/application/use_cases/simplified_inputs.py:36:1" data-review-source-href="../../../../e-footprint-interface/model_builder/application/use_cases/simplified_inputs.py#L36:1"><code>EditSimplifiedInputUseCase.execute()</code></a>
+    gathers conditional changes across owners.</p>
+  <aside id="plan-update-02" data-note="review">
+    <p><strong>[PLAN-UPDATE-02] — PROPOSED</strong></p>
+    <p>The library rejects incompatible batches and never chooses replacement values implicitly.
+      Extract the existing editor repair policy into one interface domain service used by normal and simplified edits.
+      It uses library queries to keep valid choices or select the first allowed value, and returns structured automatic-change information.</p>
+  </aside>
+  <p>Prepare the whole submitted edit before reconciling dependent choices. Keep submitted values distinguished from generated replacements:
+    a conflicting expressly submitted dependent is an error, rather than an invitation to overwrite it. Chain candidate changes until
+    affected choices are coherent, preserving labels, sources, confidence and comments on generated replacements through the usual preparer.</p>
+  <p>Submit one multi-owner transaction, then persist once at the owning use case's final boundary.
+    <a href="vscode://file//Users/vinville/dev/e-footprint-full/e-footprint-interface/model_builder/application/use_cases/edit_object.py:77:1" data-review-source-href="../../../../e-footprint-interface/model_builder/application/use_cases/edit_object.py#L77:1"><code>EditObjectUseCase.execute()</code></a>
+    and the simplified use case consume the same automatic-change records. Rejection discards request-local metadata and publishes no partial save.</p>
+  <p>Return affected fields whose options changed even when their values were retained. Present notices through existing feedback conventions;
+    keep value changes separate from metadata-only changes. Trace composite pre-edit hooks during planning so this extraction does not
+    broaden or break unrelated nested-object edits.</p>
+  <p>For the normal API edit, the browser still submits the user's explicit Provider/Model choices on Save. The shared service repairs linked
+    job resolutions; it does not silently replace a conflicting Model that the user explicitly submitted.</p>
+</section>
+
+<section id="forms" data-step>
+  <h2>5 · Configure and render choices</h2>
+  <p><a href="vscode://file//Users/vinville/dev/e-footprint-full/e-footprint-interface/model_builder/domain/services/simplified_inputs.py:104:1" data-review-source-href="../../../../e-footprint-interface/model_builder/domain/services/simplified_inputs.py#L104:1"><code>build_catalog()</code></a>
+    currently reconstructs controller/dependent edges using the interface's
+    <a href="vscode://file//Users/vinville/dev/e-footprint-full/e-footprint-interface/model_builder/domain/conditional_inputs.py:6:1" data-review-source-href="../../../../e-footprint-interface/model_builder/domain/conditional_inputs.py#L6:1"><code>resolve_input_path()</code></a>.
+    Consume library descriptions and migrate the duplicate resolver's callers. Keep input eligibility,
+    forced companion inclusion, help and persisted configuration in the interface.</p>
+  <p><a href="vscode://file//Users/vinville/dev/e-footprint-full/e-footprint-interface/model_builder/domain/services/simplified_inputs.py:135:1" data-review-source-href="../../../../e-footprint-interface/model_builder/domain/services/simplified_inputs.py#L135:1"><code>complete_selection()</code></a>
+    keeps its interface policy, using the shared edges. The library does not inherit Simplified inputs selection rules.</p>
+  <p><a href="vscode://file//Users/vinville/dev/e-footprint-full/e-footprint-interface/model_builder/adapters/forms/form_field_generator.py:223:1" data-review-source-href="../../../../e-footprint-interface/model_builder/adapters/forms/form_field_generator.py#L223:1"><code>generate_dynamic_form()</code></a>
+    independently interprets branches for fixed edit references and creation-time reference candidates. Use the shared allowed-values
+    query for those contexts, retaining existing labels, field order and one-hop browser lists.</p>
+  <p>Current mismatch: the <a href="vscode://file//Users/vinville/dev/e-footprint-full/e-footprint-interface/model_builder/adapters/forms/form_field_generator.py:413:1" data-review-source-href="../../../../e-footprint-interface/model_builder/adapters/forms/form_field_generator.py#L413:1"><code>resolved-options branch</code></a>
+    filters away unsupported resolutions, while <a href="vscode://file//Users/vinville/dev/e-footprint-full/e-footprint-interface/model_builder/templates/model_builder/side_panels/dynamic_form_fields/select_str_input.html:9:1" data-review-source-href="../../../../e-footprint-interface/model_builder/templates/model_builder/side_panels/dynamic_form_fields/select_str_input.html#L9:1"><code>select_str_input.html</code></a>
+    marks no option selected. Native selection then displays the first option despite a different stored value.
+    Render an unsupported saved choice explicitly as invalid instead; do not alter model inputs during rendering.</p>
+  <p>The loading and Results policy for already-invalid snapshots is unresolved in the spec. Its final choice may add persistence/load
+    or Results paths to this file tree during planning. Do not silently validate it by assuming every successfully computed footprint is valid.</p>
+</section>
+
+<section id="delivery">
+  <h2>Delivery and verification</h2>
+  <h3>Provisional implementation sequence</h3>
+  <ol id="phases">
+    <li><strong>A · Shared descriptions and queries — library</strong>Derive descriptors, register them generically, and provide candidate-aware queries.
+      <small>Resolve cache lifecycle, annotation/inheritance handling and path-trigger design before task preparation.</small></li>
+    <li><strong>B · Transaction validation — library</strong>Validate affected choices for value and relationship changes; prove atomic rollback and cold-object behavior.
+      <small>Depends on A. Preserve public operations and valid snapshot round-trips.</small></li>
+    <li><strong>C · Shared editor repair — interface</strong>Use one repair service in normal and simplified edits, with explicit-choice handling, provenance and feedback.
+      <small>Depends on A and B; preserve the existing editable library dependency during local development.</small></li>
+    <li><strong>D · Consumer migration and truthful display — interface</strong>Reuse library queries in selection and forms; resolve the already-invalid snapshot policy.
+      <small>Run focused regressions and both repositories' required gates after scope and plan approval.</small></li>
+  </ol>
+  <h3>Verification map</h3>
+  <div data-table-scroll><table>
+    <thead><tr><th scope="col">Behavior / risk</th><th scope="col">Critical assertion</th><th scope="col">Layer</th></tr></thead>
+    <tbody>
+      <tr><td>Controller edit with shared dependents</td><td>Reject an invalid final batch; accept a batch containing all corrections; retain unrelated inputs.</td><td>Generic library tests plus a focused video regression.</td></tr>
+      <tr><td>Relationship replacement, including multiple hops</td><td>Validate against the new path; reject atomically; later controller edits follow current links.</td><td>Library transaction and dependency tests.</td></tr>
+      <tr><td>Cold objects and loaded valid snapshots</td><td>Same outcomes before calculations, after inputs-only load, and with persisted computed state.</td><td>Library lifecycle/persistence regressions.</td></tr>
+      <tr><td>Bounded discovery</td><td>No unrelated owner validation or computed getters; required shared-job fan-out is linear in affected jobs.</td><td>Library instrumentation on relevant operations; avoid flaky timing thresholds.</td></tr>
+      <tr><td>Normal/simplified editor parity</td><td>Same final values and provenance; explicit conflicts and empty branches publish nothing; retained values refresh choices.</td><td><a href="vscode://file//Users/vinville/dev/e-footprint-full/e-footprint-interface/tests/integration/test_simplified_inputs.py:128:1" data-review-source-href="../../../../e-footprint-interface/tests/integration/test_simplified_inputs.py#L128:1"><code>existing integration coverage</code></a> extended for both paths.</td></tr>
+      <tr><td>Branch semantics and equality</td><td>Missing versus empty branch, absence versus zero, same-value provenance patches and authored timeseries remain correct.</td><td>Existing library and interface regressions.</td></tr>
+      <tr><td>Displayed selection and feedback</td><td>Saved choices match displayed choices; unsupported values stay visibly invalid; automatic job changes are explained.</td><td>Form unit tests and one focused browser flow for normal API edits.</td></tr>
+      <tr><td>Declaration lifecycle</td><td>Valid dotted declarations derive their reverse descriptions; unresolved paths fail clearly; cache does not miss newly registered types.</td><td>Library declaration tests, including test-time metadata changes.</td></tr>
+    </tbody>
+  </table></div>
+  <p>These checks are planned, not executed. Reuse existing rollback, branch and provenance tests rather than reproducing their implementation in new tests.</p>
+  <p>Expected persistence change: none. Verify that derived caches remain runtime state and that existing snapshots round-trip.
+    If planning establishes a schema change, add its migration and version gate explicitly.</p>
+  <p>Update the owning library validation/relationship documentation and interface forms/editing documentation when implementing.
+    Both repositories receive their own changelog entries. The future tasks.md lives only here and identifies repository ownership.</p>
+</section>
+
+<section id="decisions">
+  <h2>Planning questions</h2>
+  <ul>
+    <li><strong>Invalid existing snapshots:</strong> resolve the spec's reject-load versus allow-correction outcome first;
+      then trace its loading and Results consequences. Avoid silently repairing authored values on load.</li>
+    <li><strong>Registration and cache scope:</strong> choose the smallest generic registration mechanism. Confirm inherited and
+      polymorphic constructor paths, test-time metadata changes, and dynamic class import behavior without introducing a concrete-builder import.</li>
+    <li><strong>Candidate and affected-input contract:</strong> finalize input identity and result shapes shared by validation,
+      repair, configuration and forms. Include intermediate relationship triggers and retained dependents whose options changed.</li>
+    <li><strong>Normal edit integration:</strong> trace notices, affected field refresh and composite pre-edit hooks before fixing module boundaries.
+      The provisional service filename is not an approved architecture choice.</li>
+  </ul>
+  <p>No approved design decisions, tasks, briefs, application edits or application test runs are produced by this specification stage.</p>
+</section>
+</main>
+</div>
+<script src="../../review-links.js" defer></script>
+</body>
+</html>
