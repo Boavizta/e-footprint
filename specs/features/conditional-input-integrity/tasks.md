@@ -1,6 +1,6 @@
 # Conditional input integrity — tasks
 Spec: [spec.html](spec.html) · Plan: [plan.html](plan.html)
-Status: under review · 2026-10-13
+Status: implementation reviewed; coordinated merge awaits publishable efootprint 26 · 2026-10-13
 
 ## Implementation runs
 
@@ -23,7 +23,7 @@ Status: under review · 2026-10-13
 ## Task 1 — Register and query conditional rules
 
 Goal: Derive direct reverse trigger routes at subclass definition; expose `dependent_inputs()`, proposed-state `resolve_input_path()`, and `allowed_values()` as the library's single query contract.
-Status: under review
+Status: complete
 Brief: [briefs/task-1.md](briefs/task-1.md)
 Repository: e-footprint
 Files touched: `efootprint/abstract_modeling_classes/conditional_inputs.py` (new), `modeling_object.py`; `tests/abstract_modeling_classes/test_conditional_inputs.py` (new), `tests/api_utils_tests/test_json_to_system.py`; `specs/architecture/relationships.html`.
@@ -36,7 +36,7 @@ Implementation: **hard** — A class-level reverse index must route through live
 ## Task 2 — Reject incompatible library changes atomically
 
 Goal: Check every affected conditional input against the complete proposed or applied state, both during passive construction and inside live update rollback.
-Status: under review
+Status: complete · [construction cleanup decision](plan.html#impl-decision-01)
 Brief: [briefs/task-2.md](briefs/task-2.md)
 Repository: e-footprint
 Files touched: `efootprint/abstract_modeling_classes/modeling_object.py`, `modeling_update.py`; `tests/abstract_modeling_classes/test_modeling_object.py`, `tests/builders/external_apis/ecologits/test_ecologits_video_external_api.py`, `tests/api_utils_tests/test_json_to_system.py`; `specs/architecture/recomputation/lifecycle.html`.
@@ -49,7 +49,7 @@ Implementation: **hard** — Validation must cover both passive pre-attachment a
 ## Task 3 — Persist the automatic-replacement source
 
 Goal: Give generated corrections one canonical source identity across inputs-only and cached JSON round-trips.
-Status: under review
+Status: complete
 Brief: [briefs/task-3.md](briefs/task-3.md)
 Repository: e-footprint
 Files touched: `efootprint/constants/sources.py`, `efootprint/abstract_modeling_classes/explainable_object_base_class.py`, `efootprint/api_utils/json_to_system.py`; `tests/api_utils_tests/test_json_to_system.py`; `specs/architecture/persistence.html`.
@@ -62,7 +62,7 @@ Implementation: **easy** — The existing sentinel-source branches provide a dir
 ## Task 4 — Repair and save through one shared editor path
 
 Goal: Have normal and Simplified edits prepare explicit values, repair affected implicit choices in dependency order, record replacement history, and publish only an accepted final batch.
-Status: under review
+Status: complete
 Brief: [briefs/task-4.md](briefs/task-4.md)
 Repository: e-footprint-interface
 Files touched: `model_builder/domain/object_factory.py`, `model_builder/domain/services/edit_service.py`, `model_builder/application/use_cases/edit_object.py`, `model_builder/application/use_cases/simplified_inputs.py`, `model_builder/templates/model_builder/side_panels/dynamic_form_fields/source_editor.html`; `tests/unit_tests/domain/test_object_factory.py`, `tests/integration/test_simplified_inputs.py`, `tests/integration/test_ecologits_video.py`, `tests/e2e/test_source_metadata.py`; `specs/architecture/forms-and-relationships.html`.
@@ -75,7 +75,7 @@ Implementation: **hard** — The shared repair path must evaluate a staged multi
 ## Task 5 — Align forms and show accepted repairs
 
 Goal: Drive editor options from library rules and show every normal-save correction on visible cards and in the save notice.
-Status: under review
+Status: complete · [notice transport decision](plan.html#impl-decision-02)
 Brief: [briefs/task-5.md](briefs/task-5.md)
 Repository: e-footprint-interface
 Files touched: `model_builder/domain/services/simplified_inputs.py`, `model_builder/domain/conditional_inputs.py` (remove), `model_builder/adapters/forms/form_field_generator.py`, `model_builder/adapters/presenters/htmx_presenter.py`, `theme/static/scripts/model_builder_main.js`; `tests/unit_tests/domain/test_simplified_inputs.py`, `tests/unit_tests/adapters/forms/test_form_field_generator.py`, `tests/unit_tests/adapters/presenters/test_htmx_presenter.py`, `tests/integration/test_simplified_inputs.py`, `tests/e2e/objects/test_video_external_api_objects.py`, `js_tests/model_builder_main.test.js`; `specs/architecture/forms-and-relationships.html`.
@@ -88,7 +88,7 @@ Implementation: **standard** — The library query and Task 4 result are already
 ## Task 6 — Upgrade historical video inputs to version 26
 
 Goal: Correct only incompatible saved video-job resolutions during the existing 25→26 migration, then coordinate library and interface version metadata.
-Status: under review
+Status: library implementation complete; publishable interface dependency pending
 Brief: [briefs/task-6.md](briefs/task-6.md)
 Repository: e-footprint for migration/version; e-footprint-interface for publishable dependency when available.
 Files touched: `efootprint/api_utils/version_upgrade_handlers.py`, `version.py`, `pyproject.toml`; `tests/api_utils_tests/test_version_upgrade_handlers.py`, `tests/api_utils_tests/test_json_to_system.py`; interface `pyproject.toml`, `poetry.lock` at integration close-out; both `CHANGELOG.md` files at run close-out.
@@ -101,5 +101,4 @@ Implementation: **standard** — The serialized job shape and migration chain ar
 
 - Run focused tests with each task, then the full library suite with `MPLBACKEND=Agg poetry run pytest` and `poetry run mkdocs build --strict` from e-footprint. Cover modified-object inputs-only and cached JSON round-trips.
 - Validate e-footprint-interface against the edited local library: `poetry run pytest tests --ignore=tests/e2e`, `npm run jest`, rebuild edited JavaScript with `npm run build:js:dev`, and run the focused Playwright flows with a local server (`poetry run pytest tests/e2e/objects/test_video_external_api_objects.py tests/e2e/test_source_metadata.py --base-url http://localhost:8000`).
-- **Blocks coordinated merge, not implementation:** Replace the existing local editable interface dependency with a publishable `efootprint` 26 requirement and refresh its lock once that version is resolvable. Preserve the current uncommitted dependency/lock edits; do not reset them mechanically. Publishing the package and deploying the app are separate actions.
-- At run close-out, write consolidated unreleased changelog entries in both repositories and review whether a one-line `AGENTS.md`/`CLAUDE.md` pointer is useful for the new conditional-rule and editor-repair patterns. No new class registry or snapshot-structure gate is triggered by the approved plan.
+- **Blocks coordinated merge, not implementation:** PyPI currently has `efootprint` 25.0.0 but no 26.0.0 release. Once 26.0.0 is published, replace the existing local editable interface dependency with a publishable version-26 requirement and refresh its lock. Preserve the current uncommitted dependency/lock edits; do not reset them mechanically. Publishing the package and deploying the app are separate actions.

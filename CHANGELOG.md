@@ -6,8 +6,13 @@ and this project adheres to [Semantic Versioning](http://semver.org/)
 
 ## [Unreleased]
 
+### Added
+
+- Conditional declarations now provide shared affected-input and allowed-choice queries across direct relationships, including standalone and loaded objects.
+
 ### Changed
 
+- Version 26.0.0 upgrades incompatible version-25 EcoLogits video-job resolutions on import, recording the automatic replacement source and prior input history while leaving compatible values unchanged.
 - Feature close-out now delegates a plan review guide to Luna/medium: preserve the approved plan, link implemented claims to actual code, and consolidate decisions under supervisor ownership.
 - Plan decision guidance now requires an individual source-line link for every cited code artifact, including in plan amendments and implementation decisions.
 - Plan skills now use one shared amber index and visible callout format for plan amendments and implementation decisions.
@@ -20,6 +25,8 @@ and this project adheres to [Semantic Versioning](http://semver.org/)
 - Development workflow: verified task briefs, durable review handoffs, scoped agent roles, synchronized shared tooling, and local Claude/Codex usage accounting.
 
 ### Fixed
+- Conditional value and relationship edits validate the complete batch and roll back incompatible changes while accepting complete correction batches.
+- Failed object construction releases attached relationships and computed dependencies, so later edits do not encounter abandoned objects.
 - Local usage accounting now prices `gpt-5.6-luna` requests, including automatic approval reviews, on both API-equivalent and Codex-credit surfaces.
 - Conditional validation retains every dependent sharing a controller.
 - Input validation and transaction updates distinguish authored state from numerical equality: empty/zero transitions and timeseries builder settings are applied and validated even when numerical values compare equal.
