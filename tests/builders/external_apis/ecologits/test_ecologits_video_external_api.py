@@ -5,6 +5,7 @@ from unittest.mock import patch
 
 from pint import Quantity
 
+from efootprint.abstract_modeling_classes.modeling_update import ModelingUpdate
 from efootprint.abstract_modeling_classes.source_objects import SourceObject, SourceValue
 from efootprint.builders.external_apis.ecologits import ecologits_video_external_api as video_module
 from efootprint.builders.external_apis.ecologits.ecologits_explainable_quantity import EcoLogitsExplainableQuantity
@@ -203,6 +204,34 @@ class TestEcoLogitsVideoGenExternalAPIJob(TestCase):
         with self.assertRaises(ValueError):
             bad = _make_job(self.api, name="Bad", resolution=SourceObject("bad-format"))
             recompute_attribute(bad, "data_transferred")
+
+    def test_model_switch_validates_all_shared_jobs_before_and_after_calculation(self):
+        """Test provider/model edits reject incompatible resolutions and accept complete batches in either order."""
+        for calculated in (False, True):
+            with self.subTest(calculated=calculated):
+                api = _make_api(name=f"shared api {calculated}")
+                jobs = [_make_job(api, name=f"shared job {calculated} {index}") for index in range(2)]
+                if calculated:
+                    baseline = [job.request_duration.value for job in jobs]
+                with self.assertRaisesRegex(ValueError, "model_name"):
+                    api.provider = SourceObject("lightricks")
+                with self.assertRaisesRegex(ValueError, "resolution"):
+                    ModelingUpdate([[api.provider, SourceObject("lightricks")],
+                                    [api.model_name, SourceObject("ltx-2-t2v")],
+                                    [jobs[0].resolution, SourceObject("576p (1024 x 576)")]],
+                                   eager_outputs=[(job, "request_duration") for job in jobs] if calculated else None)
+                self.assertEqual("openai", api.provider.value)
+                self.assertEqual("sora-2-pro", api.model_name.value)
+                self.assertEqual(["720p (1280 x 720)"] * 2, [job.resolution.value for job in jobs])
+                if calculated:
+                    self.assertEqual(baseline, [job.request_duration.value for job in jobs])
+                changes = [[api.provider, SourceObject("lightricks")],
+                           [api.model_name, SourceObject("ltx-2-t2v")]]
+                changes += [[job.resolution, SourceObject("576p (1024 x 576)")] for job in jobs]
+                ModelingUpdate(changes[::-1] if calculated else changes)
+                self.assertEqual("ltx-2-t2v", api.model_name.value)
+                self.assertEqual(["576p (1024 x 576)"] * 2, [job.resolution.value for job in jobs])
+                self.assertTrue(all(job.request_duration.value.magnitude > 0 for job in jobs))
 
     def test_unknown_model_for_provider_raises(self):
         # Patch model_name on a valid API to ask for a model not in the catalog; update_impacts must raise.

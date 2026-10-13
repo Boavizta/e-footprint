@@ -10,7 +10,7 @@ from efootprint.abstract_modeling_classes.modeling_object import ModelingObject
 from efootprint.abstract_modeling_classes.modeling_update import ModelingUpdate
 from efootprint.abstract_modeling_classes.object_linked_to_modeling_obj import ObjectLinkedToModelingObjBase
 from efootprint.abstract_modeling_classes.source_objects import SourceObject, SourceValue
-from efootprint.abstract_modeling_classes.reactive_core import computed_dict
+from efootprint.abstract_modeling_classes.reactive_core import computed_attribute, computed_dict
 from efootprint.builders.time_builders import create_source_hourly_values_from_list
 from efootprint.constants.units import u
 from tests.utils import attach_input
@@ -144,6 +144,50 @@ class UnresolvableSignatureModel(ModelingObject):
     def __init__(self, name, value: "MissingSignatureType"):
         super().__init__(name)
         self.value = value
+
+
+class ConditionalController(ModelingObject):
+    def __init__(self, name, mode: SourceObject):
+        super().__init__(name)
+        self.mode = mode
+
+
+class ConditionalBridge(ModelingObject):
+    def __init__(self, name, api: ConditionalController):
+        super().__init__(name)
+        self.api = api
+
+
+class ConditionalJob(ModelingObject):
+    branches = {
+        SourceObject("a"): [SourceObject("x")],
+        SourceObject("b"): [SourceObject("y")],
+        SourceObject("empty"): [],
+    }
+    conditional_list_values = {"choice": {"depends_on": "api.mode", "conditional_list_values": branches}}
+
+    def __init__(self, name, api: ConditionalController, choice: SourceObject, dependent_first=False):
+        super().__init__(name)
+        if dependent_first:
+            self.choice = choice
+        self.api = api
+        self.choice = choice
+
+    @computed_attribute
+    def result(self):
+        return ExplainableObject(
+            f"{self.api.mode.value}:{self.choice.value}", "mode and choice",
+            left_parent=self.api.mode, right_parent=self.choice, operator="combine")
+
+
+class ConditionalBridgeJob(ModelingObject):
+    conditional_list_values = {
+        "choice": {"depends_on": "bridge.api.mode", "conditional_list_values": ConditionalJob.branches}}
+
+    def __init__(self, name, bridge: ConditionalBridge, choice: SourceObject):
+        super().__init__(name)
+        self.bridge = bridge
+        self.choice = choice
 
 
 class UnsupportedSignatureModel(ModelingObject):
@@ -280,11 +324,6 @@ class TestModelingObject(unittest.TestCase):
             SourceObject("original"),
             SourceObject("first-compatible"),
             SourceObject("second-compatible"),
-        )
-
-        self.assertEqual(
-            {"controller": ["first", "second"]},
-            model.attributes_with_depending_values(),
         )
 
         for candidate, invalid_dependent in (("invalidates-first", "first"), ("invalidates-second", "second")):
@@ -559,46 +598,134 @@ class TestValidationAttributes(unittest.TestCase):
 
 
 class TestCheckBelongingToAuthorizedValues(unittest.TestCase):
-    """Pins the dotted-path traversal in `conditional_list_values['depends_on']`. Single-segment
-    paths (back-compat) and multi-segment paths must both resolve through `getattr`, and a missing
-    intermediate attribute must short-circuit to the existing "value not set" error.
+    def setUp(self):
+        self.api = ConditionalController("controller", SourceObject("a"))
+        self.job = ConditionalJob("dependent job", self.api, SourceObject("x"))
 
-    Synthetic attributes are written through `object.__setattr__` to bypass the framework's
-    input-validation / update machinery — the unit under test here is the conditional-list lookup,
-    not the setter."""
+    def test_proposed_choices_and_controllers_are_checked_without_attachment(self):
+        """Test a dotted controller path resolves proposed inputs and leaves the live state intact."""
+        self.job.check_belonging_to_authorized_values("choice")
+        self.job.check_belonging_to_authorized_values(
+            "choice", {(self.api, "mode"): SourceObject("b"), (self.job, "choice"): SourceObject("y")})
+        with self.assertRaises(ValueError) as error:
+            self.job.check_belonging_to_authorized_values("choice", {(self.api, "mode"): SourceObject("b")})
+        for detail in ("dependent job", "choice", "x", "controller", "mode", "b", "y"):
+            self.assertIn(detail, str(error.exception))
+        self.assertEqual("a", self.api.mode.value)
+        self.assertEqual("x", self.job.choice.value)
 
-    def _make_obj(self, depends_on: str):
-        obj = ModelingObjectForTesting("test")
-        a_value, b_value = SourceObject("a"), SourceObject("b")
-        object.__setattr__(obj, "conditional_list_values", {
-            "child": {
-                "depends_on": depends_on,
-                "conditional_list_values": {a_value: [SourceObject("x")], b_value: [SourceObject("y")]},
-            }
-        })
-        return obj, a_value, b_value
+    def test_missing_path_and_empty_branch_reject_while_missing_branch_is_unrestricted(self):
+        """Test missing controller data differs from an empty or undeclared choice branch."""
+        for proposed in ({(self.job, "api"): None}, {(self.api, "mode"): None}):
+            with self.subTest(proposed=proposed), self.assertRaisesRegex(ValueError, "api.mode"):
+                self.job.check_belonging_to_authorized_values("choice", proposed)
+        with self.assertRaisesRegex(ValueError, "no compatible choice exists"):
+            self.job.check_belonging_to_authorized_values("choice", {(self.api, "mode"): SourceObject("empty")})
+        self.job.check_belonging_to_authorized_values("choice", {(self.api, "mode"): SourceObject("unknown")})
 
-    def test_single_segment_path_resolves_via_getattr(self):
-        obj, a_value, _ = self._make_obj("parent_attr")
-        object.__setattr__(obj, "parent_attr", a_value)
-        obj.check_belonging_to_authorized_values("child", SourceObject("x"), {})
-        with self.assertRaises(ValueError):
-            obj.check_belonging_to_authorized_values("child", SourceObject("y"), {})
+    def test_constructor_requires_controller_before_dependent(self):
+        """Test constructing a dependent before its required relationship rejects before attachment."""
+        candidate = SourceObject("x")
+        with self.assertRaisesRegex(ValueError, "api.mode"):
+            ConditionalJob("wrong order", self.api, candidate, dependent_first=True)
+        self.assertIsNone(candidate.modeling_obj_container)
 
-    def test_dotted_path_traverses_each_segment(self):
-        obj, a_value, _ = self._make_obj("intermediate.parent_attr")
-        intermediate = MagicMock()
-        intermediate.parent_attr = a_value
-        object.__setattr__(obj, "intermediate", intermediate)
-        obj.check_belonging_to_authorized_values("child", SourceObject("x"), {})
-        with self.assertRaises(ValueError):
-            obj.check_belonging_to_authorized_values("child", SourceObject("y"), {})
+    def test_passive_replacement_validates_assigned_local_and_referring_dependents(self):
+        """Test constructor-phase replacement checks staged values without changing backlinks on rejection."""
+        replacement = ConditionalController("replacement", SourceObject("b"))
+        original_link = self.job.api
+        with self.assertRaisesRegex(ValueError, "choice"):
+            self.job._set_input_passively("api", replacement)
+        self.assertIs(original_link, self.job.api)
+        self.assertEqual([], replacement.contextual_modeling_obj_containers)
+        candidate = SourceObject("b")
+        with self.assertRaisesRegex(ValueError, "choice"):
+            self.api._set_input_passively("mode", candidate)
+        self.assertEqual("a", self.api.mode.value)
+        self.assertIsNone(candidate.modeling_obj_container)
 
-    def test_dotted_path_short_circuits_when_intermediate_is_none(self):
-        obj, _, _ = self._make_obj("intermediate.parent_attr")
-        object.__setattr__(obj, "intermediate", None)
-        with self.assertRaisesRegex(ValueError, "intermediate.parent_attr"):
-            obj.check_belonging_to_authorized_values("child", SourceObject("x"), {})
+    def test_controller_edit_rejects_cold_and_calculated_shared_dependents_and_restores_eager_result(self):
+        """Test a shared controller validates every job regardless of recorded computation edges."""
+        second = ConditionalJob("second job", self.api, SourceObject("x"))
+        original = self.api.mode
+        for calculated in (False, True):
+            with self.subTest(calculated=calculated):
+                if calculated:
+                    self.assertEqual("a:x", second.result.value)
+                with self.assertRaisesRegex(ValueError, "second job"):
+                    ModelingUpdate([[self.api.mode, SourceObject("b")], [self.job.choice, SourceObject("y")]],
+                                   eager_outputs=[(second, "result")] if calculated else None)
+                self.assertIs(original, self.api.mode)
+                self.assertEqual("x", self.job.choice.value)
+                self.assertEqual("x", second.choice.value)
+                if calculated:
+                    self.assertTrue(ConditionalJob.result.slot(second).has_cached_value)
+                    self.assertEqual("a:x", second.result.value)
+                else:
+                    self.assertFalse(ConditionalJob.result.slot(second).has_cached_value)
+
+    def test_complete_batch_accepts_both_orders_and_validates_each_address_once(self):
+        """Test controller and dependent corrections use the final batch graph without redundant checks."""
+        for mode, choice, reverse in (("b", "y", False), ("a", "x", True)):
+            changes = [[self.api.mode, SourceObject(mode)], [self.job.choice, SourceObject(choice)]]
+            with patch.object(ConditionalJob, "check_belonging_to_authorized_values", autospec=True,
+                              side_effect=ConditionalJob.check_belonging_to_authorized_values) as validate:
+                ModelingUpdate(changes[::-1] if reverse else changes)
+                validate.assert_called_once_with(self.job, "choice")
+            self.assertEqual(f"{mode}:{choice}", self.job.result.value)
+
+    def test_relationship_rollback_and_accepted_replacement_follow_only_current_links(self):
+        """Test rejected direct links restore backlinks and accepted links redirect later validation."""
+        replacement = ConditionalController("replacement", SourceObject("b"))
+        original_link = self.job.api
+        self.job.result
+        with self.assertRaisesRegex(ValueError, "choice"):
+            ModelingUpdate([[self.job.api, replacement]], eager_outputs=[(self.job, "result")])
+        self.assertIs(original_link, self.job.api)
+        self.assertIs(self.job, original_link.modeling_obj_container)
+        self.assertIn(self.job, self.api.modeling_obj_containers)
+        self.assertNotIn(self.job, replacement.modeling_obj_containers)
+        self.assertTrue(ConditionalJob.result.slot(self.job).has_cached_value)
+        self.assertEqual("a:x", self.job.result.value)
+        ModelingUpdate([[self.job.choice, SourceObject("y")], [self.job.api, replacement]])
+        self.assertNotIn(self.job, self.api.modeling_obj_containers)
+        self.assertIn(self.job, replacement.modeling_obj_containers)
+        self.api.mode = SourceObject("empty")
+        with self.assertRaisesRegex(ValueError, "choice"):
+            replacement.mode = SourceObject("a")
+        self.assertEqual("b:y", self.job.result.value)
+
+    def test_entangled_replacement_corrections_are_validated_in_the_same_batch(self):
+        """Test relationship entanglements join the final graph before conditional validation."""
+        class EntangledJob(ConditionalJob):
+            @property
+            def attribute_update_entanglements(self):
+                return {"api": lambda change: [[self.choice, SourceObject("y")]]}
+
+        job = EntangledJob("entangled job", self.api, SourceObject("x"))
+        replacement = ConditionalController("replacement", SourceObject("b"))
+        job.api = replacement
+        self.assertIs(replacement, job.api._value)
+        self.assertEqual("y", job.choice.value)
+
+    def test_intermediate_and_root_relationship_replacements_validate_final_multi_hop_graph(self):
+        """Test every replaceable segment of a longer path triggers dependent validation and rollback."""
+        bridge = ConditionalBridge("bridge", self.api)
+        job = ConditionalBridgeJob("multi hop job", bridge, SourceObject("x"))
+        replacement = ConditionalController("replacement", SourceObject("b"))
+        original_link = bridge.api
+        with self.assertRaisesRegex(ValueError, "multi hop job"):
+            bridge.api = replacement
+        self.assertIs(original_link, bridge.api)
+        ModelingUpdate([[bridge.api, replacement], [job.choice, SourceObject("y")]])
+        other = ConditionalBridge("other bridge", self.api)
+        with self.assertRaisesRegex(ValueError, "multi hop job"):
+            job.bridge = other
+        self.assertIs(bridge, job.bridge._value)
+        ModelingUpdate([[job.choice, SourceObject("x")], [job.bridge, other]])
+        replacement.mode = SourceObject("empty")
+        with self.assertRaisesRegex(ValueError, "choice"):
+            self.api.mode = SourceObject("b")
 
 
 if __name__ == "__main__":

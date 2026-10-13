@@ -63,6 +63,45 @@ class TestJsonToSystem(IntegrationTestBaseClass):
 
         self.assertEqual(2, len(list(class_obj_dict["Server"].values())))
 
+    def test_conditional_edits_reject_and_rollback_after_both_snapshot_modes(self):
+        """Test restored video inputs enforce conditional choices with and without serialized caches."""
+        from efootprint.abstract_modeling_classes.modeling_update import ModelingUpdate
+        from efootprint.abstract_modeling_classes.source_objects import SourceObject
+        from efootprint.builders.external_apis.ecologits.ecologits_video_external_api import (
+            EcoLogitsVideoGenExternalAPI, EcoLogitsVideoGenExternalAPIJob)
+
+        api = EcoLogitsVideoGenExternalAPI("loaded video api", SourceObject("openai"), SourceObject("sora-2-pro"))
+        job = EcoLogitsVideoGenExternalAPIJob.from_defaults("loaded video job", external_api=api)
+        baseline_duration = job.request_duration.value
+        api.use_footprint
+        for save_computed_state in (False, True):
+            with self.subTest(save_computed_state=save_computed_state):
+                snapshot = system_to_json(job, save_computed_state=save_computed_state)
+                _, loaded, _ = json_to_system(snapshot)
+                loaded_job, loaded_api = loaded[job.id], loaded[api.id]
+                server = loaded_api.server._value
+                footprint_slot = type(server).use_footprint.slot(server)
+                self.assertEqual(save_computed_state, footprint_slot.has_cached_value)
+                original_link = loaded_job.external_api
+                with self.assertRaisesRegex(ValueError, "resolution"):
+                    ModelingUpdate([[loaded_api.provider, SourceObject("lightricks")],
+                                    [loaded_api.model_name, SourceObject("ltx-2-t2v")]],
+                                   eager_outputs=[(loaded_job, "request_duration")])
+                self.assertEqual("openai", loaded_api.provider.value)
+                self.assertEqual("sora-2-pro", loaded_api.model_name.value)
+                self.assertEqual("720p (1280 x 720)", loaded_job.resolution.value)
+                self.assertIs(original_link, loaded_job.external_api)
+                self.assertIn(loaded_job, loaded_api.jobs)
+                self.assertEqual(baseline_duration, loaded_job.request_duration.value)
+                ModelingUpdate([[loaded_job.resolution, SourceObject("576p (1024 x 576)")],
+                                [loaded_api.model_name, SourceObject("ltx-2-t2v")],
+                                [loaded_api.provider, SourceObject("lightricks")]])
+                self.assertFalse(footprint_slot.has_cached_value)
+                _, reloaded, _ = json_to_system(system_to_json(loaded_job))
+                self.assertEqual("576p (1024 x 576)", reloaded[job.id].resolution.value)
+                self.assertEqual("ltx-2-t2v", reloaded[api.id].model_name.value)
+                self.assertIs(reloaded[api.id], reloaded[job.id].external_api._value)
+
     def test_create_unlinked_uj(self):
         full_dict = deepcopy(self.base_system_dict)
         with open(os.path.join(API_UTILS_TEST_DIR, "uj_not_linked_to_usage_pattern.json"), "rb") as file:

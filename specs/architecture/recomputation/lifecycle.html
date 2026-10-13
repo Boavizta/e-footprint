@@ -126,6 +126,17 @@ S_utc._calculus_dependencies == {S_starts, S_timezone}  # topology retained</cod
 
 <h2 id="invalidation">Deletion wave and partial state</h2>
 <p><code>ModelingObject.__setattr__</code> routes live writes through <code>ModelingUpdate</code>, which normalizes list, dict, and modeling-object links and skips equal changes before applying relationship bookkeeping. The walkthrough above follows both a numerical edit and a relationship edit through that transaction.</p>
+<p>After normalization, the transaction captures each changed input's owner and attribute before the old value detaches.
+After the complete batch attaches and invalidates, it validates each changed input and each
+<a href="../relationships.html#conditional-inputs">declared conditional dependent</a> once against the final graph,
+before pulling guards or eager outputs. A controller-only edit that leaves an incompatible dependent rejects;
+a batch correcting both accepts in either order. Relationship replacements use the same lookup, including intermediate
+links and shared controllers, without relying on prior computed dependencies. Rejection restores inputs and backlinks,
+then invalidates and pulls the restored eager boundary.</p>
+<p>Passive constructor assignments use a one-entry proposed-change map to validate the new value and already assigned
+dependents before attachment. Unassigned dependents are skipped; assigning a dependent before its required controller
+is available fails with the full path. Hydration retains its explicit validation bypass until the graph is restored;
+subsequent live edits use the same conditional validation as newly constructed objects.</p>
 <p><code>input_values_match()</code> owns authored-input equality for transaction no-op detection and allowed-value
 validation. It distinguishes <code>EmptyExplainableObject</code> from explicit zero and preserves timeseries builder
 or <code>form_inputs</code> changes even when their computed arrays are equal. Optional absence, a fixed zero, and

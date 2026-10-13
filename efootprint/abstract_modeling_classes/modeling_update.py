@@ -1,6 +1,7 @@
 from time import perf_counter
 from typing import List
 
+from efootprint.abstract_modeling_classes.conditional_inputs import dependent_inputs
 from efootprint.abstract_modeling_classes.contextual_modeling_object_attribute import ContextualModelingObjectAttribute
 from efootprint.abstract_modeling_classes.explainable_object_base_class import ExplainableObject
 from efootprint.abstract_modeling_classes.object_linked_to_modeling_obj import (
@@ -31,6 +32,8 @@ class ModelingUpdate:
         self.parse_changes_list()
         self.newly_linked_mod_objs = self.collect_newly_linked_mod_objs()
 
+        changed_inputs = {(old_value.modeling_obj_container, old_value.attr_name_in_mod_obj_container)
+                          for old_value, new_value in self.changes_list}
         self.changed_slots = [slot_of_attached_value(old_value) for old_value, new_value in self.changes_list]
 
         with collect_invalidated_slots() as visited_slots:
@@ -38,11 +41,8 @@ class ModelingUpdate:
             invalidate(*self.changed_slots)
 
         try:
-            for new_sourcevalue in self.new_sourcevalues:
-                mod_obj_container = new_sourcevalue.modeling_obj_container
-                mod_obj_container.check_belonging_to_authorized_values(
-                    new_sourcevalue.attr_name_in_mod_obj_container, new_sourcevalue,
-                    mod_obj_container.attributes_with_depending_values())
+            for owner, attribute in changed_inputs | dependent_inputs(changed_inputs):
+                owner.check_belonging_to_authorized_values(attribute)
 
             self.pull_eagerly(visited_slots)
         except Exception as e:

@@ -8,6 +8,7 @@ import numpy as np
 from efootprint.abstract_modeling_classes.explainable_quantity import ExplainableQuantity
 from efootprint.abstract_modeling_classes.empty_explainable_object import EmptyExplainableObject
 from efootprint.abstract_modeling_classes.list_linked_to_modeling_obj import ListLinkedToModelingObj
+from efootprint.abstract_modeling_classes.modeling_object import ModelingObject
 from efootprint.core.country import Country
 from efootprint.core.hardware.device import Device
 from efootprint.core.hardware.edge.edge_storage import EdgeStorage
@@ -444,6 +445,7 @@ class TestSystem(TestCase):
                                        instances_manufacturing_footprint=SourceValue(1 * u.kg))
 
         system2 = System.__new__(System)
+        ModelingObject.__init__(system2, "manufacturing footprint categories")
         system2.usage_patterns = []
         system2.edge_usage_patterns = []
 
@@ -467,6 +469,7 @@ class TestSystem(TestCase):
             Network, name="network2", id="network2 id", use_footprint=SourceValue(1 * u.kg))
 
         system2 = System.__new__(System)
+        ModelingObject.__init__(system2, "use footprint categories")
         system2.usage_patterns = []
         system2.edge_usage_patterns = []
 
@@ -688,6 +691,7 @@ class TestSystem(TestCase):
         server_need = edge_setup["server_need"]
 
         system = System.__new__(System)
+        ModelingObject.__init__(system, "edge pattern linked objects")
         system.usage_patterns = []
         system.edge_usage_patterns = [edge_usage_pattern]
 

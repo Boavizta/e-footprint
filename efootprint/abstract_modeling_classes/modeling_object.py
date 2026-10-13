@@ -180,14 +180,6 @@ class ModelingObject(metaclass=ABCAfterInitMeta):
     conditional_list_values =  {}
 
     @classmethod
-    def attributes_with_depending_values(cls):
-        output_dict = {}
-        for dependent_attribute, dependent_attribute_dependencies in cls.conditional_list_values.items():
-            output_dict.setdefault(dependent_attribute_dependencies["depends_on"], []).append(dependent_attribute)
-
-        return output_dict
-
-    @classmethod
     def from_defaults(cls, name, **kwargs):
         from copy import deepcopy
         output_kwargs = deepcopy(cls.default_values)
@@ -424,50 +416,33 @@ class ModelingObject(metaclass=ABCAfterInitMeta):
         self._check_input_value_type(name, input_value, annotation, replaced_value)
         self._check_input_value_positivity_and_unit(name, input_value, annotation)
 
-    def check_belonging_to_authorized_values(self, name, input_value, attributes_with_depending_values):
-        if name in self.list_values:
-            if not any(input_values_match(input_value, allowed) for allowed in self.list_values[name]):
-                raise ValueError(
-                    f"Value {input_value} for attribute {name} is not in the list of possible values: "
-                    f"{[elt.value for elt in self.list_values[name]]}")
+    def check_belonging_to_authorized_values(self, name, proposed_changes=None):
+        """Validate one input's choices against attached or proposed controller inputs."""
+        from efootprint.abstract_modeling_classes.conditional_inputs import allowed_values, resolve_input_path
 
-        if name in self.conditional_list_values:
-            conditional_attr_name = self.conditional_list_values[name]['depends_on']
-            branches = self.conditional_list_values[name]["conditional_list_values"]
-            # depends_on may be a dotted path (e.g. "external_api.model_name") to reach an attribute on a related object
-            conditional_value = self
-            for part in conditional_attr_name.split("."):
-                conditional_value = getattr(conditional_value, part, None)
-                if conditional_value is None:
-                    break
-            if conditional_value is None:
-                raise ValueError(f"Value for attribute {conditional_attr_name} is not set but required for checking "
-                                 f"validity of {name}")
-            if (conditional_value in branches
-                    and not any(input_values_match(input_value, allowed) for allowed in
-                                branches[conditional_value])):
-                raise ValueError(
-                    f"Value {input_value} for attribute {name} is not in the list of possible values for "
-                    f"{conditional_attr_name} {conditional_value}: "
-                    f"{branches[conditional_value]}")
-
-        if name in attributes_with_depending_values:
-            for dependent_attribute in attributes_with_depending_values[name]:
-                dependent_attribute_value = getattr(self, dependent_attribute, None)
-                branches = self.conditional_list_values[dependent_attribute]["conditional_list_values"]
-                if (dependent_attribute_value is not None
-                        and input_value in branches
-                        and not any(input_values_match(dependent_attribute_value, allowed) for allowed in
-                                    branches[input_value])):
-                    raise ValueError(
-                        f"Setting {name} as {input_value} is not possible because {dependent_attribute_value}"
-                        f" is not in the list of possible values for {dependent_attribute} "
-                        f"when {name} is {input_value}."
-                        f"\nYou might want to use the ModelingUpdate object to be able to change both inputs "
-                        f"at the same time."
-                        f"\nList of possible values for {input_value}:"
-                        f"\n{branches[input_value]}"
-                    )
+        declaration = type(self).conditional_list_values.get(name)
+        if declaration is None and name not in type(self).list_values:
+            return
+        proposed_changes = proposed_changes or {}
+        address = (self, name)
+        input_value = proposed_changes[address] if address in proposed_changes else self.__dict__[name]
+        controller_value = None
+        controller_description = ""
+        if declaration is not None:
+            controller_owner, controller_attribute = resolve_input_path(
+                self, declaration["depends_on"], proposed_changes)
+            controller_address = (controller_owner, controller_attribute)
+            controller_value = (proposed_changes[controller_address] if controller_address in proposed_changes
+                                else controller_owner.__dict__[controller_attribute])
+            controller_description = (
+                f" when {type(controller_owner).__name__} {controller_owner.name!r}.{controller_attribute} "
+                f"is {controller_value}")
+        options = allowed_values(type(self), name, controller_value)
+        if options is not None and not any(input_values_match(input_value, allowed) for allowed in options):
+            choices = str(list(options)) if options else "[] (no compatible choice exists)"
+            raise ValueError(
+                f"Value {input_value} for {type(self).__name__} {self.name!r}.{name} is not in the list of permitted values"
+                f"{controller_description}. Permitted choices: {choices}")
 
     @property
     def modeling_obj_containers(self):
@@ -584,8 +559,14 @@ class ModelingObject(metaclass=ABCAfterInitMeta):
             raise AttributeError(f"{name} is a computed attribute and cannot be attached as an input.")
         current_attr = getattr(self, name, None)
         if check_input_validity:
+            from efootprint.abstract_modeling_classes.conditional_inputs import dependent_inputs
+
             self.check_input_value(name, input_value)
-            self.check_belonging_to_authorized_values(name, input_value, self.attributes_with_depending_values())
+            proposed_changes = {(self, name): input_value}
+            self.check_belonging_to_authorized_values(name, proposed_changes)
+            for owner, attribute in dependent_inputs(proposed_changes, proposed_changes) - {(self, name)}:
+                if attribute in owner.__dict__:
+                    owner.check_belonging_to_authorized_values(attribute, proposed_changes)
         value_to_set = input_value
         if isinstance(value_to_set, ModelingObject):
             from efootprint.abstract_modeling_classes.contextual_modeling_object_attribute import \
