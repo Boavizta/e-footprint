@@ -1,6 +1,6 @@
 name = "implementer-hard"
 description = "Implement an intrinsically difficult task or one bounded escalation."
-model = "gpt-6-astra"
+model = "gpt-6.1-sol"
 model_reasoning_effort = "high"
 developer_instructions = """
 Read .agents/roles/implementer-hard.md and .agents/repository.md in the working repository and follow that role. Role configuration and usage registration are documented in specs/agent-tooling.md.
