@@ -631,17 +631,36 @@ class TestCheckBelongingToAuthorizedValues(unittest.TestCase):
         self.assertIsNone(candidate.modeling_obj_container)
 
     def test_passive_replacement_validates_assigned_local_and_referring_dependents(self):
-        """Test constructor-phase replacement checks staged values without changing backlinks on rejection."""
+        """Test constructor replacements validate assigned dependents before changing values or backlinks."""
+        constructed = []
+
+        class ReplacingJob(ConditionalJob):
+            def __init__(self, name, api: ConditionalController, choice: SourceObject,
+                         replacement: ConditionalController):
+                super().__init__(name, api, choice)
+                constructed.append(self)
+                self.api = replacement
+
+        class ReplacingController(ConditionalController):
+            def __init__(self, name, mode: SourceObject, replacement: SourceObject):
+                super().__init__(name, mode)
+                constructed.append(ConditionalJob("constructor referring job", self, SourceObject("x")))
+                self.mode = replacement
+
         replacement = ConditionalController("replacement", SourceObject("b"))
-        original_link = self.job.api
-        with self.assertRaisesRegex(ValueError, "choice"):
-            self.job._set_input_passively("api", replacement)
-        self.assertIs(original_link, self.job.api)
-        self.assertEqual([], replacement.contextual_modeling_obj_containers)
         candidate = SourceObject("b")
-        with self.assertRaisesRegex(ValueError, "choice"):
-            self.api._set_input_passively("mode", candidate)
-        self.assertEqual("a", self.api.mode.value)
+        with patch("efootprint.abstract_modeling_classes.modeling_update.ModelingUpdate",
+                   side_effect=AssertionError("constructor assignment started a transaction")), \
+                patch.object(ConditionalJob.result, "getter", side_effect=AssertionError("conditional calculation")):
+            with self.assertRaisesRegex(ValueError, "choice"):
+                ReplacingJob("constructor replacing job", self.api, SourceObject("x"), replacement)
+            with self.assertRaisesRegex(ValueError, "choice"):
+                ReplacingController("constructor replacing controller", SourceObject("a"), candidate)
+        local_job, referring_job = constructed
+        self.assertIs(self.api, local_job.api._value)
+        self.assertIn(local_job, self.api.modeling_obj_containers)
+        self.assertEqual([], replacement.contextual_modeling_obj_containers)
+        self.assertEqual("a", referring_job.api.mode.value)
         self.assertIsNone(candidate.modeling_obj_container)
 
     def test_controller_edit_rejects_cold_and_calculated_shared_dependents_and_restores_eager_result(self):
