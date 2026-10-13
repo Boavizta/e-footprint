@@ -51,6 +51,20 @@ architecture document, implementation report or chronological narrative.
   IDs and highlighting. Keep removed/proposed artifacts distinguishable from current source.
   Link the replacement or concrete regression when an old symbol no longer exists.
 
+## Optional plan-local glossary
+
+- Preserve an existing local glossary and its term annotations. Check that definitions still
+  match the implemented behavior; correct misleading wording rather than explaining it away.
+- Add a small glossary near the plan header only when requested or when plan-specific vocabulary
+  makes review difficult. Keep it to at most 20 useful terms, preferably fewer, with short,
+  simple definitions in the sense used by this plan. Do not turn it into a general architecture
+  glossary or fill it with ordinary programming vocabulary.
+- Use each glossary definition as the single source for hover and keyboard-focus explanations
+  on relevant terms. Keep source-link destinations, `data-review-source-href` attributes and
+  normal-click/right-click behavior intact; term annotations must not introduce nested links.
+- Keep glossary work within the requested scope. A section-only pass does not authorize a
+  page-wide terminology rewrite. Preserve the reviewed section order, anchors and examples.
+
 ## Decisions and discrepancies
 
 The supervisor owns consequential choices and their rationale. Read the consequential-decision
@@ -72,7 +86,9 @@ user with the same evidence. Routine wording corrections need no decision callou
 After consolidated edits, run the link converter from the driving repository as documented in
 the source-link convention. Check new and existing links in scope against the final files and
 intended lines, including decision callouts. Check unique HTML IDs, internal anchors, snippets,
-file-tree mappings and consistency between status labels and the evidence.
+file-tree mappings and consistency between status labels and the evidence. If a glossary is
+present, check term/definition links, hover and keyboard-focus behavior, and that annotations
+preserve source navigation and remain readable at narrow widths.
 
 Inspect the rendered page and normal-click/right-click behavior when a permitted viewer is
 available; disclose unavailable visual or editor-launch verification. Review the diff to ensure
