@@ -61,7 +61,7 @@ be resolved during preparation, describe the specific uncertainty and why it is 
 settle; do not default to `hard` merely because the relevant code has not been read.
 
 Routing is easy → `implementer-easy`, standard → `implementer`, hard → `implementer-hard`;
-model/effort settings live in `specs/agent-tooling.md`. Review depth is independently chosen by
+model/effort settings come from the selected runtime's agent definition. Review depth is independently chosen by
 `task-review` from the actual changes and local review surfaces. An easy task may require FULL
 review; every tier retains applicable constitution gates and independent review.
 

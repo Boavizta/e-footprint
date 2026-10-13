@@ -31,37 +31,31 @@ expansion: shared instructions read the repository's small local reference at ru
 
 ## Agent roles
 
-| Role | Effort | Codex | Claude Code |
-|---|---|---|---|
-| implementer-easy | high | gpt-6-luna | claude-haiku-5-5 |
-| implementer | medium | gpt-6.1-sol | claude-opus-5-5[1m] |
-| implementer-hard | high | gpt-6-astra | claude-fable-5-1[1m] |
-| reviewer | high | gpt-6.1-sol | claude-opus-5-5[1m] |
-| diagnostician | high | gpt-6.1-sol | claude-opus-5-5[1m] |
-| plan-review-guide | medium | gpt-6-luna | claude-haiku-5-5 |
-
-Model tiers map across runtimes as Astra = Fable, Sol = Opus, Luna = Haiku, with the same effort;
-role decisions made on one runtime apply to both. This table and the runtime adapters are the only
-places that name provider models: skills, role instructions and workflow documents refer to the
-agent definitions. The supervisor/planning session preferably uses the `implementer-hard`
-configuration. An explicit user model choice overrides the default workflow recommendation.
+The runtime agent definitions are the single source of truth for each role's model and effort:
+`.codex/agents/<role>.toml` for Codex and `.claude/agents/<role>.md` for Claude Code. Read the
+selected runtime's agent definition at dispatch time; do not infer one runtime's settings from
+the other or copy them into workflow guidance. The configured roles are `implementer-easy`,
+`implementer`, `implementer-hard`, `reviewer`, `diagnostician` and `plan-review-guide`.
+The supervisor/planning session preferably uses the configured `implementer-hard` settings.
+An explicit user model choice overrides that workflow recommendation.
 
 `Implementation: easy | standard | hard` selects the corresponding implementer role using the
 [difficulty rules](../.agents/skills/spec-tasks/SKILL.md#implementation-difficulty). Standard is the
 default; easy covers well-defined transformations and known-cause fixes, including broad mechanical
-renames. Review depth and required checks remain independent. The easy tier's high effort follows the [Codex subagent starting guidance](https://learn.chatgpt.com/docs/agent-configuration/subagents).
+renames. Review depth and required checks remain independent.
 
 Portable role instructions live in `.agents/roles/`; `.codex/agents/*.toml` and
-`.claude/agents/*.md` are thin runtime adapters. When a Codex runtime exposes only a generic
-spawn tool, pass the configured model/effort explicitly and the role instructions in the brief.
+`.claude/agents/*.md` are runtime adapters. When a Codex runtime exposes only a generic
+spawn tool, read the chosen `.codex/agents/<role>.toml` and pass its model/effort explicitly
+with the role instructions in the brief.
 If a runtime cannot apply a requested setting, report it and use the user's permitted alternative;
 never claim an unobserved model pin worked. A role description is not a tool permission boundary.
 The same configured reviewer role handles per-task and global reviews and can apply approved fixes.
 The plan-review-guide role performs the final documentation pass after global review and corrections;
 it preserves the approved plan and adds implementation evidence. The supervisor owns consequential
 decisions and checks changed claims. Substantial unresolved tracing escalates to the standard
-implementer; see [the skill](../.agents/skills/plan-review-guide/SKILL.md). Its small-model tier is the initial
-default for this bounded role, subject to correction effort observed in use.
+implementer; see [the skill](../.agents/skills/plan-review-guide/SKILL.md). Adjust its agent
+definition when observed correction effort warrants a different model or effort.
 
 Use a fresh context for specification → plan → tasks and for each implementation run. This is a
 handoff convention, not authority to create new user-owned Codex tasks without a request.

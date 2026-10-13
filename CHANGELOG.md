@@ -12,6 +12,7 @@ and this project adheres to [Semantic Versioning](http://semver.org/)
 
 ### Changed
 
+- Agent workflow guidance now reads each role's model and effort from its runtime agent definition instead of a duplicated role table.
 - Version 26.0.0 upgrades incompatible version-25 EcoLogits video-job resolutions on import, recording the automatic replacement source and prior input history while leaving compatible values unchanged.
 - Feature close-out now delegates a plan review guide to Luna/medium: preserve the approved plan, link implemented claims to actual code, and consolidate decisions under supervisor ownership.
 - Plan decision guidance now requires an individual source-line link for every cited code artifact, including in plan amendments and implementation decisions.
