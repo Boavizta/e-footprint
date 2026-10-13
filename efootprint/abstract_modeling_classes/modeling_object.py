@@ -78,9 +78,21 @@ def get_canonical_class_for_cls(modeling_object_class: type) -> type:
 
 class AfterInitMeta(type):
     def __call__(cls, *args, **kwargs):
-        instance = super(AfterInitMeta, cls).__call__(*args, **kwargs)
-        instance.after_init()
-        instance._mark_live()
+        instance = cls.__new__(cls)
+        try:
+            instance.__init__(*args, **kwargs)
+            instance.after_init()
+            instance._mark_live()
+        except Exception:
+            # Retaining the instance lets failed constructors release their already attached links.
+            for slot in list(instance_slot_registry(instance).values()):
+                slot._drop_value()
+                slot.replace_dependencies()
+            for facade in instance.__dict__.get("_computed_dict_facades", {}).values():
+                facade.set_modeling_obj_container(None, None)
+            for value in get_instance_attributes(instance, ObjectLinkedToModelingObjBase).values():
+                value.set_modeling_obj_container(None, None)
+            raise
 
         return instance
 

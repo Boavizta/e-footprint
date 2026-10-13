@@ -135,7 +135,11 @@ links and shared controllers, without relying on prior computed dependencies. Re
 then invalidates and pulls the restored eager boundary.</p>
 <p>Passive constructor assignments use a one-entry proposed-change map to validate the new value and already assigned
 dependents before attachment. Unassigned dependents are skipped; assigning a dependent before its required controller
-is available fails with the full path. Hydration retains its explicit validation bypass until the graph is restored;
+is available fails with the full path. The metaclass retains the instance while running its constructor and
+<code>after_init()</code>; if either fails, it passively detaches the instance's attached inputs and cached values,
+and removes its computed dependency edges
+before re-raising the original error. Previously attached relationships therefore cannot leave an incomplete
+dependent behind on a surviving controller. Hydration retains its explicit validation bypass until the graph is restored;
 subsequent live edits use the same conditional validation as newly constructed objects.</p>
 <p><code>input_values_match()</code> owns authored-input equality for transaction no-op detection and allowed-value
 validation. It distinguishes <code>EmptyExplainableObject</code> from explicit zero and preserves timeseries builder

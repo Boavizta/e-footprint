@@ -658,10 +658,43 @@ class TestCheckBelongingToAuthorizedValues(unittest.TestCase):
                 ReplacingController("constructor replacing controller", SourceObject("a"), candidate)
         local_job, referring_job = constructed
         self.assertIs(self.api, local_job.api._value)
-        self.assertIn(local_job, self.api.modeling_obj_containers)
+        self.assertIsNone(local_job.api.modeling_obj_container)
+        self.assertNotIn(local_job, self.api.modeling_obj_containers)
         self.assertEqual([], replacement.contextual_modeling_obj_containers)
         self.assertEqual("a", referring_job.api.mode.value)
         self.assertIsNone(candidate.modeling_obj_container)
+
+    def test_failed_constructor_detaches_relationships_before_later_controller_edits(self):
+        """Test a rejected dependent constructor cannot leave an incomplete owner blocking a valid edit."""
+        candidate = SourceObject("y")
+        with self.assertRaisesRegex(ValueError, "rejected job.*choice"):
+            ConditionalJob("rejected job", self.api, candidate)
+        self.assertEqual([self.job], self.api.modeling_obj_containers)
+        self.assertIsNone(candidate.modeling_obj_container)
+        self.api.mode = SourceObject("unknown")
+        self.assertEqual("unknown:x", self.job.result.value)
+
+    def test_failed_after_init_detaches_cached_values_and_preserves_original_error(self):
+        """Test a rejected construction hook releases its cached result and earlier relationship."""
+        cached_results = []
+        failure = ValueError("construction hook rejected")
+
+        class RejectingHookJob(ConditionalJob):
+            @computed_attribute(guard=True)
+            def result(self):
+                return ConditionalJob.result(self)
+
+            def after_init(self):
+                cached_results.append(self.result)
+                raise failure
+
+        with self.assertRaises(ValueError) as error:
+            RejectingHookJob("rejected hook job", self.api, SourceObject("x"))
+        self.assertIs(failure, error.exception)
+        self.assertIsNone(cached_results[0].modeling_obj_container)
+        self.assertEqual([self.job], self.api.modeling_obj_containers)
+        self.api.mode = SourceObject("unknown")
+        self.assertEqual("unknown:x", self.job.result.value)
 
     def test_controller_edit_rejects_cold_and_calculated_shared_dependents_and_restores_eager_result(self):
         """Test a shared controller validates every job regardless of recorded computation edges."""
