@@ -29,6 +29,7 @@ class TestJsonToSystem(IntegrationTestBaseClass):
             self.base_system_dict = json.load(file)
 
     def test_automatic_replacement_source_reuses_singleton_after_both_snapshot_modes(self):
+        """Test automatic source identity after inputs-only and cached snapshot loads."""
         from efootprint.abstract_modeling_classes.explainable_object_base_class import explainable_object_from_json
         from efootprint.abstract_modeling_classes.source_objects import SourceObject
         from efootprint.builders.external_apis.ecologits.ecologits_video_external_api import (
