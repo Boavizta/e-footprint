@@ -77,6 +77,8 @@ def _resolve_sentinel_source(source_id: str) -> Optional[Source]:
         return Sources.USER_DATA
     if source_id == Sources.HYPOTHESIS.id:
         return Sources.HYPOTHESIS
+    if source_id == Sources.AUTOMATIC_REPLACEMENT.id:
+        return Sources.AUTOMATIC_REPLACEMENT
     return None
 
 

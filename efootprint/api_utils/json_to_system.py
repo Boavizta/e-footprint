@@ -143,7 +143,11 @@ def upgrade_system_dict_to_current_version(system_dict, efootprint_classes_dict=
 def build_sources_dict_from_system_dict(system_dict):
     raw_sources = system_dict.get("Sources", {}) or {}
     sources_dict = {}
-    sentinel_singletons = {Sources.USER_DATA.id: Sources.USER_DATA, Sources.HYPOTHESIS.id: Sources.HYPOTHESIS}
+    sentinel_singletons = {
+        Sources.USER_DATA.id: Sources.USER_DATA,
+        Sources.HYPOTHESIS.id: Sources.HYPOTHESIS,
+        Sources.AUTOMATIC_REPLACEMENT.id: Sources.AUTOMATIC_REPLACEMENT,
+    }
     for source_id, source_payload in raw_sources.items():
         if source_id in sentinel_singletons:
             sources_dict[source_id] = sentinel_singletons[source_id]

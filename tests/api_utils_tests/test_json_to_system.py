@@ -8,6 +8,7 @@ from efootprint.api_utils.json_to_system import json_to_system, compute_classes_
 from efootprint.api_utils.system_to_json import system_to_json
 from efootprint.builders.time_builders import create_random_source_hourly_values
 from efootprint.constants.countries import Countries
+from efootprint.constants.sources import Sources
 from efootprint.constants.units import u
 from efootprint.all_classes_in_order import ALL_EFOOTPRINT_CLASSES
 from efootprint.core.hardware.network import Network
@@ -26,6 +27,36 @@ class TestJsonToSystem(IntegrationTestBaseClass):
     def setUp(self):
         with open(os.path.join(API_UTILS_TEST_DIR, "base_system.json"), "rb") as file:
             self.base_system_dict = json.load(file)
+
+    def test_automatic_replacement_source_reuses_singleton_after_both_snapshot_modes(self):
+        from efootprint.abstract_modeling_classes.explainable_object_base_class import explainable_object_from_json
+        from efootprint.abstract_modeling_classes.source_objects import SourceObject
+        from efootprint.builders.external_apis.ecologits.ecologits_video_external_api import (
+            EcoLogitsVideoGenExternalAPI, EcoLogitsVideoGenExternalAPIJob)
+
+        api = EcoLogitsVideoGenExternalAPI(
+            "video api", SourceObject("openai", source=Sources.USER_DATA),
+            SourceObject("sora-2-pro", source=Sources.HYPOTHESIS))
+        job = EcoLogitsVideoGenExternalAPIJob.from_defaults(
+            "video job", external_api=api,
+            resolution=SourceObject("720p (1280 x 720)", source=Sources.AUTOMATIC_REPLACEMENT))
+
+        for save_computed_state in (False, True):
+            with self.subTest(save_computed_state=save_computed_state):
+                snapshot = system_to_json(job, save_computed_state=save_computed_state)
+                source_payload = snapshot["Sources"][Sources.AUTOMATIC_REPLACEMENT.id]
+                self.assertEqual(
+                    {"id": "automatic_replacement", "name": "automatic replacement", "link": None},
+                    source_payload)
+                _, loaded, _ = json_to_system(snapshot)
+                loaded_api, loaded_job = loaded[api.id], loaded[job.id]
+                self.assertIs(Sources.USER_DATA, loaded_api.provider.source)
+                self.assertIs(Sources.HYPOTHESIS, loaded_api.model_name.source)
+                self.assertIs(Sources.AUTOMATIC_REPLACEMENT, loaded_job.resolution.source)
+
+        fallback = explainable_object_from_json(
+            SourceObject("720p (1280 x 720)", source=Sources.AUTOMATIC_REPLACEMENT).to_json(), {})
+        self.assertIs(Sources.AUTOMATIC_REPLACEMENT, fallback.source)
 
     def test_conditional_queries_use_registered_routes_after_both_snapshot_modes(self):
         """Test loaded video relationships support choice queries without registering instances."""

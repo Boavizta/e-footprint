@@ -3,6 +3,7 @@ from efootprint.abstract_modeling_classes.explainable_object_base_class import S
 
 class Sources:
     USER_DATA = Source("user data", None, id="user_data")
+    AUTOMATIC_REPLACEMENT = Source("automatic replacement", None, id="automatic_replacement")
     ADEME_STUDY = Source(
         name="Étude ADEME",
         link="https://docs.google.com/spreadsheets/d/1s-B4WLXAxSE8ddoY9929SX2tPdCZ4OEl/edit#gid=155161832",
