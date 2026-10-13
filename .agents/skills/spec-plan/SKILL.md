@@ -136,9 +136,11 @@ Within the walkthrough:
   first line of that implementation, not merely to the file or a nearby caller. Keep proposed
   files linked to their file-tree entry until they exist. Distinguish illustrative pseudocode,
   UI copy and protocol values from existing code rather than presenting them as source links.
-- Every sentence should convey a change, constraint, necessary rationale or decision. Omit
-  ordinary behavior and spec repetition. Prefer concrete vocabulary over terms that suggest
-  machinery that does not exist. Clarification should replace confusing prose, not accumulate it.
+- Write the implementation walkthrough as a narrated anticipated diff. At each affected call site,
+  state what code is added, replaced, or removed and where its result goes next. Treat unmentioned
+  behavior as preserved. State a preservation constraint only when the change could plausibly break
+  a non-obvious contract; say it once beside that change. Keep rationale that explains a choice or
+  rules out a plausible alternative, and replace confusing prose rather than accumulating it.
 - Examples illustrate generic mechanisms unless explicitly declared exceptions. Do not turn
   a product example or this review's particular implementation choices into universal rules.
 
