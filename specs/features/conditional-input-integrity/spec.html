@@ -28,9 +28,9 @@
 <body>
 <header>
   <h1>Conditional input integrity</h1>
-  <p>Status: Spec — under review · 2026-10-12</p>
+  <p>Status: Spec — approved · 2026-10-13</p>
   <p>Library-driven feature spanning e-footprint and e-footprint-interface.
-    Target library release: 26.0.0. <a href="plan.html">Draft plan from the kickoff discussion</a>.</p>
+    Target library release: 26.0.0. <a href="plan.html">Approved plan</a>.</p>
 </header>
 
 <section id="problem">
@@ -69,8 +69,11 @@
       explain each automatic change. Controller and dependent changes save together. A branch with
       no allowed choice rejects the complete edit.</li>
     <li><strong>Explicit choices remain explicit.</strong> A conflicting dependent value expressly
-      submitted by the caller is rejected rather than silently overwritten. Automatic replacements
-      preserve the dependent input's label and provenance. Rejected interface edits publish no
+      submitted by the caller is rejected rather than silently overwritten. An automatic replacement
+      keeps the dependent input's label, sets its source to the system-managed "automatic replacement"
+      source, clears its confidence, and prepends a comment note recording the previous and replacement
+      values, the reason for the change, and the previous source label, confidence and comment text
+      verbatim. Record the previous source link when available. Rejected interface edits publish no
       value, relationship, provenance or result changes.</li>
     <li><strong>Accurate display after accepted edits.</strong> Accepted values, available options
       and saved values agree after editing and reloading a valid snapshot.</li>
@@ -86,8 +89,9 @@
     <li><strong>Narrow upgrade of historical files.</strong> Version 26 upgrades older snapshots
       through the existing version-migration process. Video jobs whose saved resolution is unsupported
       by their linked API's AI model receive the first allowed resolution when a compatible choice
-      exists. Supported resolutions, relationships, labels, provenance and other authored inputs remain
-      unchanged. This also covers disconnected video jobs present in the file.</li>
+      exists, with the same automatic-replacement source, unset confidence and comment history as
+      editor repairs. Supported resolutions, relationships, labels, provenance and other authored inputs
+      remain unchanged. This also covers disconnected video jobs present in the file.</li>
   </ol>
 </section>
 
@@ -100,7 +104,7 @@
       <li>Shared dependency and allowed-choice information for library validation, editor repair,
         field options and Simplified inputs selection requirements.</li>
       <li>Automatic dependent repair and feedback in normal editing, aligned with Simplified inputs.</li>
-      <li>Consistent display of accepted choices and preserved existing provenance behavior.</li>
+      <li>Consistent display of accepted choices and explicit provenance for automatic replacements.</li>
       <li>Regression coverage of video API choices and generic examples independent of that catalog.</li>
       <li>Release as library version 26.0.0, including a narrowly targeted upgrade of incompatible
         video-job resolutions in older snapshots.</li>
@@ -184,7 +188,8 @@
         <td>The operation fails and preserves the original API link and resolution.</td></tr>
       <tr><td>An older exported modeling contains the incompatible 1080p job resolution.</td>
         <td>The normal version upgrade to 26 selects 480p, the first allowed resolution. The job
-        editor displays that corrected saved value without a special recovery panel.</td></tr>
+        editor displays that corrected saved value and its replacement provenance without a special
+        recovery panel.</td></tr>
     </tbody>
   </table>
 </section>
@@ -208,8 +213,9 @@
       Version 26 adds the narrowly scoped upgrade without changing the snapshot structure. Existing
       version-mismatch behavior must prevent old computed results from being trusted for corrected inputs.</li>
     <li>The <a href="../../../../e-footprint-interface/specs/features/simplified-inputs/spec.html">Simplified inputs spec</a>
-      remains the reference for selection, provenance and save feedback. This feature extends equivalent
-      conditional-value behavior to normal editing without expanding Simplified inputs eligibility.</li>
+      remains the reference for selection and save feedback. This feature defines provenance for
+      automatic replacements and extends equivalent conditional-value behavior to normal editing
+      without expanding Simplified inputs eligibility.</li>
   </ul>
 </section>
 
@@ -217,16 +223,15 @@
   <h2>6. Open questions</h2>
   <p>No unresolved capability-level questions remain. Version 26 includes the small historical
     video-resolution migration; generic import validation and special recovery behavior are excluded.</p>
-  <p>Registration, cache lifecycle and exact library query contracts are design questions recorded
-    in the draft plan for the planning stage.</p>
+  <p>The <a href="plan.html">approved plan</a> records the registration, cache lifecycle and
+    library query decisions.</p>
 </section>
 
 <section id="resume">
   <h2>7. Resuming from cold context</h2>
   <ol>
-    <li>Read this spec, including the version 26 upgrade scope, during review.</li>
-    <li>After spec approval, refine <a href="plan.html">the draft plan</a> in a fresh planning session.
-      It preserves the reproduced failures and design proposals; it is not approved implementation work.</li>
+    <li>Read this spec and the <a href="plan.html">approved plan</a>, including the version 26 upgrade
+      scope, before preparing tasks.</li>
     <li>Read the <a href="../../architecture/index.html">library architecture index</a> and the
       <a href="../../../../e-footprint-interface/specs/architecture/index.html">interface architecture index</a>,
       then their owning pages for validation, relationships, forms and persistence.</li>
