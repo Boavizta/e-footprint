@@ -2,7 +2,7 @@
 
 Repositories and implementation ranges:
 
-- `e-footprint-interface`: `9f20b01f63817d6a7a64f66009da91c27567e9be..1042775a8958cdfdd72b7f54a2882adc0038c456`. The initially observed baseline was `7352ac8af148097e5ef186f2396a823fa987b181`; unrelated workspace-save-lock documentation was committed concurrently as `9f20b01f` and is excluded from this implementation range.
+- `e-footprint-interface`: `9f20b01f63817d6a7a64f66009da91c27567e9be..24388fed09fda3f7d3b041da0e1f22a8452b3ee0`. The initially observed baseline was `7352ac8af148097e5ef186f2396a823fa987b181`; unrelated workspace-save-lock documentation was committed concurrently as `9f20b01f` and is excluded from this implementation range.
 - `e-footprint`: consumed library revision `2efaa869d7389bb8dee9d9236fc41366633b6505`; no library implementation changes (`2efaa869..2efaa869`). This handoff is committed separately.
 
 ## Review pointers
