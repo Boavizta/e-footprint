@@ -1,8 +1,11 @@
 import uuid
 from copy import deepcopy
 
-from efootprint.abstract_modeling_classes.source_objects import SourceValue
+from efootprint.abstract_modeling_classes.conditional_inputs import allowed_values
+from efootprint.abstract_modeling_classes.input_values import input_values_match
+from efootprint.abstract_modeling_classes.source_objects import SourceObject, SourceValue
 from efootprint.api_utils.suppressed_efootprint_classes import ALL_SUPPRESSED_EFOOTPRINT_CLASSES_DICT
+from efootprint.constants.sources import Sources
 from efootprint.constants.units import u
 from efootprint.logger import logger
 
@@ -839,6 +842,40 @@ def upgrade_version_24_to_25(system_dict, efootprint_classes_dict=None):
     return system_dict
 
 
+def upgrade_version_25_to_26(system_dict, efootprint_classes_dict=None):
+    """Correct historical video resolutions while retaining authored inputs and replacement history."""
+    if efootprint_classes_dict is None:
+        from efootprint.all_classes_in_order import ALL_EFOOTPRINT_CLASSES
+        efootprint_classes_dict = {cls.__name__: cls for cls in ALL_EFOOTPRINT_CLASSES}
+    jobs = system_dict.get("EcoLogitsVideoGenExternalAPIJob", {})
+    if not jobs:
+        return system_dict
+    job_class = efootprint_classes_dict["EcoLogitsVideoGenExternalAPIJob"]
+    apis = system_dict["EcoLogitsVideoGenExternalAPI"]
+    for job in jobs.values():
+        api = apis[job["external_api"]]
+        model = SourceObject(api["model_name"]["value"])
+        options = allowed_values(job_class, "resolution", model)
+        resolution = job["resolution"]
+        current = SourceObject(resolution["value"])
+        if not options or any(input_values_match(current, option) for option in options):
+            continue
+        source = system_dict.get("Sources", {}).get(resolution.get("source"))
+        prior_source = f"{source['name']} (link: {source.get('link') or 'none'})" if source else "none"
+        note = (f"Automatic replacement: {current} → {options[0]}.\n"
+                f"Reason: {api['name']}.model_name resolves to {model} during version upgrade.\n"
+                f"Previous source: {prior_source}.\n"
+                f"Previous confidence: {resolution.get('confidence') or 'none'}.")
+        comment = resolution.get("comment")
+        resolution["value"] = options[0].value
+        resolution["source"] = Sources.AUTOMATIC_REPLACEMENT.id
+        resolution.pop("confidence", None)
+        resolution["comment"] = note + (f"\n\n{comment}" if comment is not None else "")
+        system_dict.setdefault("Sources", {})[Sources.AUTOMATIC_REPLACEMENT.id] = (
+            Sources.AUTOMATIC_REPLACEMENT.to_json())
+    return system_dict
+
+
 VERSION_UPGRADE_HANDLERS = {
     9: upgrade_version_9_to_10,
     10: upgrade_version_10_to_11,
@@ -856,4 +893,5 @@ VERSION_UPGRADE_HANDLERS = {
     22: upgrade_version_22_to_23,
     23: upgrade_version_23_to_24,
     24: upgrade_version_24_to_25,
+    25: upgrade_version_25_to_26,
 }

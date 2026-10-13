@@ -10,14 +10,95 @@ from efootprint.api_utils.json_to_system import json_to_system
 from efootprint.api_utils.version_upgrade_handlers import upgrade_version_9_to_10, upgrade_version_10_to_11, \
     upgrade_version_11_to_12, upgrade_version_12_to_13, upgrade_version_13_to_14, upgrade_version_14_to_15, \
     upgrade_version_15_to_16, upgrade_version_16_to_17, upgrade_version_18_to_19, upgrade_version_19_to_20, \
-    upgrade_version_20_to_21, upgrade_version_21_to_22, upgrade_version_23_to_24
-from efootprint.abstract_modeling_classes.source_objects import SourceValue
+    upgrade_version_20_to_21, upgrade_version_21_to_22, upgrade_version_23_to_24, upgrade_version_25_to_26
+from efootprint.abstract_modeling_classes.source_objects import SourceObject, SourceValue
+from efootprint.builders.external_apis.ecologits.ecologits_video_external_api import EcoLogitsVideoGenExternalAPIJob
+from efootprint.constants.sources import Sources
 from efootprint.constants.units import u
 
 API_UTILS_TEST_DIR = os.path.dirname(os.path.abspath(__file__))
 
 
 class TestVersionUpgradeHandlers(TestCase):
+    def test_upgrade_25_to_26_only_repairs_unsupported_video_resolutions(self):
+        supported = {"value": "1080p (1920 x 1080)", "label": "Chosen resolution", "source": "user_data",
+                     "confidence": "high", "comment": "Supported authored input"}
+        unsupported = {**supported, "value": "4K (3840 x 2160)", "source": "research",
+                       "comment": "Automatic replacement: earlier history.\n\nOriginal comment <>&"}
+        input_dict = {
+            "efootprint_version": "25.0.0",
+            "Sources": {"research": {"id": "research", "name": "Research source", "link": "https://example.com"},
+                        "user_data": Sources.USER_DATA.to_json()},
+            "EcoLogitsVideoGenExternalAPI": {"api": {
+                "id": "api", "name": "Video API", "provider": {"value": "openai"},
+                "model_name": {"value": "sora-2-pro", "comment": "Keep model provenance"}, "server": "server"}},
+            "EcoLogitsVideoGenExternalAPIJob": {
+                "supported": {"id": "supported", "external_api": "api", "resolution": supported},
+                "disconnected": {"id": "disconnected", "external_api": "api", "resolution": unsupported,
+                                 "duration": {"value": 8, "unit": "s", "comment": "Keep duration"},
+                                 "with_audio": {"value": True}}},
+            "EcoLogitsGenAIExternalAPIJob": {"other": {"resolution": copy.deepcopy(unsupported)}},
+            "calculation_graph": {"nodes": [], "edges": []},
+        }
+        output = upgrade_version_25_to_26(copy.deepcopy(input_dict))
+        resolution = output["EcoLogitsVideoGenExternalAPIJob"]["disconnected"]["resolution"]
+        self.assertEqual("720p (1280 x 720)", resolution["value"])
+        self.assertEqual("Chosen resolution", resolution["label"])
+        self.assertEqual(Sources.AUTOMATIC_REPLACEMENT.id, resolution["source"])
+        self.assertNotIn("confidence", resolution)
+        self.assertEqual(
+            "Automatic replacement: 4K (3840 x 2160) → 720p (1280 x 720).\n"
+            "Reason: Video API.model_name resolves to sora-2-pro during version upgrade.\n"
+            "Previous source: Research source (link: https://example.com).\n"
+            "Previous confidence: high.\n\n" + unsupported["comment"], resolution["comment"])
+        expected = copy.deepcopy(input_dict)
+        expected["EcoLogitsVideoGenExternalAPIJob"]["disconnected"]["resolution"] = resolution
+        expected["Sources"][Sources.AUTOMATIC_REPLACEMENT.id] = Sources.AUTOMATIC_REPLACEMENT.to_json()
+        self.assertEqual(expected, output)
+        self.assertEqual(expected, upgrade_version_25_to_26(copy.deepcopy(output)))
+
+    def test_upgrade_25_to_26_records_absent_metadata_and_creates_sources_only_for_repair(self):
+        for source_payload in (None, {"id": "research", "name": "Research", "link": None}):
+            for comment in (None, ""):
+                with self.subTest(source=source_payload, comment=comment):
+                    resolution = {"value": "4K (3840 x 2160)", "label": "Resolution"}
+                    input_dict = {
+                        "EcoLogitsVideoGenExternalAPI": {"api": {
+                            "name": "API", "model_name": {"value": "sora-2-pro"}}},
+                        "EcoLogitsVideoGenExternalAPIJob": {"job": {
+                            "external_api": "api", "resolution": resolution}},
+                    }
+                    if source_payload is not None:
+                        resolution["source"] = "research"
+                        input_dict["Sources"] = {"research": source_payload}
+                    if comment is not None:
+                        resolution["comment"] = comment
+                    output = upgrade_version_25_to_26(input_dict)
+                    prior_source = "Research (link: none)" if source_payload else "none"
+                    self.assertIn(f"Previous source: {prior_source}.", resolution["comment"])
+                    self.assertTrue(resolution["comment"].endswith(
+                        "Previous confidence: none." + ("\n\n" if comment is not None else "")))
+                    self.assertEqual(Sources.AUTOMATIC_REPLACEMENT.to_json(),
+                                     output["Sources"][Sources.AUTOMATIC_REPLACEMENT.id])
+        self.assertEqual({}, upgrade_version_25_to_26({}))
+
+    def test_upgrade_25_to_26_preserves_missing_and_empty_choice_branches(self):
+        for choices in ({}, {SourceObject("sora-2-pro"): []}):
+            with self.subTest(choices=choices):
+                declaration = {"resolution": {
+                    "depends_on": "external_api.model_name", "conditional_list_values": choices}}
+                input_dict = {
+                    "EcoLogitsVideoGenExternalAPI": {"api": {
+                        "name": "API", "model_name": {"value": "sora-2-pro"}}},
+                    "EcoLogitsVideoGenExternalAPIJob": {"job": {
+                        "external_api": "api", "resolution": {"value": "4K (3840 x 2160)", "label": "Resolution",
+                                                              "confidence": "medium", "comment": "Keep me"}}},
+                }
+                with patch.object(EcoLogitsVideoGenExternalAPIJob, "conditional_list_values", declaration):
+                    output = upgrade_version_25_to_26(
+                        copy.deepcopy(input_dict), {"EcoLogitsVideoGenExternalAPIJob": EcoLogitsVideoGenExternalAPIJob})
+                self.assertEqual(input_dict, output)
+
     def test_upgrade_23_to_24_pluralizes_patterns_and_moves_edge_span(self):
         span = {"value": 2.0, "unit": "year", "label": "Usage span", "source": "user_data"}
         input_dict = {

@@ -28,6 +28,69 @@ class TestJsonToSystem(IntegrationTestBaseClass):
         with open(os.path.join(API_UTILS_TEST_DIR, "base_system.json"), "rb") as file:
             self.base_system_dict = json.load(file)
 
+    def test_version_25_video_import_repairs_inputs_and_recomputes_old_cached_footprint(self):
+        from efootprint.abstract_modeling_classes.source_objects import SourceObject
+        from efootprint.builders.external_apis.ecologits.ecologits_video_external_api import (
+            EcoLogitsVideoGenExternalAPI, EcoLogitsVideoGenExternalAPIJob)
+
+        _, objects, _ = json_to_system(self.base_system_dict)
+        system = next(obj for obj in objects.values() if type(obj) is System)
+        step = next(obj for obj in objects.values() if type(obj).__name__ == "UsageJourneyStep")
+        api = EcoLogitsVideoGenExternalAPI("Video API", SourceObject("openai"), SourceObject("sora-2-pro"))
+        job = EcoLogitsVideoGenExternalAPIJob.from_defaults(
+            "Video job", external_api=api,
+            resolution=SourceObject("1080p (1920 x 1080)", source=Sources.USER_DATA,
+                                    confidence="high", comment="Original note"))
+        step.jobs[job] = SourceValue(1 * u.dimensionless)
+        old_total = system.total_footprint.value.sum()
+        snapshots = [system_to_json(system, save_computed_state=mode) for mode in (False, True)]
+        job.resolution = SourceObject("720p (1280 x 720)")
+        expected_total = system.total_footprint.value.sum()
+        self.assertNotEqual(old_total, expected_total)
+
+        for snapshot, cached in zip(snapshots, (False, True)):
+            with self.subTest(cached=cached):
+                snapshot["efootprint_version"] = "25.0.0"
+                snapshot["EcoLogitsVideoGenExternalAPIJob"][job.id]["resolution"]["value"] = "4K (3840 x 2160)"
+                original_snapshot = deepcopy(snapshot)
+                _, loaded, upgraded = json_to_system(snapshot)
+                loaded_system, loaded_job = loaded[system.id], loaded[job.id]
+                self.assertEqual(original_snapshot, snapshot)
+                self.assertEqual("720p (1280 x 720)", loaded_job.resolution.value)
+                self.assertIs(Sources.AUTOMATIC_REPLACEMENT, loaded_job.resolution.source)
+                self.assertIsNone(loaded_job.resolution.confidence)
+                self.assertTrue(loaded_job.resolution.comment.endswith("\n\nOriginal note"))
+                self.assertEqual(api.id, loaded_job.external_api.id)
+                self.assertFalse(type(loaded_system).total_footprint.slot(loaded_system).has_cached_value)
+                if cached:
+                    baseline = loaded_system.__dict__["_version_baseline"]
+                    self.assertEqual("25.0.0", baseline["efootprint_version"])
+                    self.assertEqual(old_total, baseline["values"][(system.id, "total_footprint", None)].value.sum())
+                self.assertEqual(expected_total, loaded_system.total_footprint.value.sum())
+                self.assertEqual("25.0.0", upgraded["efootprint_version"])
+                round_trip = system_to_json(loaded_system, save_computed_state=cached)
+                _, reloaded, _ = json_to_system(round_trip)
+                self.assertEqual(loaded_job.resolution.to_json(), reloaded[job.id].resolution.to_json())
+                self.assertEqual(expected_total, reloaded[system.id].total_footprint.value.sum())
+
+    def test_current_version_video_import_skips_historical_resolution_migration(self):
+        from efootprint.abstract_modeling_classes.source_objects import SourceObject
+        from efootprint.builders.external_apis.ecologits.ecologits_video_external_api import (
+            EcoLogitsVideoGenExternalAPI, EcoLogitsVideoGenExternalAPIJob)
+
+        api = EcoLogitsVideoGenExternalAPI("Video API", SourceObject("openai"), SourceObject("sora-2-pro"))
+        job = EcoLogitsVideoGenExternalAPIJob.from_defaults(
+            "Video job", external_api=api,
+            resolution=SourceObject("1080p (1920 x 1080)", source=Sources.USER_DATA,
+                                    confidence="high", comment="Keep authored choice"))
+        snapshot = system_to_json(job, save_computed_state=False)
+        self.assertEqual("26.0.0", snapshot["efootprint_version"])
+        with patch.dict("efootprint.api_utils.version_upgrade_handlers.VERSION_UPGRADE_HANDLERS",
+                        {25: lambda *_: self.fail("Current files must skip the historical handler")}):
+            _, loaded, upgraded = json_to_system(snapshot)
+        self.assertIs(snapshot, upgraded)
+        self.assertEqual(job.resolution.to_json(), loaded[job.id].resolution.to_json())
+
     def test_automatic_replacement_source_reuses_singleton_after_both_snapshot_modes(self):
         """Test automatic source identity after inputs-only and cached snapshot loads."""
         from efootprint.abstract_modeling_classes.explainable_object_base_class import explainable_object_from_json
