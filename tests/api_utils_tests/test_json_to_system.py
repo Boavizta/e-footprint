@@ -1,6 +1,7 @@
 import json
 import os.path
 from copy import deepcopy
+from unittest.mock import patch
 
 from efootprint.abstract_modeling_classes.source_objects import SourceValue
 from efootprint.api_utils.json_to_system import json_to_system, compute_classes_generation_order
@@ -25,6 +26,33 @@ class TestJsonToSystem(IntegrationTestBaseClass):
     def setUp(self):
         with open(os.path.join(API_UTILS_TEST_DIR, "base_system.json"), "rb") as file:
             self.base_system_dict = json.load(file)
+
+    def test_conditional_queries_use_registered_routes_after_both_snapshot_modes(self):
+        """Test loaded video relationships support choice queries without registering instances."""
+        from efootprint.abstract_modeling_classes.conditional_inputs import (
+            allowed_values, dependent_inputs, resolve_input_path)
+        from efootprint.abstract_modeling_classes.source_objects import SourceObject
+        from efootprint.builders.external_apis.ecologits.ecologits_video_external_api import (
+            EcoLogitsVideoGenExternalAPI, EcoLogitsVideoGenExternalAPIJob)
+
+        with patch("efootprint.abstract_modeling_classes.conditional_inputs.register_conditional_inputs",
+                   side_effect=AssertionError("instance registration")):
+            api = EcoLogitsVideoGenExternalAPI("video api", SourceObject("openai"), SourceObject("sora-2-pro"))
+            job = EcoLogitsVideoGenExternalAPIJob.from_defaults("video job", external_api=api)
+            job.request_duration
+            for save_computed_state in (False, True):
+                with self.subTest(save_computed_state=save_computed_state):
+                    snapshot = system_to_json(job, save_computed_state=save_computed_state)
+                    _, loaded, _ = json_to_system(snapshot)
+                    loaded_job, loaded_api = loaded[job.id], loaded[api.id]
+                    self.assertEqual({(loaded_job, "resolution")}, dependent_inputs({(loaded_api, "model_name")}))
+                    self.assertEqual({(loaded_api, "model_name")}, dependent_inputs({(loaded_api, "provider")}))
+                    self.assertEqual(
+                        (loaded_api, "model_name"), resolve_input_path(loaded_job, "external_api.model_name"))
+                    self.assertIn(
+                        loaded_job.resolution, allowed_values(type(loaded_job), "resolution", loaded_api.model_name))
+                    self.assertEqual(job.resolution, loaded_job.resolution)
+                    self.assertEqual(api.model_name, loaded_api.model_name)
 
     def test_create_unlinked_server(self):
         full_dict = deepcopy(self.base_system_dict)

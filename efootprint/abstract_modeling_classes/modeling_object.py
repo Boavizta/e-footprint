@@ -104,6 +104,12 @@ class ModelingObject(metaclass=ABCAfterInitMeta):
     classes_outside_init_params_needed_for_generating_from_json = []
     _use_name_as_id: bool = False
 
+    def __init_subclass__(cls, **kwargs):
+        super().__init_subclass__(**kwargs)
+        from efootprint.abstract_modeling_classes.conditional_inputs import register_conditional_inputs
+
+        register_conditional_inputs(cls)
+
     @classmethod
     def from_json_dict(cls, object_json_dict: dict, flat_obj_dict: dict, attach_stored_computed_values=True,
                        sources_dict: dict | None = None):
