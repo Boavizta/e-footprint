@@ -84,7 +84,7 @@ class AfterInitMeta(type):
             instance.after_init()
             instance._mark_live()
         except Exception:
-            # Retaining the instance lets failed constructors release their already attached links.
+            # Defense in depth: no current production path reuses failed graphs; failures can strand earlier links.
             for slot in list(instance_slot_registry(instance).values()):
                 slot._drop_value()
                 slot.replace_dependencies()
