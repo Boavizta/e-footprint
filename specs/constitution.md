@@ -18,7 +18,7 @@ These are the project's immutable rules. They must be respected by every code ch
 3. JSON serialization round-trip is preserved for any modified `ModelingObject`.
 4. If JSON schema changes, a migration handler is added in `efootprint/api_utils/version_upgrade_handlers.py` and the schema version bumps.
 5. New `ModelingObject` classes are registered in `efootprint/all_classes_in_order.py`: in `ALL_EFOOTPRINT_CLASSES` and, for top-level core objects, in the canonical-class registry, whose membership is the flattened `SANKEY_COLUMNS` plus `SANKEY_BREAKDOWN_ONLY_CLASSES` and the few non-Sankey canonical classes.
-6. `CHANGELOG.md` entry added under `## [Unreleased]`. For a task run standalone via `task-implement`, add it on the spot. For a task run inside a `feature-implement` loop, this is deferred: the supervisor writes one consolidated entry once every task in the feature is done, so individual tasks skip this gate.
+6. Delivered production-code changes are covered by a consolidated `CHANGELOG.md` entry under `## [Unreleased]` in each affected repository. Entries describe production changes only; omit specs, plans, tasks, development process and tooling, and tests, even when delivered alongside production changes.
 
 ## 3. Agent-facing rules
 
@@ -43,4 +43,4 @@ A change to this file requires:
 1. A short justification ("why now") proposed alongside.
 2. An explicit acknowledgment of which downstream artifacts (`architecture/`, `conventions.md`, mkdocs pages, CI tests) need to follow.
 
-Use the `update-constitution` skill, or just edit deliberately with a separate commit — never blend constitutional changes into a feature commit.
+Amend the constitution deliberately in a separate commit — never blend constitutional changes into a feature commit.
