@@ -1,6 +1,6 @@
 # Conditional input integrity — tasks
 Spec: [spec.html](spec.html) · Plan: [plan.html](plan.html)
-Status: implementation reviewed; coordinated merge awaits publishable efootprint 26 · 2026-10-13
+Status: complete; publishable efootprint 26 dependency and lock verified · 2026-10-14
 
 ## Implementation runs
 
@@ -88,7 +88,7 @@ Implementation: **standard** — The library query and Task 4 result are already
 ## Task 6 — Upgrade historical video inputs to version 26
 
 Goal: Correct only incompatible saved video-job resolutions during the existing 25→26 migration, then coordinate library and interface version metadata.
-Status: library implementation complete; publishable interface dependency pending
+Status: complete
 Brief: [briefs/task-6.md](briefs/task-6.md)
 Repository: e-footprint for migration/version; e-footprint-interface for publishable dependency when available.
 Files touched: `efootprint/api_utils/version_upgrade_handlers.py`, `version.py`, `pyproject.toml`; `tests/api_utils_tests/test_version_upgrade_handlers.py`, `tests/api_utils_tests/test_json_to_system.py`; interface `pyproject.toml`, `poetry.lock` at integration close-out; both `CHANGELOG.md` files at run close-out.
@@ -101,4 +101,4 @@ Implementation: **standard** — The serialized job shape and migration chain ar
 
 - Run focused tests with each task, then the full library suite with `MPLBACKEND=Agg poetry run pytest` and `poetry run mkdocs build --strict` from e-footprint. Cover modified-object inputs-only and cached JSON round-trips.
 - Validate e-footprint-interface against the edited local library: `poetry run pytest tests --ignore=tests/e2e`, `npm run jest`, rebuild edited JavaScript with `npm run build:js:dev`, and run the focused Playwright flows with a local server (`poetry run pytest tests/e2e/objects/test_video_external_api_objects.py tests/e2e/test_source_metadata.py --base-url http://localhost:8000`).
-- **Blocks coordinated merge, not implementation:** PyPI currently has `efootprint` 25.0.0 but no 26.0.0 release. Once 26.0.0 is published, replace the existing local editable interface dependency with a publishable version-26 requirement and refresh its lock. Preserve the current uncommitted dependency/lock edits; do not reset them mechanically. Publishing the package and deploying the app are separate actions.
+- **Release gate complete:** `efootprint` 26.0.0 was published, and the interface declares and locks the publishable version-26 dependency. Preserve the current uncommitted interface dependency/lock edits; do not reset them mechanically.
