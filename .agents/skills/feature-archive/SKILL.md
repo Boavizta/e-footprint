@@ -27,9 +27,7 @@ because their feature is archived. Commit briefs/handoffs with the working set; 
 
 3. **Delete `specs/features/<feature-name>/`.** Use `git rm -r` for tracked files, **and** remove any untracked `spec.html` / `plan.html` left behind (a tracked-files-only delete leaves those on disk — check with `git status` and `rm` them). Git history preserves everything.
 
-4. **Confirm `CHANGELOG.md` has an entry** for this feature under `## [Unreleased]`. `feature-implement` writes this once all tasks are done, so it's normally already there — add it now only if the feature was implemented without that skill (e.g. `task-implement` run standalone) and the entry is missing.
-
-5. **Commit** with a `[REMOVE]` prefix, body `<feature-name>: archive shipped feature spec`. Bundle the promotion edits, the roadmap sync, the deletion, and any CHANGELOG change into this commit (or a small number of related commits if the promotion edits are substantial).
+4. **Commit** with a `[REMOVE]` prefix, body `<feature-name>: archive shipped feature spec`. Bundle the promotion edits, the roadmap sync, and the deletion into this commit (or a small number of related commits if the promotion edits are substantial).
 
 For cross-repo features, archive in the **driving repo** (same rule as the feature folder).
 

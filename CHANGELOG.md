@@ -12,23 +12,13 @@ and this project adheres to [Semantic Versioning](http://semver.org/)
 
 ### Changed
 
-- Agent workflow guidance now reads each role's model and effort from its runtime agent definition instead of a duplicated role table.
 - Version 26.0.0 upgrades incompatible version-25 EcoLogits video-job resolutions on import, recording the automatic replacement source and prior input history while leaving compatible values unchanged.
-- Feature close-out now delegates a plan review guide to Luna/medium: preserve the approved plan, link implemented claims to actual code, and consolidate decisions under supervisor ownership.
-- Plan decision guidance now requires an individual source-line link for every cited code artifact, including in plan amendments and implementation decisions.
-- Plan skills now use one shared amber index and visible callout format for plan amendments and implementation decisions.
-- Shared plan skills now use one source-link convention for VS Code opening and right-click diffs across new plans, plan amendments and implementation decisions.
 - Optional fixed instance counts now declare their expected unit and validate compatible, nonnegative values while still allowing an unset count.
-- Codex per-task and global reviews now use GPT-6.1 Sol/high; the paired Astra/Sol shadow-review experiment ended early after one feature by user decision.
 - Ready-made modeling templates are now Examples: use `efootprint.modeling_examples`, `get_example`, and `load_example_system`; scenario IDs, data, and guide associations are preserved.
-- Feature implementation now proceeds through reviews autonomously, records consequential choices in the plan with `IMPL-DECISION` tags, and omits judgement journals, routine-fix inventories and successful-test reports.
-- Task decomposition runs autonomously in one session, writes briefs in dependency order, and presents any plan amendments together in `plan.html` using searchable `PLAN-UPDATE` tags. No plan amendments is a valid outcome.
-- Development workflow: verified task briefs, durable review handoffs, scoped agent roles, synchronized shared tooling, and local Claude/Codex usage accounting.
 
 ### Fixed
 - Conditional value and relationship edits validate the complete batch and roll back incompatible changes while accepting complete correction batches.
 - Failed object construction releases attached relationships and computed dependencies, so later edits do not encounter abandoned objects.
-- Local usage accounting now prices `gpt-5.6-luna` requests, including automatic approval reviews, on both API-equivalent and Codex-credit surfaces.
 - Conditional validation retains every dependent sharing a controller.
 - Input validation and transaction updates distinguish authored state from numerical equality: empty/zero transitions and timeseries builder settings are applied and validated even when numerical values compare equal.
 - System-comparison input diffs now use readable display units and rounding for scalar quantities.

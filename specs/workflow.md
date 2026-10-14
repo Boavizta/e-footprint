@@ -90,7 +90,8 @@ distinguishing code blockers, deployment-only conditions and later human checks.
 Both plan-amendment and implementation-decision indexes and callouts use the shared
 `spec-plan/references/plan-decision-callouts.md` presentation.
 
-Finish with global review and the consolidated changelog for delivered behavior. The global
+Finish with global review and, when production code changes, a
+consolidated changelog entry written by the `feature-implement` supervisor. The global
 reviewer owns final checks, including cross-repository integration, reusing completed checks that
 still cover the final changes. Unresolved failures and unavailable required checks remain explicit; never treat
 them as success. The user receives the delivered outcome, any consequential decisions in the plan,
@@ -108,7 +109,7 @@ leave unfinished passages explicit; bug batches without a plan do not create one
 
 Invoke `feature-archive` explicitly after shipping and resolving gates. Promote durable insight
 into owning architecture pages, conventions, testing, design/published docs as appropriate.
-Park actionable unfinished work with enough context to survive deletion. Update roadmap/changelog,
+Park actionable unfinished work with enough context to survive deletion. Update the roadmap,
 then delete the committed feature working set, including briefs and minimal handoffs.
 Git history is the archive; do not create a redundant per-feature summary. Never automatically
 retire migration or serialization-upgrade tests as a side effect of archiving.
