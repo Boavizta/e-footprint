@@ -84,7 +84,7 @@ class TestJsonToSystem(IntegrationTestBaseClass):
             resolution=SourceObject("1080p (1920 x 1080)", source=Sources.USER_DATA,
                                     confidence="high", comment="Keep authored choice"))
         snapshot = system_to_json(job, save_computed_state=False)
-        self.assertEqual("26.0.0", snapshot["efootprint_version"])
+        self.assertEqual("26.0.1", snapshot["efootprint_version"])
         with patch.dict("efootprint.api_utils.version_upgrade_handlers.VERSION_UPGRADE_HANDLERS",
                         {25: lambda *_: self.fail("Current files must skip the historical handler")}):
             _, loaded, upgraded = json_to_system(snapshot)
