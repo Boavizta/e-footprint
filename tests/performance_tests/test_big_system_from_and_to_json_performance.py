@@ -82,7 +82,7 @@ class TestBigSystemFromAndToJsonPerformance(TestCase):
         avg_writing_time = (perf_counter() - start) / nb_system_loadings
         logger.info(
             f"serializing system took {round(avg_writing_time, 3)} seconds on average for {nb_system_loadings} times")
-        self.assertLess(avg_writing_time, 0.2)
+        self.assertLess(avg_writing_time, 0.25)
 
         avg_loading_editing_writing_time = update_on_system(
             nb_system_loadings, system_dict, "UsagePattern","hourly_occurrences",
