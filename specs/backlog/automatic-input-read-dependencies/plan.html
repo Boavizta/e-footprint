@@ -1,0 +1,104 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Automatic input-read dependencies — Backlog plan</title>
+<style>
+  body { font-family: system-ui, -apple-system, sans-serif; line-height: 1.6;
+         max-width: 56rem; margin: 2rem auto; padding: 0 1.2rem; color: #1a1a1a; }
+  h1 { border-bottom: 2px solid #e0e0e0; padding-bottom: .3rem; }
+  h2 { margin-top: 2rem; }
+  small { color: #666; }
+  table { border-collapse: collapse; width: 100%; margin: 1rem 0; }
+  th, td { border: 1px solid #ccc; padding: .4rem .6rem; text-align: left; vertical-align: top; }
+  th { background: #f5f5f5; }
+  code { background: #f4f4f4; padding: .1rem .35rem; border-radius: 3px; font-size: .9em; }
+  blockquote { border-left: 3px solid #ccc; margin: 1rem 0; padding: .2rem 1rem; color: #555; }
+</style>
+</head>
+<body>
+
+<h1>Automatic input-read dependencies — Backlog plan</h1>
+<p><small>Status: Parked backlog · 2026-10-19 · Library-owned</small></p>
+
+<section>
+  <h2>1. Decision context</h2>
+  <p>A computed getter that reads an input only to pick a branch, or to raise, does not depend on that input in
+  the reactive graph. Input values stored in the instance dict have no read hook, so the only way to make such a
+  read a dependency is to wrap the result manually with
+  <code>generate_explainable_object_with_logical_dependency(&lt;input&gt;)</code>. Forgetting the wrapper is a
+  recurring error and produces stale values: editing the input no longer invalidates the computed attribute.</p>
+  <blockquote>Record a dependency edge automatically whenever a ModelingObject input is read while a slot
+  computation is in progress. The invariant becomes <strong>"anything read during a computation is a
+  dependency"</strong>, with no exception to remember, and the wrapper is deleted.</blockquote>
+  <p>Current wrapper footprint: about twenty call sites (<code>core/hardware/server_base.py</code>,
+  <code>core/hardware/storage.py</code>, the <code>core/hardware/edge/</code> classes, the EcoLogits builders,
+  <code>builders/hardware/boavizta_server_from_config.py</code>) and three subclass overrides
+  (<code>ExplainableHourlyQuantities</code>, <code>ExplainableRecurrentQuantities</code>,
+  <code>EmptyExplainableObject</code>).</p>
+</section>
+
+<section>
+  <h2>2. Existing groundwork in <code>reactive_core</code></h2>
+  <table>
+    <thead><tr><th>Mechanism</th><th>State today</th></tr></thead>
+    <tbody>
+      <tr><td>Input graph identity</td><td>Every input already has a getter-less bump node from
+        <code>_node_slot(container, attr)</code>; writes invalidate it through
+        <code>slot_of_attached_value(old_value)</code> in <code>ModelingUpdate</code>.</td></tr>
+      <tr><td>Relationship reads</td><td>Already recorded via <code>record_read_of_node</code> in
+        <code>ListLinkedToModelingObj</code>, <code>ContextualModelingObjectAttribute</code>, the
+        reverse-relationship descriptors and <code>ExplainableObjectDict</code>.</td></tr>
+      <tr><td>Computed reads</td><td>Already recorded as a conservative calculus edge in the computed-attribute
+        descriptor's <code>__get__</code>.</td></tr>
+      <tr><td>Plain explainable inputs</td><td><strong>The gap.</strong> Reading <code>self.server_type</code> runs no
+        code at all.</td></tr>
+    </tbody>
+  </table>
+</section>
+
+<section>
+  <h2>3. Design options</h2>
+  <ol>
+    <li><strong>Input descriptor per init parameter (preferred).</strong> Install a data descriptor on each class for
+      each <code>get_init_signature_params</code> name, mirroring <code>computed_attribute</code>.
+      <code>__get__</code> records a calculus edge on the input's bump node when
+      <code>computation_in_progress()</code>; <code>__set__</code> delegates to the existing
+      <code>__setattr__</code> logic. Only input reads pay the cost.</li>
+    <li><strong><code>ModelingObject.__getattribute__</code>.</strong> One method, but it fires on every attribute
+      access including method lookups; the gates in <code>tests/performance_tests/</code> would likely feel it.</li>
+  </ol>
+  <p>Record the edge as <em>calculus</em>, the kind ancestry already produces for inputs, so graph display stays
+  uniform.</p>
+</section>
+
+<section>
+  <h2>4. Consequences</h2>
+  <ul>
+    <li>The formula loses its "logically dependent on" nodes, since conditions no longer enter the explainable
+      ancestry. The slot graph keeps them. Accepted: the graph answers "what influences this", the formula answers
+      "how is it computed".</li>
+    <li>Over-recording is harmless by design: a getter that reads an input it then ignores causes a redundant
+      recompute, never a stale value. Bump nodes have no dependencies, so no new cycle is possible.</li>
+    <li>Strengthens the direction of making the slot graph the single persisted dependency graph (see the interface
+      repository's <code>specs/features/calculation-explanations-without-pulls/</code> discussion).</li>
+  </ul>
+</section>
+
+<section>
+  <h2>5. Traps to cover in the plan and tests</h2>
+  <ul>
+    <li>Reads through a relationship (<code>self.external_api.provider</code>) must land on the target object's
+      descriptor via the contextual proxy's <code>__getattribute__</code> delegation.</li>
+    <li><code>EmptyExplainableObject()</code> results that currently get their only parent from the wrapper
+      (for example <code>core/hardware/edge/edge_device.py</code>) must remain constructible with no parent.</li>
+    <li>Reads during validation and invalidation must record nothing, since no computation is on the stack. Add a
+      test so this stays true.</li>
+    <li>Performance gates decide between the two designs if descriptor overhead is visible on the big-system
+      fixtures.</li>
+  </ul>
+</section>
+
+</body>
+</html>
