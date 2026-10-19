@@ -24,7 +24,7 @@
 <body>
 
 <h1>Explanation links from formula and slots</h1>
-<p class="status">Status: Spec — under review · 2026-10-19 · Library-driven, cross-repository</p>
+<p class="status">Status: Spec — approved · 2026-10-19 · Library-driven, cross-repository · amended by PLAN-UPDATE-01</p>
 
 <section>
   <h2>1. Problem and audience</h2>
@@ -106,8 +106,10 @@
       persistence contract, and tolerating the old key in existing files.</li>
       <li>Library tests for completeness after a save-and-load round trip, including the formula, ancestors,
       children and graph of nested saved values.</li>
-      <li>Interface tests asserting the side panel and graph page are complete after reload. Owning architecture
-      pages in both repositories updated to describe where links come from.</li>
+      <li>Owning architecture pages in both repositories updated to describe where links come from. No interface
+      tests: the side panel and graph page forward the library's flat formula, children list and calculus graph
+      without transformation, so the library round-trip tests are the completeness tests (plan amendment
+      PLAN-UPDATE-01, accepted 2026-10-19).</li>
     </ul>
   </details>
   <details><summary>Out of scope (this iteration)</summary>
