@@ -30,3 +30,4 @@ ai-usage/.local/
 !ai-usage/config.json
 !ai-usage/prices.json
 !.claude/settings.json
+!.codex/hooks.json

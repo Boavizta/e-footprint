@@ -111,9 +111,12 @@ across ledgers:
 python3 ai-usage/usage.py report --ledger ../e-footprint-interface/ai-usage/.local/ledger.sqlite3
 ```
 
-Claude SessionStart/SessionEnd hooks collect in the background. Codex workflow sessions should
-collect explicitly at stage/run start and before close-out; no unsupported Codex hook is assumed.
-Collect again later to include the closing response: close-out usage is always a timed snapshot.
+Claude (`.claude/settings.json`) and Codex CLI/desktop (`.codex/hooks.json`) SessionStart/SessionEnd
+hooks collect in the background. Codex runs project hooks only after they are trusted (desktop "Review
+hooks" prompt or CLI `/hooks`), again after each change. Its SessionEnd fires on archive, normal exit or 30 minutes idle
+and is capped at 3 s, so it detaches the collector. Workflow stages still collect explicitly at
+start and close-out; collect again later to include the closing response: close-out usage is always
+a timed snapshot.
 Failures are recorded and surfaced, never a reason to abandon otherwise authorized product work.
 
 ### Attribute current work

@@ -36,6 +36,7 @@
     ".codex/agents/implementer.toml",
     ".codex/agents/plan-review-guide.toml",
     ".codex/agents/reviewer.toml",
+    ".codex/hooks.json",
     "ai-usage/README.md",
     "ai-usage/adapters.py",
     "ai-usage/prices.json",
@@ -56,8 +57,8 @@
     ".agents/roles/plan-review-guide.md": "ada1e8ab3f6146f6dff9d5d685d4eba0823c48c119ee7d85f3980838e1f88a35",
     ".agents/roles/reviewer.md": "7709eaf63b81b46b06ea4d2dad322ecd38cfbe12dde1f59442f4b1e23e9b9e1e",
     ".agents/skills/bug-fixes/SKILL.md": "ecbd1c63090c526b1fe3d7a58295d804e44e260fe00537f38e736bfd8ced0e8e",
-    ".agents/skills/feature-archive/SKILL.md": "547ce7350ca60528ca8189568929819cbb31d5f1a19f9352b6d96604c86063a7",
-    ".agents/skills/feature-implement/SKILL.md": "e05e0ba3000321c8c8e9b9bc94406bd2dcf613e6f00f99da672e60de96119511",
+    ".agents/skills/feature-archive/SKILL.md": "6a78cf19e9de67e4193a3a2a1bdd2a81ef6b5c4ff43af7eafde11758b36d4d46",
+    ".agents/skills/feature-implement/SKILL.md": "b26025c4a255ff6f8951c5fef0f01b1b77865f499c2dceb6a2171bbf7836f8b3",
     ".agents/skills/feature-implement/scripts/vscode_review_links.py": "0baa5042be167dc8a0d40630c7cebee2fed8d08dcfba74370ecd6d4640e2de83",
     ".agents/skills/plan-review-guide/SKILL.md": "dc6eb1a126c87ff58085e6f8327175faca7e5c39badf164fafe204afac28ca0f",
     ".agents/skills/spec-plan/SKILL.md": "923cb82f97141d140a2c509d4c07d32de4b66fc7a95037d4a85fa0cfd8b184e2",
@@ -67,7 +68,7 @@
     ".agents/skills/spec-specify/SKILL.md": "1f5679624ad2c80f48bc1f2c72fba5872f961d97d390adf292021a685e4409f6",
     ".agents/skills/spec-tasks/SKILL.md": "08d8453b07afc21d29cb5964895a9616f0c606e087fcea327d55a97d127269a6",
     ".agents/skills/spec-tasks/references/brief.md": "32ec1f9947d2d692637e8a3f961f7dfae39fa7d50f3e7bd9f1fd19b63589171f",
-    ".agents/skills/task-implement/SKILL.md": "71bf69dc786fbcd033b7db67a8a2cf729c1e68a333720f578ed22b079b891471",
+    ".agents/skills/task-implement/SKILL.md": "923d9140cbac436581da12ae636eaeda09616aa0f151c7e0b53110154b628af4",
     ".agents/skills/task-implement/references/handoff.md": "9e6d35f90c3093ee273a2925786a80c6098745bd493fbc9059dd665a86525a45",
     ".agents/skills/task-review/SKILL.md": "4b3a1824a8f3a10223783173c862cd2551b7cbfa4da64634afc80033e2443da5",
     ".agents/skills/update-constitution/SKILL.md": "cce7955fff229287ab339ab21d331b922d5ac83f6d23e154cd77b32fca8743ea",
@@ -84,6 +85,7 @@
     ".codex/agents/implementer.toml": "cf6e2d5f1fb57ee6bd1a8986215d922c5f242d205f8302a49e66d751e8c30b16",
     ".codex/agents/plan-review-guide.toml": "420d1e89590b8d576132ce8ddb537e7dc01b0cbd1e572659968247f78994869f",
     ".codex/agents/reviewer.toml": "f8ca07a6021192f16cea76c90215c1253bff8461d3ed2077b4ba989b0cfaafe8",
+    ".codex/hooks.json": "36accd06708f92aa2a616a733a8582edac181bd5469b2e18389ae560f2671251",
     "ai-usage/README.md": "f972b7bd78a6643b2f62df3b1feac1bd20f98f744a2d7af168bd9ace1ed0ee16",
     "ai-usage/adapters.py": "e50dabfee24ed3d5124c33336c1ebc7b55338e90bf0c8babc4dcb37ded5b5f46",
     "ai-usage/prices.json": "294d47a2796d19e5cf56f5a1cc7bf4d4720c6626e28430d5283171aae3d3f74d",
@@ -92,8 +94,8 @@
     "ai-usage/tests/test_usage.py": "dec7ff91564fc050f1f12fe7816389ca393c4e5b5ba95a5bb878718e5ccc6dde",
     "ai-usage/usage.py": "9d1b5adff636f87fa62864bb988c8307e670a48c4d292488f13a6ca81982c60a",
     "scripts/sync_agent_tooling.py": "3fe7841551cd2a45b07e73c57066b8bd415d33b9665afbd2443673c6e8696b12",
-    "specs/agent-tooling.md": "fcc87b9e209a898204d228d58c79d6b12a43acbd00515bfb633421fce0470c81",
+    "specs/agent-tooling.md": "c5a59ecf0628b6da64948709711c57e04629f3a5cdb816a021ca9d49d53329cb",
     "specs/review-links.js": "435d48ff035471affbd0b8da62911dedf29d78a68dd6c2ef98cfcb13c5d9508e",
-    "specs/workflow.md": "cdfe4813d5934d2c44053ba848779a70bb1cd0721d4bdd2e0bf6444a2279713d"
+    "specs/workflow.md": "7396385788c5e3b4f671826dca0d52ad901eceb2057541c2f88ea6075ad7b7f6"
   }
 }
