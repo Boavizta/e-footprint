@@ -248,6 +248,8 @@
     <aside id="plan-updates" data-note="review">
       <p><strong>Plan updates</strong></p>
       <p><a href="#plan-update-01">[PLAN-UPDATE-01] No interface tests; library round-trip tests cover the displays — ACCEPTED</a></p>
+      <p><a href="#plan-update-02">[PLAN-UPDATE-02] Slots that leave the model sever their edges; children re-checked after pull — PROPOSED</a></p>
+      <p><a href="#plan-update-03">[PLAN-UPDATE-03] Resolve a computed-dict operand through its element, not the whole dict — PROPOSED</a></p>
     </aside>
   </header>
 
@@ -339,6 +341,35 @@
         <li>The display runs outside any compute frame, so the pulls record no dependency edges; the pulled
           values attach to their slots exactly as a results-page read would attach them.</li>
       </ul>
+      <aside id="plan-update-03" data-note="review">
+        <p><strong>[PLAN-UPDATE-03] — PROPOSED</strong></p>
+        <p><em>Current plan:</em> the resolver reads <code>getattr(container, attr_name)</code>, then indexes the
+          result with the key for a dict address (snippet above).</p>
+        <p><em>Proposed change.</em> For an address naming a computed dict, the resolver indexes the dict facade
+          (<a href="vscode://file//Users/vinville/dev/e-footprint-full/e-footprint/efootprint/abstract_modeling_classes/reactive_core/computed_slots.py:255:1" data-review-source-href="../../../efootprint/abstract_modeling_classes/reactive_core/computed_slots.py#L255:1"><code>computed_dict.facade()</code></a>, found through
+          <a href="vscode://file//Users/vinville/dev/e-footprint-full/e-footprint/efootprint/abstract_modeling_classes/reactive_core/computed_slots.py:63:1" data-review-source-href="../../../efootprint/abstract_modeling_classes/reactive_core/computed_slots.py#L63:1"><code>computed_slots()</code></a> of the container's class)
+          instead of reading the attribute. The facade's
+          <a href="vscode://file//Users/vinville/dev/e-footprint-full/e-footprint/efootprint/abstract_modeling_classes/explainable_object_dict.py:254:1" data-review-source-href="../../../efootprint/abstract_modeling_classes/explainable_object_dict.py#L254:1"><code>__getitem__</code></a> pulls only that key's sub-slot
+          and raises for a key outside the key collection. Plain attributes and input dicts keep ordinary attribute
+          access.</p>
+        <p><em>Why.</em> Reading a computed dict through
+          <a href="vscode://file//Users/vinville/dev/e-footprint-full/e-footprint/efootprint/abstract_modeling_classes/reactive_core/computed_slots.py:356:1" data-review-source-href="../../../efootprint/abstract_modeling_classes/reactive_core/computed_slots.py#L356:1"><code>computed_dict.__get__()</code></a> pulls its
+          key-set slot, whose closure pulls every element
+          (<a href="vscode://file//Users/vinville/dev/e-footprint-full/e-footprint/efootprint/abstract_modeling_classes/reactive_core/computed_slots.py:285:1" data-review-source-href="../../../efootprint/abstract_modeling_classes/reactive_core/computed_slots.py#L285:1">line 285</a>). Stored formulas do hold element
+          addresses: freshly computed and saved, the complex integration system's formulas hold 17 element addresses out
+          of 69 operand addresses, all elements of
+          <a href="vscode://file//Users/vinville/dev/e-footprint-full/e-footprint/efootprint/core/hardware/network.py:82:1" data-review-source-href="../../../efootprint/core/hardware/network.py#L82:1"><code>use_footprint_per_job</code></a>,
+          <a href="vscode://file//Users/vinville/dev/e-footprint-full/e-footprint/efootprint/core/hardware/device.py:127:1" data-review-source-href="../../../efootprint/core/hardware/device.py#L127:1"><code>use_footprint_per_usage_pattern</code></a>
+          or <a href="vscode://file//Users/vinville/dev/e-footprint-full/e-footprint/efootprint/core/hardware/device.py:152:1" data-review-source-href="../../../efootprint/core/hardware/device.py#L152:1"><code>instances_manufacturing_footprint_per_usage_pattern</code></a>.
+          Measured in this checkout on the complex integration system, saved and reloaded: resolving one
+          <a href="vscode://file//Users/vinville/dev/e-footprint-full/e-footprint/efootprint/core/hardware/network.py:82:1" data-review-source-href="../../../efootprint/core/hardware/network.py#L82:1"><code>use_footprint_per_job</code></a> element costs 73 computations through the attribute and 20 through the
+          facade. The extra computations are sibling elements the formula does not show, which the spec's
+          constraint "explanation requests compute only the values they display" excludes.</p>
+        <p><em>Trade-offs.</em> The resolver distinguishes computed dicts from input dicts, a branch the snippet did not
+          have. It relies on facade item reads that the engine already uses to read one element inside a computation,
+          so no new engine path is introduced.</p>
+        <p><em>Affected task:</em> Task 2.</p>
+      </aside>
       <p>The computed operand is a fresh value attached to its slot, so its label, unit and magnitude are live. The
         presenter's symbol table and Input Variables list render it like any in-memory operand. Inline constants such
         as <code>one hour</code> are stored as dicts and keep deserializing through
@@ -479,6 +510,41 @@ def direct_children_with_id(self):
         pulls seven dependents through 82 computations in about 5 ms. The spec's "bound the list?" question is
         answered: no bound. A dependent whose getter raises propagates the error to the request, exactly as opening a
         non-serialized attribute does today; no recovery is added.</p>
+      <aside id="plan-update-02" data-note="review">
+        <p><strong>[PLAN-UPDATE-02] — PROPOSED</strong></p>
+        <p><em>Current plan:</em> children are the calculus dependents of the value's slot that carry a drop callback,
+          each pulled (this step); the engine is unchanged (<a href="vscode://file//Users/vinville/dev/e-footprint-full/e-footprint/efootprint/abstract_modeling_classes/reactive_core/graph.py:315:1" data-review-source-href="../../../efootprint/abstract_modeling_classes/reactive_core/graph.py#L315:1"><code>graph.py</code></a> "No edit").</p>
+        <p><em>Proposed change.</em> (a) A slot that leaves the model severs its own dependency edges: each stale
+          sub-slot that <a href="vscode://file//Users/vinville/dev/e-footprint-full/e-footprint/efootprint/abstract_modeling_classes/reactive_core/computed_slots.py:269:1" data-review-source-href="../../../efootprint/abstract_modeling_classes/reactive_core/computed_slots.py#L269:1"><code>computed_dict.discard_stale_keys()</code></a> pops from the registry,
+          and every slot of an object removed by <a href="vscode://file//Users/vinville/dev/e-footprint-full/e-footprint/efootprint/abstract_modeling_classes/modeling_object.py:674:1" data-review-source-href="../../../efootprint/abstract_modeling_classes/modeling_object.py#L674:1"><code>ModelingObject.self_delete()</code></a>
+          (beside its <a href="vscode://file//Users/vinville/dev/e-footprint-full/e-footprint/efootprint/abstract_modeling_classes/modeling_object.py:686:1" data-review-source-href="../../../efootprint/abstract_modeling_classes/modeling_object.py#L686:1"><code>_drop_value()</code> loop</a>), calls
+          <a href="vscode://file//Users/vinville/dev/e-footprint-full/e-footprint/efootprint/abstract_modeling_classes/reactive_core/graph.py:183:1" data-review-source-href="../../../efootprint/abstract_modeling_classes/reactive_core/graph.py#L183:1"><code>replace_dependencies()</code></a> with no arguments. Edges of live slots are
+          untouched. (b) The children property keeps a pulled dependent only if
+          <code>slot in dependent.calculus_dependencies</code> still holds after the pull.</p>
+        <p><em>Why.</em> <a href="vscode://file//Users/vinville/dev/e-footprint-full/e-footprint/efootprint/abstract_modeling_classes/reactive_core/graph.py:128:1" data-review-source-href="../../../efootprint/abstract_modeling_classes/reactive_core/graph.py#L128:1"><code>dependents</code></a> is a deliberate over-approximation for invalidation: a void slot keeps
+          the edges of its last successful computation (<a href="vscode://file//Users/vinville/dev/e-footprint-full/e-footprint/efootprint/abstract_modeling_classes/reactive_core/graph.py:88:1" data-review-source-href="../../../efootprint/abstract_modeling_classes/reactive_core/graph.py#L88:1"><code>ReactiveSlot</code> docstring</a>).
+          Two paths leave dead slots wired in: <a href="vscode://file//Users/vinville/dev/e-footprint-full/e-footprint/efootprint/abstract_modeling_classes/reactive_core/computed_slots.py:269:1" data-review-source-href="../../../efootprint/abstract_modeling_classes/reactive_core/computed_slots.py#L269:1"><code>discard_stale_keys()</code></a> pops a stale sub-slot
+          (<a href="vscode://file//Users/vinville/dev/e-footprint-full/e-footprint/efootprint/abstract_modeling_classes/reactive_core/computed_slots.py:274:1" data-review-source-href="../../../efootprint/abstract_modeling_classes/reactive_core/computed_slots.py#L274:1">line 274</a>) without removing its edges, and <a href="vscode://file//Users/vinville/dev/e-footprint-full/e-footprint/efootprint/abstract_modeling_classes/modeling_object.py:674:1" data-review-source-href="../../../efootprint/abstract_modeling_classes/modeling_object.py#L674:1"><code>self_delete()</code></a> drops values
+          but keeps edges. Replayed in this checkout,
+          <a href="vscode://file//Users/vinville/dev/e-footprint-full/e-footprint/tests/integration_tests/integration_simple_system_base_class.py:354:1" data-review-source-href="../../../tests/integration_tests/integration_simple_system_base_class.py#L354:1"><code>run_test_add_usage_pattern</code></a> up to its
+          <a href="vscode://file//Users/vinville/dev/e-footprint-full/e-footprint/tests/integration_tests/integration_simple_system_base_class.py:373:1" data-review-source-href="../../../tests/integration_tests/integration_simple_system_base_class.py#L373:1">post-reset loop</a>: after rollback and deletion of the added usage pattern, the
+          country's carbon intensity keeps six explainable calculus dependents, one of them the new device's
+          <a href="vscode://file//Users/vinville/dev/e-footprint-full/e-footprint/efootprint/core/hardware/device.py:127:1" data-review-source-href="../../../efootprint/core/hardware/device.py#L127:1"><code>use_footprint_per_usage_pattern</code></a> sub-slot keyed by the deleted pattern; pulling it raises
+          <code>KeyError</code>. The country's timezone also keeps the deleted pattern's
+          <a href="vscode://file//Users/vinville/dev/e-footprint-full/e-footprint/efootprint/core/usage/usage_pattern.py:72:1" data-review-source-href="../../../efootprint/core/usage/usage_pattern.py#L72:1"><code>utc_hourly_occurrences</code></a> as a dependent. The property as planned would therefore fail the existing
+          post-reset loops (<a href="vscode://file//Users/vinville/dev/e-footprint-full/e-footprint/tests/integration_tests/integration_simple_system_base_class.py:375:1" data-review-source-href="../../../tests/integration_tests/integration_simple_system_base_class.py#L375:1">simple</a>, <a href="vscode://file//Users/vinville/dev/e-footprint-full/e-footprint/tests/integration_tests/integration_simple_edge_system_base_class.py:424:1" data-review-source-href="../../../tests/integration_tests/integration_simple_edge_system_base_class.py#L424:1">edge</a>,
+          <a href="vscode://file//Users/vinville/dev/e-footprint-full/e-footprint/tests/integration_tests/integration_simple_edge_system_base_class.py:448:1" data-review-source-href="../../../tests/integration_tests/integration_simple_edge_system_base_class.py#L448:1">edge, journey</a>). With (a) monkeypatched into the same replay, three dependents remain,
+          all live and pulling cleanly, and no surviving slot lists a deleted object's slot. For (b), a void dependent
+          whose last computation read this value only under a branch that no longer holds would otherwise be listed
+          after recomputing without it; the check is one set lookup.</p>
+        <p><em>Trade-offs.</em> (a) touches the reactive core, a FULL review surface, but removes edges only from slots
+          no longer reachable from the model, so no live slot can miss an invalidation. Objects detached without
+          deletion (a network left behind by a rollback) keep their edges: while they still read the value they are
+          listed, as live in-memory consumers. A reloaded interface model never holds such slots, since the loader
+          rebuilds only the saved graph. Alternative: filter at read time on owner liveness; slots carry no owner
+          reference, so this adds state to every slot. Rejected.</p>
+        <p><em>Affected tasks:</em> Task 1 (new, carries (a)) and Task 2 (carries (b) and depends on (a)).</p>
+      </aside>
       <p>Removed with this step: the <code>_direct_children_with_id</code> slot and setter,
         <a href="vscode://file//Users/vinville/dev/e-footprint-full/e-footprint/efootprint/abstract_modeling_classes/explainable_object_base_class.py:369:1" data-review-source-href="../../../efootprint/abstract_modeling_classes/explainable_object_base_class.py#L369:1"><code>add_child_to_direct_children_with_id()</code></a>,
         <a href="vscode://file//Users/vinville/dev/e-footprint-full/e-footprint/efootprint/abstract_modeling_classes/explainable_object_base_class.py:373:1" data-review-source-href="../../../efootprint/abstract_modeling_classes/explainable_object_base_class.py#L373:1"><code>remove_child_from_direct_children_with_id()</code></a>,
