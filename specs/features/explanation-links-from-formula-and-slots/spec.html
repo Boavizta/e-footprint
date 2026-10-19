@@ -1,0 +1,264 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Explanation links from formula and slots — Spec</title>
+<style>
+  body { font-family: system-ui, -apple-system, sans-serif; line-height: 1.6;
+         max-width: 52rem; margin: 2rem auto; padding: 0 1.2rem; color: #1a1a1a; }
+  h1 { border-bottom: 2px solid #e0e0e0; padding-bottom: .3rem; }
+  h2 { margin-top: 2rem; }
+  .status { color: #666; font-size: .9rem; }
+  table { border-collapse: collapse; width: 100%; margin: 1rem 0; }
+  th, td { border: 1px solid #ccc; padding: .4rem .6rem; text-align: left; vertical-align: top; }
+  th { background: #f5f5f5; }
+  code { background: #f4f4f4; padding: .1rem .35rem; border-radius: 3px; font-size: .9em; }
+  details { margin: .6rem 0; border: 1px solid #e0e0e0; border-radius: 6px; padding: .4rem .8rem; }
+  summary { cursor: pointer; font-weight: 600; }
+  .mockup { border: 1px dashed #999; border-radius: 8px; padding: 1rem; margin: 1rem 0; }
+  blockquote { border-left: 3px solid #ccc; margin: 1rem 0; padding: .2rem 1rem; color: #555; }
+  svg text { font-family: system-ui, sans-serif; font-size: 12px; }
+</style>
+</head>
+<body>
+
+<h1>Explanation links from formula and slots</h1>
+<p class="status">Status: Spec — under review · 2026-10-19 · Library-driven, cross-repository</p>
+
+<section>
+  <h2>1. Problem and audience</h2>
+  <p>After a model is saved and reloaded, the explanation of a calculated value is incomplete. In the introductory
+  <em>GenAI for Marketing video on social</em> example, the Google Veo server's <strong>Instances manufacturing
+  footprint</strong> formula reads <code>* ( / ( * one hour ) ) + * ( / ( * one hour ) )</code>: the operators and
+  inline constants survive, the operand references do not. The value itself is correct.</p>
+  <p>The same reload leaves two neighbouring displays incomplete and they never recover, even after the missing
+  values are computed later in the session. Measured on the saved and reloaded example:</p>
+  <table>
+    <thead><tr><th>Link shown after reload</th><th>Shown</th><th>Actual</th></tr></thead>
+    <tbody>
+      <tr><td>Operands of the Veo instances manufacturing footprint (formula and calculus graph page)</td><td>0</td><td>6</td></tr>
+      <tr><td>Direct children of one of its job inputs (side panel list)</td><td>0</td><td>5</td></tr>
+    </tbody>
+  </table>
+  <ul>
+    <li><strong>Who:</strong> every interface user who opens a calculated attribute of a saved model, and every
+    library user who calls <code>explain()</code> or draws a calculus graph on a loaded system. Explainability is a
+    stated mission capability; a formula with holes undermines the trust the tool exists to build.</li>
+    <li><strong>Frequency:</strong> every interface request rebuilds the model from its saved form, so every
+    explanation of a stored footprint is affected, not only the first after an explicit reload. Only values that
+    are saved with the model are affected; values recomputed on read already explain correctly. The affected values
+    are the headline footprints, which are the ones users open most.</li>
+    <li><strong>Why now:</strong> the cause is a second, separately stored copy of each value's dependency links that
+    is resolved once at load time, when the referenced values do not exist yet. The library already holds a complete,
+    values-free dependency graph for the whole model. Deriving the explanation links from what already exists removes
+    the duplicate rather than repairing it.</li>
+  </ul>
+  <p><strong>Scope tradeoff.</strong> Rendering an explanation may compute the operands it shows. This is the same
+  work the next click would trigger, and the same cost users already pay when opening an attribute that is not
+  saved with the model. A design that renders stored topology without computing anything was considered and set
+  aside as unmeasured optimization; see the
+  <a href="../../../../e-footprint-interface/specs/features/calculation-explanations-without-pulls/README.md">decision record</a>.
+  The frequency assumption that explanations are opened far less often than models are saved is unverified.</p>
+</section>
+
+<section>
+  <h2>2. Success criteria</h2>
+  <p>Each criterion holds on a system computed, saved with its calculated values, and loaded again, with no
+  computation between load and the check. "Complete" means identical to the same display on the system before it
+  was saved.</p>
+  <ul>
+    <li>The formula of a saved calculated value is complete: every operand appears with its label, operators and
+    order are preserved, repeated operands appear each time, inline constants appear once per use.</li>
+    <li>The direct ancestors of a saved calculated value are complete and are exactly the attached operands of its
+    formula.</li>
+    <li>The direct children of any value, input or calculated, are complete: every calculated value whose formula
+    uses it is listed, whether or not that child was saved with the model.</li>
+    <li>The calculus graph of a saved calculated value reaches every input it depends on, through every intermediate
+    value, with the same nodes and edges as before saving.</li>
+    <li>Holding for the Veo instances manufacturing footprint, the CDN server's use footprint and the system total
+    footprint in the GenAI video example, and for the existing integration-test systems.</li>
+    <li>Saving a model after an input edit and reloading it yields the same completeness.</li>
+    <li>In the interface, the calculated-attribute side panel shows a complete formula, Input Variables list with
+    magnitudes and Direct children list for a saved footprint after reload, and the calculus graph page shows every
+    ancestor level. No interface view, presenter or template code changes to achieve this.</li>
+    <li>Loading a saved model performs no computation. Saving a model performs no computation beyond what the save
+    boundary already requests. Explanation requests compute only the values they display.</li>
+    <li>Saved files no longer carry the per-value ancestor address list. Files that still carry it load without
+    error.</li>
+    <li>All library and interface test suites pass; the library's big-system load and save performance gates hold.</li>
+  </ul>
+</section>
+
+<section>
+  <h2>3. Scope</h2>
+  <blockquote>Capability-level only. File paths, class/method/parameter names, refactor
+  instructions, internal hypotheses, and "mirror pattern X" code-level decisions belong in
+  <code>plan.html</code>, not here.</blockquote>
+  <details open><summary>In scope</summary>
+    <ul>
+      <li>Resolving a saved formula's operand references on display, computing an operand when it is not yet
+      available.</li>
+      <li>Defining a saved value's direct ancestors from its formula rather than from a separately stored list.</li>
+      <li>Defining a value's direct children from the model's dependency graph rather than from the saved values
+      present at load.</li>
+      <li>Removing the per-value stored ancestor list and the load-time children reconstruction from the
+      persistence contract, and tolerating the old key in existing files.</li>
+      <li>Library tests for completeness after a save-and-load round trip, including the formula, ancestors,
+      children and graph of nested saved values.</li>
+      <li>Interface tests asserting the side panel and graph page are complete after reload. Owning architecture
+      pages in both repositories updated to describe where links come from.</li>
+    </ul>
+  </details>
+  <details><summary>Out of scope (this iteration)</summary>
+    <ul>
+      <li>Rendering explanations from stored topology without computing operands (kept as the fallback if measured
+      latency demands it).</li>
+      <li>Caching computed intermediates across interface requests.</li>
+      <li>Changing which values are saved with the model.</li>
+      <li>Making the calculus graph and the formula agree exactly. The graph may show a dependency that the formula
+      does not, when a calculated value is read only to choose a branch. Accepted: the graph answers "what
+      influences this", the formula "how is it computed".</li>
+      <li>Recording input reads during computation automatically (parked separately under
+      <code>specs/backlog/automatic-input-read-dependencies/</code>).</li>
+      <li>Visual changes to the side panel or graph page.</li>
+    </ul>
+  </details>
+</section>
+
+<section>
+  <h2>4. UX / interface</h2>
+  <p>No visual change. The diagram shows where each displayed link comes from today and after the feature, for a
+  saved footprint whose operands were not saved with the model.</p>
+  <div class="mockup">
+    <svg viewBox="0 0 760 330" role="img" aria-label="Sources of explanation links before and after">
+      <defs>
+        <marker id="arr" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse">
+          <path d="M0,0 L10,5 L0,10 z" fill="#555"/>
+        </marker>
+      </defs>
+      <!-- column titles -->
+      <text x="90" y="22" font-weight="700">Saved file</text>
+      <text x="330" y="22" font-weight="700">Loaded model</text>
+      <text x="580" y="22" font-weight="700">Display</text>
+
+      <!-- saved file boxes -->
+      <rect x="20" y="40" width="190" height="44" rx="6" fill="#f4f4f4" stroke="#999"/>
+      <text x="30" y="58">Formula tree</text>
+      <text x="30" y="75" fill="#666">operators + operand addresses</text>
+
+      <rect x="20" y="100" width="190" height="44" rx="6" fill="#fff0ed" stroke="#963939" stroke-dasharray="4 3"/>
+      <text x="30" y="118" fill="#963939">Ancestor address list</text>
+      <text x="30" y="135" fill="#963939">removed</text>
+
+      <rect x="20" y="160" width="190" height="44" rx="6" fill="#f4f4f4" stroke="#999"/>
+      <text x="30" y="178">Dependency graph</text>
+      <text x="30" y="195" fill="#666">all slots, all edges, no values</text>
+
+      <!-- loaded model boxes -->
+      <rect x="250" y="40" width="200" height="44" rx="6" fill="#eaf3ed" stroke="#176751"/>
+      <text x="260" y="58">Formula with resolved leaves</text>
+      <text x="260" y="75" fill="#176751">void operand → computed on demand</text>
+
+      <rect x="250" y="100" width="200" height="44" rx="6" fill="#fff0ed" stroke="#963939" stroke-dasharray="4 3"/>
+      <text x="260" y="118" fill="#963939">Ancestor list frozen at load</text>
+      <text x="260" y="135" fill="#963939">void → dropped, never re-read</text>
+
+      <rect x="250" y="160" width="200" height="44" rx="6" fill="#eaf3ed" stroke="#176751"/>
+      <text x="260" y="178">Slot graph</text>
+      <text x="260" y="195" fill="#176751">complete after load</text>
+
+      <rect x="250" y="220" width="200" height="44" rx="6" fill="#fff0ed" stroke="#963939" stroke-dasharray="4 3"/>
+      <text x="260" y="238" fill="#963939">Children by inversion at load</text>
+      <text x="260" y="255" fill="#963939">only saved values appear</text>
+
+      <!-- display boxes -->
+      <rect x="500" y="40" width="240" height="44" rx="6" fill="#fff" stroke="#555"/>
+      <text x="510" y="58">Formula + Input Variables</text>
+      <text x="510" y="75" fill="#666">side panel</text>
+
+      <rect x="500" y="130" width="240" height="44" rx="6" fill="#fff" stroke="#555"/>
+      <text x="510" y="148">Calculus graph page</text>
+      <text x="510" y="165" fill="#666">walks direct ancestors</text>
+
+      <rect x="500" y="220" width="240" height="44" rx="6" fill="#fff" stroke="#555"/>
+      <text x="510" y="238">Direct children list</text>
+      <text x="510" y="255" fill="#666">side panel</text>
+
+      <!-- arrows saved -> loaded -->
+      <line x1="210" y1="62" x2="250" y2="62" stroke="#555" marker-end="url(#arr)"/>
+      <line x1="210" y1="122" x2="250" y2="122" stroke="#963939" stroke-dasharray="4 3" marker-end="url(#arr)"/>
+      <line x1="210" y1="182" x2="250" y2="182" stroke="#555" marker-end="url(#arr)"/>
+
+      <!-- arrows loaded -> display, after -->
+      <line x1="450" y1="62" x2="500" y2="62" stroke="#176751" stroke-width="2" marker-end="url(#arr)"/>
+      <path d="M450,70 C480,70 480,152 500,152" fill="none" stroke="#176751" stroke-width="2" marker-end="url(#arr)"/>
+      <path d="M450,182 C480,182 480,242 500,242" fill="none" stroke="#176751" stroke-width="2" marker-end="url(#arr)"/>
+
+      <!-- arrows before (dashed red) -->
+      <path d="M450,122 C480,122 480,152 500,152" fill="none" stroke="#963939" stroke-dasharray="4 3" marker-end="url(#arr)"/>
+      <line x1="450" y1="242" x2="500" y2="242" stroke="#963939" stroke-dasharray="4 3" marker-end="url(#arr)"/>
+
+      <!-- legend -->
+      <line x1="20" y1="300" x2="60" y2="300" stroke="#963939" stroke-dasharray="4 3"/>
+      <text x="68" y="304">today: stale copy, incomplete after reload</text>
+      <line x1="330" y1="300" x2="370" y2="300" stroke="#176751" stroke-width="2"/>
+      <text x="378" y="304">after: derived from formula or slot graph</text>
+    </svg>
+  </div>
+  <p>After the feature, the formula and the calculus graph page both read the resolved formula, and the children
+  list reads the slot graph. The two dashed sources disappear from the saved file and the loaded model.</p>
+</section>
+
+<section>
+  <h2>5. Constraints</h2>
+  <ul>
+    <li><strong>Constitution §1.1.</strong> The change stays inside the framework and serialization layers; no
+    upward import is introduced.</li>
+    <li><strong>Constitution §1.2 and §2.3.</strong> No compatibility branch beyond tolerating the removed key on
+    load. Round-trip equality of saved values is preserved; the ancestor list is no longer part of the saved form,
+    so the schema version bumps and a migration handler drops the key (§2.4).</li>
+    <li><strong>Constitution §1.3.</strong> This is a removal of duplicated state, not a new abstraction. Each fact
+    keeps one owner: expression in the formula, topology in the dependency graph, values in the slot cache.</li>
+    <li><strong>Engine invariants.</strong> Loading computes nothing. Saving computes nothing. Bookkeeping that runs
+    inside a computation or an invalidation never computes. Only display-time resolution may compute, and only the
+    values it displays.</li>
+    <li><strong>Performance.</strong> The library's big-system load and save gates in
+    <code>tests/performance_tests/</code> hold. A before-and-after latency measurement of the three example
+    explanations is recorded in the plan as the baseline for the "optimize only if needed" decision.</li>
+    <li><strong>Owning pages.</strong> <a href="../../architecture/persistence.html#contract">Persistence contract</a>
+    and <a href="../../architecture/recomputation.html#slot">Recomputation: the reactive slot</a> in the library;
+    the interface's rendering page gains a line on where explanation links come from.</li>
+    <li><strong>Changelog.</strong> One consolidated entry under Unreleased in each affected repository (§2.6).</li>
+  </ul>
+</section>
+
+<section>
+  <h2>6. Open questions</h2>
+  <ul>
+    <li>Should the direct children of a heavily used input, whose every consumer is computed when the list is
+    rendered, be bounded in any way, or is the measured latency on the examples acceptable as is? Default: no bound;
+    measure first.</li>
+    <li>Does any library consumer rely on children links of values that are not attached to a model object? None
+    was found in the code; confirm during planning.</li>
+  </ul>
+</section>
+
+<section>
+  <h2>7. Resuming from cold context</h2>
+  <ol>
+    <li>Read this file end to end, then the
+    <a href="../../../../e-footprint-interface/specs/features/calculation-explanations-without-pulls/README.md">decision record</a>
+    for the measurements and the options that were rejected.</li>
+    <li>Read <code>plan.html</code> for the ordered steps, the exact code paths and the test gates.</li>
+    <li>Start at <code>specs/architecture/index.html</code> and follow it to
+    <a href="../../architecture/recomputation.html">Recomputation</a> and
+    <a href="../../architecture/persistence.html">Persistence</a>; read <code>specs/conventions.md</code> and
+    <code>specs/testing.md</code>.</li>
+    <li>The interface side is tests and documentation only; its owning repository guidance is
+    <code>../e-footprint-interface/AGENTS.md</code>.</li>
+  </ol>
+</section>
+
+</body>
+</html>

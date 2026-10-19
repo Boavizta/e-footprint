@@ -1,0 +1,463 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Explanation links from formula and slots — Implementation plan</title>
+<style>
+  :root { color-scheme: light; --ink: #21312f; --muted: #5e706e; --line: #dbe4df;
+    --paper: #fff; --bg: #f5f7f3; --accent: #176751; --soft: #eaf3ed;
+    --blue: #285e91; --blue-bg: #edf4fb; --amber: #835219; --amber-bg: #fff5e5; }
+  * { box-sizing: border-box; }
+  html { scroll-behavior: smooth; scroll-padding-top: 1.5rem; }
+  body { margin: 0; font: 16px/1.6 system-ui, -apple-system, sans-serif; color: var(--ink); background: var(--bg); }
+  a { color: var(--accent); text-underline-offset: .18em; }
+  a:hover { text-decoration-thickness: 2px; }
+  :is(a, summary):focus-visible { outline: 3px solid #3974b3; outline-offset: 4px; }
+  #review-link-menu { position: fixed; z-index: 20; min-width: 12rem; padding: .3rem;
+    border: 1px solid var(--line); border-radius: .5rem; background: var(--paper);
+    box-shadow: 0 .5rem 1.5rem #21312f30; font-size: .85rem; }
+  #review-link-menu[hidden] { display: none; }
+  #review-link-menu a { display: block; padding: .35rem .55rem; border-radius: .3rem; text-decoration: none; }
+  #review-link-menu a:hover, #review-link-menu a:focus { background: var(--soft); }
+  body > a { position: absolute; left: 1rem; top: -5rem; z-index: 5; background: var(--paper); padding: .7rem; }
+  body > a:focus { top: 1rem; }
+  #layout { display: grid; grid-template-columns: 22rem minmax(0, 64rem); gap: 2rem; max-width: 92rem; margin: auto; padding: 2rem 1.5rem 5rem; }
+  #layout:has(#sidebar:not([open])) { grid-template-columns: 2.75rem minmax(0, 64rem); }
+  #sidebar { position: sticky; top: 1rem; align-self: start; max-height: calc(100vh - 2rem); overflow: auto; overscroll-behavior: contain; padding: 0 .5rem 0 0; border: 0; border-radius: 0; background: transparent; margin: 0; }
+  #sidebar:not([open]) { overflow: visible; padding-right: 0; }
+  #sidebar > summary { position: sticky; top: 0; z-index: 2; list-style: none; display: flex; align-items: center; gap: .4rem; width: max-content; max-width: 100%; margin: 0 0 .7rem; padding: .3rem .55rem; border: 1px solid var(--line); border-radius: .4rem; background: var(--paper); color: var(--accent); font-size: .8rem; }
+  #sidebar > summary::-webkit-details-marker { display: none; }
+  #sidebar > summary::before { content: "☰"; font-size: 1.1rem; line-height: 1; }
+  #sidebar:not([open]) > summary { width: 2.75rem; height: 2.75rem; justify-content: center; margin-bottom: 0; padding: 0; }
+  #sidebar:not([open]) > summary span { position: absolute; width: 1px; height: 1px; overflow: hidden; clip-path: inset(50%); white-space: nowrap; }
+  #navigation { font-size: .85rem; padding-bottom: .6rem; }
+  #navigation > p:first-child { text-transform: uppercase; letter-spacing: .1em; font-size: .72rem; font-weight: 700; color: var(--accent); }
+  #navigation ol { list-style: none; padding: 0; }
+  #navigation li a { display: block; padding: .35rem .5rem; border-radius: .3rem; }
+  #navigation li a:hover { background: var(--soft); }
+  main { min-width: 0; }
+  header > p:first-child, small, figcaption, [data-reading-note] { color: var(--muted); }
+  h1 { font-size: clamp(1.8rem, 3vw, 2.4rem); line-height: 1.2; letter-spacing: -.03em; }
+  h2 { font-size: 1.4rem; line-height: 1.3; }
+  h3 { font-size: 1.08rem; margin: 1.5rem 0 .4rem; }
+  p, ul, ol { margin: .6rem 0 1rem; }
+  li { margin: .3rem 0; }
+  main > section { margin-top: 2rem; padding-top: 1rem; border-top: 1px solid var(--line); }
+  main p { max-width: 76ch; }
+  [data-reading-note], [data-files] { font-size: .83rem; }
+  [data-files] > span { color: var(--muted); }
+  [data-step] > h3 > a { color: inherit; text-decoration: none; }
+  [data-step]:is(:target, :has(:target)) { border-left: 3px solid var(--accent); padding-left: .8rem; }
+  code { background: #eef2ef; padding: .08rem .25rem; border-radius: 3px; font: .86em/1.5 ui-monospace, SFMono-Regular, Consolas, monospace; overflow-wrap: anywhere; }
+  pre { overflow: auto; padding: 1rem; border: 1px solid var(--line); border-radius: .5rem; background: #f8faf7; font: .86rem/1.6 ui-monospace, SFMono-Regular, Consolas, monospace; }
+  pre code { background: none; padding: 0; font: inherit; overflow-wrap: normal; }
+  [data-code] { margin: 1rem 0; }
+  [data-code-file] { display: flex; flex-wrap: wrap; gap: .2rem .8rem; align-items: baseline; margin: 0; max-width: none; padding: .45rem .8rem; border: 1px solid var(--line); border-bottom: 0; border-radius: .5rem .5rem 0 0; background: #eef2ef; font-size: .8rem; }
+  [data-code-file] code { background: none; padding: 0; font-size: 1em; }
+  [data-code] pre { margin: 0; border-radius: 0 0 .5rem .5rem; }
+  details { border: 1px solid var(--line); border-radius: .5rem; padding: .7rem 1rem; background: var(--paper); margin: .7rem 0; }
+  summary { cursor: pointer; font-weight: 650; }
+  #modules h2 { font-size: 1.05rem; }
+  #modules > p { font-size: .76rem; color: var(--muted); }
+  #change-tree { padding: .7rem; border: 1px solid var(--line); border-radius: .6rem; background: var(--paper); font-size: .8rem; }
+  #change-tree details { border: 0; background: none; padding: .2rem 0 .2rem .6rem; margin: .25rem 0; }
+  #change-tree > details { padding-left: 0; }
+  #change-tree ul { list-style: none; border-left: 1px solid var(--line); margin: .25rem 0 .25rem .35rem; padding: 0 0 0 .7rem; }
+  #change-tree li { padding: .3rem; border-radius: .3rem; }
+  #change-tree li:target { outline: 2px solid var(--accent); outline-offset: 2px; }
+  #change-tree li > small { display: block; margin-top: .2rem; }
+  [data-change] { font-size: .65rem; font-weight: 700; text-transform: uppercase; border-radius: .25rem; padding: .1rem .3rem; background: #eef2ef; color: var(--muted); }
+  [data-change="new"] { color: var(--accent); background: var(--soft); }
+  [data-change="removed"] { color: #963939; background: #fff0ed; }
+  [data-reading-links] { margin-left: .3rem; font-size: .7rem; }
+  aside[data-note] { border-left: 3px solid var(--blue); background: var(--blue-bg); padding: .8rem 1rem; border-radius: 0 .5rem .5rem 0; margin: 1rem 0; font-size: .92rem; }
+  aside[data-note="review"] { border-color: var(--amber); background: var(--amber-bg); }
+  aside[data-note] p { margin: .3rem 0; }
+  table { width: 100%; border-collapse: collapse; font-size: .88rem; }
+  th, td { text-align: left; vertical-align: top; border-bottom: 1px solid var(--line); padding: .65rem; }
+  th { background: var(--soft); }
+  #phases { list-style: none; padding: 0; display: grid; grid-template-columns: 1fr 1fr; gap: .7rem; }
+  #phases li { margin: 0; padding: .9rem; background: var(--paper); border: 1px solid var(--line); border-radius: .5rem; }
+  #phases strong, #phases small { display: block; }
+  body:has(#resolver:target, #resolver :target, #change-tree :target[data-steps~="resolver"]) #change-tree li[data-steps~="resolver"] { background: var(--soft); }
+  body:has(#resolver:target, #resolver :target, #change-tree :target[data-steps~="resolver"]) #navigation a[href="#resolver"] { background: var(--soft); font-weight: 700; }
+  body:has(#ancestors:target, #ancestors :target, #change-tree :target[data-steps~="ancestors"]) #change-tree li[data-steps~="ancestors"] { background: var(--soft); }
+  body:has(#ancestors:target, #ancestors :target, #change-tree :target[data-steps~="ancestors"]) #navigation a[href="#ancestors"] { background: var(--soft); font-weight: 700; }
+  body:has(#children:target, #children :target, #change-tree :target[data-steps~="children"]) #change-tree li[data-steps~="children"] { background: var(--soft); }
+  body:has(#children:target, #children :target, #change-tree :target[data-steps~="children"]) #navigation a[href="#children"] { background: var(--soft); font-weight: 700; }
+  body:has(#persistence:target, #persistence :target, #change-tree :target[data-steps~="persistence"]) #change-tree li[data-steps~="persistence"] { background: var(--soft); }
+  body:has(#persistence:target, #persistence :target, #change-tree :target[data-steps~="persistence"]) #navigation a[href="#persistence"] { background: var(--soft); font-weight: 700; }
+  body:has(#interface:target, #interface :target, #change-tree :target[data-steps~="interface"]) #change-tree li[data-steps~="interface"] { background: var(--soft); }
+  body:has(#interface:target, #interface :target, #change-tree :target[data-steps~="interface"]) #navigation a[href="#interface"] { background: var(--soft); font-weight: 700; }
+  @media (max-width: 1100px) { #layout { grid-template-columns: 18rem minmax(0, 1fr); gap: 1.2rem; } }
+  @media (max-width: 850px) {
+    #layout { display: flex; flex-direction: column; padding: 1rem; }
+    #sidebar { position: static; max-height: min(45vh, 24rem); padding: 0; width: 100%; }
+    #sidebar:not([open]) { width: 2.75rem; }
+    #navigation ol { display: flex; flex-wrap: wrap; gap: .25rem; }
+    #phases { grid-template-columns: 1fr; }
+  }
+  @media (prefers-reduced-motion: reduce) { html { scroll-behavior: auto; } }
+  @media print {
+    #review-link-menu { display: none; } body { background: white; font-size: 10pt; }
+    #layout { display: flex; flex-direction: column; padding: 0; }
+    #sidebar, #sidebar:not([open]) { order: 1; position: static; width: 100%; max-height: none; overflow: visible; }
+    #navigation, body > a, #sidebar > summary { display: none; } main { order: 0; }
+    #modules { break-before: page; } details::details-content { content-visibility: visible; display: block; }
+    [data-code], figure, tr { break-inside: avoid; } pre { white-space: pre-wrap; overflow-wrap: anywhere; }
+  }
+</style>
+</head>
+<body>
+<a href="#main">Skip to plan</a>
+<div id="layout">
+<details id="sidebar" aria-label="Reading order and changed files" open>
+  <summary title="Show or hide navigation and changed files"><span>Navigation and changed files</span></summary>
+  <nav id="navigation" aria-label="Reading order">
+    <p>Reading order</p>
+    <ol>
+      <li><a href="#resolver">1.1 · Resolve a saved formula on display</a></li>
+      <li><a href="#ancestors">1.2 · Direct ancestors from the formula</a></li>
+      <li><a href="#children">1.3 · Direct children from the slot graph</a></li>
+      <li><a href="#persistence">1.4 · Persistence contract and loader</a></li>
+      <li><a href="#interface">1.5 · Interface: what reaches the user</a></li>
+    </ol>
+    <p><a href="#delivery">Delivery &amp; verification</a> · <a href="#decisions">Review decisions</a></p>
+  </nav>
+  <section id="modules">
+    <h2>Changed files</h2>
+    <p>Select a reading step to highlight its files. Click a linked file to open it in VS Code, or right-click it for a diff against <code>main</code>. Numbered links return to the walkthrough.</p>
+    <div id="change-tree">
+      <details open>
+        <summary>e-footprint / efootprint</summary>
+        <details open>
+          <summary>abstract_modeling_classes/</summary>
+          <ul>
+            <li id="file-explainable" data-steps="resolver ancestors children persistence">
+              <a href="vscode://file//Users/vinville/dev/e-footprint-full/e-footprint/efootprint/abstract_modeling_classes/explainable_object_base_class.py:95:1" data-review-source-href="../../../efootprint/abstract_modeling_classes/explainable_object_base_class.py#L95:1"><code>explainable_object_base_class.py</code></a> <span data-change="modified">Modified</span>
+              <span data-reading-links><a href="#resolver">1.1</a> · <a href="#ancestors">1.2</a> · <a href="#children">1.3</a> · <a href="#persistence">1.4</a></span>
+              <small>Address resolver pulls; ancestors derived from formula leaves; children derived from slot dependents; hydration state, children bookkeeping and <code>all_descendants_with_id</code> removed; <code>to_json</code> stops writing the ancestor key.</small>
+            </li>
+            <li id="file-graph" data-steps="children">
+              <a href="vscode://file//Users/vinville/dev/e-footprint-full/e-footprint/efootprint/abstract_modeling_classes/reactive_core/graph.py:315:1" data-review-source-href="../../../efootprint/abstract_modeling_classes/reactive_core/graph.py#L315:1"><code>reactive_core/graph.py</code></a> <span data-change="unchanged">Read only</span>
+              <span data-reading-links><a href="#children">1.3</a></span>
+              <small><code>slot_of_attached_value</code>, <code>ReactiveSlot.dependents</code> and <code>calculus_dependencies</code> are the children source. No change expected.</small>
+            </li>
+          </ul>
+        </details>
+        <details open>
+          <summary>api_utils/</summary>
+          <ul>
+            <li id="file-loader" data-steps="persistence">
+              <a href="vscode://file//Users/vinville/dev/e-footprint-full/e-footprint/efootprint/api_utils/json_to_system.py:261:1" data-review-source-href="../../../efootprint/api_utils/json_to_system.py#L261:1"><code>json_to_system.py</code></a> <span data-change="modified">Modified</span>
+              <span data-reading-links><a href="#persistence">1.4</a></span>
+              <small>Remove <code>invert_children_links_of_stored_values</code> and its call. Loading keeps rebuilding the slot graph and attaching cached values; it computes nothing.</small>
+            </li>
+            <li id="file-upgrade" data-steps="persistence">
+              <a href="vscode://file//Users/vinville/dev/e-footprint-full/e-footprint/efootprint/api_utils/version_upgrade_handlers.py" data-review-source-href="../../../efootprint/api_utils/version_upgrade_handlers.py"><code>version_upgrade_handlers.py</code></a> <span data-change="modified">Modified</span>
+              <span data-reading-links><a href="#persistence">1.4</a></span>
+              <small>Next major version drops <code>direct_ancestors_with_id</code> keys from saved values (see <a href="#decision-migration">decision 1</a>).</small>
+            </li>
+          </ul>
+        </details>
+        <details open>
+          <summary>utils/</summary>
+          <ul>
+            <li id="file-calculus-graph" data-steps="ancestors">
+              <a href="vscode://file//Users/vinville/dev/e-footprint-full/e-footprint/efootprint/utils/calculus_graph.py:40:1" data-review-source-href="../../../efootprint/utils/calculus_graph.py#L40:1"><code>calculus_graph.py</code></a> <span data-change="unchanged">Unchanged</span>
+              <span data-reading-links><a href="#ancestors">1.2</a></span>
+              <small>Walks <code>direct_ancestors_with_id</code>; becomes complete through 1.2 with no edit.</small>
+            </li>
+          </ul>
+        </details>
+        <details open>
+          <summary>tests/ and specs/</summary>
+          <ul>
+            <li id="file-tests" data-steps="ancestors children persistence">
+              <code>tests/abstract_modeling_classes/</code>, <code>tests/integration_tests/</code>, <code>tests/utils.py</code> <span data-change="modified">Modified</span>
+              <small>Fifteen files reference the ancestor or children links; four fixtures carry the key (listed in <a href="#delivery">delivery</a>).</small>
+            </li>
+            <li id="file-docs" data-steps="persistence">
+              <a href="vscode://file//Users/vinville/dev/e-footprint-full/e-footprint/specs/architecture/persistence.html:6:1" data-review-source-href="../../architecture/persistence.html#L6:1"><code>specs/architecture/persistence.html</code></a> · <a href="vscode://file//Users/vinville/dev/e-footprint-full/e-footprint/specs/architecture/recomputation.html:32:1" data-review-source-href="../../architecture/recomputation.html#L32:1"><code>recomputation.html</code></a> · <code>CHANGELOG.md</code> <span data-change="modified">Modified</span>
+            </li>
+          </ul>
+        </details>
+      </details>
+      <details open>
+        <summary>e-footprint-interface</summary>
+        <ul>
+          <li id="file-presenter" data-steps="interface">
+            <a href="vscode://file//Users/vinville/dev/e-footprint-full/e-footprint-interface/model_builder/domain/entities/web_abstract_modeling_classes/explainable_objects_web.py:12:1" data-review-source-href="../../../../e-footprint-interface/model_builder/domain/entities/web_abstract_modeling_classes/explainable_objects_web.py#L12:1"><code>explainable_objects_web.py</code></a> · <a href="vscode://file//Users/vinville/dev/e-footprint-full/e-footprint-interface/model_builder/adapters/views/views.py:449:1" data-review-source-href="../../../../e-footprint-interface/model_builder/adapters/views/views.py#L449:1"><code>views.py</code></a> <span data-change="unchanged">Unchanged</span>
+            <span data-reading-links><a href="#interface">1.5</a></span>
+            <small>Presenter and graph view already read the three link sources; they receive complete results.</small>
+          </li>
+          <li id="file-interface-tests" data-steps="interface">
+            <code>tests/</code> (library-shadowed) · <code>specs/architecture/rendering.html</code> · <code>CHANGELOG.md</code> <span data-change="modified">Modified</span>
+            <small>Round-trip completeness tests for the side panel and graph page; one line on where explanation links come from.</small>
+          </li>
+        </ul>
+      </details>
+    </div>
+  </section>
+</details>
+
+<main id="main">
+  <header>
+    <p>Plan · draft from the specify stage, to refine in <code>spec-plan</code> · 2026-10-19</p>
+    <h1>Explanation links from formula and slots — implementation plan</h1>
+    <p><a href="vscode://file//Users/vinville/dev/e-footprint-full/e-footprint/specs/features/explanation-links-from-formula-and-slots/spec.html" data-review-source-href="spec.html">Spec under review</a> · <a href="#modules">Changed files</a> ·
+      <a href="vscode://file//Users/vinville/dev/e-footprint-full/e-footprint-interface/specs/features/calculation-explanations-without-pulls/README.md" data-review-source-href="../../../../e-footprint-interface/specs/features/calculation-explanations-without-pulls/README.md">Decision record</a></p>
+  </header>
+
+  <section id="walkthrough">
+    <h2>1. Follow the interactions through the code</h2>
+    <p data-reading-note>Proposed changes, not implemented code. Paths are relative to <code>e-footprint/efootprint/</code>
+      unless the interface repository is named. Line numbers are those of the 2026-10-19 checkout.</p>
+
+    <article id="resolver" data-step>
+      <h3><a href="#resolver">1.1 · Resolve a saved formula on display</a></h3>
+      <p data-files><span>Files</span> <a href="#file-explainable"><code>abstract_modeling_classes/explainable_object_base_class.py</code></a></p>
+      <p>A user opens a saved footprint. The interface presenter reads
+        <a href="vscode://file//Users/vinville/dev/e-footprint-full/e-footprint/efootprint/abstract_modeling_classes/explainable_object_base_class.py:214:1" data-review-source-href="../../../efootprint/abstract_modeling_classes/explainable_object_base_class.py#L214:1"><code>explain_nested_tuples</code></a>,
+        which deserializes the stored tree on first access and resolves each leaf address through
+        <a href="vscode://file//Users/vinville/dev/e-footprint-full/e-footprint/efootprint/abstract_modeling_classes/explainable_object_base_class.py:95:1" data-review-source-href="../../../efootprint/abstract_modeling_classes/explainable_object_base_class.py#L95:1"><code>get_attribute_from_flat_obj_dict()</code></a>.
+        Today that helper peeks, so a void operand becomes <code>None</code> and the flattener drops the leaf but keeps
+        its operators. The change: the resolver reads the attribute normally, which pulls a void computed slot.</p>
+      <div data-code>
+        <p data-code-file><a href="#file-explainable"><code>abstract_modeling_classes/explainable_object_base_class.py</code></a>
+          <small>Proposed resolver (replaces the peeking body)</small></p>
+        <pre><code>def get_attribute_from_flat_obj_dict(attr_key: str, flat_obj_dict: dict):
+    """Resolve a serialized (container id, attribute[, key id]) address to its live value, computing
+    a void computed attribute. Display-time only: the formula is the sole caller."""
+    container_id, attr_name, key_id = _parse_value_address(attr_key)
+    value = getattr(flat_obj_dict[container_id], attr_name)
+    if key_id:
+        return value[flat_obj_dict[key_id]]
+    return value</code></pre>
+      </div>
+      <p>Safety of pulling here rests on three facts verified in this checkout: the formula property has a single
+        non-test reader, the interface presenter; no getter calls <code>explain()</code> during a computation;
+        <a href="vscode://file//Users/vinville/dev/e-footprint-full/e-footprint/efootprint/abstract_modeling_classes/explainable_object_base_class.py:616:1" data-review-source-href="../../../efootprint/abstract_modeling_classes/explainable_object_base_class.py#L616:1"><code>to_json()</code></a>
+        re-serializes the raw stored tuple when present, so saving never deserializes. After 1.2 removes the
+        ancestor hydration, the formula deserializer is the resolver's only caller, so there is one resolver with
+        one policy. The dict-container lookup keeps using
+        <a href="vscode://file//Users/vinville/dev/e-footprint-full/e-footprint/efootprint/abstract_modeling_classes/object_linked_to_modeling_obj.py:22:1" data-review-source-href="../../../efootprint/abstract_modeling_classes/object_linked_to_modeling_obj.py#L22:1"><code>peek_attribute_value()</code></a>,
+        which stays as the bookkeeping-side primitive.</p>
+      <p>The computed operand is a fresh value attached to its slot, so its own formula, label and unit are live.
+        The presenter's symbol table and Input Variables list render it like any in-memory operand, magnitudes
+        included.</p>
+    </article>
+
+    <article id="ancestors" data-step>
+      <h3><a href="#ancestors">1.2 · Direct ancestors derived from the formula</a></h3>
+      <p data-files><span>Files</span> <a href="#file-explainable"><code>abstract_modeling_classes/explainable_object_base_class.py</code></a> ·
+        <a href="#file-calculus-graph"><code>utils/calculus_graph.py</code></a></p>
+      <p>The calculus graph page calls
+        <a href="vscode://file//Users/vinville/dev/e-footprint-full/e-footprint/efootprint/utils/calculus_graph.py:40:1" data-review-source-href="../../../efootprint/utils/calculus_graph.py#L40:1"><code>build_calculus_graph()</code></a>,
+        which walks
+        <a href="vscode://file//Users/vinville/dev/e-footprint-full/e-footprint/efootprint/abstract_modeling_classes/explainable_object_base_class.py:265:1" data-review-source-href="../../../efootprint/abstract_modeling_classes/explainable_object_base_class.py#L265:1"><code>direct_ancestors_with_id</code></a>.
+        For a loaded value that property runs
+        <a href="vscode://file//Users/vinville/dev/e-footprint-full/e-footprint/efootprint/abstract_modeling_classes/explainable_object_base_class.py:245:1" data-review-source-href="../../../efootprint/abstract_modeling_classes/explainable_object_base_class.py#L245:1"><code>load_ancestors_and_children_from_json()</code></a>
+        once, at load time, from the loader's inversion pass; void addresses are dropped and a flag prevents any later
+        re-resolution. The measured result is zero of six ancestors, before and after the operands are computed.</p>
+      <p>By construction a value's direct ancestors are the attached leaves of its formula:
+        <a href="vscode://file//Users/vinville/dev/e-footprint-full/e-footprint/efootprint/abstract_modeling_classes/explainable_object_base_class.py:432:1" data-review-source-href="../../../efootprint/abstract_modeling_classes/explainable_object_base_class.py#L432:1"><code>compute_explain_nested_tuples()</code></a>
+        collapses the parent tree at exactly the nodes
+        <a href="vscode://file//Users/vinville/dev/e-footprint-full/e-footprint/efootprint/abstract_modeling_classes/explainable_object_base_class.py:362:1" data-review-source-href="../../../efootprint/abstract_modeling_classes/explainable_object_base_class.py#L362:1"><code>return_direct_ancestors_with_id_to_child()</code></a>
+        keeps. So the loaded case derives the list from the resolved formula instead of a stored key.</p>
+      <div data-code>
+        <p data-code-file><a href="#file-explainable"><code>abstract_modeling_classes/explainable_object_base_class.py</code></a>
+          <small>Proposed property; the in-memory path for fresh values is unchanged</small></p>
+        <pre><code>@property
+def direct_ancestors_with_id(self):
+    if self._direct_ancestors_with_id is None:  # loaded value: derive from the formula once
+        seen, ancestors = set(), []
+        for leaf in _attached_leaves(self.explain_nested_tuples):
+            if leaf.id not in seen:
+                seen.add(leaf.id)
+                ancestors.append(leaf)
+        self._direct_ancestors_with_id = ancestors
+    return self._direct_ancestors_with_id</code></pre>
+      </div>
+      <p>Fresh values keep building the list in <code>__init__</code> from their parents, which
+        <a href="vscode://file//Users/vinville/dev/e-footprint-full/e-footprint/efootprint/abstract_modeling_classes/reactive_core/graph.py:329:1" data-review-source-href="../../../efootprint/abstract_modeling_classes/reactive_core/graph.py#L329:1"><code>record_calculus_edges_from_ancestry()</code></a>
+        reads inside the compute closure; that path never touches a stored formula. "Logically dependent on" leaves
+        are formula leaves, so conditions wrapped today stay ancestors. Unattached constants such as
+        <code>one hour</code> are excluded, matching the current rule. Removed with this step:
+        <code>_keys_of_direct_ancestors_with_id_loaded_from_json</code>, <code>_graph_links_hydrated_from_json</code>,
+        <code>load_ancestors_and_children_from_json()</code>, and the ancestor branch of
+        <a href="vscode://file//Users/vinville/dev/e-footprint-full/e-footprint/efootprint/abstract_modeling_classes/explainable_object_base_class.py:150:1" data-review-source-href="../../../efootprint/abstract_modeling_classes/explainable_object_base_class.py#L150:1"><code>initialize_calculus_graph_data_from_json()</code></a>,
+        which keeps installing the formula, the flat object dict and the sources dict.</p>
+      <p>Because the first access now happens on display and pulls, the graph walk from the root reaches fresh
+        operands with live ancestor lists, then cached serialized values whose own lists derive from their formulas,
+        then inputs. No change to <code>calculus_graph.py</code>.</p>
+    </article>
+
+    <article id="children" data-step>
+      <h3><a href="#children">1.3 · Direct children derived from the slot graph</a></h3>
+      <p data-files><span>Files</span> <a href="#file-explainable"><code>abstract_modeling_classes/explainable_object_base_class.py</code></a> ·
+        <a href="#file-graph"><code>abstract_modeling_classes/reactive_core/graph.py</code></a></p>
+      <p>The side panel's Direct children list calls the interface's
+        <a href="vscode://file//Users/vinville/dev/e-footprint-full/e-footprint-interface/model_builder/domain/entities/web_abstract_modeling_classes/explainable_objects_web.py:63:1" data-review-source-href="../../../../e-footprint-interface/model_builder/domain/entities/web_abstract_modeling_classes/explainable_objects_web.py#L63:1"><code>web_children()</code></a>,
+        which reads
+        <a href="vscode://file//Users/vinville/dev/e-footprint-full/e-footprint/efootprint/abstract_modeling_classes/explainable_object_base_class.py:276:1" data-review-source-href="../../../efootprint/abstract_modeling_classes/explainable_object_base_class.py#L276:1"><code>direct_children_with_id</code></a>.
+        Today that list is filled by
+        <a href="vscode://file//Users/vinville/dev/e-footprint-full/e-footprint/efootprint/api_utils/json_to_system.py:261:1" data-review-source-href="../../../efootprint/api_utils/json_to_system.py#L261:1"><code>invert_children_links_of_stored_values()</code></a>
+        from cached values only, so void dependents never appear (zero of five for a job input). Formulas cannot
+        supply children, since void values have none. The slot graph can: it is reinstalled complete at load by
+        <a href="vscode://file//Users/vinville/dev/e-footprint-full/e-footprint/efootprint/api_utils/json_to_system.py:279:1" data-review-source-href="../../../efootprint/api_utils/json_to_system.py#L279:1"><code>rebuild_dependency_graph()</code></a>.</p>
+      <div data-code>
+        <p data-code-file><a href="#file-explainable"><code>abstract_modeling_classes/explainable_object_base_class.py</code></a>
+          <small>Proposed property replacing the stored list</small></p>
+        <pre><code>@property
+def direct_children_with_id(self):
+    if self.modeling_obj_container is None:
+        return []
+    slot = slot_of_attached_value(self)
+    children = []
+    for dependent in slot.dependents:
+        if dependent.getter is None or slot not in dependent.calculus_dependencies:
+            continue  # bump nodes and structural-only readers are not formula children
+        value = dependent.pull()
+        if isinstance(value, ExplainableObject):
+            children.append(value)
+    return children</code></pre>
+      </div>
+      <p><a href="vscode://file//Users/vinville/dev/e-footprint-full/e-footprint/efootprint/abstract_modeling_classes/reactive_core/graph.py:315:1" data-review-source-href="../../../efootprint/abstract_modeling_classes/reactive_core/graph.py#L315:1"><code>slot_of_attached_value()</code></a>
+        gives the node for a computed value through its backpointer and for an input through its bump node, so the
+        same property serves both.
+        <a href="vscode://file//Users/vinville/dev/e-footprint-full/e-footprint/efootprint/abstract_modeling_classes/reactive_core/graph.py:128:1" data-review-source-href="../../../efootprint/abstract_modeling_classes/reactive_core/graph.py#L128:1"><code>dependents</code></a>
+        is the union of calculus and structural readers; filtering on
+        <a href="vscode://file//Users/vinville/dev/e-footprint-full/e-footprint/efootprint/abstract_modeling_classes/reactive_core/graph.py:132:1" data-review-source-href="../../../efootprint/abstract_modeling_classes/reactive_core/graph.py#L132:1"><code>calculus_dependencies</code></a>
+        keeps formula consumers and drops computed-dict key-set slots. A computed-dict facade pulled this way is not an
+        <code>ExplainableObject</code> and is skipped; its sub-slots are dependents in their own right and appear as
+        entries. Pulling a dependent computes its void subtree; this is the heaviest display in the feature and the
+        one to measure first.</p>
+      <p>Removed with this step: <code>_direct_children_with_id</code> and its setter,
+        <a href="vscode://file//Users/vinville/dev/e-footprint-full/e-footprint/efootprint/abstract_modeling_classes/explainable_object_base_class.py:369:1" data-review-source-href="../../../efootprint/abstract_modeling_classes/explainable_object_base_class.py#L369:1"><code>add_child_to_direct_children_with_id()</code></a>,
+        <a href="vscode://file//Users/vinville/dev/e-footprint-full/e-footprint/efootprint/abstract_modeling_classes/explainable_object_base_class.py:373:1" data-review-source-href="../../../efootprint/abstract_modeling_classes/explainable_object_base_class.py#L373:1"><code>remove_child_from_direct_children_with_id()</code></a>,
+        <a href="vscode://file//Users/vinville/dev/e-footprint-full/e-footprint/efootprint/abstract_modeling_classes/explainable_object_base_class.py:378:1" data-review-source-href="../../../efootprint/abstract_modeling_classes/explainable_object_base_class.py#L378:1"><code>all_descendants_with_id</code></a>
+        (no callers), and the children bookkeeping inside
+        <a href="vscode://file//Users/vinville/dev/e-footprint-full/e-footprint/efootprint/abstract_modeling_classes/explainable_object_base_class.py:332:1" data-review-source-href="../../../efootprint/abstract_modeling_classes/explainable_object_base_class.py#L332:1"><code>set_modeling_obj_container()</code></a>,
+        which keeps its label check, the base call and <code>finalize_explanation()</code>. The value-drop path through
+        <a href="vscode://file//Users/vinville/dev/e-footprint-full/e-footprint/efootprint/abstract_modeling_classes/reactive_core/computed_slots.py:38:1" data-review-source-href="../../../efootprint/abstract_modeling_classes/reactive_core/computed_slots.py#L38:1"><code>_release_value()</code></a>
+        then only unsets the container. Invalidation never used these lists; it is slot-based.</p>
+    </article>
+
+    <article id="persistence" data-step>
+      <h3><a href="#persistence">1.4 · Persistence contract and loader</a></h3>
+      <p data-files><span>Files</span> <a href="#file-explainable"><code>abstract_modeling_classes/explainable_object_base_class.py</code></a> ·
+        <a href="#file-loader"><code>api_utils/json_to_system.py</code></a> · <a href="#file-upgrade"><code>api_utils/version_upgrade_handlers.py</code></a> ·
+        <a href="#file-docs"><code>specs/architecture/persistence.html</code></a></p>
+      <p>Saving: <code>to_json(with_formula=True)</code> stops writing <code>direct_ancestors_with_id</code> and keeps
+        writing <code>explain_nested_tuples</code>. The values-free <code>calculation_graph</code> section is unchanged.
+        Measured on the introductory examples the key is 0.8 to 3.4 percent of the payload; size is a side effect.</p>
+      <p>Loading: <code>json_to_system</code> no longer calls the inversion pass at
+        <a href="vscode://file//Users/vinville/dev/e-footprint-full/e-footprint/efootprint/api_utils/json_to_system.py:244:1" data-review-source-href="../../../efootprint/api_utils/json_to_system.py#L244:1">line 244</a>.
+        It still attaches cached values, rebuilds the slot graph and marks objects live, and it computes nothing:
+        the first formula or ancestor access now happens on display, not at load. Files from earlier versions carry
+        the key; a version-upgrade handler removes it so the loader has no tolerance branch
+        (<a href="#decision-migration">decision 1</a>).</p>
+      <p>Documentation: the persistence contract's "formulas, and ancestor addresses" and "Children are derived by
+        inversion at load" sentences at
+        <a href="vscode://file//Users/vinville/dev/e-footprint-full/e-footprint/specs/architecture/persistence.html:6:1" data-review-source-href="../../architecture/persistence.html#L6:1">persistence.html lines 6 to 7</a>
+        change to "formulas; ancestors derive from formula leaves on display, children from slot dependents". The
+        recomputation page's calculus-dependency note at
+        <a href="vscode://file//Users/vinville/dev/e-footprint-full/e-footprint/specs/architecture/recomputation.html:32:1" data-review-source-href="../../architecture/recomputation.html#L32:1">recomputation.html line 32</a>
+        gains the display-time rule: bookkeeping never computes, display resolution may.</p>
+    </article>
+
+    <article id="interface" data-step>
+      <h3><a href="#interface">1.5 · Interface: what reaches the user</a></h3>
+      <p data-files><span>Files</span> <a href="#file-presenter"><code>e-footprint-interface/.../explainable_objects_web.py</code></a> ·
+        <a href="#file-interface-tests"><code>e-footprint-interface/tests/</code></a></p>
+      <p>No interface production code changes. The presenter's
+        <a href="vscode://file//Users/vinville/dev/e-footprint-full/e-footprint-interface/model_builder/domain/entities/web_abstract_modeling_classes/explainable_objects_web.py:12:1" data-review-source-href="../../../../e-footprint-interface/model_builder/domain/entities/web_abstract_modeling_classes/explainable_objects_web.py#L12:1"><code>compute_literal_formula_and_ancestors_mapped_to_symbols_list()</code></a>
+        flattens the formula (1.1), <code>web_children()</code> reads the children (1.3), and
+        <a href="vscode://file//Users/vinville/dev/e-footprint-full/e-footprint-interface/model_builder/adapters/views/views.py:449:1" data-review-source-href="../../../../e-footprint-interface/model_builder/adapters/views/views.py#L449:1"><code>display_calculus_graph()</code></a>
+        hands the value to the library renderer (1.2). The interface work is a round-trip test per display against
+        the GenAI video example using the library shadowed from the local checkout, a one-line note in the rendering
+        architecture page, and the changelog entry.</p>
+    </article>
+  </section>
+
+  <section id="delivery">
+    <h2>2. Delivery and verification</h2>
+    <h3>Implementation sequence</h3>
+    <ol id="phases">
+      <li><strong>A · Pulling resolver and ancestors from the formula</strong>Steps 1.1 and 1.2. Fixes the Veo formula
+        and the calculus graph page on its own. <small>Loader still runs the inversion pass against the derived lists
+        until B; keep the pass peeking by reading the stored keys directly in the interim, or land A and B together.</small></li>
+      <li><strong>B · Children from slot dependents</strong>Step 1.3 and removal of the inversion pass.
+        <small>Depends on A only through the shared file.</small></li>
+      <li><strong>C · Persistence sweep</strong>Step 1.4: stop writing the key, migration handler and version bump,
+        regenerate the four fixtures, update both architecture pages and the changelog. <small>Last, so A and B are
+        testable against existing fixtures.</small></li>
+      <li><strong>D · Interface tests and documentation</strong>Step 1.5 in the interface repository, against the
+        library as an editable dependency. <small>Restore the publishable dependency before merge.</small></li>
+    </ol>
+    <h3>Affected tests and fixtures</h3>
+    <p>Library tests referencing the links: <code>tests/abstract_modeling_classes/test_explainable_object_base_class.py</code>,
+      <code>test_explainable_quantity.py</code>, <code>test_explainable_object_dict.py</code>,
+      <code>test_explainable_hourly_quantities.py</code>, <code>tests/integration_tests/integration_simple_system_base_class.py</code>,
+      <code>integration_simple_edge_system_base_class.py</code>, <code>integration_complex_system_base_class.py</code>,
+      <code>tests/builders/external_apis/ecologits/test_ecologits_video_external_api.py</code>,
+      <code>tests/builders/hardware/test_boavizta_cloud_server.py</code>, <code>tests/utils.py</code>,
+      <code>tests/performance_tests/json_size.py</code>. Fixtures carrying the key:
+      <code>tests/system_with_calculated_attributes.json</code>, <code>tests/simple_edge_system_with_calculated_attributes.json</code>,
+      <code>tests/integration_tests/simple_system_with_calculated_attributes.json</code>, <code>tests/performance_tests/big_system.json</code>.</p>
+    <h3>Verification map</h3>
+    <table>
+      <thead><tr><th scope="col">Behavior / risk</th><th scope="col">Critical assertion</th><th scope="col">Test layer</th></tr></thead>
+      <tbody>
+        <tr><td>Formula complete after round trip</td><td>Flat formula of the Veo footprint equals the pre-save flat formula, leaf by leaf, operators and constants included</td><td>Library integration (GenAI video example)</td></tr>
+        <tr><td>Ancestors equal formula leaves</td><td>Set of ancestor ids equals set of attached-leaf ids, for a saved root and for a nested saved value (system total)</td><td>Library unit</td></tr>
+        <tr><td>Children complete after round trip</td><td>Children of a job input after reload equal children before save, by (container id, attribute, key)</td><td>Library integration</td></tr>
+        <tr><td>Graph reachability</td><td>Node and edge sets of <code>build_calculus_graph</code> equal before and after the round trip for Veo, CDN use footprint and system total</td><td>Library integration</td></tr>
+        <tr><td>Load computes nothing</td><td>Observer under <code>observe_computations</code> records no computation during <code>json_to_system</code></td><td>Library unit</td></tr>
+        <tr><td>Save computes nothing</td><td>Same observer during <code>system_to_json</code> on a partially computed model</td><td>Library unit</td></tr>
+        <tr><td>Display computes only what it shows</td><td>Explaining one footprint leaves unrelated void slots void</td><td>Library unit</td></tr>
+        <tr><td>Structural-only dependents excluded</td><td>A computed-dict key-set slot never appears among children</td><td>Library unit</td></tr>
+        <tr><td>Old files load</td><td>V26 fixture with the key loads through the upgrade handler and round-trips without the key</td><td>Library migration test</td></tr>
+        <tr><td>Performance gates</td><td>Existing big-system load/save thresholds hold</td><td><code>tests/performance_tests/</code></td></tr>
+        <tr><td>Side panel and graph page complete</td><td>After reload, formula tokens, Input Variables with magnitudes, Direct children and graph node count match the pre-save render</td><td>Interface integration</td></tr>
+        <tr><td>Latency baseline</td><td>Before/after timing of the three example explanations recorded in this plan</td><td>Manual, <code>time_it</code> output</td></tr>
+      </tbody>
+    </table>
+    <p>Coverage above is planned, not executed.</p>
+  </section>
+
+  <section id="decisions">
+    <h2>3. Decisions for review</h2>
+    <aside id="decision-migration" data-note="review">
+      <p><strong>1 · Migration handler versus silent tolerance of the removed key</strong></p>
+      <p>Constitution §2.4 asks for a handler and a version bump when the schema changes. The leaner alternative is a
+        loader that ignores unknown keys, which it may already do. Recommendation: the handler, so the contract stays
+        explicit and the fixtures are regenerated once; confirm in <code>spec-plan</code> whether the loader currently
+        rejects or ignores the key.</p>
+    </aside>
+    <aside id="decision-children-cost" data-note="review">
+      <p><strong>2 · Unbounded pulling of children</strong></p>
+      <p>Listing the children of a widely used input computes every consumer's void subtree. Recommendation: no
+        bound, measure on the examples first, and record the numbers here. The stored-topology rendering from the
+        decision record is the fallback if the baseline is unacceptable.</p>
+    </aside>
+    <aside id="decision-graph-formula" data-note="review">
+      <p><strong>3 · Graph and formula may differ by a node</strong></p>
+      <p>Ancestors derive from formula leaves, so the calculus graph page shows formula ancestry, as today. The slot
+        graph additionally records computed values read only in conditionals. Nothing in this feature displays those
+        extra edges; accepted and out of scope.</p>
+    </aside>
+    <aside id="decision-order" data-note="review">
+      <p><strong>4 · Land A and B together or sequentially</strong></p>
+      <p>With A alone, the loader's inversion pass would trigger the new derived ancestor property at load time and
+        pull. Either B lands with A, or A keeps the inversion pass reading the raw stored keys with a peek until B
+        removes it. Recommendation: one task for A and B, since both edit the same two properties.</p>
+    </aside>
+  </section>
+</main>
+</div>
+<script src="../../review-links.js" defer></script>
+</body>
+</html>
