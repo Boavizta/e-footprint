@@ -13,7 +13,7 @@ API and credit ratios identified separately. `Unknown` is distinct from zero.
 
 | # | Driving repo / feature · writer session | State · runs/tasks covered | Consequential findings: both / Sol missed / Astra missed | Noise: Astra / Sol | Initial cost ratios: API / credits | Initial active-time ratio |
 |---|---|---|---|---|---|---|
-| 1 | [e-footprint-interface / simplified-inputs](../../../../e-footprint-interface/specs/features/simplified-inputs/tasks.md) · `01a0f333-986f-7100-b00f-853bcc5ab71d` | COMPLETE · Runs A–C, tasks 1–10 paired | 14 / 4 / 3 | 0 / 0 | 0.155 / 0.151 | 0.882 |
+| 1 | [e-footprint-interface / simplified-inputs](https://github.com/Boavizta/e-footprint-interface/blob/170d7931/specs/features/simplified-inputs/tasks.md) · `01a0f333-986f-7100-b00f-853bcc5ab71d` | COMPLETE · Runs A–C, tasks 1–10 paired | 14 / 4 / 3 | 0 / 0 | 0.155 / 0.151 | 0.882 |
 
 ## Supporting evidence
 
@@ -60,14 +60,14 @@ Each pair used independent, read-only FULL initial passes with no consequential 
 
 Task 4: interface `9e94e06d..8e881aaab1e5f1ca964f05e2edc3c0fd88c6f510`; both initial passes FULL.
 Both found complete definitions retaining addresses of disconnected objects lost by System-only copying/reminting.
-Accepted correction follows [IMPL-DECISION-02](../../../../e-footprint-interface/specs/features/simplified-inputs/plan.html#impl-decision-02).
+Accepted correction follows [IMPL-DECISION-02](https://github.com/Boavizta/e-footprint-interface/blob/170d7931/specs/features/simplified-inputs/plan.html#impl-decision-02).
 Sol alone found the P1 rejected-import recovery path publishing incoming settings onto the old model when Redis is absent;
 its supported isolated reproduction was accepted for correction by the primary reviewer. No unsupported suggestions.
 
 Task 5: library `a76ce657..d80d5e7f`; interface `d17c0e58..e228911f`. Both independent FULL initial
 passes found the same two consequential defects: equal-output timeseries edits discarding authored settings/provenance,
 and numeric zero satisfying an empty-only conditional choice (P2). Both were corrected through the library-owned
-matching rule; see [IMPL-DECISION-03](../../../../e-footprint-interface/specs/features/simplified-inputs/plan.html#impl-decision-03).
+matching rule; see [IMPL-DECISION-03](https://github.com/Boavizta/e-footprint-interface/blob/170d7931/specs/features/simplified-inputs/plan.html#impl-decision-03).
 No unsupported suggestions. Global review is not part of the paired measurements.
 
 Price-card date: 2026-09-30. Measurements merge both repository ledgers and use only collector turn 0; primary fixes and global review
@@ -86,7 +86,7 @@ losing their automatic initialization under the new mutation guard (P2). Astra a
 object deletion bypassing serialization (P1); Sol alone found export anchors retaining browser-native
 navigation during saves (P2). All three were accepted and corrected in `0481af00923dfeab5c93a901ccf6a103905803aa`.
 The deliberate saved-diagram read/write separation is recorded in
-[IMPL-DECISION-04](../../../../e-footprint-interface/specs/features/simplified-inputs/plan.html#impl-decision-04).
+[IMPL-DECISION-04](https://github.com/Boavizta/e-footprint-interface/blob/170d7931/specs/features/simplified-inputs/plan.html#impl-decision-04).
 No unsupported suggestions.
 
 Task 7: interface `34b1e2e62eb1439f73f337affdb514ef98be0c28..ad20fb53ad606cb95ff0eac5cd3ebb7c14fb50b7`.
@@ -96,7 +96,7 @@ found complete configuration forms exceeding Django's 1,000-parameter limit on s
 Sol alone found a delayed Configure response being parked across a model switch and resurfacing on return (P2).
 All four were accepted and corrected in `c95b11bb2e69856522e64d00c7a66d82e64f1c73`.
 The bounded form transport choice is recorded in
-[IMPL-DECISION-05](../../../../e-footprint-interface/specs/features/simplified-inputs/plan.html#impl-decision-05).
+[IMPL-DECISION-05](https://github.com/Boavizta/e-footprint-interface/blob/170d7931/specs/features/simplified-inputs/plan.html#impl-decision-05).
 No unsupported suggestions.
 
 Task 8: interface `5cfe21b02f228beb3272afafa4826112b48f3049..3f0b344b05749088c8397d1469bd582e804dd1f9`.
@@ -148,7 +148,7 @@ No unsupported suggestions from either reviewer.
 Global review then found that Add → Duplicate replaced the whole workspace shell and discarded a failed
 draft on a surviving model, a cumulative seam missed by both initial Task 10 passes. The same recovery
 rule now covers supported shell replacements in `62ae1bec`; see
-[IMPL-DECISION-08](../../../../e-footprint-interface/specs/features/simplified-inputs/plan.html#impl-decision-08).
+[IMPL-DECISION-08](https://github.com/Boavizta/e-footprint-interface/blob/170d7931/specs/features/simplified-inputs/plan.html#impl-decision-08).
 This unpaired global finding is excluded from the paired counts and costs.
 
 | Task | Reviewer · native session | Actual model / effort | Initial input / cache read / cache write / output | Active minutes | API-equivalent USD | Codex credits |
