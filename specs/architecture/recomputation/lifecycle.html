@@ -179,7 +179,7 @@ different authored projections must invalidate and validate normally; arithmetic
 <h2 id="debugging">Debugging map</h2>
 <div class="tablewrap"><table><tr><th>Symptom</th><th>Inspect</th></tr>
 <tr><td>A value stays stale after an input edit</td><td>Was the input/relationship read hooked? Did the computed result's ancestry include the consumed value? Does serialized topology restore that edge?</td></tr>
-<tr><td>Too much recomputes</td><td>Look for broad relationship reads, stale conditional edges that never successfully refreshed, or a caller explicitly pulling a broad eager output.</td></tr>
+<tr><td>Too much recomputes</td><td>Look for broad relationship reads or a caller explicitly pulling a broad eager output.</td></tr>
 <tr><td>An invalid edit fails only later</td><td>The validating getter should explicitly declare <code>guard=True</code>, and new-link traversal must include its object.</td></tr>
 <tr><td>A cycle error appears</td><td>Read the reported slot chain; it is the active recursive pull path, not a guessed class-level order.</td></tr>
 <tr><td>A loaded cached result survives the wrong edit</td><td>Check the values-free <code>calculation_graph</code>, especially structural edges through valueless intermediates.</td></tr>

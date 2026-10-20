@@ -86,8 +86,9 @@ class ReactiveSlot:
     getter, recursively computing any void ancestor it pulls. Dependency edges are recorded during the
     computation (``record_calculus_dependency`` / ``record_structural_dependency``) and replace the
     previous edges whatever its outcome, so a slot's links are always the reads of its current state:
-    its cached value, its last failed or rejected attempt (whatever made it fail was read first), the
-    value installed at load, or an evicted transient structure's last value. A slot voided by a
+    its cached value, its last failed or rejected attempt (a failed attempt keeps only the reads recorded
+    before it raised: input reads surface only through a returned value's ancestry), the value installed
+    at load, or an evicted transient structure's last value. A slot voided by a
     deletion wave, removed from its owner or owned by a deleted object has no links. A failed
     computation leaves the slot void and unmarked, so a later pull simply retries and the next
     deletion wave still traverses it.
