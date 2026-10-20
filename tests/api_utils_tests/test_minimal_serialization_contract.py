@@ -129,20 +129,29 @@ class TestMinimalSerializationContract(TestCase):
         self.assertFalse(rebuilt_slot.has_cached_value)
         self.assertTrue(rebuilt_slot.calculus_dependencies)
 
-    def test_sub_slot_keyed_by_a_coordinate_with_an_unserialized_component_is_skipped(self):
-        """Test that a coordinate one of whose components is outside the serialized object set has no node, like
-        any sub-slot keyed by a foreign object."""
-        from efootprint.api_utils.system_to_json import calculation_graph_section
+    def test_coordinate_with_an_unsaved_component_is_skipped_at_save(self):
+        """Test that a job's coordinate-keyed sub-slots whose usage pattern the save does not write (an edge usage
+        pattern unlinked from its system without being deleted) get no node, like any sub-slot keyed by a foreign
+        object, so the saved file loads."""
+        from efootprint.abstract_modeling_classes.reactive_core import peek_instance_slot_registry
+        from efootprint.core.usage.job import JobOccurrenceCoordinate
+        from tests.integration_tests.integration_complex_system_base_class import IntegrationTestComplexSystemBaseClass
 
-        node, job, usage_pattern, _, _ = self.attribution_coordinate_node()
-        objects = [self.system] + self.system.all_linked_objects
-        self.assertIn(node, calculation_graph_section(objects)["nodes"])
+        system, _ = IntegrationTestComplexSystemBaseClass.generate_complex_system()
+        system.impact_repartition_matrix
+        edge_usage_pattern = system.edge_usage_patterns[0]
+        # Triggered by a web step and by a recurrent server need of the edge usage pattern.
+        shared_job = next(obj for obj in system.all_linked_objects if obj.name == "server 1 job 1")
+        system.edge_usage_patterns = []
+        self.assertTrue([registry_key for registry_key in peek_instance_slot_registry(shared_job)
+                         if isinstance(registry_key, tuple) and isinstance(registry_key[1], JobOccurrenceCoordinate)
+                         and registry_key[1].usage_pattern == edge_usage_pattern])
 
-        nodes_without_usage_pattern = calculation_graph_section(
-            [obj for obj in objects if obj is not usage_pattern])["nodes"]
-        self.assertIn([job.id, "hourly_avg_occurrences_across_usage_patterns", None], nodes_without_usage_pattern)
-        self.assertFalse([saved_node for saved_node in nodes_without_usage_pattern
-                          if usage_pattern.id in json.dumps(saved_node[2])])
+        saved_dict = json.loads(json.dumps(system_to_json(system)))
+
+        self.assertNotIn(edge_usage_pattern.id, saved_dict.get("EdgeUsagePattern", {}))
+        self.assertNotIn(edge_usage_pattern.id, json.dumps(saved_dict["calculation_graph"]["nodes"]))
+        json_to_system(saved_dict)
 
     def test_coordinate_node_referencing_an_absent_object_is_rejected(self):
         """Test that a coordinate node whose component is absent from the file raises like any corrupted node."""

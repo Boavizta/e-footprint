@@ -154,9 +154,9 @@ def calculation_graph_section(objects) -> dict:
         for registry_key, slot in registry.items():
             address = _slot_address(obj.id, registry_key)
             if not _key_object_ids(address[2]) <= serialized_object_ids:
-                # A slot keyed by an object outside the serialized set (e.g. a deleted dict member
-                # still referenced by the stale edges of valueless slots): dead post-load, like any
-                # dependency on a foreign object.
+                # A slot keyed by an object (or a coordinate with a component) outside the serialized set,
+                # e.g. an edge usage pattern unlinked from its system but not deleted: dead post-load, like
+                # any dependency on a foreign object.
                 continue
             address_by_slot_id[id(slot)] = address
             slot_by_address[address] = slot
