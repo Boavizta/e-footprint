@@ -18,7 +18,7 @@ from efootprint.abstract_modeling_classes.source_objects import SOURCE_VALUE_DEF
 from efootprint.constants.units import u
 from efootprint.core.hardware.storage import Storage
 from efootprint.abstract_modeling_classes.reactive_core import (
-    ComputationPurpose, computed_attribute, computed_dict, computed_structure, ReverseCollection)
+    computed_attribute, computed_dict, computed_structure, ReverseCollection)
 
 if TYPE_CHECKING:
     from efootprint.core.usage.job import JobBase, DirectServerJob
@@ -322,7 +322,7 @@ class ServerBase(InfraHardware, AttributionSource):
 
         return load_use_footprint.to(u.kg).set_label(f"Hourly load use footprint")
 
-    @computed_attribute(serialize=True, purposes={ComputationPurpose.FOOTPRINT})
+    @computed_attribute(serialize=True)
     def use_footprint(self):
         """Hourly carbon emissions caused by the electricity consumed by the server, equal to the sum of its idle and load use footprints."""
         return (self.idle_use_footprint + self.load_use_footprint).to(u.kg).set_label(

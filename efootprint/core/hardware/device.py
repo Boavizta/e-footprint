@@ -9,7 +9,7 @@ from efootprint.constants.units import u
 from efootprint.core.attribution import Atom, AttributionSource
 from efootprint.core.hardware.hardware_base import HardwareBase
 from efootprint.core.lifecycle_phases import LifeCyclePhases
-from efootprint.abstract_modeling_classes.reactive_core import ComputationPurpose, computed_attribute, computed_dict
+from efootprint.abstract_modeling_classes.reactive_core import computed_attribute, computed_dict
 
 if TYPE_CHECKING:
     from efootprint.core.usage.usage_pattern import UsagePattern
@@ -135,7 +135,7 @@ class Device(HardwareBase, AttributionSource):
             instances_energy * usage_pattern.country.average_carbon_intensity
         ).to(u.kg).set_label(f"Usage footprint for {usage_pattern.name}")
 
-    @computed_attribute(serialize=True, purposes={ComputationPurpose.FOOTPRINT})
+    @computed_attribute(serialize=True)
     def use_footprint(self):
         """Total hourly carbon emissions caused by the device's electricity use, summed across all usage patterns that run on this device."""
         return sum(
@@ -156,7 +156,7 @@ class Device(HardwareBase, AttributionSource):
             * self.device_manufacturing_footprint_over_one_hour).to(u.kg).set_label(
             f"Manufacturing footprint for {usage_pattern.name}")
 
-    @computed_attribute(serialize=True, purposes={ComputationPurpose.FOOTPRINT})
+    @computed_attribute(serialize=True)
     def instances_manufacturing_footprint(self):
         """Total hourly manufacturing-phase emissions of all devices in use, summed across all usage patterns that run on this device."""
         return sum(

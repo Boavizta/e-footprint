@@ -26,7 +26,7 @@ from efootprint.abstract_modeling_classes.explainable_quantity import Explainabl
 from efootprint.abstract_modeling_classes.empty_explainable_object import EmptyExplainableObject
 from efootprint.utils.display import human_readable_unit, display_quantity_as_str
 from efootprint.abstract_modeling_classes.reactive_core import (
-    ComputationPurpose, computed_attribute, computed_structure)
+    computed_attribute, computed_structure)
 from efootprint.core.attribution import attribution_sources, evict_attribution_source_intermediates
 
 
@@ -275,7 +275,7 @@ class System(ModelingObject):
 
         return ExplainableObjectDict(use_footprints)
 
-    @computed_attribute(serialize=True, purposes={ComputationPurpose.FOOTPRINT})
+    @computed_attribute(serialize=True)
     def total_footprint(self):
         """Total system carbon footprint as an hourly timeseries, summing manufacturing and use footprints across every category of object (servers, storages, devices, networks, edge components)."""
         # Relationship edits can change containment after construction, so validate again at the footprint boundary.

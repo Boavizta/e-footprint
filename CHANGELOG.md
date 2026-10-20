@@ -4,6 +4,14 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](http://keepachangelog.com/)
 and this project adheres to [Semantic Versioning](http://semver.org/)
 
+## [Unreleased]
+
+### Changed
+- A computed value's dependency links now always describe its current state: an edit unlinks every value it empties until it is recomputed, a failed or rejected computation stays linked to what it read, and removed computed-dict entries and deleted objects' values are unlinked from the values they used.
+
+### Removed
+- `computation_slots_for_purpose`, `ComputationPurpose` and the `purposes` parameter of `computed_attribute` and `computed_dict`, which had no caller outside their own tests.
+
 ## [V26.0.1] - 2026-10-15
 
 ### Changed

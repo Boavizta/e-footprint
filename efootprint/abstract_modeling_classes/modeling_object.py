@@ -680,10 +680,11 @@ class ModelingObject(metaclass=ABCAfterInitMeta):
                 f"You can’t delete {self.name} because "
                 f"{','.join([mod_obj.name for mod_obj in self.modeling_obj_containers])} have it as attribute.")
 
-        # Drop this object's computed values so ancestor children links and container bookkeeping on
-        # surviving objects don't accumulate dead values.
+        # Drop this object's computed values and unlink its slots so ancestor children links, container
+        # bookkeeping and dependents on surviving objects don't accumulate dead values or slots.
         for slot in list(instance_slot_registry(self).values()):
             slot._drop_value()
+            slot.replace_dependencies()
         for facade in self.__dict__.get("_computed_dict_facades", {}).values():
             facade.set_modeling_obj_container(None, None)
 

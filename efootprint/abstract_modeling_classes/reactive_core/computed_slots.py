@@ -1,7 +1,5 @@
 """Descriptors and declaration registries for reactive computed modeling attributes."""
 
-from enum import StrEnum
-
 from .graph import (
     ReactiveSlot, computation_in_progress, instance_slot_registry, peek_instance_slot_registry,
     record_calculus_dependency,
@@ -13,13 +11,6 @@ from .graph import (
 # read): memoized per (registry, class), invalidated by any slot registration (which only happens at
 # class-definition time or through add_computed_attribute).
 _slot_collection_cache = {}
-
-
-class ComputationPurpose(StrEnum):
-    """Purpose declared only on meaningful computation outputs; intermediate membership is derived
-    from the realized dependency graph rather than repeated on every descriptor."""
-
-    FOOTPRINT = "footprint"
 
 
 def _assert_not_attached_elsewhere(value, instance, attr_name):
@@ -114,14 +105,12 @@ class computed_attribute:
     serialization contract (the single source of truth for "what serializes"), and ``guard=True``
     marks a slot whose getter can intentionally reject an invalid state: guard slots eagerly recompute
     whenever an update invalidates them, so invalid edits are rejected at update time even when that
-    slot lies outside the selected eager-output cone. ``purposes`` marks meaningful output roots;
-    intermediate membership is derived from the materialized dependency graph.
+    slot lies outside the selected eager-output cone.
     """
 
-    def __init__(self, getter=None, *, serialize=False, guard=False, purposes=()):
+    def __init__(self, getter=None, *, serialize=False, guard=False):
         self.serialize = serialize
         self.guard = guard
-        self.purposes = frozenset(ComputationPurpose(purpose) for purpose in purposes)
         self.getter = None
         if getter is not None:
             self._bind_getter(getter)
@@ -240,11 +229,11 @@ class computed_dict(computed_attribute):
     # The persistent dict facade remains attached to its owner across key-set invalidations.
     _on_value_dropped = None
 
-    def __init__(self, keys: str, guard=False, serialize=False, purposes=()):
+    def __init__(self, keys: str, guard=False, serialize=False):
         # Like parametrized computed_attribute, decorator construction precedes getter binding:
         # @computed_dict(keys="jobs") builds this descriptor, then inherited __call__ receives the
         # decorated getter and returns the now-bound descriptor for installation on the class.
-        super().__init__(guard=guard, serialize=serialize, purposes=purposes)
+        super().__init__(guard=guard, serialize=serialize)
         self.keys = keys
 
     def slot(self, instance) -> ReactiveSlot:
@@ -272,6 +261,7 @@ class computed_dict(computed_attribute):
         registry = instance_slot_registry(instance)
         for stale_key in [key for key in list(dict.keys(facade)) if key not in current_keys]:
             stale_slot = registry.pop((self.attr_name, stale_key))
+            stale_slot.replace_dependencies()
             # This element no longer belongs to the model's validation boundary. Clearing the
             # existing policy flag also keeps a pre-pruning invalidation set from pulling it.
             stale_slot.guard = False
@@ -476,41 +466,6 @@ def evict_transient_structures(instance):
     for descriptor in computed_structures(type(instance)).values():
         if descriptor.transient:
             descriptor.evict_cached_value(instance)
-
-
-def computation_slots_for_purpose(instance, purpose: ComputationPurpose) -> frozenset[ReactiveSlot]:
-    """Materialized computing slots upstream of this instance's outputs tagged with ``purpose``.
-
-    The query follows the actual per-instance dependency topology, including materialized computed-dict
-    element slots. A declared but never-computed output has no runtime graph membership and is therefore
-    absent; slots with no getter are input and relationship nodes, not computations, and are traversed but
-    not returned.
-    """
-    purpose = ComputationPurpose(purpose)
-    tagged_names = {
-        name for name, descriptor in computed_slots(type(instance)).items() if purpose in descriptor.purposes
-    }
-    roots = []
-    for registry_key, slot in peek_instance_slot_registry(instance).items():
-        attr_name = registry_key[0] if isinstance(registry_key, tuple) else registry_key
-        if attr_name not in tagged_names or slot.getter is None:
-            continue
-        if slot.has_cached_value or slot.calculus_dependencies or slot.structural_dependencies:
-            roots.append(slot)
-
-    visited = set()
-    computations = set()
-    work = roots
-    while work:
-        slot = work.pop()
-        if slot in visited:
-            continue
-        visited.add(slot)
-        if slot.getter is not None:
-            computations.add(slot)
-        work.extend(slot.calculus_dependencies)
-        work.extend(slot.structural_dependencies)
-    return frozenset(computations)
 
 
 def serialized_slots(cls: type) -> dict:

@@ -9,10 +9,10 @@ from efootprint.abstract_modeling_classes.explainable_object_dict import Explain
 from efootprint.abstract_modeling_classes.explainable_quantity import ExplainableQuantity
 from efootprint.abstract_modeling_classes.modeling_object import ModelingObject
 from efootprint.abstract_modeling_classes.reactive_core import (
-    CircularDependencyError, ComputationPurpose, ReactiveSlot, ReverseCollection, ReverseLink,
-    add_computed_attribute, computation_slots_for_purpose, computed_attribute, computed_dict, computed_slots,
+    CircularDependencyError, ReactiveSlot, ReverseCollection, ReverseLink,
+    add_computed_attribute, computed_attribute, computed_dict, computed_slots,
     computed_structure, computed_structures, evict_transient_structures, invalidate, record_calculus_dependency,
-    observe_computations, record_structural_dependency, reverse_slots)
+    observe_computations, record_structural_dependency, reverse_slots, slot_of_attached_value)
 from efootprint.abstract_modeling_classes.source_objects import SourceValue
 from efootprint.constants.units import u
 
@@ -79,26 +79,6 @@ class ReactiveCoreConcreteChild(ReactiveCoreAbstractBase):
     @computed_attribute
     def derived(self):
         return ExplainableQuantity(1 * u.dimensionless, "one")
-
-
-class ReactiveCorePurposeHolder(ModelingObject):
-    default_values = {"power": SourceValue(1 * u.W)}
-
-    def __init__(self, name, power: ExplainableQuantity):
-        super().__init__(name)
-        self.power = power
-
-    @computed_attribute
-    def doubled_power(self):
-        return (self.power * ExplainableQuantity(2 * u.dimensionless, "two")).set_label("Doubled power")
-
-    @computed_attribute(purposes={ComputationPurpose.FOOTPRINT})
-    def use_footprint(self):
-        return self.doubled_power.copy().set_label("Use footprint")
-
-    @computed_attribute(purposes={ComputationPurpose.FOOTPRINT})
-    def unmaterialized_footprint(self):
-        return self.power.copy().set_label("Unmaterialized footprint")
 
 
 class ReactiveCoreObserverGuard(ModelingObject):
@@ -199,50 +179,6 @@ class TestComputedAttribute(TestCase):
         self.assertEqual(6, obj.tripled_power.magnitude)
         self.assertEqual("Thrice the power.", computed_slots(DynamicTarget)["tripled_power"].__doc__)
 
-    def test_purpose_query_derives_membership_from_materialized_output_ancestors(self):
-        """Test purpose membership follows the realized graph without classifying inputs or an
-        unmaterialized tagged output."""
-        holder = ReactiveCorePurposeHolder("purpose holder", SourceValue(3 * u.W))
-
-        _ = holder.use_footprint
-
-        footprint_slots = computation_slots_for_purpose(holder, ComputationPurpose.FOOTPRINT)
-        self.assertEqual(
-            {holder._reactive_slots["doubled_power"], holder._reactive_slots["use_footprint"]},
-            footprint_slots,
-        )
-
-    def test_purpose_query_keeps_invalidated_materialized_topology(self):
-        """Test a materialized output remains classified while void because invalidation retains its
-        dependency topology for the next pull."""
-        holder = ReactiveCorePurposeHolder("invalidated holder", SourceValue(3 * u.W))
-        _ = holder.use_footprint
-
-        holder.power = SourceValue(4 * u.W)
-
-        footprint_slots = computation_slots_for_purpose(holder, ComputationPurpose.FOOTPRINT)
-        self.assertEqual(
-            {holder._reactive_slots["doubled_power"], holder._reactive_slots["use_footprint"]},
-            footprint_slots,
-        )
-
-    def test_declared_physical_footprint_outputs_are_tagged(self):
-        """Test every computed physical-footprint output declaration exposes a footprint root tag."""
-        from efootprint.all_classes_in_order import ALL_EFOOTPRINT_CLASSES
-
-        tagged_outputs = []
-        for efootprint_class in ALL_EFOOTPRINT_CLASSES:
-            for attr_name in ("use_footprint", "instances_manufacturing_footprint", "total_footprint"):
-                descriptor = computed_slots(efootprint_class).get(attr_name)
-                if descriptor is not None:
-                    tagged_outputs.append((efootprint_class, attr_name))
-                    self.assertIn(
-                        ComputationPurpose.FOOTPRINT,
-                        descriptor.purposes,
-                        f"{efootprint_class.__name__}.{attr_name}",
-                    )
-        self.assertGreater(len(tagged_outputs), 0)
-
 
 class TestComputedDict(TestCase):
     def setUp(self):
@@ -282,6 +218,32 @@ class TestComputedDict(TestCase):
         self.assertEqual([self.leaf_1, leaf_3], list(self.holder.value_per_leaf.keys()))
         self.assertEqual(6, self.holder.value_per_leaf[leaf_3].magnitude)
         self.assertIsNone(dropped_value.modeling_obj_container)
+
+    def test_pruned_element_slot_is_unlinked_from_its_dependencies(self):
+        """Test that a computed-dict element whose key left the key collection is no longer listed among
+        the dependents of what it read."""
+        departed_slot = ReactiveCoreHolder.value_per_leaf.sub_slot(self.holder, self.leaf_2)
+        _ = self.holder.value_per_leaf
+        leaf_2_power_slot = slot_of_attached_value(self.leaf_2.power)
+        self.assertIn(departed_slot, leaf_2_power_slot.dependents)
+
+        self.holder.leaves = [self.leaf_1]
+        _ = self.holder.value_per_leaf
+
+        self.assertNotIn(("value_per_leaf", self.leaf_2), self.holder._reactive_slots)
+        self.assertNotIn(departed_slot, leaf_2_power_slot.dependents)
+        self.assertEqual(frozenset(), departed_slot.calculus_dependencies)
+
+    def test_deleted_object_slots_are_unlinked_from_surviving_dependencies(self):
+        """Test that deleting an object removes its slots from the dependents of surviving objects' slots."""
+        _ = self.holder.value_per_leaf
+        holder_slots = set(self.holder._reactive_slots.values())
+        leaf_slots = [slot_of_attached_value(leaf.power) for leaf in (self.leaf_1, self.leaf_2)]
+
+        self.holder.self_delete()
+
+        for leaf_slot in leaf_slots:
+            self.assertEqual(set(), holder_slots & leaf_slot.dependents)
 
     def test_departed_element_slot_ceases_to_be_a_guard(self):
         """A computed-dict element removed from the key set no longer validates model state, even
@@ -601,8 +563,9 @@ class TestComputationObserver(TestCase):
         self.assertNotIn(leaf.id, element_slot.diagnostic_name)
         self.assertNotIn(holder.id, element_slot.diagnostic_name)
 
-    def test_raising_observer_restores_old_edges_and_leaves_new_child_cache_retryable(self):
-        """Test observer failure drops the parent cache, restores its prior edges, and keeps successful children."""
+    def test_raising_observer_links_rejected_reads_and_leaves_new_child_cache_retryable(self):
+        """Test observer failure drops the parent cache, links it to the rejected attempt's reads, and keeps
+        successful children."""
         switches = {"read_a": True}
 
         def conditional_getter():
@@ -626,9 +589,9 @@ class TestComputationObserver(TestCase):
 
         self.assertFalse(conditional.has_cached_value)
         self.assertTrue(self.b.has_cached_value)
-        self.assertEqual(frozenset([self.a]), conditional.calculus_dependencies)
-        self.assertEqual(frozenset([self.b, conditional]), self.a.dependents)
-        self.assertNotIn(conditional, self.b.dependents)
+        self.assertEqual(frozenset([self.b]), conditional.calculus_dependencies)
+        self.assertEqual(frozenset([self.b]), self.a.dependents)
+        self.assertEqual(frozenset([conditional]), self.b.dependents)
         self.assertEqual(1, conditional.pull())
         self.assertEqual(1, self.compute_counts["b"])
 
@@ -869,22 +832,34 @@ class TestDependencyEdgeRefresh(TestCase):
         self.assertEqual({self.a}, invalidate(self.a))
         self.assertTrue(conditional.has_cached_value)
 
-    def test_edges_and_marker_survive_valuelessness(self):
-        """Test that invalidation deletes the cached value but keeps the slot's topology edges."""
+    def test_invalidation_unlinks_voided_slots_and_recompute_relinks_them(self):
+        """Test that the wave cuts the dependency links of every slot it voids while still reaching their
+        dependents, and that recomputing reinstalls exactly the new reads."""
         summing = _summing_slot("summing", [self.a], self.compute_counts)
-        summing.pull()
+        downstream = _summing_slot("downstream", [summing], self.compute_counts)
+        downstream.pull()
 
-        invalidate(summing)
+        visited = invalidate(self.a)
 
-        self.assertFalse(summing.has_cached_value)
-        self.assertTrue(summing.wave_passed)
+        self.assertEqual({self.a, summing, downstream}, visited)
+        for slot in (summing, downstream):
+            self.assertFalse(slot.has_cached_value)
+            self.assertTrue(slot.wave_passed)
+            self.assertEqual(frozenset(), slot.calculus_dependencies)
+        self.assertEqual(frozenset(), self.a.dependents)
+        self.assertEqual(frozenset(), summing.dependents)
+
+        downstream.pull()
+
         self.assertEqual(frozenset([self.a]), summing.calculus_dependencies)
+        self.assertEqual(frozenset([summing]), downstream.calculus_dependencies)
         self.assertEqual(frozenset([summing]), self.a.dependents)
+        self.assertEqual(frozenset([downstream]), summing.dependents)
 
-    def test_failed_recompute_keeps_previous_edges_and_leaves_slot_void_and_unmarked(self):
-        """Test that a getter raising during recompute keeps the previous dependency edges (safe
-        over-approximation), leaves the slot void so a later pull retries and refreshes them, and
-        clears the wave marker so the next wave still traverses the slot."""
+    def test_failed_recompute_installs_attempt_reads_and_leaves_slot_void_and_unmarked(self):
+        """Test that a getter raising before any read leaves the slot unlinked (its links are the failed
+        attempt's reads), void so a later pull retries and relinks it, and unmarked so the next wave
+        still traverses it."""
         switches = {"fail": False}
 
         def getter():
@@ -903,12 +878,71 @@ class TestDependencyEdgeRefresh(TestCase):
 
         self.assertFalse(fragile.has_cached_value)
         self.assertFalse(fragile.wave_passed)
-        self.assertEqual(frozenset([self.a]), fragile.calculus_dependencies)
-        self.assertEqual(frozenset([fragile]), self.a.dependents)
+        self.assertEqual(frozenset(), fragile.calculus_dependencies)
+        self.assertEqual(frozenset(), self.a.dependents)
 
         switches["fail"] = False
         self.assertEqual(1, fragile.pull())
         self.assertTrue(fragile.has_cached_value)
+        self.assertEqual(frozenset([fragile]), self.a.dependents)
+
+    def test_getter_failing_after_a_read_is_linked_to_that_read(self):
+        """Test that a computation raising after reading a dependency keeps the slot void but linked to
+        it, so a later write to that dependency still reaches the slot."""
+        def getter():
+            self.a.pull()
+            record_calculus_dependency(self.a)
+            self.b.pull()
+            record_calculus_dependency(self.b)
+            raise ValueError("synthetic computation failure")
+        fragile = ReactiveSlot("fragile", getter)
+
+        with self.assertRaises(ValueError):
+            fragile.pull()
+
+        self.assertFalse(fragile.has_cached_value)
+        self.assertEqual(frozenset([self.a, self.b]), fragile.calculus_dependencies)
+        self.assertEqual(frozenset([fragile]), self.a.dependents)
+        self.assertEqual({self.a, fragile}, invalidate(self.a))
+
+    def test_server_type_switch_and_rejected_update_leave_links_of_the_current_branch(self):
+        """Test that a server type switch unlinks the number of instances from the on-premise-only inputs, a
+        capacity-guard rejection rolls back to links of the restored branch, and switching back relinks them."""
+        from efootprint.abstract_modeling_classes.modeling_update import ModelingUpdate
+        from efootprint.core.hardware.hardware_base import InsufficientCapacityError
+        from efootprint.core.hardware.server import Server, ServerTypes
+        from tests.integration_tests.integration_simple_system_base_class import IntegrationTestSimpleSystemBaseClass
+
+        system, _ = IntegrationTestSimpleSystemBaseClass.generate_simple_system()
+        server = system.servers[0]
+        nb_of_instances_slot = Server.nb_of_instances.slot(server)
+        guard_slot = Server.fixed_nb_of_instances_validation.slot(server)
+        fixed_nb_of_instances_slot = slot_of_attached_value(server.fixed_nb_of_instances)
+
+        def nb_of_instances_dependencies():
+            _ = server.nb_of_instances
+            return nb_of_instances_slot.calculus_dependencies | nb_of_instances_slot.structural_dependencies
+
+        self.assertIn(guard_slot, nb_of_instances_dependencies())
+        self.assertIn(fixed_nb_of_instances_slot, nb_of_instances_dependencies())
+
+        ModelingUpdate([[server.server_type, ServerTypes.autoscaling()]])
+        self.assertFalse(nb_of_instances_slot.has_cached_value)
+        self.assertNotIn(nb_of_instances_slot, fixed_nb_of_instances_slot.dependents)
+        self.assertNotIn(guard_slot, nb_of_instances_dependencies())
+        self.assertNotIn(fixed_nb_of_instances_slot, nb_of_instances_dependencies())
+
+        with self.assertRaises(InsufficientCapacityError):
+            ModelingUpdate([[server.server_type, ServerTypes.on_premise()],
+                            [server.fixed_nb_of_instances, SourceValue(1 * u.concurrent)]])
+        self.assertEqual(ServerTypes.autoscaling(), server.server_type)
+        self.assertNotIn(guard_slot, nb_of_instances_dependencies())
+        self.assertNotIn(fixed_nb_of_instances_slot, nb_of_instances_dependencies())
+
+        ModelingUpdate([[server.server_type, ServerTypes.on_premise()]])
+        self.assertIn(guard_slot, nb_of_instances_dependencies())
+        self.assertIn(fixed_nb_of_instances_slot, nb_of_instances_dependencies())
+        self.assertTrue(guard_slot.has_cached_value)
 
     def test_dependency_kind_migrates_on_recompute(self):
         """Test that a dependency recorded structurally then arithmetically on recompute moves between

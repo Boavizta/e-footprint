@@ -30,9 +30,7 @@ from .graph import (
     suppress_dependency_recording,
 )
 from .computed_slots import (
-    ComputationPurpose,
     add_computed_attribute,
-    computation_slots_for_purpose,
     computed_attribute,
     computed_dict,
     computed_structure,

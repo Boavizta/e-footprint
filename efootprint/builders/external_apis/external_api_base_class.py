@@ -7,7 +7,7 @@ from efootprint.abstract_modeling_classes.modeling_object import ModelingObject
 from efootprint.constants.units import u
 from efootprint.core.attribution import Atom, AttributionSource
 from efootprint.core.lifecycle_phases import LifeCyclePhases
-from efootprint.abstract_modeling_classes.reactive_core import ComputationPurpose, computed_attribute
+from efootprint.abstract_modeling_classes.reactive_core import computed_attribute
 
 
 class ExternalAPIServer(ModelingObject, AttributionSource):
@@ -22,7 +22,7 @@ class ExternalAPIServer(ModelingObject, AttributionSource):
         return self.modeling_obj_containers[0]
 
 
-    @computed_attribute(serialize=True, purposes={ComputationPurpose.FOOTPRINT})
+    @computed_attribute(serialize=True)
     @abstractmethod
     def instances_manufacturing_footprint(self):
         pass
@@ -32,7 +32,7 @@ class ExternalAPIServer(ModelingObject, AttributionSource):
     def instances_energy(self):
         pass
 
-    @computed_attribute(serialize=True, purposes={ComputationPurpose.FOOTPRINT})
+    @computed_attribute(serialize=True)
     @abstractmethod
     def use_footprint(self):
         pass

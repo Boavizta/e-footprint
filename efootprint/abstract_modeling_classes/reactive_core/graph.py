@@ -29,8 +29,8 @@ def observe_computations(callback):
     ``slot.diagnostic_name`` for a non-user-authored calculation identity. It must not mutate the model,
     pull reactive values, or retain the slot beyond the callback.
 
-    If the callback raises, the just-produced value is dropped, the slot's previous dependency edges
-    are restored, and the exception is re-raised. Successful child computations remain cached.
+    If the callback raises, the just-produced value is dropped, the slot stays linked to the reads of
+    the rejected attempt, and the exception is re-raised. Successful child computations remain cached.
     """
     token = _computation_observer.set(callback)
     try:
@@ -85,10 +85,12 @@ class ReactiveSlot:
     A slot is either cached (holds a value) or void. ``pull`` returns the cached value or runs the
     getter, recursively computing any void ancestor it pulls. Dependency edges are recorded during the
     computation (``record_calculus_dependency`` / ``record_structural_dependency``) and replace the
-    previous edges when it succeeds, so a dependency read only under a stale conditional branch stops
-    invalidating the slot. A failed computation keeps the previous edges — over-invalidation is safe,
-    a missed edge is not — and leaves the slot void and unmarked, so a later pull simply retries and
-    the next deletion wave still traverses it.
+    previous edges whatever its outcome, so a slot's links are always the reads of its current state:
+    its cached value, its last failed or rejected attempt (whatever made it fail was read first), the
+    value installed at load, or an evicted transient structure's last value. A slot voided by a
+    deletion wave, removed from its owner or owned by a deleted object has no links. A failed
+    computation leaves the slot void and unmarked, so a later pull simply retries and the next
+    deletion wave still traverses it.
     """
 
     def __init__(self, name: str, getter=None, on_value_dropped=None, diagnostic_name: str | None = None):
@@ -157,9 +159,6 @@ class ReactiveSlot:
                 raise CircularDependencyError(f"Circular dependency between computed slots: {chain}")
         observer = _computation_observer.get()
         frame = _ComputeFrame(self)
-        if observer is not None:
-            previous_calculus_dependencies = self._calculus_dependencies
-            previous_structural_dependencies = self._structural_dependencies
         token = _compute_stack.set(stack + (frame,))
         try:
             value = self.getter()
@@ -169,21 +168,21 @@ class ReactiveSlot:
             # marked would let a dependent whose getter catches the failure cache a fallback below a
             # marked slot, which the next wave would prune past — a stale value.
             self._wave_passed = False
-        self.replace_dependencies(frame.calculus_reads, frame.structural_reads)
+            self.replace_dependencies(frame.calculus_reads, frame.structural_reads)
         self.attach_cached_value(value)
         if observer is not None:
             try:
                 observer(self)
             except Exception:
                 self._drop_value()
-                self.replace_dependencies(previous_calculus_dependencies, previous_structural_dependencies)
                 raise
         return value
 
     def replace_dependencies(self, calculus_dependencies=frozenset(), structural_dependencies=frozenset()):
         """Install the slot's dependency edges, updating the reverse (dependents) index on both the
-        dropped and the added dependencies. Called with each successful computation's recorded reads,
-        and directly by the load path to rebuild serialized topology without computing anything."""
+        dropped and the added dependencies. Called with each computation's recorded reads, directly by
+        the load path to rebuild serialized topology without computing anything, and with no arguments
+        to unlink a slot that was voided, removed or deleted."""
         old_dependencies = self._calculus_dependencies | self._structural_dependencies
         new_dependencies = set(calculus_dependencies) | set(structural_dependencies)
         for dependency in old_dependencies - new_dependencies:
@@ -191,8 +190,8 @@ class ReactiveSlot:
         for dependency in new_dependencies - old_dependencies:
             dependency._dependents.add(self)
         for dependency in new_dependencies:
-            # A recorded read means the dependency was consumed by a computation that will cache: the
-            # dependency's wave marker (whose invariant is "all my dependents are marked") is stale.
+            # A recorded read means the dependency now has an unmarked dependent: its wave marker (whose
+            # invariant is "all my dependents are marked") is stale.
             # Getter-less bump nodes rely on this — they never compute, so nothing else clears theirs.
             dependency._wave_passed = False
         self._calculus_dependencies = set(calculus_dependencies)
@@ -253,6 +252,8 @@ def invalidate(*slots: ReactiveSlot) -> set[ReactiveSlot]:
         slot._drop_value()
         visited.add(slot)
         work.extend(slot._dependents)
+        # After the extend: the cut removes the slot from its dependencies' dependents, never its own.
+        slot.replace_dependencies()
     collector = _invalidation_collector.get()
     if collector is not None:
         collector.update(visited)
