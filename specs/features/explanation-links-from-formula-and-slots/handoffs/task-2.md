@@ -28,3 +28,12 @@ is an unrelated tooling commit from another session on top of `9ea0617e`).
   complete after round trip" row for these keys. The round-trip test leaves such children out of the expected
   list, with a comment. A fix would mean persisting coordinate-keyed sub-slot addresses and rebuilding their keys
   at load, which is outside this task.
+
+## Review (run A)
+- Range after review: `57d10ac5..94bbeb80` (`3dc4c55f` deterministic save order, `94bbeb80` byte-identical
+  display-then-save check). The calculation-graph difference came from the complex fixture's three code-built
+  `France` countries sharing one id in name-as-id test mode, not from an earlier test.
+- Pre-existing, unresolved (predates the feature and Task 1): the same `calculation_graph_section` skip of
+  coordinate-keyed sub-slots breaks invalidation after a reload. Editing `Job.data_transferred` or
+  `UsageJourneyStep.user_time_spent` on a reloaded simple, complex or services system leaves the stored
+  `System.impact_repartition_matrix` cached and stale. STRUCTURING-DECISION for the supervisor.
