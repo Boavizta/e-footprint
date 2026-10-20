@@ -528,6 +528,8 @@ class ExplainableObject(ObjectLinkedToModelingObj):
         pins that retention on purpose, and after a branch switch the same retention returns the stale branch's
         computations. Under the invariant, a void output is unclassified until it recomputes, the rule the function's
         docstring already applies to a never-computed output. No production code calls it; the test is rewritten.</p>
+      <p><strong>Proposed engine change.</strong> Invalidation cuts the links of every slot it voids, and every
+        computation outcome (success, failure or rejection) installs the reads of that attempt:</p>
       <div data-code>
         <p data-code-file><a href="#file-graph"><code>efootprint/abstract_modeling_classes/reactive_core/graph.py</code></a>
           <small>Proposed: invalidation cuts links; every computation outcome installs its reads</small></p>
