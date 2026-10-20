@@ -1,11 +1,11 @@
 # Explanation links from formula and slots — tasks
 Spec: [spec.html](spec.html) · Plan: [plan.html](plan.html)
-Status: under review. Task 2 is provisional until [PLAN-UPDATE-03](plan.html#plan-update-03) is decided.
+Status: under review.
 
 ## Implementation runs
 | Run | Delivered milestone | Tasks in execution order | Prerequisites |
 |---|---|---|---|
-| A | Saved explanations complete after reload in the library and the interface, schema 27 | [1](#task-1--engine-keeps-dependency-links-current), [2](#task-2--derive-explanation-links-from-formula-and-slot-graph), [3](#task-3--schema-27-drop-the-stored-ancestor-key), [4](#task-4--interface-adopts-library-27) | Decision on PLAN-UPDATE-03. Task 4 validates against the editable library; merge waits for the 27.0.0 release (see gates) |
+| A | Saved explanations complete after reload in the library and the interface, schema 27 | [1](#task-1--engine-keeps-dependency-links-current), [2](#task-2--derive-explanation-links-from-formula-and-slot-graph), [3](#task-3--schema-27-drop-the-stored-ancestor-key), [4](#task-4--interface-adopts-library-27) | Task 4 validates against the editable library; merge waits for the 27.0.0 release (see gates) |
 
 ## Overview
 | Task | Delivered behavior | Plan section | Repository | Implementation |
@@ -17,7 +17,7 @@ Status: under review. Task 2 is provisional until [PLAN-UPDATE-03](plan.html#pla
 
 ## Plan amendments to review
 [Amendment index in the plan](plan.html#plan-updates)
-- [PLAN-UPDATE-03](plan.html#plan-update-03) — resolve a computed-dict operand through its element. Affects Task 2. PROPOSED.
+- [PLAN-UPDATE-03](plan.html#plan-update-03) — resolve a computed-dict operand through its element. ACCEPTED 2026-10-20 and integrated into [1.1](plan.html#resolver); Task 2 follows it.
 - [PLAN-UPDATE-02](plan.html#plan-update-02) — engine keeps dependency links current. ACCEPTED 2026-10-20 and integrated into [1.3](plan.html#children); Tasks 1 and 2 follow it.
 
 ## Task 1 — Engine keeps dependency links current
@@ -33,13 +33,13 @@ Implementation: standard — the plan supplies the three engine changes and argu
 
 ## Task 2 — Derive explanation links from formula and slot graph
 Goal: a saved value resolves its formula on display (pulling void operands), derives its direct ancestors from the formula's attached leaves and its children from the slot's calculus dependents; the stored ancestor list, the hydration state, the children bookkeeping and the loader's inversion pass go.
-Status: provisional — pending [PLAN-UPDATE-03](plan.html#plan-update-03)
+Status: under review
 Brief: [briefs/task-2.md](briefs/task-2.md)
 Repository: e-footprint
 Files touched: `efootprint/abstract_modeling_classes/explainable_object_base_class.py`, `efootprint/api_utils/json_to_system.py`, `efootprint/abstract_modeling_classes/reactive_core/computed_slots.py` (`_release_value` docstring), the four unit test files named in the plan, `tests/integration_tests/integration_test_base_class.py`, `tests/integration_tests/test_integration_simple_system_from_json.py`, `tests/performance_tests/json_size.py`, `specs/architecture/persistence.html` (contract cell and children sentence), `specs/architecture/recomputation.html`, `CHANGELOG.md`.
 Tests: round-trip completeness (flat formula, ancestor ids, children ids, calculus graph nodes and edges) on every integration fixture system; load and save observed with `observe_computations`; display computes only what it shows; structural and computed-structure dependents excluded; unit assertions on the ancestor key flipped; hand-built bookkeeping tests rewritten. Full library suite and performance gates.
 Acceptance: the plan's [verification map](plan.html#delivery) rows for the library hold; no load-time or save-time computation; stored values re-serialize byte-for-byte after a display.
-Depends on: Task 1; PLAN-UPDATE-03 decided.
+Depends on: Task 1.
 Implementation: standard — the plan supplies the resolver, ancestor and children code and verifies the no-pull paths; what remains is ordinary integration and test rewriting.
 
 ## Task 3 — Schema 27: drop the stored ancestor key
@@ -65,7 +65,6 @@ Depends on: Tasks 1–3.
 Implementation: easy — a dependency pin and two documentation lines; no product code.
 
 ## Gates and prerequisites
-- Blocks implementation: decision on PLAN-UPDATE-03 (Task 2).
 - Blocks deployment only: efootprint 27.0.0 published to PyPI before the interface's pin moves from the editable dependency to `27.0.0` and merges. Validate Task 4 with the editable library in the interface venv, then restore a publishable dependency deliberately.
 - After the run: manual GenAI video check on the interface (Task 4) against the editable library; regenerate the gitignored local `tests/performance_tests/big_system.json` before running the performance gates.
 - Not part of this feature: the uncommitted save-threshold edit in `tests/performance_tests/test_big_system_from_and_to_json_performance.py`.

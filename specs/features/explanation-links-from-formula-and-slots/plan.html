@@ -262,7 +262,7 @@
       <p><strong>Plan updates</strong></p>
       <p><a href="#plan-update-01">[PLAN-UPDATE-01] No interface tests; library round-trip tests cover the displays — ACCEPTED</a></p>
       <p><a href="#plan-update-02">[PLAN-UPDATE-02] Engine keeps dependency links current; children read them as is — ACCEPTED</a></p>
-      <p><a href="#plan-update-03">[PLAN-UPDATE-03] Resolve a computed-dict operand through its element, not the whole dict — PROPOSED</a></p>
+      <p><a href="#plan-update-03">[PLAN-UPDATE-03] Resolve a computed-dict operand through its element, not the whole dict — ACCEPTED</a></p>
     </aside>
   </header>
 
@@ -321,20 +321,43 @@
       <p><strong>Change.</strong> The resolver reads the attribute through ordinary attribute access, so a void computed
         slot is pulled by
         <a href="vscode://file//Users/vinville/dev/e-footprint-full/e-footprint/efootprint/abstract_modeling_classes/reactive_core/computed_slots.py:192:1" data-review-source-href="../../../efootprint/abstract_modeling_classes/reactive_core/computed_slots.py#L192:1"><code>computed_attribute.__get__()</code></a>
-        and a dict address indexes the input dict or the computed-dict facade, whose item read pulls the sub-slot.
-        The peeking body and its "never computes" docstring go.</p>
+        A key address on an input dict indexes that dict. A key address on a computed dict indexes the dict facade
+        (<a href="vscode://file//Users/vinville/dev/e-footprint-full/e-footprint/efootprint/abstract_modeling_classes/reactive_core/computed_slots.py:255:1" data-review-source-href="../../../efootprint/abstract_modeling_classes/reactive_core/computed_slots.py#L255:1"><code>computed_dict.facade()</code></a>,
+        found through
+        <a href="vscode://file//Users/vinville/dev/e-footprint-full/e-footprint/efootprint/abstract_modeling_classes/reactive_core/computed_slots.py:63:1" data-review-source-href="../../../efootprint/abstract_modeling_classes/reactive_core/computed_slots.py#L63:1"><code>computed_slots()</code></a>
+        of the container's class) instead of reading the attribute. The facade's
+        <a href="vscode://file//Users/vinville/dev/e-footprint-full/e-footprint/efootprint/abstract_modeling_classes/explainable_object_dict.py:254:1" data-review-source-href="../../../efootprint/abstract_modeling_classes/explainable_object_dict.py#L254:1"><code>__getitem__</code></a>
+        pulls only that key's sub-slot and raises for a key outside the key collection. Reading the attribute would go
+        through
+        <a href="vscode://file//Users/vinville/dev/e-footprint-full/e-footprint/efootprint/abstract_modeling_classes/reactive_core/computed_slots.py:356:1" data-review-source-href="../../../efootprint/abstract_modeling_classes/reactive_core/computed_slots.py#L356:1"><code>computed_dict.__get__()</code></a>,
+        which pulls the key-set slot, whose closure pulls every element
+        (<a href="vscode://file//Users/vinville/dev/e-footprint-full/e-footprint/efootprint/abstract_modeling_classes/reactive_core/computed_slots.py:285:1" data-review-source-href="../../../efootprint/abstract_modeling_classes/reactive_core/computed_slots.py#L285:1">line 285</a>).
+        Stored formulas do hold element addresses: freshly computed and saved, the complex integration system's formulas
+        hold 17 element addresses out of 69 operand addresses, all elements of
+        <a href="vscode://file//Users/vinville/dev/e-footprint-full/e-footprint/efootprint/core/hardware/network.py:82:1" data-review-source-href="../../../efootprint/core/hardware/network.py#L82:1"><code>use_footprint_per_job</code></a>,
+        <a href="vscode://file//Users/vinville/dev/e-footprint-full/e-footprint/efootprint/core/hardware/device.py:127:1" data-review-source-href="../../../efootprint/core/hardware/device.py#L127:1"><code>use_footprint_per_usage_pattern</code></a>
+        or <a href="vscode://file//Users/vinville/dev/e-footprint-full/e-footprint/efootprint/core/hardware/device.py:152:1" data-review-source-href="../../../efootprint/core/hardware/device.py#L152:1"><code>instances_manufacturing_footprint_per_usage_pattern</code></a>.
+        Measured on that system, saved and reloaded, resolving one <code>use_footprint_per_job</code> element costs 73
+        computations through the attribute and 20 through the facade. The extra computations are sibling elements the
+        formula does not show, which the spec's constraint "explanation requests compute only the values they display"
+        excludes. The facade item read is the path the engine already uses to read one element inside a computation, so
+        no new engine path is introduced. The peeking body and its "never computes" docstring go.</p>
       <div data-code>
         <p data-code-file><a href="#file-explainable"><code>efootprint/abstract_modeling_classes/explainable_object_base_class.py</code></a>
           <small>Proposed body of <code>get_attribute_from_flat_obj_dict</code> (replaces the peeking one)</small></p>
         <pre><code>def get_attribute_from_flat_obj_dict(attr_key: str, flat_obj_dict: dict):
     """Resolve a serialized (container id, attribute[, key id]) address to its live value, computing a
     void computed slot. Only the formula deserializer calls this, on display: an operand of an
-    explanation is part of what is being explained."""
+    explanation is part of what is being explained. A computed-dict element is read through the dict
+    facade, which computes that element only."""
     container_id, attr_name, key_id = _parse_value_address(attr_key)
-    value = getattr(flat_obj_dict[container_id], attr_name)
-    if key_id:
-        return value[flat_obj_dict[key_id]]
-    return value</code></pre>
+    container = flat_obj_dict[container_id]
+    if not key_id:
+        return getattr(container, attr_name)
+    descriptor = computed_slots(type(container)).get(attr_name)
+    if isinstance(descriptor, computed_dict):
+        return descriptor.facade(container)[flat_obj_dict[key_id]]
+    return getattr(container, attr_name)[flat_obj_dict[key_id]]</code></pre>
       </div>
       <p>Why pulling here is safe, verified in this checkout:</p>
       <ul>
@@ -355,33 +378,11 @@
           values attach to their slots exactly as a results-page read would attach them.</li>
       </ul>
       <aside id="plan-update-03" data-note="review">
-        <p><strong>[PLAN-UPDATE-03] — PROPOSED</strong></p>
-        <p><em>Current plan:</em> the resolver reads <code>getattr(container, attr_name)</code>, then indexes the
-          result with the key for a dict address (snippet above).</p>
-        <p><em>Proposed change.</em> For an address naming a computed dict, the resolver indexes the dict facade
-          (<a href="vscode://file//Users/vinville/dev/e-footprint-full/e-footprint/efootprint/abstract_modeling_classes/reactive_core/computed_slots.py:255:1" data-review-source-href="../../../efootprint/abstract_modeling_classes/reactive_core/computed_slots.py#L255:1"><code>computed_dict.facade()</code></a>, found through
-          <a href="vscode://file//Users/vinville/dev/e-footprint-full/e-footprint/efootprint/abstract_modeling_classes/reactive_core/computed_slots.py:63:1" data-review-source-href="../../../efootprint/abstract_modeling_classes/reactive_core/computed_slots.py#L63:1"><code>computed_slots()</code></a> of the container's class)
-          instead of reading the attribute. The facade's
-          <a href="vscode://file//Users/vinville/dev/e-footprint-full/e-footprint/efootprint/abstract_modeling_classes/explainable_object_dict.py:254:1" data-review-source-href="../../../efootprint/abstract_modeling_classes/explainable_object_dict.py#L254:1"><code>__getitem__</code></a> pulls only that key's sub-slot
-          and raises for a key outside the key collection. Plain attributes and input dicts keep ordinary attribute
-          access.</p>
-        <p><em>Why.</em> Reading a computed dict through
-          <a href="vscode://file//Users/vinville/dev/e-footprint-full/e-footprint/efootprint/abstract_modeling_classes/reactive_core/computed_slots.py:356:1" data-review-source-href="../../../efootprint/abstract_modeling_classes/reactive_core/computed_slots.py#L356:1"><code>computed_dict.__get__()</code></a> pulls its
-          key-set slot, whose closure pulls every element
-          (<a href="vscode://file//Users/vinville/dev/e-footprint-full/e-footprint/efootprint/abstract_modeling_classes/reactive_core/computed_slots.py:285:1" data-review-source-href="../../../efootprint/abstract_modeling_classes/reactive_core/computed_slots.py#L285:1">line 285</a>). Stored formulas do hold element
-          addresses: freshly computed and saved, the complex integration system's formulas hold 17 element addresses out
-          of 69 operand addresses, all elements of
-          <a href="vscode://file//Users/vinville/dev/e-footprint-full/e-footprint/efootprint/core/hardware/network.py:82:1" data-review-source-href="../../../efootprint/core/hardware/network.py#L82:1"><code>use_footprint_per_job</code></a>,
-          <a href="vscode://file//Users/vinville/dev/e-footprint-full/e-footprint/efootprint/core/hardware/device.py:127:1" data-review-source-href="../../../efootprint/core/hardware/device.py#L127:1"><code>use_footprint_per_usage_pattern</code></a>
-          or <a href="vscode://file//Users/vinville/dev/e-footprint-full/e-footprint/efootprint/core/hardware/device.py:152:1" data-review-source-href="../../../efootprint/core/hardware/device.py#L152:1"><code>instances_manufacturing_footprint_per_usage_pattern</code></a>.
-          Measured in this checkout on the complex integration system, saved and reloaded: resolving one
-          <a href="vscode://file//Users/vinville/dev/e-footprint-full/e-footprint/efootprint/core/hardware/network.py:82:1" data-review-source-href="../../../efootprint/core/hardware/network.py#L82:1"><code>use_footprint_per_job</code></a> element costs 73 computations through the attribute and 20 through the
-          facade. The extra computations are sibling elements the formula does not show, which the spec's
-          constraint "explanation requests compute only the values they display" excludes.</p>
-        <p><em>Trade-offs.</em> The resolver distinguishes computed dicts from input dicts, a branch the snippet did not
-          have. It relies on facade item reads that the engine already uses to read one element inside a computation,
-          so no new engine path is introduced.</p>
-        <p><em>Affected task:</em> Task 2.</p>
+        <p><strong>[PLAN-UPDATE-03] — ACCEPTED 2026-10-20</strong></p>
+        <p>The resolver originally read every address through <code>getattr</code>, then indexed the result for a key
+          address. Task preparation showed that this computes every element of a computed dict to display one of them
+          (73 computations instead of 20 on the complex integration system). Decision: index the computed-dict facade
+          for a computed-dict element (change and snippet above).</p>
       </aside>
       <p>The computed operand is a fresh value attached to its slot, so its label, unit and magnitude are live. The
         presenter's symbol table and Input Variables list render it like any in-memory operand. Inline constants such

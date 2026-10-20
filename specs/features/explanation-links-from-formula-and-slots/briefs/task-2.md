@@ -1,7 +1,7 @@
 # Task 2 — Derive explanation links from formula and slot graph
 Written 2026-10-19 against e-footprint 58966eb1; revised 2026-10-20 for the integrated 1.3.
 Plan: [1.1](../plan.html#resolver), [1.2](../plan.html#ancestors), [1.3](../plan.html#children), [1.4](../plan.html#persistence) (saving, loading, documentation), [verification map](../plan.html#delivery), [PLAN-UPDATE-03](../plan.html#plan-update-03). Task: [tasks.md](../tasks.md#task-2--derive-explanation-links-from-formula-and-slot-graph).
-Status: provisional — pending PLAN-UPDATE-03.
+Status: under review.
 
 ## Start here
 All in `efootprint/abstract_modeling_classes/explainable_object_base_class.py` unless noted:
@@ -12,7 +12,7 @@ All in `efootprint/abstract_modeling_classes/explainable_object_base_class.py` u
 
 ## Change along the code path
 Land everything below as one change. The plan's delivery section explains why it cannot be split.
-1. **Resolver** (plan 1.1 snippet, as amended by PLAN-UPDATE-03). Plain attributes resolve by `getattr`. A key address on a computed dict indexes `descriptor.facade(container)[key]`, with the descriptor taken from `computed_slots(container.efootprint_class)`; this pulls one sub-slot. A key address on an input dict indexes the input dict. Delete the peeking body and its docstring.
+1. **Resolver** (plan 1.1 snippet). Plain attributes resolve by `getattr`. A key address on a computed dict indexes `descriptor.facade(container)[key]`, with the descriptor taken from `computed_slots(container.efootprint_class)`; this pulls one sub-slot. A key address on an input dict indexes the input dict. Delete the peeking body and its docstring.
 2. **Ancestors** (plan 1.2 snippet). Add `_attached_formula_leaves`. For a value with a formula key, `initialize_calculus_graph_data_from_json` sets `_direct_ancestors_with_id = None`. The getter derives the list on first read, deduplicated by id in left-to-right order. Remove the three hydration slots, their `__init__` lines and `load_ancestors_and_children_from_json`. The setter only assigns.
 3. **Children** (plan 1.3 snippet). Make it a read-only property: filter on `on_value_dropped is not None` and `slot in dependent.calculus_dependencies`, then pull. Task 1 makes those links current, so no check after the pull. Remove `_direct_children_with_id`, its setter, the add/remove helpers, `all_descendants_with_id`, and both link loops in `set_modeling_obj_container`. Keep the label check, the base call and `finalize_explanation()`.
 4. **Save**. `to_json(with_formula=True)` stops writing `direct_ancestors_with_id`; it still writes `explain_nested_tuples_from_json` when set.
@@ -46,4 +46,4 @@ Task 1 makes every link current: voided slots have none, failed attempts are lin
 Schema version, handler and fixture version strings (Task 3). Interface (Task 4). Stored-topology rendering without pulls.
 
 ## Unverified
-The plan's latency baseline was measured with addresses pulled through `getattr`. PLAN-UPDATE-03 should only lower those numbers. Re-measure only if a reviewer asks.
+The plan's latency baseline was measured with addresses pulled through `getattr`. Reading computed-dict elements through the facade should only lower those numbers. Re-measure only if a reviewer asks.
