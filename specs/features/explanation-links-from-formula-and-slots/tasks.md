@@ -5,13 +5,14 @@ Status: approved 2026-10-20.
 ## Implementation runs
 | Run | Delivered milestone | Tasks in execution order | Prerequisites |
 |---|---|---|---|
-| A | Saved explanations complete after reload in the library and the interface, schema 27 | [1](#task-1--engine-keeps-dependency-links-current), [2](#task-2--derive-explanation-links-from-formula-and-slot-graph), [3](#task-3--schema-27-and-interface-adoption) | Task 3's interface part validates against the editable library; its interface merge waits for the 27.0.0 release (see gates) |
+| A | Saved explanations complete after reload in the library and the interface, schema 27 | [1](#task-1--engine-keeps-dependency-links-current), [2](#task-2--derive-explanation-links-from-formula-and-slot-graph), [4](#task-4--persist-coordinate-keyed-sub-slot-addresses), [3](#task-3--schema-27-and-interface-adoption) | Task 3's interface part validates against the editable library; its interface merge waits for the 27.0.0 release (see gates) |
 
 ## Overview
 | Task | Delivered behavior | Plan section | Repository | Implementation |
 |---|---|---|---|---|
 | 1 | A slot's dependency links are the reads of its current state; voided, removed and deleted slots have none; the unused purpose query is gone | [1.3, engine invariant](plan.html#children), PLAN-UPDATE-04 | e-footprint | standard |
 | 2 | Formula, ancestors, children and calculus graph of a saved value complete after reload; load and save compute nothing | [1.1](plan.html#resolver)–[1.4](plan.html#persistence) (save/load parts), PLAN-UPDATE-03 | e-footprint | standard |
+| 4 | Coordinate-keyed computed-dict sub-slots are addressed in the saved calculation graph and rebuilt at load, so edits reach stored attribution summaries and children are complete after reload | added during run A (Task 2 review, [IMPL-DECISION-03](plan.html#impl-decision-03)) | e-footprint | hard |
 | 3 | Files at schema 26 upgrade by dropping the ancestor key; library at 27.0.0; interface pinned to it with its architecture and changelog lines, GenAI example checked by hand | [1.4](plan.html#persistence) (old files), [1.5](plan.html#interface) | e-footprint, then e-footprint-interface | easy |
 
 ## Plan amendments to review
@@ -33,7 +34,7 @@ Implementation: standard — the plan supplies the three engine changes and argu
 
 ## Task 2 — Derive explanation links from formula and slot graph
 Goal: a saved value resolves its formula on display (pulling void operands), derives its direct ancestors from the formula's attached leaves and its children from the slot's calculus dependents; the stored ancestor list, the hydration state, the children bookkeeping and the loader's inversion pass go.
-Status: done 2026-10-20 — commit `f01893df`; handoff [handoffs/task-2.md](handoffs/task-2.md) (open concern: coordinate-keyed children not persisted).
+Status: done 2026-10-20 — range `57d10ac5..c07aff88`; handoff [handoffs/task-2.md](handoffs/task-2.md); see [IMPL-DECISION-02](plan.html#impl-decision-02) (byte-stable save). The coordinate-keyed children gap it surfaced is fixed by Task 4.
 Brief: [briefs/task-2.md](briefs/task-2.md)
 Repository: e-footprint
 Files touched: `efootprint/abstract_modeling_classes/explainable_object_base_class.py`, `efootprint/api_utils/json_to_system.py`, `efootprint/abstract_modeling_classes/reactive_core/computed_slots.py` (`_release_value` docstring), the four unit test files named in the plan, `tests/integration_tests/integration_test_base_class.py`, `tests/integration_tests/test_integration_simple_system_from_json.py`, `tests/performance_tests/json_size.py`, `specs/architecture/persistence.html` (contract cell and children sentence), `specs/architecture/recomputation.html`, `CHANGELOG.md`.
@@ -41,6 +42,17 @@ Tests: round-trip completeness (flat formula, ancestor ids, children ids, calcul
 Acceptance: the plan's [verification map](plan.html#delivery) rows for the library hold; no load-time or save-time computation; stored values re-serialize byte-for-byte after a display.
 Depends on: Task 1.
 Implementation: standard — the plan supplies the resolver, ancestor and children code and verifies the no-pull paths; what remains is ordinary integration and test rewriting.
+
+## Task 4 — Persist coordinate-keyed sub-slot addresses
+Goal: `calculation_graph_section` no longer skips computed-dict sub-slots keyed by a non-serialized key object (`JobOccurrenceCoordinate`): their address carries the key's components by object id, and `rebuild_dependency_graph` rebuilds the key without computing. After reload, an edit to `Job.data_transferred` or `UsageJourneyStep.user_time_spent` invalidates the stored `System.impact_repartition_matrix` and `EdgeDevice.footprint_breakdown_summary` exactly as in memory, and the children of a job input after reload equal those before save, coordinate-keyed sub-slots included.
+Status: added 2026-10-20 by the supervisor (newly discovered pre-existing defect, Task 2 review); approved within run A's authority.
+Brief: this section; probes `/private/tmp/claude-502/-Users-vinville-dev-e-footprint-full-e-footprint/e0c07a96-69b6-410b-968b-4a1a1d876f66/scratchpad/stale_matrix.py` and `stale_matrix_inputs.py` (may be gone).
+Repository: e-footprint
+Files touched: `efootprint/api_utils/system_to_json.py` (`calculation_graph_section`, `_slot_address`), `efootprint/api_utils/json_to_system.py` (`rebuild_dependency_graph`), `efootprint/core/usage/job.py` (`JobOccurrenceCoordinate` key serialization), a key-class registry if needed (`efootprint/all_classes_in_order.py`), `tests/integration_tests/integration_test_base_class.py` (round-trip helper stops excluding coordinate keys; new reload-then-edit invalidation helper), `tests/api_utils_tests/test_system_to_json.py` or `test_json_to_system.py` (address unit tests), the committed inputs-only fixtures only if their bytes change, `specs/architecture/persistence.html` (calculation-graph sentence), `CHANGELOG.md` (Fixed).
+Tests: on every fixture, reload then edit each of the two inputs above and assert the stored matrix (and summary where present) is void and recomputes to the fresh value; the round-trip helper's children comparison includes coordinate-keyed sub-slots; load still computes nothing (`observe_computations`); the canonical round trip stays byte-identical; a saved file whose coordinate components are absent (deleted usage pattern) is skipped at save like any foreign key, and a hand-corrupted node still raises `ValueError`. Full suite and performance gates.
+Acceptance: the plan's "Children complete after round trip" row holds without exclusion; the attribution docstring's "invalidated precisely through recorded dependency edges" holds after reload; no load-time computation; `api_utils` stays domain-blind (a generic key protocol or registry, not a `JobOccurrenceCoordinate` special case inside the serializer loop).
+Depends on: Task 2.
+Implementation: hard — a new persistence contract for non-object dict keys across serializer, loader and the key class, with no-compute-at-load and foreign-key soundness constraints and no plan snippet.
 
 ## Task 3 — Schema 27 and interface adoption
 Goal: a 26→27 upgrade handler pops `direct_ancestors_with_id` from every stored value and the library moves to 27.0.0; the interface then runs on it with its architecture line and changelog entry, and the GenAI video example is checked by hand.
@@ -50,7 +62,7 @@ Repository: e-footprint, then e-footprint-interface (one commit in each)
 Files touched: library — `efootprint/api_utils/version_upgrade_handlers.py`, `tests/api_utils_tests/test_version_upgrade_handlers.py`, `efootprint/version.py`, `pyproject.toml`, the committed inputs-only fixtures under `tests/integration_tests/` and the two packaged examples under `efootprint/modeling_examples/` (version string), `tests/api_utils_tests/test_json_to_system.py` (version assertion), `specs/architecture/persistence.html` (handler sentence), `CHANGELOG.md` (same entry as Task 2). Interface — `pyproject.toml` (library pin), `specs/architecture/rendering.html`, `CHANGELOG.md`.
 Tests: handler unit test; a V26 dict carrying the key loads and round-trips without it; `tests/test_version_is_up_to_date.py`; full library suite; interface suite against the editable library; manual check of the Veo instances manufacturing footprint, CDN use footprint and system total graph page.
 Acceptance: plan row "Old files load" holds; version strings agree; interface suite passes; the three displays are complete after reload; no interface view, presenter or template change.
-Depends on: Task 2.
+Depends on: Task 4 (and Task 2).
 Implementation: easy — a key-pop handler on the established handler pattern, version-string updates, a dependency pin and two documentation lines; no interface product code.
 
 ## Gates and prerequisites

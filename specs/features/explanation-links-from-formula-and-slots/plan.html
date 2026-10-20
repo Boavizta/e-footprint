@@ -287,6 +287,7 @@
     <aside id="impl-decisions" data-note="review">
       <p><strong>Implementation decisions</strong></p>
       <p><a href="#impl-decision-01">[IMPL-DECISION-01] Rollback re-pulls forward-visited guards; plan's wave-reachability argument corrected, repeated-invalid-edit defect fixed — APPLIED</a></p>
+      <p><a href="#impl-decision-02">[IMPL-DECISION-02] Save discovers objects through inputs only, so a save is byte-stable whatever is computed — APPLIED</a></p>
     </aside>
   </header>
 
@@ -792,6 +793,29 @@ def direct_children_with_id(self):
         <code>explain_nested_tuples</code>. The values-free <code>calculation_graph</code> section written by
         <a href="vscode://file//Users/vinville/dev/e-footprint-full/e-footprint/efootprint/api_utils/system_to_json.py:199:1" data-review-source-href="../../../efootprint/api_utils/system_to_json.py#L199:1"><code>system_to_json()</code></a> is unchanged.
         Saving still peeks only.</p>
+      <aside id="impl-decision-02" data-note="review">
+        <p><strong>[IMPL-DECISION-02] — APPLIED</strong></p>
+        <p><em>Newly discovered pre-existing defect, fixed in run A (Task 2 review).</em></p>
+        <p>The save traversal in
+          <a href="vscode://file//Users/vinville/dev/e-footprint-full/e-footprint/efootprint/api_utils/system_to_json.py:28:1" data-review-source-href="../../../efootprint/api_utils/system_to_json.py#L28:1"><code>recursively_write_json_dict</code></a>
+          discovered objects through peeked computed values as well as inputs: computed-dict keys were queued for
+          writing and computed facades were followed through their containers, so the order of objects and of the
+          top-level class blocks depended on what happened to be cached. A canonical round trip was therefore not
+          byte-identical even before this feature (the existing round-trip tests compared dicts, which hid it), and
+          after 1.1 merely building a loaded model's calculus graph then saving reordered the file. Objects are now
+          discovered through inputs and input dicts only; computed values contribute sources only. On every fixture
+          the written object and source sets are unchanged for System roots. The three committed reference files
+          (<code>simple_system.json</code>, <code>complex_system.json</code>, <code>system_with_services.json</code>)
+          were regenerated with order as the only difference. The round-trip tests
+          <a href="vscode://file//Users/vinville/dev/e-footprint-full/e-footprint/tests/integration_tests/integration_test_base_class.py:292:1" data-review-source-href="../../../tests/integration_tests/integration_test_base_class.py#L292:1"><code>run_test_explanation_links_survive_round_trip</code></a>
+          and
+          <a href="vscode://file//Users/vinville/dev/e-footprint-full/e-footprint/tests/integration_tests/integration_test_base_class.py:342:1" data-review-source-href="../../../tests/integration_tests/integration_test_base_class.py#L342:1"><code>run_test_displaying_one_stored_formula_computes_only_its_operands</code></a>
+          now compare serialized bytes, calculation graph included, which is the acceptance the task stated. The
+          interface is unaffected: <code>ModelWeb.to_json</code> iterates its own flat object dict. The
+          "Saving peeks, never pulls" rule in
+          <a href="vscode://file//Users/vinville/dev/e-footprint-full/e-footprint/specs/architecture/persistence.html:4:1" data-review-source-href="../../architecture/persistence.html#L4:1">persistence.html</a>
+          gained the clause that bytes do not depend on what is computed.</p>
+      </aside>
       <p><strong>Loading.</strong>
         <a href="vscode://file//Users/vinville/dev/e-footprint-full/e-footprint/efootprint/api_utils/json_to_system.py:159:1" data-review-source-href="../../../efootprint/api_utils/json_to_system.py#L159:1"><code>json_to_system()</code></a> drops the
         call at <a href="vscode://file//Users/vinville/dev/e-footprint-full/e-footprint/efootprint/api_utils/json_to_system.py:244:1" data-review-source-href="../../../efootprint/api_utils/json_to_system.py#L244:1">line 244</a> and the function
