@@ -1,39 +1,48 @@
-# Task 1 — Sever edges of slots that leave the model
-Written 2026-10-19 against e-footprint 58966eb1.
-Plan: [PLAN-UPDATE-02](../plan.html#plan-update-02) part (a). Task: [tasks.md](../tasks.md#task-1--sever-edges-of-slots-that-leave-the-model).
-Status: provisional — pending PLAN-UPDATE-02.
+# Task 1 — Engine keeps dependency links current
+Written 2026-10-20 against e-footprint 58966eb1 (feature specs at bfdc44f6).
+Plan: [1.3, engine invariant](../plan.html#children) (PLAN-UPDATE-02, accepted). Task: [tasks.md](../tasks.md#task-1--engine-keeps-dependency-links-current).
+Status: under review.
 
 ## Start here
-- `computed_dict.discard_stale_keys` — `efootprint/abstract_modeling_classes/reactive_core/computed_slots.py` — pops each stale sub-slot from the registry (`stale_slot = registry.pop(...)`) and leaves its edges in place.
-- `ModelingObject.self_delete` — `efootprint/abstract_modeling_classes/modeling_object.py` — drops every slot's value in the `for slot in list(instance_slot_registry(self).values())` loop, keeps edges.
-- `ReactiveSlot.replace_dependencies` — `reactive_core/graph.py` — called with no arguments, it removes the slot from every former dependency's `_dependents` and clears its own sets.
+- `invalidate` — `efootprint/abstract_modeling_classes/reactive_core/graph.py` — the deletion wave; voids slots and keeps their links today.
+- `ReactiveSlot._compute` — same file — installs `frame.calculus_reads` / `frame.structural_reads` only after the getter returns; on observer rejection restores `previous_calculus_dependencies` / `previous_structural_dependencies`.
+- `ReactiveSlot.replace_dependencies` — same file — the only writer of links; called with no arguments it unlinks the slot from every dependency.
+- `computed_dict.discard_stale_keys` — `reactive_core/computed_slots.py` — pops stale sub-slots (`stale_slot = registry.pop(...)`).
+- `ModelingObject.self_delete` — `efootprint/abstract_modeling_classes/modeling_object.py` — the `for slot in list(instance_slot_registry(self).values()): slot._drop_value()` loop.
 
 ## Change along the code path
-1. In `discard_stale_keys`, after popping `stale_slot`, call `stale_slot.replace_dependencies()`.
-2. In `self_delete`, in the existing drop loop, call `slot.replace_dependencies()` after `slot._drop_value()`.
-Result: `slot.dependents` of a surviving input or computed slot contains no slot that was popped or belongs to a deleted object.
+Follow the plan's snippet in 1.3.
+1. `invalidate`: after `work.extend(slot._dependents)`, call `slot.replace_dependencies()`. The extend must come first, because the cut removes the slot from its dependencies' `_dependents`, not from its own.
+2. `_compute`: move `self.replace_dependencies(frame.calculus_reads, frame.structural_reads)` into the `finally`, so it runs whether the getter returns or raises. In the observer `except`, keep `_drop_value()` and `raise`; delete the restore and the `previous_*` bookkeeping.
+3. `discard_stale_keys`: `stale_slot.replace_dependencies()` after the pop. `self_delete`: `slot.replace_dependencies()` after `slot._drop_value()`.
+4. Docstrings and pages: the `ReactiveSlot` docstring ("A failed computation keeps the previous edges — over-invalidation is safe…"), the `observe_computations` docstring ("the slot's previous dependency edges are restored"), `recomputation/computed-surfaces.html` ("keeps previous edges after failure as a safe over-approximation"), and `recomputation/lifecycle.html` (observer boundary paragraph; "Previous edges survive a failed getter" invariant). State the invariant once: a slot's links are the reads of its current state (cached value, last failed or rejected attempt, value installed at load, or an evicted transient structure's last value); a voided, removed or deleted slot has none.
 
-Prototype (monkeypatch in `/private/tmp/claude-502/-Users-vinville-dev-e-footprint-full/d9e42849-33d3-4a0d-961d-63fea7d042be/scratchpad/deleted_dependents_patched.py`, a scratch copy that may be gone): replaying `run_test_add_usage_pattern` (simple integration base class) with a ModelingUpdate, rollback, then `self_delete` of the added pattern, the country's `average_carbon_intensity` went from 6 explainable calculus dependents (one stale sub-slot whose pull raises `KeyError`) to 3 live ones. The deleted pattern's `utc_hourly_occurrences` no longer hangs off the country's `timezone`.
+Expected result: after any edit, every slot the wave visited has empty dependency sets until it recomputes; after `self_delete` or pruning, no surviving slot lists a removed slot among its `dependents`.
 
 ## Earlier tasks
 None.
 
 ## Reuse
-`replace_dependencies()` already maintains the reverse index both ways; do not hand-edit `_dependents`. Tests: `TestComputedDict.test_key_set_change_drops_stale_entries_and_adds_new_ones` in `tests/abstract_modeling_classes/test_reactive_core.py` (it calls `discard_stale_keys` directly) and the `ReactiveCore*` fixture classes in that file; the delete tests in `tests/abstract_modeling_classes/test_modeling_object.py`.
+- `replace_dependencies()` keeps the reverse index consistent in both directions. Never edit `_dependents` by hand.
+- Fixtures: `self.a` / `self.values` / bare `ReactiveSlot` getters in `test_reactive_core.py` (see `test_failed_compute_clears_marker_so_next_wave_reaches_fallback_caching_dependent`), and the `ReactiveCore*` model classes at the top of that file. `ReactiveCoreObserverGuard` covers observer rejection inside a guard.
+- `ServerBase.nb_of_instances` / `fixed_nb_of_instances_validation` for the branch-switch and rollback case (`ServerTypes.on_premise()` vs `ServerTypes.autoscaling()`; the capacity guard raises `InsufficientCapacityError`).
 
 ## Invariants and traps
-- Only slots unreachable from the model lose edges. A popped sub-slot is never returned again: if its key comes back, `sub_slot()` creates a new slot. A deleted object's slots are never read again.
-- Do not sever the slot's incoming side (its own `_dependents`). Readers keep it in their dependency sets until they recompute, which is harmless.
-- Leave detached objects that were not deleted untouched (for example a network left behind by a rollback). They are live consumers.
-- `reactive_core` is a FULL review surface (`.agents/repository.md`); constitution gates apply.
+- `computed_structure.evict_cached_value` drops a value without invalidating. It must keep its links, so do not move the cut into `_drop_value`.
+- Loaded void intermediates keep the links `rebuild_dependency_graph` installed until a wave reaches them; the same wave voids the stored values above them.
+- Wave pruning stays sound: a marked slot's dependents are marked in the same wave before its links are cut, and the next compute clears the marker on success or failure.
+- `CircularDependencyError` is raised before the frame is pushed; nothing to install there.
+- `reactive_core` is a FULL review surface (`.agents/repository.md`).
 
 ## Validation
-- Add a unit test in `test_reactive_core.py`: with a `ReactiveCoreHolder` computed dict whose element reads a leaf input, compute, remove the key, trigger pruning, then assert the popped sub-slot is not in the leaf node's `dependents`.
-- Add a unit or integration test: after `self_delete`, no slot in `instance_slot_registry(o)` of any surviving object `o` lists a slot of the deleted object among its `dependents`.
-- `PYTHONPATH=./ /Users/vinville/Library/Caches/pypoetry/virtualenvs/efootprint-6BqlWvzT-py3.13/bin/python -m pytest tests/abstract_modeling_classes tests/integration_tests` then the full `MPLBACKEND=Agg` suite. Check first that this venv still exists.
+- `test_failed_recompute_keeps_previous_edges_and_leaves_slot_void_and_unmarked`: its getter raises before reading `a`, so assert empty dependencies and `a.dependents` without the slot. Rename the test to match.
+- `test_purpose_query_keeps_invalidated_materialized_topology`: rewrite it to assert that a voided output is unclassified until pulled, and classified again afterwards.
+- New: invalidation leaves voided slots unlinked and recompute relinks them. A getter that reads X and then raises is linked to X. An observer-rejected slot is void and linked to the rejected attempt's reads. The fallback test passes unchanged. Branch switch plus capacity-guard failure plus rollback leaves the guard and `nb_of_instances` with on-premise links after recompute (next to `test_observer_failure_during_guard_recomputation_preserves_transactional_rollback`). A pruned stale sub-slot and a deleted object's slots are absent from surviving `dependents`.
+- Replay check (prototype was `/private/tmp/claude-502/-Users-vinville-dev-e-footprint-full/d9e42849-33d3-4a0d-961d-63fea7d042be/scratchpad/deleted_dependents_patched.py`, may be gone): after `run_test_add_usage_pattern`'s rollback and `self_delete`, the carbon intensity's explainable calculus dependents are all live and pull without error.
+- `PYTHONPATH=./ <venv>/bin/python -m pytest tests/abstract_modeling_classes tests/integration_tests` (venv: `/Users/vinville/Library/Caches/pypoetry/virtualenvs/efootprint-6BqlWvzT-py3.13`, check it exists), then the full suite with `MPLBACKEND=Agg`, then `tests/performance_tests`. Measured during preparation: +1 ms on a 36 ms edit-and-recompute.
 
 ## Out of scope
-Changing children derivation (Task 2). Pruning stale keys more eagerly than today.
+Children derivation and anything in `explainable_object_base_class.py` (Task 2). The serializer's dead-slot filter in `calculation_graph_section` stays as it is.
 
 ## Unverified
-A stale sub-slot whose key-set slot was never visited by an invalidation wave stays registered with its edges. Settling it: in the Task 1 tests, check whether any integration post-reset scenario leaves such a slot. Expected outcome: none, because a sub-slot only acquires edges once its key set has been materialized.
+A stale sub-slot whose key-set slot no invalidation wave has visited stays registered, though under the invariant without links once voided. Check that the integration post-reset scenarios leave no such slot linked.

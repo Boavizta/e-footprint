@@ -1,7 +1,7 @@
 # Task 2 — Derive explanation links from formula and slot graph
-Written 2026-10-19 against e-footprint 58966eb1.
-Plan: [1.1](../plan.html#resolver), [1.2](../plan.html#ancestors), [1.3](../plan.html#children), [1.4](../plan.html#persistence) (saving, loading, documentation), [verification map](../plan.html#delivery), [PLAN-UPDATE-02](../plan.html#plan-update-02) (b), [PLAN-UPDATE-03](../plan.html#plan-update-03). Task: [tasks.md](../tasks.md#task-2--derive-explanation-links-from-formula-and-slot-graph).
-Status: provisional — pending PLAN-UPDATE-02 (b) and PLAN-UPDATE-03.
+Written 2026-10-19 against e-footprint 58966eb1; revised 2026-10-20 for the integrated 1.3.
+Plan: [1.1](../plan.html#resolver), [1.2](../plan.html#ancestors), [1.3](../plan.html#children), [1.4](../plan.html#persistence) (saving, loading, documentation), [verification map](../plan.html#delivery), [PLAN-UPDATE-03](../plan.html#plan-update-03). Task: [tasks.md](../tasks.md#task-2--derive-explanation-links-from-formula-and-slot-graph).
+Status: provisional — pending PLAN-UPDATE-03.
 
 ## Start here
 All in `efootprint/abstract_modeling_classes/explainable_object_base_class.py` unless noted:
@@ -14,13 +14,13 @@ All in `efootprint/abstract_modeling_classes/explainable_object_base_class.py` u
 Land everything below as one change. The plan's delivery section explains why it cannot be split.
 1. **Resolver** (plan 1.1 snippet, as amended by PLAN-UPDATE-03). Plain attributes resolve by `getattr`. A key address on a computed dict indexes `descriptor.facade(container)[key]`, with the descriptor taken from `computed_slots(container.efootprint_class)`; this pulls one sub-slot. A key address on an input dict indexes the input dict. Delete the peeking body and its docstring.
 2. **Ancestors** (plan 1.2 snippet). Add `_attached_formula_leaves`. For a value with a formula key, `initialize_calculus_graph_data_from_json` sets `_direct_ancestors_with_id = None`. The getter derives the list on first read, deduplicated by id in left-to-right order. Remove the three hydration slots, their `__init__` lines and `load_ancestors_and_children_from_json`. The setter only assigns.
-3. **Children** (plan 1.3 snippet, plus PLAN-UPDATE-02 (b)). Make it a read-only property: filter on `on_value_dropped is not None` and `slot in dependent.calculus_dependencies` before the pull, and check again after the pull. Remove `_direct_children_with_id`, its setter, the add/remove helpers, `all_descendants_with_id`, and both link loops in `set_modeling_obj_container`. Keep the label check, the base call and `finalize_explanation()`.
+3. **Children** (plan 1.3 snippet). Make it a read-only property: filter on `on_value_dropped is not None` and `slot in dependent.calculus_dependencies`, then pull. Task 1 makes those links current, so no check after the pull. Remove `_direct_children_with_id`, its setter, the add/remove helpers, `all_descendants_with_id`, and both link loops in `set_modeling_obj_container`. Keep the label check, the base call and `finalize_explanation()`.
 4. **Save**. `to_json(with_formula=True)` stops writing `direct_ancestors_with_id`; it still writes `explain_nested_tuples_from_json` when set.
 5. **Load**. Delete `invert_children_links_of_stored_values` and its call. `rebuild_dependency_graph` is unchanged.
 6. **Docs and changelog**. `persistence.html` contract cell and children sentence (plan 1.4 wording). `recomputation.html`: one sentence saying display-time resolution may compute, and bookkeeping never does. `_release_value` docstring: drop "ancestor children links". `CHANGELOG.md`: a new `## [Unreleased]` heading above V26.0.1 with one entry; Task 3 extends it.
 
 ## Earlier tasks
-Task 1 makes `dependents` free of popped and deleted slots. Without it, the post-reset loops over `country.average_carbon_intensity.direct_children_with_id` in `integration_simple_system_base_class.py` (`run_test_add_usage_pattern`) and `integration_simple_edge_system_base_class.py` (two scenarios) raise `KeyError`.
+Task 1 makes every link current: voided slots have none, failed attempts are linked to their reads, removed and deleted slots are unlinked. Without it, the post-reset loops over `country.average_carbon_intensity.direct_children_with_id` in `integration_simple_system_base_class.py` (`run_test_add_usage_pattern`) and `integration_simple_edge_system_base_class.py` (two scenarios) raise `KeyError`. Consequence for tests: right after an edit, a value's children are only those already recomputed. A test that asserts children after an edit must pull first, as the halfway-save test already does with `system.total_footprint`.
 
 ## Reuse
 - `observe_computations` (graph.py) for the load, save and display-only assertions.
