@@ -25,7 +25,7 @@ def impact_rows(self):
 </div>
 
 <h2 id="shared">What all three share</h2>
-<div class="diagram"><div class="dtitle">One declaration model, one runtime graph</div><div class="three"><div class="n computed"><b>1 · Class declaration</b><br><span>Decorator syntax installs a descriptor holding the original domain getter.</span></div><div class="n dict"><b>2 · Per-instance slot</b><br><span>An instance read resolves one or more <a class="term" href="../glossary.html#reactive-slot"><code>ReactiveSlot</code></a>s, each cached or void.</span></div><div class="n lazy"><b>3 · Same dependency graph</b><br><span>Successful computation records dependencies; edits invalidate the affected cache cone.</span></div></div></div>
+<div class="diagram"><div class="dtitle">One declaration model, one runtime graph</div><div class="three"><div class="n computed"><b>1 · Class declaration</b><br><span>Decorator syntax installs a descriptor holding the original domain getter.</span></div><div class="n dict"><b>2 · Per-instance slot</b><br><span>An instance read resolves one or more <a class="term" href="../glossary.html#reactive-slot"><code>ReactiveSlot</code></a>s, each cached or void.</span></div><div class="n lazy"><b>3 · Same dependency graph</b><br><span>Computation records dependencies; edits invalidate the affected cache cone.</span></div></div></div>
 <ul>
 <li>The getter body is the calculation SSOT. For documented computed values, its docstring is the doc-as-code meaning.</li>
 <li>Each slot pulls recursively, caches a successful result, detects recursive pull cycles, and is linked to the reads of its current state: a voided, removed or deleted slot has no links (<a href="lifecycle.html#correctness">invariant</a>).</li>
