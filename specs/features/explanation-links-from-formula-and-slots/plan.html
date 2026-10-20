@@ -649,8 +649,11 @@ class ReactiveSlot:
           rejects the same edit twice and finds the guard cached and linked to <code>fixed_nb_of_instances</code> and
           <code>server_type</code> after rollback. Effect: the "Branch switch and rollback" verification row holds through
           the explicit re-pull rather than through wave reachability, and rollback now costs one extra pull per guard the
-          forward wave visited. Remaining gap, accepted: a getter that caught a failure and cached a fallback would not be
-          linked to inputs its failed branch read; no such getter exists.</p>
+          forward wave visited. Remaining gaps, accepted: a getter that caught a failure and cached a fallback would not be
+          linked to inputs its failed branch read (no such getter exists); and a newly linked object whose own guard
+          fails and reads a node that the rollback's detach changes would, now that failed attempts are linked, land
+          in the rollback wave and raise again (the global review probed never-computed, previously computed and
+          intrinsically invalid new servers and found no producer).</p>
       </aside>
       <p>Accepted consequence: a value emptied by an edit lists no children until its consumers recompute. In the
         interface the eager footprint pull recomputes the edited cone in the same request, so the saved graph is
