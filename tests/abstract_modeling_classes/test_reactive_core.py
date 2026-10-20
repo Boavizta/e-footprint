@@ -652,6 +652,57 @@ class TestComputationObserver(TestCase):
         self.assertEqual(3, holder.power_validation.magnitude)
         self.assertEqual(2, callbacks)
 
+    def test_repeated_invalid_guarded_edit_is_rejected_each_time(self):
+        """Test that rollback re-validates the guard the forward wave voided, so repeating an invalid edit
+        without eager outputs is rejected again and the guard ends cached and linked to its inputs."""
+        from efootprint.abstract_modeling_classes.modeling_update import ModelingUpdate
+        from efootprint.core.hardware.hardware_base import InsufficientCapacityError
+        from efootprint.core.hardware.server import Server
+        from tests.integration_tests.integration_simple_system_base_class import IntegrationTestSimpleSystemBaseClass
+
+        system, _ = IntegrationTestSimpleSystemBaseClass.generate_simple_system()
+        server = system.servers[0]
+        original_fixed_nb_of_instances = server.fixed_nb_of_instances
+        guard_slot = Server.fixed_nb_of_instances_validation.slot(server)
+
+        for _ in range(2):
+            with self.assertRaises(InsufficientCapacityError):
+                ModelingUpdate([[server.fixed_nb_of_instances, SourceValue(1 * u.concurrent)]])
+
+        self.assertIs(original_fixed_nb_of_instances, server.fixed_nb_of_instances)
+        self.assertTrue(guard_slot.has_cached_value)
+        self.assertLessEqual(
+            {slot_of_attached_value(server.fixed_nb_of_instances), slot_of_attached_value(server.server_type)},
+            guard_slot.calculus_dependencies)
+
+    def test_rejected_link_to_a_computed_standalone_object_rolls_back_without_reraising(self):
+        """Test that a previously computed standalone server whose guard rejects being linked to a job is
+        rolled back cleanly: re-validating its forward-visited guard in its detached state does not raise
+        again, and the model keeps its original links and footprint."""
+        from efootprint.abstract_modeling_classes.modeling_update import ModelingUpdate
+        from efootprint.core.hardware.hardware_base import InsufficientCapacityError
+        from efootprint.core.hardware.server import Server, ServerTypes
+        from efootprint.core.hardware.storage import Storage
+        from tests.integration_tests.integration_simple_system_base_class import IntegrationTestSimpleSystemBaseClass
+
+        system, _ = IntegrationTestSimpleSystemBaseClass.generate_simple_system()
+        original_server = system.servers[0]
+        job = original_server.jobs[0]
+        footprint_before = system.total_footprint.magnitude.copy()
+        standalone_server = Server.from_defaults(
+            "standalone server", server_type=ServerTypes.on_premise(),
+            fixed_nb_of_instances=SourceValue(1 * u.concurrent), storage=Storage.from_defaults("standalone storage"))
+        standalone_guard_slot = Server.fixed_nb_of_instances_validation.slot(standalone_server)
+        _ = standalone_server.fixed_nb_of_instances_validation
+
+        with self.assertRaises(InsufficientCapacityError):
+            ModelingUpdate([[job.server, standalone_server]])
+
+        self.assertIs(original_server, job.server)
+        self.assertEqual([], standalone_server.jobs)
+        self.assertTrue(standalone_guard_slot.has_cached_value)
+        self.assertTrue((footprint_before == system.total_footprint.magnitude).all())
+
 
 class TestInvalidationWave(TestCase):
     def setUp(self):

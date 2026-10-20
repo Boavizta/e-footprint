@@ -132,7 +132,7 @@ After the complete batch attaches and invalidates, it validates each changed inp
 before pulling guards or eager outputs. A controller-only edit that leaves an incompatible dependent rejects;
 a batch correcting both accepts in either order. Relationship replacements use the same lookup, including intermediate
 links and shared controllers, without relying on prior computed dependencies. Rejection restores inputs and backlinks,
-then invalidates and pulls the restored eager boundary.</p>
+then invalidates and pulls the restored eager boundary, including the guards the forward wave visited.</p>
 <p>Passive constructor assignments use a one-entry proposed-change map to validate the new value and already assigned
 dependents before attachment. Unassigned dependents are skipped; assigning a dependent before its required controller
 is available fails with the full path. The metaclass retains the instance while running its constructor and
@@ -173,7 +173,7 @@ different authored projections must invalidate and validate normally; arithmetic
 <li><b>Marked implies dependents marked.</b> This—not cached/void state—is the deletion-wave pruning invariant.</li>
 <li><b>Getters are read-only.</b> Writes during computation are rejected.</li>
 <li><b>Framework stays domain-blind.</b> Eager behavior is configured structurally through outputs and guards, never by naming core classes.</li>
-<li><b>Rollback is transactional.</b> A rejected update restores original inputs/links, invalidates the failed state, and pulls the restored eager boundary.</li>
+<li><b>Rollback is transactional.</b> A rejected update restores original inputs/links, invalidates the failed state, and pulls the restored eager boundary. It also re-validates every guard the forward wave visited: a guard that failed recorded no read of the input that made it fail, so the rollback wave cannot reach it, and left void it would let the same invalid edit through next time.</li>
 </ul>
 
 <h2 id="debugging">Debugging map</h2>

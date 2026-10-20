@@ -47,7 +47,7 @@ class ModelingUpdate:
             self.pull_eagerly(visited_slots)
         except Exception as e:
             logger.error("An error occurred during attribute recomputation. Resetting to previous values.")
-            self.rollback()
+            self.rollback(visited_slots)
             e.args = (f"Error occurred while computing changes. All changes have been reset."
                       f"\nOriginal error:\n {e}",) + e.args[1:]
             raise e
@@ -178,9 +178,11 @@ class ModelingUpdate:
                 getattr(mod_obj, attr_name)
         return len(visited_slots)
 
-    def rollback(self):
+    def rollback(self, forward_visited_slots=frozenset()):
         """Restore the inputs and relationships, invalidate again, and recompute the restored state so
-        the model stays fully cached and consistent after a rejected update."""
+        the model stays fully cached and consistent after a rejected update. The guards the forward wave
+        visited are re-validated too: a guard that failed recorded no read of the input that made it fail,
+        so the rollback wave cannot reach it, and left void it would let the same invalid edit through."""
         # The rejected links are undone: their objects are detached again, so re-pulling their guard
         # slots would re-raise the very error being rolled back.
         self.newly_linked_mod_objs = []
@@ -188,7 +190,7 @@ class ModelingUpdate:
             for old_value, new_value in self.changes_list:
                 new_value.replace_in_mod_obj_container_without_recomputation(old_value)
             invalidate(*self.changed_slots)
-        self.pull_eagerly(visited_slots)
+        self.pull_eagerly(forward_visited_slots | visited_slots)
 
     @property
     def old_sourcevalues(self):

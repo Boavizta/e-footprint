@@ -9,6 +9,9 @@ and this project adheres to [Semantic Versioning](http://semver.org/)
 ### Changed
 - A computed value's dependency links now always describe its current state: an edit unlinks every value it empties until it is recomputed, a failed or rejected computation stays linked to what it read, and removed computed-dict entries and deleted objects' values are unlinked from the values they used.
 
+### Fixed
+- A rejected update now re-validates the guards it had voided, so repeating the same invalid edit is rejected again instead of accepted.
+
 ### Removed
 - `computation_slots_for_purpose`, `ComputationPurpose` and the `purposes` parameter of `computed_attribute` and `computed_dict`, which had no caller outside their own tests.
 
