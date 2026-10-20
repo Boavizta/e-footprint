@@ -29,8 +29,10 @@ complexity tradeoff, assess:
 - **Simpler interaction:** could an existing control, explicit action or manual retry deliver the outcome
   with negligible extra user effort? Compare against adding the convenience, not only different ways to build it.
 - **Likely complexity:** does the convenience imply remembered intent, queues, automatic continuation,
-  draft preservation, extra states or coordination between interactions? Use known context to flag the
-  likely cost; leave implementation details and uncertain mechanisms for `plan.html` or `spec-plan`.
+  draft preservation, extra states or coordination between interactions? Can a second request start while
+  one is in flight? Prefer the project's existing lock unless responsiveness during the wait is a stated
+  need. Use known context to flag the likely cost; leave implementation details and uncertain mechanisms
+  for `plan.html` or `spec-plan`.
 - **Recommendation:** include, simplify or omit the behavior, explaining the marginal user benefit and
   cost. Keep this proportional to the feature; no numerical scoring or separate assessment artifact is needed.
 

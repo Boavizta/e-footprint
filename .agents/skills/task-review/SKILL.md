@@ -28,7 +28,7 @@ task can require FULL review; assess the actual diff and affected contracts inde
 5. Apply the checklist at the chosen depth:
 
 
-   - **Complexity** — recursive traversal, multi-layer indirection, or private helpers that could be a flat loop or direct inline logic.
+   - **Complexity** — recursive traversal, multi-layer indirection, or private helpers that could be a flat loop or direct inline logic, or client-side arbitration between requests where a lock would do.
    - **Dead defensive code** — code guarding hypothetical cases not grounded in real data or an enforced invariant.
    - **Defensive-code provenance** — for every new guard, fallback, reconciliation hook, duplicated validation, or hardening, identify the concrete producer of the guarded state, a supported application path that reaches it, and the layer that owns the invariant. A test that directly assigns an impossible internal state is not production evidence. If no supported path exists, flag the code for removal; if another component creates the state, flag a downstream workaround in favour of fixing that component.
    - **Missed invariant** — a constraint that is assumed downstream but not asserted at the earliest possible layer.

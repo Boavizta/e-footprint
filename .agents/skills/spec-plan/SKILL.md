@@ -54,7 +54,9 @@ than silently changing the spec or routinely reopening settled product decisions
 
 For each added abstraction, state store, queue, synchronization step, validation or recovery
 mechanism, identify the agreed behavior it serves and compare it with a smaller extension of
-existing code. Remove mechanisms with no demonstrated need. Apply the project's feature and resource
+existing code. Remove mechanisms with no demonstrated need. A sync, queue, replacement or pending-flag
+rule is a smell: before proposing one, check whether the existing lock already serialises the actions,
+and list the descendants that would inherit the attribute. Apply the project's feature and resource
 priorities from its mission and `.agents/repository.md`.
 
 Also look for requirements whose implementation cost could be substantially reduced by a small
