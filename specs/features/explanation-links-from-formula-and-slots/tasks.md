@@ -33,7 +33,7 @@ Implementation: standard — the plan supplies the three engine changes and argu
 
 ## Task 2 — Derive explanation links from formula and slot graph
 Goal: a saved value resolves its formula on display (pulling void operands), derives its direct ancestors from the formula's attached leaves and its children from the slot's calculus dependents; the stored ancestor list, the hydration state, the children bookkeeping and the loader's inversion pass go.
-Status: approved 2026-10-20
+Status: done 2026-10-20 — commit `f01893df`; handoff [handoffs/task-2.md](handoffs/task-2.md) (open concern: coordinate-keyed children not persisted).
 Brief: [briefs/task-2.md](briefs/task-2.md)
 Repository: e-footprint
 Files touched: `efootprint/abstract_modeling_classes/explainable_object_base_class.py`, `efootprint/api_utils/json_to_system.py`, `efootprint/abstract_modeling_classes/reactive_core/computed_slots.py` (`_release_value` docstring), the four unit test files named in the plan, `tests/integration_tests/integration_test_base_class.py`, `tests/integration_tests/test_integration_simple_system_from_json.py`, `tests/performance_tests/json_size.py`, `specs/architecture/persistence.html` (contract cell and children sentence), `specs/architecture/recomputation.html`, `CHANGELOG.md`.
