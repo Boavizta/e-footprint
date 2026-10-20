@@ -288,6 +288,7 @@
       <p><strong>Implementation decisions</strong></p>
       <p><a href="#impl-decision-01">[IMPL-DECISION-01] Rollback re-pulls forward-visited guards; plan's wave-reachability argument corrected, repeated-invalid-edit defect fixed — APPLIED</a></p>
       <p><a href="#impl-decision-02">[IMPL-DECISION-02] Save discovers objects through inputs only, so a save is byte-stable whatever is computed — APPLIED</a></p>
+      <p><a href="#impl-decision-03">[IMPL-DECISION-03] Coordinate-keyed sub-slots get saved addresses; stored attribution summaries invalidate after reload — APPLIED</a></p>
     </aside>
   </header>
 
@@ -816,6 +817,50 @@ def direct_children_with_id(self):
           <a href="vscode://file//Users/vinville/dev/e-footprint-full/e-footprint/specs/architecture/persistence.html:4:1" data-review-source-href="../../architecture/persistence.html#L4:1">persistence.html</a>
           gained the clause that bytes do not depend on what is computed.</p>
       </aside>
+      <aside id="impl-decision-03" data-note="review">
+        <p><strong>[IMPL-DECISION-03] — APPLIED</strong></p>
+        <p><em>Newly discovered pre-existing defect fixed in run A (Task 4, added by the supervisor after the Task 2
+          review), with substantial lasting complexity: a new node-key form in the saved calculation graph.</em></p>
+        <p>The calculation-graph section promises that reinstalled edges let later edits reach cached serialized
+          values. It skipped every computed-dict sub-slot whose key is not a serialized object, and the attribution
+          dicts <code>Job.hourly_avg_occurrences_per_coordinate</code> and
+          <code>hourly_data_transferred_per_coordinate</code> are keyed by <code>JobOccurrenceCoordinate</code>
+          (and the step-occupancy weight by <code>UsageJourneyStepCoordinate</code>). After a reload, an edit to
+          <code>Job.data_transferred</code> or <code>UsageJourneyStep.user_time_spent</code> therefore never reached
+          the stored
+          <a href="vscode://file//Users/vinville/dev/e-footprint-full/e-footprint/efootprint/core/system.py:301:1" data-review-source-href="../../../efootprint/core/system.py#L301:1"><code>System.impact_repartition_matrix</code></a> or
+          <a href="vscode://file//Users/vinville/dev/e-footprint-full/e-footprint/efootprint/core/hardware/edge/edge_device.py:299:1" data-review-source-href="../../../efootprint/core/hardware/edge/edge_device.py#L299:1"><code>EdgeDevice.footprint_breakdown_summary</code></a>,
+          which stayed cached and stale (reproduced before Task 1, so pre-existing). The same skip was what left
+          children incomplete after reload for those keys, the one plan row Task 2 could not deliver.</p>
+        <p>Fix: a key class implements
+          <a href="vscode://file//Users/vinville/dev/e-footprint-full/e-footprint/efootprint/core/usage/job.py:87:1" data-review-source-href="../../../efootprint/core/usage/job.py#L87:1"><code>to_json_key</code></a> /
+          <a href="vscode://file//Users/vinville/dev/e-footprint-full/e-footprint/efootprint/core/usage/job.py:93:1" data-review-source-href="../../../efootprint/core/usage/job.py#L93:1"><code>from_json_key</code></a> (components by object id; same pair on
+          <a href="vscode://file//Users/vinville/dev/e-footprint-full/e-footprint/efootprint/core/usage/usage_journey_step.py:35:1" data-review-source-href="../../../efootprint/core/usage/usage_journey_step.py#L35:1"><code>UsageJourneyStepCoordinate</code></a>) and is registered in
+          <a href="vscode://file//Users/vinville/dev/e-footprint-full/e-footprint/efootprint/all_classes_in_order.py:104:1" data-review-source-href="../../../efootprint/all_classes_in_order.py#L104:1"><code>COMPUTED_DICT_KEY_CLASSES_DICT</code></a>.
+          <a href="vscode://file//Users/vinville/dev/e-footprint-full/e-footprint/efootprint/api_utils/system_to_json.py:105:1" data-review-source-href="../../../efootprint/api_utils/system_to_json.py#L105:1"><code>_slot_address</code></a> keeps a hashable address,
+          <a href="vscode://file//Users/vinville/dev/e-footprint-full/e-footprint/efootprint/api_utils/system_to_json.py:127:1" data-review-source-href="../../../efootprint/api_utils/system_to_json.py#L127:1"><code>_json_node</code></a> writes the key as
+          <code>{"ClassName": {component: id}}</code>, and
+          <a href="vscode://file//Users/vinville/dev/e-footprint-full/e-footprint/efootprint/api_utils/system_to_json.py:117:1" data-review-source-href="../../../efootprint/api_utils/system_to_json.py#L117:1"><code>_key_object_ids</code></a> applies the foreign-id skip to object
+          keys and coordinate components alike. At load
+          <a href="vscode://file//Users/vinville/dev/e-footprint-full/e-footprint/efootprint/api_utils/json_to_system.py:295:1" data-review-source-href="../../../efootprint/api_utils/json_to_system.py#L295:1"><code>_dict_key_from_json</code></a> rebuilds the key by dict lookups
+          only, so loading still computes nothing, and a rebuilt coordinate compares equal to one built at compute
+          time because modeling objects hash by id. <code>api_utils</code> keeps no coordinate special case. The
+          foreign-component skip is load-bearing: unlinking an <code>EdgeUsagePattern</code> from the system without
+          deleting it leaves coordinate sub-slots keyed by the unwritten pattern, which
+          <a href="vscode://file//Users/vinville/dev/e-footprint-full/e-footprint/tests/api_utils_tests/test_minimal_serialization_contract.py:132:1" data-review-source-href="../../../tests/api_utils_tests/test_minimal_serialization_contract.py#L132:1"><code>test_coordinate_with_an_unsaved_component_is_skipped_at_save</code></a>
+          reaches through that path. Evidence:
+          <a href="vscode://file//Users/vinville/dev/e-footprint-full/e-footprint/tests/integration_tests/integration_test_base_class.py:387:1" data-review-source-href="../../../tests/integration_tests/integration_test_base_class.py#L387:1"><code>run_test_editing_a_reloaded_model_voids_its_stored_summaries</code></a>
+          on every fixture compares the voided stored slots and recomputed values after a reload with the same edit in
+          memory (fails on the pre-task code on all six web fixtures; the edge-only fixtures have no such input and
+          assert nothing).</p>
+        <p>Cost accepted: the saved graph now has a third node-key form (null, object id, or class-keyed components);
+          every future non-object computed-dict key class must implement the pair and be registered, or its
+          invalidation edges are silently lost at save (stated in <code>specs/conventions.md</code> and
+          <code>persistence.html</code>). On the big performance system: +386 nodes, file +11.6%
+          (3.40 MB to 3.79 MB), load and save each +2–4 ms. Older files keep loading since the nodes are additive,
+          and the Task 3 version bump demotes their stored values to the comparison baseline anyway. No schema handler
+          is needed.</p>
+      </aside>
       <p><strong>Loading.</strong>
         <a href="vscode://file//Users/vinville/dev/e-footprint-full/e-footprint/efootprint/api_utils/json_to_system.py:159:1" data-review-source-href="../../../efootprint/api_utils/json_to_system.py#L159:1"><code>json_to_system()</code></a> drops the
         call at <a href="vscode://file//Users/vinville/dev/e-footprint-full/e-footprint/efootprint/api_utils/json_to_system.py:244:1" data-review-source-href="../../../efootprint/api_utils/json_to_system.py#L244:1">line 244</a> and the function
@@ -953,7 +998,7 @@ def direct_children_with_id(self):
       <tbody>
         <tr><td>Formula complete after round trip</td><td>Flat formula of a stored footprint after reload equals the pre-save flat formula token by token, including repeated operands and inline constants</td><td>Library integration, from-json fixtures and the <a href="vscode://file//Users/vinville/dev/e-footprint-full/e-footprint/tests/builders/external_apis/ecologits/test_ecologits_video_external_api.py:166:1" data-review-source-href="../../../tests/builders/external_apis/ecologits/test_ecologits_video_external_api.py#L166:1">EcoLogits video test system</a></td></tr>
         <tr><td>Ancestors equal formula leaves, in order</td><td>Ancestor ids of a saved root and of a nested saved value equal the pre-save ids</td><td>Library integration</td></tr>
-        <tr><td>Children complete after round trip</td><td>Children ids of a job input after reload equal those before save; void dependents included</td><td>Library integration (the existing <a href="vscode://file//Users/vinville/dev/e-footprint-full/e-footprint/tests/integration_tests/integration_simple_system_base_class.py:239:1" data-review-source-href="../../../tests/integration_tests/integration_simple_system_base_class.py#L239:1">halfway-save test</a> extends)</td></tr>
+        <tr><td>Children complete after round trip</td><td>Children ids of a job input after reload equal those before save; void dependents included (coordinate-keyed sub-slots too, since <a href="#impl-decision-03">IMPL-DECISION-03</a>)</td><td>Library integration (the existing <a href="vscode://file//Users/vinville/dev/e-footprint-full/e-footprint/tests/integration_tests/integration_simple_system_base_class.py:239:1" data-review-source-href="../../../tests/integration_tests/integration_simple_system_base_class.py#L239:1">halfway-save test</a> extends)</td></tr>
         <tr><td>Graph reachability</td><td>Node and edge sets of <code>build_calculus_graph</code> equal before and after the round trip for the total footprint</td><td>Library integration</td></tr>
         <tr><td>Load computes nothing</td><td><code>observe_computations</code> records nothing during <code>json_to_system</code></td><td>Library integration</td></tr>
         <tr><td>Save computes nothing</td><td>Same observer during <code>system_to_json</code> on a partially computed model</td><td>Library unit</td></tr>
