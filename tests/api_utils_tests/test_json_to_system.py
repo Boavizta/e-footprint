@@ -84,12 +84,26 @@ class TestJsonToSystem(IntegrationTestBaseClass):
             resolution=SourceObject("1080p (1920 x 1080)", source=Sources.USER_DATA,
                                     confidence="high", comment="Keep authored choice"))
         snapshot = system_to_json(job, save_computed_state=False)
-        self.assertEqual("26.0.1", snapshot["efootprint_version"])
+        self.assertEqual("27.0.0", snapshot["efootprint_version"])
         with patch.dict("efootprint.api_utils.version_upgrade_handlers.VERSION_UPGRADE_HANDLERS",
                         {25: lambda *_: self.fail("Current files must skip the historical handler")}):
             _, loaded, upgraded = json_to_system(snapshot)
         self.assertIs(snapshot, upgraded)
         self.assertEqual(job.resolution.to_json(), loaded[job.id].resolution.to_json())
+
+    def test_version_26_file_with_stored_direct_ancestors_loads_and_saves_without_them(self):
+        _, objects, _ = json_to_system(self.base_system_dict)
+        system = next(obj for obj in objects.values() if type(obj) is System)
+        system.total_footprint.value  # computed so the snapshot carries the stored total
+        snapshot = system_to_json(system, save_computed_state=True)
+        snapshot["efootprint_version"] = "26.0.1"
+        snapshot["System"][system.id]["total_footprint"]["direct_ancestors_with_id"] = ["('x', 'y', None)"]
+
+        _, loaded, _ = json_to_system(snapshot)
+        round_trip = system_to_json(loaded[system.id], save_computed_state=True)
+
+        self.assertNotIn("direct_ancestors_with_id", json.dumps(round_trip))
+        self.assertEqual(system.total_footprint.value.sum(), loaded[system.id].total_footprint.value.sum())
 
     def test_automatic_replacement_source_reuses_singleton_after_both_snapshot_modes(self):
         """Test automatic source identity after inputs-only and cached snapshot loads."""

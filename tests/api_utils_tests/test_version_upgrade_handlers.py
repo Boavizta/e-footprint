@@ -10,7 +10,8 @@ from efootprint.api_utils.json_to_system import json_to_system
 from efootprint.api_utils.version_upgrade_handlers import upgrade_version_9_to_10, upgrade_version_10_to_11, \
     upgrade_version_11_to_12, upgrade_version_12_to_13, upgrade_version_13_to_14, upgrade_version_14_to_15, \
     upgrade_version_15_to_16, upgrade_version_16_to_17, upgrade_version_18_to_19, upgrade_version_19_to_20, \
-    upgrade_version_20_to_21, upgrade_version_21_to_22, upgrade_version_23_to_24, upgrade_version_25_to_26
+    upgrade_version_20_to_21, upgrade_version_21_to_22, upgrade_version_23_to_24, upgrade_version_25_to_26, \
+    upgrade_version_26_to_27
 from efootprint.abstract_modeling_classes.source_objects import SourceObject, SourceValue
 from efootprint.builders.external_apis.ecologits.ecologits_video_external_api import EcoLogitsVideoGenExternalAPIJob
 from efootprint.constants.sources import Sources
@@ -98,6 +99,25 @@ class TestVersionUpgradeHandlers(TestCase):
                     output = upgrade_version_25_to_26(
                         copy.deepcopy(input_dict), {"EcoLogitsVideoGenExternalAPIJob": EcoLogitsVideoGenExternalAPIJob})
                 self.assertEqual(input_dict, output)
+
+    def test_upgrade_26_to_27_drops_direct_ancestors_from_values_and_dict_entries_only(self):
+        stored = {"value": 1.0, "unit": "dimensionless", "label": "Value",
+                  "direct_ancestors_with_id": ["('a', 'b', None)"], "direct_children_with_id": [],
+                  "explain_nested_tuples": [["('a', 'b', None)", "+", {"value": 2, "direct_ancestors_with_id": []}]]}
+        input_dict = {
+            "efootprint_version": "26.0.1",
+            "Server": {"server": {"id": "server", "name": "Server", "base_value": copy.deepcopy(stored),
+                                  "per_coordinate": {"coord": copy.deepcopy(stored)},
+                                  "source": {"name": "Source", "link": None}}},
+            "calculation_graph": {"nodes": [], "edges": [{"direct_ancestors_with_id": []}]},
+            "interface_config": {"sankey_diagrams": [{"direct_ancestors_with_id": []}]},
+        }
+        output = upgrade_version_26_to_27(copy.deepcopy(input_dict))
+        expected = copy.deepcopy(input_dict)
+        for stored_value in (expected["Server"]["server"]["base_value"],
+                             expected["Server"]["server"]["per_coordinate"]["coord"]):
+            del stored_value["direct_ancestors_with_id"]
+        self.assertEqual(expected, output)
 
     def test_upgrade_23_to_24_pluralizes_patterns_and_moves_edge_span(self):
         span = {"value": 2.0, "unit": "year", "label": "Usage span", "source": "user_data"}

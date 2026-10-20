@@ -876,6 +876,21 @@ def upgrade_version_25_to_26(system_dict, efootprint_classes_dict=None):
     return system_dict
 
 
+def upgrade_version_26_to_27(system_dict, efootprint_classes_dict=None):
+    """Drop stored direct_ancestors_with_id: explanations now derive a value's ancestors from its formula."""
+    if efootprint_classes_dict is None:
+        from efootprint.all_classes_in_order import ALL_EFOOTPRINT_CLASSES
+        efootprint_classes_dict = {cls.__name__: cls for cls in ALL_EFOOTPRINT_CLASSES}
+    for class_key in efootprint_classes_dict.keys() & system_dict.keys():
+        for obj_dict in system_dict[class_key].values():
+            for attr_value in obj_dict.values():
+                if isinstance(attr_value, dict):
+                    stored_values = [attr_value] + [entry for entry in attr_value.values() if isinstance(entry, dict)]
+                    for stored_value in stored_values:
+                        stored_value.pop("direct_ancestors_with_id", None)
+    return system_dict
+
+
 VERSION_UPGRADE_HANDLERS = {
     9: upgrade_version_9_to_10,
     10: upgrade_version_10_to_11,
@@ -894,4 +909,5 @@ VERSION_UPGRADE_HANDLERS = {
     23: upgrade_version_23_to_24,
     24: upgrade_version_24_to_25,
     25: upgrade_version_25_to_26,
+    26: upgrade_version_26_to_27,
 }
