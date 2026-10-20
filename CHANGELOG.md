@@ -7,6 +7,7 @@ and this project adheres to [Semantic Versioning](http://semver.org/)
 ## [Unreleased]
 
 ### Changed
+- A saved model's explanations are complete after reload: displaying a stored value's formula computes its missing operands, its direct ancestors come from that formula and its direct children from the model's dependency graph, so values that were not saved are listed too. Saved values no longer carry a `direct_ancestors_with_id` key, and loading and saving compute nothing.
 - A computed value's dependency links now always describe its current state: an edit unlinks every value it empties until it is recomputed, a failed or rejected computation stays linked to what it read, and removed computed-dict entries and deleted objects' values are unlinked from the values they used.
 
 ### Fixed

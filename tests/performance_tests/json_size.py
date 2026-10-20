@@ -54,10 +54,7 @@ if __name__ == "__main__":
     compressed_values_size = get_values_size(data, "compressed_values")
     label_values_size = get_values_size(data, "label")
     api_values_size = get_values_size(data, "api_call_response")
-    direct_ancestors_with_id_size = get_values_size(data, "direct_ancestors_with_id")
-    direct_children_with_id_size = get_values_size(data, "direct_children_with_id")
-    explain_nested_tuples_size = get_values_size(data, "explain_nested_tuples")
-    calculus_graph_size = direct_children_with_id_size + direct_ancestors_with_id_size + explain_nested_tuples_size
+    calculus_graph_size = get_values_size(data, "explain_nested_tuples")
     keys_size = get_keys_size(data)
     other_values_size = (total_json_size - compressed_values_size - api_values_size - label_values_size -
                          calculus_graph_size - keys_size)

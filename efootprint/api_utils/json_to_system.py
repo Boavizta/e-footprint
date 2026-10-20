@@ -241,7 +241,6 @@ def json_to_system(system_dict, efootprint_classes_dict=None):
                 explainable_object_json, flat_obj_dict, sources_dict)
 
     if trust_stored_values:
-        invert_children_links_of_stored_values(flat_obj_dict)
         rebuild_dependency_graph(system_dict[CALCULATION_GRAPH_KEY], flat_obj_dict)
 
     baseline_values = None
@@ -256,24 +255,6 @@ def json_to_system(system_dict, efootprint_classes_dict=None):
         modeling_obj._mark_live()
 
     return class_obj_dict, flat_obj_dict, system_dict
-
-
-def invert_children_links_of_stored_values(flat_obj_dict):
-    """Serialized values carry only their direct-ancestor addresses; the reciprocal children links
-    are derived here by inversion, once every object is loaded (ancestors resolving to void slots are
-    filtered by computed-structure hydration — a stored total's ancestors are themselves stored, by
-    construction of the serialize set)."""
-    from efootprint.abstract_modeling_classes.reactive_core import instance_slot_registry
-
-    for obj in flat_obj_dict.values():
-        for slot in list(instance_slot_registry(obj).values()):
-            if slot.getter is None or not slot.has_cached_value:
-                continue
-            ancestors = getattr(slot._value, "direct_ancestors_with_id", None)
-            if not ancestors:
-                continue
-            for ancestor in ancestors:
-                ancestor.add_child_to_direct_children_with_id(slot._value)
 
 
 def rebuild_dependency_graph(calculation_graph, flat_obj_dict):

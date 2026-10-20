@@ -193,7 +193,7 @@ class TestExplainableObjectDict(unittest.TestCase):
 
         self.assertEqual(real_modeling_obj, modeled_value.modeling_obj_container)
         self.assertEqual("attr_name", modeled_value.attr_name_in_mod_obj_container)
-        self.assertIn(modeled_child, modeled_value.direct_children_with_id)
+        self.assertEqual([modeled_value], modeled_child.direct_ancestors_with_id)
 
     def test_to_json(self):
         self.dict_obj[self.mock_modeling_obj] = self.mock_explainable_obj

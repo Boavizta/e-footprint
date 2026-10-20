@@ -69,7 +69,7 @@ class TestExplainableQuantity(unittest.TestCase):
         json_data = {"label": "1 Watt", "value": 1, "unit": "watt"}
         obj = ExplainableQuantity.from_json_dict(json_data)
         json_output = obj.to_json(with_formula=True)
-        self.assertIn("direct_ancestors_with_id", json_output)
+        self.assertNotIn("direct_ancestors_with_id", json_output)
         self.assertNotIn("direct_ancestors_with_id", obj.json_value_data)
         self.assertNotIn("direct_ancestors_with_id", obj.to_json(with_formula=False))
 

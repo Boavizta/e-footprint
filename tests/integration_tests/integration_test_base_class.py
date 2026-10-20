@@ -5,6 +5,7 @@ from dataclasses import dataclass
 import inspect
 from typing import Callable, List, Optional, Dict, Sequence, Type, Union
 from unittest import TestCase
+import ast
 import os
 import json
 
@@ -287,6 +288,103 @@ class IntegrationTestBaseClass(TestCase):
                                      f"Attribute {attr_key} label is not equal for {obj.name}")
 
             logger.info(f"All ExplainableQuantities have right values for generated object {obj.name}")
+
+    def run_test_explanation_links_survive_round_trip(self):
+        """Test that a saved and reloaded system explains itself as the saved one did: same flat formula
+        and direct ancestors for the total and a nested stored value, same children for a job input (void
+        dependents included), and the same calculus graph of the total."""
+        from efootprint.abstract_modeling_classes.reactive_core import observe_computations
+        from efootprint.core.usage.job import JobBase
+        from efootprint.utils.calculus_graph import build_calculus_graph
+
+        def formula_tokens(value):
+            return [
+                (token.id, token.label) if isinstance(token, ExplainableObject) and token.modeling_obj_container
+                else (token.label, str(token)) if isinstance(token, ExplainableObject) else token
+                for token in value.compute_formula_as_flat_tuple(value.explain_nested_tuples)]
+
+        def graph_nodes_and_edges(value):
+            graph = build_calculus_graph(value)
+            return set(graph.get_nodes()), {(edge["from"], edge["to"]) for edge in graph.edges}
+
+        def job_input_children(system):
+            job = next(obj for obj in system.all_linked_objects if isinstance(obj, JobBase))
+            return job.data_transferred.direct_children_with_id
+
+        total = self.system.total_footprint
+        system_dict = json.loads(json.dumps(system_to_json(self.system)))
+        _, flat_obj_dict, _ = json_to_system(system_dict)
+        reloaded_system = flat_obj_dict[self.system.id]
+        reloaded_total = reloaded_system.total_footprint
+        nested_reloaded = next(
+            ancestor for ancestor in reloaded_total.direct_ancestors_with_id
+            if ancestor.explain_nested_tuples_from_json is not None)
+        nested = next(ancestor for ancestor in total.direct_ancestors_with_id if ancestor.id == nested_reloaded.id)
+
+        self.assertEqual(formula_tokens(total), formula_tokens(reloaded_total))
+        self.assertEqual(formula_tokens(nested), formula_tokens(nested_reloaded))
+        self.assertEqual(total.direct_ancestor_ids, reloaded_total.direct_ancestor_ids)
+        self.assertEqual(nested.direct_ancestor_ids, nested_reloaded.direct_ancestor_ids)
+        if any(isinstance(obj, JobBase) for obj in self.system.all_linked_objects):
+            # The saved calculation graph addresses dict elements by modeling-object key only: elements keyed by
+            # derived attribution coordinates are not persisted, and are listed again once recomputed.
+            children_ids = sorted(
+                child.id for child in job_input_children(self.system)
+                if child.dict_container is None or isinstance(child.key_in_dict, ModelingObject))
+            pulled_for_children = []
+            with observe_computations(pulled_for_children.append):
+                reloaded_children_ids = sorted(child.id for child in job_input_children(reloaded_system))
+            self.assertTrue(children_ids)
+            self.assertEqual(children_ids, reloaded_children_ids)
+            self.assertTrue(pulled_for_children, "unsaved children are void after reload and must still be listed")
+        self.assertEqual(graph_nodes_and_edges(total), graph_nodes_and_edges(reloaded_total))
+
+    def run_test_displaying_one_stored_formula_computes_only_its_operands(self):
+        """Test that loading computes nothing, that explaining one stored footprint leaves every other void
+        operand of a stored formula void, and that saving after the display computes nothing and writes the
+        same objects and stored values."""
+        from efootprint.abstract_modeling_classes.reactive_core import instance_slot_registry, observe_computations
+
+        _ = self.system.total_footprint
+        computed = []
+        with observe_computations(computed.append):
+            _, flat_obj_dict, _ = json_to_system(json.loads(json.dumps(system_to_json(self.system))))
+        self.assertEqual([], computed)
+        system = flat_obj_dict[self.system.id]
+
+        def operand_slots(stored_formula):
+            # Resolved from the stored addresses, never through the value: reading its ancestors would pull them.
+            if isinstance(stored_formula, list):
+                return operand_slots(stored_formula[0]) + operand_slots(stored_formula[2])
+            if not isinstance(stored_formula, str):
+                return []
+            container_id, attr_name, key_id = ast.literal_eval(stored_formula)
+            slot = instance_slot_registry(flat_obj_dict[container_id]).get(
+                (attr_name, flat_obj_dict[key_id]) if key_id else attr_name)
+            return [slot] if slot is not None and slot.getter is not None else []
+
+        stored_values = [
+            slot._value for obj in flat_obj_dict.values() for slot in instance_slot_registry(obj).values()
+            if slot.has_cached_value and getattr(slot._value, "explain_nested_tuples_from_json", None) is not None
+            and slot._value is not system.total_footprint]
+        displayed = stored_values[0]
+        void_operand_slots_of_other_values = [
+            slot for value in stored_values[1:] for slot in operand_slots(value.explain_nested_tuples_from_json)
+            if not slot.has_cached_value]
+        self.assertTrue(void_operand_slots_of_other_values)
+        json_before_display = system_to_json(system)
+        with observe_computations(computed.append):
+            displayed.explain()
+        self.assertTrue(computed)
+        self.assertTrue(all(not slot.has_cached_value for slot in void_operand_slots_of_other_values))
+
+        computed_during_save = []
+        with observe_computations(computed_during_save.append):
+            json_after_display = system_to_json(system)
+        self.assertEqual([], computed_during_save)
+        # The calculation graph is left out: a slot the display recomputed carries the reads of that computation.
+        self.assertEqual({key: value for key, value in json_before_display.items() if key != "calculation_graph"},
+                         {key: value for key, value in json_after_display.items() if key != "calculation_graph"})
 
     def _test_input_change(
             self, expl_attr, expl_attr_new_value, input_object, expl_attr_name,

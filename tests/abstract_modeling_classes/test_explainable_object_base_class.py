@@ -13,12 +13,52 @@ from efootprint.abstract_modeling_classes.explainable_object_base_class import E
 from efootprint.abstract_modeling_classes.explainable_quantity import ExplainableQuantity
 from efootprint.abstract_modeling_classes.empty_explainable_object import EmptyExplainableObject
 from efootprint.abstract_modeling_classes.explainable_timezone import ExplainableTimezone
-from efootprint.abstract_modeling_classes.source_objects import Source
+from efootprint.abstract_modeling_classes.source_objects import Source, SourceValue
 from efootprint.builders.timeseries.explainable_hourly_quantities_from_form_inputs import \
     ExplainableHourlyQuantitiesFromFormInputs
 from efootprint.builders.timeseries.explainable_recurrent_quantities_from_constant import \
     ExplainableRecurrentQuantitiesFromConstant
 from efootprint.constants.units import u
+from efootprint.abstract_modeling_classes.modeling_object import ModelingObject
+from efootprint.abstract_modeling_classes.reactive_core import (
+    computed_attribute, computed_dict, computed_structure, instance_slot_registry, observe_computations,
+    slot_of_attached_value)
+
+
+class ChildrenLinksLeaf(ModelingObject):
+    default_values = {}
+
+    def __init__(self, name, power: ExplainableQuantity):
+        super().__init__(name)
+        self.power = power.set_label("Power")
+
+    @computed_attribute
+    def double_power(self):
+        return (self.power * ExplainableQuantity(2 * u.dimensionless, "two")).set_label("Double power")
+
+    @computed_attribute
+    def quadruple_power(self):
+        return (self.double_power * ExplainableQuantity(2 * u.dimensionless, "two")).set_label("Quadruple power")
+
+
+class ChildrenLinksHolder(ModelingObject):
+    default_values = {}
+
+    def __init__(self, name, leaf: ChildrenLinksLeaf):
+        super().__init__(name)
+        self.leaf = leaf
+
+    @property
+    def selected_leaves(self):
+        return [self.leaf] if self.leaf.double_power.magnitude > 0 else []
+
+    @computed_dict(keys="selected_leaves")
+    def power_per_selected_leaf(self, leaf):
+        return leaf.power.copy().set_label(f"Power of selected {leaf.name}")
+
+    @computed_structure
+    def double_power_magnitude(self):
+        return self.leaf.double_power.magnitude
 
 
 class TestExplainableObjectBaseClass(TestCase):
@@ -103,69 +143,52 @@ class TestExplainableObjectBaseClass(TestCase):
         self.assertEqual(self.a.modeling_obj_container, self.modeling_obj_container_mock)
         self.assertEqual(self.a.attr_name_in_mod_obj_container, "attr1")
 
-    def test_set_modeling_obj_container_should_trigger_add_child_to_direct_children_with_id(self):
-        ancestor = MagicMock()
-        self.a._direct_ancestors_with_id = [ancestor]
-        self.a.set_modeling_obj_container(None, None)
-        self.a.set_modeling_obj_container(self.modeling_obj_container_mock, "attr1")
-        ancestor.add_child_to_direct_children_with_id.assert_called_once_with(direct_child=self.a)
+    def test_unattached_value_has_no_children(self):
+        self.assertEqual([], ExplainableObject(1, "unattached").direct_children_with_id)
 
-    def test_set_modeling_obj_container_should_trigger_remove_child_from_direct_children_with_id(self):
-        ancestor = MagicMock()
-        self.a._direct_ancestors_with_id = [ancestor]
-        self.a._direct_ancestors_with_id = [ancestor]
-        self.a.modeling_obj_container = MagicMock()
-        self.a.modeling_obj_container.id = 2
-        self.a.modeling_obj_container.name = "Model2"
-        self.a.set_modeling_obj_container(None, None)
-        ancestor.remove_child_from_direct_children_with_id.assert_called_once_with(direct_child=self.a)
+    def test_value_attached_by_hand_has_no_children(self):
+        """Test that children come from the slot graph only: a value built by hand outside a computation
+        records no read, so its operand lists no child."""
+        leaf = ChildrenLinksLeaf("hand leaf", SourceValue(1 * u.W))
+        hand_built = ExplainableQuantity(2 * u.W, label="hand built", left_parent=leaf.power, operator="duplicate")
+        hand_built.set_modeling_obj_container(ChildrenLinksHolder("hand holder", leaf), "hand_attr")
 
-    def test_add_child_to_direct_children_with_id_shouldnt_update_list_if_child_already_in_list(self):
-        self.a.direct_children_with_id = [self.c]
-        self.c.modeling_obj_container = self.modeling_obj_container_mock
-        self.a.add_child_to_direct_children_with_id(self.c)
+        self.assertEqual([leaf.power], hand_built.direct_ancestors_with_id)
+        self.assertEqual([], leaf.power.direct_children_with_id)
 
-        self.assertEqual([self.c], self.a.direct_children_with_id)
+    def test_children_are_the_explainable_calculus_dependents_only(self):
+        """Test that a value read by a computed-dict key set and by a computed structure lists neither as a
+        child, only the computed attribute whose formula uses it."""
+        leaf = ChildrenLinksLeaf("leaf", SourceValue(1 * u.W))
+        holder = ChildrenLinksHolder("holder", leaf)
+        _ = leaf.quadruple_power, dict(holder.power_per_selected_leaf), holder.double_power_magnitude
+        double_power_slot = slot_of_attached_value(leaf.double_power)
+        key_set_slot = instance_slot_registry(holder)["power_per_selected_leaf"]
+        structure_slot = instance_slot_registry(holder)["double_power_magnitude"]
+        for non_explainable_reader in (key_set_slot, structure_slot):
+            self.assertIn(double_power_slot, non_explainable_reader.calculus_dependencies)
 
-    def test_remove_child_from_direct_children_with_id_shouldnt_update_list_if_child_not_in_list(self):
-        direct_child = MagicMock(id="1")
-        self.a.direct_children_with_id = [direct_child]
-        self.a.remove_child_from_direct_children_with_id(MagicMock(id="2"))
+        self.assertEqual([leaf.quadruple_power], leaf.double_power.direct_children_with_id)
 
-        self.assertEqual([direct_child], self.a.direct_children_with_id)
+    def test_loaded_value_derives_ancestors_from_formula_leaves_on_first_read(self):
+        """Test that a loaded value computes nothing at load, then derives its ancestors from the formula's
+        attached leaves, left to right and deduplicated, pulling a void operand and skipping inline
+        constants."""
+        leaf = ChildrenLinksLeaf("loaded leaf", SourceValue(1 * u.W))
+        constant = ExplainableQuantity(3 * u.dimensionless, "three")
+        loaded = ExplainableQuantity(9 * u.W, label="loaded")
+        computed = []
+        with observe_computations(lambda slot: computed.append(slot.diagnostic_name)):
+            loaded.initialize_calculus_graph_data_from_json(
+                {"explain_nested_tuples": [
+                    [leaf.power.full_str_tuple_id, "*", constant.to_json()], "+",
+                    [str((leaf.id, "double_power", None)), "+", leaf.power.full_str_tuple_id]]},
+                {leaf.id: leaf})
+            self.assertEqual([], computed)
+            ancestors = loaded.direct_ancestors_with_id
 
-    def test_remove_child_from_direct_children_with_id_should_update_list_if_child_in_list(self):
-        direct_child = MagicMock(id="1")
-        self.a.direct_children_with_id = [direct_child]
-        self.a.remove_child_from_direct_children_with_id(direct_child)
-
-        self.assertEqual([], self.a.direct_children_with_id)
-
-    def test_all_descendants_with_id(self):
-        root = ExplainableObject(0, "root")
-        child1 = ExplainableObject(1, "child1")
-        child1.modeling_obj_container = MagicMock(id="child1_mod_obj_container")
-        child1.attr_name_in_mod_obj_container = "grandchild1"
-        child2 = ExplainableObject(2, "child2")
-        child2.modeling_obj_container = MagicMock(id="child2_mod_obj_container")
-        child2.attr_name_in_mod_obj_container = "grandchild2"
-        grandchild1 = ExplainableObject(3, "grandchild1")
-        grandchild1.modeling_obj_container = MagicMock(id="grandchild1_mod_obj_container")
-        grandchild1.attr_name_in_mod_obj_container = "grandchild1"
-        grandchild2 = ExplainableObject(4, "grandchild2")
-        grandchild2.modeling_obj_container = MagicMock(id="grandchild2_mod_obj_container")
-        grandchild2.attr_name_in_mod_obj_container = "grandchild2"
-
-        root.direct_children_with_id.append(child1)
-        root.direct_children_with_id.append(child2)
-        child1.direct_children_with_id.append(grandchild1)
-        child2.direct_children_with_id.append(grandchild2)
-
-        descendants = root.all_descendants_with_id
-        descendants_labels = [descendant.label for descendant in descendants]
-
-        self.assertEqual(len(descendants), 4)
-        self.assertListEqual(descendants_labels, ["child1", "child2", "grandchild2", "grandchild1"])
+        self.assertEqual([leaf.power, leaf.double_power], ancestors)
+        self.assertEqual(["ChildrenLinksLeaf.double_power"], computed)
 
     def test_all_ancestors_with_id(self):
         descendant = ExplainableObject(0, "descendant")

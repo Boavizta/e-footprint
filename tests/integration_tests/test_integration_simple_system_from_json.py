@@ -1,6 +1,7 @@
 import json
 import os
 
+from efootprint.abstract_modeling_classes.reactive_core import observe_computations
 from efootprint.api_utils.json_to_system import json_to_system
 from efootprint.api_utils.system_to_json import system_to_json
 from efootprint.utils.calculus_graph import build_calculus_graph
@@ -32,7 +33,10 @@ class IntegrationTestSimpleSystemFromJson(IntegrationTestSimpleSystemBaseClass, 
     def test_system_calculation_graph_right_after_json_to_system(self):
         with open(self.system_json_filepath, "r") as file:
             system_dict = json.load(file)
-        class_obj_dict, flat_obj_dict, _ = json_to_system(system_dict)
+        computed = []
+        with observe_computations(computed.append):
+            class_obj_dict, flat_obj_dict, _ = json_to_system(system_dict)
+        self.assertEqual([], computed)
         system = flat_obj_dict[self.system.id]
         self.assertFalse("None" in system.total_footprint.explain())
         graph = build_calculus_graph(system.total_footprint)

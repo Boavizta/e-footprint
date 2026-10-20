@@ -371,7 +371,7 @@ class TestExplainableHourlyQuantities(unittest.TestCase):
         }
         obj = ExplainableHourlyQuantities.from_json_dict(json_data)
         json_output = obj.to_json(with_formula=True)
-        self.assertIn("direct_ancestors_with_id", json_output)
+        self.assertNotIn("direct_ancestors_with_id", json_output)
         self.assertNotIn("direct_ancestors_with_id", obj.json_compressed_value_data)
         self.assertNotIn("direct_ancestors_with_id", obj.to_json(with_formula=False))
 

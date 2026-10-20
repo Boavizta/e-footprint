@@ -22,9 +22,8 @@ _OBJECT_LINKED_SLOTS = (
 def peek_attribute_value(container, attr_name):
     """The object stored at a (container, attribute) address, without ever running a computation:
     instance dict for inputs, facade or cached slot value for computed attributes. Used by the graph
-    bookkeeping (id resolution, dict containers, lazy calculus-graph rehydration), which must never
-    re-enter the engine — pulling there would recurse into the very slot being attached or recompute
-    slots mid-invalidation."""
+    bookkeeping (id resolution, dict containers), which must never re-enter the engine — pulling there
+    would recurse into the very slot being attached or recompute slots mid-invalidation."""
     if attr_name in container.__dict__:
         return container.__dict__[attr_name]
     facade = container.__dict__.get("_computed_dict_facades", {}).get(attr_name)

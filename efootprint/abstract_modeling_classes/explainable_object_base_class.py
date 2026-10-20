@@ -4,8 +4,7 @@ from functools import lru_cache
 from typing import Literal, Type, Optional, TYPE_CHECKING
 import os
 
-from efootprint.abstract_modeling_classes.object_linked_to_modeling_obj import (
-    ObjectLinkedToModelingObj, peek_attribute_value)
+from efootprint.abstract_modeling_classes.object_linked_to_modeling_obj import ObjectLinkedToModelingObj
 from efootprint.constants.units import u
 from efootprint.logger import logger
 from efootprint.abstract_modeling_classes.utils import css_escape
@@ -85,26 +84,37 @@ def _resolve_sentinel_source(source_id: str) -> Optional[Source]:
 @lru_cache(maxsize=2 ** 17)
 def _parse_value_address(attr_key: str) -> tuple:
     """Parse a serialized value address string back into its (container id, attribute, key id)
-    triple. Addresses are stable strings repeated across ancestor/children/formula references, and
-    eval-based parsing is slow, so the parse is memoized. The cache is bounded because addresses
-    carry per-model uuids: a long-lived process loading many models must not grow it forever —
-    repeat lookups are intra-load, so a generous bound keeps the full speedup."""
+    triple. Addresses are stable strings repeated across formula references, and eval-based parsing is
+    slow, so the parse is memoized. The cache is bounded because addresses carry per-model uuids: a
+    long-lived process loading many models must not grow it forever — repeat lookups are intra-model,
+    so a generous bound keeps the full speedup."""
     return eval(attr_key)
 
 
 def get_attribute_from_flat_obj_dict(attr_key: str, flat_obj_dict: dict):
-    """Resolve a serialized (container id, attribute[, key id]) address to its currently stored value,
-    or None when the slot is void — never computes: resolution runs inside graph bookkeeping (value
-    drops, rehydration), where a pull would recompute slots mid-invalidation. A void address means the
-    referenced value generation was dropped, so there is no live object to link to."""
-    modeling_obj_container_id, attr_name_in_mod_obj_container, key_in_dict = _parse_value_address(attr_key)
-    container_attr_value = peek_attribute_value(
-        flat_obj_dict[modeling_obj_container_id], attr_name_in_mod_obj_container)
-    if key_in_dict:
-        if not isinstance(container_attr_value, dict):
-            return None
-        return dict.get(container_attr_value, flat_obj_dict[key_in_dict])
-    return container_attr_value
+    """Resolve a serialized (container id, attribute[, key id]) address to its live value, computing a
+    void computed slot. Only the formula deserializer calls this, on display: an operand of an
+    explanation is part of what is being explained. A computed-dict element is read through the dict
+    facade, which computes that element only."""
+    from efootprint.abstract_modeling_classes.reactive_core import computed_dict, computed_slots
+
+    container_id, attr_name, key_id = _parse_value_address(attr_key)
+    container = flat_obj_dict[container_id]
+    if not key_id:
+        return getattr(container, attr_name)
+    descriptor = computed_slots(container.efootprint_class).get(attr_name)
+    if isinstance(descriptor, computed_dict):
+        return descriptor.facade(container)[flat_obj_dict[key_id]]
+    return getattr(container, attr_name)[flat_obj_dict[key_id]]
+
+
+def _attached_formula_leaves(node):
+    """Attached values of a formula tree, left to right: by construction the value's direct ancestors."""
+    if isinstance(node, tuple):
+        yield from _attached_formula_leaves(node[0])
+        yield from _attached_formula_leaves(node[2])
+    elif isinstance(node, ExplainableObject) and node.modeling_obj_container is not None:
+        yield node
 
 
 class ExplainableObject(ObjectLinkedToModelingObj):
@@ -118,13 +128,9 @@ class ExplainableObject(ObjectLinkedToModelingObj):
         'left_parent',
         'right_parent',
         'operator',
-        '_keys_of_direct_ancestors_with_id_loaded_from_json',
-        '_keys_of_direct_children_with_id_loaded_from_json',
-        '_graph_links_hydrated_from_json',
         '_flat_obj_dict',
         '_sources_dict',
         '_direct_ancestors_with_id',
-        '_direct_children_with_id',
         'explain_nested_tuples_from_json',
         '_explain_nested_tuples',
     )
@@ -151,16 +157,10 @@ class ExplainableObject(ObjectLinkedToModelingObj):
             self, json_input: dict, flat_obj_dict: dict[str, "ModelingObject"],
             sources_dict: Optional[dict] = None):
         self._sources_dict = sources_dict
-        if "direct_ancestors_with_id" in json_input:
-            self._keys_of_direct_ancestors_with_id_loaded_from_json = json_input[
-                "direct_ancestors_with_id"]
-            # Children are not serialized: they are derived by inverting the stored ancestors once
-            # every object is loaded (see the loader's children-inversion pass).
-            self._keys_of_direct_children_with_id_loaded_from_json = json_input.get(
-                "direct_children_with_id", [])
-            self._graph_links_hydrated_from_json = False
-            self.explain_nested_tuples_from_json = json_input.get("explain_nested_tuples")
+        if "explain_nested_tuples" in json_input:
+            self.explain_nested_tuples_from_json = json_input["explain_nested_tuples"]
             self._flat_obj_dict = flat_obj_dict
+            self._direct_ancestors_with_id = None  # derived from the formula on first read
 
     def __init__(
             self, value: object, label: str = None, left_parent: "ExplainableObject" = None,
@@ -180,13 +180,9 @@ class ExplainableObject(ObjectLinkedToModelingObj):
         self.left_parent = left_parent
         self.right_parent = right_parent
         self.operator = operator
-        self._keys_of_direct_ancestors_with_id_loaded_from_json = None
-        self._keys_of_direct_children_with_id_loaded_from_json = None
-        self._graph_links_hydrated_from_json = False
         self._flat_obj_dict = None
         self._sources_dict = None
         self._direct_ancestors_with_id = []
-        self._direct_children_with_id = []
         self.explain_nested_tuples_from_json = None
         self._explain_nested_tuples = None
 
@@ -242,46 +238,33 @@ class ExplainableObject(ObjectLinkedToModelingObj):
         self._explain_nested_tuples = None
         self.explain_nested_tuples_from_json = None
 
-    def load_ancestors_and_children_from_json(self):
-        if (not self._graph_links_hydrated_from_json
-                and self._keys_of_direct_ancestors_with_id_loaded_from_json is not None):
-            self._graph_links_hydrated_from_json = True
-            # Dropped or valueless generations resolve to None and are filtered from the live links:
-            # their graph links are dead until recomputed. The serialized keys are kept as loaded
-            # (assigned directly, not through the setters that would clear them), so re-serializing
-            # never prunes references to slots that merely happen to be valueless right now.
-            self._direct_ancestors_with_id = [
-                ancestor for ancestor in (
-                    get_attribute_from_flat_obj_dict(direct_ancestor_key, self._flat_obj_dict)
-                    for direct_ancestor_key in self._keys_of_direct_ancestors_with_id_loaded_from_json)
-                if ancestor is not None]
-            self._direct_children_with_id = [
-                child for child in (
-                    get_attribute_from_flat_obj_dict(direct_child_key, self._flat_obj_dict)
-                    for direct_child_key in self._keys_of_direct_children_with_id_loaded_from_json)
-                if child is not None]
-
     @property
     def direct_ancestors_with_id(self):
-        self.load_ancestors_and_children_from_json()
-
+        if self._direct_ancestors_with_id is None:
+            self._direct_ancestors_with_id = list(
+                {leaf.id: leaf for leaf in _attached_formula_leaves(self.explain_nested_tuples)}.values())
         return self._direct_ancestors_with_id
 
     @direct_ancestors_with_id.setter
     def direct_ancestors_with_id(self, value):
         self._direct_ancestors_with_id = value
-        self._keys_of_direct_ancestors_with_id_loaded_from_json = None
 
     @property
     def direct_children_with_id(self):
-        self.load_ancestors_and_children_from_json()
+        """Attached values whose formula uses this value: the calculus dependents of its slot, pulled."""
+        if self.modeling_obj_container is None:
+            return []
+        from efootprint.abstract_modeling_classes.reactive_core import slot_of_attached_value
 
-        return self._direct_children_with_id
-
-    @direct_children_with_id.setter
-    def direct_children_with_id(self, value):
-        self._direct_children_with_id = value
-        self._keys_of_direct_children_with_id_loaded_from_json = None
+        slot = slot_of_attached_value(self)
+        children = []
+        for dependent in slot.dependents:
+            # Only slots that attach an explainable value to their owner (computed attributes and
+            # computed-dict elements) are children; bump nodes, key-set nodes and computed structures are not.
+            if dependent.on_value_dropped is None or slot not in dependent.calculus_dependencies:
+                continue
+            children.append(dependent.pull())
+        return children
 
     def __copy__(self):
         cls = self.__class__
@@ -336,19 +319,9 @@ class ExplainableObject(ObjectLinkedToModelingObj):
                 f"ExplainableObjects that are attributes of a ModelingObject should always have a label. "
                 f"{self} doesn’t have one.")
 
-        if self.modeling_obj_container is not None:
-            for direct_ancestor_with_id in self.direct_ancestors_with_id:
-                direct_ancestor_with_id.remove_child_from_direct_children_with_id(direct_child=self)
-            for child in self.direct_children_with_id:
-                # Rehydrate child calculus graph so that it now has live links to its ancestors
-                child.load_ancestors_and_children_from_json()
-
         super().set_modeling_obj_container(new_modeling_obj_container, attr_name)
 
         if new_modeling_obj_container is not None:
-            for direct_ancestor_with_id in self.direct_ancestors_with_id:
-                direct_ancestor_with_id.add_child_to_direct_children_with_id(direct_child=self)
-
             self.finalize_explanation()
 
     def finalize_explanation(self):
@@ -365,31 +338,6 @@ class ExplainableObject(ObjectLinkedToModelingObj):
         else:
             return [ancestor for ancestor in self.direct_ancestors_with_id
                     if ancestor.modeling_obj_container is not None]
-
-    def add_child_to_direct_children_with_id(self, direct_child):
-        if direct_child.id not in self.direct_child_ids:
-            self.direct_children_with_id.append(direct_child)
-
-    def remove_child_from_direct_children_with_id(self, direct_child):
-        self.direct_children_with_id = [
-            child for child in self.direct_children_with_id if child.id != direct_child.id]
-
-    @property
-    def all_descendants_with_id(self):
-        all_descendants = []
-        visited_ids = set()
-        stack = [self]
-
-        while stack:
-            parent = stack.pop()
-            for child in parent.direct_children_with_id:
-                cid = child.id
-                if cid not in visited_ids:
-                    visited_ids.add(cid)
-                    all_descendants.append(child)
-                    stack.append(child)
-
-        return all_descendants
 
     @property
     def all_ancestors_with_id(self):
@@ -631,14 +579,8 @@ class ExplainableObject(ObjectLinkedToModelingObj):
             output_dict["comment"] = self.comment
 
         if with_formula:
-            # Serialized computed values carry their direct-ancestor addresses (children derive by
-            # inversion at load) and their formula tuples, so a stored value stays explainable.
-            if self._keys_of_direct_ancestors_with_id_loaded_from_json is not None:
-                output_dict["direct_ancestors_with_id"] = self._keys_of_direct_ancestors_with_id_loaded_from_json
-            else:
-                output_dict["direct_ancestors_with_id"] = [
-                    ancestor.full_str_tuple_id for ancestor in self.direct_ancestors_with_id]
-
+            # Serialized computed values carry their formula tuples, so a stored value stays explainable:
+            # ancestors derive from the formula's attached leaves and children from the slot graph.
             if self.explain_nested_tuples_from_json is not None:
                 output_dict["explain_nested_tuples"] = self.explain_nested_tuples_from_json
             else:

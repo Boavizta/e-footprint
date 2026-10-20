@@ -27,8 +27,8 @@ def _assert_not_attached_elsewhere(value, instance, attr_name):
 
 
 def _release_value(value):
-    """Drop callback for computed slots: unlink the dropped value from its container so ancestor
-    children links and container bookkeeping don't accumulate dead values."""
+    """Drop callback for computed slots: unlink the dropped value from its container so container
+    bookkeeping doesn't accumulate dead values."""
     if value is not None and value.modeling_obj_container is not None:
         value.set_modeling_obj_container(None, None)
 
