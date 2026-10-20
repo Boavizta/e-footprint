@@ -342,13 +342,17 @@ class IntegrationTestBaseClass(TestCase):
     def run_test_displaying_one_stored_formula_computes_only_its_operands(self):
         """Test that loading computes nothing, that explaining one stored footprint leaves every other void
         operand of a stored formula void, and that saving after the display computes nothing and writes the
-        same objects and stored values."""
+        same bytes."""
         from efootprint.abstract_modeling_classes.reactive_core import instance_slot_registry, observe_computations
 
-        _ = self.system.total_footprint
+        # Start from an inputs-only reload: fixtures built from code may hold distinct objects sharing an id (the
+        # complex system's countries), whose edges a save drops as foreign, and only the loaded model is unambiguous.
+        _, inputs_flat_obj_dict, _ = json_to_system(system_to_json(self.system, save_computed_state=False))
+        _ = inputs_flat_obj_dict[self.system.id].total_footprint
         computed = []
         with observe_computations(computed.append):
-            _, flat_obj_dict, _ = json_to_system(json.loads(json.dumps(system_to_json(self.system))))
+            _, flat_obj_dict, _ = json_to_system(
+                json.loads(json.dumps(system_to_json(inputs_flat_obj_dict[self.system.id]))))
         self.assertEqual([], computed)
         system = flat_obj_dict[self.system.id]
 
@@ -382,9 +386,7 @@ class IntegrationTestBaseClass(TestCase):
         with observe_computations(computed_during_save.append):
             json_after_display = system_to_json(system)
         self.assertEqual([], computed_during_save)
-        # The calculation graph is left out: a slot the display recomputed carries the reads of that computation.
-        self.assertEqual({key: value for key, value in json_before_display.items() if key != "calculation_graph"},
-                         {key: value for key, value in json_after_display.items() if key != "calculation_graph"})
+        self.assertEqual(json.dumps(json_before_display), json.dumps(json_after_display))
 
     def _test_input_change(
             self, expl_attr, expl_attr_new_value, input_object, expl_attr_name,
