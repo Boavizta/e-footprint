@@ -660,6 +660,15 @@ class ReactiveSlot:
           fails and reads a node that the rollback's detach changes would, now that failed attempts are linked, land
           in the rollback wave and raise again (the global review probed never-computed, previously computed and
           intrinsically invalid new servers and found no producer).</p>
+        <p>Planned fix: the parked backlog plan
+          <a href="../../backlog/automatic-input-read-dependencies/plan.html">automatic input-read dependencies</a>
+          records an edge for every input read during a computation, which closes the fallback-getter gap and makes
+          a rejected guard reachable from its inputs by the rollback wave alone. Once it lands, remove the
+          <code>forward_visited_slots</code> argument of
+          <a href="vscode://file//Users/vinville/dev/e-footprint-full/e-footprint/efootprint/abstract_modeling_classes/modeling_update.py:181:1" data-review-source-href="../../../efootprint/abstract_modeling_classes/modeling_update.py#L181:1"><code>ModelingUpdate.rollback</code></a>
+          and the call passing it from
+          <a href="vscode://file//Users/vinville/dev/e-footprint-full/e-footprint/efootprint/abstract_modeling_classes/modeling_update.py:50:1" data-review-source-href="../../../efootprint/abstract_modeling_classes/modeling_update.py#L50:1"><code>ModelingUpdate.__init__</code></a>;
+          the two regression tests above must keep passing without them.</p>
       </aside>
       <p>Accepted consequence: a value emptied by an edit lists no children until its consumers recompute. In the
         interface the eager footprint pull recomputes the edited cone in the same request, so the saved graph is
