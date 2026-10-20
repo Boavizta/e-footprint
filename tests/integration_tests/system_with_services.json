@@ -154,6 +154,38 @@
             }
         }
     },
+    "UsageJourneyStep": {
+        "20-min-streaming-on-Youtube-with-genAI-chat": {
+            "name": "20 min streaming on Youtube with genAI chat",
+            "id": "20-min-streaming-on-Youtube-with-genAI-chat",
+            "user_time_spent": {
+                "value": 20.0,
+                "unit": "minute",
+                "label": "Time spent by user",
+                "source": "hypothesis"
+            },
+            "jobs": {
+                "direct-GPU-server-job": {
+                    "value": 1.0,
+                    "unit": "dimensionless",
+                    "label": "Times per step",
+                    "source": "hypothesis"
+                },
+                "Streaming-job": {
+                    "value": 1.0,
+                    "unit": "dimensionless",
+                    "label": "Times per step",
+                    "source": "hypothesis"
+                },
+                "GenAI-job": {
+                    "value": 1.0,
+                    "unit": "dimensionless",
+                    "label": "Times per step",
+                    "source": "hypothesis"
+                }
+            }
+        }
+    },
     "GPUJob": {
         "direct-GPU-server-job": {
             "name": "direct GPU server job",
@@ -591,38 +623,6 @@
         "GenAI-service-server": {
             "name": "GenAI service server",
             "id": "GenAI-service-server"
-        }
-    },
-    "UsageJourneyStep": {
-        "20-min-streaming-on-Youtube-with-genAI-chat": {
-            "name": "20 min streaming on Youtube with genAI chat",
-            "id": "20-min-streaming-on-Youtube-with-genAI-chat",
-            "user_time_spent": {
-                "value": 20.0,
-                "unit": "minute",
-                "label": "Time spent by user",
-                "source": "hypothesis"
-            },
-            "jobs": {
-                "direct-GPU-server-job": {
-                    "value": 1.0,
-                    "unit": "dimensionless",
-                    "label": "Times per step",
-                    "source": "hypothesis"
-                },
-                "Streaming-job": {
-                    "value": 1.0,
-                    "unit": "dimensionless",
-                    "label": "Times per step",
-                    "source": "hypothesis"
-                },
-                "GenAI-job": {
-                    "value": 1.0,
-                    "unit": "dimensionless",
-                    "label": "Times per step",
-                    "source": "hypothesis"
-                }
-            }
         }
     }
 }

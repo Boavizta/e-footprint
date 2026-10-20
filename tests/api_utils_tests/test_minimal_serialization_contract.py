@@ -88,12 +88,22 @@ class TestMinimalSerializationContract(TestCase):
         self.assertIsNone(computed_slots(type(loaded_system))["total_footprint"].peek(loaded_system))
 
     def test_canonical_round_trip_is_identity(self):
-        """Test that loading a canonical file and re-serializing it reproduces the same dict —
+        """Test that loading a canonical file and re-serializing it reproduces the same bytes —
         stored values, calculation graph and formulas included."""
         loaded_system = self.load_canonical()
-        # json round trip normalizes tuples (formula tuples serialize as JSON arrays) before comparing.
-        self.assertEqual(
-            json.loads(json.dumps(self.canonical_dict)), json.loads(json.dumps(system_to_json(loaded_system))))
+        self.assertEqual(json.dumps(self.canonical_dict), json.dumps(system_to_json(loaded_system)))
+
+    def test_displaying_the_calculus_graph_leaves_a_later_save_unchanged(self):
+        """Test that the calculus graph of a stored total, whose display computes the void operands below it,
+        leaves a later save byte-identical: which objects a save writes, and in which order, never depends
+        on what is computed."""
+        from efootprint.utils.calculus_graph import build_calculus_graph
+
+        loaded_system = self.load_canonical()
+        json_before_display = json.dumps(system_to_json(loaded_system))
+        build_calculus_graph(loaded_system.total_footprint)
+
+        self.assertEqual(json_before_display, json.dumps(system_to_json(loaded_system)))
 
     def test_inputs_only_save_recomputes_on_read_to_same_values(self):
         """Test that a file saved without computed state loads valueless and recomputes to the same
@@ -320,10 +330,9 @@ class TestEdgeSystemSerializationContract(TestCase):
 
     def test_canonical_round_trip_is_identity(self):
         """Test that loading an edge-system canonical file and re-serializing reproduces the same
-        dict, breakdown summaries included."""
+        bytes, breakdown summaries included."""
         loaded_system, _ = self.load_canonical()
-        self.assertEqual(
-            json.loads(json.dumps(self.canonical_dict)), json.loads(json.dumps(system_to_json(loaded_system))))
+        self.assertEqual(json.dumps(self.canonical_dict), json.dumps(system_to_json(loaded_system)))
 
     def test_sankey_renders_breakdown_from_stored_data_without_recompute(self):
         """Test that a loaded edge session builds its Sankey — per-component breakdown decoration

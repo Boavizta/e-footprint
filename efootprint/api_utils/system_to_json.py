@@ -50,29 +50,25 @@ def recursively_write_json_dict(
                 deferred_linked_objects.append(candidate)
                 deferred_linked_object_ids.add(candidate.id)
 
-        # Computed values live in the reactive slots, not the instance dict: scan them too so their
-        # sources and dict keys are discovered. The sources gathered here are only *candidates* — the
-        # block is filtered down to those a serialized value actually references (see
-        # ``collect_referenced_source_ids``), so pure computed-attribute provenance, which no
-        # serialized value cites and which recompute re-attaches, is dropped rather than persisted as
-        # an orphan. peek, never pull — only materialized values ever contributed, and saving a model
-        # must not compute it (dict entries are read through the raw dict for the same reason: facade
-        # iteration would pull).
-        # efootprint_class, not type(mod_obj): objects reached through relationships arrive wrapped in
-        # ContextualModelingObjectAttribute, whose own class declares no computed slots.
-        attributes_to_scan = list(mod_obj.__dict__.items()) + [
-            (attr_name, peeked_value) for attr_name, descriptor in computed_slots(mod_obj.efootprint_class).items()
-            if (peeked_value := descriptor.peek(mod_obj)) is not None]
-        for key, value in attributes_to_scan:
+        def collect_sources(value):
+            if isinstance(value, ExplainableObject) and value.source is not None:
+                sources_by_id.setdefault(value.source.id, value.source)
+            elif isinstance(value, ExplainableObjectDict):
+                for elt in dict.values(value):
+                    if isinstance(elt, ExplainableObject) and elt.source is not None:
+                        sources_by_id.setdefault(elt.source.id, elt.source)
+
+        # Objects are discovered through inputs and input dicts only, so which objects are written, and in
+        # which order, does not depend on what happens to be computed: a save after a display writes the
+        # same bytes. Computed values live in the reactive slots, not the instance dict, and are scanned for
+        # their sources only: the sources gathered here are *candidates*, filtered down to those a serialized
+        # value actually references (see ``collect_referenced_source_ids``). peek, never pull — saving a
+        # model must not compute it.
+        for key, value in mod_obj.__dict__.items():
             if key.startswith("_"):
                 continue
             if sources_by_id is not None:
-                if isinstance(value, ExplainableObject) and value.source is not None:
-                    sources_by_id.setdefault(value.source.id, value.source)
-                elif isinstance(value, ExplainableObjectDict):
-                    for elt in dict.values(value):
-                        if isinstance(elt, ExplainableObject) and elt.source is not None:
-                            sources_by_id.setdefault(elt.source.id, elt.source)
+                collect_sources(value)
             if isinstance(value, ModelingObject):
                 recursively_write_json_dict(output_dict, value, save_computed_state, deferred_linked_objects,
                                             deferred_linked_object_ids, sources_by_id=sources_by_id,
@@ -85,8 +81,14 @@ def recursively_write_json_dict(
             elif isinstance(value, ExplainableObjectDict):
                 for dict_key in dict.keys(value):
                     add_deferred_linked_object(dict_key)
+        if sources_by_id is not None:
+            # efootprint_class, not type(mod_obj): objects reached through relationships arrive wrapped in
+            # ContextualModelingObjectAttribute, whose own class declares no computed slots.
+            for descriptor in computed_slots(mod_obj.efootprint_class).values():
+                collect_sources(descriptor.peek(mod_obj))
         for dict_container in mod_obj.explainable_object_dicts_containers:
-            add_deferred_linked_object(dict_container.modeling_obj_container)
+            if dict_container._computed_binding() is None:
+                add_deferred_linked_object(dict_container.modeling_obj_container)
 
         if owns_deferred_queue and not is_processing_deferred_links:
             while deferred_linked_objects:

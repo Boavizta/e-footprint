@@ -563,6 +563,76 @@
             },
             "server": "Server-1"
         },
+        "server-3-job-2": {
+            "name": "server 3 job 2",
+            "id": "server-3-job-2",
+            "data_transferred": {
+                "value": 150.0,
+                "unit": "kilobyte",
+                "label": "Sum of all data uploads and downloads by request",
+                "source": "hypothesis"
+            },
+            "data_stored": {
+                "value": 100.0,
+                "unit": "kilobyte_stored",
+                "label": "Data stored by request",
+                "source": "hypothesis"
+            },
+            "request_duration": {
+                "value": 1.0,
+                "unit": "second",
+                "label": "Request duration",
+                "source": "hypothesis"
+            },
+            "ram_needed": {
+                "value": 50.0,
+                "unit": "megabyte_ram",
+                "label": "RAM needed during job processing",
+                "source": "hypothesis"
+            },
+            "compute_needed": {
+                "value": 0.1,
+                "unit": "cpu_core",
+                "label": "cpu cores needed on server Server 3 during job processing",
+                "source": "hypothesis"
+            },
+            "server": "Server-3"
+        },
+        "server-2-job": {
+            "name": "server 2 job",
+            "id": "server-2-job",
+            "data_transferred": {
+                "value": 150.0,
+                "unit": "kilobyte",
+                "label": "Sum of all data uploads and downloads by request",
+                "source": "hypothesis"
+            },
+            "data_stored": {
+                "value": 100.0,
+                "unit": "kilobyte_stored",
+                "label": "Data stored by request",
+                "source": "hypothesis"
+            },
+            "request_duration": {
+                "value": 1.0,
+                "unit": "second",
+                "label": "Request duration",
+                "source": "hypothesis"
+            },
+            "ram_needed": {
+                "value": 50.0,
+                "unit": "megabyte_ram",
+                "label": "RAM needed during job processing",
+                "source": "hypothesis"
+            },
+            "compute_needed": {
+                "value": 0.1,
+                "unit": "cpu_core",
+                "label": "cpu cores needed on server Server 2 during job processing",
+                "source": "hypothesis"
+            },
+            "server": "Server-2"
+        },
         "server-1-job-2": {
             "name": "server 1 job 2",
             "id": "server-1-job-2",
@@ -633,79 +703,9 @@
             },
             "server": "Server-1"
         },
-        "server-2-job": {
-            "name": "server 2 job",
-            "id": "server-2-job",
-            "data_transferred": {
-                "value": 150.0,
-                "unit": "kilobyte",
-                "label": "Sum of all data uploads and downloads by request",
-                "source": "hypothesis"
-            },
-            "data_stored": {
-                "value": 100.0,
-                "unit": "kilobyte_stored",
-                "label": "Data stored by request",
-                "source": "hypothesis"
-            },
-            "request_duration": {
-                "value": 1.0,
-                "unit": "second",
-                "label": "Request duration",
-                "source": "hypothesis"
-            },
-            "ram_needed": {
-                "value": 50.0,
-                "unit": "megabyte_ram",
-                "label": "RAM needed during job processing",
-                "source": "hypothesis"
-            },
-            "compute_needed": {
-                "value": 0.1,
-                "unit": "cpu_core",
-                "label": "cpu cores needed on server Server 2 during job processing",
-                "source": "hypothesis"
-            },
-            "server": "Server-2"
-        },
         "server-3-job": {
             "name": "server 3 job",
             "id": "server-3-job",
-            "data_transferred": {
-                "value": 150.0,
-                "unit": "kilobyte",
-                "label": "Sum of all data uploads and downloads by request",
-                "source": "hypothesis"
-            },
-            "data_stored": {
-                "value": 100.0,
-                "unit": "kilobyte_stored",
-                "label": "Data stored by request",
-                "source": "hypothesis"
-            },
-            "request_duration": {
-                "value": 1.0,
-                "unit": "second",
-                "label": "Request duration",
-                "source": "hypothesis"
-            },
-            "ram_needed": {
-                "value": 50.0,
-                "unit": "megabyte_ram",
-                "label": "RAM needed during job processing",
-                "source": "hypothesis"
-            },
-            "compute_needed": {
-                "value": 0.1,
-                "unit": "cpu_core",
-                "label": "cpu cores needed on server Server 3 during job processing",
-                "source": "hypothesis"
-            },
-            "server": "Server-3"
-        },
-        "server-3-job-2": {
-            "name": "server 3 job 2",
-            "id": "server-3-job-2",
             "data_transferred": {
                 "value": 150.0,
                 "unit": "kilobyte",
@@ -826,92 +826,6 @@
             },
             "storage": "Default-SSD-storage-1"
         },
-        "Server-2": {
-            "name": "Server 2",
-            "id": "Server-2",
-            "carbon_footprint_manufacturing": {
-                "value": 600.0,
-                "unit": "kilogram",
-                "label": "Carbon footprint manufacturing",
-                "source": "Base-ADEME_V19"
-            },
-            "power": {
-                "value": 300.0,
-                "unit": "watt",
-                "label": "Power",
-                "source": "hypothesis"
-            },
-            "lifespan": {
-                "value": 6.0,
-                "unit": "year",
-                "label": "Lifespan",
-                "source": "hypothesis"
-            },
-            "fraction_of_usage_time": {
-                "value": 1.0,
-                "unit": "dimensionless",
-                "label": "Fraction of usage time",
-                "source": "hypothesis"
-            },
-            "server_type": {
-                "value": "on-premise",
-                "label": "Server type",
-                "source": "hypothesis"
-            },
-            "idle_power": {
-                "value": 50.0,
-                "unit": "watt",
-                "label": "Idle power",
-                "source": "hypothesis"
-            },
-            "ram": {
-                "value": 128.0,
-                "unit": "gigabyte_ram",
-                "label": "RAM",
-                "source": "hypothesis"
-            },
-            "compute": {
-                "value": 24.0,
-                "unit": "cpu_core",
-                "label": "Nb cpu cores",
-                "source": "hypothesis"
-            },
-            "power_usage_effectiveness": {
-                "value": 1.2,
-                "unit": "dimensionless",
-                "label": "PUE",
-                "source": "hypothesis"
-            },
-            "average_carbon_intensity": {
-                "value": 400.0,
-                "unit": "gram / kilowatt_hour",
-                "label": "Average carbon intensity of electricity",
-                "source": "hypothesis"
-            },
-            "utilization_rate": {
-                "value": 0.9,
-                "unit": "dimensionless",
-                "label": "Utilization rate",
-                "source": "hypothesis"
-            },
-            "base_ram_consumption": {
-                "value": 0.0,
-                "unit": "gigabyte_ram",
-                "label": "Base RAM consumption",
-                "source": "hypothesis"
-            },
-            "base_compute_consumption": {
-                "value": 0.0,
-                "unit": "cpu_core",
-                "label": "Base cpu core consumption",
-                "source": "hypothesis"
-            },
-            "fixed_nb_of_instances": {
-                "value": null,
-                "label": "User defined number of instances"
-            },
-            "storage": "Default-SSD-storage-2"
-        },
         "Server-3": {
             "name": "Server 3",
             "id": "Server-3",
@@ -997,6 +911,92 @@
                 "label": "User defined number of instances"
             },
             "storage": "Default-SSD-storage-3"
+        },
+        "Server-2": {
+            "name": "Server 2",
+            "id": "Server-2",
+            "carbon_footprint_manufacturing": {
+                "value": 600.0,
+                "unit": "kilogram",
+                "label": "Carbon footprint manufacturing",
+                "source": "Base-ADEME_V19"
+            },
+            "power": {
+                "value": 300.0,
+                "unit": "watt",
+                "label": "Power",
+                "source": "hypothesis"
+            },
+            "lifespan": {
+                "value": 6.0,
+                "unit": "year",
+                "label": "Lifespan",
+                "source": "hypothesis"
+            },
+            "fraction_of_usage_time": {
+                "value": 1.0,
+                "unit": "dimensionless",
+                "label": "Fraction of usage time",
+                "source": "hypothesis"
+            },
+            "server_type": {
+                "value": "on-premise",
+                "label": "Server type",
+                "source": "hypothesis"
+            },
+            "idle_power": {
+                "value": 50.0,
+                "unit": "watt",
+                "label": "Idle power",
+                "source": "hypothesis"
+            },
+            "ram": {
+                "value": 128.0,
+                "unit": "gigabyte_ram",
+                "label": "RAM",
+                "source": "hypothesis"
+            },
+            "compute": {
+                "value": 24.0,
+                "unit": "cpu_core",
+                "label": "Nb cpu cores",
+                "source": "hypothesis"
+            },
+            "power_usage_effectiveness": {
+                "value": 1.2,
+                "unit": "dimensionless",
+                "label": "PUE",
+                "source": "hypothesis"
+            },
+            "average_carbon_intensity": {
+                "value": 400.0,
+                "unit": "gram / kilowatt_hour",
+                "label": "Average carbon intensity of electricity",
+                "source": "hypothesis"
+            },
+            "utilization_rate": {
+                "value": 0.9,
+                "unit": "dimensionless",
+                "label": "Utilization rate",
+                "source": "hypothesis"
+            },
+            "base_ram_consumption": {
+                "value": 0.0,
+                "unit": "gigabyte_ram",
+                "label": "Base RAM consumption",
+                "source": "hypothesis"
+            },
+            "base_compute_consumption": {
+                "value": 0.0,
+                "unit": "cpu_core",
+                "label": "Base cpu core consumption",
+                "source": "hypothesis"
+            },
+            "fixed_nb_of_instances": {
+                "value": null,
+                "label": "User defined number of instances"
+            },
+            "storage": "Default-SSD-storage-2"
         }
     },
     "Storage": {
@@ -1056,9 +1056,9 @@
                 "label": "User defined number of instances"
             }
         },
-        "Default-SSD-storage-2": {
-            "name": "Default SSD storage 2",
-            "id": "Default-SSD-storage-2",
+        "Default-SSD-storage-3": {
+            "name": "Default SSD storage 3",
+            "id": "Default-SSD-storage-3",
             "power": {
                 "value": 0.0,
                 "unit": "watt",
@@ -1112,9 +1112,9 @@
                 "label": "User defined number of instances"
             }
         },
-        "Default-SSD-storage-3": {
-            "name": "Default SSD storage 3",
-            "id": "Default-SSD-storage-3",
+        "Default-SSD-storage-2": {
+            "name": "Default SSD storage 2",
+            "id": "Default-SSD-storage-2",
             "power": {
                 "value": 0.0,
                 "unit": "watt",

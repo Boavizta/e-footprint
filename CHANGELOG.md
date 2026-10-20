@@ -12,6 +12,7 @@ and this project adheres to [Semantic Versioning](http://semver.org/)
 
 ### Fixed
 - A rejected update now re-validates the guards it had voided, so repeating the same invalid edit is rejected again instead of accepted.
+- `system_to_json` writes the same bytes whatever has been computed: objects are discovered through inputs only, so displaying an explanation or the calculus graph before a save no longer reorders the file.
 
 ### Removed
 - `computation_slots_for_purpose`, `ComputationPurpose` and the `purposes` parameter of `computed_attribute` and `computed_dict`, which had no caller outside their own tests.
