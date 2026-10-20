@@ -826,7 +826,14 @@ def direct_children_with_id(self):
           discovered through inputs and input dicts only; computed values contribute sources only. On every fixture
           the written object and source sets are unchanged for System roots. The three committed reference files
           (<a href="vscode://file//Users/vinville/dev/e-footprint-full/e-footprint/tests/integration_tests/simple_system.json:1:1" data-review-source-href="../../../tests/integration_tests/simple_system.json#L1:1"><code>simple_system.json</code></a>, <a href="vscode://file//Users/vinville/dev/e-footprint-full/e-footprint/tests/integration_tests/complex_system.json:1:1" data-review-source-href="../../../tests/integration_tests/complex_system.json#L1:1"><code>complex_system.json</code></a>, <a href="vscode://file//Users/vinville/dev/e-footprint-full/e-footprint/tests/integration_tests/system_with_services.json:1:1" data-review-source-href="../../../tests/integration_tests/system_with_services.json#L1:1"><code>system_with_services.json</code></a>)
-          were regenerated with order as the only difference. The round-trip tests
+          were regenerated with order as the only difference. Content does change in one state no fixture holds:
+          an object that still drives the system's computations through reverse links without being reachable from the
+          system's inputs (an <code>EdgeUsagePattern</code> unlinked from its <code>System</code> but not deleted) was
+          written by the old traversal and is dropped by this one, so an inputs-only reload loses what it drove. The
+          interface cannot produce that state (it removes objects through <code>self_delete</code> only); the library
+          can. The root cause is that membership is declared forward while footprints aggregate backward; the backlog seed
+          <a href="../../backlog/connectivity-defined-system-membership/seed.md">connectivity-defined system membership</a>
+          carries the discussion and the measured divergence. The round-trip tests
           <a href="vscode://file//Users/vinville/dev/e-footprint-full/e-footprint/tests/integration_tests/integration_test_base_class.py:292:1" data-review-source-href="../../../tests/integration_tests/integration_test_base_class.py#L292:1"><code>run_test_explanation_links_survive_round_trip</code></a>
           and
           <a href="vscode://file//Users/vinville/dev/e-footprint-full/e-footprint/tests/integration_tests/integration_test_base_class.py:338:1" data-review-source-href="../../../tests/integration_tests/integration_test_base_class.py#L338:1"><code>run_test_displaying_one_stored_formula_computes_only_its_operands</code></a>
