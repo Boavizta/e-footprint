@@ -151,12 +151,29 @@
             <li id="file-computed-slots" data-steps="children">
               <a href="vscode://file//Users/vinville/dev/e-footprint-full/e-footprint/efootprint/abstract_modeling_classes/reactive_core/computed_slots.py:38:1" data-review-source-href="../../../efootprint/abstract_modeling_classes/reactive_core/computed_slots.py#L38:1"><code>reactive_core/computed_slots.py</code></a> <span data-change="modified">Modified</span>
               <span data-reading-links><a href="#children">1.3</a></span>
-              <small><code>discard_stale_keys()</code> cuts the links of each popped stale sub-slot; the <code>_release_value</code> docstring no longer mentions children links.</small>
+              <small><code>discard_stale_keys()</code> cuts the links of each popped stale sub-slot; <code>ComputationPurpose</code>, the <code>purposes</code> parameter and <code>computation_slots_for_purpose()</code> removed (<a href="#plan-update-04">PLAN-UPDATE-04</a>); the <code>_release_value</code> docstring no longer mentions children links.</small>
             </li>
             <li id="file-modeling-object" data-steps="children">
               <a href="vscode://file//Users/vinville/dev/e-footprint-full/e-footprint/efootprint/abstract_modeling_classes/modeling_object.py:674:1" data-review-source-href="../../../efootprint/abstract_modeling_classes/modeling_object.py#L674:1"><code>modeling_object.py</code></a> <span data-change="modified">Modified</span>
               <span data-reading-links><a href="#children">1.3</a></span>
               <small><code>self_delete()</code> cuts the links of every slot of the deleted object, in its existing drop loop.</small>
+            </li>
+          </ul>
+        </details>
+        <details open>
+          <summary>efootprint/core/ and efootprint/builders/</summary>
+          <ul>
+            <li id="file-footprint-declarations" data-steps="children">
+              <a href="vscode://file//Users/vinville/dev/e-footprint-full/e-footprint/efootprint/core/system.py:278:1" data-review-source-href="../../../efootprint/core/system.py#L278:1"><code>core/system.py</code></a> ·
+              <a href="vscode://file//Users/vinville/dev/e-footprint-full/e-footprint/efootprint/core/hardware/device.py:138:1" data-review-source-href="../../../efootprint/core/hardware/device.py#L138:1"><code>hardware/device.py</code></a> ·
+              <a href="vscode://file//Users/vinville/dev/e-footprint-full/e-footprint/efootprint/core/hardware/server_base.py:325:1" data-review-source-href="../../../efootprint/core/hardware/server_base.py#L325:1"><code>hardware/server_base.py</code></a> ·
+              <a href="vscode://file//Users/vinville/dev/e-footprint-full/e-footprint/efootprint/core/hardware/infra_hardware.py:42:1" data-review-source-href="../../../efootprint/core/hardware/infra_hardware.py#L42:1"><code>hardware/infra_hardware.py</code></a> ·
+              <a href="vscode://file//Users/vinville/dev/e-footprint-full/e-footprint/efootprint/core/hardware/network.py:76:1" data-review-source-href="../../../efootprint/core/hardware/network.py#L76:1"><code>hardware/network.py</code></a> ·
+              <a href="vscode://file//Users/vinville/dev/e-footprint-full/e-footprint/efootprint/core/hardware/edge/edge_device.py:251:1" data-review-source-href="../../../efootprint/core/hardware/edge/edge_device.py#L251:1"><code>hardware/edge/edge_device.py</code></a> ·
+              <a href="vscode://file//Users/vinville/dev/e-footprint-full/e-footprint/efootprint/builders/external_apis/external_api_base_class.py:25:1" data-review-source-href="../../../efootprint/builders/external_apis/external_api_base_class.py#L25:1"><code>builders/external_apis/external_api_base_class.py</code></a> ·
+              <a href="vscode://file//Users/vinville/dev/e-footprint-full/e-footprint/efootprint/builders/external_apis/ecologits/ecologits_external_api_server_base.py:52:1" data-review-source-href="../../../efootprint/builders/external_apis/ecologits/ecologits_external_api_server_base.py#L52:1"><code>builders/external_apis/ecologits/ecologits_external_api_server_base.py</code></a> <span data-change="modified">Modified</span>
+              <span data-reading-links><a href="#children">1.3</a></span>
+              <small>Drop <code>purposes={ComputationPurpose.FOOTPRINT}</code> from the footprint output declarations and the unused import (<a href="#plan-update-04">PLAN-UPDATE-04</a>).</small>
             </li>
           </ul>
         </details>
@@ -187,7 +204,7 @@
               <a href="vscode://file//Users/vinville/dev/e-footprint-full/e-footprint/tests/abstract_modeling_classes/test_reactive_core.py:884:1" data-review-source-href="../../../tests/abstract_modeling_classes/test_reactive_core.py#L884:1"><code>abstract_modeling_classes/test_reactive_core.py</code></a> ·
               <a href="vscode://file//Users/vinville/dev/e-footprint-full/e-footprint/tests/abstract_modeling_classes/test_modeling_object.py:1:1" data-review-source-href="../../../tests/abstract_modeling_classes/test_modeling_object.py#L1:1"><code>test_modeling_object.py</code></a> <span data-change="modified">Modified</span>
               <span data-reading-links><a href="#children">1.3</a></span>
-              <small>Link invariant: cut on invalidation, reads installed on failure and rejection, stale keys and deleted objects unlinked, branch switch and rollback; the failed-recompute test's "keeps previous edges" assertion flips.</small>
+              <small>Link invariant: cut on invalidation, reads installed on failure and rejection, stale keys and deleted objects unlinked, branch switch and rollback; the failed-recompute test's "keeps previous edges" assertion flips; the purpose holder and the three purpose tests go.</small>
             </li>
             <li id="file-unit-tests" data-steps="ancestors children persistence">
               <a href="vscode://file//Users/vinville/dev/e-footprint-full/e-footprint/tests/abstract_modeling_classes/test_explainable_object_base_class.py:106:1" data-review-source-href="../../../tests/abstract_modeling_classes/test_explainable_object_base_class.py#L106:1"><code>abstract_modeling_classes/test_explainable_object_base_class.py</code></a> ·
@@ -223,6 +240,8 @@
               <a href="vscode://file//Users/vinville/dev/e-footprint-full/e-footprint/specs/architecture/recomputation.html:32:1" data-review-source-href="../../architecture/recomputation.html#L32:1"><code>recomputation.html</code></a> ·
               <a href="vscode://file//Users/vinville/dev/e-footprint-full/e-footprint/specs/architecture/recomputation/computed-surfaces.html:31:1" data-review-source-href="../../architecture/recomputation/computed-surfaces.html#L31:1"><code>recomputation/computed-surfaces.html</code></a> ·
               <a href="vscode://file//Users/vinville/dev/e-footprint-full/e-footprint/specs/architecture/recomputation/lifecycle.html:51:1" data-review-source-href="../../architecture/recomputation/lifecycle.html#L51:1"><code>recomputation/lifecycle.html</code></a> ·
+              <a href="vscode://file//Users/vinville/dev/e-footprint-full/e-footprint/specs/architecture/recomputation/blocks/computed-attribute.html:57:1" data-review-source-href="../../../specs/architecture/recomputation/blocks/computed-attribute.html#L57:1"><code>recomputation/blocks/computed-attribute.html</code></a> ·
+              <a href="vscode://file//Users/vinville/dev/e-footprint-full/e-footprint/specs/conventions.md:21:1" data-review-source-href="../../../specs/conventions.md#L21:1"><code>specs/conventions.md</code></a> ·
               <a href="vscode://file//Users/vinville/dev/e-footprint-full/e-footprint/CHANGELOG.md:7:1" data-review-source-href="../../../CHANGELOG.md#L7:1"><code>CHANGELOG.md</code></a> <span data-change="modified">Modified</span>
               <span data-reading-links><a href="#children">1.3</a> · <a href="#persistence">1.4</a></span>
             </li>
@@ -263,6 +282,7 @@
       <p><a href="#plan-update-01">[PLAN-UPDATE-01] No interface tests; library round-trip tests cover the displays — ACCEPTED</a></p>
       <p><a href="#plan-update-02">[PLAN-UPDATE-02] Engine keeps dependency links current; children read them as is — ACCEPTED</a></p>
       <p><a href="#plan-update-03">[PLAN-UPDATE-03] Resolve a computed-dict operand through its element, not the whole dict — ACCEPTED</a></p>
+      <p><a href="#plan-update-04">[PLAN-UPDATE-04] Remove the unused purpose query and its tags — ACCEPTED</a></p>
     </aside>
   </header>
 
@@ -526,8 +546,8 @@ class ExplainableObject(ObjectLinkedToModelingObj):
         <a href="vscode://file//Users/vinville/dev/e-footprint-full/e-footprint/efootprint/abstract_modeling_classes/reactive_core/computed_slots.py:481:1" data-review-source-href="../../../efootprint/abstract_modeling_classes/reactive_core/computed_slots.py#L481:1"><code>computation_slots_for_purpose()</code></a>, which keeps classifying a void output through its retained links. Its test
         <a href="vscode://file//Users/vinville/dev/e-footprint-full/e-footprint/tests/abstract_modeling_classes/test_reactive_core.py:215:1" data-review-source-href="../../../tests/abstract_modeling_classes/test_reactive_core.py#L215:1"><code>test_purpose_query_keeps_invalidated_materialized_topology</code></a>
         pins that retention on purpose, and after a branch switch the same retention returns the stale branch's
-        computations. Under the invariant, a void output is unclassified until it recomputes, the rule the function's
-        docstring already applies to a never-computed output. No production code calls it; the test is rewritten.</p>
+        computations. Nothing outside its tests calls it, and the <code>purposes=</code> tags on footprint outputs exist
+        only to feed it, so this feature removes the query rather than adapting it (<a href="#plan-update-04">PLAN-UPDATE-04</a>).</p>
       <p><strong>Proposed engine change.</strong> Invalidation cuts the links of every slot it voids, and every
         computation outcome (success, failure or rejection) installs the reads of that attempt:</p>
       <div data-code>
@@ -592,7 +612,7 @@ class ReactiveSlot:
           <code>nb_of_instances</code> through it, since a read is recorded before the pulled slot computes); the rollback
           wave voids both and cuts their links, and their recompute records the on-premise branch.</li>
       </ul>
-      <p>Accepted consequences: a value emptied by an edit lists no children until its consumers recompute, and a void footprint output is absent from the purpose query until it recomputes. In the
+      <p>Accepted consequence: a value emptied by an edit lists no children until its consumers recompute. In the
         interface the eager footprint pull recomputes the edited cone in the same request, so the saved graph is
         current. Cost, measured on the big performance system for the input with the largest dependents cone (a
         <code>UsageJourneyStep</code>'s <code>user_time_spent</code>, 202 invalidated slots): edit plus recompute 36 ms
@@ -686,6 +706,40 @@ def direct_children_with_id(self):
           make the engine keep links current (invalidation cuts them, every computation outcome installs its reads,
           removed and deleted slots cut theirs) instead of filtering stale links in the children property. It is part
           of this feature: the children list is the first exact reader of the graph.</p>
+      </aside>
+      <aside id="plan-update-04" data-note="review">
+        <p><strong>[PLAN-UPDATE-04] — ACCEPTED 2026-10-20</strong></p>
+        <p>The link invariant changes what
+          <a href="vscode://file//Users/vinville/dev/e-footprint-full/e-footprint/efootprint/abstract_modeling_classes/reactive_core/computed_slots.py:481:1" data-review-source-href="../../../efootprint/abstract_modeling_classes/reactive_core/computed_slots.py#L481:1"><code>computation_slots_for_purpose()</code></a> returns for a void
+          output. Nothing outside its tests calls it, so instead of rewriting its test, this feature removes it with
+          everything that only serves it:</p>
+        <ul>
+          <li><a href="vscode://file//Users/vinville/dev/e-footprint-full/e-footprint/efootprint/abstract_modeling_classes/reactive_core/computed_slots.py:18:1" data-review-source-href="../../../efootprint/abstract_modeling_classes/reactive_core/computed_slots.py#L18:1"><code>ComputationPurpose</code></a>, the <code>purposes</code> parameter and attribute of
+            <a href="vscode://file//Users/vinville/dev/e-footprint-full/e-footprint/efootprint/abstract_modeling_classes/reactive_core/computed_slots.py:121:1" data-review-source-href="../../../efootprint/abstract_modeling_classes/reactive_core/computed_slots.py#L121:1"><code>computed_attribute.__init__()</code></a> and
+            <a href="vscode://file//Users/vinville/dev/e-footprint-full/e-footprint/efootprint/abstract_modeling_classes/reactive_core/computed_slots.py:243:1" data-review-source-href="../../../efootprint/abstract_modeling_classes/reactive_core/computed_slots.py#L243:1"><code>computed_dict.__init__()</code></a> with their docstring sentence, and the two exports in
+            <a href="vscode://file//Users/vinville/dev/e-footprint-full/e-footprint/efootprint/abstract_modeling_classes/reactive_core/__init__.py:33:1" data-review-source-href="../../../efootprint/abstract_modeling_classes/reactive_core/__init__.py#L33:1"><code>reactive_core/__init__.py</code></a>.</li>
+          <li>The <code>purposes={ComputationPurpose.FOOTPRINT}</code> declarations and their imports in
+            <a href="vscode://file//Users/vinville/dev/e-footprint-full/e-footprint/efootprint/core/system.py:278:1" data-review-source-href="../../../efootprint/core/system.py#L278:1"><code>system.py</code></a>,
+            <a href="vscode://file//Users/vinville/dev/e-footprint-full/e-footprint/efootprint/core/hardware/device.py:138:1" data-review-source-href="../../../efootprint/core/hardware/device.py#L138:1"><code>device.py</code></a>,
+            <a href="vscode://file//Users/vinville/dev/e-footprint-full/e-footprint/efootprint/core/hardware/server_base.py:325:1" data-review-source-href="../../../efootprint/core/hardware/server_base.py#L325:1"><code>server_base.py</code></a>,
+            <a href="vscode://file//Users/vinville/dev/e-footprint-full/e-footprint/efootprint/core/hardware/infra_hardware.py:42:1" data-review-source-href="../../../efootprint/core/hardware/infra_hardware.py#L42:1"><code>infra_hardware.py</code></a>,
+            <a href="vscode://file//Users/vinville/dev/e-footprint-full/e-footprint/efootprint/core/hardware/network.py:76:1" data-review-source-href="../../../efootprint/core/hardware/network.py#L76:1"><code>network.py</code></a>,
+            <a href="vscode://file//Users/vinville/dev/e-footprint-full/e-footprint/efootprint/core/hardware/edge/edge_device.py:251:1" data-review-source-href="../../../efootprint/core/hardware/edge/edge_device.py#L251:1"><code>edge_device.py</code></a>,
+            <a href="vscode://file//Users/vinville/dev/e-footprint-full/e-footprint/efootprint/builders/external_apis/external_api_base_class.py:25:1" data-review-source-href="../../../efootprint/builders/external_apis/external_api_base_class.py#L25:1"><code>external_api_base_class.py</code></a> and
+            <a href="vscode://file//Users/vinville/dev/e-footprint-full/e-footprint/efootprint/builders/external_apis/ecologits/ecologits_external_api_server_base.py:52:1" data-review-source-href="../../../efootprint/builders/external_apis/ecologits/ecologits_external_api_server_base.py#L52:1"><code>ecologits_external_api_server_base.py</code></a>.</li>
+          <li>In <a href="vscode://file//Users/vinville/dev/e-footprint-full/e-footprint/tests/abstract_modeling_classes/test_reactive_core.py:84:1" data-review-source-href="../../../tests/abstract_modeling_classes/test_reactive_core.py#L84:1"><code>test_reactive_core.py</code></a>:
+            <code>ReactiveCorePurposeHolder</code> and the three purpose tests.</li>
+          <li>The architecture text: the
+            <a href="vscode://file//Users/vinville/dev/e-footprint-full/e-footprint/specs/architecture/recomputation/lifecycle.html:162:1" data-review-source-href="../../../specs/architecture/recomputation/lifecycle.html#L162:1">"Footprint roots and derived graph membership"</a>
+            section of <code>lifecycle.html</code>, the
+            <a href="vscode://file//Users/vinville/dev/e-footprint-full/e-footprint/specs/architecture/recomputation/computed-surfaces.html:50:1" data-review-source-href="../../../specs/architecture/recomputation/computed-surfaces.html#L50:1">purposes paragraph</a> of
+            <code>computed-surfaces.html</code>, the
+            <a href="vscode://file//Users/vinville/dev/e-footprint-full/e-footprint/specs/architecture/recomputation/blocks/computed-attribute.html:57:1" data-review-source-href="../../../specs/architecture/recomputation/blocks/computed-attribute.html#L57:1">purposes row</a> of the
+            computed-attribute options table, and the <code>purposes</code> sentence in the slot-flags bullet of
+            <a href="vscode://file//Users/vinville/dev/e-footprint-full/e-footprint/specs/conventions.md:21:1" data-review-source-href="../../../specs/conventions.md#L21:1"><code>specs/conventions.md</code></a>.</li>
+        </ul>
+        <p>Guard and serialization flags are independent of purposes and stay. A future consumer that needs footprint
+          membership can reintroduce the tags with that consumer. The removal lands with Task 1.</p>
       </aside>
     </article>
 
@@ -784,7 +838,8 @@ def direct_children_with_id(self):
     <h3>Implementation sequence</h3>
     <ol id="phases">
       <li><strong>A · Engine link invariant</strong>The engine half of 1.3: invalidation cuts links, every computation
-        outcome installs its reads, stale dict keys and deleted objects cut theirs; engine tests and the recomputation pages.
+        outcome installs its reads, stale dict keys and deleted objects cut theirs; the unused purpose query and its tags
+        removed (<a href="#plan-update-04">PLAN-UPDATE-04</a>); engine tests and the recomputation pages.
         <small>Lands first: the children property of B reads the graph as a relation, and the existing post-reset loops over
         <code>direct_children_with_id</code> would pull dead slots without it.</small></li>
       <li><strong>B · Library core, one change</strong>Steps 1.1 to 1.4 together: resolver, derived ancestors and
@@ -845,6 +900,7 @@ def direct_children_with_id(self):
         <tr><td>Failure and rejection install their reads</td><td>A getter that reads X then raises is linked to X only; an observer-rejected slot is void and linked to the rejected attempt's reads; the fallback-caching dependent is still invalidated by X</td><td>Library unit (engine)</td></tr>
         <tr><td>Branch switch and rollback</td><td>After a <code>server_type</code> switch that trips the capacity guard and rolls back, the guard's and <code>nb_of_instances</code>' links are the on-premise branch's once recomputed</td><td>Library unit or integration (engine)</td></tr>
         <tr><td>Removed and deleted slots unlinked</td><td>A pruned stale sub-slot and every slot of a deleted object are absent from surviving slots' dependents; the add-usage-pattern post-reset children contain no dead slot</td><td>Library unit (engine) + integration</td></tr>
+        <tr><td>Purpose query removed</td><td>No <code>ComputationPurpose</code>, <code>purposes</code> or <code>computation_slots_for_purpose</code> left in <code>efootprint/</code>, <code>tests/</code> or <code>specs/architecture/</code>; full suite passes</td><td>Search + library suite</td></tr>
         <tr><td>Structural-only and structure dependents excluded</td><td>Children of an input read by a computed-dict key set and by a computed structure contain neither</td><td>Library unit</td></tr>
         <tr><td>Fresh values unchanged</td><td>Existing ancestor-order and formula unit tests pass untouched</td><td>Library unit</td></tr>
         <tr><td>Old files load</td><td>26→27 handler drops the key; a V26 dict with the key loads and round-trips without it</td><td>Library migration unit</td></tr>

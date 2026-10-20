@@ -1,7 +1,7 @@
 # Task 2 — Derive explanation links from formula and slot graph
 Written 2026-10-19 against e-footprint 58966eb1; revised 2026-10-20 for the integrated 1.3.
 Plan: [1.1](../plan.html#resolver), [1.2](../plan.html#ancestors), [1.3](../plan.html#children), [1.4](../plan.html#persistence) (saving, loading, documentation), [verification map](../plan.html#delivery), [PLAN-UPDATE-03](../plan.html#plan-update-03). Task: [tasks.md](../tasks.md#task-2--derive-explanation-links-from-formula-and-slot-graph).
-Status: under review.
+Status: approved 2026-10-20.
 
 ## Start here
 All in `efootprint/abstract_modeling_classes/explainable_object_base_class.py` unless noted:
@@ -17,7 +17,7 @@ Land everything below as one change. The plan's delivery section explains why it
 3. **Children** (plan 1.3 snippet). Make it a read-only property: filter on `on_value_dropped is not None` and `slot in dependent.calculus_dependencies`, then pull. Task 1 makes those links current, so no check after the pull. Remove `_direct_children_with_id`, its setter, the add/remove helpers, `all_descendants_with_id`, and both link loops in `set_modeling_obj_container`. Keep the label check, the base call and `finalize_explanation()`.
 4. **Save**. `to_json(with_formula=True)` stops writing `direct_ancestors_with_id`; it still writes `explain_nested_tuples_from_json` when set.
 5. **Load**. Delete `invert_children_links_of_stored_values` and its call. `rebuild_dependency_graph` is unchanged.
-6. **Docs and changelog**. `persistence.html` contract cell and children sentence (plan 1.4 wording). `recomputation.html`: one sentence saying display-time resolution may compute, and bookkeeping never does. `_release_value` docstring: drop "ancestor children links". `CHANGELOG.md`: a new `## [Unreleased]` heading above V26.0.1 with one entry; Task 3 extends it.
+6. **Docs and changelog**. `persistence.html` contract cell and children sentence (plan 1.4 wording). `recomputation.html`: one sentence saying display-time resolution may compute, and bookkeeping never does. `_release_value` docstring: drop "ancestor children links". `CHANGELOG.md`: one entry under the `## [Unreleased]` heading Task 1 added; Task 3 extends it.
 
 ## Earlier tasks
 Task 1 makes every link current: voided slots have none, failed attempts are linked to their reads, removed and deleted slots are unlinked. Without it, the post-reset loops over `country.average_carbon_intensity.direct_children_with_id` in `integration_simple_system_base_class.py` (`run_test_add_usage_pattern`) and `integration_simple_edge_system_base_class.py` (two scenarios) raise `KeyError`. Consequence for tests: right after an edit, a value's children are only those already recomputed. A test that asserts children after an edit must pull first, as the halfway-save test already does with `system.total_footprint`.
@@ -43,7 +43,7 @@ Task 1 makes every link current: voided slots have none, failed attempts are lin
 - Commands: `PYTHONPATH=./ <venv>/bin/python -m pytest tests` with `MPLBACKEND=Agg`, then `tests/performance_tests` after regenerating the local `big_system.json` (`tests/performance_tests/generate_big_system.py`).
 
 ## Out of scope
-Schema version, handler and fixture version strings (Task 3). Interface (Task 4). Stored-topology rendering without pulls.
+Schema version, handler and fixture version strings (Task 3). Interface (Task 3). Stored-topology rendering without pulls.
 
 ## Unverified
 The plan's latency baseline was measured with addresses pulled through `getattr`. Reading computed-dict elements through the facade should only lower those numbers. Re-measure only if a reviewer asks.
