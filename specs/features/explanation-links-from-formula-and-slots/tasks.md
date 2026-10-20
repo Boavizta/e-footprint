@@ -22,7 +22,7 @@ Status: approved 2026-10-20.
 
 ## Task 1 — Engine keeps dependency links current
 Goal: a slot's dependency links are the reads of its current state. Invalidation cuts the links of every slot it voids; a computation installs its reads whether it succeeds, fails or is rejected by an observer; stale computed-dict sub-slots and a deleted object's slots cut theirs. `computation_slots_for_purpose`, `ComputationPurpose` and the `purposes=` tags, which only that query reads, are removed (PLAN-UPDATE-04).
-Status: approved 2026-10-20
+Status: done 2026-10-20 — range `14b9da47..c277effd`; see [IMPL-DECISION-01](plan.html#impl-decision-01) (rollback re-pulls forward-visited guards, pre-existing repeated-invalid-edit defect fixed).
 Brief: [briefs/task-1.md](briefs/task-1.md)
 Repository: e-footprint
 Files touched: `efootprint/abstract_modeling_classes/reactive_core/graph.py` (`invalidate`, `ReactiveSlot._compute`, `ReactiveSlot` and `observe_computations` docstrings), `efootprint/abstract_modeling_classes/reactive_core/computed_slots.py` (`discard_stale_keys`; purpose API removed), `efootprint/abstract_modeling_classes/reactive_core/__init__.py` (exports), `efootprint/abstract_modeling_classes/modeling_object.py` (`self_delete`), the eight model files declaring `purposes=` (listed in [PLAN-UPDATE-04](plan.html#plan-update-04)), `tests/abstract_modeling_classes/test_reactive_core.py`, `tests/abstract_modeling_classes/test_modeling_object.py`, `specs/architecture/recomputation/computed-surfaces.html`, `specs/architecture/recomputation/lifecycle.html`, `specs/architecture/recomputation/blocks/computed-attribute.html`, `specs/conventions.md`, `CHANGELOG.md` (Unreleased, Removed).

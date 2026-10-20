@@ -284,6 +284,10 @@
       <p><a href="#plan-update-03">[PLAN-UPDATE-03] Resolve a computed-dict operand through its element, not the whole dict — ACCEPTED</a></p>
       <p><a href="#plan-update-04">[PLAN-UPDATE-04] Remove the unused purpose query and its tags — ACCEPTED</a></p>
     </aside>
+    <aside id="impl-decisions" data-note="review">
+      <p><strong>Implementation decisions</strong></p>
+      <p><a href="#impl-decision-01">[IMPL-DECISION-01] Rollback re-pulls forward-visited guards; plan's wave-reachability argument corrected, repeated-invalid-edit defect fixed — APPLIED</a></p>
+    </aside>
   </header>
 
   <section id="walkthrough">
@@ -607,11 +611,45 @@ class ReactiveSlot:
           a marked void slot that nothing reaches any more is unmarked by its next compute, success or failure.</li>
         <li><strong>Rollback.</strong>
           <a href="vscode://file//Users/vinville/dev/e-footprint-full/e-footprint/efootprint/abstract_modeling_classes/modeling_update.py:181:1" data-review-source-href="../../../efootprint/abstract_modeling_classes/modeling_update.py#L181:1"><code>ModelingUpdate.rollback()</code></a>
-          writes the old inputs back and invalidates from the same input nodes. A guard that failed under the new
-          <code>server_type</code> read <code>server_type</code> before raising, so its links reach it from there (and
-          <code>nb_of_instances</code> through it, since a read is recorded before the pulled slot computes); the rollback
-          wave voids both and cuts their links, and their recompute records the on-premise branch.</li>
+          writes the old inputs back, invalidates from the same input nodes, then re-pulls the guards the forward
+          wave visited together with those its own wave voids. Reading a plain input such as <code>server_type</code>
+          records nothing: input edges come only from the returned value's ancestry, so a guard that raised is linked
+          only to the computed slots it read, and the rollback wave alone could not reach it. The explicit re-pull
+          recomputes it on the restored inputs, and its links then describe the on-premise branch
+          (<a href="#impl-decision-01">IMPL-DECISION-01</a>).</li>
       </ul>
+      <aside id="impl-decision-01" data-note="review">
+        <p><strong>[IMPL-DECISION-01] — APPLIED</strong></p>
+        <p><em>Material plan difference and a newly discovered pre-existing defect, fixed in run A (Task 1 review).</em></p>
+        <p>The plan argued that a guard rejected under a new <code>server_type</code> would be re-linked by the
+          rollback wave because it "read <code>server_type</code> before raising". That is false: reading a plain
+          explainable input records nothing in the compute frame. Input edges are only installed from the returned
+          value's ancestry by
+          <a href="vscode://file//Users/vinville/dev/e-footprint-full/e-footprint/efootprint/abstract_modeling_classes/reactive_core/graph.py:331:1" data-review-source-href="../../../efootprint/abstract_modeling_classes/reactive_core/graph.py#L331:1"><code>record_calculus_edges_from_ancestry</code></a>,
+          which never runs for an attempt that raised. With reads installed in the <code>finally</code> of
+          <a href="vscode://file//Users/vinville/dev/e-footprint-full/e-footprint/efootprint/abstract_modeling_classes/reactive_core/graph.py:52:1" data-review-source-href="../../../efootprint/abstract_modeling_classes/reactive_core/graph.py#L52:1"><code>ReactiveSlot._compute</code></a> as planned,
+          a rejected capacity guard is linked only to <code>raw_nb_of_instances</code>, so the rollback wave from the
+          input nodes never reaches it and it stays void. Displayed values stay correct because a void slot recomputes
+          when read, and no getter in <code>efootprint</code> catches exceptions; the limit is stated under
+          <a href="vscode://file//Users/vinville/dev/e-footprint-full/e-footprint/specs/architecture/recomputation/lifecycle.html:171:1" data-review-source-href="../../architecture/recomputation/lifecycle.html#L171:1">"Links are the reads of the current state"</a>.</p>
+        <p>Investigating this exposed a pre-existing defect with the same root cause on the old engine: an invalid
+          guarded edit submitted through <code>ModelingUpdate</code> without eager outputs was rejected once, then
+          accepted when repeated, because the failed guard never cleared the input's wave marker and no wave pulled it
+          again. The fix, applied in
+          <a href="vscode://file//Users/vinville/dev/e-footprint-full/e-footprint/efootprint/abstract_modeling_classes/modeling_update.py:50:1" data-review-source-href="../../../efootprint/abstract_modeling_classes/modeling_update.py#L50:1"><code>ModelingUpdate.__init__</code></a> and
+          <a href="vscode://file//Users/vinville/dev/e-footprint-full/e-footprint/efootprint/abstract_modeling_classes/modeling_update.py:193:1" data-review-source-href="../../../efootprint/abstract_modeling_classes/modeling_update.py#L193:1"><code>ModelingUpdate.rollback</code></a>,
+          passes the forward wave's visited slots into rollback, which re-pulls their guards together with its own
+          wave's. No filter for newly linked objects was needed: re-pulling the guard of a detached, previously
+          computed standalone object does not raise again, as
+          <a href="vscode://file//Users/vinville/dev/e-footprint-full/e-footprint/tests/abstract_modeling_classes/test_reactive_core.py:678:1" data-review-source-href="../../../tests/abstract_modeling_classes/test_reactive_core.py#L678:1"><code>test_rejected_link_to_a_computed_standalone_object_rolls_back_without_reraising</code></a>
+          checks. The regression
+          <a href="vscode://file//Users/vinville/dev/e-footprint-full/e-footprint/tests/abstract_modeling_classes/test_reactive_core.py:655:1" data-review-source-href="../../../tests/abstract_modeling_classes/test_reactive_core.py#L655:1"><code>test_repeated_invalid_guarded_edit_is_rejected_each_time</code></a>
+          rejects the same edit twice and finds the guard cached and linked to <code>fixed_nb_of_instances</code> and
+          <code>server_type</code> after rollback. Effect: the "Branch switch and rollback" verification row holds through
+          the explicit re-pull rather than through wave reachability, and rollback now costs one extra pull per guard the
+          forward wave visited. Remaining gap, accepted: a getter that caught a failure and cached a fallback would not be
+          linked to inputs its failed branch read; no such getter exists.</p>
+      </aside>
       <p>Accepted consequence: a value emptied by an edit lists no children until its consumers recompute. In the
         interface the eager footprint pull recomputes the edited cone in the same request, so the saved graph is
         current. Cost, measured on the big performance system for the input with the largest dependents cone (a
