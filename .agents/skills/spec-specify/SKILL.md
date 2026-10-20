@@ -46,6 +46,20 @@ lower environmental impact; assess likely runtime/resource work separately when 
 Record consequential capability tradeoffs and frequency assumptions briefly in the problem, scope or
 open questions of `spec.html`; put technical cost explanations in the draft plan when one is needed.
 
+### Split when the scope has grown
+
+Scope creeps during the discussion: a core capability picks up inline controls in other views, side
+panels, live summaries, exports. Each addition looks small in conversation and large in a plan, and a
+single spec covering all of them produces a plan nobody can hold in one pass. So **just before drafting,
+once the discussion has settled, size the scope**: if it holds more than five or six distinct user
+interactions, or more than one surface where the user acts on the same state (the primary view plus
+inline controls elsewhere, a side panel, a self-refreshing summary), propose a split. A core spec keeps
+the primary surface and the interactions it cannot ship without; a follow-up spec takes the extensions,
+which then start from a shipped core rather than from assumptions about it.
+
+Name the split explicitly (which interactions stay, which move), say why, and ask the user to confirm.
+If they prefer one spec, record that decision in §3 and proceed.
+
 ## Process
 
 1. **Confirm the feature name** with the user (kebab-case, descriptive). If the slot already exists at `specs/features/<feature-name>/`, stop and ask whether to overwrite or pick a different name.
@@ -54,7 +68,7 @@ open questions of `spec.html`; put technical cost explanations in the draft plan
 
 3. **Classify accumulated context.** Audit the prior conversation for design-level signals: file paths, class/method names, parameter defaults, refactor instructions, citations of existing-code patterns to copy, decisions made about provider/model splits, where-things-live, internal vs external parameters, etc. If load-bearing design content is already in the conversation, drafting only `spec.html` will either (a) discard that content or (b) leak it into the spec. In that case, produce **both** `spec.html` and a draft `plan.html` in this same pass. Tell the user explicitly that you're producing two files and why. If the conversation is purely capability-framed, draft only `spec.html`.
 
-4. **Shape the scope, then draft the spec.** Apply the feature-shaping check above before success criteria or mockups make a convenience look mandatory. Follow the template below. Use AskUserQuestion for any unclear *capability-level* question (audience, user outcome, in/out scope). Do not invent answers. Do **not** ask design-level questions here — those go to `spec-plan`. If the user volunteers a design decision, capture it for `plan.html` instead of folding it into the spec.
+4. **Shape the scope, then draft the spec.** Apply the feature-shaping check above before success criteria or mockups make a convenience look mandatory. If the check triggers a split and the user confirms it, create the follow-up slot too: `specs/features/<follow-up-name>/spec.html` holding only the problem statement, the moved interactions as in-scope bullets, and a dependency note on the core feature; list the moved interactions under "Out of scope (this iteration)" in the core spec with a link to the follow-up. Follow the template below. Use AskUserQuestion for any unclear *capability-level* question (audience, user outcome, in/out scope). Do not invent answers. Do **not** ask design-level questions here — those go to `spec-plan`. If the user volunteers a design decision, capture it for `plan.html` instead of folding it into the spec.
 
    For any user-facing surface, **embed a clickable HTML mockup or an inline SVG of the interaction / data flow** in §4 rather than describing it in prose. Showing the experience is the main reason the spec is HTML — prefer a concrete artifact the user can look at and react to over a paragraph that approximates it.
 
