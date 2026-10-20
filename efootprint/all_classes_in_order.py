@@ -23,7 +23,7 @@ from efootprint.core.usage.edge.edge_usage_pattern import EdgeUsagePattern
 from efootprint.core.usage.edge.recurrent_edge_device_need import RecurrentEdgeDeviceNeed
 from efootprint.core.usage.edge.recurrent_server_need import RecurrentServerNeed
 from efootprint.builders.usage.edge.recurrent_edge_workload import RecurrentEdgeWorkload, RecurrentEdgeWorkloadNeed
-from efootprint.core.usage.usage_journey_step import UsageJourneyStep
+from efootprint.core.usage.usage_journey_step import UsageJourneyStep, UsageJourneyStepCoordinate
 from efootprint.core.usage.usage_journey import UsageJourney
 from efootprint.core.hardware.device import Device
 from efootprint.core.country import Country
@@ -32,7 +32,7 @@ from efootprint.core.hardware.storage import Storage
 from efootprint.core.hardware.gpu_server import GPUServer
 from efootprint.core.hardware.server import Server
 from efootprint.builders.services.video_streaming import VideoStreaming, VideoStreamingJob
-from efootprint.core.usage.job import Job, JobBase, GPUJob
+from efootprint.core.usage.job import Job, JobBase, GPUJob, JobOccurrenceCoordinate
 from efootprint.core.hardware.network import Network
 from efootprint.core.system import System
 from efootprint.builders.external_apis.external_api_base_class import ExternalAPI, ExternalAPIServer
@@ -97,6 +97,12 @@ ALL_CANONICAL_CLASSES_DICT = {cls.__name__: cls for cls in CANONICAL_CLASSES}
 ALL_CONCRETE_EFOOTPRINT_CLASSES_DICT = {cls.__name__: cls for cls in ALL_EFOOTPRINT_CLASSES}
 ALL_EFOOTPRINT_CLASSES_DICT = copy(ALL_CONCRETE_EFOOTPRINT_CLASSES_DICT)
 ALL_EFOOTPRINT_CLASSES_DICT.update(ALL_CANONICAL_CLASSES_DICT)
+
+# Computed-dict key classes that are not modeling objects: the saved calculation graph addresses their
+# sub-slots by class name and the key's components (to_json_key / from_json_key), and the loader rebuilds
+# the key through this registry.
+COMPUTED_DICT_KEY_CLASSES_DICT = {
+    key_class.__name__: key_class for key_class in (JobOccurrenceCoordinate, UsageJourneyStepCoordinate)}
 
 OBJECT_CATEGORIES = {
     "Servers": [ServerBase],

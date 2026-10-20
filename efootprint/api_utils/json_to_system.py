@@ -8,7 +8,7 @@ from efootprint.abstract_modeling_classes.explainable_object_dict import Explain
 
 from efootprint.abstract_modeling_classes.modeling_object import ModelingObject
 from efootprint.abstract_modeling_classes.explainable_object_base_class import Source, explainable_object_from_json
-from efootprint.all_classes_in_order import ALL_EFOOTPRINT_CLASSES
+from efootprint.all_classes_in_order import ALL_EFOOTPRINT_CLASSES, COMPUTED_DICT_KEY_CLASSES_DICT
 from efootprint.api_utils.suppressed_efootprint_classes import ALL_SUPPRESSED_EFOOTPRINT_CLASSES_DICT
 from efootprint.api_utils.system_to_json import CALCULATION_GRAPH_KEY
 from efootprint.constants.sources import Sources
@@ -265,13 +265,14 @@ def rebuild_dependency_graph(calculation_graph, flat_obj_dict):
         _node_slot, computed_slots, computed_structures)
 
     slots = []
-    for container_id, attr_name, key_id in calculation_graph["nodes"]:
-        container = flat_obj_dict.get(container_id)
-        if container is None or (key_id is not None and key_id not in flat_obj_dict):
+    for container_id, attr_name, key_json in calculation_graph["nodes"]:
+        try:
+            container = flat_obj_dict[container_id]
+            key = _dict_key_from_json(key_json, flat_obj_dict)
+        except KeyError as absent_object:
             raise ValueError(
-                f"Calculation-graph node ({container_id}, {attr_name}, {key_id}) references an object absent "
-                f"from the file: the file is corrupted or was edited by hand.")
-        key = flat_obj_dict[key_id] if key_id is not None else None
+                f"Calculation-graph node ({container_id}, {attr_name}, {key_json}) references an object absent "
+                f"from the file: the file is corrupted or was edited by hand.") from absent_object
         container_class = container.efootprint_class
         declared_computed_slots = computed_slots(container_class)
         declared_computed_structures = computed_structures(container_class)
@@ -289,6 +290,18 @@ def rebuild_dependency_graph(calculation_graph, flat_obj_dict):
 
     for node_index_str, label in calculation_graph.get("labels", {}).items():
         slots[int(node_index_str)].serialized_label = label
+
+
+def _dict_key_from_json(key_json, flat_obj_dict):
+    """The dict key a saved node addresses: none, a modeling object by id, or a key object rebuilt from
+    its ``{"ClassName": {component: id}}`` form through the key-class registry — looked up, never computed.
+    A KeyError means the file lacks an object the node references."""
+    if key_json is None:
+        return None
+    if isinstance(key_json, str):
+        return flat_obj_dict[key_json]
+    (class_name, components), = key_json.items()
+    return COMPUTED_DICT_KEY_CLASSES_DICT[class_name].from_json_key(components, flat_obj_dict)
 
 
 def collect_baseline_values_from_other_version(system_dict, efootprint_classes_dict, sources_dict):

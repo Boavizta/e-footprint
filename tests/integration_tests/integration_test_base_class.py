@@ -326,11 +326,7 @@ class IntegrationTestBaseClass(TestCase):
         self.assertEqual(total.direct_ancestor_ids, reloaded_total.direct_ancestor_ids)
         self.assertEqual(nested.direct_ancestor_ids, nested_reloaded.direct_ancestor_ids)
         if any(isinstance(obj, JobBase) for obj in self.system.all_linked_objects):
-            # The saved calculation graph addresses dict elements by modeling-object key only: elements keyed by
-            # derived attribution coordinates are not persisted, and are listed again once recomputed.
-            children_ids = sorted(
-                child.id for child in job_input_children(self.system)
-                if child.dict_container is None or isinstance(child.key_in_dict, ModelingObject))
+            children_ids = sorted(child.id for child in job_input_children(self.system))
             pulled_for_children = []
             with observe_computations(pulled_for_children.append):
                 reloaded_children_ids = sorted(child.id for child in job_input_children(reloaded_system))
@@ -387,6 +383,56 @@ class IntegrationTestBaseClass(TestCase):
             json_after_display = system_to_json(system)
         self.assertEqual([], computed_during_save)
         self.assertEqual(json.dumps(json_before_display), json.dumps(json_after_display))
+
+    def run_test_editing_a_reloaded_model_voids_its_stored_summaries(self):
+        """Test that after a reload, editing a job's data transferred or a step's user time spent voids the stored
+        impact-repartition matrix, and the edge-device breakdown summaries that depend on it, through the saved
+        graph exactly as in memory, and that they recompute to the same values."""
+        from efootprint.abstract_modeling_classes.reactive_core import instance_slot_registry
+        from efootprint.abstract_modeling_classes.source_objects import SourceValue
+        from efootprint.core.hardware.edge.edge_device import EdgeDevice
+        from efootprint.core.usage.job import JobBase
+        from efootprint.core.usage.usage_journey_step import UsageJourneyStep
+
+        # Start from an inputs-only reload (see run_test_displaying_one_stored_formula_computes_only_its_operands).
+        inputs_only = system_to_json(self.system, save_computed_state=False)
+
+        def stored_summaries(flat_obj_dict):
+            system = flat_obj_dict[self.system.id]
+            edge_devices = [obj for obj in system.all_linked_objects if isinstance(obj, EdgeDevice)]
+            _ = system.total_footprint, system.impact_repartition_matrix
+            for edge_device in edge_devices:
+                _ = edge_device.footprint_breakdown_summary
+            return {(system.id, "impact_repartition_matrix"): instance_slot_registry(system)["impact_repartition_matrix"],
+                    **{(edge_device.id, "footprint_breakdown_summary"):
+                       instance_slot_registry(edge_device)["footprint_breakdown_summary"] for edge_device in edge_devices}}
+
+        def edit_then_report(flat_obj_dict, summaries, edited_class, attr_name):
+            edited = next((obj for obj in flat_obj_dict.values() if isinstance(obj, edited_class)), None)
+            if edited is None:
+                return None
+            setattr(edited, attr_name, SourceValue(getattr(edited, attr_name).value * 1.7))
+            voided = {address for address, slot in summaries.items() if not slot.has_cached_value}
+            values = {address: getattr(flat_obj_dict[address[0]], address[1]) for address in summaries}
+            return voided, values
+
+        for edited_class, attr_name in ((JobBase, "data_transferred"), (UsageJourneyStep, "user_time_spent")):
+            _, in_memory_flat_obj_dict, _ = json_to_system(json.loads(json.dumps(inputs_only)))
+            in_memory_summaries = stored_summaries(in_memory_flat_obj_dict)
+            saved = json.dumps(system_to_json(in_memory_flat_obj_dict[self.system.id]))
+            in_memory = edit_then_report(in_memory_flat_obj_dict, in_memory_summaries, edited_class, attr_name)
+            if in_memory is None:
+                continue
+            voided_in_memory, values_in_memory = in_memory
+            self.assertIn((self.system.id, "impact_repartition_matrix"), voided_in_memory)
+
+            _, reloaded_flat_obj_dict, _ = json_to_system(json.loads(saved))
+            reloaded_summaries = stored_summaries(reloaded_flat_obj_dict)
+            self.assertTrue(all(slot.has_cached_value for slot in reloaded_summaries.values()))
+            voided_after_reload, values_after_reload = edit_then_report(
+                reloaded_flat_obj_dict, reloaded_summaries, edited_class, attr_name)
+            self.assertEqual(voided_in_memory, voided_after_reload, f"{attr_name} edit")
+            self.assertEqual(values_in_memory, values_after_reload, f"{attr_name} edit")
 
     def _test_input_change(
             self, expl_attr, expl_attr_new_value, input_object, expl_attr_name,

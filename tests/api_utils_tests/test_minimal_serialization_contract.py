@@ -93,6 +93,68 @@ class TestMinimalSerializationContract(TestCase):
         loaded_system = self.load_canonical()
         self.assertEqual(json.dumps(self.canonical_dict), json.dumps(system_to_json(loaded_system)))
 
+    def attribution_coordinate_node(self):
+        """The saved node of one job's hourly data transferred sub-slot keyed by an occurrence coordinate, and the
+        objects it is built from."""
+        usage_pattern = self.system.usage_patterns[0]
+        journey = next(iter(usage_pattern.usage_journeys))
+        step = next(iter(journey.uj_steps))
+        job = next(iter(step.jobs))
+        node = [job.id, "hourly_data_transferred_per_coordinate", {"JobOccurrenceCoordinate": {
+            "usage_pattern": usage_pattern.id, "journey": journey.id, "step": step.id}}]
+        return node, job, usage_pattern, journey, step
+
+    def test_coordinate_keyed_sub_slots_are_addressed_by_their_components_and_rebuilt_at_load(self):
+        """Test that a computed-dict sub-slot keyed by an attribution coordinate is saved under its class name and
+        components by object id, with its edges, and that a trusted load rebuilds the keyed slot."""
+        from efootprint.abstract_modeling_classes.reactive_core import instance_slot_registry
+        from efootprint.core.usage.job import JobOccurrenceCoordinate
+
+        node, job, usage_pattern, journey, step = self.attribution_coordinate_node()
+        nodes = self.canonical_dict["calculation_graph"]["nodes"]
+        self.assertIn(node, nodes)
+        self.assertIn([step.id, "hourly_avg_occurrences_per_usage_coordinate", {"UsageJourneyStepCoordinate": {
+            "usage_pattern": usage_pattern.id, "usage_journey": journey.id}}], nodes)
+        self.assertTrue(any(edge[0] == nodes.index(node) for edge in self.canonical_dict["calculation_graph"]["edges"]))
+
+        with ComputeCounter() as counter:
+            loaded_system = self.load_canonical()
+        self.assertEqual([], counter.computed_slot_names)
+        loaded_up, loaded_journey, loaded_step, loaded_job = (
+            next(obj for obj in loaded_system.all_linked_objects if obj.id == obj_id)
+            for obj_id in (usage_pattern.id, journey.id, step.id, job.id))
+        rebuilt_slot = instance_slot_registry(loaded_job)[
+            ("hourly_data_transferred_per_coordinate",
+             JobOccurrenceCoordinate(loaded_up, journey=loaded_journey, step=loaded_step))]
+        self.assertFalse(rebuilt_slot.has_cached_value)
+        self.assertTrue(rebuilt_slot.calculus_dependencies)
+
+    def test_sub_slot_keyed_by_a_coordinate_with_an_unserialized_component_is_skipped(self):
+        """Test that a coordinate one of whose components is outside the serialized object set has no node, like
+        any sub-slot keyed by a foreign object."""
+        from efootprint.api_utils.system_to_json import calculation_graph_section
+
+        node, job, usage_pattern, _, _ = self.attribution_coordinate_node()
+        objects = [self.system] + self.system.all_linked_objects
+        self.assertIn(node, calculation_graph_section(objects)["nodes"])
+
+        nodes_without_usage_pattern = calculation_graph_section(
+            [obj for obj in objects if obj is not usage_pattern])["nodes"]
+        self.assertIn([job.id, "hourly_avg_occurrences_across_usage_patterns", None], nodes_without_usage_pattern)
+        self.assertFalse([saved_node for saved_node in nodes_without_usage_pattern
+                          if usage_pattern.id in json.dumps(saved_node[2])])
+
+    def test_coordinate_node_referencing_an_absent_object_is_rejected(self):
+        """Test that a coordinate node whose component is absent from the file raises like any corrupted node."""
+        node, _, usage_pattern, _, _ = self.attribution_coordinate_node()
+        corrupted_dict = json.loads(json.dumps(self.canonical_dict))
+        corrupted_node = corrupted_dict["calculation_graph"]["nodes"][
+            self.canonical_dict["calculation_graph"]["nodes"].index(node)]
+        corrupted_node[2]["JobOccurrenceCoordinate"]["usage_pattern"] = "absent-usage-pattern"
+
+        with self.assertRaisesRegex(ValueError, "references an object absent from the file"):
+            json_to_system(corrupted_dict)
+
     def test_displaying_the_calculus_graph_leaves_a_later_save_unchanged(self):
         """Test that the calculus graph of a stored total, whose display computes the void operands below it,
         leaves a later save byte-identical: which objects a save writes, and in which order, never depends

@@ -13,6 +13,7 @@ and this project adheres to [Semantic Versioning](http://semver.org/)
 ### Fixed
 - A rejected update now re-validates the guards it had voided, so repeating the same invalid edit is rejected again instead of accepted.
 - `system_to_json` writes the same bytes whatever has been computed: objects are discovered through inputs only, so displaying an explanation or the calculus graph before a save no longer reorders the file.
+- The saved calculation graph now addresses computed-dict elements keyed by an attribution coordinate (a job's occurrences and data transferred per usage pattern and step or recurrent server need, a step's occupancy per usage pattern and journey), so after a reload an edit to a job's data transferred or a step's user time spent invalidates the stored impact-repartition matrix and edge-device breakdown summaries, and a job input lists all its children.
 
 ### Removed
 - `computation_slots_for_purpose`, `ComputationPurpose` and the `purposes` parameter of `computed_attribute` and `computed_dict`, which had no caller outside their own tests.

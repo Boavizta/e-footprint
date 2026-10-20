@@ -84,6 +84,15 @@ class JobOccurrenceCoordinate:
         journey = f"/journey/{self.journey.id}" if self.journey is not None else ""
         return f"{self.usage_pattern.id}{journey}/{trigger_kind}/{trigger.id}"
 
+    def to_json_key(self) -> dict:
+        """The key's components by object id, as the saved calculation graph addresses its sub-slots."""
+        return {name: component.id for name in ("usage_pattern", "journey", "step", "recurrent_server_need")
+                if (component := getattr(self, name)) is not None}
+
+    @classmethod
+    def from_json_key(cls, components: dict, flat_obj_dict: dict) -> "JobOccurrenceCoordinate":
+        return cls(**{name: flat_obj_dict[object_id] for name, object_id in components.items()})
+
 
 class JobBase(ModelingObject):
     # Mark the class as abstract but not its children when they define a default_values class attribute

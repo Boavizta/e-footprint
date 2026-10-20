@@ -32,6 +32,14 @@ class UsageJourneyStepCoordinate:
     def id(self):
         return f"{self.usage_pattern.id}/journey/{self.usage_journey.id}"
 
+    def to_json_key(self) -> dict:
+        """The key's components by object id, as the saved calculation graph addresses its sub-slots."""
+        return {"usage_pattern": self.usage_pattern.id, "usage_journey": self.usage_journey.id}
+
+    @classmethod
+    def from_json_key(cls, components: dict, flat_obj_dict: dict) -> "UsageJourneyStepCoordinate":
+        return cls(flat_obj_dict[components["usage_pattern"]], flat_obj_dict[components["usage_journey"]])
+
 
 class UsageJourneyStep(ModelingObject):
     """One step within a {class:UsageJourney}, characterised by how long the user spends on it and which {class:Job}s it triggers on the server side."""

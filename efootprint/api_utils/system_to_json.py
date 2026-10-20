@@ -103,15 +103,44 @@ def recursively_write_json_dict(
 
 
 def _slot_address(obj_id, registry_key):
-    if isinstance(registry_key, tuple):
-        name, key = registry_key
-        return obj_id, name, getattr(key, "id", key)
-    return obj_id, registry_key, None
+    """The hashable address of a slot. A dict sub-slot keyed by a modeling object carries the key's id; one
+    keyed by another key object (an attribution coordinate) carries the key's class name and its components'
+    ids, written as ``{"ClassName": {component: id}}`` (see ``_json_node``)."""
+    if not isinstance(registry_key, tuple):
+        return obj_id, registry_key, None
+    name, key = registry_key
+    if isinstance(key, ModelingObject):
+        return obj_id, name, key.id
+    return obj_id, name, (type(key).__name__, tuple(key.to_json_key().items()))
+
+
+def _key_object_ids(key_part) -> set:
+    """The ids of the objects an address's key part references."""
+    if key_part is None:
+        return set()
+    if isinstance(key_part, str):
+        return {key_part}
+    _, components = key_part
+    return {object_id for _, object_id in components}
+
+
+def _json_node(address) -> list:
+    obj_id, name, key_part = address
+    if isinstance(key_part, tuple):
+        class_name, components = key_part
+        key_part = {class_name: dict(components)}
+    return [obj_id, name, key_part]
+
+
+def _address_sort_key(address):
+    # The key part's text only orders nodes deterministically; it is not decoded.
+    return address[0], address[1], "" if address[2] is None else str(address[2])
 
 
 def calculation_graph_section(objects) -> dict:
     """The values-free calculation-graph section: every computing slot's dependency edges (calculus
-    and structural), slot-addressed as (container id, attribute name, dict key id or null) triples.
+    and structural), slot-addressed as (container id, attribute name, dict key) triples where the dict
+    key is null, a modeling object's id, or a key object's class name and components by object id.
     At load, these edges are reinstalled directly, so invalidation waves triggered by later edits
     traverse valueless intermediate slots and reach the cached serialized values below them. Labels
     of currently cached values ride along (best effort) so consumers can display the graph shape
@@ -123,13 +152,12 @@ def calculation_graph_section(objects) -> dict:
     for obj in objects:
         registry = peek_instance_slot_registry(obj)
         for registry_key, slot in registry.items():
-            if (isinstance(registry_key, tuple)
-                    and getattr(registry_key[1], "id", None) not in serialized_object_ids):
+            address = _slot_address(obj.id, registry_key)
+            if not _key_object_ids(address[2]) <= serialized_object_ids:
                 # A slot keyed by an object outside the serialized set (e.g. a deleted dict member
                 # still referenced by the stale edges of valueless slots): dead post-load, like any
                 # dependency on a foreign object.
                 continue
-            address = _slot_address(obj.id, registry_key)
             address_by_slot_id[id(slot)] = address
             slot_by_address[address] = slot
 
@@ -162,7 +190,7 @@ def calculation_graph_section(objects) -> dict:
             labels[str(index_by_address[address])] = label
 
     return {
-        "nodes": [list(address) for address in node_addresses],
+        "nodes": [_json_node(address) for address in node_addresses],
         "edges": [
             [index_by_address[address],
              [index_by_address[dep] for dep in calculus_addresses],
@@ -171,10 +199,6 @@ def calculation_graph_section(objects) -> dict:
                 edges_by_address.items(), key=lambda item: _address_sort_key(item[0]))],
         "labels": labels,
     }
-
-
-def _address_sort_key(address):
-    return address[0], address[1], address[2] or ""
 
 
 def collect_referenced_source_ids(serialized_blocks) -> set:
