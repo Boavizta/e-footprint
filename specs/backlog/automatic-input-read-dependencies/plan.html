@@ -83,9 +83,9 @@
       recompute, never a stale value. Bump nodes have no dependencies, so no new cycle is possible.</li>
     <li>Strengthens the direction of making the slot graph the single persisted dependency graph (see the interface
       repository's <code>specs/features/calculation-explanations-without-pulls/</code> discussion).</li>
-    <li>Supersedes the rollback re-pull added by
-      <a href="../../features/explanation-links-from-formula-and-slots/plan.html#impl-decision-01">IMPL-DECISION-01</a>
-      of the explanation-links feature: a rejected guard will be linked to the inputs it read, so the rollback wave
+    <li>Supersedes the rollback re-pull of the guards the forward wave visited
+      (<a href="../../architecture/recomputation/lifecycle.html#correctness">lifecycle, “Rollback is transactional”</a>;
+      IMPL-DECISION-01 of the archived explanation-links feature, in git history up to commit 8be08e68): a rejected guard will be linked to the inputs it read, so the rollback wave
       reaches it by itself. Remove the <code>forward_visited_slots</code> parameter of
       <code>ModelingUpdate.rollback</code> and its call from <code>ModelingUpdate.__init__</code>
       (<code>efootprint/abstract_modeling_classes/modeling_update.py</code>) as part of this feature, keeping

@@ -1,8 +1,8 @@
 # Connectivity-defined system membership — backlog seed
 
 Status: parked backlog · 2026-10-20 · library-owned, interface adapts.
-Origin: review of [IMPL-DECISION-02](../../features/explanation-links-from-formula-and-slots/plan.html#impl-decision-02)
-and the parked item it left in the explanation-links `tasks.md`. This file carries the discussion until a
+Origin: review of IMPL-DECISION-02 (inputs-only save traversal) and the parked item it left in the tasks of the
+archived feature `specs/features/explanation-links-from-formula-and-slots/` (git history up to commit 8be08e68). This file carries the discussion until a
 `spec-specify` session turns it into a feature.
 
 ## The problem
