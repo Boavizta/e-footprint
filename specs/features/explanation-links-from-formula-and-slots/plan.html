@@ -811,7 +811,8 @@ def direct_children_with_id(self):
         <a href="vscode://file//Users/vinville/dev/e-footprint-full/e-footprint/efootprint/abstract_modeling_classes/explainable_object_base_class.py:564:1" data-review-source-href="../../../efootprint/abstract_modeling_classes/explainable_object_base_class.py#L564:1"><code>to_json(with_formula=True)</code></a>
         drops the <code>direct_ancestors_with_id</code> branch (lines 634–640) and keeps writing
         <code>explain_nested_tuples</code>. The values-free <code>calculation_graph</code> section written by
-        <a href="vscode://file//Users/vinville/dev/e-footprint-full/e-footprint/efootprint/api_utils/system_to_json.py:225:1" data-review-source-href="../../../efootprint/api_utils/system_to_json.py#L225:1"><code>system_to_json()</code></a> is unchanged.
+        <a href="vscode://file//Users/vinville/dev/e-footprint-full/e-footprint/efootprint/api_utils/system_to_json.py:225:1" data-review-source-href="../../../efootprint/api_utils/system_to_json.py#L225:1"><code>system_to_json()</code></a> gained one node-key form for
+        coordinate-keyed sub-slots (<a href="#impl-decision-03">IMPL-DECISION-03</a>) and is otherwise unchanged.
         Saving still peeks only.</p>
       <aside id="impl-decision-02" data-note="review">
         <p><strong>[IMPL-DECISION-02] — APPLIED</strong></p>
@@ -847,8 +848,10 @@ def direct_children_with_id(self):
         <p><strong>[IMPL-DECISION-03] — APPLIED</strong></p>
         <p><em>Newly discovered pre-existing defect fixed in run A (Task 4, added by the supervisor after the Task 2
           review), with substantial lasting complexity: a new node-key form in the saved calculation graph.</em></p>
-        <p>The calculation-graph section promises that reinstalled edges let later edits reach cached serialized
-          values. It skipped every computed-dict sub-slot whose key is not a serialized object, and the attribution
+        <p>The <code>calculation_graph</code> block of the saved file, written by
+          <a href="vscode://file//Users/vinville/dev/e-footprint-full/e-footprint/efootprint/api_utils/system_to_json.py:140:1" data-review-source-href="../../../efootprint/api_utils/system_to_json.py#L140:1"><code>calculation_graph_section()</code></a>,
+          exists so that the edges reinstalled at load let later edits reach cached serialized values. That function
+          skipped every computed-dict sub-slot whose key is not a serialized object, and the attribution
           dicts <a href="vscode://file//Users/vinville/dev/e-footprint-full/e-footprint/efootprint/core/usage/job.py:283:1" data-review-source-href="../../../efootprint/core/usage/job.py#L283:1"><code>Job.hourly_avg_occurrences_per_coordinate</code></a> and
           <a href="vscode://file//Users/vinville/dev/e-footprint-full/e-footprint/efootprint/core/usage/job.py:311:1" data-review-source-href="../../../efootprint/core/usage/job.py#L311:1"><code>hourly_data_transferred_per_coordinate</code></a> are keyed by <a href="vscode://file//Users/vinville/dev/e-footprint-full/e-footprint/efootprint/core/usage/job.py:59:1" data-review-source-href="../../../efootprint/core/usage/job.py#L59:1"><code>JobOccurrenceCoordinate</code></a>
           (and the step-occupancy weight by <a href="vscode://file//Users/vinville/dev/e-footprint-full/e-footprint/efootprint/core/usage/usage_journey_step.py:22:1" data-review-source-href="../../../efootprint/core/usage/usage_journey_step.py#L22:1"><code>UsageJourneyStepCoordinate</code></a>). After a reload, an edit to
