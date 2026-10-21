@@ -35,8 +35,8 @@ This skill owns what a bug-batch plan contains and in which order.
   claim needs a line the diagnostics do not give or where two documents disagree. Do not
   re-diagnose a confirmed cause.
 - Check the batch is closed: every `CONFIRMED` or `PLAUSIBLE` diagnostic has exactly one task,
-  every task links a diagnostic or a smell-sweep finding, and every user-approved refactor has a
-  task. A diagnostic without a task is a gap: append the task to `tasks.md` in the
+  every task links a diagnostic or a smell-sweep finding, each confirmed bug has a committed
+  reproduction or a stated reason for none, and every user-approved refactor has a task. A diagnostic without a task is a gap: append the task to `tasks.md` in the
   [bug-fixes task format](../bug-fixes/SKILL.md#task-format) with the next number, and tell the
   user. Do not drop a diagnosed bug silently and do not renumber.
 - Settled `## Decisions` in a diagnostic stay settled. Open forks go to the plan's decisions
@@ -55,18 +55,19 @@ explains all of the cluster's bugs. No architecture teaching; link the owning pa
 
 ### Bug step
 
-One `data-step` article per task, in this order and scaled to the bug. An easy one-line fix can
+One `data-step` article per task, in this order and scaled to the bug. The reproduction is the
+task's only test; name an extra test only when the task lists one for a new public contract. An easy one-line fix can
 take five lines; do not pad a step to fill the shape.
 
 1. Heading `Task N · <title>` with chips: verdict (`CONFIRMED` or `PLAUSIBLE`, the latter styled
    `data-chip="review"`), repository, implementation difficulty. Link the diagnostic.
-2. **Symptom**: what the user sees, in one or two sentences.
+2. **Symptom**: what the user sees, in one or two sentences, with the reproduction test linked at
+   its function line and its recorded failure quoted. A bug with no reproduction says why.
 3. **Root cause**: one paragraph with deep links to the lines that produce the behavior. When the
    reporter's hypothesis was disproven, say so here.
 4. **Fix**: the narrated anticipated diff. Add a snippet only where prose would leave the shape
    of the change unclear; mark existing versus proposed code.
-5. **Tests**: the regression and its layer.
-6. **Settled** decisions as plain text, **open** forks as a link to the decisions section, and the
+5. **Settled** decisions as plain text, **open** forks as a link to the decisions section, and the
    diagnostic's flags (invariants, cross-repository ordering, serialization, local-only validation).
    For a `PLAUSIBLE` task, state the staged gate: the observation to add first, then the
    outcome-specific fix.
@@ -84,6 +85,8 @@ as a review decision with the smaller alternative; do not drop an approved refac
 A dedicated `#execution-plan` section owns run ordering. For each `feature-implement` run, list the
 task numbers in order with dependency, shared-file, cross-repository and user-validation notes,
 following the run-size and ordering rules in [bug-fixes](../bug-fixes/SKILL.md#close-the-batch).
+Give each run one command that runs its reproductions unmasked, such as
+`pytest --runxfail <test ids>`, so the reviewer can read the real tracebacks.
 Add a one-line deduplication verdict for each pair of tasks that could be the same cause. Draw a
 small dependency diagram when the dependencies are not a straight line, labelling hard
 dependencies, soft ordering and shared files distinctly.

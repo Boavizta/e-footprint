@@ -227,3 +227,7 @@ When a class is refactored to compute per-source dicts first and totals as sums,
 
 - `tests/AGENTS.md` — points here.
 - `tests/integration_tests/AGENTS.md` — integration test patterns.
+
+## Bug-batch reproductions
+
+A `bug-fixes` diagnosis commits one test per confirmed bug that asserts the expected behavior and fails for the diagnosed reason, marked `@pytest.mark.xfail(strict=True, reason="bug-fixes-<YYYY-MM> Task N")`, so the suite stays green until the fix removes the marker. Run them unmasked with `pytest --runxfail <test ids>` to read the real traceback. Prefer an existing test as the home: a parametrized case via `pytest.param(..., marks=...)`, or a sibling test reusing the setup that folds back in when the marker goes. Never wrap an existing passing test in the marker. Rules and exceptions: `.agents/skills/bug-fixes/SKILL.md#reproduction-test`.

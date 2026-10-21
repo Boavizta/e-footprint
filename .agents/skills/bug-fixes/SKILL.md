@@ -10,7 +10,7 @@ Run a diagnosis-only session for a batch of bug reports. The output is a self-co
 Keep the roles separate:
 
 - The main agent owns intake, user decisions, task synthesis, and ordering. Read the reference docs needed to assess findings, but preserve context by delegating product-code investigation.
-- The `diagnostician` role investigates one bug per sub-agent. They may edit only their assigned diagnostic file; product code remains read-only.
+- The `diagnostician` role investigates one bug per sub-agent. They may edit only their assigned diagnostic file and its reproduction test; product code remains read-only.
 
 If the batch contains only one or two small bugs, suggest diagnosing and fixing them directly with `task-implement`-style discipline instead of creating a batch workspace.
 
@@ -46,6 +46,7 @@ For every independently observable bug:
    - test the user's hypothesis and state plainly when it is disproven;
    - inspect both repositories when ownership is unclear;
    - identify the smallest correct fix direction without implementing it;
+   - write the [reproduction test](#reproduction-test), run it, and record its failing output in the diagnostic;
    - flag constitution invariants, migrations or serialization changes, cross-repository ordering, and validation that cannot run locally;
    - return only a terse verdict, fix direction, and user decision forks. The full evidence stays in the diagnostic file.
 4. Check the verdict against the loaded architecture and constitution before relaying it. Challenge findings that conflict with a documented invariant or place modeling logic in the interface.
@@ -53,6 +54,36 @@ For every independently observable bug:
 6. Add one task to `tasks.md` for each confirmed bug. Split a report only when its independently shippable parts have distinct acceptance criteria or land in different repositories; express their ordering with `Depends on`. Drop reports shown to be expected behavior, and tell the user why.
 
 A `PLAUSIBLE` diagnosis is allowed when local evidence cannot prove a device-, browser-, data-, or environment-specific cause. Rank the hypotheses and make its task staged: first add the minimum observation or discriminating test, then pause for the result before applying the outcome-specific fix.
+
+## Reproduction test
+
+Every confirmed bug gets one committed test that asserts the expected behavior and fails on the
+current branch for the diagnosed reason. It is the executable form of the evidence, the fix's
+acceptance criterion, and the task's complete test change: the fix is done when the test passes
+with its marker removed, and the implementer adds no further tests. Size it to the acceptance
+surface, parametrizing over every affected class, example or panel the diagnostic names, and
+assert at the supported boundary, never inside a helper the fix may introduce. Refactor tasks are
+behavior-preserving and rely on the existing suite; a bug found during a fix is a new report with
+its own reproduction.
+
+- Mark it as a strict expected failure so the suite stays green while the bug exists and the fix
+  cannot land without flipping it: `@pytest.mark.xfail(strict=True, reason="bug-fixes-<YYYY-MM> Task N")`,
+  or `test.failing(...)` in Jest. The reason string is the one allowed task reference in test code;
+  it leaves with the marker.
+- Choose the cheapest layer in `specs/testing.md` that reproduces the real failure, through the
+  supported entry point (view, use case, browser), following the repository's fixture conventions.
+- Prefer an existing test as the home for a new failure mode over a new file. Add a parametrized
+  case with `pytest.param(..., marks=pytest.mark.xfail(strict=True, reason=...))` when the test
+  is parametrized; otherwise add the tightened assertion as a sibling test beside the existing
+  one, reusing its setup, and note that it folds back into the existing test when the marker goes.
+  Never wrap an existing passing test in the marker: that masks the coverage it already gives.
+- Run it and record the failing assertion or traceback in the diagnostic. A test that passes on
+  the current branch, or fails for another reason, is not a reproduction. When a scratch prototype
+  of the fix exists, use it to check that the test discriminates; do not commit the prototype.
+- When a product fork is still open, assert only the undisputed invariant (no raw 500, the object
+  is gone) and state in the diagnostic how the assertion tightens once the decision is settled.
+- Write none for a report shown to be expected behavior, a cleanup with no observable defect, or a
+  `PLAUSIBLE` cause whose staged observation step already plays this role. Say why in the diagnostic.
 
 ## Diagnostic template
 
@@ -65,6 +96,9 @@ A `PLAUSIBLE` diagnosis is allowed when local evidence cannot prove a device-, b
 
 ## Root cause
 <Mechanism with repository/path:line evidence.>
+
+## Reproduction
+- `<repository/path>::<test>` — <layer>; fails on `<branch>@<commit>` with <assertion or error>. | none — <reason>
 
 ## Fix approach
 <Concrete direction and meaningful alternatives rejected.>
@@ -107,9 +141,10 @@ accounting for the completed diagnosis rather than the bug's impact.
 - `<repository/path>` — <intended change>
 
 **Tests added/changed:**
-- `<repository/path>` — <regression case>
+- `<repository/path>::<test>` — reproduction; remove its expected-failure marker. No other tests unless a new public contract is named here.
 
 **Acceptance:**
+- The reproduction passes with its marker removed
 - <Observable result>
 
 **Depends on:** none | Task N
@@ -127,7 +162,7 @@ Task numbers follow arrival order and remain stable. Put uncertainty, user valid
    - ordered `feature-implement` runs, normally no more than about eight tasks each;
    - data-loss and silent-correctness fixes first, then contained UI fixes, larger or staged work, and finally behavior-preserving smell-sweep refactors;
    - the task numbers in execution order for each run, plus dependency, shared-file, cross-repository, and user-validation notes.
-3. Verify every confirmed report has a diagnostic and exactly one task unless the split is explained. Verify every task links a diagnostic.
+3. Verify every confirmed report has a diagnostic and exactly one task unless the split is explained. Verify every task links a diagnostic, and that each confirmed bug has a committed reproduction or a stated reason for none.
 4. Commit the diagnosis working set when the user wants it finalized, using `[ADD] bug-fixes-<YYYY-MM>: diagnosed working set` and including the task/diagnostic counts in the commit body.
 
 Hand off to `bug-fixes-plan` in a fresh session: the diagnostics replace `spec.html`, and that skill writes the `plan.html` that groups the bugs by mechanism and orders the `feature-implement` runs. Use `feature-archive` after all runs have shipped and durable knowledge has been promoted to the live reference docs.
@@ -136,6 +171,7 @@ Hand off to `bug-fixes-plan` in a fresh session: the diagnostics replace `spec.h
 
 - Do not implement fixes during this skill, including apparent one-liners.
 - Do not accept an uncited root-cause claim or silently preserve a disproven user hypothesis.
+- Do not commit a reproduction that passes on the current branch, fails for a reason other than the diagnosed one, or wraps an existing passing test.
 - Do not use destructive operations to prove a diagnosis. Move such confirmation into a staged task and surface the gate.
 - Do not create duplicate working sets across repositories for a cross-repository batch.
 
