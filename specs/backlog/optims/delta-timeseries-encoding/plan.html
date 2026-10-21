@@ -116,11 +116,11 @@
   <h2>6. Reproduction</h2>
   <p>Run from the interface Poetry environment so the script can normalize old files through the real importer:</p>
   <pre><code>cd e-footprint-interface
-poetry run python ../e-footprint/specs/backlog/delta-timeseries-encoding/benchmark.py \
+poetry run python ../e-footprint/specs/backlog/optims/delta-timeseries-encoding/benchmark.py \
   ../json_files_that_should_load_and_open_results_without_failing_in_interface
 
 # Add the growth-heavy export and repeat the timing microbenchmark:
-poetry run python ../e-footprint/specs/backlog/delta-timeseries-encoding/benchmark.py \
+poetry run python ../e-footprint/specs/backlog/optims/delta-timeseries-encoding/benchmark.py \
   ../json_files_that_should_load_and_open_results_without_failing_in_interface \
   --stress-json "/path/to/growth-heavy-model.e-f.json" --timings</code></pre>
   <p>The private corpus is not committed. The script redacts filenames by default, verifies every delta round trip, and
