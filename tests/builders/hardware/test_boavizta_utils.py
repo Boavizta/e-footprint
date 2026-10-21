@@ -1,11 +1,9 @@
 import os
-import unittest
 from importlib.metadata import version
 from unittest import TestCase
 from unittest.mock import Mock, patch
 
 import requests
-from packaging.version import Version
 from efootprint.builders.hardware.boaviztapi_utils import call_boaviztapi_from_package_dependency, \
     call_boaviztapi_from_web_request
 import efootprint.builders.hardware.boaviztapi_utils as boaviztapi_utils
@@ -13,15 +11,22 @@ from efootprint.logger import logger
 
 
 class TestBoaviztaUtils(TestCase):
-    @unittest.skipUnless(
-        Version(version("boaviztapi")) > Version("2.3.0"),
-        "boaviztapi<=2.3.0 handles test data differently in a testing context, causing a spurious "
-        "mismatch; fix is approved upstream and lands in the next boaviztapi release — see CLAUDE.md")
     def test_web_api_and_package_dependency_calls_return_same_results(self):
         """
         This test checks that the results from the web API and the package dependency are the same.
         It does this by comparing the results of a call to the Boavizta API using both methods.
+        A version mismatch fails first with an explicit message: the package must be bumped (and the cloud
+        instances snapshot regenerated) whenever the hosted service moves ahead.
         """
+        try:
+            hosted_version = call_boaviztapi_from_web_request("https://api.boavizta.org/v1/utils/version")
+        except requests.RequestException as exc:
+            self.skipTest(f"Boavizta API not reachable: {exc}")
+        self.assertEqual(
+            version("boaviztapi"), hosted_version,
+            f"Installed boaviztapi {version('boaviztapi')} differs from the hosted API's {hosted_version}: "
+            f"bump the dependency and regenerate the cloud instances snapshot.")
+
         for url, params in [
             ("https://api.boavizta.org/v1/cloud/instance/all_providers", {}),
             ("https://api.boavizta.org/v1/cloud/instance/all_instances", {"provider": "aws"}),
