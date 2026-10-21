@@ -4,20 +4,21 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](http://keepachangelog.com/)
 and this project adheres to [Semantic Versioning](http://semver.org/)
 
-## [Unreleased]
+## [V27.0.0] - 2026-10-21
 
 ### Changed
-- A saved model's explanations are complete after reload: displaying a stored value's formula computes its missing operands, its direct ancestors come from that formula and its direct children from the model's dependency graph, so values that were not saved are listed too. Loading and saving compute nothing.
-- Saved schema version 27: saved values no longer carry a `direct_ancestors_with_id` key, and version-26 files load with it dropped.
-- A computed value's dependency links now always describe its current state: an edit unlinks every value it empties until it is recomputed, a failed or rejected computation stays linked to what it read, and removed computed-dict entries and deleted objects' values are unlinked from the values they used.
+- JSON schema version 27: saved values no longer store `direct_ancestors_with_id`. Version-26 files still load.
+- Upgraded BoaviztAPI to 2.5.0 and refreshed the cloud instances snapshot.
 
 ### Removed
-- `computation_slots_for_purpose`, `ComputationPurpose` and the `purposes` parameter of `computed_attribute` and `computed_dict`, which were unused.
+- Unused `ComputationPurpose`, `computation_slots_for_purpose` and the `purposes` parameter of `computed_attribute` and `computed_dict`.
 
 ### Fixed
-- A rejected update now re-validates the guards it had voided, so repeating the same invalid edit is rejected again instead of accepted.
-- `system_to_json` writes the same bytes whatever has been computed: objects are discovered through inputs only, so displaying an explanation or the calculus graph before a save no longer reorders the file.
-- The saved calculation graph now addresses computed-dict elements keyed by an attribution coordinate (a job's occurrences and data transferred per usage pattern and step or recurrent server need, a step's occupancy per usage pattern and journey), so after a reload an edit to a job's data transferred or a step's user time spent invalidates the stored impact-repartition matrix and edge-device breakdown summaries, and a job input lists all its children.
+- Explanations of a reloaded model are complete: formulas, ancestors and children are listed, including values that were not saved.
+- Dependency links no longer go stale after an edit, a failed computation or a deletion.
+- Repeating a rejected invalid edit is rejected again instead of accepted.
+- `system_to_json` output no longer depends on what was displayed or computed before saving.
+- After a reload, editing a job's data transferred or a step's user time spent now correctly updates impact repartition and edge device breakdowns.
 
 ## [V26.0.1] - 2026-10-15
 
