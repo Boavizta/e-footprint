@@ -77,8 +77,11 @@ its own reproduction.
   is parametrized; otherwise add the tightened assertion as a sibling test beside the existing
   one, reusing its setup, and note that it folds back into the existing test when the marker goes.
   Never wrap an existing passing test in the marker: that masks the coverage it already gives.
-- Run it and record the failing assertion or traceback in the diagnostic. A test that passes on
-  the current branch, or fails for another reason, is not a reproduction. When a scratch prototype
+- Run it and record in the diagnostic's Reproduction section the trimmed failing traceback or
+  assertion, and for each step of the root-cause chain a watch expression with the value observed
+  at that line. `bug-fixes-plan` turns these into breakpoints and quotes them without re-running
+  anything. A test that passes on the current branch, or fails for another reason, is not a
+  reproduction. When a scratch prototype
   of the fix exists, use it to check that the test discriminates; do not commit the prototype.
 - When a product fork is still open, assert only the undisputed invariant (no raw 500, the object
   is gone) and state in the diagnostic how the assertion tightens once the decision is settled.
@@ -95,10 +98,12 @@ its own reproduction.
 - **Reported:** <faithful report and whether its hypothesis held>
 
 ## Root cause
-<Mechanism with repository/path:line evidence.>
+<Mechanism in one sentence, then the causal chain as numbered steps with repository/path:line evidence.>
 
 ## Reproduction
-- `<repository/path>::<test>` — <layer>; fails on `<branch>@<commit>` with <assertion or error>. | none — <reason>
+- `<repository/path>::<test>` — <layer>; fails on `<branch>@<commit>`. | none — <reason>
+- Traceback (trimmed): <frames, innermost last>
+- Watch: `<expression>` at `<repository/path:line>` → <observed value>, one per chain step
 
 ## Fix approach
 <Concrete direction and meaningful alternatives rejected.>

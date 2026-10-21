@@ -63,10 +63,18 @@ take five lines; do not pad a step to fill the shape.
    `data-chip="review"`), repository, implementation difficulty. Link the diagnostic.
 2. **Symptom**: what the user sees, in one or two sentences, with the reproduction test linked at
    its function line and its recorded failure quoted. A bug with no reproduction says why.
-3. **Root cause**: one paragraph with deep links to the lines that produce the behavior. When the
-   reporter's hypothesis was disproven, say so here.
-4. **Fix**: the narrated anticipated diff. Add a snippet only where prose would leave the shape
-   of the change unclear; mark existing versus proposed code.
+3. **Root cause**: explain only what the reproduction cannot show by itself. Do not retell the
+   test's fixture or act; link the test and let the reader read code. In this order:
+   - the mechanism in one sentence; when the reporter's hypothesis was disproven, say so here;
+   - the causal chain that puts the bad state in place: three to five numbered steps, each with
+     its code link (the breakpoint), a watch expression and the value observed in the recorded run;
+   - the trimmed traceback from the recorded run with each frame linked, which explains the crash
+     site without prose; omit it when the failure is a wrong value rather than an error;
+   - a debug recipe: the test line to break on right after the act, and the unmasked run command.
+   State tables and narrated walkthroughs of the act are what the breakpoints replace.
+4. **Fix**: the narrated anticipated diff, directly after the chain, since a small diff often
+   states the cause better than prose. Add a snippet only where prose would leave the shape of the
+   change unclear; mark existing versus proposed code.
 5. **Settled** decisions as plain text, **open** forks as a link to the decisions section, and the
    diagnostic's flags (invariants, cross-repository ordering, serialization, local-only validation).
    For a `PLAUSIBLE` task, state the staged gate: the observation to add first, then the
