@@ -5,7 +5,7 @@ description: Diagnose a batch of reported bugs before implementation. Creates on
 
 # bug-fixes
 
-Run a diagnosis-only session for a batch of bug reports. The output is a self-contained working set under `specs/features/`; implementation happens later through `feature-implement`.
+Run a diagnosis-only session for a batch of bug reports. The output is a self-contained working set under `specs/features/`; `bug-fixes-plan` then writes the review plan, and implementation happens through `feature-implement`.
 
 Keep the roles separate:
 
@@ -122,7 +122,7 @@ Task numbers follow arrival order and remain stable. Put uncertainty, user valid
 ## Close the batch
 
 1. Offer an optional read-only smell sweep over the surfaces implicated by several reports. Its `smell-sweep.md` ranks findings by risk and effort, marks overlap with existing tasks, and records suspicious-looking code that is actually sound. Add only user-approved refactors as final tasks.
-2. Replace the execution-plan placeholder with:
+2. Leave the execution-plan placeholder in place: `bug-fixes-plan` writes the execution plan in `plan.html` and replaces the placeholder with a pointer. That plan follows these rules:
    - a deduplication verdict showing that each task has a distinct cause;
    - ordered `feature-implement` runs, normally no more than about eight tasks each;
    - data-loss and silent-correctness fixes first, then contained UI fixes, larger or staged work, and finally behavior-preserving smell-sweep refactors;
@@ -130,7 +130,7 @@ Task numbers follow arrival order and remain stable. Put uncertainty, user valid
 3. Verify every confirmed report has a diagnostic and exactly one task unless the split is explained. Verify every task links a diagnostic.
 4. Commit the diagnosis working set when the user wants it finalized, using `[ADD] bug-fixes-<YYYY-MM>: diagnosed working set` and including the task/diagnostic counts in the commit body.
 
-Hand off each planned run to a fresh `feature-implement` session. The linked diagnostics replace `spec.html` and `plan.html` for these bug-batch tasks. Use `feature-archive` after all tasks have shipped and durable knowledge has been promoted to the live reference docs.
+Hand off to `bug-fixes-plan` in a fresh session: the diagnostics replace `spec.html`, and that skill writes the `plan.html` that groups the bugs by mechanism and orders the `feature-implement` runs. Use `feature-archive` after all runs have shipped and durable knowledge has been promoted to the live reference docs.
 
 ## Guardrails
 

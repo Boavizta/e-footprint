@@ -11,7 +11,8 @@ then explicit archive after shipping. A user's clear request to implement an alr
 change is authorization; do not manufacture another approval gate.
 
 Small fixes, local refactors and investigations may go directly to work. A conversational bug
-batch uses `bug-fixes`: evidence-backed diagnostics plus one task list replace spec/plan. The
+batch uses `bug-fixes`: evidence-backed diagnostics plus one task list replace the spec, then
+`bug-fixes-plan` writes the `plan.html` that groups the bugs by mechanism and orders the runs. The
 normal implement/review/archive steps still apply. This workflow does not authorize deployments,
 publication, destructive operations or paid external actions beyond the user's actual grants.
 

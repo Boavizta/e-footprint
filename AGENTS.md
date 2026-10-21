@@ -50,7 +50,7 @@ recording only consequential decisions in context in the plan.
 4. **Implement** — execute one task at a time, respecting constitution gates. Skill: `task-implement`.
 
 Investigations and ad-hoc design work are exempt; the four-stage flow is for features that ship.
-Conversational bug batches use `bug-fixes`: diagnostics plus `tasks.md`, followed by the normal implement/review/archive stages.
+Conversational bug batches use `bug-fixes` (diagnostics plus `tasks.md`), then `bug-fixes-plan` (`plan.html` grouping the bugs and ordering the runs), followed by the normal implement/review/archive stages.
 
 ## Documentation upkeep
 
