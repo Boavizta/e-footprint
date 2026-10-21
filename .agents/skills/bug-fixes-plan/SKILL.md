@@ -36,7 +36,12 @@ This skill owns what a bug-batch plan contains and in which order.
   re-diagnose a confirmed cause.
 - Check the batch is closed: every `CONFIRMED` or `PLAUSIBLE` diagnostic has exactly one task,
   every task links a diagnostic or a smell-sweep finding, each confirmed bug has a committed
-  reproduction or a stated reason for none, and every user-approved refactor has a task. A diagnostic without a task is a gap: append the task to `tasks.md` in the
+  reproduction or a stated reason for none, and every user-approved refactor has a task. Close a
+  missing reproduction by delegating it to a `diagnostician` under the
+  [bug-fixes reproduction rules](../bug-fixes/SKILL.md#reproduction-test); it writes the test and
+  the diagnostic's Reproduction section, and the plan step is written from those. When a plan
+  predates the reproductions, do this cluster by cluster in reading order and commit each cluster's
+  tests, diagnostics and rewritten steps together, so review can start before the batch is done. A diagnostic without a task is a gap: append the task to `tasks.md` in the
   [bug-fixes task format](../bug-fixes/SKILL.md#task-format) with the next number, and tell the
   user. Do not drop a diagnosed bug silently and do not renumber.
 - Settled `## Decisions` in a diagnostic stay settled. Open forks go to the plan's decisions
