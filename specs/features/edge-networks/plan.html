@@ -1,0 +1,730 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Edge wireless networks — library modeling — Implementation plan (draft)</title>
+<style>
+  :root { color-scheme: light; --ink: #21312f; --muted: #5e706e; --line: #dbe4df;
+    --paper: #fff; --bg: #f5f7f3; --accent: #176751; --soft: #eaf3ed;
+    --blue: #285e91; --blue-bg: #edf4fb; --amber: #835219; --amber-bg: #fff5e5; }
+  * { box-sizing: border-box; }
+  html { scroll-behavior: smooth; scroll-padding-top: 1.5rem; }
+  body { margin: 0; font: 16px/1.6 system-ui, -apple-system, sans-serif;
+    color: var(--ink); background: var(--bg); }
+  a { color: var(--accent); text-underline-offset: .18em; }
+  a:hover { text-decoration-thickness: 2px; }
+  :is(a, summary):focus-visible { outline: 3px solid #3974b3; outline-offset: 4px; }
+  #review-link-menu { position: fixed; z-index: 20; min-width: 12rem; padding: .3rem;
+    border: 1px solid var(--line); border-radius: .5rem; background: var(--paper);
+    box-shadow: 0 .5rem 1.5rem #21312f30; font-size: .85rem; }
+  #review-link-menu[hidden] { display: none; }
+  #review-link-menu a { display: block; padding: .35rem .55rem; border-radius: .3rem; text-decoration: none; }
+  #review-link-menu a:hover, #review-link-menu a:focus { background: var(--soft); }
+  body > a { position: absolute; left: 1rem; top: -5rem; z-index: 5;
+    background: var(--paper); padding: .7rem; }
+  body > a:focus { top: 1rem; }
+  #layout { display: grid; grid-template-columns: 22rem minmax(0, 64rem); gap: 2rem;
+    max-width: 92rem; margin: auto; padding: 2rem 1.5rem 5rem; }
+  #layout:has(#sidebar:not([open])) { grid-template-columns: 2.75rem minmax(0, 64rem); }
+  #sidebar { position: sticky; top: 1rem; align-self: start; max-height: calc(100vh - 2rem);
+    overflow: auto; overscroll-behavior: contain; padding: 0 .5rem 0 0;
+    border: 0; border-radius: 0; background: transparent; margin: 0; }
+  #sidebar:not([open]) { overflow: visible; padding-right: 0; }
+  #sidebar > summary { position: sticky; top: 0; z-index: 2; list-style: none; display: flex;
+    align-items: center; gap: .4rem; width: max-content; max-width: 100%; margin: 0 0 .7rem;
+    padding: .3rem .55rem; border: 1px solid var(--line); border-radius: .4rem;
+    background: var(--paper); color: var(--accent); font-size: .8rem; }
+  #sidebar > summary::-webkit-details-marker { display: none; }
+  #sidebar > summary::before { content: "☰"; font-size: 1.1rem; line-height: 1; }
+  #sidebar:not([open]) > summary { width: 2.75rem; height: 2.75rem; justify-content: center;
+    margin-bottom: 0; padding: 0; }
+  #sidebar:not([open]) > summary span { position: absolute; width: 1px; height: 1px;
+    overflow: hidden; clip-path: inset(50%); white-space: nowrap; }
+  #navigation { font-size: .85rem; padding-bottom: .6rem; }
+  #navigation > p:first-child { text-transform: uppercase; letter-spacing: .1em;
+    font-size: .72rem; font-weight: 700; color: var(--accent); }
+  #navigation ol { list-style: none; padding: 0; }
+  #navigation li a { display: block; padding: .35rem .5rem; border-radius: .3rem; }
+  #navigation li a:hover { background: var(--soft); }
+  main { min-width: 0; }
+  header > p:first-child, small, figcaption, [data-reading-note] { color: var(--muted); }
+  h1 { font-size: clamp(1.8rem, 3vw, 2.4rem); line-height: 1.2; letter-spacing: -.03em; }
+  h2 { font-size: 1.4rem; line-height: 1.3; }
+  h3 { font-size: 1.08rem; margin: 1.5rem 0 .4rem; }
+  p, ul, ol { margin: .6rem 0 1rem; }
+  li { margin: .3rem 0; }
+  main > section { margin-top: 2rem; padding-top: 1rem; border-top: 1px solid var(--line); }
+  main p { max-width: 76ch; }
+  [data-reading-note], [data-files] { font-size: .83rem; }
+  [data-files] > span { color: var(--muted); }
+  [data-step] > h3 > a { color: inherit; text-decoration: none; }
+  [data-step]:is(:target, :has(:target)) { border-left: 3px solid var(--accent); padding-left: .8rem; }
+  code { background: #eef2ef; padding: .08rem .25rem; border-radius: 3px;
+    font: .86em/1.5 ui-monospace, SFMono-Regular, Consolas, monospace; overflow-wrap: anywhere; }
+  pre { overflow: auto; padding: 1rem; border: 1px solid var(--line); border-radius: .5rem;
+    background: #f8faf7; font: .86rem/1.6 ui-monospace, SFMono-Regular, Consolas, monospace; }
+  pre code { background: none; padding: 0; font: inherit; overflow-wrap: normal; }
+  [data-code] { margin: 1rem 0; }
+  [data-code-file] { display: flex; flex-wrap: wrap; gap: .2rem .8rem; align-items: baseline;
+    margin: 0; max-width: none; padding: .45rem .8rem; border: 1px solid var(--line); border-bottom: 0;
+    border-radius: .5rem .5rem 0 0; background: #eef2ef; font-size: .8rem; }
+  [data-code-file] code { background: none; padding: 0; font-size: 1em; }
+  [data-code] pre { margin: 0; border-radius: 0 0 .5rem .5rem; }
+  details { border: 1px solid var(--line); border-radius: .5rem; padding: .7rem 1rem;
+    background: var(--paper); margin: .7rem 0; }
+  summary { cursor: pointer; font-weight: 650; }
+  #modules h2 { font-size: 1.05rem; }
+  #modules > p { font-size: .76rem; color: var(--muted); }
+  #change-tree { padding: .7rem; border: 1px solid var(--line); border-radius: .6rem;
+    background: var(--paper); font-size: .8rem; }
+  #change-tree details { border: 0; background: none; padding: .2rem 0 .2rem .6rem; margin: .25rem 0; }
+  #change-tree > details { padding-left: 0; }
+  #change-tree ul { list-style: none; border-left: 1px solid var(--line); margin: .25rem 0 .25rem .35rem;
+    padding: 0 0 0 .7rem; }
+  #change-tree li { padding: .3rem; border-radius: .3rem; }
+  #change-tree li:target { outline: 2px solid var(--accent); outline-offset: 2px; }
+  #change-tree li > small { display: block; margin-top: .2rem; }
+  [data-change] { font-size: .65rem; font-weight: 700; text-transform: uppercase;
+    border-radius: .25rem; padding: .1rem .3rem; background: #eef2ef; color: var(--muted); }
+  [data-change="new"] { color: var(--accent); background: var(--soft); }
+  [data-change="renamed"] { color: #285e91; background: #edf4fb; }
+  [data-change="removed"] { color: #963939; background: #fff0ed; }
+  [data-reading-links] { margin-left: .3rem; font-size: .7rem; }
+  aside[data-note] { border-left: 3px solid var(--blue); background: var(--blue-bg);
+    padding: .8rem 1rem; border-radius: 0 .5rem .5rem 0; margin: 1rem 0; font-size: .92rem; }
+  aside[data-note="review"] { border-color: var(--amber); background: var(--amber-bg); }
+  aside[data-note] p { margin: .3rem 0; }
+  figure { margin: 1rem 0; padding: 1rem; background: var(--paper); border: 1px solid var(--line); }
+  figure > div, [data-table-scroll] { overflow-x: auto; }
+  svg { display: block; width: 100%; height: auto; }
+  figcaption { font-size: .82rem; margin-top: .6rem; }
+  table { width: 100%; border-collapse: collapse; font-size: .88rem; }
+  th, td { text-align: left; vertical-align: top; border-bottom: 1px solid var(--line); padding: .65rem; }
+  th { background: var(--soft); }
+  #phases { list-style: none; padding: 0; display: grid; grid-template-columns: 1fr 1fr; gap: .7rem; }
+  #phases li { margin: 0; padding: .9rem; background: var(--paper); border: 1px solid var(--line); border-radius: .5rem; }
+  #phases strong, #phases small { display: block; }
+
+  body:has(#shared-data:target, #shared-data :target, #change-tree :target[data-steps~="shared-data"])
+    #change-tree li[data-steps~="shared-data"] { background: var(--soft); }
+  body:has(#shared-data:target, #shared-data :target, #change-tree :target[data-steps~="shared-data"])
+    #navigation a[href="#shared-data"] { background: var(--soft); font-weight: 700; }
+  body:has(#create-interface:target, #create-interface :target, #change-tree :target[data-steps~="create-interface"])
+    #change-tree li[data-steps~="create-interface"] { background: var(--soft); }
+  body:has(#create-interface:target, #create-interface :target, #change-tree :target[data-steps~="create-interface"])
+    #navigation a[href="#create-interface"] { background: var(--soft); font-weight: 700; }
+  body:has(#messaging-need:target, #messaging-need :target, #change-tree :target[data-steps~="messaging-need"])
+    #change-tree li[data-steps~="messaging-need"] { background: var(--soft); }
+  body:has(#messaging-need:target, #messaging-need :target, #change-tree :target[data-steps~="messaging-need"])
+    #navigation a[href="#messaging-need"] { background: var(--soft); font-weight: 700; }
+  body:has(#gateway:target, #gateway :target, #change-tree :target[data-steps~="gateway"])
+    #change-tree li[data-steps~="gateway"] { background: var(--soft); }
+  body:has(#gateway:target, #gateway :target, #change-tree :target[data-steps~="gateway"])
+    #navigation a[href="#gateway"] { background: var(--soft); font-weight: 700; }
+  body:has(#operator:target, #operator :target, #change-tree :target[data-steps~="operator"])
+    #change-tree li[data-steps~="operator"] { background: var(--soft); }
+  body:has(#operator:target, #operator :target, #change-tree :target[data-steps~="operator"])
+    #navigation a[href="#operator"] { background: var(--soft); font-weight: 700; }
+  body:has(#registration:target, #registration :target, #change-tree :target[data-steps~="registration"])
+    #change-tree li[data-steps~="registration"] { background: var(--soft); }
+  body:has(#registration:target, #registration :target, #change-tree :target[data-steps~="registration"])
+    #navigation a[href="#registration"] { background: var(--soft); font-weight: 700; }
+
+  @media (max-width: 1100px) {
+    #layout { grid-template-columns: 18rem minmax(0, 1fr); gap: 1.2rem; }
+  }
+  @media (max-width: 850px) {
+    #layout { display: flex; flex-direction: column; padding: 1rem; }
+    #sidebar { position: static; max-height: min(45vh, 24rem); padding: 0; width: 100%; }
+    #sidebar:not([open]) { width: 2.75rem; }
+    #navigation ol { display: flex; flex-wrap: wrap; gap: .25rem; }
+    #phases { grid-template-columns: 1fr; }
+  }
+  @media (prefers-reduced-motion: reduce) { html { scroll-behavior: auto; } }
+  @media print {
+    #review-link-menu { display: none; }
+    body { background: white; font-size: 10pt; }
+    #layout { display: flex; flex-direction: column; padding: 0; }
+    #sidebar, #sidebar:not([open]) { order: 1; position: static; width: 100%; max-height: none; overflow: visible; }
+    #navigation, body > a, #sidebar > summary { display: none; }
+    main { order: 0; }
+    #modules { break-before: page; }
+    details::details-content { content-visibility: visible; display: block; }
+    [data-code], figure, tr { break-inside: avoid; }
+    pre { white-space: pre-wrap; overflow-wrap: anywhere; }
+    figure > div, [data-table-scroll] { overflow: visible; }
+  }
+</style>
+</head>
+<body>
+<a href="#main">Skip to plan</a>
+<div id="layout">
+<details id="sidebar" aria-label="Reading order and changed files" open>
+  <summary title="Show or hide navigation and changed files"><span>Navigation and changed files</span></summary>
+  <nav id="navigation" aria-label="Reading order">
+    <p>Reading order</p>
+    <ol>
+      <li><a href="#shared-data">1.1 · Shared data: hardware unit parent and technology table</a></li>
+      <li><a href="#create-interface">1.2 · Create a network interface from a technology</a></li>
+      <li><a href="#messaging-need">1.3 · Attach a messaging need and compute hourly energy</a></li>
+      <li><a href="#gateway">1.4 · Link an owned gateway and count it</a></li>
+      <li><a href="#operator">1.5 · Operator-side technologies</a></li>
+      <li><a href="#registration">1.6 · Registration, serialization, documentation</a></li>
+    </ol>
+    <p><a href="#delivery">Delivery &amp; verification</a> · <a href="#decisions">Decisions for review</a></p>
+  </nav>
+  <section id="modules">
+    <h2>Changed files</h2>
+    <p>Select a reading step to highlight its files. Click a linked file to open it in VS Code, or right-click it for a diff against <code>main</code>. Numbered links return to the walkthrough.</p>
+    <div id="change-tree">
+      <details open>
+        <summary>e-footprint / efootprint</summary>
+        <details open>
+          <summary>core/hardware/edge/</summary>
+          <ul>
+            <li id="file-hardware-unit" data-steps="shared-data gateway">
+              <code>edge_hardware_unit.py</code> <span data-change="new">New</span>
+              <span data-reading-links><a href="#shared-data">1.1</a> · <a href="#gateway">1.4</a></span>
+              <small>Abstract countable deployed unit lifted from <code>EdgeDevice</code>: group membership, unit count, lifespan guard, per-pattern scaling sums, two abstract hooks.</small>
+            </li>
+            <li id="file-edge-device" data-steps="shared-data">
+              <a href="vscode://file//Users/vinville/dev/e-footprint-full/e-footprint/efootprint/core/hardware/edge/edge_device.py:31:1" data-review-source-href="../../../efootprint/core/hardware/edge/edge_device.py#L31:1"><code>edge_device.py</code></a> <span data-change="modified">Modified</span>
+              <span data-reading-links><a href="#shared-data">1.1</a></span>
+              <small>Inherits the lifted cluster; keeps components, needs, attribution atoms. Behavior unchanged.</small>
+            </li>
+            <li id="file-edge-device-group" data-steps="shared-data gateway">
+              <a href="vscode://file//Users/vinville/dev/e-footprint-full/e-footprint/efootprint/core/hardware/edge/edge_device_group.py:14:1" data-review-source-href="../../../efootprint/core/hardware/edge/edge_device_group.py#L14:1"><code>edge_device_group.py</code></a> <span data-change="modified">Modified</span>
+              <span data-reading-links><a href="#shared-data">1.1</a> · <a href="#gateway">1.4</a></span>
+              <small><code>edge_device_counts</code> value type widened to the parent; name kept.</small>
+            </li>
+            <li id="file-technologies" data-steps="shared-data create-interface operator">
+              <code>edge_network_technologies.py</code> <span data-change="new">New</span>
+              <span data-reading-links><a href="#shared-data">1.1</a> · <a href="#create-interface">1.2</a> · <a href="#operator">1.5</a></span>
+              <small>The six-column default table as sourced values, plus the technology name list.</small>
+            </li>
+            <li id="file-interface" data-steps="create-interface messaging-need gateway operator">
+              <code>edge_network_interface.py</code> <span data-change="new">New</span>
+              <span data-reading-links><a href="#create-interface">1.2</a> · <a href="#messaging-need">1.3</a> · <a href="#gateway">1.4</a> · <a href="#operator">1.5</a></span>
+              <small><code>EdgeNetworkInterface(EdgeComponent)</code>: technology inputs, per-message energy, three-term hourly power, gateway link and operator rows.</small>
+            </li>
+            <li id="file-gateway" data-steps="gateway">
+              <code>edge_gateway.py</code> <span data-change="new">New</span>
+              <span data-reading-links><a href="#gateway">1.4</a></span>
+              <small><code>EdgeGateway(EdgeHardwareUnit, AttributionSource)</code>: constant power, fabrication, lifespan, reverse collection of interfaces, atoms.</small>
+            </li>
+          </ul>
+        </details>
+        <details open>
+          <summary>core/usage/edge/</summary>
+          <ul>
+            <li id="file-messaging-need" data-steps="messaging-need">
+              <code>recurrent_messaging_need.py</code> <span data-change="new">New</span>
+              <span data-reading-links><a href="#messaging-need">1.3</a></span>
+              <small><code>RecurrentMessagingNeed(RecurrentEdgeComponentNeed)</code>: messages per hour and payload size.</small>
+            </li>
+          </ul>
+        </details>
+        <details open>
+          <summary>constants/</summary>
+          <ul>
+            <li id="file-sources" data-steps="shared-data">
+              <a href="vscode://file//Users/vinville/dev/e-footprint-full/e-footprint/efootprint/constants/sources.py:4:1" data-review-source-href="../../../efootprint/constants/sources.py#L4:1"><code>sources.py</code></a> <span data-change="modified">Modified</span>
+              <span data-reading-links><a href="#shared-data">1.1</a></span>
+              <small>One <code>Source</code> per cited paper or vendor measurement.</small>
+            </li>
+            <li id="file-units" data-steps="messaging-need">
+              <a href="vscode://file//Users/vinville/dev/e-footprint-full/e-footprint/efootprint/constants/units.py:20:1" data-review-source-href="../../../efootprint/constants/units.py#L20:1"><code>units.py</code></a> (custom units file) <span data-change="modified">Modified</span>
+              <span data-reading-links><a href="#messaging-need">1.3</a></span>
+              <small>A <code>message</code> count unit beside the existing count units so messages per hour is a dimensioned need.</small>
+            </li>
+          </ul>
+        </details>
+        <details open>
+          <summary>repository root and api_utils/</summary>
+          <ul>
+            <li id="file-registry" data-steps="registration">
+              <a href="vscode://file//Users/vinville/dev/e-footprint-full/e-footprint/efootprint/all_classes_in_order.py:54:1" data-review-source-href="../../../efootprint/all_classes_in_order.py#L54:1"><code>all_classes_in_order.py</code></a> <span data-change="modified">Modified</span>
+              <span data-reading-links><a href="#registration">1.6</a></span>
+              <small>Register the three classes: component list, need list, Sankey infrastructure column, object categories.</small>
+            </li>
+            <li id="file-changelog" data-steps="registration">
+              <a href="vscode://file//Users/vinville/dev/e-footprint-full/e-footprint/CHANGELOG.md" data-review-source-href="../../../CHANGELOG.md"><code>CHANGELOG.md</code></a> <span data-change="modified">Modified</span>
+              <span data-reading-links><a href="#registration">1.6</a></span>
+              <small>One consolidated entry under Unreleased.</small>
+            </li>
+          </ul>
+        </details>
+        <details open>
+          <summary>tests/</summary>
+          <ul>
+            <li id="file-tests" data-steps="create-interface messaging-need gateway operator registration">
+              <code>hardware/edge/test_edge_network_interface.py</code>, <code>hardware/edge/test_edge_gateway.py</code>, <code>usage/edge/test_recurrent_messaging_need.py</code> <span data-change="new">New</span>
+              <span data-reading-links><a href="#delivery">2</a></span>
+              <small>Unit tests per class, literature reproductions, dimensional checks.</small>
+            </li>
+            <li id="file-integration" data-steps="gateway registration">
+              <a href="vscode://file//Users/vinville/dev/e-footprint-full/e-footprint/tests/integration_tests/integration_edge_device_group_base_class.py:34:1" data-review-source-href="../../../tests/integration_tests/integration_edge_device_group_base_class.py#L34:1"><code>integration_tests/integration_edge_device_group_base_class.py</code></a> and its JSON twin <span data-change="modified">Modified</span>
+              <span data-reading-links><a href="#delivery">2</a></span>
+              <small>Add a LoRaWAN device, a gateway in the group and an NB-IoT device; assert footprint lines, Sankey presence and JSON round trip.</small>
+            </li>
+          </ul>
+        </details>
+      </details>
+    </div>
+  </section>
+</details>
+
+<main id="main">
+  <header>
+    <p>Plan · <strong>draft captured at specify stage</strong> · 2026-11-02 · refine in <code>spec-plan</code></p>
+    <h1>Edge wireless networks — library modeling — implementation plan</h1>
+    <p><a href="spec.html" target="_blank" rel="noopener">Spec under review</a> · <a href="#modules">Changed files</a> ·
+      <a href="../../../../e-footprint-interface/specs/features/edge-networks/2026-07-06-edge-network-spec-draft.md">Kickoff draft</a> ·
+      <a href="../../../../e-footprint-interface/specs/features/edge-networks/2026-07-06-edge-network-modeling-note.md">Literature note</a></p>
+    <p data-reading-note>This draft captures the design decisions already taken in the kickoff draft and grounds them in the
+      current code. It is not approved. The <code>spec-plan</code> stage refines it after the spec is approved; items in
+      <a href="#decisions">Decisions for review</a> are where the draft departs from, or sharpens, the kickoff draft.</p>
+  </header>
+
+  <section id="walkthrough">
+    <h2>1. Follow the caller operations through the code</h2>
+    <p data-reading-note>Proposed changes, not implemented code. Paths are relative to <code>efootprint/</code> unless stated;
+      the interface repository is named explicitly where it is affected.</p>
+
+    <article id="shared-data" data-step>
+      <h3><a href="#shared-data">1.1 · Shared data: the hardware unit parent and the technology table</a></h3>
+      <p data-files><span>Files</span>
+        <a href="#file-hardware-unit"><code>core/hardware/edge/edge_hardware_unit.py</code></a> ·
+        <a href="#file-edge-device"><code>core/hardware/edge/edge_device.py</code></a> ·
+        <a href="#file-edge-device-group"><code>core/hardware/edge/edge_device_group.py</code></a> ·
+        <a href="#file-technologies"><code>core/hardware/edge/edge_network_technologies.py</code></a> ·
+        <a href="#file-sources"><code>constants/sources.py</code></a></p>
+      <p><strong>What happens today.</strong> The "countable deployed unit" role lives on
+        <a href="vscode://file//Users/vinville/dev/e-footprint-full/e-footprint/efootprint/core/hardware/edge/edge_device.py:31:1" data-review-source-href="../../../efootprint/core/hardware/edge/edge_device.py#L31:1"><code>EdgeDevice</code></a> as a cluster:
+        <a href="vscode://file//Users/vinville/dev/e-footprint-full/e-footprint/efootprint/core/hardware/edge/edge_device.py:73:1" data-review-source-href="../../../efootprint/core/hardware/edge/edge_device.py#L73:1"><code>parent_groups</code></a>,
+        <a href="vscode://file//Users/vinville/dev/e-footprint-full/e-footprint/efootprint/core/hardware/edge/edge_device.py:138:1" data-review-source-href="../../../efootprint/core/hardware/edge/edge_device.py#L138:1"><code>_find_root_groups()</code></a>,
+        <a href="vscode://file//Users/vinville/dev/e-footprint-full/e-footprint/efootprint/core/hardware/edge/edge_device.py:146:1" data-review-source-href="../../../efootprint/core/hardware/edge/edge_device.py#L146:1"><code>total_nb_of_units</code></a>,
+        the group-reference delete guard in
+        <a href="vscode://file//Users/vinville/dev/e-footprint-full/e-footprint/efootprint/core/hardware/edge/edge_device.py:163:1" data-review-source-href="../../../efootprint/core/hardware/edge/edge_device.py#L163:1"><code>self_delete()</code></a>,
+        <code>lifespan</code> with
+        <a href="vscode://file//Users/vinville/dev/e-footprint-full/e-footprint/efootprint/core/hardware/edge/edge_device.py:115:1" data-review-source-href="../../../efootprint/core/hardware/edge/edge_device.py#L115:1"><code>lifespan_validation</code></a>,
+        and the per-pattern sums
+        <a href="vscode://file//Users/vinville/dev/e-footprint-full/e-footprint/efootprint/core/hardware/edge/edge_device.py:244:1" data-review-source-href="../../../efootprint/core/hardware/edge/edge_device.py#L244:1"><code>instances_energy</code></a>,
+        <a href="vscode://file//Users/vinville/dev/e-footprint-full/e-footprint/efootprint/core/hardware/edge/edge_device.py:252:1" data-review-source-href="../../../efootprint/core/hardware/edge/edge_device.py#L252:1"><code>use_footprint</code></a> and
+        <a href="vscode://file//Users/vinville/dev/e-footprint-full/e-footprint/efootprint/core/hardware/edge/edge_device.py:260:1" data-review-source-href="../../../efootprint/core/hardware/edge/edge_device.py#L260:1"><code>instances_manufacturing_footprint</code></a>.
+        <a href="vscode://file//Users/vinville/dev/e-footprint-full/e-footprint/efootprint/core/hardware/edge/edge_device_group.py:37:1" data-review-source-href="../../../efootprint/core/hardware/edge/edge_device_group.py#L37:1"><code>EdgeDeviceGroup.edge_device_counts</code></a>
+        is annotated as a weighted dict of <code>EdgeDevice</code>.</p>
+      <p><strong>What is extracted.</strong> That cluster moves unchanged into an abstract
+        <code>EdgeHardwareUnit(ModelingObject)</code>. Subclasses answer two hooks: where their usage patterns come
+        from, and the per-pattern unitary hourly energy and manufacturing. <code>EdgeDevice</code> keeps answering through
+        its recurrent needs and components (its
+        <a href="vscode://file//Users/vinville/dev/e-footprint-full/e-footprint/efootprint/core/hardware/edge/edge_device.py:93:1" data-review-source-href="../../../efootprint/core/hardware/edge/edge_device.py#L93:1"><code>edge_usage_patterns</code></a>,
+        <a href="vscode://file//Users/vinville/dev/e-footprint-full/e-footprint/efootprint/core/hardware/edge/edge_device.py:219:1" data-review-source-href="../../../efootprint/core/hardware/edge/edge_device.py#L219:1"><code>instances_energy_per_usage_pattern</code></a>,
+        <a href="vscode://file//Users/vinville/dev/e-footprint-full/e-footprint/efootprint/core/hardware/edge/edge_device.py:231:1" data-review-source-href="../../../efootprint/core/hardware/edge/edge_device.py#L231:1"><code>use_footprint_per_usage_pattern</code></a> and
+        <a href="vscode://file//Users/vinville/dev/e-footprint-full/e-footprint/efootprint/core/hardware/edge/edge_device.py:200:1" data-review-source-href="../../../efootprint/core/hardware/edge/edge_device.py#L200:1"><code>instances_manufacturing_footprint_per_usage_pattern</code></a>
+        stay where they are and keep their names, so the computed-attribute graph and every existing test are untouched).
+        The gateway answers through its linked interfaces and constant inputs (<a href="#gateway">1.4</a>).</p>
+      <div data-code>
+        <p data-code-file><a href="#file-hardware-unit"><code>core/hardware/edge/edge_hardware_unit.py</code></a> <small>Proposed new parent (sketch)</small></p>
+        <pre><code>class EdgeHardwareUnit(ModelingObject):
+    """A deployed, countable piece of edge hardware: a device or a gateway. Sized by
+    {class:EdgeDeviceGroup} counts, amortised over its lifespan, scaled per usage pattern."""
+
+    parent_groups = ReverseCollection("EdgeDeviceGroup")
+
+    @property
+    @abstractmethod
+    def edge_usage_patterns(self) -> List["EdgeUsagePattern"]: ...
+
+    @computed_attribute(guard=True)
+    def lifespan_validation(self): ...            # moved verbatim from EdgeDevice
+
+    @computed_attribute
+    def total_nb_of_units(self): ...              # moved verbatim from EdgeDevice
+
+    def self_delete(self): ...                    # moved verbatim from EdgeDevice
+
+    # instances_energy / use_footprint / instances_manufacturing_footprint:
+    # sums over the subclass's *_per_usage_pattern dicts, moved verbatim.</code></pre>
+      </div>
+      <p><a href="vscode://file//Users/vinville/dev/e-footprint-full/e-footprint/efootprint/core/hardware/edge/edge_device_group.py:37:1" data-review-source-href="../../../efootprint/core/hardware/edge/edge_device_group.py#L37:1"><code>edge_device_counts</code></a>
+        widens its annotation to <code>WeightedExplainableObjectDict["EdgeHardwareUnit"]</code>; the parameter description
+        at <a href="vscode://file//Users/vinville/dev/e-footprint-full/e-footprint/efootprint/core/hardware/edge/edge_device_group.py:25:1" data-review-source-href="../../../efootprint/core/hardware/edge/edge_device_group.py#L25:1"><code>param_descriptions</code></a>
+        says "device or gateway". The attribute and class names stay (kickoff decision 1b: the rename churn across both
+        repositories is not worth the vocabulary gain). The interface's dict-relationship registry resolves
+        <code>(parent class, attribute, child class)</code> from this annotation; the interface spec records that a
+        gateway must resolve to the same attribute as a device through subclass matching.</p>
+      <p><strong>Technology table.</strong> A module-level mapping from technology name to a dict of sourced default
+        values, one column per technology, mirroring how
+        <a href="vscode://file//Users/vinville/dev/e-footprint-full/e-footprint/efootprint/core/hardware/edge/edge_workload_component.py:27:1" data-review-source-href="../../../efootprint/core/hardware/edge/edge_workload_component.py#L27:1"><code>EdgeWorkloadComponent.default_values</code></a>
+        and <a href="vscode://file//Users/vinville/dev/e-footprint-full/e-footprint/efootprint/core/hardware/network.py:44:1" data-review-source-href="../../../efootprint/core/hardware/network.py#L44:1"><code>Network.archetypes()</code></a> hold sourced
+        defaults today. Each value is a <code>SourceValue</code> whose <code>Source</code> is a new entry in
+        <a href="vscode://file//Users/vinville/dev/e-footprint-full/e-footprint/efootprint/constants/sources.py:4:1" data-review-source-href="../../../efootprint/constants/sources.py#L4:1"><code>Sources</code></a> (Morin 2017, Casals 2017,
+        Bouguera 2018, Gomez 2019, Lauridsen 2018, Andres-Maldonado 2019, Kim 2019, Nordic SED 2023, Nordic nwp_049 2025,
+        Malmodin 2018, Ruiz 2022, Pirson &amp; Bol 2021). Values to pin come from the kickoff draft's §5 table; the
+        SIGFOX triple transmission is a <code>transmissions_per_message</code> column (3 for SIGFOX, 1 elsewhere) rather
+        than a code branch, so the only per-technology branches left are the operator rows of
+        <a href="#operator">1.5</a>.</p>
+      <div data-code>
+        <p data-code-file><a href="#file-technologies"><code>core/hardware/edge/edge_network_technologies.py</code></a> <small>Proposed shape (two columns shown)</small></p>
+        <pre><code>EDGE_NETWORK_TECHNOLOGIES = {
+    "LoRaWAN": dict(
+        p_tx=SourceValue(420 * u.mW, Sources.CASALS_2017),
+        p_rx=SourceValue(44 * u.mW, Sources.CASALS_2017),
+        p_sleep=SourceValue(4.3 * u.uW, Sources.CASALS_2017),
+        bitrate=SourceValue(5.5 * u.kbit / u.s, Sources.CASALS_2017),       # SF7
+        overhead_per_frame=SourceValue(13 * 8 * u.bit, Sources.MORIN_2017),
+        max_payload_per_frame=SourceValue(222 * u.B, Sources.MORIN_2017),
+        energy_fixed_per_message=..., rx_listen_time_per_message=...,        # RX1 + RX2 windows
+        sync_period=SourceValue(float("inf") * u.s, Sources.MORIN_2017),    # asynchronous
+        energy_per_sync=SourceValue(0 * u.uJ, Sources.MORIN_2017),
+        transmissions_per_message=SourceValue(1 * u.dimensionless, Sources.HYPOTHESIS),
+        operator_network_energy_per_device_hour=SourceValue(0 * u.Wh, Sources.HYPOTHESIS),
+        operator_network_embodied_per_device_hour=SourceValue(0 * u.g, Sources.HYPOTHESIS),
+        requires_gateway=True),
+    "NB-IoT": dict(..., operator_network_energy_per_device_hour=SourceValue(2.3 * u.Wh, Sources.MALMODIN_2018),
+                   operator_network_embodied_per_device_hour=..., requires_gateway=False),
+}</code></pre>
+      </div>
+    </article>
+
+    <article id="create-interface" data-step>
+      <h3><a href="#create-interface">1.2 · Create a network interface from a technology</a></h3>
+      <p data-files><span>Files</span>
+        <a href="#file-interface"><code>core/hardware/edge/edge_network_interface.py</code></a> ·
+        <a href="#file-technologies"><code>core/hardware/edge/edge_network_technologies.py</code></a></p>
+      <p>The caller writes <code>EdgeNetworkInterface.from_technology("LoRaWAN", p_sleep=...)</code>. The class method
+        looks the column up, overlays the caller's keyword overrides and calls the constructor. The constructor is the
+        ordinary <a href="vscode://file//Users/vinville/dev/e-footprint-full/e-footprint/efootprint/core/hardware/edge/edge_component.py:19:1" data-review-source-href="../../../efootprint/core/hardware/edge/edge_component.py#L19:1"><code>EdgeComponent</code></a>
+        constructor with every physical parameter as an explicit input, so the interface serializes, edits and
+        explains like any component. <code>technology</code> is a string <code>SourceObject</code> input with
+        <code>list_values</code>, the pattern <a href="vscode://file//Users/vinville/dev/e-footprint-full/e-footprint/efootprint/core/hardware/server_base.py:28:1" data-review-source-href="../../../efootprint/core/hardware/server_base.py#L28:1"><code>ServerTypes</code></a>
+        uses for <code>server_type</code>; it is a label and a validation key, not a switch (see
+        <a href="#decision-technology">decision D7</a>).</p>
+      <div data-code>
+        <p data-code-file><a href="#file-interface"><code>core/hardware/edge/edge_network_interface.py</code></a> <small>Proposed class (constructor and factory)</small></p>
+        <pre><code>class EdgeNetworkInterface(EdgeComponent):
+    """Radio module of an {class:EdgeDevice}: LoRaWAN, SIGFOX, NB-IoT, BLE, WiFi (power-saving) or Thread.
+    Draws a sleep floor, energy per message sent by its {class:RecurrentMessagingNeed}s and energy per
+    synchronization exchange; links to an {class:EdgeGateway} or carries an operator-network share."""
+
+    list_values = {"technology": [SourceObject(name) for name in EDGE_NETWORK_TECHNOLOGIES]}
+    default_values = {**EDGE_NETWORK_TECHNOLOGIES["LoRaWAN"], "technology": SourceObject("LoRaWAN"),
+                      "carbon_footprint_manufacturing_per_unit": SourceValue(2 * u.kg, Sources.PIRSON_BOL_2021),
+                      "lifespan": SourceValue(6 * u.year), "packet_error_rate": SourceValue(0 * u.dimensionless),
+                      "n_hops": SourceValue(1 * u.dimensionless)}
+
+    @classmethod
+    def compatible_root_units(cls):
+        return ["message / second"]            # the messaging need's hourly messages
+
+    @classmethod
+    def from_technology(cls, technology: str, name: str | None = None, **overrides):
+        defaults = {**cls.default_values, **EDGE_NETWORK_TECHNOLOGIES[technology],
+                    "technology": SourceObject(technology)}
+        return cls(name or f"{technology} interface", **{**defaults, **overrides})
+
+    def __init__(self, name, technology, p_tx, p_rx, p_sleep, bitrate, overhead_per_frame,
+                 max_payload_per_frame, energy_fixed_per_message, rx_listen_time_per_message,
+                 sync_period, energy_per_sync, transmissions_per_message, packet_error_rate, n_hops,
+                 operator_network_energy_per_device_hour, operator_network_embodied_per_device_hour,
+                 carbon_footprint_manufacturing_per_unit, lifespan, edge_gateway: "EdgeGateway | None" = None,
+                 nb_of_units=None):
+        super().__init__(name, carbon_footprint_manufacturing_per_unit=..., lifespan=lifespan, nb_of_units=nb_of_units)
+        ...  # set_label every input; power_per_unit / idle_power_per_unit are not inputs here</code></pre>
+      </div>
+      <p><strong>Lifespan.</strong> The kickoff draft says "inherited from EdgeDevice". The base component contract makes
+        <code>lifespan</code> an input for core components, and
+        <a href="vscode://file//Users/vinville/dev/e-footprint-full/e-footprint/efootprint/core/hardware/edge/edge_device.py:180:1" data-review-source-href="../../../efootprint/core/hardware/edge/edge_device.py#L180:1"><code>EdgeDevice.unused_component_manufacturing_per_edge_device()</code></a>
+        raises when a need-less component's lifespan is a never-computed calculated attribute. An interface deployed
+        at a pattern with no messaging need there would hit that error with an inherited lifespan. This draft keeps
+        <code>lifespan</code> as an input defaulting to 6 years like every core component
+        (<a href="#decision-lifespan">decision D1</a>).</p>
+      <p><strong>Per-message energy.</strong> Computed once per interface from inputs, as a calculated attribute the
+        messaging flow multiplies by the hourly message count. Not a timeseries: payload size is a scalar on the
+        need, so the product is taken per need in <a href="#messaging-need">1.3</a>.</p>
+      <div data-code>
+        <p data-code-file><a href="#file-interface"><code>core/hardware/edge/edge_network_interface.py</code></a> <small>Proposed per-message physics (kickoff §4, unchanged)</small></p>
+        <pre><code>def energy_per_message(self, payload_size: ExplainableQuantity) -> ExplainableQuantity:
+    nb_frames = ceil(payload_size / self.max_payload_per_frame)
+    bits_per_frame = (payload_size / nb_frames).to(u.bit) + self.overhead_per_frame
+    nb_transmissions = self.transmissions_per_message / (1 - self.packet_error_rate)
+    airtime = nb_transmissions * nb_frames * bits_per_frame / self.bitrate
+    return self.n_hops * (self.energy_fixed_per_message + airtime * self.p_tx
+                          + self.rx_listen_time_per_message * self.p_rx)</code></pre>
+      </div>
+    </article>
+
+    <article id="messaging-need" data-step>
+      <h3><a href="#messaging-need">1.3 · Attach a messaging need and compute hourly interface energy</a></h3>
+      <p data-files><span>Files</span>
+        <a href="#file-messaging-need"><code>core/usage/edge/recurrent_messaging_need.py</code></a> ·
+        <a href="#file-interface"><code>core/hardware/edge/edge_network_interface.py</code></a> ·
+        <a href="#file-units"><code>constants/units.py</code></a></p>
+      <p>The caller writes <code>RecurrentMessagingNeed("readings", edge_component=interface, messages_per_hour=..., payload_size=...)</code>
+        and lists it in a <code>RecurrentEdgeDeviceNeed</code> like any component need. Making it a subclass of
+        <a href="vscode://file//Users/vinville/dev/e-footprint-full/e-footprint/efootprint/core/usage/edge/recurrent_edge_component_need.py:36:1" data-review-source-href="../../../efootprint/core/usage/edge/recurrent_edge_component_need.py#L36:1"><code>RecurrentEdgeComponentNeed</code></a>
+        (the precedent is
+        <a href="vscode://file//Users/vinville/dev/e-footprint-full/e-footprint/efootprint/core/usage/edge/recurrent_edge_storage_need.py:18:1" data-review-source-href="../../../efootprint/core/usage/edge/recurrent_edge_storage_need.py#L18:1"><code>RecurrentEdgeStorageNeed</code></a>)
+        resolves the kickoff's open point 3: the component's
+        <a href="vscode://file//Users/vinville/dev/e-footprint-full/e-footprint/efootprint/core/hardware/edge/edge_component.py:70:1" data-review-source-href="../../../efootprint/core/hardware/edge/edge_component.py#L70:1"><code>edge_usage_patterns</code></a>,
+        the pattern's <a href="vscode://file//Users/vinville/dev/e-footprint-full/e-footprint/efootprint/core/usage/edge/edge_usage_pattern.py:112:1" data-review-source-href="../../../efootprint/core/usage/edge/edge_usage_pattern.py#L112:1"><code>containment_inventory</code></a>
+        and the device's attribution atoms all walk component needs, so a separate hierarchy would have to re-create
+        every one of those paths.</p>
+      <div data-code>
+        <p data-code-file><a href="#file-messaging-need"><code>core/usage/edge/recurrent_messaging_need.py</code></a> <small>Proposed class</small></p>
+        <pre><code>class RecurrentMessagingNeed(RecurrentEdgeComponentNeed):
+    """Messages an {class:EdgeNetworkInterface} sends over a typical week, with their payload size."""
+
+    def __init__(self, name, edge_component: "EdgeNetworkInterface",
+                 messages_per_hour: ExplainableRecurrentQuantities, payload_size: ExplainableQuantity):
+        super().__init__(name, edge_component)        # recurrent_need is computed below
+        self.messages_per_hour = messages_per_hour.set_label("Messages per hour")
+        self.payload_size = payload_size.set_label("Payload size")
+
+    @computed_attribute
+    def recurrent_need(self):
+        """Alias so the base validation and hourly replay see messages per hour as the component need."""
+        return self.messages_per_hour.copy().set_label("Recurrent need")</code></pre>
+      </div>
+      <p>With <code>recurrent_need</code> aliased,
+        <a href="vscode://file//Users/vinville/dev/e-footprint-full/e-footprint/efootprint/core/usage/edge/recurrent_edge_component_need.py:93:1" data-review-source-href="../../../efootprint/core/usage/edge/recurrent_edge_component_need.py#L93:1"><code>recurrent_need_validation</code></a>
+        checks the unit against the interface's <code>compatible_root_units</code> (hence the new <code>message</code>
+        unit in the custom units file loaded by
+        <a href="vscode://file//Users/vinville/dev/e-footprint-full/e-footprint/efootprint/constants/units.py:20:1" data-review-source-href="../../../efootprint/constants/units.py#L20:1"><code>units.py</code></a>), and
+        <a href="vscode://file//Users/vinville/dev/e-footprint-full/e-footprint/efootprint/core/usage/edge/recurrent_edge_component_need.py:109:1" data-review-source-href="../../../efootprint/core/usage/edge/recurrent_edge_component_need.py#L109:1"><code>unitary_hourly_need_per_usage_pattern</code></a>
+        replays the week over the deployment calendar, scaled by containment occurrences, exactly as for CPU or RAM
+        needs. Nothing else in the need base class changes.</p>
+      <p><strong>Hourly power of the interface.</strong> The component's required hook
+        <a href="vscode://file//Users/vinville/dev/e-footprint-full/e-footprint/efootprint/core/hardware/edge/edge_component.py:94:1" data-review-source-href="../../../efootprint/core/hardware/edge/edge_component.py#L94:1"><code>unitary_power_per_usage_pattern</code></a>
+        sums the three terms over the messaging needs reaching the pattern, found through the existing
+        <a href="vscode://file//Users/vinville/dev/e-footprint-full/e-footprint/efootprint/core/hardware/edge/edge_component.py:73:1" data-review-source-href="../../../efootprint/core/hardware/edge/edge_component.py#L73:1"><code>recurrent_needs_in_usage_pattern()</code></a>.
+        Its shape mirrors
+        <a href="vscode://file//Users/vinville/dev/e-footprint-full/e-footprint/efootprint/core/hardware/edge/edge_workload_component.py:64:1" data-review-source-href="../../../efootprint/core/hardware/edge/edge_workload_component.py#L64:1"><code>EdgeWorkloadComponent.unitary_power_per_usage_pattern</code></a>:
+        a floor plus a demand-driven term on the need's hourly axis.</p>
+      <div data-code>
+        <p data-code-file><a href="#file-interface"><code>core/hardware/edge/edge_network_interface.py</code></a> <small>Proposed hourly power (sketch, Δt = 1 h)</small></p>
+        <pre><code>@computed_dict(keys="edge_usage_patterns")
+def unitary_power_per_usage_pattern(self, usage_pattern):
+    one_hour = ExplainableQuantity(1 * u.hour, "one hour")
+    messages = sum(need.unitary_hourly_need_per_usage_pattern[usage_pattern]
+                   for need in self.recurrent_needs_in_usage_pattern(usage_pattern))   # messages / hour
+    message_energy = sum(need.unitary_hourly_need_per_usage_pattern[usage_pattern]
+                         * self.energy_per_message(need.payload_size) for need in ...)  # J / hour
+    syncs = maximum(0, one_hour / self.sync_period - messages * one_hour)               # 0 when sync_period is inf
+    return (self.p_sleep + message_energy / one_hour
+            + syncs * self.energy_per_sync / one_hour
+            + self.operator_network_energy_per_device_hour / one_hour).set_label(...)
+
+@property
+def unitary_power_at_zero_recurrent_need(self):
+    """Sleep floor plus the idle keep-alive cost: what the radio draws when no message is sent."""
+    return self.p_sleep + self.energy_per_sync / self.sync_period + self.operator_network_energy_per_device_hour / one_hour</code></pre>
+      </div>
+      <p>From there the existing component chain does the rest:
+        <a href="vscode://file//Users/vinville/dev/e-footprint-full/e-footprint/efootprint/core/hardware/edge/edge_component.py:145:1" data-review-source-href="../../../efootprint/core/hardware/edge/edge_component.py#L145:1"><code>energy_per_edge_device_per_usage_pattern</code></a>
+        multiplies by parallel deployments, the device sums it in
+        <a href="vscode://file//Users/vinville/dev/e-footprint-full/e-footprint/efootprint/core/hardware/edge/edge_device.py:219:1" data-review-source-href="../../../efootprint/core/hardware/edge/edge_device.py#L219:1"><code>instances_energy_per_usage_pattern</code></a>
+        times <code>total_nb_of_units</code>, and the attribution layer's
+        <a href="vscode://file//Users/vinville/dev/e-footprint-full/e-footprint/efootprint/core/hardware/edge/edge_device.py:420:1" data-review-source-href="../../../efootprint/core/hardware/edge/edge_device.py#L420:1"><code>energy_atom_value_per_need_and_pattern</code></a>
+        splits the floor equally among the interface's needs and the rest by demand share, which the
+        <a href="vscode://file//Users/vinville/dev/e-footprint-full/e-footprint/efootprint/core/hardware/edge/edge_device.py:320:1" data-review-source-href="../../../efootprint/core/hardware/edge/edge_device.py#L320:1"><code>demand_share_per_need_and_pattern</code></a>
+        computes from <code>unitary_hourly_need_per_usage_pattern</code> (messages per hour). The sync term is not
+        linear in message count, but shares still sum to one per hour, so atoms still partition the component's use
+        footprint exactly.</p>
+      <p><strong>Radio module fabrication</strong> flows through the unchanged
+        <a href="vscode://file//Users/vinville/dev/e-footprint-full/e-footprint/efootprint/core/hardware/edge/edge_component.py:130:1" data-review-source-href="../../../efootprint/core/hardware/edge/edge_component.py#L130:1"><code>manufacturing_footprint_per_edge_device_per_usage_pattern</code></a>.
+        The operator embodied share joins it in <a href="#operator">1.5</a>.</p>
+    </article>
+
+    <article id="gateway" data-step>
+      <h3><a href="#gateway">1.4 · Link an owned gateway and count it</a></h3>
+      <p data-files><span>Files</span>
+        <a href="#file-gateway"><code>core/hardware/edge/edge_gateway.py</code></a> ·
+        <a href="#file-interface"><code>core/hardware/edge/edge_network_interface.py</code></a> ·
+        <a href="#file-hardware-unit"><code>core/hardware/edge/edge_hardware_unit.py</code></a> ·
+        <a href="#file-edge-device-group"><code>core/hardware/edge/edge_device_group.py</code></a></p>
+      <p>The caller writes <code>EdgeGateway("farm LoRa gateway")</code>, assigns it to <code>interface.edge_gateway</code>
+        (a plain forward link, so <code>ModelingUpdate</code> handles reassignment like any object link) and puts it in a
+        group: <code>EdgeDeviceGroup("farm", edge_device_counts={device: 80, gateway: 1})</code>.</p>
+      <div data-code>
+        <p data-code-file><a href="#file-gateway"><code>core/hardware/edge/edge_gateway.py</code></a> <small>Proposed class</small></p>
+        <pre><code>class EdgeGateway(EdgeHardwareUnit, AttributionSource):
+    """User-owned concentrator between device radios and the IP backhaul: LoRaWAN gateway, Thread border
+    router, BLE hub, WiFi access point. Draws constant power; sized by {class:EdgeDeviceGroup} counts."""
+
+    default_values = {"power": SourceValue(5 * u.W, Sources.HYPOTHESIS),
+                      "carbon_footprint_fabrication": SourceValue(25 * u.kg, Sources.PIRSON_BOL_2021),
+                      "lifespan": SourceValue(6 * u.year)}
+
+    edge_network_interfaces = ReverseCollection("EdgeNetworkInterface")
+
+    @property
+    def edge_usage_patterns(self):
+        return list(dict.fromkeys(sum([i.edge_usage_patterns for i in self.edge_network_interfaces], start=[])))
+
+    @computed_dict(keys="edge_usage_patterns")
+    def instances_energy_per_usage_pattern(self, usage_pattern):
+        return (self.power * one_hour * usage_pattern.nb_deployments_in_parallel * self.total_nb_of_units).set_label(...)
+
+    @computed_dict(keys="edge_usage_patterns")
+    def use_footprint_per_usage_pattern(self, usage_pattern):
+        return (self.instances_energy_per_usage_pattern[usage_pattern]
+                * usage_pattern.country.average_carbon_intensity).to(u.kg).set_label(...)
+
+    @computed_dict(keys="edge_usage_patterns")
+    def instances_manufacturing_footprint_per_usage_pattern(self, usage_pattern):
+        return (self.carbon_footprint_fabrication / self.lifespan * one_hour
+                * usage_pattern.nb_deployments_in_parallel * self.total_nb_of_units).to(u.kg).set_label(...)
+
+    def attribution_atoms(self, phase): ...   # see below</code></pre>
+      </div>
+      <p>The three per-pattern dicts are the gateway's answers to the parent's hooks; the parent's summed
+        <code>instances_energy</code>, <code>use_footprint</code> and <code>instances_manufacturing_footprint</code>
+        (moved from <code>EdgeDevice</code> in <a href="#shared-data">1.1</a>) make the gateway a top-level footprint
+        source like <a href="vscode://file//Users/vinville/dev/e-footprint-full/e-footprint/efootprint/core/hardware/network.py:20:1" data-review-source-href="../../../efootprint/core/hardware/network.py#L20:1"><code>Network</code></a>. The
+        <a href="vscode://file//Users/vinville/dev/e-footprint-full/e-footprint/efootprint/core/hardware/edge/edge_device.py:115:1" data-review-source-href="../../../efootprint/core/hardware/edge/edge_device.py#L115:1"><code>lifespan_validation</code></a>
+        guard applies unchanged, raising
+        <a href="vscode://file//Users/vinville/dev/e-footprint-full/e-footprint/efootprint/core/hardware/hardware_base.py:50:1" data-review-source-href="../../../efootprint/core/hardware/hardware_base.py#L50:1"><code>InsufficientCapacityError</code></a>
+        when a pattern's usage span exceeds the gateway's lifespan. <code>total_nb_of_units</code> reads the widened
+        <a href="vscode://file//Users/vinville/dev/e-footprint-full/e-footprint/efootprint/core/hardware/edge/edge_device_group.py:37:1" data-review-source-href="../../../efootprint/core/hardware/edge/edge_device_group.py#L37:1"><code>edge_device_counts</code></a>
+        and defaults to one per deployment when the gateway is in no group.</p>
+      <p><strong>Refusing operator-side links.</strong> A guard on the interface,
+        <code>edge_gateway_validation</code>, raises a <code>ValueError</code> when <code>edge_gateway</code> is set and
+        the technology column has <code>requires_gateway=False</code>. It is a guarded computed attribute like
+        <a href="vscode://file//Users/vinville/dev/e-footprint-full/e-footprint/efootprint/core/usage/edge/recurrent_edge_component_need.py:93:1" data-review-source-href="../../../efootprint/core/usage/edge/recurrent_edge_component_need.py#L93:1"><code>recurrent_need_validation</code></a>,
+        so it re-runs on both technology and gateway edits. Nothing forces a gateway on the four owned technologies:
+        a missing gateway simply contributes nothing, and the interface spec decides how to prompt for one.</p>
+      <p><strong>Sankey atoms.</strong> <a href="vscode://file//Users/vinville/dev/e-footprint-full/e-footprint/efootprint/core/attribution/__init__.py:92:1" data-review-source-href="../../../efootprint/core/attribution/__init__.py#L92:1"><code>AttributionSource</code></a>
+        requires <code>attribution_atoms(phase)</code>. The gateway's per-pattern value splits across the
+        messaging-need paths of its linked interfaces, weighted by each path's device <code>total_nb_of_units</code>
+        times occurrences, so the sum of atoms equals the gateway's footprint. The shape copies
+        <a href="vscode://file//Users/vinville/dev/e-footprint-full/e-footprint/efootprint/core/hardware/network.py:97:1" data-review-source-href="../../../efootprint/core/hardware/network.py#L97:1"><code>Network.attribution_atoms()</code></a>
+        (one atom per containment cell) and
+        <a href="vscode://file//Users/vinville/dev/e-footprint-full/e-footprint/efootprint/core/hardware/edge/edge_device.py:465:1" data-review-source-href="../../../efootprint/core/hardware/edge/edge_device.py#L465:1"><code>EdgeDevice.attribution_atoms()</code></a>
+        (occurrence shares over <code>containment_inventory.component_need_paths</code>). This is the "cheap optional
+        view" of kickoff §3.3; no further user-facing breakdown is planned (spec open question 4).</p>
+    </article>
+
+    <article id="operator" data-step>
+      <h3><a href="#operator">1.5 · Operator-side technologies: NB-IoT and SIGFOX</a></h3>
+      <p data-files><span>Files</span>
+        <a href="#file-interface"><code>core/hardware/edge/edge_network_interface.py</code></a> ·
+        <a href="#file-technologies"><code>core/hardware/edge/edge_network_technologies.py</code></a></p>
+      <p>No object. Two sourced per-device-hour inputs on the interface, zero for the four owned technologies. The
+        energy row is already folded into <code>unitary_power_per_usage_pattern</code> in <a href="#messaging-need">1.3</a>
+        (Wh per device-hour divided by one hour is a power), so it flows through the component's use footprint and the
+        country carbon intensity with no extra path. The embodied row joins the component's manufacturing axis by
+        overriding
+        <a href="vscode://file//Users/vinville/dev/e-footprint-full/e-footprint/efootprint/core/hardware/edge/edge_component.py:130:1" data-review-source-href="../../../efootprint/core/hardware/edge/edge_component.py#L130:1"><code>manufacturing_footprint_per_edge_device_per_usage_pattern</code></a>
+        on the interface: base amortization plus <code>operator_network_embodied_per_device_hour × nb_deployments_in_parallel</code>.
+        Both terms carry labels naming the operator network so the explainability graph shows them as distinct
+        ancestors. Allocation key is time per subscriber, never per gigabyte (Mytton 2024, ITU-T L.1410).</p>
+      <p>Values to pin: Malmodin 2018 gives about 20 kWh per mobile subscription per year (≈ 2.3 Wh per hour); Ruiz
+        2022 gives 81 to 103 kg CO2e per subscription per year including embodied, to be split. Until pinned, the
+        column may ship flagged <code>Sources.HYPOTHESIS</code> values (spec open question 3).</p>
+    </article>
+
+    <article id="registration" data-step>
+      <h3><a href="#registration">1.6 · Registration, serialization, documentation</a></h3>
+      <p data-files><span>Files</span>
+        <a href="#file-registry"><code>all_classes_in_order.py</code></a> ·
+        <a href="#file-changelog"><code>CHANGELOG.md</code></a></p>
+      <ul>
+        <li><code>EdgeNetworkInterface</code> joins
+          <a href="vscode://file//Users/vinville/dev/e-footprint-full/e-footprint/efootprint/all_classes_in_order.py:54:1" data-review-source-href="../../../efootprint/all_classes_in_order.py#L54:1"><code>EDGE_COMPONENT_CLASSES</code></a>, so it is a
+          Sankey breakdown child of its device through the existing <code>EdgeComponent</code> entry.</li>
+        <li><code>RecurrentMessagingNeed</code> joins
+          <a href="vscode://file//Users/vinville/dev/e-footprint-full/e-footprint/efootprint/all_classes_in_order.py:56:1" data-review-source-href="../../../efootprint/all_classes_in_order.py#L56:1"><code>RECURRENT_EDGE_COMPONENT_NEED_CLASSES</code></a>.</li>
+        <li><code>EdgeGateway</code> is appended to the infrastructure column of
+          <a href="vscode://file//Users/vinville/dev/e-footprint-full/e-footprint/efootprint/all_classes_in_order.py:72:1" data-review-source-href="../../../efootprint/all_classes_in_order.py#L72:1"><code>SANKEY_COLUMNS</code></a> beside
+          <code>EdgeDevice</code> and <code>Network</code>, which makes it a canonical class automatically. It is listed
+          under <a href="vscode://file//Users/vinville/dev/e-footprint-full/e-footprint/efootprint/all_classes_in_order.py:107:1" data-review-source-href="../../../efootprint/all_classes_in_order.py#L107:1"><code>OBJECT_CATEGORIES["EdgeDevices"]</code></a>
+          so the interface's existing "Edge devices" column shows it (<a href="#decision-category">decision D5</a>).</li>
+        <li><strong>JSON.</strong> New classes serialize through the generic object path; <code>edge_gateway=None</code>
+          serializes like any optional link. The widened <code>edge_device_counts</code> keeps its on-disk shape, so no
+          handler is added after
+          <a href="vscode://file//Users/vinville/dev/e-footprint-full/e-footprint/efootprint/api_utils/version_upgrade_handlers.py:879:1" data-review-source-href="../../../efootprint/api_utils/version_upgrade_handlers.py#L879:1"><code>upgrade_version_26_to_27</code></a>
+          and the schema version does not bump (<a href="#decision-schema">decision D6</a>). Round-trip tests use the
+          integration JSON twins.</li>
+        <li><strong>Docs.</strong> Class docstrings, <code>param_descriptions</code> and computed-attribute docstrings
+          are the single source of truth; the mkdocs reference regenerates from them and
+          <code>tests/test_descriptions.py</code> checks coverage. The user documentation gains one page: technology
+          defaults table with sources, the gateway sharing convention, the backhaul convention, and the Thread hardware
+          caveat.</li>
+        <li><strong>Changelog.</strong> One consolidated entry under Unreleased.</li>
+      </ul>
+    </article>
+  </section>
+
+  <section id="delivery">
+    <h2>2. Delivery and verification</h2>
+    <h3>Implementation sequence</h3>
+    <ol id="phases">
+      <li><strong>A · Technology table, sources, interface component, messaging need</strong>Full value for NB-IoT and
+        SIGFOX users with no gateway work; every owned-technology interface works with no gateway attached.
+        <small>Includes the operator rows (1.5) and the <code>message</code> unit.</small></li>
+      <li><strong>B · Lift <code>EdgeHardwareUnit</code> out of <code>EdgeDevice</code></strong>Pure refactor;
+        <code>EdgeDevice</code> and <code>EdgeDeviceGroup</code> tests pass untouched.
+        <small>Independent of A; must precede C.</small></li>
+      <li><strong>C · <code>EdgeGateway</code>, gateway link, guard, atoms</strong>Gateway counted through groups,
+        its own Sankey line. <small>Depends on A and B.</small></li>
+      <li><strong>D · Registration, docs page, changelog, integration twins</strong>Strict docs build and JSON round
+        trip over the extended edge group system. <small>Depends on C.</small></li>
+    </ol>
+    <h3>Verification map</h3>
+    <div data-table-scroll>
+      <table>
+        <thead><tr><th scope="col">Behavior / risk</th><th scope="col">Critical assertion</th><th scope="col">Test layer</th></tr></thead>
+        <tbody>
+          <tr><td>Technology defaults with provenance (SC1)</td><td><code>from_technology("Thread")</code> yields the column's values, each with its source; an override keeps its own source.</td><td>unit, <code>tests/hardware/edge/test_edge_network_interface.py</code></td></tr>
+          <tr><td>Three-term energy (SC2, SC4)</td><td>1 msg/day on LoRaWAN: sleep term &gt; 90 % of interface energy; Thread at 2.5 s poll: sync term &gt; 90 %; payload 300 B on SIGFOX (12 B frames) → 25 frames; PER 0.2 → airtime × 1.25; SIGFOX × 3.</td><td>unit</td></tr>
+          <tr><td>Published figures (SC3)</td><td>Casals 2017 LoRaWAN, Gomez 2019 SIGFOX (≈ 900 mJ per 12 B), Kim 2019 Thread (≈ 30 µA at 10 s) within 30 %.</td><td>unit, one test per paper</td></tr>
+          <tr><td>Dimensional soundness</td><td>Hourly power is in W; per-message energy in J; need unit mismatch raises <code>InvalidComponentNeedUnitError</code>.</td><td>unit</td></tr>
+          <tr><td>Device behavior unchanged after the lift (SC8)</td><td>Existing <a href="vscode://file//Users/vinville/dev/e-footprint-full/e-footprint/tests/hardware/edge/test_edge_device.py:44:1" data-review-source-href="../../../tests/hardware/edge/test_edge_device.py#L44:1"><code>TestEdgeDevice</code></a>, <a href="vscode://file//Users/vinville/dev/e-footprint-full/e-footprint/tests/hardware/edge/test_edge_device_group.py:20:1" data-review-source-href="../../../tests/hardware/edge/test_edge_device_group.py#L20:1"><code>TestEdgeDeviceGroupInit</code></a> and integration suites pass without edits.</td><td>existing unit + integration</td></tr>
+          <tr><td>Gateway counted and attributed (SC5, SC7)</td><td>Gateway in a nested group unrolls like a device; gateway in no group counts 1 per deployment; system footprint has a gateway line; Σ atoms == gateway footprint; operator-side link raises; short lifespan raises <code>InsufficientCapacityError</code>.</td><td>unit <code>test_edge_gateway.py</code>; integration <a href="vscode://file//Users/vinville/dev/e-footprint-full/e-footprint/tests/integration_tests/integration_edge_device_group_base_class.py:34:1" data-review-source-href="../../../tests/integration_tests/integration_edge_device_group_base_class.py#L34:1"><code>IntegrationEdgeDeviceGroupBaseClass</code></a></td></tr>
+          <tr><td>Operator share (SC6)</td><td>NB-IoT interface use footprint includes operator energy × CI; manufacturing includes embodied share; LoRaWAN interface has zero operator terms.</td><td>unit + integration</td></tr>
+          <tr><td>No double counting (spec open question 1)</td><td>Backhaul network footprint equals the server-side job's data-driven value with and without messaging needs present.</td><td>integration</td></tr>
+          <tr><td>Serialization and registry (SC9)</td><td>JSON twin of the extended edge group system round-trips with calculated attributes; new classes in <code>ALL_EFOOTPRINT_CLASSES</code>; <code>mkdocs build --strict</code> clean.</td><td>integration from-JSON twin, descriptions test, docs build</td></tr>
+        </tbody>
+      </table>
+    </div>
+    <p>Coverage above is planned, not executed.</p>
+  </section>
+
+  <section id="decisions">
+    <h2>3. Decisions for review</h2>
+    <p>Where this draft departs from or sharpens the kickoff draft. Each is a design choice within the spec's
+      scope; the <code>spec-plan</code> stage confirms or changes them.</p>
+    <dl>
+      <dt id="decision-lifespan"><strong>D1 · Interface lifespan is an input (default 6 years), not inherited from the device.</strong></dt>
+      <dd>Kickoff said "inherited". Inheriting means a computed lifespan, which the need-less-component booking in
+        <a href="vscode://file//Users/vinville/dev/e-footprint-full/e-footprint/efootprint/core/hardware/edge/edge_device.py:180:1" data-review-source-href="../../../efootprint/core/hardware/edge/edge_device.py#L180:1"><code>unused_component_manufacturing_per_edge_device()</code></a>
+        cannot read. An input keeps the base component contract and lets a radio module outlive or outlast its host.</dd>
+      <dt id="decision-subclass"><strong>D2 · <code>RecurrentMessagingNeed</code> subclasses <code>RecurrentEdgeComponentNeed</code>, with <code>recurrent_need</code> computed from <code>messages_per_hour</code>.</strong></dt>
+      <dd>Resolves kickoff open point 3. Reuses validation, weekly replay, containment paths and attribution unchanged.
+        Alternative (a parallel need hierarchy) would duplicate four traversal paths and the atom builder.</dd>
+      <dt id="decision-backhaul"><strong>D3 · No payload-to-network data path.</strong></dt>
+      <dd>Spec open question 1; recommendation stated there. If the user wants the second path, it is a new
+        <code>Network</code> consumer beside <a href="vscode://file//Users/vinville/dev/e-footprint-full/e-footprint/efootprint/core/hardware/network.py:62:1" data-review-source-href="../../../efootprint/core/hardware/network.py#L62:1"><code>use_footprint_for_data_volume_and_usage_pattern()</code></a>
+        plus a rule to avoid charging the same bytes through jobs; plan it only on request.</dd>
+      <dt id="decision-sf"><strong>D4 · No LoRaWAN spreading-factor input.</strong></dt>
+      <dd>Spec open question 2. Bitrate and maximum payload are per-interface inputs; the docs tabulate SF7 to SF12.</dd>
+      <dt id="decision-category"><strong>D5 · <code>EdgeGateway</code> is its own canonical class in the Sankey infrastructure column, listed under the existing "EdgeDevices" object category.</strong></dt>
+      <dd>Own class: the Sankey and system breakdown need a distinct line. Existing category: avoids a new interface
+        column for one object type; the interface spec can still give it its own Add button.</dd>
+      <dt id="decision-schema"><strong>D6 · No schema version bump.</strong></dt>
+      <dd>Only additive classes and an annotation widening with the same on-disk shape. Confirm against the
+        constitution's serialization gate during planning; bump if any existing object's JSON changes.</dd>
+      <dt id="decision-technology"><strong>D7 · <code>technology</code> is a string <code>SourceObject</code> with <code>list_values</code>, not a Python <code>Enum</code>.</strong></dt>
+      <dd>Matches how other choice inputs serialize and how the interface renders selects; the technology table is
+        keyed by the same strings. The table also carries a <code>requires_gateway</code> flag used by the link guard
+        and by the interface to hide the gateway control.</dd>
+    </dl>
+  </section>
+</main>
+</div>
+<script src="../../review-links.js" defer></script>
+</body>
+</html>
