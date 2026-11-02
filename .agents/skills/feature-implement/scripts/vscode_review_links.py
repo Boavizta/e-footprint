@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Make local file links in an HTML plan open in VS Code for review."""
+"""Open plan source links in VS Code and documentation HTML in browser tabs."""
 
 import argparse
 from html import escape, unescape
@@ -56,12 +56,28 @@ def rewrite(source: str, plan_dir: Path, restore: bool) -> tuple[str, int, list[
         if url.scheme or original.startswith("#") or url.query:
             return tag
         location = LINE_FRAGMENT.fullmatch(url.fragment) if url.fragment else None
-        if url.fragment and location is None:
-            return tag
         path = (plan_dir / unquote(url.path)).resolve()
+        documentation_html = path.suffix.lower() == ".html" and any(
+            parent.name in {"specs", "docs", "docs_sources"} for parent in path.parents
+        )
+        if url.fragment and location is None and not documentation_html:
+            return tag
         if not path.is_file():
             missing.append(original)
             return tag
+        if documentation_html:
+            # Source-line fragments are not browser anchors. Preserve authored section ids.
+            browser_href = url._replace(fragment="").geturl() if location else original
+            tag = SOURCE.sub("", tag, count=1)
+            tag = HREF.sub(f'href="{escape(browser_href, quote=True)}"', tag, count=1)
+            tag = re.sub(r'\starget="[^"]*"', "", tag, flags=re.IGNORECASE)
+            rel = re.search(r'\srel="([^"]*)"', tag, re.IGNORECASE)
+            rel_values = unescape(rel.group(1)).split() if rel else []
+            if "noopener" not in rel_values:
+                rel_values.append("noopener")
+            tag = re.sub(r'\srel="[^"]*"', "", tag, flags=re.IGNORECASE)
+            count += 1
+            return tag[:-1] + f' target="_blank" rel="{escape(" ".join(rel_values), quote=True)}">'
         vscode_href = "vscode://file/" + quote(str(path), safe="/")
         if location is not None:
             vscode_href += f":{location.group(1)}:{location.group(2) or '1'}"

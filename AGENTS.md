@@ -27,6 +27,8 @@ This file orients agents and contributors. It is intentionally short. Substance 
 | Final plan review guide (preserved structure, implementation links, consolidated decisions) | `.agents/skills/plan-review-guide/SKILL.md`; delegated at `feature-implement` close-out to the `plan-review-guide` agent, with supervisor-owned decisions |
 | Past investigations and dated decisions | `archives/` |
 
+In feature plans, HTML documentation links open in a new browser tab; production source links (including HTML templates) open in VS Code. See the plan-link convention above.
+
 ## Dev commands
 
 ```bash
