@@ -13,6 +13,7 @@ This file orients agents and contributors. It is intentionally short. Substance 
 |---|---|
 | Architecture and core patterns (modeling structure, ExplainableObject, dependency graph) | `specs/architecture/index.html` |
 | Conditional input rules, final-batch validation, and failed-construction cleanup | `specs/architecture/relationships.html#conditional-inputs` and `specs/architecture/recomputation/lifecycle.html` |
+| Derived internal-parent relationships and live contextual wrappers | `specs/architecture/relationships.html` |
 | Ready-made modeling examples and guides | `efootprint/modeling_examples/` and `specs/architecture/layers-and-modeling.html` |
 | Code style, modeling refactor preferences, agent behaviour rules | `specs/conventions.md` |
 | Testing patterns and what TO / NOT TO test | `specs/testing.md` |
