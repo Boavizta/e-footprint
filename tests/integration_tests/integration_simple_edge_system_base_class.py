@@ -133,6 +133,7 @@ class IntegrationTestSimpleEdgeSystemBaseClass(IntegrationTestBaseClass):
             self.edge_function, self.edge_usage_journey, self.edge_usage_pattern, self.edge_usage_pattern.country
         ] + self.edge_computer.components + self.edge_process.recurrent_edge_component_needs + self.edge_device.components + self.edge_device_need.recurrent_edge_component_needs + [self.edge_usage_pattern.network]
         self.assertEqual(set(expected_objects), set(self.system.all_linked_objects))
+        self.assertEqual([self.edge_computer], self.edge_computer.cpu_component.internal_modeling_obj_containers)
 
     def run_test_calculation_graph(self):
         graph = build_calculus_graph(self.system.total_footprint)
