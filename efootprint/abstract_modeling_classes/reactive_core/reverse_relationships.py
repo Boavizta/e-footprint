@@ -80,8 +80,7 @@ class ReverseCollection:
         # containers node, so recording both would negate the refinement.
         containers = dict.fromkeys(
             contextual_container.modeling_obj_container
-            for contextual_container in instance.contextual_modeling_obj_containers
-            if contextual_container.modeling_obj_container is not None)
+            for contextual_container in instance.contextual_modeling_obj_containers)
         return [mod_obj for mod_obj in containers if isinstance(mod_obj, member_type)]
 
     def __get__(self, instance, owner=None):

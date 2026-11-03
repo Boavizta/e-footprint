@@ -14,7 +14,8 @@ class ContextualModelingObjectAttribute(ObjectLinkedToModelingObj):
             self._value = value
         else:
             raise TypeError(f"Expected a ModelingObject or ContextualModelingObjectAttribute, got {type(value)}")
-        self._value.add_to_contextual_modeling_obj_containers(self)
+        if modeling_obj_container is not None:
+            self._value.add_to_contextual_modeling_obj_containers(self)
         self.modeling_obj_container = modeling_obj_container
         self.attr_name_in_mod_obj_container = attr_name_in_mod_obj_container
 
@@ -29,6 +30,10 @@ class ContextualModelingObjectAttribute(ObjectLinkedToModelingObj):
         previous_container = self.modeling_obj_container
         super().set_modeling_obj_container(new_parent_modeling_object, attr_name)
         if previous_container is not new_parent_modeling_object:
+            if new_parent_modeling_object is None:
+                self._value.remove_from_contextual_modeling_obj_containers(self)
+            elif previous_container is None:
+                self._value.add_to_contextual_modeling_obj_containers(self)
             bump_reverse_nodes(self._value, previous_container)
             bump_reverse_nodes(self._value, new_parent_modeling_object)
 

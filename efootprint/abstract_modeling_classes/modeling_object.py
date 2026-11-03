@@ -461,8 +461,7 @@ class ModelingObject(metaclass=ABCAfterInitMeta):
         record_read_of_node(self, CONTAINERS_NODE_NAME)
         return list(dict.fromkeys(
             [contextual_mod_obj_container.modeling_obj_container
-             for contextual_mod_obj_container in self.contextual_modeling_obj_containers
-             if contextual_mod_obj_container.modeling_obj_container is not None]))
+             for contextual_mod_obj_container in self.contextual_modeling_obj_containers]))
 
     @classmethod
     def is_subclass_of(cls, base_class_name: str) -> bool:
@@ -481,6 +480,12 @@ class ModelingObject(metaclass=ABCAfterInitMeta):
 
     def add_to_contextual_modeling_obj_containers(self, contextual_mod_obj_container):
         self.contextual_modeling_obj_containers.append(contextual_mod_obj_container)
+
+    def remove_from_contextual_modeling_obj_containers(self, contextual_mod_obj_container):
+        # Wrappers on the same target compare equal; unlink only this relationship.
+        self.contextual_modeling_obj_containers = [
+            container for container in self.contextual_modeling_obj_containers
+            if container is not contextual_mod_obj_container]
 
     def is_structural_input_dict_attribute(self, attr_name: str, attr_value=None) -> bool:
         from efootprint.abstract_modeling_classes.explainable_object_dict import ExplainableObjectDict
@@ -804,8 +809,6 @@ class ModelingObject(metaclass=ABCAfterInitMeta):
         record_read_of_node(self, CONTAINERS_NODE_NAME)
         output_dict = {}
         for contextual_mod_obj_container in self.contextual_modeling_obj_containers:
-            if contextual_mod_obj_container.modeling_obj_container is None:
-                continue
             if contextual_mod_obj_container.modeling_obj_container not in output_dict:
                 output_dict[contextual_mod_obj_container.modeling_obj_container] = 1
             else:

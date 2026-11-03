@@ -14,11 +14,15 @@ from efootprint.abstract_modeling_classes.reactive_core import ReactiveSlot
 from efootprint.abstract_modeling_classes.source_objects import SourceObject, SourceValue
 from efootprint.api_utils.json_to_system import json_to_system
 from efootprint.api_utils.system_to_json import system_to_json
+from efootprint.builders.hardware.edge.edge_computer import EdgeComputer
+from efootprint.builders.usage.edge.recurrent_edge_process import RecurrentEdgeProcess
+from efootprint.core.usage.edge.edge_function import EdgeFunction
 from efootprint.builders.timeseries import ExplainableHourlyQuantitiesFromFormInputs
 from efootprint.builders.hardware.boavizta_cloud_server import BoaviztaCloudServer
 from efootprint.builders.hardware.boavizta_server_from_config import BoaviztaServerFromConfig
 from efootprint.constants.countries import Countries
 from efootprint.constants.units import u
+from efootprint.core.hardware.edge.edge_storage import EdgeStorage
 from efootprint.core.hardware.server import Server
 from efootprint.core.hardware.server_base import ServerBase, ServerTypes
 from efootprint.core.hardware.gpu_server import GPUServer
@@ -54,6 +58,48 @@ class SignedOptionalDuration(OptionalDuration):
 
 
 class TestModelingUpdate(unittest.TestCase):
+    def test_accepted_list_update_unregisters_old_wrappers_and_round_trips(self):
+        device = EdgeComputer.from_defaults("List update device", storage=EdgeStorage.from_defaults("List update storage"))
+        first = RecurrentEdgeProcess.from_defaults("Removed need", edge_device=device)
+        second = RecurrentEdgeProcess.from_defaults("Kept need", edge_device=device)
+        function = EdgeFunction("Updated function", [first, second], [])
+        old_wrappers = list(function.recurrent_edge_device_needs)
+
+        ModelingUpdate([[function.recurrent_edge_device_needs, [second]]])
+
+        self.assertEqual(first.contextual_modeling_obj_containers, [])
+        self.assertTrue(all(wrapper.modeling_obj_container is None for wrapper in old_wrappers))
+        self.assertEqual(len(second.contextual_modeling_obj_containers), 1)
+        self.assertIs(second.contextual_modeling_obj_containers[0], function.recurrent_edge_device_needs[0])
+        _, restored, _ = json_to_system(system_to_json(function, save_computed_state=False))
+        restored_second = restored[second.id]
+        self.assertEqual(restored_second.modeling_obj_containers, [restored[function.id]])
+        self.assertIs(restored_second.contextual_modeling_obj_containers[0],
+                      restored[function.id].recurrent_edge_device_needs[0])
+
+    def test_rejected_list_update_restores_same_wrappers_and_round_trips(self):
+        device = EdgeComputer.from_defaults("Rollback device", storage=EdgeStorage.from_defaults("Rollback device storage"))
+        first = RecurrentEdgeProcess.from_defaults("First rollback need", edge_device=device)
+        second = RecurrentEdgeProcess.from_defaults("Second rollback need", edge_device=device)
+        function = EdgeFunction("Rollback function", [first, second], [])
+        server = Server.from_defaults("Rollback sibling", storage=Storage.from_defaults("Rollback sibling storage"))
+        original_list = function.recurrent_edge_device_needs
+        original_wrappers = list(original_list)
+        original_type = server.server_type
+
+        with self.assertRaisesRegex(ValueError, "not in the list"):
+            ModelingUpdate([[original_list, [second]], [original_type, SourceObject("unknown")]])
+
+        self.assertIs(function.recurrent_edge_device_needs, original_list)
+        self.assertIs(server.server_type, original_type)
+        for need, wrapper in zip((first, second), original_wrappers):
+            self.assertEqual(len(need.contextual_modeling_obj_containers), 1)
+            self.assertIs(need.contextual_modeling_obj_containers[0], wrapper)
+            self.assertIs(wrapper.modeling_obj_container, function)
+        _, restored, _ = json_to_system(system_to_json(function, save_computed_state=False))
+        for need in (first, second):
+            self.assertEqual(restored[need.id].modeling_obj_containers, [restored[function.id]])
+
     def test_optional_quantity_updates_validate_units_and_sign(self):
         """Compatible units and empty edits work; invalid edits retain the attached value."""
         model = OptionalDuration("Optional duration", EmptyExplainableObject())

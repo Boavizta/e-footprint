@@ -4,6 +4,11 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](http://keepachangelog.com/)
 and this project adheres to [Semantic Versioning](http://semver.org/)
 
+## [Unreleased]
+
+### Fixed
+- Detached direct and list relationships no longer remain in their targets’ contextual containers; rejected updates restore the original attached wrappers.
+
 ## [V27.0.0] - 2026-10-21
 
 ### Changed
