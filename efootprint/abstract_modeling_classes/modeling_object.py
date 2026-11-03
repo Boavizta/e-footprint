@@ -463,6 +463,18 @@ class ModelingObject(metaclass=ABCAfterInitMeta):
             [contextual_mod_obj_container.modeling_obj_container
              for contextual_mod_obj_container in self.contextual_modeling_obj_containers]))
 
+    @property
+    def internal_modeling_obj_containers(self):
+        """Live parents holding this object without any constructor-input relationship to it."""
+        record_read_of_node(self, CONTAINERS_NODE_NAME)
+        attributes_by_parent = {}
+        for relationship in self.contextual_modeling_obj_containers:
+            parent = relationship.modeling_obj_container
+            if parent is not None:
+                attributes_by_parent.setdefault(parent, set()).add(relationship.attr_name_in_mod_obj_container)
+        return [parent for parent, attributes in attributes_by_parent.items()
+                if not attributes.intersection(get_init_signature_params(type(parent)))]
+
     @classmethod
     def is_subclass_of(cls, base_class_name: str) -> bool:
         """Check if this class inherits from base_class_name or any of its subclasses.

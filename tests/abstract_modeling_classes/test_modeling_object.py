@@ -780,5 +780,52 @@ class TestCheckBelongingToAuthorizedValues(unittest.TestCase):
             self.api.mode = SourceObject("b")
 
 
+def test_internal_containers_group_relationships_by_parent_and_ignore_detached_links():
+    from efootprint.abstract_modeling_classes.contextual_modeling_object_attribute import ContextualModelingObjectAttribute
+
+    child = ModelingObjectForTesting("Child")
+    parent = ModelingObjectForTesting("Parent")
+    other = ModelingObjectForTesting("Other", mod_obj_input1=child)
+    internal = ContextualModelingObjectAttribute(child, parent, "generated")
+    duplicate = ContextualModelingObjectAttribute(child, parent, "other_generated")
+    assert child.internal_modeling_obj_containers == [parent]
+    constructor = ContextualModelingObjectAttribute(child, parent, "mod_obj_input1")
+    assert child.internal_modeling_obj_containers == []
+    constructor.set_modeling_obj_container(None, None)
+    assert child.internal_modeling_obj_containers == [parent]
+    internal.set_modeling_obj_container(None, None)
+    duplicate.set_modeling_obj_container(None, None)
+    assert child.internal_modeling_obj_containers == []
+    assert child.modeling_obj_containers == [other]
+
+
+def test_internal_containers_survive_serialization_without_persisted_metadata():
+    from efootprint.api_utils.system_to_json import system_to_json
+    from efootprint.api_utils.json_to_system import json_to_system
+    from efootprint.builders.hardware.edge.edge_computer import EdgeComputer
+    from efootprint.builders.hardware.edge.edge_appliance import EdgeAppliance
+    from efootprint.builders.usage.edge.recurrent_edge_process import RecurrentEdgeProcess
+    from efootprint.core.hardware.edge.edge_storage import EdgeStorage
+
+    computer = EdgeComputer.from_defaults("Computer", storage=EdgeStorage.from_defaults("Storage"))
+    appliance = EdgeAppliance.from_defaults("Appliance")
+    process = RecurrentEdgeProcess.from_defaults("Process", edge_device=computer)
+    for obj in (computer, appliance, process):
+        _, objects, _ = json_to_system(system_to_json(obj, save_computed_state=False))
+        loaded = objects[obj.id]
+        assert loaded.internal_modeling_obj_containers == []
+        if obj is computer:
+            assert computer.storage.internal_modeling_obj_containers == []
+            assert loaded.storage.internal_modeling_obj_containers == []
+            for component in (loaded.cpu_component, loaded.ram_component):
+                assert component.internal_modeling_obj_containers == [loaded]
+            assert computer.cpu_component.internal_modeling_obj_containers == [computer]
+        elif obj is appliance:
+            assert loaded.appliance_component.internal_modeling_obj_containers == [loaded]
+        else:
+            for need in loaded.recurrent_edge_component_needs:
+                assert need.internal_modeling_obj_containers == [loaded]
+
+
 if __name__ == "__main__":
     unittest.main()

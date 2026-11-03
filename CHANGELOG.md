@@ -7,6 +7,7 @@ and this project adheres to [Semantic Versioning](http://semver.org/)
 ## [Unreleased]
 
 ### Fixed
+- Expose derived internal-parent relationship metadata, distinguishing automatically managed objects from constructor inputs without changing saved JSON.
 - Detached direct and list relationships no longer remain in their targets’ contextual containers; rejected updates restore the original attached wrappers.
 
 ## [V27.0.0] - 2026-10-21
