@@ -66,6 +66,10 @@ take five lines; do not pad a step to fill the shape.
 
 1. Heading `Task N · <title>` with chips: verdict (`CONFIRMED` or `PLAUSIBLE`, the latter styled
    `data-chip="review"`), repository, implementation difficulty. Link the diagnostic.
+   When a supported reproduction exists, place a **Debug reproduction** button immediately below
+   the heading, before chips and file metadata, using the
+   [shared reproduction-link convention](../spec-plan/references/plan-review-links.md#one-click-pytest-reproductions).
+   Keep the debug recipe and copyable command below; unsupported runners follow that convention's fallback.
 2. **Symptom**: what the user sees, in one or two sentences, with the reproduction test linked at
    its function line and its recorded failure quoted. A bug with no reproduction says why.
 3. **Root cause**: explain only what the reproduction cannot show by itself. Do not retell the

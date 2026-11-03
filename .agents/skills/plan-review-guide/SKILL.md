@@ -39,6 +39,12 @@ architecture document, implementation report or chronological narrative.
   verified line/column targets, portable `data-review-source-href` attributes and the existing
   click/right-click menu. Put links on the existing words or identifiers; avoid appending file
   inventories. Each distinct code artifact gets its own target when locations differ.
+- Preserve task-start **Debug reproduction** buttons, their styling and detailed debug recipes
+  using [the shared reproduction-link convention](../spec-plan/references/plan-review-links.md#one-click-pytest-reproductions).
+  When a test moves or is renamed, update its selector, portable path, suggested line and copyable
+  command together, then refresh its absolute URL. Removing the expected-failure marker after a
+  fix does not retire the button: it now launches the passing regression. If the test is removed,
+  link its actual replacement or explain the missing runnable reproduction instead of leaving a stale button.
 - For behavior within a script, link the implementing function, event handler or branch with
   a verified line target. When the trigger and action live at different locations, link both
   on the matching prose. Reserve whole-script links for file-level references; they do not

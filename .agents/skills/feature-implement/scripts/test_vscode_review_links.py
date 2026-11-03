@@ -54,8 +54,25 @@ class ReviewLinksTests(unittest.TestCase):
                 self.assertIn(f'data-review-source-href="{original}"', result)
                 self.assertEqual(source, rewrite(result, self.plan_dir, True)[0])
 
+    def test_pytest_links_localize_without_becoming_plain_file_links(self):
+        path = self.file('tests/test_example.py')
+        source = ('<a href="vscode://local.plan-review-links/debug-pytest?path=%2Fold%2Fcheckout&amp;line=12" '
+                  'data-review-pytest="../../../tests/test_example.py::TestExample::test_example">Debug</a>')
+        result, count, missing = rewrite(source, self.plan_dir, False)
+        from urllib.parse import parse_qs, urlsplit
+        from html import unescape
+        href = unescape(result.split('href="', 1)[1].split('"', 1)[0])
+        self.assertEqual('/debug-pytest', urlsplit(href).path)
+        self.assertEqual({'path': [str(path)], 'line': ['12'], 'test': ['TestExample::test_example']},
+                         parse_qs(urlsplit(href).query))
+        self.assertEqual(1, count)
+        self.assertEqual([], missing)
+        self.assertEqual(result, rewrite(result, self.plan_dir, False)[0])
+        self.assertEqual(result, rewrite(result, self.plan_dir, True)[0])
+
     def test_external_and_plan_section_links_are_untouched(self):
-        for href in ('https://example.org/docs/page.html', '#task-1'):
+        for href in ('https://example.org/docs/page.html', '#task-1',
+                     'vscode://local.plan-review-links/debug-test?repo=tests/example.test.ts'):
             source = f'<a href="{href}">Link</a>'
             self.assertEqual(source, rewrite(source, self.plan_dir, False)[0])
 

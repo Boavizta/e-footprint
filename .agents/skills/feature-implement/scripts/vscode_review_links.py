@@ -6,12 +6,13 @@ from html import escape, unescape
 from pathlib import Path
 import os
 import re
-from urllib.parse import quote, unquote, urlsplit
+from urllib.parse import parse_qsl, quote, unquote, urlencode, urlsplit
 
 
 ANCHOR = re.compile(r"<a\b[^>]*>", re.IGNORECASE | re.DOTALL)
 HREF = re.compile(r'\bhref="([^"]*)"', re.IGNORECASE)
 SOURCE = re.compile(r'\sdata-review-source-href="([^"]*)"', re.IGNORECASE)
+PYTEST = re.compile(r'\sdata-review-pytest="([^"]*)"', re.IGNORECASE)
 LOCATION = re.compile(r":\d+(?::\d+)?$")
 LINE_FRAGMENT = re.compile(r"L(\d+)(?::(\d+))?")
 
@@ -40,6 +41,21 @@ def rewrite(source: str, plan_dir: Path, restore: bool) -> tuple[str, int, list[
             return tag
         href = unescape(href_match.group(1))
         source_match = SOURCE.search(tag)
+        pytest_match = PYTEST.search(tag)
+        if pytest_match is not None and not restore:
+            nodeid = unescape(pytest_match.group(1))
+            test_path, separator, test_id = nodeid.partition("::")
+            path = (plan_dir / unquote(test_path)).resolve()
+            if not separator or not path.is_file():
+                missing.append(nodeid)
+                return tag
+            query = dict(parse_qsl(urlsplit(href).query))
+            query.update(path=str(path), test=test_id)
+            debug_href = "vscode://local.plan-review-links/debug-pytest?" + urlencode(query)
+            count += 1
+            return HREF.sub(lambda _: f'href="{escape(debug_href, quote=True)}"', tag, count=1)
+        if href.startswith("vscode://") and urlsplit(href).netloc != "file":
+            return tag
 
         if restore:
             if source_match is None:

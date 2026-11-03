@@ -60,6 +60,11 @@
   [data-files] > span { color: var(--muted); }
   [data-step] > h3 > a { color: inherit; text-decoration: none; }
   [data-step]:is(:target, :has(:target)) { border-left: 3px solid var(--accent); padding-left: .8rem; }
+  [data-task-actions] { margin: .5rem 0 .8rem; }
+  [data-debug-reproduction] { display: inline-block; padding: .4rem .75rem; border: 1px solid var(--accent);
+    border-radius: .35rem; background: var(--accent); color: white; font-size: .85rem; font-weight: 650; text-decoration: none; }
+  [data-debug-reproduction]:hover { filter: brightness(.9); }
+  [data-debug-reproduction]:focus-visible { outline: 2px solid var(--accent); outline-offset: 3px; }
   code { background: #eef2ef; padding: .08rem .25rem; border-radius: 3px;
     font: .86em/1.5 ui-monospace, SFMono-Regular, Consolas, monospace; overflow-wrap: anywhere; }
   pre { overflow: auto; padding: 1rem; border: 1px solid var(--line); border-radius: .5rem;
@@ -229,6 +234,15 @@
 
     <article id="action-a" data-step>
       <h3><a href="#action-a">1.2 · ACTION_A</a></h3>
+      <!-- When this step has a supported reproduction, put its Debug reproduction button here,
+           before chips, files and prose. Adapt the complete markup in
+           ../references/plan-review-links.md#one-click-pytest-reproductions:
+      <p data-task-actions>
+        <a data-debug-reproduction aria-label="Debug reproduction for ACTION_A"
+           href="vscode://local.plan-review-links/debug-pytest?path=%2Fabsolute%2Frepo%2Ftests%2Ftest_example.py&amp;test=TestExample%3A%3Atest_example&amp;line=42"
+           data-review-pytest="../../../tests/test_example.py::TestExample::test_example">Debug reproduction</a>
+      </p>
+      -->
       <p data-files><span>Files</span>
         <a href="#file-a"><code>MODULE/FILE_A</code></a> ·
         <a href="#file-b"><code>OTHER_MODULE/FILE_B</code></a></p>

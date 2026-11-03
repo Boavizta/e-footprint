@@ -86,6 +86,10 @@ prose and file-tree entries. Audit all code-styled mentions outside illustrative
 existing identifier or implementation detail should remain unlinked, and every source link should
 resolve to the intended file and line. Apply the shared decision callout's code-artifact audit to
 every plan amendment and implementation decision. Refresh plan links as described in
-[the shared convention](plan-review-links.md). Inspect the rendered layout when an available,
-permitted viewer supports it; otherwise disclose that visual verification was not performed. Do
-not claim planned application tests have run.
+[the shared convention](plan-review-links.md). For each task with a supported reproduction,
+check that its **Debug reproduction** button sits immediately below the heading and targets the
+correct current test file and selector, with a matching portable attribute and valid suggested
+line. Keep the copyable command consistent with that target and state any launcher prerequisite;
+unsupported runners use the convention's command fallback. Inspect the rendered layout when an
+available, permitted viewer supports it; otherwise disclose that visual verification was not
+performed. Do not claim planned application tests have run.

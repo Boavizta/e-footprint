@@ -25,3 +25,21 @@ python3 .agents/skills/feature-implement/scripts/vscode_review_links.py specs/fe
 ```
 
 Inspect the changed links, verify each intended file and line exists, and check the page's normal-click and right-click behavior. Keep the marked, static URLs in the plan so local review does not depend on runtime link rewriting. A different checkout can run the same converter to localize the URLs. Do not commit a separate temporary review copy.
+
+## One-click pytest reproductions
+
+For each task or walkthrough step with an existing, supported pytest reproduction, place a **Debug reproduction** button immediately after its heading, before status chips, file metadata and descriptive prose. Use a native link styled as a button, with the starter's `data-task-actions` and `data-debug-reproduction` attributes and a task-specific accessible label. Keep the breakpoint advice and copyable unmasked command in the detailed debug recipe; an inline debug link there may remain.
+
+Use the local extension's `/debug-pytest` route (version 0.0.8 or later). The URL carries an absolute test-file `path`, the selector after the file's `::` in `test`, and an optional suggested `line`; encode query values and HTML-escape ampersands. Preserve a plan-relative `data-review-pytest` value so the converter above refreshes this checkout's path without changing the debug route. Do not add `data-review-source-href` to debug links.
+
+```html
+<p data-task-actions>
+  <a data-debug-reproduction aria-label="Debug reproduction for Task N"
+     href="vscode://local.plan-review-links/debug-pytest?path=%2Fabsolute%2Frepo%2Ftests%2Ftest_example.py&amp;test=TestExample%3A%3Atest_example&amp;line=42"
+     data-review-pytest="../../../tests/test_example.py::TestExample::test_example">Debug reproduction</a>
+</p>
+```
+
+Replace the example's file, selector, suggested line and accessible label with the actual reproduction; make the relative path resolve from this plan, including across repositories. For an older plan, merge the starter's button styles without changing its reviewed layout. Do not invent a test or add an inactive button where no reproduction exists. For another runner, offer a button only when the extension has a working route that launches and unmasks that runner's reproduction. Otherwise keep the copyable command and state that one-click debugging is unavailable; never point a Jest test at the pytest route.
+
+The launcher uses the repository's Poetry environment and `--runxfail`, disables coverage and inherited parallel options for this run, honors existing breakpoints without adding any, and mirrors output to Terminal and Debug Console. With no breakpoints, reviewers can read the unmasked failure after the run. Their exception-breakpoint settings still apply. Explain near the links that E2E tests need Django at `http://localhost:8000`; Python debugging covers the pytest process, not that separate server or browser JavaScript. See the extension README in the interface repository for installation and the URL format.
