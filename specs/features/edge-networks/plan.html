@@ -287,6 +287,11 @@
       <a href="#decisions">Decisions for review</a> are where the draft departs from, or sharpens, the kickoff draft.</p>
   </header>
 
+  <aside id="plan-updates" data-note="review">
+    <p><strong>Plan updates</strong></p>
+    <p><a href="#plan-update-01">[PLAN-UPDATE-01] Named LoRaWAN configurations — PROVISIONAL; revisit value versus complexity</a></p>
+  </aside>
+
   <section id="walkthrough">
     <h2>1. Follow the caller operations through the code</h2>
     <p data-reading-note>Proposed changes, not implemented code. Paths are relative to <code>efootprint/</code> unless stated;
@@ -394,6 +399,26 @@
       <p data-files><span>Files</span>
         <a href="#file-interface"><code>core/hardware/edge/edge_network_interface.py</code></a> ·
         <a href="#file-technologies"><code>core/hardware/edge/edge_network_technologies.py</code></a></p>
+      <aside id="plan-update-01" data-note="review">
+        <p><strong>[PLAN-UPDATE-01] — PROVISIONAL: named, sourced LoRaWAN configurations</strong></p>
+        <p><strong>Direction agreed during spec review, 2026-11-04.</strong> Offer a small set of named,
+          sourced configurations that apply related radio parameters together, with individual overrides.
+          This is recorded in <a href="spec.html#questions" target="_blank" rel="noopener">spec review decision 2</a>.
+          The exact configuration set and public API remain to be designed; the technology-only factory and
+          table sketches are provisional for this operation.</p>
+        <p><strong>Revisit explicitly during plan review: value versus complexity.</strong> Compare copying
+          documented settings with selecting a configuration for a sensor whose radio link needs a higher
+          spreading factor. Named configurations reduce user effort and the risk of inconsistent bitrate,
+          frame-payload and receive-window assumptions. Their cost includes maintaining sourced parameter
+          bundles, stating regional and bandwidth assumptions, and defining selection, overrides and persistence.
+          Expected selection frequency and the full set of coupled parameters remain unverified.</p>
+        <p><strong>Planning direction.</strong> Start with a small data table in the
+          <a href="#file-technologies">proposed technology module</a> and the
+          <a href="#file-interface">proposed interface factory</a>, reusing the shared energy calculation.
+          Assess whether that is sufficient before adding a dedicated spreading-factor input or more general
+          configuration machinery. Confirm the benefit justifies the concrete implementation cost before
+          final approval, and align the spec if that review changes the agreed direction.</p>
+      </aside>
       <p>The caller writes <code>EdgeNetworkInterface.from_technology("LoRaWAN", p_sleep=...)</code>. The class method
         looks the column up, overlays the caller's keyword overrides and calls the constructor. The constructor is the
         ordinary <a href="vscode://file//Users/vinville/dev/e-footprint-full/e-footprint/efootprint/core/hardware/edge/edge_component.py:19:1" data-review-source-href="../../../efootprint/core/hardware/edge/edge_component.py#L19:1"><code>EdgeComponent</code></a>
@@ -604,7 +629,7 @@ def unitary_power_at_zero_recurrent_need(self):
         (one atom per containment cell) and
         <a href="vscode://file//Users/vinville/dev/e-footprint-full/e-footprint/efootprint/core/hardware/edge/edge_device.py:465:1" data-review-source-href="../../../efootprint/core/hardware/edge/edge_device.py#L465:1"><code>EdgeDevice.attribution_atoms()</code></a>
         (occurrence shares over <code>containment_inventory.component_need_paths</code>). This is the "cheap optional
-        view" of kickoff §3.3; no further user-facing breakdown is planned (spec open question 4).</p>
+        view" of kickoff §3.3; no further user-facing breakdown is planned (spec review decision 4).</p>
     </article>
 
     <article id="operator" data-step>
@@ -623,7 +648,7 @@ def unitary_power_at_zero_recurrent_need(self):
         ancestors. Allocation key is time per subscriber, never per gigabyte (Mytton 2024, ITU-T L.1410).</p>
       <p>Values to pin: Malmodin 2018 gives about 20 kWh per mobile subscription per year (≈ 2.3 Wh per hour); Ruiz
         2022 gives 81 to 103 kg CO2e per subscription per year including embodied, to be split. Until pinned, the
-        column may ship flagged <code>Sources.HYPOTHESIS</code> values (spec open question 3).</p>
+        column may ship flagged <code>Sources.HYPOTHESIS</code> values (spec review decision 3).</p>
     </article>
 
     <article id="registration" data-step>
@@ -679,13 +704,14 @@ def unitary_power_at_zero_recurrent_need(self):
         <thead><tr><th scope="col">Behavior / risk</th><th scope="col">Critical assertion</th><th scope="col">Test layer</th></tr></thead>
         <tbody>
           <tr><td>Technology defaults with provenance (SC1)</td><td><code>from_technology("Thread")</code> yields the column's values, each with its source; an override keeps its own source.</td><td>unit, <code>tests/hardware/edge/test_edge_network_interface.py</code></td></tr>
+          <tr><td>Named LoRaWAN configurations (provisional, <a href="#plan-update-01">PLAN-UPDATE-01</a>)</td><td>After the configuration set is reviewed, verify that selecting one applies coherent sourced parameters, individual overrides retain their provenance, and the resolved parameters survive JSON round trip.</td><td>unit + JSON round trip</td></tr>
           <tr><td>Three-term energy (SC2, SC4)</td><td>1 msg/day on LoRaWAN: sleep term &gt; 90 % of interface energy; Thread at 2.5 s poll: sync term &gt; 90 %; payload 300 B on SIGFOX (12 B frames) → 25 frames; PER 0.2 → airtime × 1.25; SIGFOX × 3.</td><td>unit</td></tr>
           <tr><td>Published figures (SC3)</td><td>Casals 2017 LoRaWAN, Gomez 2019 SIGFOX (≈ 900 mJ per 12 B), Kim 2019 Thread (≈ 30 µA at 10 s) within 30 %.</td><td>unit, one test per paper</td></tr>
           <tr><td>Dimensional soundness</td><td>Hourly power is in W; per-message energy in J; need unit mismatch raises <code>InvalidComponentNeedUnitError</code>.</td><td>unit</td></tr>
           <tr><td>Device behavior unchanged after the lift (SC8)</td><td>Existing <a href="vscode://file//Users/vinville/dev/e-footprint-full/e-footprint/tests/hardware/edge/test_edge_device.py:44:1" data-review-source-href="../../../tests/hardware/edge/test_edge_device.py#L44:1"><code>TestEdgeDevice</code></a>, <a href="vscode://file//Users/vinville/dev/e-footprint-full/e-footprint/tests/hardware/edge/test_edge_device_group.py:20:1" data-review-source-href="../../../tests/hardware/edge/test_edge_device_group.py#L20:1"><code>TestEdgeDeviceGroupInit</code></a> and integration suites pass without edits.</td><td>existing unit + integration</td></tr>
           <tr><td>Gateway counted and attributed (SC5, SC7)</td><td>Gateway in a nested group unrolls like a device; gateway in no group counts 1 per deployment; system footprint has a gateway line; Σ atoms == gateway footprint; operator-side link raises; short lifespan raises <code>InsufficientCapacityError</code>.</td><td>unit <code>test_edge_gateway.py</code>; integration <a href="vscode://file//Users/vinville/dev/e-footprint-full/e-footprint/tests/integration_tests/integration_edge_device_group_base_class.py:34:1" data-review-source-href="../../../tests/integration_tests/integration_edge_device_group_base_class.py#L34:1"><code>IntegrationEdgeDeviceGroupBaseClass</code></a></td></tr>
           <tr><td>Operator share (SC6)</td><td>NB-IoT interface use footprint includes operator energy × CI; manufacturing includes embodied share; LoRaWAN interface has zero operator terms.</td><td>unit + integration</td></tr>
-          <tr><td>No double counting (spec open question 1)</td><td>Backhaul network footprint equals the server-side job's data-driven value with and without messaging needs present.</td><td>integration</td></tr>
+          <tr><td>No double counting (spec review decision 1)</td><td>Backhaul network footprint equals the server-side job's data-driven value with and without messaging needs present.</td><td>integration</td></tr>
           <tr><td>Serialization and registry (SC9)</td><td>JSON twin of the extended edge group system round-trips with calculated attributes; new classes in <code>ALL_EFOOTPRINT_CLASSES</code>; <code>mkdocs build --strict</code> clean.</td><td>integration from-JSON twin, descriptions test, docs build</td></tr>
         </tbody>
       </table>
@@ -706,11 +732,13 @@ def unitary_power_at_zero_recurrent_need(self):
       <dd>Resolves kickoff open point 3. Reuses validation, weekly replay, containment paths and attribution unchanged.
         Alternative (a parallel need hierarchy) would duplicate four traversal paths and the atom builder.</dd>
       <dt id="decision-backhaul"><strong>D3 · No payload-to-network data path.</strong></dt>
-      <dd>Spec open question 1; recommendation stated there. If the user wants the second path, it is a new
-        <code>Network</code> consumer beside <a href="vscode://file//Users/vinville/dev/e-footprint-full/e-footprint/efootprint/core/hardware/network.py:62:1" data-review-source-href="../../../efootprint/core/hardware/network.py#L62:1"><code>use_footprint_for_data_volume_and_usage_pattern()</code></a>
-        plus a rule to avoid charging the same bytes through jobs; plan it only on request.</dd>
-      <dt id="decision-sf"><strong>D4 · No LoRaWAN spreading-factor input.</strong></dt>
-      <dd>Spec open question 2. Bitrate and maximum payload are per-interface inputs; the docs tabulate SF7 to SF12.</dd>
+      <dd>Confirmed in <a href="spec.html#questions" target="_blank" rel="noopener">spec review decision 1</a>:
+        messaging needs add no backhaul data path. User documentation directs cloud-bound bytes through
+        the server-side job's data transferred.</dd>
+      <dt id="decision-sf"><strong>D4 · Small set of named, sourced LoRaWAN configurations — provisional.</strong></dt>
+      <dd>Spec-review direction: apply related settings together and allow individual overrides. The user explicitly
+        wants the value-versus-complexity tradeoff weighed again during plan review; see
+        <a href="#plan-update-01">PLAN-UPDATE-01</a> for the alternatives, costs and unresolved design details.</dd>
       <dt id="decision-category"><strong>D5 · <code>EdgeGateway</code> is its own canonical class in the Sankey infrastructure column, listed under the existing "EdgeDevices" object category.</strong></dt>
       <dd>Own class: the Sankey and system breakdown need a distinct line. Existing category: avoids a new interface
         column for one object type; the interface spec can still give it its own Add button.</dd>

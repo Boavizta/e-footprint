@@ -29,7 +29,7 @@
 <body>
 
 <h1>Edge wireless networks — library modeling</h1>
-<p class="status">Status: Spec — under review · 2026-11-02</p>
+<p class="status">Status: Spec — under review · Decisions updated 2026-11-04</p>
 
 <section id="problem">
   <h2>1. Problem and audience</h2>
@@ -48,8 +48,8 @@
         <td>Document their own radio module and gateway measurements (sleep current, transmit power,
         fabrication footprint) with provenance, and optimize against them.</td></tr>
     <tr><td>Researchers and consultants</td>
-        <td>Start from literature-sourced defaults for six technologies, each value carrying its source,
-        and reproduce published figures.</td></tr>
+        <td>Start from defaults for six technologies, each value carrying its source or an explicit
+        e-footprint hypothesis label where evidence is missing, and reproduce published figures.</td></tr>
   </table>
   <p><strong>Why now.</strong> Edge modeling (devices, components, groups, deployment patterns) shipped in
   both repositories, so the radio link is the main missing piece for IoT fleets. The modeling approach is
@@ -61,9 +61,13 @@
     <li><strong>Power model, never kWh/GB</strong> for the device radio and the gateway. The existing
     per-gigabyte network stays the backhaul model from the gateway to the cloud.</li>
     <li><strong>Six technologies, one parameter table.</strong> LoRaWAN, SIGFOX, NB-IoT, BLE, WiFi in
-    power-saving mode, and Thread. Adding a technology later is a table row, not a code path. The only
-    per-technology specifics are SIGFOX's built-in triple transmission and the operator-side allocation
-    rows of NB-IoT and SIGFOX.</li>
+    power-saving mode, and Thread. Technology parameters share one energy model; differences such as
+    SIGFOX's built-in triple transmission and the operator-side allocations of NB-IoT and SIGFOX are
+    carried by the defaults.</li>
+    <li><strong>Named LoRaWAN configurations, subject to plan review.</strong> A small set of named,
+    sourced configurations applies related radio settings together, with individual overrides. This
+    reduces manual parameter entry and inconsistent combinations; the value-versus-complexity tradeoff
+    must be weighed again explicitly in the <a href="plan.html#plan-update-01">plan</a> before final approval.</li>
     <li><strong>No distance scaling of transmit power and no segment chaining.</strong> Technology choice
     and datasheet transmit power already encode range class. Mesh technologies get a single integer hop
     multiplier, default 1.</li>
@@ -76,7 +80,8 @@
     subscriber, never per gigabyte.</li>
     <li><strong>Backhaul volume is not charged twice.</strong> Message payloads reach the cloud through
     the server-side jobs the user already models on the existing per-gigabyte network. This spec adds no
-    second data path (see open question 1).</li>
+    second data path. User documentation explains that cloud-bound bytes must be entered in the
+    server-side job's data transferred.</li>
     <li><strong>Battery-to-lifespan coupling deferred.</strong> Device and component lifespans keep their
     existing defaults and overrides.</li>
   </ul>
@@ -93,8 +98,11 @@
     edge device by naming one of the six technologies. Every physical parameter (transmit, receive and
     sleep power, bitrate, frame overhead, maximum payload per frame, fixed energy per message, receive
     listen time per message, synchronization period and energy, hop count, packet error rate, operator
-    shares, fabrication footprint, lifespan) is filled from the technology table, carries a literature
-    source, and can be overridden individually with the user's own source.</li>
+    shares, fabrication footprint, lifespan) is filled from the technology defaults, carries a literature
+    or vendor source or an explicit e-footprint hypothesis label where evidence is missing, and can be
+    overridden individually with the user's own source. For LoRaWAN, a user can select a named, sourced
+    configuration to apply related settings together, then override individual values; the configuration
+    set and value-versus-complexity tradeoff remain subject to plan review.</li>
     <li><strong>Messaging drives the link.</strong> A user attaches a messaging need to the interface
     with a weekly messages-per-hour pattern and a payload size. The interface's hourly energy is the sum
     of a sleep floor, a per-message term and a synchronization term, and flows into the device's hourly
@@ -111,7 +119,9 @@
     by 1.25. SIGFOX counts three transmissions per message.</li>
     <li><strong>Owned gateway.</strong> A user creates a gateway (constant power, fabrication footprint,
     lifespan), links interfaces to it, and sees it as its own source in the system footprint and in the
-    Sankey, never folded into the devices. Its hourly energy and manufacturing scale by its group count and
+    Sankey, as its own node alongside edge devices in the same infrastructure column. Sankey flows allocate
+    its footprint across the usage paths that reach it; an additional gateway breakdown by linked device
+    is out of scope for v1. Its hourly energy and manufacturing scale by its group count and
     the deployment pattern's parallel deployments. A gateway in no group counts as one per deployment.
     Linking a gateway from an operator-side technology is refused with a clear error, and a gateway whose
     lifespan is shorter than a pattern's usage span raises the same error class as a device does.</li>
@@ -136,12 +146,16 @@
   <details open><summary>In scope</summary>
     <ul>
       <li>A radio interface component for edge devices, parameterized by technology with sourced,
-      overridable defaults for LoRaWAN, SIGFOX, NB-IoT, BLE, WiFi (power-saving mode) and Thread.</li>
+      overridable defaults for LoRaWAN, SIGFOX, NB-IoT, BLE, WiFi (power-saving mode) and Thread;
+      clearly labeled estimates are allowed where evidence is missing.</li>
+      <li>A small set of named, sourced LoRaWAN configurations applying related settings together,
+      with individual overrides, subject to an explicit value-versus-complexity review in the plan.</li>
       <li>A messaging need (weekly messages-per-hour pattern, payload size) that loads the interface, with
       fragmentation, retransmission and hop multipliers.</li>
       <li>Three-term hourly energy for the interface: sleep floor, per-message, synchronization.</li>
       <li>A user-owned gateway object: constant power, fabrication footprint, lifespan; linked from
-      interfaces; counted through groups; its own footprint source.</li>
+      interfaces; counted through groups; its own footprint source and Sankey node in the same
+      infrastructure column as edge devices, with allocation across the usage paths that reach it.</li>
       <li>Per-device-hour operator energy and embodied shares for NB-IoT and SIGFOX.</li>
       <li>Radio module fabrication footprint amortized like any component.</li>
       <li>Registration, serialization, documentation metadata and changelog for the new objects.</li>
@@ -158,8 +172,10 @@
       creates a calculation loop to design carefully).</li>
       <li>A sharing-fraction input for an owned gateway (fractional group count or scaled inputs cover it,
       stated in the user documentation).</li>
-      <li>A second backhaul data path from message payloads to the per-gigabyte network (see open
-      question 1).</li>
+      <li>A second backhaul data path from message payloads to the per-gigabyte network; server-side
+      jobs carry the cloud-bound data volume.</li>
+      <li>An additional gateway-footprint breakdown by linked device beyond the gateway's own line
+      and Sankey allocation.</li>
       <li>Always-on WiFi devices on mains power: modeled as plain device power draw today.</li>
       <li>Further technologies (TSCH, 802.11ah): a table row each when needed.</li>
     </ul>
@@ -169,9 +185,10 @@
 <section id="ux">
   <h2>4. Library API and object graph</h2>
   <p>What a library user writes once the feature ships. Names are the draft's working names; the plan
-  settles them.</p>
+  settles them. The sketch shows technology defaults and an individual override; the exact API for
+  selecting a named LoRaWAN configuration will be settled during plan review.</p>
 <pre><code>interface = EdgeNetworkInterface.from_technology(
-    "LoRaWAN",                                   # six defaults loaded, each overridable
+    "LoRaWAN",                                   # technology defaults loaded, each overridable
     p_sleep=SourceValue(2.1 * u.uW, Source("bench measurement 2026-05")),
 )
 device = EdgeDevice("soil sensor", components=[cpu, ram, interface], lifespan=...)
@@ -309,13 +326,14 @@ pattern = EdgeUsagePattern(..., network=backhaul, country=france)</code></pre>
     <p>backhaul footprint = data transferred by the server-side jobs × network energy per gigabyte × grid carbon intensity — <em>existing</em></p>
   </div>
   <p>Unchanged. Message payloads reach the cloud through the jobs the user already models; the messaging need
-  adds no second data path (open question 1).</p>
+  adds no second data path. User documentation makes explicit that the server-side job must carry
+  the cloud-bound bytes.</p>
 
   <h3>Symbols</h3>
   <table>
     <tr><th>Symbol</th><th>Meaning</th><th>Unit</th><th>Where it comes from</th></tr>
     <tr><td><var>P</var><sub>tx</sub>, <var>P</var><sub>rx</sub>, <var>P</var><sub>sleep</sub></td><td>Radio power while transmitting, receiving, sleeping</td><td>W</td><td>technology default, overridable</td></tr>
-    <tr><td>bitrate</td><td>Over-the-air data rate</td><td>bit/s</td><td>technology default (LoRaWAN: SF7 value), overridable</td></tr>
+    <tr><td>bitrate</td><td>Over-the-air data rate</td><td>bit/s</td><td>technology default or named LoRaWAN configuration, overridable; configuration defaults settled in the plan</td></tr>
     <tr><td>overhead per frame, max payload per frame</td><td>Protocol header bits; largest payload one frame carries</td><td>bit, B</td><td>technology default</td></tr>
     <tr><td>fixed energy per message, listen time per message</td><td>Wake-up and idle energy; acknowledgement or receive-window duration</td><td>J, s</td><td>technology default</td></tr>
     <tr><td>sync period, energy per sync</td><td>Keep-alive interval and energy of one exchange</td><td>s, J</td><td>technology default; period ∞ for LoRaWAN, SIGFOX, NB-IoT</td></tr>
@@ -338,12 +356,16 @@ pattern = EdgeUsagePattern(..., network=backhaul, country=france)</code></pre>
     additive); strict docs build from docstrings and parameter descriptions; changelog entry.</li>
     <li><strong>No backward compatibility burden</strong> beyond loading existing saved systems: the group
     composition type may widen to a shared parent without shims.</li>
-    <li><strong>Leanness.</strong> One technology table with sources; no per-technology code path except
-    SIGFOX's triple transmission and the operator rows. Existing per-component mechanisms (hourly need
+    <li><strong>Leanness.</strong> Technology defaults and named LoRaWAN configurations use the shared
+    energy model. Reassess the named configurations' user value versus implementation and maintenance
+    complexity explicitly during plan review. Existing per-component mechanisms (hourly need
     replay, affine power curve, amortized fabrication, attribution atoms) are reused, not duplicated.</li>
-    <li><strong>Provenance.</strong> Every default is a sourced value naming its paper or vendor
-    measurement. Vendor-measured Thread figures are flagged as such; the Thread defaults are best-in-class
-    hardware and the user documentation says so.</li>
+    <li><strong>Provenance.</strong> Use sourced values naming their paper or vendor measurement where
+    evidence is available. Where evidence is missing, estimates are allowed if clearly labeled as
+    e-footprint hypotheses, with their assumptions and limitations documented; they must not be presented
+    as measured or literature-established figures. This applies in particular to operator-network
+    allocations and radio-module or gateway manufacturing footprints. Vendor-measured Thread figures
+    are flagged as such; the Thread defaults are best-in-class hardware and the user documentation says so.</li>
     <li><strong>Units end to end</strong> through pint: a dimensional check is part of the tests.</li>
     <li><strong>Runtime cost.</strong> Interface energy is one more hourly series per (need, pattern), the
     same size as any component need; no new timeseries resolution.</li>
@@ -355,26 +377,26 @@ pattern = EdgeUsagePattern(..., network=backhaul, country=france)</code></pre>
 </section>
 
 <section id="questions">
-  <h2>7. Open questions</h2>
+  <h2>7. Review decisions and planning follow-ups</h2>
+  <p>The four open questions were resolved during review on 2026-11-04. The LoRaWAN configuration
+  tradeoff must be revisited during plan review; exact defaults still need verification.</p>
   <ol>
-    <li><strong>Backhaul mechanism (recommendation: no new data path).</strong> The draft says the
-    existing per-gigabyte network is "fed by message payloads volume". Today that network only sees data
-    through jobs, and an IoT model that reaches the cloud already has a server-side job carrying the
-    ingested bytes. Adding a payload-to-network path would double count whenever such a job exists and
-    would add a second data mechanism to the network object. Recommendation: the messaging need carries no
-    backhaul volume; the user documentation says backhaul is modeled by the server-side job's data
-    transferred. Confirm or ask for the second path.</li>
-    <li><strong>LoRaWAN spreading factor (recommendation: not a dedicated input in v1).</strong> The draft's
-    API sketch passes a spreading factor. A dedicated selector is a per-technology code path. Bitrate and
-    maximum payload are already overridable per interface, and the documentation can tabulate the SF7
-    to SF12 values. Confirm, or ask for the selector.</li>
-    <li><strong>Default figures to pin during implementation.</strong> Operator per-subscription energy and
-    embodied split for NB-IoT and SIGFOX (Malmodin 2018, Ruiz 2022); radio module and gateway fabrication
-    footprints from Pirson &amp; Bol functional blocks; each technology column verified against its paper's
-    tables. Placeholder values are acceptable while flagged as e-footprint hypotheses.</li>
-    <li><strong>Gateway breakdown by linked device.</strong> The Sankey needs the gateway's footprint split
-    across the usage paths that reach it. Is a user-facing breakdown of the gateway by device wanted
-    beyond that, or is the system-level gateway line enough for v1? Recommendation: the Sankey split only.</li>
+    <li><strong>Backhaul: server-side jobs only.</strong> Messaging needs add no payload-to-network path.
+    User documentation explains that backhaul is modeled through the server-side job's data transferred,
+    avoiding a second charge for the same bytes.</li>
+    <li><strong>LoRaWAN: small set of named, sourced configurations.</strong> Apply related radio settings
+    together while preserving individual overrides. The exact configurations and selection API are
+    planning decisions. The user explicitly requests another value-versus-complexity assessment before
+    final plan approval; see the visible <a href="plan.html#plan-update-01">plan review callout</a>.</li>
+    <li><strong>Defaults: clearly labeled estimates allowed where evidence is missing.</strong> Verify
+    technology defaults against their sources. Figures still to pin include operator per-subscription
+    energy and embodied splits for NB-IoT and SIGFOX (Malmodin 2018, Ruiz 2022), and radio-module and gateway
+    fabrication footprints from Pirson &amp; Bol functional blocks. If evidence remains insufficient,
+    identify the value as an e-footprint hypothesis and document its assumptions and limitations.</li>
+    <li><strong>Gateway: its own line and Sankey allocation only.</strong> Gateways appear as their own
+    nodes alongside edge devices in the same infrastructure column. Their footprints are allocated across
+    the usage paths that reach them. No additional gateway-footprint breakdown by linked device is
+    required for v1.</li>
   </ol>
 </section>
 
