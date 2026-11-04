@@ -4,10 +4,13 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](http://keepachangelog.com/)
 and this project adheres to [Semantic Versioning](http://semver.org/)
 
-## [Unreleased]
+## [V27.0.1] - 2026-11-04
 
 ### Fixed
-- Keep contextual containers limited to attached relationships, restore original wrappers after rejected updates, and expose derived internal-parent metadata without changing saved JSON.
+- Keep contextual containers limited to attached relationships, restore original wrappers after rejected updates.
+
+### Changed
+- Expose derived internal-parent metadata for objects that are created by their parents, like ExternalAPIServer.
 
 ## [V27.0.0] - 2026-10-21
 
