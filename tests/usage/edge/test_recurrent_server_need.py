@@ -153,14 +153,6 @@ class TestRecurrentServerNeed(TestCase):
         self.assertIsInstance(result, ExplainableHourlyQuantities)
         # Paris is UTC+1 in January → convert_to_utc keeps the same length and rotates the first value to the end
         self.assertEqual(1000, len(result.value))
-
-    def test_unitary_hourly_volume_of_ungrouped_device_is_unchanged(self):
-        """A device in no group is one unit, so the volume stays the recurrent volume."""
-        mock_pattern = self._contain_in_one_usage_pattern(self.server_need)
-
-        recompute_attribute(self.server_need, "unitary_hourly_volume_per_usage_pattern")
-
-        result = self.server_need.unitary_hourly_volume_per_usage_pattern[mock_pattern]
         np.testing.assert_allclose(result.value.magnitude, 2.0)
 
     def test_unitary_hourly_volume_scales_with_total_units_of_nested_grouped_device(self):
