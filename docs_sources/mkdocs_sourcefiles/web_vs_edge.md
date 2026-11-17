@@ -56,6 +56,7 @@ The bridge between paradigms is {class:RecurrentServerNeed}. It attaches
 to an edge device and holds a per-unit weekly pattern (168 hours) of
 recurrent server interaction, plus the list of {class:Job} objects the
 device triggers on the web side. At calculation time, the per-unit
-volume is multiplied by the device's total unit count (its {class:EdgeDeviceGroup}
-hierarchy unrolled, one when ungrouped) to produce the hourly demand those jobs impose
-on the web infrastructure.
+volume is multiplied by the device's total units per deployment (its {class:EdgeDeviceGroup}
+hierarchy unrolled, one when ungrouped) and by the deployments in service
+({calc:EdgeUsagePattern.nb_deployments_in_parallel}) to produce the hourly demand those jobs
+impose on the web infrastructure.
