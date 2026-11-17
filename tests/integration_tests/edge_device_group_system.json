@@ -1,6 +1,11 @@
 {
     "efootprint_version": "27.0.1",
     "Sources": {
+        "Base-ADEME_V19": {
+            "id": "Base-ADEME_V19",
+            "name": "Base ADEME_V19",
+            "link": "https://data.ademe.fr/datasets/base-carbone(r)"
+        },
         "Our-world-in-data-28202429": {
             "id": "Our-world-in-data-28202429",
             "name": "Our world in data (2024)",
@@ -73,7 +78,9 @@
             "recurrent_edge_device_needs": [
                 "grouped-edge-device-need"
             ],
-            "recurrent_server_needs": []
+            "recurrent_server_needs": [
+                "grouped-server-need"
+            ]
         }
     },
     "RecurrentEdgeDeviceNeed": {
@@ -229,6 +236,26 @@
             }
         }
     },
+    "RecurrentServerNeed": {
+        "grouped-server-need": {
+            "name": "grouped server need",
+            "id": "grouped-server-need",
+            "edge_device": "grouped-edge-device",
+            "recurrent_volume_per_edge_device": {
+                "recurring_values": "[1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0]",
+                "unit": "occurrence",
+                "label": "Default recurrent volume per edge device"
+            },
+            "jobs": {
+                "grouped-server-job": {
+                    "value": 1.0,
+                    "unit": "dimensionless",
+                    "label": "Times per occurrence",
+                    "source": "hypothesis"
+                }
+            }
+        }
+    },
     "Network": {
         "Default-wifi-network": {
             "name": "Default wifi network",
@@ -286,6 +313,189 @@
                 }
             },
             "edge_device_counts": {}
+        }
+    },
+    "Job": {
+        "grouped-server-job": {
+            "name": "grouped server job",
+            "id": "grouped-server-job",
+            "data_transferred": {
+                "value": 150.0,
+                "unit": "kilobyte",
+                "label": "Sum of all data uploads and downloads by request",
+                "source": "hypothesis"
+            },
+            "data_stored": {
+                "value": 100.0,
+                "unit": "kilobyte_stored",
+                "label": "Data stored by request",
+                "source": "hypothesis"
+            },
+            "request_duration": {
+                "value": 1.0,
+                "unit": "second",
+                "label": "Request duration",
+                "source": "hypothesis"
+            },
+            "ram_needed": {
+                "value": 50.0,
+                "unit": "megabyte_ram",
+                "label": "RAM needed during job processing",
+                "source": "hypothesis"
+            },
+            "compute_needed": {
+                "value": 0.1,
+                "unit": "cpu_core",
+                "label": "cpu cores needed on server grouped server during job processing",
+                "source": "hypothesis"
+            },
+            "server": "grouped-server"
+        }
+    },
+    "Server": {
+        "grouped-server": {
+            "name": "grouped server",
+            "id": "grouped-server",
+            "carbon_footprint_manufacturing": {
+                "value": 600.0,
+                "unit": "kilogram",
+                "label": "Carbon footprint manufacturing",
+                "source": "Base-ADEME_V19"
+            },
+            "power": {
+                "value": 300.0,
+                "unit": "watt",
+                "label": "Power",
+                "source": "hypothesis"
+            },
+            "lifespan": {
+                "value": 6.0,
+                "unit": "year",
+                "label": "Lifespan",
+                "source": "hypothesis"
+            },
+            "fraction_of_usage_time": {
+                "value": 1.0,
+                "unit": "dimensionless",
+                "label": "Fraction of usage time",
+                "source": "hypothesis"
+            },
+            "server_type": {
+                "value": "autoscaling",
+                "label": "Server type",
+                "source": "hypothesis"
+            },
+            "idle_power": {
+                "value": 50.0,
+                "unit": "watt",
+                "label": "Idle power",
+                "source": "hypothesis"
+            },
+            "ram": {
+                "value": 128.0,
+                "unit": "gigabyte_ram",
+                "label": "RAM",
+                "source": "hypothesis"
+            },
+            "compute": {
+                "value": 24.0,
+                "unit": "cpu_core",
+                "label": "Nb cpu cores",
+                "source": "hypothesis"
+            },
+            "power_usage_effectiveness": {
+                "value": 1.2,
+                "unit": "dimensionless",
+                "label": "PUE",
+                "source": "hypothesis"
+            },
+            "average_carbon_intensity": {
+                "value": 400.0,
+                "unit": "gram / kilowatt_hour",
+                "label": "Average carbon intensity of electricity",
+                "source": "hypothesis"
+            },
+            "utilization_rate": {
+                "value": 0.9,
+                "unit": "dimensionless",
+                "label": "Utilization rate",
+                "source": "hypothesis"
+            },
+            "base_ram_consumption": {
+                "value": 0.0,
+                "unit": "gigabyte_ram",
+                "label": "Base RAM consumption",
+                "source": "hypothesis"
+            },
+            "base_compute_consumption": {
+                "value": 0.0,
+                "unit": "cpu_core",
+                "label": "Base cpu core consumption",
+                "source": "hypothesis"
+            },
+            "fixed_nb_of_instances": {
+                "value": null,
+                "label": "User defined number of instances"
+            },
+            "storage": "grouped-server-storage"
+        }
+    },
+    "Storage": {
+        "grouped-server-storage": {
+            "name": "grouped server storage",
+            "id": "grouped-server-storage",
+            "power": {
+                "value": 0.0,
+                "unit": "watt",
+                "label": "Power",
+                "source": "hypothesis"
+            },
+            "lifespan": {
+                "value": 6.0,
+                "unit": "year",
+                "label": "Lifespan",
+                "source": "hypothesis"
+            },
+            "fraction_of_usage_time": {
+                "value": 1.0,
+                "unit": "dimensionless",
+                "label": "Fraction of usage time",
+                "source": "hypothesis"
+            },
+            "carbon_footprint_manufacturing_per_storage_capacity": {
+                "value": 160.0,
+                "unit": "kilogram / terabyte_stored",
+                "label": "Manufacturing carbon footprint per storage capacity",
+                "source": "hypothesis"
+            },
+            "storage_capacity": {
+                "value": 1.0,
+                "unit": "terabyte_stored",
+                "label": "Storage capacity",
+                "source": "hypothesis"
+            },
+            "data_replication_factor": {
+                "value": 3.0,
+                "unit": "dimensionless",
+                "label": "Data replication factor",
+                "source": "hypothesis"
+            },
+            "data_storage_duration": {
+                "value": 43830.0,
+                "unit": "hour",
+                "label": "Data storage duration",
+                "source": "hypothesis"
+            },
+            "base_storage_need": {
+                "value": 0.0,
+                "unit": "terabyte_stored",
+                "label": "Initial storage need",
+                "source": "hypothesis"
+            },
+            "fixed_nb_of_instances": {
+                "value": null,
+                "label": "User defined number of instances"
+            }
         }
     }
 }

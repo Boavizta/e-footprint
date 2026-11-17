@@ -18,12 +18,16 @@ from efootprint.core.hardware.edge.edge_device import EdgeDevice
 from efootprint.core.hardware.edge.edge_device_group import EdgeDeviceGroup
 from efootprint.core.hardware.edge.edge_ram_component import EdgeRAMComponent
 from efootprint.core.hardware.network import Network
+from efootprint.core.hardware.server import Server
+from efootprint.core.hardware.storage import Storage
 from efootprint.core.system import System
 from efootprint.core.usage.edge.edge_function import EdgeFunction
 from efootprint.core.usage.edge.edge_usage_journey import EdgeUsageJourney
 from efootprint.core.usage.edge.edge_usage_pattern import EdgeUsagePattern
 from efootprint.core.usage.edge.recurrent_edge_component_need import RecurrentEdgeComponentNeed
 from efootprint.core.usage.edge.recurrent_edge_device_need import RecurrentEdgeDeviceNeed
+from efootprint.core.usage.edge.recurrent_server_need import RecurrentServerNeed
+from efootprint.core.usage.job import Job
 from tests.integration_tests.integration_test_base_class import IntegrationTestBaseClass
 
 NB_FLOORS = 3
@@ -38,6 +42,7 @@ class IntegrationEdgeDeviceGroupBaseClass(IntegrationTestBaseClass):
         building_group (root)  ── contains floor_group × NB_FLOORS
         floor_group            ── contains edge_device × NB_DEVICES_PER_FLOOR
         Total devices per ensemble = NB_FLOORS × NB_DEVICES_PER_FLOOR = 12
+    Each device calls a server job through a RecurrentServerNeed, so the job's occurrences follow the hierarchy.
     """
 
     REF_JSON_FILENAME = "edge_device_group_system"
@@ -45,6 +50,8 @@ class IntegrationEdgeDeviceGroupBaseClass(IntegrationTestBaseClass):
         "building_group": "building group",
         "floor_group": "floor group",
         "edge_device": "grouped edge device",
+        "edge_usage_pattern": "grouped edge usage pattern",
+        "server_job": "grouped server job",
     }
 
     @staticmethod
@@ -72,10 +79,15 @@ class IntegrationEdgeDeviceGroupBaseClass(IntegrationTestBaseClass):
             edge_device=edge_device,
             recurrent_edge_component_needs=[ram_need, cpu_need],
         )
+        server_job = Job.from_defaults(
+            "grouped server job",
+            server=Server.from_defaults("grouped server", storage=Storage.from_defaults("grouped server storage")))
+        server_need = RecurrentServerNeed.from_defaults(
+            "grouped server need", edge_device=edge_device, jobs=[server_job])
         edge_function = EdgeFunction(
             "grouped edge function",
             recurrent_edge_device_needs=[edge_device_need],
-            recurrent_server_needs=[],
+            recurrent_server_needs=[server_need],
         )
         edge_usage_journey = EdgeUsageJourney.from_defaults(
             "grouped edge usage journey", edge_functions=[edge_function])
@@ -123,8 +135,12 @@ class IntegrationEdgeDeviceGroupBaseClass(IntegrationTestBaseClass):
         self.assertIn(self.building_group, self.floor_group.modeling_obj_containers)
         self.assertIn(self.floor_group, self.edge_device.modeling_obj_containers)
 
+    def _server_job_occurrences(self):
+        return self.server_job.hourly_occurrences_per_usage_pattern[self.edge_usage_pattern].value.magnitude
+
     def run_test_contextual_parentage_survives_structural_dict_update(self):
         initial_sub_group_counts = self.building_group.sub_group_counts
+        initial_server_job_occurrences = self._server_job_occurrences()
         updated_sub_group_counts = WeightedExplainableObjectDict(
             {self.floor_group: SourceValue((NB_FLOORS + 1) * u.dimensionless)}
         )
@@ -135,6 +151,8 @@ class IntegrationEdgeDeviceGroupBaseClass(IntegrationTestBaseClass):
             self.assertIn(self.building_group, self.floor_group.modeling_obj_containers)
             self.assertAlmostEqual(NB_FLOORS + 1, self.floor_group.effective_nb_of_units_within_root.value.magnitude)
             self.assertAlmostEqual((NB_FLOORS + 1) * NB_DEVICES_PER_FLOOR, self.edge_device.total_nb_of_units.value.magnitude)
+            np.testing.assert_allclose(
+                self._server_job_occurrences(), initial_server_job_occurrences * (NB_FLOORS + 1) / NB_FLOORS, rtol=1e-6)
             self.assertNotEqual(self.initial_footprint, self.system.total_footprint)
 
         self.assertAlmostEqual(NB_FLOORS, self.floor_group.effective_nb_of_units_within_root.value.magnitude)
@@ -142,6 +160,7 @@ class IntegrationEdgeDeviceGroupBaseClass(IntegrationTestBaseClass):
 
     def run_test_existing_edge_device_count_update_recomputes_hierarchy(self):
         initial_count = self.floor_group.edge_device_counts[self.edge_device]
+        initial_server_job_occurrences = self._server_job_occurrences()
 
         with self.cleanup_stack(verify_total_footprint_changed_before_cleanup=True) as cleanup:
             cleanup.callback(self.floor_group.edge_device_counts.__setitem__, self.edge_device, initial_count)
@@ -156,6 +175,9 @@ class IntegrationEdgeDeviceGroupBaseClass(IntegrationTestBaseClass):
                 NB_FLOORS * (NB_DEVICES_PER_FLOOR + 1),
                 self.edge_device.total_nb_of_units.value.magnitude,
             )
+            np.testing.assert_allclose(
+                self._server_job_occurrences(),
+                initial_server_job_occurrences * (NB_DEVICES_PER_FLOOR + 1) / NB_DEVICES_PER_FLOOR, rtol=1e-6)
 
     def run_test_whole_structural_dict_replacement_of_new_group_serializes_with_calculated_attributes(self):
         # When a ModelingUpdate replaces both sub_group_counts and edge_device_counts simultaneously, the child group
