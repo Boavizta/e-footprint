@@ -8,10 +8,13 @@ import pytz
 from efootprint.abstract_modeling_classes.explainable_recurrent_quantities import ExplainableRecurrentQuantities
 from efootprint.abstract_modeling_classes.explainable_hourly_quantities import ExplainableHourlyQuantities
 from efootprint.abstract_modeling_classes.empty_explainable_object import EmptyExplainableObject
+from efootprint.abstract_modeling_classes.explainable_quantity import ExplainableQuantity
+from efootprint.abstract_modeling_classes.source_objects import SourceValue
 from efootprint.abstract_modeling_classes.source_objects import SourceTimezone
 from efootprint.constants.units import u
 from efootprint.core.usage.edge.recurrent_server_need import RecurrentServerNeed
 from efootprint.core.hardware.edge.edge_device import EdgeDevice
+from efootprint.core.hardware.edge.edge_device_group import EdgeDeviceGroup
 from efootprint.core.usage.job import JobBase
 from efootprint.core.usage.edge.edge_function import EdgeFunction
 from efootprint.core.usage.edge.edge_usage_journey import EdgeUsageJourney
@@ -25,6 +28,7 @@ class TestRecurrentServerNeed(TestCase):
         self.mock_edge_device = MagicMock(spec=EdgeDevice)
         self.mock_edge_device.name = "Mock Edge Device"
         self.mock_edge_device.id = "mock_device"
+        self.mock_edge_device.total_nb_of_units = ExplainableQuantity(1 * u.dimensionless, "one unit")
 
         self.mock_job = create_mod_obj_mock(JobBase, name="Mock Job", id="mock_job")
 
@@ -121,36 +125,66 @@ class TestRecurrentServerNeed(TestCase):
                 "negative need", self.mock_edge_device, negative_volume, [self.mock_job])
 
 
-    def test_update_unitary_hourly_volume_per_usage_pattern(self):
-        """Test updating unitary hourly volume for all usage patterns."""
-        mock_pattern_1 = create_mod_obj_mock(EdgeUsagePattern, name="Pattern 1", id="pattern_1")
-        start_date_1 = datetime(2023, 1, 1, 0, 0, 0, tzinfo=pytz.utc)
-        hourly_data_1 = np.array([5.0] * 1000) * u.concurrent
-        mock_nb_parallel = ExplainableHourlyQuantities(hourly_data_1, start_date_1, "test parallel journeys 1")
-        mock_country_1 = MagicMock()
-        mock_country_1.timezone = SourceTimezone(pytz.timezone("Europe/Paris"))
-        mock_pattern_1.country = mock_country_1
+    def _contain_in_one_usage_pattern(self, server_need):
+        """Put server_need in a single edge usage pattern with 5 parallel deployments and one occurrence, and return that pattern."""
+        mock_pattern = create_mod_obj_mock(EdgeUsagePattern, name="Pattern 1", id="pattern_1")
+        start_date = datetime(2023, 1, 1, 0, 0, 0, tzinfo=pytz.utc)
+        mock_pattern.country = MagicMock(timezone=SourceTimezone(pytz.timezone("Europe/Paris")))
+        mock_pattern.nb_deployments_in_parallel = ExplainableHourlyQuantities(
+            np.array([5.0] * 1000) * u.concurrent, start_date, "test parallel journeys 1")
+        mock_pattern.containment_inventory = MagicMock(
+            server_need_paths=[MagicMock(recurrent_server_need=server_need, nb_occurrences=1)])
 
         mock_journey = create_mod_obj_mock(EdgeUsageJourney, name="Mock Journey")
-        mock_journey.edge_usage_patterns = [mock_pattern_1]
-        mock_pattern_1.nb_deployments_in_parallel = mock_nb_parallel
-
+        mock_journey.edge_usage_patterns = [mock_pattern]
         mock_function = create_mod_obj_mock(EdgeFunction, name="Mock Function")
         mock_function.edge_usage_journeys = [mock_journey]
-        mock_function.recurrent_server_needs = [self.server_need]
         mock_journey.edge_functions = [mock_function]
-        path = MagicMock(recurrent_server_need=self.server_need, nb_occurrences=1)
-        mock_pattern_1.containment_inventory = MagicMock(server_need_paths=[path])
+        set_modeling_obj_containers(server_need, [mock_function])
+        return mock_pattern
 
-        set_modeling_obj_containers(self.server_need, [mock_function])
+    def test_update_unitary_hourly_volume_per_usage_pattern(self):
+        """Test updating unitary hourly volume for all usage patterns."""
+        mock_pattern = self._contain_in_one_usage_pattern(self.server_need)
 
         recompute_attribute(self.server_need, "unitary_hourly_volume_per_usage_pattern")
 
-        self.assertIn(mock_pattern_1, self.server_need.unitary_hourly_volume_per_usage_pattern)
-        result = self.server_need.unitary_hourly_volume_per_usage_pattern[mock_pattern_1]
+        result = self.server_need.unitary_hourly_volume_per_usage_pattern[mock_pattern]
         self.assertIsInstance(result, ExplainableHourlyQuantities)
         # Paris is UTC+1 in January → convert_to_utc keeps the same length and rotates the first value to the end
-        self.assertEqual(len(hourly_data_1), len(result.value))
+        self.assertEqual(1000, len(result.value))
+
+    def test_unitary_hourly_volume_of_ungrouped_device_is_unchanged(self):
+        """A device in no group is one unit, so the volume stays the recurrent volume."""
+        mock_pattern = self._contain_in_one_usage_pattern(self.server_need)
+
+        recompute_attribute(self.server_need, "unitary_hourly_volume_per_usage_pattern")
+
+        result = self.server_need.unitary_hourly_volume_per_usage_pattern[mock_pattern]
+        np.testing.assert_allclose(result.value.magnitude, 2.0)
+
+    def test_unitary_hourly_volume_scales_with_total_units_of_nested_grouped_device(self):
+        """A device counted 4 times in a sub-group of 3 is 12 units, so the server receives 12 times the volume."""
+        device = EdgeDevice(
+            name="grouped edge device", structure_carbon_footprint_manufacturing=SourceValue(0 * u.kg),
+            components=[], lifespan=SourceValue(5 * u.year))
+        root_group = EdgeDeviceGroup("root group")
+        sub_group = EdgeDeviceGroup("sub group")
+        root_group.sub_group_counts[sub_group] = SourceValue(3 * u.dimensionless)
+        sub_group.edge_device_counts[device] = SourceValue(4 * u.dimensionless)
+        recompute_attribute(root_group, "effective_nb_of_units_within_root")
+        recompute_attribute(sub_group, "effective_nb_of_units_within_root")
+        recompute_attribute(device, "total_nb_of_units")
+        server_need = RecurrentServerNeed(
+            "grouped server need", device,
+            ExplainableRecurrentQuantities(np.array([2.0] * 168, dtype=np.float32) * u.occurrence, "grouped volume"),
+            [self.mock_job])
+        mock_pattern = self._contain_in_one_usage_pattern(server_need)
+
+        recompute_attribute(server_need, "unitary_hourly_volume_per_usage_pattern")
+
+        result = server_need.unitary_hourly_volume_per_usage_pattern[mock_pattern]
+        np.testing.assert_allclose(result.value.magnitude, 2.0 * 12)
 
 
 if __name__ == "__main__":
