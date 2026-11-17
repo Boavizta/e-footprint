@@ -351,17 +351,14 @@ class TestJob(TestCase):
         edge_usage_pattern = create_mod_obj_mock(EdgeUsagePattern, name="Edge Pattern",
                                                  class_as_simple_str="EdgeUsagePattern")
 
-        # Setup active deployments
-        nb_parallel = create_source_hourly_values_from_list([2, 3, 4, 5])
         mock_edge_usage_journey = create_mod_obj_mock(EdgeUsageJourney, name="Mock Edge Journey")
-        edge_usage_pattern.nb_deployments_in_parallel = nb_parallel
         edge_usage_pattern.edge_usage_journeys = [mock_edge_usage_journey]
 
-        # Setup recurrent server need with unitary hourly volume
-        unitary_volume = create_source_hourly_values_from_list([1, 1, 1, 1])
+        # Setup recurrent server need with its hourly volume, deployed units already folded in
+        hourly_volume = create_source_hourly_values_from_list([2, 3, 4, 5], pint_unit=u.occurrence)
         mock_server_need = create_mod_obj_mock(RecurrentServerNeed, name="Mock recurrent server need")
         mock_server_need.jobs = {self.job: SourceValue(2 * u.dimensionless)}  # Job invoked twice so volume is doubled
-        mock_server_need.unitary_hourly_volume_per_usage_pattern = {edge_usage_pattern: unitary_volume}
+        mock_server_need.hourly_volume_per_usage_pattern = {edge_usage_pattern: hourly_volume}
         # Only the pattern's own edge journey's server needs contribute to its occurrences.
         mock_edge_usage_journey.recurrent_server_needs = [mock_server_need]
         edge_usage_pattern.recurrent_server_needs = [mock_server_need]
@@ -372,7 +369,7 @@ class TestJob(TestCase):
         recompute_attribute(self.job, "hourly_occurrences_per_usage_pattern", edge_usage_pattern)
 
         job_occurrences = self.job.hourly_occurrences_per_usage_pattern[edge_usage_pattern]
-        # unitary_volume * nb_parallel * nb of times job appears = [1*2*2, 1*3*2, 1*4*2, 1*5*2] = [4, 6, 8, 10]
+        # hourly_volume * nb of times job appears = [2*2, 3*2, 4*2, 5*2] = [4, 6, 8, 10]
         self.assertEqual([4.0, 6.0, 8.0, 10.0], job_occurrences.value_as_float_list)
 
 

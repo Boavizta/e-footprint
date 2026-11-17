@@ -79,17 +79,17 @@ class RecurrentServerNeed(ModelingObject):
             "Validated recurrent need")
         
     @computed_dict(keys="edge_usage_patterns")
-    def unitary_hourly_volume_per_usage_pattern(self, usage_pattern: "EdgeUsagePattern"):
-        """Hourly job-trigger volume of the edge device's units, derived by replaying the typical week over the deployment calendar, scaling by the need's containment-path count across selected edge usage journeys and by the device's total number of units."""
-        unitary_hourly_volume = self.recurrent_volume_per_edge_device.generate_hourly_quantities_over_timespan(
+    def hourly_volume_per_usage_pattern(self, usage_pattern: "EdgeUsagePattern"):
+        """Hourly job-trigger volume every deployed unit of the edge device sends, derived by replaying the typical week over the deployment calendar, scaling by the need's containment-path count across selected edge usage journeys, by the device's total number of units per deployment and by the deployments in service."""
+        hourly_volume = self.recurrent_volume_per_edge_device.generate_hourly_quantities_over_timespan(
             usage_pattern.nb_deployments_in_parallel,
             usage_pattern.country.timezone)
         nb_of_occurrences_of_self_within_usage_pattern = sum(
             path.nb_occurrences for path in usage_pattern.containment_inventory.server_need_paths
             if path.recurrent_server_need == self)
 
-        unitary_hourly_volume *= ExplainableQuantity(nb_of_occurrences_of_self_within_usage_pattern * u.dimensionless,
-                                                   label=f"Occurrences within {usage_pattern.name}")
-        unitary_hourly_volume *= self.edge_device.total_nb_of_units
-        return unitary_hourly_volume.set_label(
-            f"Unitary hourly need for {usage_pattern.name}")
+        hourly_volume *= ExplainableQuantity(nb_of_occurrences_of_self_within_usage_pattern * u.dimensionless,
+                                             label=f"Occurrences within {usage_pattern.name}")
+        hourly_volume *= self.edge_device.total_nb_of_units
+        hourly_volume *= usage_pattern.nb_deployments_in_parallel
+        return hourly_volume.to(u.occurrence).set_label(f"Hourly volume for {usage_pattern.name}")

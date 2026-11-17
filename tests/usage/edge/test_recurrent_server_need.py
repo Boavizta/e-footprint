@@ -143,20 +143,20 @@ class TestRecurrentServerNeed(TestCase):
         set_modeling_obj_containers(server_need, [mock_function])
         return mock_pattern
 
-    def test_update_unitary_hourly_volume_per_usage_pattern(self):
-        """Test updating unitary hourly volume for all usage patterns."""
+    def test_update_hourly_volume_per_usage_pattern(self):
+        """An ungrouped device in one pattern with 5 deployments in service sends 5 times the recurrent volume."""
         mock_pattern = self._contain_in_one_usage_pattern(self.server_need)
 
-        recompute_attribute(self.server_need, "unitary_hourly_volume_per_usage_pattern")
+        recompute_attribute(self.server_need, "hourly_volume_per_usage_pattern")
 
-        result = self.server_need.unitary_hourly_volume_per_usage_pattern[mock_pattern]
+        result = self.server_need.hourly_volume_per_usage_pattern[mock_pattern]
         self.assertIsInstance(result, ExplainableHourlyQuantities)
         # Paris is UTC+1 in January → convert_to_utc keeps the same length and rotates the first value to the end
         self.assertEqual(1000, len(result.value))
-        np.testing.assert_allclose(result.value.magnitude, 2.0)
+        np.testing.assert_allclose(result.value.magnitude, 2.0 * 5)
 
-    def test_unitary_hourly_volume_scales_with_total_units_of_nested_grouped_device(self):
-        """A device counted 4 times in a sub-group of 3 is 12 units, so the server receives 12 times the volume."""
+    def test_hourly_volume_scales_with_total_units_of_nested_grouped_device(self):
+        """A device counted 4 times in a sub-group of 3 is 12 units, so the server receives 12 times the volume of each of the 5 deployments."""
         device = EdgeDevice(
             name="grouped edge device", structure_carbon_footprint_manufacturing=SourceValue(0 * u.kg),
             components=[], lifespan=SourceValue(5 * u.year))
@@ -173,10 +173,10 @@ class TestRecurrentServerNeed(TestCase):
             [self.mock_job])
         mock_pattern = self._contain_in_one_usage_pattern(server_need)
 
-        recompute_attribute(server_need, "unitary_hourly_volume_per_usage_pattern")
+        recompute_attribute(server_need, "hourly_volume_per_usage_pattern")
 
-        result = server_need.unitary_hourly_volume_per_usage_pattern[mock_pattern]
-        np.testing.assert_allclose(result.value.magnitude, 2.0 * 12)
+        result = server_need.hourly_volume_per_usage_pattern[mock_pattern]
+        np.testing.assert_allclose(result.value.magnitude, 2.0 * 12 * 5)
 
 
 if __name__ == "__main__":

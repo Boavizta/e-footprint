@@ -9,6 +9,9 @@ and this project adheres to [Semantic Versioning](http://semver.org/)
 ### Fixed
 - Server calls of a RecurrentServerNeed scale with the total number of units of its edge device, grouped or not.
 
+### Changed
+- `RecurrentServerNeed.unitary_hourly_volume_per_usage_pattern` is renamed `hourly_volume_per_usage_pattern` and holds the volume of every deployed unit (device units per deployment × deployments in service); jobs multiply it only by their weight.
+
 ## [V27.0.1] - 2026-11-04
 
 ### Fixed

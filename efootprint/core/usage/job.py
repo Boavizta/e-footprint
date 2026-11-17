@@ -192,13 +192,12 @@ class JobBase(ModelingObject):
         else:  # usage_pattern is an EdgeUsagePattern
             job_occurrences = EmptyExplainableObject()
             # Only server needs reachable through this pattern's selected edge usage journeys contribute. Repeated
-            # containment paths are already folded into each need's per-pattern unitary volume.
+            # containment paths, device units and deployments are already folded into each need's hourly volume.
             for recurrent_server_need in usage_pattern.recurrent_server_needs:
                 if self not in recurrent_server_need.jobs:
                     continue
                 job_occurrences += (
-                        recurrent_server_need.unitary_hourly_volume_per_usage_pattern[usage_pattern]
-                        * usage_pattern.nb_deployments_in_parallel
+                        recurrent_server_need.hourly_volume_per_usage_pattern[usage_pattern]
                         * recurrent_server_need.jobs[self])
 
         return job_occurrences.to(u.occurrence).set_label(
@@ -299,8 +298,7 @@ class JobBase(ModelingObject):
         else:
             recurrent_server_need = coordinate.recurrent_server_need
             raw_occurrences = (
-                recurrent_server_need.unitary_hourly_volume_per_usage_pattern[usage_pattern]
-                * usage_pattern.nb_deployments_in_parallel
+                recurrent_server_need.hourly_volume_per_usage_pattern[usage_pattern]
                 * recurrent_server_need.jobs[self])
 
         trigger = coordinate.step if coordinate.step is not None else coordinate.recurrent_server_need

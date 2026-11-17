@@ -60,7 +60,7 @@ class TestMultiJourneyScaling(TestCase):
             expected_component_pairs, cached_sub_slot_count(system, "unitary_hourly_need_per_usage_pattern")
         )
         self.assertEqual(
-            expected_server_pairs, cached_sub_slot_count(system, "unitary_hourly_volume_per_usage_pattern")
+            expected_server_pairs, cached_sub_slot_count(system, "hourly_volume_per_usage_pattern")
         )
 
         component_path_count = sum(
@@ -119,7 +119,7 @@ class TestMultiJourneyScaling(TestCase):
             expected_component_pairs, cached_sub_slot_count(system, "unitary_hourly_need_per_usage_pattern")
         )
         self.assertEqual(
-            expected_server_pairs, cached_sub_slot_count(system, "unitary_hourly_volume_per_usage_pattern")
+            expected_server_pairs, cached_sub_slot_count(system, "hourly_volume_per_usage_pattern")
         )
 
     def test_scalar_rows_grow_with_paths_without_retaining_source_helpers(self):
