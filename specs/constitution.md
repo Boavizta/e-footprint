@@ -33,7 +33,7 @@ Other coding-style and testing rules live in `conventions.md` and `testing.md`.
 - Python < 3.12.
 - Internationalization of error messages or descriptions.
 - Alternative serialization formats beyond JSON.
-- Replacing core dependencies (Pint, NumPy, Pandas) without an explicit principle change.
+- Replacing core dependencies (Pint, NumPy) without an explicit principle change.
 - Backward-compatibility shims for any consumer other than e-footprint-interface.
 
 ## 5. Amending the constitution
