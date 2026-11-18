@@ -4,7 +4,7 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](http://keepachangelog.com/)
 and this project adheres to [Semantic Versioning](http://semver.org/)
 
-## [Unreleased]
+## [V27.0.2]
 
 ### Fixed
 - Server calls of a RecurrentServerNeed scale with the total number of units of its edge device, grouped or not.
