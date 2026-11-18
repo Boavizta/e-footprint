@@ -32,6 +32,7 @@ from efootprint.core.usage.edge.recurrent_edge_device_need import RecurrentEdgeD
 from tests import root_test_dir
 from tests.utils import create_mod_obj_mock
 from tests.utils import recompute_attribute
+from tests.optional_dependencies import needs_viz
 
 
 class TestSystem(TestCase):
@@ -480,6 +481,7 @@ class TestSystem(TestCase):
                     len(list(system2.use_footprints[category].values())), 2,
                     f"{category} doesn’t have right len")
 
+    @needs_viz
     def test_footprints_by_category_and_object(self):
         fab_footprints = {
             "Servers": {self.server: ExplainableQuantity(6 * u.kg, "server")},
@@ -501,6 +503,50 @@ class TestSystem(TestCase):
             en_mock.return_value = use_footprints
             self.system.plot_footprints_by_category_and_object(
                 filename=os.path.join(root_test_dir, "footprints by category and object unit test.html"))
+
+    def _plot_footprints_figure(self, fab_footprints, use_footprints, total_footprint_hourly_kg):
+        total_footprint = create_source_hourly_values_from_list(total_footprint_hourly_kg, pint_unit=u.kg)
+        with patch.object(System, "manufacturing_footprint_sum_over_period", new_callable=PropertyMock) as fab_mock,\
+            patch.object(System, "use_footprint_sum_over_period", new_callable=PropertyMock) as en_mock,\
+            patch.object(System, "total_footprint", new_callable=PropertyMock) as total_mock:
+            fab_mock.return_value = fab_footprints
+            en_mock.return_value = use_footprints
+            total_mock.return_value = total_footprint
+            return self.system.plot_footprints_by_category_and_object(notebook=False)
+
+    @needs_viz
+    def test_footprints_by_category_and_object_expresses_every_bar_in_the_chart_unit(self):
+        """Footprints whose own display units differ (kg, t) are all drawn in the unit of the total."""
+        fig = self._plot_footprints_figure(
+            fab_footprints={
+                "Servers": {self.server: ExplainableQuantity(500 * u.kg, "server")},
+                "Devices": {self.device: ExplainableQuantity(0 * u.kg, "devices")}},
+            use_footprints={
+                "Servers": {self.server: ExplainableQuantity(0 * u.kg, "server")},
+                "Devices": {self.device: ExplainableQuantity(2 * u.metric_ton, "devices")}},
+            total_footprint_hourly_kg=[1500, 1000])
+
+        self.assertEqual("t CO2 emissions", fig.layout.yaxis.title.text)
+        bars = {(trace.name, category): value for trace in fig.data for category, value in zip(trace.x, trace.y)}
+        self.assertEqual(
+            {("Electricity", "Servers"): 0, ("Electricity", "Devices"): 2,
+             ("Manufacturing", "Servers"): 0.5, ("Manufacturing", "Devices"): 0}, bars)
+        percentages = {(annotation.x, annotation.xshift): annotation.text for annotation in fig.layout.annotations}
+        self.assertEqual(
+            {("Devices", -30): "80%", ("Devices", 30): "0%", ("Servers", -30): "0%", ("Servers", 30): "20%"},
+            percentages)
+        self.assertEqual("left", fig.layout.legend.xanchor)
+
+    @needs_viz
+    def test_footprints_by_category_and_object_handles_a_category_without_any_object(self):
+        """A system with servers but no devices is plotted, with the legend away from the servers bars."""
+        fig = self._plot_footprints_figure(
+            fab_footprints={"Servers": {self.server: ExplainableQuantity(1 * u.kg, "server")}, "Devices": {}},
+            use_footprints={"Servers": {self.server: ExplainableQuantity(3 * u.kg, "server")}, "Devices": {}},
+            total_footprint_hourly_kg=[4])
+
+        self.assertEqual(["Servers"], list(fig.data[0].x))
+        self.assertEqual("right", fig.layout.legend.xanchor)
 
     def test_creating_system_with_empty_up_list_is_possible(self):
         system = System("Test system", usage_patterns=[], edge_usage_patterns=[])

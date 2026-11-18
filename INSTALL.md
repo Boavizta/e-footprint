@@ -5,7 +5,7 @@
 For installing poetry and command line auto-complete, see [this documentation](https://python-poetry.org/docs/). Then you can do:
 
 ```shell
-poetry install --with dev
+poetry install --with dev --all-extras
 poetry run ipython
 Python 3.10.6 (main, Mar 10 2023, 10:55:28) [GCC 11.3.0]
 Type 'copyright', 'credits' or 'license' for more information
@@ -13,6 +13,8 @@ IPython 8.18.1 -- An enhanced Interactive Python. Type '?' for help.
 In [1]: import efootprint
 ...
 ```
+
+`--all-extras` installs the optional dependency groups (`viz` and `boaviztapi`, see [`pyproject.toml`](pyproject.toml)) that the full test suite exercises. Without it you get the bare core install, on which the tests that need an optional group are skipped.
 
 Every `poetry run` command will use python virtual env.
 
@@ -61,7 +63,7 @@ python -m pytest --cov=tests
 You can generate `requirements.txt` and `requirements-dev.txt` from `pyproject.toml` and poetry with:
 
 ```shell
-poetry export -f requirements.txt --without-hashes -o requirements.txt 
+poetry export -f requirements.txt --without-hashes --all-extras -o requirements.txt 
 poetry export -f requirements.txt --without-hashes --only dev -o requirements-dev.txt 
 ```
 

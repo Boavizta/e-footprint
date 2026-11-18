@@ -11,6 +11,7 @@ from efootprint.abstract_modeling_classes.explainable_quantity import Explainabl
 from efootprint.abstract_modeling_classes.empty_explainable_object import EmptyExplainableObject
 from efootprint.abstract_modeling_classes.explainable_object_base_class import ExplainableObject
 from efootprint.constants.units import u
+from tests.optional_dependencies import needs_viz
 
 
 class TestExplainableHourlyQuantities(unittest.TestCase):
@@ -482,6 +483,7 @@ class TestExplainableHourlyQuantities(unittest.TestCase):
 
         self.assertNotEqual(hourly_usage_data.value_as_float_list, duplicated.value_as_float_list)
 
+    @needs_viz
     def test_plot_explainable_hourly_quantities(self):
         random_values = [random.randrange(10, 20) for _ in range(24 * 31)]
         start_date = datetime.strptime("2025-01-01", "%Y-%m-%d")
@@ -490,6 +492,7 @@ class TestExplainableHourlyQuantities(unittest.TestCase):
             label="Hourly emission of carbon of my test")
         hourly_emission.plot()
 
+    @needs_viz
     def test_plot_explainable_hourly_quantities_with_xlims(self):
         random_values = [random.randrange(10, 20) for _ in range(24 * 31)]
         start_date = datetime.strptime("2025-01-01", "%Y-%m-%d")

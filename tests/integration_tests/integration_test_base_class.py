@@ -19,6 +19,7 @@ from efootprint.api_utils.json_to_system import json_to_system
 from efootprint.api_utils.system_to_json import system_to_json
 from efootprint.constants.units import u
 from efootprint.logger import logger
+from tests.optional_dependencies import needs_viz
 
 INTEGRATION_TEST_DIR = os.path.dirname(os.path.abspath(__file__))
 
@@ -289,6 +290,7 @@ class IntegrationTestBaseClass(TestCase):
 
             logger.info(f"All ExplainableQuantities have right values for generated object {obj.name}")
 
+    @needs_viz
     def run_test_explanation_links_survive_round_trip(self):
         """Test that a saved and reloaded system explains itself as the saved one did: same flat formula
         and direct ancestors for the total and a nested stored value, same children for a job input (void

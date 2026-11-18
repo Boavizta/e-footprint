@@ -25,6 +25,7 @@ from efootprint.abstract_modeling_classes.explainable_hourly_quantities import E
 from efootprint.abstract_modeling_classes.explainable_quantity import ExplainableQuantity
 from efootprint.abstract_modeling_classes.empty_explainable_object import EmptyExplainableObject
 from efootprint.utils.display import human_readable_unit, display_quantity_as_str
+from efootprint.utils.optional_dependencies import requires_extra
 from efootprint.abstract_modeling_classes.reactive_core import (
     computed_attribute, computed_structure)
 from efootprint.core.attribution import attribution_sources, evict_attribution_source_intermediates
@@ -368,82 +369,58 @@ class System(ModelingObject):
         return SystemComparison(baseline_system, self)
 
     def plot_footprints_by_category_and_object(self, filename=None, height=400, width=800, notebook=True):
-        import plotly.express as px
-        import plotly
+        with requires_extra("viz"):
+            import plotly.graph_objects as go
+            import plotly
 
         fab_footprints = self.manufacturing_footprint_sum_over_period
         use_footprints = self.use_footprint_sum_over_period
-
-        rows_as_dicts = []
-        total_footprint_sum_display = self.total_footprint.sum().display_quantity
-        chart_unit = total_footprint_sum_display.units
-        chart_unit_str = human_readable_unit(chart_unit)
-        value_colname = f"{chart_unit_str} CO2 emissions"
-
-        for category in fab_footprints:
-            fab_objects = sorted(fab_footprints[category].items(), key=lambda x: x[0].name)
-            energy_objects = sorted(use_footprints[category].items(), key=lambda x: x[0].name)
-
-            for objs, color in zip([energy_objects, fab_objects], ["Electricity", "Manufacturing"]):
-                for object, expl_quantity in objs:
-                    display_quantity = expl_quantity.display_quantity
-                    amount_str = display_quantity_as_str(display_quantity)
-
-                    rows_as_dicts.append({
-                        "Type": color, "Category": category, "Object": object.name,
-                        value_colname: display_quantity.magnitude, "Amount": amount_str})
-
-        import pandas as pd
-        df = pd.DataFrame.from_records(rows_as_dicts)
-
-        total_co2 = df[value_colname].sum()
         total_footprint = self.total_footprint
+        total_footprint_sum_display = total_footprint.sum().display_quantity
+        chart_unit = total_footprint_sum_display.units
 
+        fig = go.Figure()
+        magnitude_by_category_and_type = {}
+        for footprint_type, footprints in (("Electricity", use_footprints), ("Manufacturing", fab_footprints)):
+            categories, magnitudes, hover_data = [], [], []
+            for category in fab_footprints:
+                for obj, expl_quantity in sorted(footprints[category].items(), key=lambda x: x[0].name):
+                    magnitude = float(expl_quantity.value.to(chart_unit).magnitude)
+                    categories.append(category)
+                    magnitudes.append(magnitude)
+                    hover_data.append((obj.name, display_quantity_as_str(expl_quantity.display_quantity)))
+                    key = (category, footprint_type)
+                    magnitude_by_category_and_type[key] = magnitude_by_category_and_type.get(key, 0) + magnitude
+            if categories:
+                # Bars of one trace that share a category are stacked by plotly: one segment per object.
+                fig.add_trace(go.Bar(
+                    name=footprint_type, x=categories, y=magnitudes, customdata=hover_data,
+                    hovertemplate="Object=%{customdata[0]}<br>Amount=%{customdata[1]}<extra></extra>"))
+
+        def category_magnitude(category):
+            return sum(
+                magnitude for (cat, _), magnitude in magnitude_by_category_and_type.items() if cat == category)
+
+        legend_alignment, legend_x = ("right", 0.98) if category_magnitude("Servers") > category_magnitude("Devices") \
+            else ("left", 0.02)
         start_date = total_footprint.start_date
         end_date = start_date + timedelta(hours=len(total_footprint.value) - 1)
-        total_amount_str = display_quantity_as_str(total_footprint_sum_display)
-
-        fig = px.bar(
-            df, x="Category", y=value_colname, color='Type', barmode='group',
-            height=height, width=width,
-            hover_data={"Type": False, "Category": False, "Object": True, value_colname: False, "Amount": True},
-            template="plotly_white",
-            title=f"Total CO2 emissions from {start_date.date()} to {end_date.date()}: {total_amount_str}"
-        )
-
-        # Legend placement logic
-        total_energy_servers = sum(use_footprints["Servers"].values(), start=0)
-        total_fab_servers = sum(fab_footprints["Servers"].values(), start=0)
-        total_energy_devices = sum(use_footprints["Devices"].values(), start=0)
-        total_fab_devices = sum(fab_footprints["Devices"].values(), start=0)
-
-        if (total_energy_servers + total_fab_servers) > (total_energy_devices + total_fab_devices):
-            legend_alignment = "right"
-            legend_x = 0.98
-        else:
-            legend_alignment = "left"
-            legend_x = 0.02
-
         fig.update_layout(
+            barmode="group", height=height, width=width, template="plotly_white",
+            xaxis_title="Category", yaxis_title=f"{human_readable_unit(chart_unit)} CO2 emissions",
             legend={"orientation": "v", "yanchor": "top", "y": 1.02, "xanchor": legend_alignment, "x": legend_x,
                     "title": ""},
-            title={"x": 0.5, "y": 0.9, "xanchor": 'center', "yanchor": 'top'}
+            title={"text": f"Total CO2 emissions from {start_date.date()} to {end_date.date()}: "
+                           f"{display_quantity_as_str(total_footprint_sum_display)}",
+                   "x": 0.5, "y": 0.9, "xanchor": "center", "yanchor": "top"}
         )
 
         # Add annotations (percentages per category and type)
-        total_by_cat_type = df.groupby(["Category", "Type"])[value_colname].sum()
-
-        for (category, source_type), height_val in total_by_cat_type.items():
-            x_shift = 30 if source_type == 'Manufacturing' else -30
-            percentage = int((height_val / total_co2) * 100)
-
+        total_magnitude = sum(magnitude_by_category_and_type.values())
+        for (category, footprint_type), magnitude in sorted(magnitude_by_category_and_type.items()):
             fig.add_annotation(
-                x=category, y=height_val,
-                text=f"{percentage}%",
-                showarrow=False,
-                yshift=10,
-                xshift=x_shift
-            )
+                x=category, y=magnitude, text=f"{int(magnitude / total_magnitude * 100)}%", showarrow=False,
+                yshift=10, xshift=30 if footprint_type == "Manufacturing" else -30)
 
         if notebook and filename is None:
             filename = f"{self.name} footprints.html"

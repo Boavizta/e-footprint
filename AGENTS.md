@@ -33,7 +33,7 @@ In feature plans, HTML documentation links open in a new browser tab; production
 ## Dev commands
 
 ```bash
-poetry install --with dev
+poetry install --with dev --all-extras   # all-extras: viz + boaviztapi optional groups
 poetry run pytest                              # full suite
 poetry run pytest tests/path/to/test_file.py   # single test
 mkdocs serve                                   # local docs preview

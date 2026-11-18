@@ -16,6 +16,7 @@ from efootprint.abstract_modeling_classes.explainable_timezone import Explainabl
 from efootprint.constants.units import u, get_unit
 from efootprint.logger import logger
 from efootprint.utils.display import best_display_unit, format_quantity_for_display, summarize_timeseries_for_display
+from efootprint.utils.optional_dependencies import requires_extra
 from efootprint.utils.plot_timeseries import plot_timeseries_data, prepare_data
 from efootprint.abstract_modeling_classes.aggregation_utils import validate_timeseries_unit
 
@@ -511,7 +512,8 @@ class ExplainableHourlyQuantities(ExplainableObject):
                f"{summarize_timeseries_for_display(self.value)}"
 
     def plot(self, figsize=(10, 4), filepath=None, plt_show=False, xlims=None, cumsum=False):
-        import matplotlib.pyplot as plt
+        with requires_extra("viz"):
+            import matplotlib.pyplot as plt
 
         time_axis, quantity = prepare_data(self.value, self.start_date, cumsum)
         fig, ax = plot_timeseries_data(quantity, time_axis, figsize, xlims)

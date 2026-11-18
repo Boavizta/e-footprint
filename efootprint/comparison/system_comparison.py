@@ -15,6 +15,7 @@ from efootprint.constants.units import u
 from efootprint.utils.display import (
     best_display_unit, display_quantity_as_str, format_display_number, format_quantity_for_display,
     human_readable_unit)
+from efootprint.utils.optional_dependencies import requires_extra
 from efootprint.utils.plot_timeseries import get_time_axis
 from efootprint.utils.tools import get_init_signature_params
 
@@ -462,10 +463,11 @@ class SystemComparison:
 
 def _matplotlib_pyplot(plt_show):
     import os
-    import matplotlib
+    with requires_extra("viz"):
+        import matplotlib
+        from matplotlib import pyplot as plt
     if not plt_show and os.environ.get("MPLBACKEND") is None:
         matplotlib.use("Agg", force=True)
-    from matplotlib import pyplot as plt
 
     return plt
 

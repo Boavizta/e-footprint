@@ -24,6 +24,7 @@ from efootprint.utils.object_relationships_graphs import build_object_relationsh
 from efootprint.builders.time_builders import create_source_hourly_values_from_list, create_hourly_usage_from_frequency
 from tests.integration_tests.integration_test_base_class import IntegrationTestBaseClass, ObjectLinkScenario
 from tests.utils import check_all_calculus_graph_dependencies_consistencies
+from tests.optional_dependencies import needs_viz
 
 
 class IntegrationTestSimpleSystemBaseClass(IntegrationTestBaseClass):
@@ -70,6 +71,7 @@ class IntegrationTestSimpleSystemBaseClass(IntegrationTestBaseClass):
         system, start_date = cls.generate_simple_system()
         cls._setup_from_system(system, start_date)
 
+    @needs_viz
     def run_test_system_calculation_graph_right_after_json_to_system(self):
         # Created just because it exists in the IntegrationTestSimpleSystem class and another test makes sure that both
         # classes have the same methods.
@@ -91,6 +93,7 @@ class IntegrationTestSimpleSystemBaseClass(IntegrationTestBaseClass):
             self.uj_step_2, self.job_1, self.job_2, self.usage_pattern.devices[0], self.usage_pattern.country}
         self.assertEqual(expected_objects, set(self.system.all_linked_objects))
 
+    @needs_viz
     def run_test_calculation_graph(self):
         graph = build_calculus_graph(self.system.total_footprint)
         graph.show(
@@ -99,6 +102,7 @@ class IntegrationTestSimpleSystemBaseClass(IntegrationTestBaseClass):
             content = f.read()
         self.assertGreater(len(content), 50000)
 
+    @needs_viz
     def run_test_object_relationship_graph(self):
         object_relationships_graph = build_object_relationships_graph(
             self.system, classes_to_ignore=USAGE_PATTERN_VIEW_CLASSES_TO_IGNORE)
@@ -429,6 +433,7 @@ class IntegrationTestSimpleSystemBaseClass(IntegrationTestBaseClass):
     def run_test_check_all_calculus_graph_dependencies_consistencies(self):
         check_all_calculus_graph_dependencies_consistencies(self.system)
 
+    @needs_viz
     def run_test_impact_repartition_sankey(self):
         from efootprint.utils.impact_repartition import ImpactRepartitionSankey
         sankey = ImpactRepartitionSankey(self.system)

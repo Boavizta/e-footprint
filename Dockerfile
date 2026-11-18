@@ -2,7 +2,7 @@
 #
 # This image installs efootprint from PyPI (not from this repo's source) so it
 # stays usable standalone: the pinned `pip install` here mirrors what any end
-# user would get. Mount a directory containing your own script and run it:
+# user would get with every optional dependency group (`efootprint[all]`). Mount a directory containing your own script and run it:
 #
 #   docker run --rm -v "$PWD":/work boavizta/efootprint python /work/build_model.py
 #
@@ -20,6 +20,6 @@
 FROM python:3.12-slim
 
 ARG EFOOTPRINT_VERSION
-RUN pip install --no-cache-dir "efootprint==${EFOOTPRINT_VERSION}"
+RUN pip install --no-cache-dir "efootprint[all]==${EFOOTPRINT_VERSION}"
 
 WORKDIR /work

@@ -190,6 +190,10 @@ with self.cleanup_stack(
 
 `cleanup_stack()` always checks after rollback that `system.total_footprint` matches the initial baseline. Opt in to the pre-rollback check with `verify_total_footprint_changed_before_cleanup=True` for mutation tests where the system is expected to differ from baseline before cleanup.
 
+## Optional dependency groups
+
+A test that exercises plotting, graph rendering or the `boaviztapi` package is decorated with `@needs_viz` or `@needs_boaviztapi` from `tests/optional_dependencies.py`, which skips it when the group is not installed. The `bare-core` CI job runs the whole suite on a core-only install: a test that fails there either lacks its marker or reveals a core path that wrongly needs an optional package.
+
 ## Matplotlib backend
 
 When running tests that exercise plotting code, prefer:

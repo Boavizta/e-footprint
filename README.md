@@ -33,7 +33,13 @@ Checkout our open source [e-footprint modeling use cases](https://github.com/pub
 
 ## Tutorial
 
-    pip install efootprint
+    pip install "efootprint[viz]"
+
+`pip install efootprint` alone installs the bare core: modeling, computation and JSON import / export. Optional dependency groups add the rest:
+
+- `efootprint[viz]`: plots, Sankey diagrams, object relationship and calculation graphs (matplotlib, plotly, pyvis);
+- `efootprint[boaviztapi]`: offline fallback for the Boavizta server builders, used when https://api.boavizta.org is unreachable;
+- `efootprint[all]`: both.
 
 You can then run the [jupyter notebook tutorial](tutorial.ipynb) to familiarize yourself with the object logic and generate an object relationship graph and a calculation graph as HTML files in the current folder.
 

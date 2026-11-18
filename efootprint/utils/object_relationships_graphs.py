@@ -1,6 +1,5 @@
-from pyvis.network import Network
-
 from efootprint.utils.graph_tools import WIDTH, HEIGHT, set_string_max_width
+from efootprint.utils.optional_dependencies import requires_extra
 
 COLOR_MAP = {
     "ServerBase": "red",
@@ -56,6 +55,8 @@ def build_object_relationships_graph(
     if classes_to_ignore is None:
         classes_to_ignore = ["System"]
     if input_graph is None:
+        with requires_extra("viz"):
+            from pyvis.network import Network
         input_graph = Network(notebook=notebook, width=width, height=height, cdn_resources=cdn_resources)
     if visited_python_ids is None:
         visited_python_ids = set()

@@ -5,6 +5,7 @@ import numpy as np
 from pint import Quantity
 
 from efootprint.utils.display import best_display_unit, human_readable_unit
+from efootprint.utils.optional_dependencies import requires_extra
 
 
 def get_time_axis(start_date: datetime, length: int) -> np.ndarray:
@@ -19,8 +20,9 @@ def prepare_data(q: Quantity, start: datetime, apply_cumsum=False) -> tuple[np.n
 
 def plot_timeseries_data(
     q: Quantity, time_axis: np.ndarray, figsize=(10, 4), xlims: Optional[tuple[datetime, datetime]] = None):
-    from matplotlib import pyplot as plt
-    import matplotlib.dates as mdates
+    with requires_extra("viz"):
+        from matplotlib import pyplot as plt
+        import matplotlib.dates as mdates
 
     fig, ax = plt.subplots(nrows=1, ncols=1, figsize=figsize)
     display_unit = best_display_unit(q)

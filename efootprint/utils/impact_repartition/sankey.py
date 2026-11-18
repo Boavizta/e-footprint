@@ -28,6 +28,7 @@ from efootprint.core.attribution import node_totals_and_links_by_phase_in_kg
 from efootprint.core.lifecycle_phases import LifeCyclePhases
 from efootprint.utils.display import best_display_unit, format_display_number, format_quantity_for_display, human_readable_unit
 from efootprint.utils.impact_repartition._graph import SankeyGraph
+from efootprint.utils.optional_dependencies import requires_extra
 from efootprint.utils.tools import time_it
 
 ConfiguredClass: TypeAlias = type[ModelingObject] | str
@@ -733,8 +734,9 @@ class ImpactRepartitionSankey:
     def figure(
             self, title: str | None = None, filename: str | None = None, height: int = None, width: int = None,
             notebook: bool = False) -> Any:
-        import plotly.graph_objects as go
-        import plotly
+        with requires_extra("viz"):
+            import plotly.graph_objects as go
+            import plotly
 
         self.build()
         if title is None:

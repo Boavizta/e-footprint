@@ -1,7 +1,13 @@
 import unittest
+import os
+
+import pytest
+
+from tests.optional_dependencies import needs_viz
+
+pytest.importorskip("nbconvert")  # dev dependency, absent from a bare core install
 from nbconvert import PythonExporter
 from nbformat import read
-import os
 
 
 def run_notebook(notebook_path):
@@ -11,7 +17,8 @@ def run_notebook(notebook_path):
     # Execute the notebook and collect the output
     python_code, _ = exporter.from_notebook_node(notebook)
     # exec can’t execute get_ipython so we need to remove the one call to this method that installs efootprint
-    python_code = python_code.replace("get_ipython().system('pip install efootprint')", "# Removed for testing")
+    python_code = python_code.replace(
+        """get_ipython().system('pip install "efootprint[viz]"')""", "# Removed for testing")
 
     exec(python_code)
 
@@ -20,5 +27,6 @@ root_dir = os.path.dirname(os.path.abspath(__file__))
 
 
 class TestNotebooks(unittest.TestCase):
+    @needs_viz
     def test_tutorial(self):
         run_notebook(os.path.join(root_dir, "..", "tutorial.ipynb"))

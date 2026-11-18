@@ -8,7 +8,7 @@ clean:
 install: install_pip
 
 install_pip:
-		poetry install --with dev
+		poetry install --with dev --all-extras
 
 test:
 		poetry run pytest

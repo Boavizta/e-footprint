@@ -6,7 +6,6 @@ from typing import List, Union, get_origin, get_args, TYPE_CHECKING
 import os
 
 import numpy as np
-from IPython.display import HTML
 
 from efootprint.abstract_modeling_classes.explainable_quantity import ExplainableQuantity
 from efootprint.abstract_modeling_classes.empty_explainable_object import EmptyExplainableObject
@@ -686,6 +685,7 @@ class ModelingObject(metaclass=ABCAfterInitMeta):
         add_unique_id_to_mynetwork(filename)
 
         if notebook:
+            from IPython.display import HTML
             return HTML(filename)
 
     def self_delete(self):

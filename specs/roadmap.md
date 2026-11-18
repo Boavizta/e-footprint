@@ -29,15 +29,6 @@ calculus-methodology evolution. Decided 2026-07-02 during pull-based-computation
 
 Currently used for server manufacturing (`BoaviztaCloudServer`). Planned expansion to **water (WUE)** and **rare-earth metals**. Will require new modeling primitives to carry multi-impact footprints alongside CO2-eq.
 
-### Lean base install — optional heavy dependencies (memory optimization)
-
-Driven by the interface's binding Redis-RAM constraint. Move dependencies the interface doesn't need at runtime into optional extras so `pip install efootprint` is lighter and lower-RAM:
-
-- **Visualization** (`matplotlib`, `plotly`, `pyvis`) — the interface renders its own JS charts; these are only needed for notebook/library `.plot()` / Sankey / pyvis use. Gate their imports and ship an `efootprint[viz]` extra. Tension to weigh: the library-first / notebook-usable principle (notebook users would then need `efootprint[viz]`).
-- **pandas** — audit how deeply it is used in the core path first; making it optional touches **constitution §4** (Pint/NumPy/Pandas protected) and needs a constitutional note. NumPy stays required (timeseries are `float32` arrays).
-
-Prerequisites: measure the actual RAM win before committing; introduce the optional-extras mechanism in `pyproject.toml`. **Not** the compression codec — a benchmark (2026-06-30) showed `zstandard` is fast and RAM-cheap (≈0 MB to import), so it stays required. Origin: EcoScan feedback packaging discussion + interface memory work.
-
 ## Far horizon (no commitment)
 
 - **SystemTimeline — modeling systems that evolve across time.** Append-only ledger of dated,

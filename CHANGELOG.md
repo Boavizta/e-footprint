@@ -4,6 +4,18 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](http://keepachangelog.com/)
 and this project adheres to [Semantic Versioning](http://semver.org/)
 
+## [Unreleased]
+
+### Changed
+- `pip install efootprint` now installs the core only (modeling, computation, JSON import / export). Plots, Sankey figures and object / calculation graphs need `pip install "efootprint[viz]"` (matplotlib, plotly, pyvis); the offline fallback of the Boavizta server builders needs `pip install "efootprint[boaviztapi]"`; `efootprint[all]` installs both. A missing optional package raises an error naming the group to install.
+- Without the `boaviztapi` group, Boavizta server builders rely on the https://api.boavizta.org web API and fail with an explicit error when it is unreachable.
+- The number of occurrences running in parallel is computed with a sliding-window sum instead of an FFT convolution: hours without any running occurrence are now exactly zero instead of carrying float noise, and scipy is no longer needed.
+- numpy is declared as a direct dependency; pandas is no longer a dependency.
+
+### Fixed
+- `System.plot_footprints_by_category_and_object` draws every bar in the unit of the chart axis: bars and percentages were wrong whenever objects had footprints of different magnitudes (kg next to t).
+- `System.plot_footprints_by_category_and_object` no longer fails on a system that has servers but no devices, or devices but no servers.
+
 ## [V27.0.2]
 
 ### Fixed

@@ -18,6 +18,7 @@ from efootprint.api_utils.system_to_json import materialize_serialized_state, sy
 from efootprint.api_utils.version_upgrade_handlers import upgrade_version_22_to_23
 from efootprint.constants.units import u
 from tests.integration_tests.integration_simple_system_base_class import IntegrationTestSimpleSystemBaseClass
+from tests.optional_dependencies import needs_viz
 
 
 class ComputeCounter:
@@ -164,6 +165,7 @@ class TestMinimalSerializationContract(TestCase):
         with self.assertRaisesRegex(ValueError, "references an object absent from the file"):
             json_to_system(corrupted_dict)
 
+    @needs_viz
     def test_displaying_the_calculus_graph_leaves_a_later_save_unchanged(self):
         """Test that the calculus graph of a stored total, whose display computes the void operands below it,
         leaves a later save byte-identical: which objects a save writes, and in which order, never depends

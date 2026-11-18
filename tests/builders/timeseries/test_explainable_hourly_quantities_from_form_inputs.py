@@ -11,9 +11,11 @@ from efootprint.core.usage.usage_pattern import UsagePattern
 
 from efootprint.builders.timeseries import ExplainableHourlyQuantitiesFromFormInputs
 from tests.utils import create_mod_obj_mock, recompute_attribute
+from tests.optional_dependencies import needs_viz
 
 
 class CalculusGraphTest(TestCase):
+    @needs_viz
     def test_calculus_graph_html_gen(self):
         self.mock_usage_journey = create_mod_obj_mock(UsageJourney, "usage journey", id="usage-journey-id")
         self.mock_devices = [MagicMock(spec=Device, id="device-id"), MagicMock(spec=Device, id="device-id2")]

@@ -25,6 +25,7 @@ from efootprint.core.usage.edge.edge_function import EdgeFunction
 from efootprint.core.usage.edge.edge_usage_journey import EdgeUsageJourney
 from efootprint.core.usage.edge.edge_usage_pattern import EdgeUsagePattern
 from tests.integration_tests.integration_test_base_class import IntegrationTestBaseClass, ObjectLinkScenario
+from tests.optional_dependencies import needs_viz
 
 
 class IntegrationTestComplexSystemBaseClass(IntegrationTestBaseClass):
@@ -250,9 +251,11 @@ class IntegrationTestComplexSystemBaseClass(IntegrationTestBaseClass):
         )
         self._run_object_link_scenario(scenario)
 
+    @needs_viz
     def run_test_plot_footprints_by_category_and_object(self):
         self.system.plot_footprints_by_category_and_object()
 
+    @needs_viz
     def run_test_plot_footprints_by_category_and_object_notebook_false(self):
         fig = self.system.plot_footprints_by_category_and_object(width=400, height=100, notebook=False)
         html = fig.to_html(full_html=False, include_plotlyjs=False)

@@ -35,7 +35,7 @@ poetry self add poetry-plugin-export
 ```
 
 ```shell
-poetry export -f requirements.txt --without-hashes -o requirements.txt 
+poetry export -f requirements.txt --without-hashes --all-extras -o requirements.txt 
 poetry export -f requirements.txt --without-hashes --only dev -o requirements-dev.txt 
 ```
 

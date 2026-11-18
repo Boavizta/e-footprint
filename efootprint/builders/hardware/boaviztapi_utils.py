@@ -6,6 +6,7 @@ import orjson
 import requests
 
 from efootprint.logger import logger
+from efootprint.utils.optional_dependencies import requires_extra
 
 
 _BOAVIZTAPI_CACHE_MAX_BYTES = 50 * 1024 * 1024
@@ -101,18 +102,18 @@ def call_boaviztapi_from_package_dependency(url, method="GET", params=None, json
     import asyncio
     import inspect
     import warnings
-    from scipy.optimize import OptimizeWarning
 
     warnings.simplefilter("ignore", ResourceWarning)
-    warnings.simplefilter("ignore", OptimizeWarning)
     warnings.simplefilter("ignore", DeprecationWarning)
     warnings.simplefilter("ignore", UserWarning)
 
-    from boaviztapi.routers.cloud_router import instance_cloud_impact_from_model, server_get_all_provider_name, \
-        server_get_all_archetype_name as server_get_all_archetype_name_cloud
-    from boaviztapi.routers.server_router import (
-        server_impact_from_model, server_get_all_archetype_name as server_get_all_archetype_name_server,
-        get_archetype_config)
+    with requires_extra("boaviztapi"):
+        from boaviztapi.routers.cloud_router import (
+            instance_cloud_impact_from_model, server_get_all_provider_name,
+            server_get_all_archetype_name as server_get_all_archetype_name_cloud)
+        from boaviztapi.routers.server_router import (
+            server_impact_from_model, server_get_all_archetype_name as server_get_all_archetype_name_server,
+            get_archetype_config)
 
     url_method_mapping = {
         "https://api.boavizta.org/v1/cloud/instance/all_providers": server_get_all_provider_name,

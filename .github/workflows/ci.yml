@@ -38,9 +38,28 @@ jobs:
         run: poetry config virtualenvs.in-project true
 
       - name: Install dependencies
-        run: poetry install --with dev
+        run: poetry install --with dev --all-extras
 
       - name: Run tests
         env:
           MPLBACKEND: Agg
         run: poetry run pytest
+
+  bare-core:
+    # The suite must also pass on a bare `pip install efootprint`, without the optional dependency
+    # groups (viz, boaviztapi): tests that need one are skipped through tests/optional_dependencies.py.
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+
+      - name: Install the bare core
+        run: pip install . pytest
+
+      - name: Run tests
+        run: pytest

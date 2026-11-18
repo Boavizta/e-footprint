@@ -25,6 +25,7 @@ from efootprint.core.usage.job import Job
 from efootprint.core.usage.usage_journey import UsageJourney
 from efootprint.core.usage.usage_journey_step import UsageJourneyStep
 from efootprint.core.usage.usage_pattern import UsagePattern
+from tests.optional_dependencies import needs_viz
 
 os.environ.setdefault("MPLBACKEND", "Agg")
 
@@ -409,6 +410,7 @@ class TestSystemComparison(TestCase):
         self.assertEqual("profile 1 baseline: 10 concurrent", row.value_a)
         self.assertEqual("profile 1 baseline: 20 concurrent", row.value_b)
 
+    @needs_viz
     def test_plot_helpers_smoke_render(self):
         """Test the notebook plot helpers render without error."""
         from matplotlib import pyplot as plt
@@ -419,6 +421,7 @@ class TestSystemComparison(TestCase):
             self.assertIsNotNone(axes)
             plt.close(figure)
 
+    @needs_viz
     def test_plot_decomposition_uses_best_display_unit_and_labels_values(self):
         """Test decomposition plots scale all bars to one readable unit and display their values."""
         from matplotlib import pyplot as plt

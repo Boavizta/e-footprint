@@ -37,6 +37,11 @@ These are project-specific patterns worth keeping in mind when extending modelin
 - **Focus on the immediate context.** You don't necessarily need to understand all upstream and downstream dependencies of a given object to work on it. Focus on the object you are working on unless a broader focus is asked.
 - **Ask before guessing.** When in doubt about how to implement a new feature, ask for guidance before starting implementation.
 
+## Optional dependencies
+
+- Packages of an optional group (`viz`, `boaviztapi`; see `tech_stack.md`) are never imported at module top level. Import them inside the function that needs them, under `with requires_extra("<group>"):` (`efootprint/utils/optional_dependencies.py`), so a bare core install gets an error naming the group to install.
+- A core computation, serialization or import path must not need an optional group. The `bare-core` CI job enforces it.
+
 ## Editing patterns
 
 - **Use programmatic tools for systematic textual work across many files.** For renames, global substitutions, or dropping a pattern everywhere, batch the change with `sed -i ''` or `grep -l … | xargs sed -i ''` rather than a serial Read+Edit loop per file. Per-file Edit is for heterogeneous changes (each file needs a different edit) or when you need to inspect surrounding context before replacing. Verify with `grep` after the bulk replacement that no stale references remain.

@@ -7,6 +7,7 @@ from efootprint.api_utils.system_to_json import system_to_json
 from efootprint.utils.calculus_graph import build_calculus_graph
 from tests.integration_tests.integration_simple_system_base_class import IntegrationTestSimpleSystemBaseClass
 from tests.integration_tests.integration_test_base_class import INTEGRATION_TEST_DIR, AutoTestMethodsMeta
+from tests.optional_dependencies import needs_viz
 
 
 class IntegrationTestSimpleSystemFromJson(IntegrationTestSimpleSystemBaseClass, metaclass=AutoTestMethodsMeta):
@@ -30,6 +31,7 @@ class IntegrationTestSimpleSystemFromJson(IntegrationTestSimpleSystemBaseClass, 
         reloaded_system = flat_obj_dict[system.id]
         cls._setup_from_system(reloaded_system, start_date)
 
+    @needs_viz
     def test_system_calculation_graph_right_after_json_to_system(self):
         with open(self.system_json_filepath, "r") as file:
             system_dict = json.load(file)

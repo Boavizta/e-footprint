@@ -19,8 +19,8 @@ def format_tutorial_and_save_to_mkdocs_sourcefiles(tutorial_doc_path):
         tutorial = file.read()
 
     # Suppress pip install output cell
-    pattern = r"!pip install efootprint\n```.*?```python"  # Match the desired section
-    replacement = "!pip install efootprint\n```\n\n  *pip install logs...*\n\n```python"  # Replace with this string
+    pattern = r"!pip install \"efootprint\[viz\]\"\n```.*?```python"  # Match the desired section
+    replacement = "!pip install \"efootprint[viz]\"\n```\n\n  *pip install logs...*\n\n```python"  # Replace with this string
     tutorial = re.sub(pattern, replacement, tutorial, flags=re.DOTALL)
 
     tutorial_reformated = tutorial.replace("```python\n\n```", "")

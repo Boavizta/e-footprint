@@ -8,6 +8,7 @@ from efootprint.core.attribution import attribution_sources
 from efootprint.core.lifecycle_phases import LifeCyclePhases
 from efootprint.core.usage.usage_journey import UsageJourney
 from efootprint.utils.impact_repartition import ImpactRepartitionSankey
+from tests.optional_dependencies import needs_viz
 
 
 class _EmptySystem:
@@ -733,6 +734,7 @@ class TestImpactRepartitionSankeyPresentation(TestCase):
         self.assertEqual(["Device", "Storage"], displayed[0]["class_names"])
         self.assertEqual("Manual column", displayed[1]["description"])
 
+    @needs_viz
     def test_figure_can_hide_column_information(self):
         """Test figure without column information annotations."""
         fig = ImpactRepartitionSankey(
@@ -740,6 +742,7 @@ class TestImpactRepartitionSankeyPresentation(TestCase):
 
         self.assertEqual((), fig.layout.annotations)
 
+    @needs_viz
     def test_figure_returns_resized_plotly_figure_when_notebook_false(self):
         """Test figure returns a Plotly figure with the requested size when notebook is disabled."""
         fig = ImpactRepartitionSankey(
@@ -750,6 +753,7 @@ class TestImpactRepartitionSankeyPresentation(TestCase):
         self.assertEqual(567, fig.layout.height)
 
     @patch("plotly.offline.plot")
+    @needs_viz
     def test_figure_exports_html_when_filename_is_provided_calls_plotly(self, plot_mock):
         """Test figure writes the HTML file when filename is provided."""
         fig = ImpactRepartitionSankey(
@@ -761,6 +765,7 @@ class TestImpactRepartitionSankeyPresentation(TestCase):
         self.assertEqual("impact.html", plot_mock.call_args.kwargs["filename"])
         self.assertFalse(plot_mock.call_args.kwargs["auto_open"])
 
+    @needs_viz
     def test_figure_exports_default_html_when_notebook_true_and_no_filename(self):
         """Test figure exports the default HTML file when notebook is enabled without filename."""
         with patch("plotly.offline.plot") as plot_mock, patch("IPython.display.HTML") as html_mock:
@@ -776,6 +781,7 @@ class TestImpactRepartitionSankeyPresentation(TestCase):
         self.assertFalse(plot_mock.call_args.kwargs["auto_open"])
         html_mock.assert_called_once_with(filename="Test system impact repartition.html")
 
+    @needs_viz
     def test_figure_returns_file_backed_html_when_notebook_true_and_filename_is_provided(self):
         """Test figure returns file-backed HTML when notebook is enabled with a filename."""
         with patch("plotly.offline.plot") as plot_mock, patch("IPython.display.HTML") as html_mock:
@@ -790,6 +796,7 @@ class TestImpactRepartitionSankeyPresentation(TestCase):
         self.assertEqual("impact.html", plot_mock.call_args.kwargs["filename"])
         html_mock.assert_called_once_with(filename="impact.html")
 
+    @needs_viz
     def test_figure_displays_column_information_as_top_annotations(self):
         """Test figure places left-aligned column information above the matching node columns."""
         sankey = ImpactRepartitionSankey(_EmptySystem(), aggregation_threshold_percent=0)

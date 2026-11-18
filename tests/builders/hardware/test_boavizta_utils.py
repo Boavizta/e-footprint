@@ -8,9 +8,11 @@ from efootprint.builders.hardware.boaviztapi_utils import call_boaviztapi_from_p
     call_boaviztapi_from_web_request
 import efootprint.builders.hardware.boaviztapi_utils as boaviztapi_utils
 from efootprint.logger import logger
+from tests.optional_dependencies import needs_boaviztapi
 
 
 class TestBoaviztaUtils(TestCase):
+    @needs_boaviztapi
     def test_web_api_and_package_dependency_calls_return_same_results(self):
         """
         This test checks that the results from the web API and the package dependency are the same.
