@@ -1,7 +1,6 @@
 import numpy as np
 
 from pint import Quantity
-from scipy.signal import fftconvolve
 
 from efootprint.abstract_modeling_classes.empty_explainable_object import EmptyExplainableObject
 from efootprint.abstract_modeling_classes.explainable_hourly_quantities import ExplainableHourlyQuantities
@@ -13,11 +12,9 @@ def compute_nb_avg_hourly_occurrences(hourly_occurrences_starts, event_duration)
     Compute the average number of hourly occurrences running in parallel
     for events of a given duration.
 
-    This function replaces a slow Python loop with a single convolution:
-    - The loop version repeatedly shifts and sums the hourly occurrences array.
-    - Mathematically, this is equivalent to a convolution with a "boxcar"
-      (a vector of ones of length = event duration in hours).
-    - Using convolution makes the code both much faster and easier to maintain.
+    Summing the occurrences still running at each hour is a convolution with a "boxcar"
+    (a vector of ones of length = event duration in hours), which is a sliding-window sum:
+    it is computed as the difference of two shifted cumulative sums.
 
     Parameters
     ----------
@@ -40,8 +37,11 @@ def compute_nb_avg_hourly_occurrences(hourly_occurrences_starts, event_duration)
     values = hourly_occurrences_starts.value.magnitude.astype(np.float32, copy=False)
 
     if nb_full_hours > 0:
-        kernel = np.ones(nb_full_hours, dtype=np.float32)
-        result = fftconvolve(values, kernel, mode="full")
+        # Sum in float64 so that the difference of cumulative sums stays exact at float32 precision.
+        cumulative_sum = np.cumsum(values, dtype=np.float64)
+        window_end_sums = np.concatenate((cumulative_sum, np.full(nb_full_hours - 1, cumulative_sum[-1])))
+        window_start_sums = np.concatenate((np.zeros(nb_full_hours), cumulative_sum[:-1]))
+        result = (window_end_sums - window_start_sums).astype(np.float32)
     else:
         result = None
 
@@ -55,7 +55,7 @@ def compute_nb_avg_hourly_occurrences(hourly_occurrences_starts, event_duration)
             shifted_values = np.pad(values, (nb_full_hours, 0), constant_values=np.float32(0))
             result = initial_values_padded + shifted_values * rest_f32
 
-    # Clip FFT numerical noise and avoid negative values that could lead to NegativeCumulativeStorageNeedError.
+    # Avoid negative values that could lead to NegativeCumulativeStorageNeedError.
     np.maximum(result, 0, out=result)
 
     return ExplainableHourlyQuantities(
