@@ -33,7 +33,8 @@ In feature plans, HTML documentation links open in a new browser tab; production
 ## Dev commands
 
 ```bash
-poetry install --with dev
+git pull                                     # always start from the latest main — agents repeatedly dev against stale checkouts
+poetry install --with dev                    # re-run after every pull so dependencies stay in sync
 poetry run pytest                              # full suite
 poetry run pytest tests/path/to/test_file.py   # single test
 mkdocs serve                                   # local docs preview
