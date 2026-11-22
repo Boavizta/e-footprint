@@ -11,6 +11,7 @@ and this project adheres to [Semantic Versioning](http://semver.org/)
 - Without the `boaviztapi` group, Boavizta server builders rely on the https://api.boavizta.org web API and fail with an explicit error when it is unreachable.
 - The number of occurrences running in parallel is computed with a sliding-window sum instead of an FFT convolution: hours without any running occurrence are now exactly zero instead of carrying float noise, and scipy is no longer needed.
 - numpy is declared as a direct dependency; pandas is no longer a dependency.
+- New internal module `efootprint.narrate`: step markers the update transaction calls, read by the development tooling during this repository's own test runs. They do nothing anywhere else and import the standard library alone; no behaviour changes.
 
 ### Fixed
 - `System.plot_footprints_by_category_and_object` draws every bar in the unit of the chart axis: bars and percentages were wrong whenever objects had footprints of different magnitudes (kg next to t).

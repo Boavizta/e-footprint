@@ -13,6 +13,7 @@ from efootprint.abstract_modeling_classes.modeling_object import (
 from efootprint.abstract_modeling_classes.reactive_core import (
     collect_invalidated_slots, computed_slots, invalidate, prune_stale_computed_dict_keys, slot_of_attached_value)
 from efootprint.logger import logger
+from efootprint.narrate import narrate
 
 
 class ModelingUpdate:
@@ -35,12 +36,20 @@ class ModelingUpdate:
         changed_inputs = {(old_value.modeling_obj_container, old_value.attr_name_in_mod_obj_container)
                           for old_value, new_value in self.changes_list}
         self.changed_slots = [slot_of_attached_value(old_value) for old_value, new_value in self.changes_list]
+        narrate("The slot of each replaced value is found by `slot_of_attached_value` **before the value "
+                "detaches**: these are the nodes the wave starts from.",
+                lambda: {"changed slots": [slot.name for slot in self.changed_slots]})
 
         with collect_invalidated_slots() as visited_slots:
             self.apply_changes()
             invalidate(*self.changed_slots)
+            narrate("`invalidate` runs the deletion wave: **the changed slots and every slot that read them, "
+                    "transitively, lose their cached value**. Nothing is recomputed yet.",
+                    lambda: {"slots voided": sorted(slot.name for slot in visited_slots)})
 
         try:
+            narrate("With the whole batch in place, each changed input, and each input whose allowed values "
+                    "depend on one, is **checked against its authorized values**.")
             for owner, attribute in changed_inputs | dependent_inputs(changed_inputs):
                 owner.check_belonging_to_authorized_values(attribute)
 
@@ -116,8 +125,13 @@ class ModelingUpdate:
 
         for index in sorted(indexes_to_skip, reverse=True):
             del self.changes_list[index]
+        narrate("Each change is **checked and normalized before anything moves**: a list, a dict or a modeling "
+                "object is wrapped in the container that links it to its owner, and a change to an equal value "
+                "is dropped.", lambda: {"changes kept": len(self.changes_list)})
 
     def apply_changes(self):
+        narrate("**Every change is applied before anything recomputes**: each old value detaches and the new "
+                "one attaches at the same owner and attribute.")
         for old_value, new_value in self.changes_list:
             old_value.replace_in_mod_obj_container_without_recomputation(new_value)
 
@@ -153,6 +167,9 @@ class ModelingUpdate:
             objects_to_visit += [unwrap(linked_obj) for linked_obj in mod_obj.mod_obj_attributes]
             for dict_attr in get_instance_attributes(mod_obj, ExplainableObjectDict).values():
                 objects_to_visit += [unwrap(key) for key in dict.keys(dict_attr) if isinstance(key, ModelingObject)]
+        narrate("The objects the changes link into the model are collected **with everything they point to**: "
+                "their slots were never computed, so no wave can reach their guards.",
+                lambda: {"newly linked": sorted(collected)})
         return list(collected.values())
 
     def pull_guard_slots_of_newly_linked_objects(self):
@@ -171,8 +188,12 @@ class ModelingUpdate:
         outputs. Ordinary computed slots remain void until read. Returns the number of slots affected
         by the wave."""
         prune_stale_computed_dict_keys(visited_slots)
+        narrate("**Guards run at update time**: `pull_guard_slots` recomputes every guard the wave voided, then "
+                "every guard of a newly linked object is pulled, so an invalid state fails here.")
         pull_guard_slots(visited_slots)
         self.pull_guard_slots_of_newly_linked_objects()
+        narrate("**Ordinary computations stay void until read**, unless the caller named eager outputs, which "
+                "are pulled now.", lambda: {"eager outputs": len(self.eager_outputs or [])})
         if self.eager_outputs is not None:
             for mod_obj, attr_name in self.eager_outputs:
                 getattr(mod_obj, attr_name)
@@ -186,6 +207,8 @@ class ModelingUpdate:
         # The rejected links are undone: their objects are detached again, so re-pulling their guard
         # slots would re-raise the very error being rolled back.
         self.newly_linked_mod_objs = []
+        narrate("A failure **restores the model**: every change is applied backwards, the wave runs again and "
+                "the guards are pulled on the restored state, before the error is raised.")
         with collect_invalidated_slots() as visited_slots:
             for old_value, new_value in self.changes_list:
                 new_value.replace_in_mod_obj_container_without_recomputation(old_value)

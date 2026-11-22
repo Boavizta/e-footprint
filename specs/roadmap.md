@@ -6,6 +6,18 @@ For **modeling-method questions** — where modeling something *well* needs scie
 
 ## Active streams
 
+### Comprehension harness — installed, one flow narrated
+
+The spec-driven workflow moved to plans written into the code as pieces and delivered in lots
+([`workflow.md`](workflow.md)), as in the interface. The tools, the stage skills and the roles
+are installed ([`comprehension_harness/README.md`](../comprehension_harness/README.md)), with the
+Python stack they read (`.agents/repository.md` § "The stack"). One flow is narrated, the edit of
+a live model: `tests/narratives/test_model_edit.py` tells the update transaction, from the
+assignment to the guards. Next: the first feature planned in pieces, and the other flows narrated
+as they are touched. The first read of a computed value sits in the reactive core's per-slot
+code: its narrative waits for a measure against the performance baselines. A feature in flight on
+`plan.html` and `tasks.md` (`edge-networks`, `workflow-improvements`) is finished by hand.
+
 ### Not yet wired: `mkdocs build --strict` in CI
 
 SSOT metadata content (`param_descriptions`, docstrings, `tests/test_descriptions.py`) shipped, and `mkdocs build --strict` runs clean locally (verified 2026-07-01) — but the follow-up step, wiring it into `.github/workflows/ci.yml`, was never done. Just add the step; no doc fixes needed first.

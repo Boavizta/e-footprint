@@ -12,6 +12,7 @@ from efootprint.abstract_modeling_classes.empty_explainable_object import EmptyE
 from efootprint.abstract_modeling_classes.input_values import input_values_match
 from efootprint.abstract_modeling_classes.utils import css_escape
 from efootprint.logger import logger
+from efootprint.narrate import event
 from efootprint.abstract_modeling_classes.object_linked_to_modeling_obj import ObjectLinkedToModelingObjBase
 from efootprint.abstract_modeling_classes.reactive_core import (
     CONTAINERS_NODE_NAME, collect_invalidated_slots, computed_attribute, computed_slots, instance_slot_registry,
@@ -639,6 +640,7 @@ class ModelingObject(metaclass=ABCAfterInitMeta):
                 return
             from efootprint.abstract_modeling_classes.modeling_update import ModelingUpdate
             logger.debug(f"Updating {name} in {self.name}")
+            event("The modeler assigns an attribute of a live object.", lambda: {"attribute": name})
             ModelingUpdate([[current_attr, input_value]])
 
     @property
