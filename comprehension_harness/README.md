@@ -54,8 +54,13 @@ They are written for any project. What a project is to them is the three things 
    - optionally, a journey helper that writes screens, captures and cases under
      `<docs>/design/journeys-generated/`. Without it a feature's spec is its `spec.md` alone.
 
-   A Python project that tests with pytest takes `python/` and writes none of the four but the
-   journey helper: "The Python stack" below.
+   **A stack lives beside the tools, in `comprehension_harness/<language>/`**, with its own tests:
+   the collector, the declarations a test makes, the source index and the title reader. Only the
+   three calls are elsewhere, in the product's own package. A Python project that tests with
+   pytest takes `python/` and writes none of the four but the journey helper: "The Python stack"
+   below. A stack no other project uses yet is its project's own, in the same place
+   (`typescript/` for one written on the TypeScript compiler and vitest), and is in no shared
+   list until a second project takes it.
 
    Everything else of this list can be done before the stack exists. The tools then stop and
    name what is missing: the command of the configuration that failed, the narrative tests that
