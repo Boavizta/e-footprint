@@ -1,176 +1,156 @@
 ---
 name: spec-plan
-description: Write or refine plan.html after a feature spec is approved. Build an interaction-led, code-grounded implementation plan with linked file navigation. Planning only; no application implementation or task generation.
+description: Use after the user approves a feature's spec to write or refine its plan — second stage of the spec-driven workflow. The plan is made of pieces written into the code (planned calls, shells, @planned comments, planned test titles) and a short plan.md; the reviewer reads the plan page generated from them. Planning only — nothing the product does changes, and no delivery is written.
 ---
 
 # spec-plan
 
-Help the reviewer picture the smallest justified code change, with little interpretive effort.
-The reviewer already knows the spec: the plan is a high-level code review of proposed changes,
-not another product explanation.
+Help the reviewer picture the smallest justified change, with little interpretive effort. The
+plan is not a document you draw: it is the feature's **pieces**, each tagged at the places it
+changes, and the page is generated from them. You write:
 
-Output: `specs/features/<feature-name>/plan.html` in the driving repository. Keep the plan
-content self-contained and editable throughout review. Planning may include read-only code inspection
-and scoped local diagnostics; do not implement application changes or generate tasks.
+- the **sites** in the code: `planned` calls where a change lands, shells for new functions,
+  `@planned` comments where no line runs;
+- the **planned tests** of the narrative and server tiers, as titles with no body;
+- **`specs/features/<feature>/plan.md`**: a section a piece (its statement, its reason), the
+  decisions across pieces, the waivers.
 
-Start this stage in a fresh session from the approved spec and any existing plan. A decision
-missing from those documents is a gap to resolve, not a reason to infer it from an earlier chat.
-Refine an existing draft in place. Read `.agents/repository.md` for local adaptations.
-Use the collection/binding commands in `specs/agent-tooling.md` at stage start and close-out;
-attribute this session to the driving repo, feature and `plan` stage. Missing telemetry is reported,
-not a reason to stop planning.
+Nothing the product does changes: a `planned` call is inert and a shell fails loudly if reached.
+You write no unit-tier title and no delivery; those are `spec-tasks`'.
 
-Walkthrough writing, the HTML surface and the handoff audit follow
-[the shared plan review surface](references/plan-review-surface.md), which `bug-fixes-plan` also uses.
-This skill owns what a feature plan contains and in which order.
+**Run it in a fresh session**, from the approved spec. A spec that cannot stand alone fails here,
+as a question to the user. Read `.agents/repository.md` (the stack's spellings, the commands, the
+gates, § "Planning checks") and [`specs/workflow-formats.md`](../../../specs/workflow-formats.md)
+§ "A site" and § "`plan.md`": the form is stated there and its budgets are checked. Do not read
+the tools' source to learn it. `map …` below is the map's command (`code-map` skill).
 
-## Ground the plan before writing
+The `references/` and `assets/` beside this file belong to the earlier `plan.html` form, which
+`bug-fixes-plan` and `plan-review-guide` still write.
 
-- Resolve the feature and driving repository from the conversation and workspace workflow.
-  Read the approved `spec.html`, any existing plan and relevant review decisions. Ask only if
-  the feature or approval is genuinely unclear; do not restart an established review.
-- Read the repository's `AGENTS.md`, mission, constitution and architecture entry point, then the owning
-  documentation for affected paths. Both repositories use `specs/architecture/index.html`;
-  consult `.agents/repository.md` if a documentation transition is still in progress.
-  Flag architectural deviations; constitutional changes require explicit approval through the
-  constitutional workflow, not an incidental plan paragraph.
-- Trace the relevant existing code and tests, including success, error, cancellation, rendering
-  and persistence behavior where the proposed change touches them. Documentation alone is not
-  evidence of what an endpoint, hook or browser handler currently does.
-- Look for existing mechanisms before proposing abstractions. Explain a refactor as the shared
-  surface rules describe: today, what changes and who uses it, what new behavior it enables.
-- Ground material unresolved decisions in a concrete scenario from the current code or approved
-  scope. Separate observations, proposals and uncertainties; collect ordinary scope questions for
-  plan review as described below. Do not manufacture edge cases to force a product decision.
+## Before writing
 
-## Audit complexity before human review
+- **Read the map first**: `map spec <feature>`, then the `narrative` and `around` answers it
+  names, then `step` for the steps you will change. It gives a `file:line` for what matters, so
+  you read ranges, not files. Then the spec, `plan-draft.md` if the spec stage left one, the
+  project's rules and the architecture pages that own what the change touches.
+- **The narratives the change lands in are reviewed before the plan is written.** A flow that has
+  no narrative, or one whose steps read wrong, is told or corrected first, in its own commit and
+  preferably its own session; say so and stop. A plan written on a narrative nobody has read is
+  rewritten when someone does.
+- **Trace the real code and tests** along every path the feature touches: success, error,
+  cancellation, retry, rendering, persistence. A document is no evidence of what a function does
+  today.
+- **Look for the existing mechanism** before proposing a new one. For each interaction, make the
+  checks of `repository.md` § "Planning checks" and say which it touches.
+- A feature with no existing flow to land in has shells that never run, so its pieces have no
+  run order on the page. Tell the reviewer; the order is then `plan.md`'s.
 
-Treat the approved spec as scope already shaped by the mission's leanness preference during
-`spec-specify`. Planning grounds those choices in actual code and supported interactions, where
-new costs or simpler alternatives may become apparent. Look for newly discovered complexity traps
-or opportunities where a small behavior change removes substantial implementation cost. Revisit
-agreed tradeoffs when new evidence changes their balance; surface proposals for review rather
-than silently changing the spec or routinely reopening settled product decisions.
+## Audit complexity before the review
 
-For each added abstraction, state store, queue, synchronization step, validation or recovery
-mechanism, identify the agreed behavior it serves and compare it with a smaller extension of
-existing code. Remove mechanisms with no demonstrated need. A sync, queue, replacement or pending-flag
-rule is a smell: before proposing one, check whether the existing lock already serialises the actions,
-and list the descendants that would inherit the attribute. Apply the project's feature and resource
-priorities from its mission and `.agents/repository.md`.
+The spec's scope was shaped at `spec-specify`. Planning is the first time it meets the code, where
+a cost or a simpler alternative can show. For each added abstraction, store, queue,
+synchronisation, validation or recovery, name the agreed behaviour it serves and compare it with
+a smaller extension of what exists. Remove what has no demonstrated need.
 
-Also look for requirements whose implementation cost could be substantially reduced by a small
-behavior change. When traced code or necessary proposed mechanisms reveal such an opportunity,
-actively recommend it for review: identify the affected spec clause, show the complexity it causes,
-and compare the smallest behavior change with implementing the approved requirement. Explain which
-states, coordination, persistence or recovery mechanisms would disappear; a difficult implementation
-or a line-count estimate alone does not justify changing scope.
+- **A value that behaves like a figure of an existing whole joins it.** Challenge a parallel type:
+  it costs a second type, another parameter and a rewritten filter wherever the whole is walked.
+- A queue, a replacement rule or a pending flag is a smell: check first whether an existing lock
+  already serialises the actions.
+- No check for a hypothetical stale or hand-crafted request. "Defence in depth" is no
+  justification; a new check has a concrete job in a supported path.
+- Before planning a refresh, a preserved draft or a background sync, check which surfaces are
+  visible. Showing an error is not keeping an edit.
+- No framework inferred from one helper, no second model of data owned elsewhere.
+- No recovery for a failure inside a failure handler by reflex: each adds branches of its own.
+- A confirmed bug found on the way is reported with its evidence, and a deferred concern parked
+  where the repository parks them. Nothing is fixed during planning.
 
-Assess the actual user cost, including expected frequency, benefit, failure severity and accessibility.
-Distinguish evidence from assumptions and unknowns; do not invent usage figures or savings. A short
-spec edit may have large behavioral consequences. Preserve correctness, security and domain invariants;
-rare but consequential needs may justify substantial complexity. Separate maintenance benefits from
-runtime/resource effects when relevant. Keep a consequential recommendation visible beside the
-affected interaction using the proposal guidance below; no separate audit document or new stage is needed.
+**A change the feature needs in another repository is planned there**, in that repository's own
+plan of the feature, by a session run there. Here it is a pointer, an item of
+`## Planned elsewhere`, never a piece: say what this plan relies on and which pieces stand on it
+(`workflow-formats.md` § "A feature that changes two repositories"). A guard here against what
+the other repository should fix is put to the reviewer as a `To confirm:`.
 
-In particular:
+**A requirement a small behaviour change would make much cheaper** is put to the reviewer as a
+`To confirm:` in the piece it concerns: the smaller behaviour, which states, coordination or
+recovery would disappear, and what the user would lose. Weigh frequency, benefit and failure
+severity on evidence, never on invented figures. The spec changes only on the answer: then
+`spec.md`, its cases and the plan are edited together, in place, with no note of the change. Correctness, security and the project's
+invariants are never traded away. No proposal is a valid result.
 
-- Do not duplicate existing validation or introduce protections solely for hypothetical stale
-  or hand-crafted requests. A “defense in depth” label is not a justification. Preserve existing
-  security protections and domain invariants; explain any necessary new check through its
-  concrete role in the supported workflow.
-- Check which UI surfaces actually exist or remain visible before proposing refresh, draft
-  preservation or background synchronization. Distinguish error presentation from edit retention.
-- Do not infer a generic framework from one shared helper, or a second data model from information
-  already owned elsewhere. Share the smallest useful mechanism.
-- Do not automatically add recovery for failures inside a failure handler. Such paths add more
-  branches and failure states; require a concrete supported scenario and user benefit before
-  planning them. Let ordinary error handling cover exceptional secondary failures.
-- Keep required feature work separate from unrelated reliability improvements. Surface confirmed
-  bugs with evidence and ownership; park deferred concerns using the user's backlog convention,
-  rather than making them feature prerequisites. Do not implement fixes during planning.
+This audits your reasoning. It is no section of `plan.md`.
 
-This is a check on the agent's reasoning, not a mandatory audit section in the rendered plan.
-It does not universally forbid queues, drafts or defensive checks: their cost must earn its place
-in the actual feature.
+## Writing the pieces
 
-## Reading order and content
+- **A piece is one statement the reviewer can approve alone.** Cut by what is decided, not by
+  file or by layer. A change to stored data is a piece; so is each decision the reviewer could
+  refuse without refusing the rest.
+- **A clause states the change at its place**, not what the code does today: one clause, no
+  reason, no list of cases. The reason is the piece's, in `plan.md`.
+- **A new function is a shell, and the clause of the site that will call it names it in
+  backticks.** Without that the piece is drawn on no flow, and the check fails.
+- **On code that runs, a site is a call.** A comment is for a type, a schema, a migration, a doc.
+  No test crosses a comment, so no flow shows it and no test reaches it.
+- **A mechanical ripple is stated once, at its cause.** When one site makes twenty literals or
+  assertions change the same way, its clause says so, and the twenty carry no tag. A place is
+  tagged when its change is a decision.
+- **Define a term where the plan first needs it**, and use only defined terms after.
+- **For a mechanism in two steps, the piece's reason says why one is not enough.**
+- **Each fact once.** What a site's clause says, the section does not repeat; what a test title
+  says, neither does.
 
-Use the following shape, scaled to the feature rather than a fixed number of sections:
+## Writing the tests
 
-1. **Shared data, if it changes.** Start with materially new or changed data structures needed
-   by the following interactions. Show their concrete shape, identity and ownership. Existing
-   metadata can be read directly; explaining it does not require a wrapper or new data model.
-   Omit this opening section when no shared data changes.
-2. **Follow interactions through the code.** After the shared data, organize by user action or
-   library caller operation. Follow its entry point, changed calls, validation, persistence and
-   visible or returned result where relevant. Introduce a helper when its first caller invokes
-   it, explaining its owning module and meaningful inputs/outputs in that flow; later flows
-   link back. Avoid standalone inventories of implementation functions or query contracts.
-   A dedicated contract section is appropriate when the contract itself is the feature's main
-   review subject, such as a new public API or integration protocol; still connect it to callers.
-3. **Implementation sequence and verification.** Keep dependency order distinct from reading
-   order. Name independently useful steps and any approved ride-along refactor. Map important
-   behavior and regression risks to existing test layers; do not enumerate helper-internal
-   assertions or duplicate library tests without a concrete reason.
-4. **Material decisions only.** Keep risks, alternatives, migrations, documentation changes and
-   unresolved questions where they help review. Omit empty sections, generic reassurance and
-   unchanged rules. Keep actual review decisions visible, not hidden as agent-only detail.
+Titles only, of the narrative and server tiers. A behaviour is proven by a narrative case; a unit
+title is `spec-tasks`' to plan.
 
-Within the walkthrough, apply the
-[code-grounded walkthrough rules](references/plan-review-surface.md#code-grounded-walkthrough):
-file-titled snippets, existing versus proposed code, helpers introduced at their first call site,
-linked identifiers, and the narrated anticipated diff.
+- **Each rule of the spec has one owner**: the test whose title ends `[<rule-slug>]`.
+- **No title repeats a case the feature's host already has.** When the new value only joins an
+  existing whole, that whole's tests are extended, not copied with the value swapped in.
+- **An existing case extended is the owner**: a planned test beside it, under a comment saying
+  it is the case above, given what, and retitled, and that no case is added.
+- **A rule true by the shape of the code is waived, not tested**: an item of `## Rules no test
+  holds`, proposed with `To confirm:`. A test that restates the implementation is not written.
+- **A planned case goes to the piece at whose commit it can be written.**
+- **Re-read each journey case of the spec against the plan's decisions**, and reword one a
+  decision made false.
 
-## HTML review surface
+## Guards and states
 
-Build the page as described in
-[the shared review surface](references/plan-review-surface.md#html-review-surface), starting from
-[the HTML starter](assets/plan.html) for a new plan. Steps are the interactions of the reading
-order above; the changed-file tree highlights the files of the selected interaction.
+- **Before a guard on a value, list the paths that can produce it.** If none can, write no guard
+  of its own: the existing loud check covers it.
+- **Before making a validity check stricter, list the stored states an earlier client can
+  leave.** A stricter check that throws on one of them breaks a screen for a user who did nothing.
 
-## Iteration and handoff
+## Points to confirm
 
-- Refine existing plans in place, following the
-  [shared iteration rules](references/plan-review-surface.md#iteration).
-- Record discovered spec simplifications as `[PLAN-UPDATE-01] — PROPOSED` callouts beside the
-  affected plan passage, using the [shared index and callout format](references/plan-decision-callouts.md).
-  Give each proposal a stable ID; continue the existing numbering if proposals already exist.
-  Include the linked spec clause, precise current/proposed behavior, linked code evidence for the
-  complexity removed, user tradeoffs, recommendation and material uncertainties. Label spec changes
-  explicitly so the reviewer can distinguish them from implementation choices within approved scope.
-  Keep the approved spec and accepted design intact while pending, and mark dependent plan passages
-  provisional wherever they rely on the proposed behavior. Continue unaffected planning and present
-  meaningful proposals together with the plan for review. Interrupt only when a fundamental scope
-  contradiction prevents a coherent reviewable plan even with explicit provisional assumptions;
-  complete unaffected work first. Do not manufacture proposals to fill the format.
-- When a decision changes, synchronize the walkthrough, snippets, changed-file tree, verification
-  and affected spec statements. Update the spec only for agreed capability changes, not to smuggle
-  implementation details into it. For an accepted spec proposal, update the spec and plan together
-  and mark its callout/index ACCEPTED. For a rejected proposal, mark it REJECTED with a brief reason
-  and align the plan with the unchanged requirement. Remove obsolete machinery everywhere it was described.
-- Task decomposition records proposed amendments beside affected passages in `plan.html`, using
-  the `spec-tasks` content rules and [shared callout format](references/plan-decision-callouts.md).
-  Preserve their stable IDs and the approved design while decisions are pending. Apply accepted
-  changes to the plan, synchronize affected tasks/briefs, and mark the callouts ACCEPTED.
-  Amendment decisions and task approval can happen in the same review.
-- During an authorized implementation run, consequential technical decisions use the
-  `feature-implement` content rules and shared callout format: update the owning plan passage
-  and add an `IMPL-DECISION` callout.
-  Keep ordinary fixes and successful test results out of the plan.
-- Record recurring review feedback when requested, but do not automatically rewrite the skill
-  during feature review. Generalize lessons only when the user authorizes that update.
-- Run the [shared handoff audit](references/plan-review-surface.md#handoff-audit): anchors,
-  links, file labels, snippet/prose/tree agreement, linked identifiers, link refresh and
-  rendered-layout inspection.
-- Report the plan path, substantive changes and remaining decisions concisely. Wait for review;
-  do not advance to `spec-tasks` or implementation without authorization. After approval, hand off
-  to `spec-tasks` in a fresh session.
+- One per piece at most: the question in bold, then the alternative. Only what is the reviewer's
+  to decide.
+- **State the content, never a rule's name alone.** "Applied offline is owned by one case" reads
+  as if offline saving were planned.
+- An answer is written into the piece as a statement, and the paragraph goes.
 
-## Maintaining this skill
+## While editing, and before handing over
 
-The library repository's `.agents/skills/spec-plan/` is canonical; the interface copy is a mirror.
-When editing the skill itself, synchronize both instructions and assets. Keep feature-plan
-content rules here, rules shared with `bug-fixes-plan` in `references/plan-review-surface.md`, and
-layout boilerplate in the starter, rather than copying a feature's entire review history into
-the skill.
+- **Batch the edits.** Each edit replays the session's whole context.
+- `map check <feature>` says in a screen what fails; `map plan <feature>` shows the plan as it
+  stands. Run the whole check once, before the commit, with the gate of a plan edit
+  (`repository.md` § "Gates"). A plan needs no run of the whole test suite.
+- **A mechanical change across many files goes to a cheaper agent with a precise brief**, then is
+  checked: a rename, a retag.
+- **Delete `plan-draft.md` once each of its lines is a piece**, a reason or a point to confirm.
+  A line you do not follow is said to the reviewer, not dropped. Commit the plan's files by name.
+- Tell the reviewer where the plan page is, the points to confirm, and **what you read that no
+  verb of the map pointed at**: those are the map's gaps.
+
+## The review, and the approval
+
+- The reviewer reads the page top down: the pieces no flow shows, the flows the change lands in,
+  then a card a piece, those of the first block first. They ask in this session, and answer each
+  point to confirm under it on the served page (`npm run comprehension`). Read those answers with
+  `map feedback <feature>`; each answer is an edit in place and a commit.
+- A simplification of the underlying code found on the way is made in another session, and the
+  plan is then rewritten against it.
+- **The plan is approved when no question is left and the reviewer says so.** Then, and only
+  then, run the approval command and commit `plan.approved.json`. An agent never approves on its
+  own judgement. The next stage is `spec-tasks`, in a fresh session.

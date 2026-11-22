@@ -12,6 +12,33 @@ Model-engine memory work lives in `performance/memory/`: its native profiler loa
 shared-child scenarios expose materialized slot counts, and dated fresh-process measurements remain evidence rather
 than platform-independent memory thresholds. Keep deterministic cache-shape assertions in `tests/performance_tests/`.
 
+## Narrative tests (`tests/narratives/`)
+
+A narrative test crosses one flow in order so that its page can be drawn
+(`npm run comprehension:render`, then `specs/comprehension_harness/`). The flow tells itself:
+`narrate` at each step and `event` at its cause, imported from `efootprint/narrate.py` and inert
+outside a test run of this repository. The test declares the narrative with
+`comprehension_harness/python/declare.py`:
+
+- `@narrative.mechanism("<title>")` on a test class for a flow of the engine, `@narrative("<title>")`
+  for a flow a modeler sets off; the first paragraph of its docstring is the summary.
+- Its first test is the reference case, the one the page tells step by step, unless another is
+  marked `@canonical`. The other tests are variants: another kind of edit, a failure.
+- It builds real objects, never mocks, and asserts what the flow gives, as any test does. The
+  steps are recorded, not asserted.
+
+`comprehension_harness/python/collector.py` is loaded for every pytest run (`tests/conftest.py`)
+and writes what each test crossed under `node_modules/.cache/comprehension_harness/stories/`; a
+test that crosses no call costs nothing. `npx tsx comprehension_harness/render.ts --check` holds
+a narrative to its form. How each declaration is spelled: `.agents/repository.md` § "The stack".
+
+The stack's own tests are `comprehension_harness/python/tests/`, collected by a bare `pytest` run.
+Four of them hold what a user of the published package relies on: the calls do nothing and never
+call a watch where no collector is installed; their module imports the standard library alone;
+`efootprint/narrate.py` is a copy of the reference these two are held on,
+`comprehension_harness/python/narrate.py`; and this repository's own source passes the index's
+refusals.
+
 ## What NOT to test in unit tests
 
 Things covered by integration tests are duplication:

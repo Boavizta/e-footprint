@@ -1,6 +1,6 @@
 ---
 name: reviewer
-description: Independently review a task or cumulative feature change.
+description: Independently review one lot's commits, or one task of a bug batch.
 model: claude-opus-5-5[1m]
 effort: high
 ---

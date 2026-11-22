@@ -130,7 +130,7 @@ its own reproduction.
 ## Task format
 
 Keep every task usable from cold context and compatible with `task-implement` and `feature-implement`:
-classify remaining work using [implementation difficulty](../spec-tasks/SKILL.md#implementation-difficulty),
+classify remaining work using [implementation difficulty](../spec-tasks/SKILL.md#difficulty),
 accounting for the completed diagnosis rather than the bug's impact.
 
 ```markdown

@@ -1,47 +1,76 @@
 # Shared agent workflow and local usage tooling
 
-The library is the canonical authoring checkout. Both repositories commit complete copies of
-shared skills, role instructions, runtime agent definitions, collector code and tests. Each
-checkout works on its own; neither installs a new package into the product environment.
+This repository is the reference for the files it shares with other projects: the comprehension
+tools, the stage skills, the roles' instructions, the method's documents and the review-link
+extension; and, with the library, the bug-batch skills and the usage collector. Every project
+commits complete copies and works on its own; none installs a package into its product
+environment.
 
-Local adaptations live in `.agents/repository.md` and `ai-usage/config.json`. Skills point there
-for architecture, validation and review-risk details. Both architecture entry points are
-`specs/architecture/index.html`.
-Plans link relevant architecture without adding an architecture tutorial.
+What a project is to the shared files, it writes itself, and nothing synchronizes it:
+`.agents/repository.md`, `comprehension.config.json`, `ai-usage/config.json`, its settings and
+its runtime adapters (`.claude/agents/`, `.codex/agents/`). Skills point at
+`.agents/repository.md` for architecture, validation and review-risk details. Both architecture
+entry points are `specs/architecture/index.html`.
+
+The method is [`workflow.md`](workflow.md); the forms of a feature's files are
+[`workflow-formats.md`](workflow-formats.md); the tools, and how a project installs them, are
+[`comprehension_harness/README.md`](../comprehension_harness/README.md).
 
 ## Synchronization
 
-From the library root:
+`.agent-tooling-sync.json` here is the manifest: lists of shared files, each named explicitly.
+
+| List | Holds | Taken by |
+|---|---|---|
+| `core` | The comprehension tools and their tests, the stylesheet and the script of the generated pages, the method's two documents, the stage skills, the roles' instructions, the review-link extension, the synchronization script and its test | Every project that uses the method |
+| `python` | The Python stack of the comprehension tools, `comprehension_harness/python/`, with its tests: the three calls, the test declarations, the pytest plugin, the source index, the title reader and the watch loop | Every Python project that uses the method |
+| `e-footprint` | The bug-batch skills of the `plan.html` form with their references, their two roles and their link converter, the usage collector, the Codex hooks, this page | The library |
+
+A project that takes lists runs the script from its own checkout, with this one as upstream:
 
 ```sh
-python3 scripts/sync_agent_tooling.py --target ../e-footprint-interface --check
-python3 scripts/sync_agent_tooling.py --target ../e-footprint-interface
+python3 scripts/sync_agent_tooling.py --upstream ../e-footprint-interface --check
+python3 scripts/sync_agent_tooling.py --upstream ../e-footprint-interface
 ```
 
-The explicit file list in `.agent-tooling-sync.json` owns only shared files. Local references,
-collector configuration, `AGENTS.md`, secrets/local settings, and interface-only skills remain
-untouched. The manifest stores the last synchronized hashes: destination edits cause a conflict
-instead of being overwritten. Reconcile a useful interface change back into the canonical copy.
-`--accept-target-overwrite` is for reviewed bootstrap/reconciliation only. A removed manifest path
-requires explicit retirement; the script never sweeps directories or deletes local files.
-When invoked from the interface, pass `--source ../e-footprint --target .`.
+Its first run names the lists it takes (`--lists core e-footprint`). The script writes a lock in
+that checkout, `.agent-tooling-lock.json`: the lists, the hash of each file at the last sync, and
+this repository's address, commit and licence. Nothing is written here but the files themselves.
 
-To add a shared file, add its relative path to the library manifest, then synchronize. No template
-expansion: shared instructions read the repository's small local reference at runtime.
+- A file changed here only is pulled there. A file changed there only is pushed here, where it
+  reads as an ordinary diff to review and commit.
+- A file changed on both sides is a conflict, and neither side is overwritten. The script shows
+  both changes against the last synced version, read here at the locked commit; a person settles
+  it by editing one side. Nothing is merged automatically. `--settle here` or `--settle upstream`
+  is for a reviewed bootstrap only.
+- A push refuses a file that holds one of the lock's `private_words`: what a project does not
+  publish never arrives here.
+- A path taken off the manifest stays in the other checkout until `--retire` drops it from its
+  lock. The script never sweeps a directory and never deletes a file.
+- No template expansion: shared instructions read the repository's local reference at run time.
+  A difference that lasts goes into the shared file or into `.agents/repository.md`.
+
+To share a new file, add its path to a list here, then synchronize.
+
+The library's checkout still carries the script and the manifest of the time it was the
+reference. Do not run that script toward this repository. The library takes the lists in a later
+step, with the adjustments its own skills need.
 
 ## Agent roles
 
 The runtime agent definitions are the single source of truth for each role's model and effort:
-`.codex/agents/<role>.toml` for Codex and `.claude/agents/<role>.md` for Claude Code. Read the
-selected runtime's agent definition at dispatch time; do not infer one runtime's settings from
-the other or copy them into workflow guidance. The configured roles are `implementer-easy`,
-`implementer`, `implementer-hard`, `reviewer`, `diagnostician` and `plan-review-guide`.
+`.codex/agents/<role>.toml` for Codex and `.claude/agents/<role>.md` for Claude Code. They are
+each repository's own. Read the selected runtime's agent definition at dispatch time; do not
+infer one runtime's settings from the other or copy them into workflow guidance. The configured
+roles are `implementer-easy`, `implementer`, `implementer-hard`, `reviewer`, `reviewer-global`
+and `light`, with `diagnostician` and `plan-review-guide` for a bug batch.
 The supervisor/planning session preferably uses the configured `implementer-hard` settings.
 An explicit user model choice overrides that workflow recommendation.
 
-`Implementation: easy | standard | hard` selects the corresponding implementer role using the
-[difficulty rules](../.agents/skills/spec-tasks/SKILL.md#implementation-difficulty). Standard is the
-default; easy covers well-defined transformations and known-cause fixes, including broad mechanical
+A lot's difficulty (`easy`, `standard` or `hard`; for a bug-batch task, its `Implementation:`
+line) selects the corresponding implementer role, by the
+[difficulty rules](../.agents/skills/spec-tasks/SKILL.md#difficulty). Standard is the default;
+easy covers well-defined transformations and known-cause fixes, including broad mechanical
 renames. Review depth and required checks remain independent.
 
 Portable role instructions live in `.agents/roles/`; `.codex/agents/*.toml` and
@@ -50,34 +79,38 @@ spawn tool, read the chosen `.codex/agents/<role>.toml` and pass its model/effor
 with the role instructions in the brief.
 If a runtime cannot apply a requested setting, report it and use the user's permitted alternative;
 never claim an unobserved model pin worked. A role description is not a tool permission boundary.
-The same configured reviewer role handles per-task and global reviews and can apply approved fixes.
-The plan-review-guide role performs the final documentation pass after global review and corrections;
+The `reviewer` role reads one lot's commits, or one task of a bug batch; `reviewer-global` reads
+the whole delivery once its last lot is reviewed. Both can apply approved fixes. `light` runs a
+suite or a lookup and reports the evidence.
+The plan-review-guide role performs the final documentation pass of a bug batch after global review and corrections;
 it preserves the approved plan and adds implementation evidence. The supervisor owns consequential
 decisions and checks changed claims. Substantial unresolved tracing escalates to the standard
 implementer; see [the skill](../.agents/skills/plan-review-guide/SKILL.md). Adjust its agent
 definition when observed correction effort warrants a different model or effort.
 
-Use a fresh context for specification → plan → tasks and for each implementation run. This is a
+Use a fresh context for each of specification, plan and tasks, and for each implementation run. This is a
 handoff convention, not authority to create new user-owned Codex tasks without a request.
-Read independent files in batches. Task preparation stays in one session: the same agent writes
-the overview and every brief in dependency order, then presents any plan proposals together.
-Implementation remains ordered by task dependencies. Never share stateful test suites or mutable
+Read independent files in batches.
+Implementation follows the delivery's order of lots. Never share stateful test suites or mutable
 application databases between parallel agents.
 
-Label delegated work `<feature>--impl-task-N`, `--review-task-N`,
-`--diag-<bug>`, `--review-global`, `--plan-review-guide` or `--gate-full`. In Claude place the label in the description;
+Label delegated work `<feature>--impl-lot-<lot>`, `--review-lot-<lot>`, `--review-global` or
+`--gate-full`, `<lot>` being the lot's slug; for a bug batch `--impl-task-N`, `--review-task-N`,
+`--diag-<bug>` or `--plan-review-guide`. In Claude place the label in the description;
 use plain unnamed subagents so role effort is not lost to teammate inheritance. Do not transfer
 that Claude-specific naming workaround to Codex. Stable session bindings below are preferred
-where labels cannot carry the owner, run or runtime identity reliably.
+where labels cannot carry the owner, run or runtime identity reliably. A lot's label gives the
+ledger the feature and the role; only a task's label carries a number it records.
 
 ## Implementation review
 
-An authorized feature run completes implementation and reviews autonomously. The plan carries
-only consequential choices, tagged `IMPL-DECISION`; task status and unresolved prerequisites stay
-in `tasks.md`. Minimal handoffs give agents exact commit ranges and material review pointers.
+An authorized `feature-implement` run delivers one lot, then stops for the reviewer
+([`workflow.md`](workflow.md) § 4). A decision is written into the plan and nowhere else: a
+`Changed:` paragraph for what changes a line of it, a `Note:` for a choice the next lot stands
+on. What only the user can do goes to the feature's gates file. A bug batch keeps its
+`tasks.md`, and records a consequential choice as an `IMPL-DECISION` callout of its `plan.html`.
 Routine fixes and successful test results are omitted from review artifacts and reports; required
 checks still run, and unresolved failures remain visible. No separate judgement or gate journals.
-See `feature-implement` for the decision format and exceptional interruption conditions.
 
 The retired Astra/Sol shadow-review comparison and its early-stop decision are recorded in the
 library's `specs/features/workflow-improvements/shadow-review.md`.
@@ -206,9 +239,12 @@ Do not automatically stage private ledgers or exports into public commits.
 
 ```sh
 python3 -m unittest discover -s ai-usage/tests -v
-python3 scripts/sync_agent_tooling.py --target ../e-footprint-interface --check
+python3 scripts/test_sync_agent_tooling.py
+npx vitest run comprehension_harness
+node --test tools/vscode-plan-review-links/extension.test.js
 ```
 
-The synthetic fixtures exercise both formats, repeated/partial counts, retention, attribution,
-pricing and synchronization conflicts without touching a dev server or application database.
-Product changes still follow their repository's constitutional gates.
+The synthetic fixtures exercise both transcript formats, repeated/partial counts, retention,
+attribution and pricing; the synchronization tests build their checkouts in a temporary folder;
+the tools' tests read no file of the project. None touches a dev server or an application
+database. Product changes still follow their repository's constitutional gates.

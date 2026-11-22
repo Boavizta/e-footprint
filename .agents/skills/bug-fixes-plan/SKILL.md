@@ -19,8 +19,8 @@ the batch folder as feature and the `plan` stage.
 
 Shared ground with `spec-plan`, owned there and never restated here:
 
-- Grounding in repository docs and code: [spec-plan's grounding rules](../spec-plan/SKILL.md#ground-the-plan-before-writing).
-- Complexity audit for proposed mechanisms and refactors: [spec-plan's audit](../spec-plan/SKILL.md#audit-complexity-before-human-review).
+- Grounding in repository docs and code: [spec-plan's grounding rules](../spec-plan/SKILL.md#before-writing).
+- Complexity audit for proposed mechanisms and refactors: [spec-plan's audit](../spec-plan/SKILL.md#audit-complexity-before-the-review).
 - Walkthrough writing, HTML surface, iteration and handoff audit: [plan review surface](../spec-plan/references/plan-review-surface.md).
 - Source links and the right-click diff menu: [plan-review-links](../spec-plan/references/plan-review-links.md).
 - Decision indexes and callouts: [plan-decision-callouts](../spec-plan/references/plan-decision-callouts.md).
@@ -143,6 +143,6 @@ after all runs have shipped.
 
 ## Maintaining this skill
 
-The library repository's `.agents/skills/bug-fixes-plan/` is canonical; the interface copy is a
-mirror. Rules shared with `spec-plan` live in `spec-plan/references/` and `spec-plan/assets/`:
+The interface repository's `.agents/skills/bug-fixes-plan/` is the reference; the library's copy
+is synchronized from it (`specs/agent-tooling.md`). Rules shared with `spec-plan` live in `spec-plan/references/` and `spec-plan/assets/`:
 change them there and synchronize both repositories. Keep only bug-batch content rules here.

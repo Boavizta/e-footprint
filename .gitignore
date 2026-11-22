@@ -26,8 +26,24 @@ litellm-commands.md
 
 # Private development telemetry and synchronization/configuration sources
 ai-usage/.local/
-!.agent-tooling-sync.json
+!.agent-tooling-lock.json
 !ai-usage/config.json
 !ai-usage/prices.json
 !.claude/settings.json
 !.codex/hooks.json
+
+# The comprehension harness (comprehension_harness/README.md). Its configuration and its Node manifest are
+# committed; the pages are generated from the code and never are, but for their hand-written heads.
+node_modules/
+!comprehension.config.json
+!package.json
+!package-lock.json
+!comprehension_harness/**/*.json
+!tools/**/*.json
+specs/comprehension_harness/narratives/*.html
+specs/comprehension_harness/mechanisms/*.html
+!specs/comprehension_harness/**/*.skeleton.html
+specs/comprehension_harness/plans/
+specs/design/journeys-generated/
+specs/features/*/plan-feedback.json
+ai-usage/.state/

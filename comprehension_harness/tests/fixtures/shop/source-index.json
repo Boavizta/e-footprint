@@ -1,0 +1,112 @@
+{
+  "narratives": [
+    {
+      "file": "tests/test_checkout.py",
+      "title": "The customer pays a basket",
+      "line": 5,
+      "summary": "The total is the lines' sum with the tax, and that is what is charged.",
+      "firstTest": "test_charges_the_total_with_tax"
+    }
+  ],
+  "files": {
+    "shop/pricing.py": {
+      "sites": [
+        { "kind": "step", "line": 8, "column": 5, "fn": "with_tax", "sentence": "The price **gains the tax**, `rate` of it." }
+      ],
+      "functions": [
+        { "fn": "with_tax", "line": 6, "column": 5, "endLine": 9 },
+        { "fn": "round_price", "line": 12, "column": 5, "endLine": 13 }
+      ],
+      "declarations": [
+        { "name": "TAX", "line": 3, "column": 1 },
+        { "name": "with_tax", "line": 6, "column": 5 },
+        { "name": "round_price", "line": 12, "column": 5 }
+      ],
+      "imports": [],
+      "locals": [
+        { "name": "amount", "line": 6, "column": 14 },
+        { "name": "rate", "line": 7, "column": 5 },
+        { "name": "amount", "line": 12, "column": 17 }
+      ],
+      "uses": [
+        { "name": "TAX", "line": 7, "column": 12, "at": { "file": "shop/pricing.py", "line": 3, "column": 1 } }
+      ]
+    },
+    "shop/checkout.py": {
+      "sites": [
+        { "kind": "step", "line": 11, "column": 9, "fn": "Basket.total", "sentence": "The basket **adds its lines** before `with_tax`." },
+        { "kind": "event", "line": 16, "column": 5, "fn": "pay", "sentence": "The customer presses Pay." },
+        {
+          "kind": "planned", "line": 18, "column": 5, "fn": "pay", "sentence": "The amount due **loses the card's balance**.",
+          "planned": { "feature": "gift-cards", "slug": "deduct-the-card", "change": "changed", "signature": null }
+        },
+        { "kind": "step", "line": 23, "column": 5, "fn": "charge", "sentence": "The amount **is charged**." },
+        {
+          "kind": "planned", "line": 28, "column": 5, "fn": "refund", "sentence": "A refund goes back to the card first.",
+          "planned": { "feature": "gift-cards", "slug": "refund-to-card", "change": "added", "signature": "def refund(amount):" }
+        }
+      ],
+      "functions": [
+        { "fn": "Basket.__init__", "line": 6, "column": 9, "endLine": 7 },
+        { "fn": "Basket.total", "line": 9, "column": 9, "endLine": 12 },
+        { "fn": "pay", "line": 15, "column": 5, "endLine": 19 },
+        { "fn": "charge", "line": 22, "column": 5, "endLine": 24 },
+        { "fn": "refund", "line": 27, "column": 5, "endLine": 29 },
+        { "fn": "pay_all", "line": 32, "column": 5, "endLine": 33 }
+      ],
+      "declarations": [
+        { "name": "Basket", "line": 5, "column": 7 },
+        { "name": "pay", "line": 15, "column": 5 },
+        { "name": "charge", "line": 22, "column": 5 },
+        { "name": "refund", "line": 27, "column": 5 },
+        { "name": "pay_all", "line": 32, "column": 5 }
+      ],
+      "imports": [
+        { "name": "round_price", "at": { "file": "shop/pricing.py", "line": 12, "column": 5 } },
+        { "name": "with_tax", "at": { "file": "shop/pricing.py", "line": 6, "column": 5 } }
+      ],
+      "locals": [
+        { "name": "__init__", "line": 6, "column": 9 },
+        { "name": "self", "line": 6, "column": 18 },
+        { "name": "lines", "line": 6, "column": 24 },
+        { "name": "total", "line": 9, "column": 9 },
+        { "name": "self", "line": 9, "column": 15 },
+        { "name": "subtotal", "line": 10, "column": 9 },
+        { "name": "line", "line": 10, "column": 39 },
+        { "name": "basket", "line": 15, "column": 9 },
+        { "name": "amount", "line": 17, "column": 5 },
+        { "name": "amount", "line": 22, "column": 12 },
+        { "name": "amount", "line": 27, "column": 12 },
+        { "name": "baskets", "line": 32, "column": 13 },
+        { "name": "basket", "line": 33, "column": 29 }
+      ],
+      "uses": [
+        { "name": "round_price", "line": 12, "column": 16, "at": { "file": "shop/pricing.py", "line": 12, "column": 5 } },
+        { "name": "with_tax", "line": 12, "column": 28, "at": { "file": "shop/pricing.py", "line": 6, "column": 5 } },
+        { "name": "charge", "line": 19, "column": 12, "at": { "file": "shop/checkout.py", "line": 22, "column": 5 } },
+        { "name": "pay", "line": 33, "column": 13, "at": { "file": "shop/checkout.py", "line": 15, "column": 5 } }
+      ]
+    },
+    "tests/test_checkout.py": {
+      "sites": [],
+      "functions": [
+        { "fn": "TestPay.test_charges_the_total_with_tax", "line": 9, "column": 9, "endLine": 10 }
+      ],
+      "declarations": [
+        { "name": "TestPay", "line": 6, "column": 7 }
+      ],
+      "imports": [
+        { "name": "Basket", "at": { "file": "shop/checkout.py", "line": 5, "column": 7 } },
+        { "name": "pay", "at": { "file": "shop/checkout.py", "line": 15, "column": 5 } }
+      ],
+      "locals": [
+        { "name": "test_charges_the_total_with_tax", "line": 9, "column": 9 },
+        { "name": "self", "line": 9, "column": 41 }
+      ],
+      "uses": [
+        { "name": "pay", "line": 10, "column": 16, "at": { "file": "shop/checkout.py", "line": 15, "column": 5 } },
+        { "name": "Basket", "line": 10, "column": 20, "at": { "file": "shop/checkout.py", "line": 5, "column": 7 } }
+      ]
+    }
+  }
+}

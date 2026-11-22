@@ -1,0 +1,120 @@
+{
+  "name": "e-footprint",
+  "stack": {
+    "calls": "efootprint.narrate",
+    "sourceIndex": [
+      "python3",
+      "-m",
+      "comprehension_harness.python.source_index"
+    ],
+    "titles": [
+      "python3",
+      "-m",
+      "comprehension_harness.python.titles"
+    ]
+  },
+  "cache": "node_modules/.cache/comprehension_harness",
+  "docs": "specs",
+  "hub": {
+    "label": "architecture index",
+    "page": "specs/architecture/index.html"
+  },
+  "productPage": "modeling",
+  "actor": "modeler",
+  "source": {
+    "scan": [
+      "efootprint",
+      "tests",
+      "specs"
+    ],
+    "app": [
+      "efootprint/"
+    ],
+    "product": [
+      "efootprint/"
+    ],
+    "words": [
+      "efootprint",
+      "tests",
+      "scripts",
+      "comprehension_harness",
+      "tools",
+      "ai-usage"
+    ],
+    "mechanisms": [
+      "efootprint/abstract_modeling_classes/"
+    ],
+    "chips": [
+      [
+        "efootprint/abstract_modeling_classes",
+        "dom",
+        "engine"
+      ],
+      [
+        "efootprint/core",
+        "app",
+        "model"
+      ],
+      [
+        "efootprint/builders",
+        "app",
+        "builder"
+      ],
+      [
+        "efootprint/api_utils",
+        "adp",
+        "serialization"
+      ],
+      [
+        "efootprint/utils",
+        "adp",
+        "utility"
+      ]
+    ]
+  },
+  "tests": {
+    "roots": [
+      "tests/"
+    ],
+    "files": "^tests/(?:.*/)?test_[^/]*\\.py$",
+    "narrative": [
+      "tests/narratives/"
+    ],
+    "browser": [],
+    "journeys": "^$",
+    "server": null
+  },
+  "pagesNamingCode": [
+    {
+      "page": "specs/constitution.md",
+      "kind": "rule",
+      "split": "heading"
+    },
+    {
+      "page": "specs/conventions.md",
+      "kind": "convention",
+      "split": "heading"
+    }
+  ],
+  "commands": {
+    "tool": [
+      "npx",
+      "tsx"
+    ],
+    "tests": [
+      "poetry",
+      "run",
+      "pytest"
+    ],
+    "watch": [
+      "python3",
+      "-m",
+      "comprehension_harness.python.watch"
+    ],
+    "journeys": []
+  },
+  "planDiff": null,
+  "repositories": {
+    "e-footprint-interface": "../e-footprint-interface"
+  }
+}

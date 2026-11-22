@@ -1,138 +1,249 @@
 ---
 name: feature-implement
-description: Complete an approved feature or bug-batch run autonomously through implementation and review, recording only consequential decisions in context in the plan.
+description: Supervise the implementation of an approved delivery, lot by lot — fourth stage of the spec-driven workflow. For each lot the supervisor spawns an implementer, runs the lot check against the approved plan, spawns a reviewer over the lot's commits, triages the findings itself, and hands the reviewer of the plan every decision as a Changed paragraph to answer on the delivery page. It parks a lot it cannot land, keeps a gates file of what only the user can do, and closes the last lot with a global review and the full gate. Also runs the tasks of a bug batch. Autonomous by default; human input is needed only for the approvals, for production-destructive actions, or for a run that cannot usefully continue.
 ---
 
 # feature-implement
 
-Supervise the approved tasks; delegate implementation and independent review. Read `.agents/repository.md` and the role/usage sections needed from `specs/agent-tooling.md` once. Implementers and reviewers read their own detailed skills; consult `task-implement` or `task-review` yourself only for a material workflow question. Resolve the feature/run from the request; use the first unfinished run when unambiguous. Do not ask again for authority already supplied.
+You are the **supervisor**. You write no product code: you spawn sub-agents for the work, decide
+what their reports raise, and keep the plan true to what is built.
 
-An approved run is authorization to proceed end-to-end through task implementation, fixes and
-global review. Own technical trade-offs within the agreed outcomes, including internal interface
-and mechanism changes. A reviewer's `STRUCTURING-DECISION` label goes to you for resolution; it
-does not create a human approval gate. User intervention is exceptional.
+**The unit of work and of review is the lot**: one implementer, a commit a piece, one reviewer
+over the lot's commit range. The trace from a piece to its commits is kept, and a parked lot keeps
+what landed.
+
+**A run delivers one lot and stops** for the reviewer of the plan, so the next lot builds on
+decisions and code that were read. Go through every lot in one run only when the user asks; the
+decisions are then handed over grouped by lot.
+
+**Within the lot you are autonomous, and you assume the user is gone.** No kickoff question, no
+pause: a check only the user can do goes onto the gates file, a lot that cannot land is parked,
+and you decide what the review raises. What you may spend and what you never do alone is
+`repository.md` § "Autonomy". If the user says they are around and want to be consulted, put the
+structuring decisions to them instead; nothing else changes.
+
+Read once: `.agents/repository.md`, [`specs/workflow-formats.md`](../../../specs/workflow-formats.md)
+from § "The approval, and what moved since" down, and the `task-implement` and `task-review`
+skills, which your sub-agents follow. `map …` is the map's command (`code-map` skill).
 
 ## Setup
 
-- Read the constitution, task overview and only the approved spec/plan or bug-diagnostic passages and architecture pages needed for the active task. Follow further references when a material decision needs them; leave detailed code tracing to the assigned agents. Check that acceptance and dependencies are usable without inventing product decisions. Keep a single working set in the driving repo.
-- Record starting commits and existing dirty files in every affected repo. Agree file ownership with parallel work; commit only exact owned paths. A shared checkout need not become globally clean.
-- Keep consequential decisions in the plan using the format below. Keep task status and any unresolved prerequisites in `tasks.md`. Do not create judgement files, gate journals, or replacement bookkeeping files.
-- Use the configured agent definitions: `implementer-easy`, `implementer`, `implementer-hard`, `reviewer` (per-task and global) and `plan-review-guide`. Read the selected runtime's agent definition for its current model and effort; the supervisor preferably runs at the `implementer-hard` configuration. Respect explicit user model choices; report actual configuration instead of claiming a role pin worked. See `specs/agent-tooling.md` for dispatch and usage registration.
-- Collect local usage at run start and register this session/each subagent with the feature, owner, stage, run, role and task where its runtime exposes an ID. Do not repeatedly collect or report usage during an unchanged run; missing telemetry never blocks implementation and is reported as missing.
+1. **The feature and the lot come from the invocation.** With no lot named, take the first lot
+   that still owes something (`map plan <feature>`). Ask only when the feature itself is unclear.
+2. **The plan is approved with its delivery, and `map check <feature>` is clean.** Otherwise there
+   is nothing to implement: say what is missing and stop.
+3. **Read the plan through the map**, not the files: `map plan <feature>` for the whole,
+   `map brief <feature>/<lot>` for the lot, with the notes earlier lots left.
+4. **Sort the lot's user-held gates**, from its reason and its pieces:
+   - a **validation**: a check on a device, by eye or by ear. The lot ships fully tested and the
+     check goes to the gates file. A failed check reopens the lot later; it never holds the run;
+   - an **evidence gate**: later work hinges on a reading the run cannot produce. Only what comes
+     before it ships. Never guess the verdict;
+   - a **post-run operation**: a deploy, a statement on production. The code lands complete; the
+     operation is an ordered step for the user.
+5. **Start or reopen the gates file**, `specs/features/<feature>/gates.md` (template below). You
+   commit it with the work.
 
-## Completion-driven supervision
+## Who runs what
 
-This run is autonomous. While an implementer or reviewer works, continue only useful independent
-supervisor-owned work; otherwise wait for its handoff or an actionable request. Do not poll the
-agent, checkout or clock merely to produce progress reports, and do not ask agents for routine
-progress messages. Use an event wait rather than repeated short status checks. If the runtime
-requires periodic user updates, use a bounded event wait and the minimum update needed without
-separate clock checks. Surface consequential progress, exceptions and the final outcome.
+A role's model and effort are pinned in the runtime's agent definitions and named nowhere else:
+skills name roles. How a spawn is labelled, and what it must not be given: `repository.md`
+§ "Sub-agents and the ledger".
 
-## Per-task loop
+| Role | Used for |
+|---|---|
+| `implementer` | A lot of `standard` difficulty: the default |
+| `implementer-easy` | An `easy` lot. Escalates to `implementer` |
+| `implementer-hard` | A `hard` lot, and the one escalation of a lot `implementer` could not land |
+| `reviewer` | The review of a lot, and its approved fixes, in the same context |
+| `reviewer-global` | The review of the whole delivery, once the last lot is reviewed |
+| `light` | Chores with no judgement: running the final gate and reporting, a lookup, a mechanical edit under a precise brief. It reports evidence; you decide |
 
-1. Spawn exactly one task's implementation role from its `Implementation` tier: easy → `implementer-easy`, standard → `implementer`, hard → `implementer-hard`. Use the [difficulty rules](../spec-tasks/SKILL.md#implementation-difficulty); if the tier is missing, legacy, or contradicted by new evidence, reassess and update it with a brief reason. Review-risk surfaces and predecessor tiers do not automatically require a stronger implementer. Supply task/brief paths, repository roots, dependency changes, owned file boundaries and role instructions. Require implementation commits, a minimal handoff, and leads on newly discovered pre-existing defects, substantial lasting complexity or unresolved concerns.
-2. Spawn an independent `reviewer` over the explicit implementation range(s), not whatever `HEAD` happens to be after handoff commits. Give the same intent and handoff path, and authorize evident scoped corrections in the same assignment. The reviewer chooses its depth, applies routine fixes, and returns material plan differences, newly discovered pre-existing defects, substantial lasting complexity or unresolved concerns alongside the final commit range.
-3. Resolve the material choices yourself within the approved outcomes. Resume the reviewer for fixes needing that direction. A reviewer's `STRUCTURING-DECISION` label calls for your judgement, not automatically a plan update. Capture only material differences from the approved plan; no routine-fix inventory or review-tier log. Continue without requesting user approval for ordinary implementation choices.
-4. Keep check execution with the implementer and reviewer. Use their completion status and outstanding concerns to decide whether the task is complete; resume the responsible agent for missing checks or in-scope failures. Keep unresolved failures or unavailable required checks explicit. Do not copy passing test results, command transcripts or resolved routine fixes into plans, handoffs, reports or logs.
-5. For a bug-batch task, the fix is complete when its reproduction test passes with the expected-failure marker removed. The implementer does not weaken the reproduction's assertions; it tightens them only to encode a decision settled after diagnosis and says so in the task. A sibling reproduction folds back into the existing test it tightened. The implementer adds no tests beyond those the task lists; a bug found on the way is a new report, not an addition to the current task.
-6. Update task status and any actual blockers. Commit supervisor-owned updates with the next substantive change or at close-out instead of making status-only commits. Add handoff leads only for material cross-task concerns; no per-task success checklist.
+The strongest tier goes where a miss is expensive and nothing checks after it; the default tier
+to the roles with a backstop; the cheapest to bounded jobs. You run on what `implementer-hard`
+pins: say so in the gates file when you do not.
 
-Use the implementer's handoff and explicit commit range to dispatch review, then the reviewer's final range and outstanding concerns to decide the next step. The reviewer owns full source tracing. Inspect diff statistics and narrow hunks only when a material choice or an APPLIED plan claim requires direct evidence; do not duplicate completed review or reload whole plans, skills and unrelated dirty diffs at every handoff.
+## A lot
 
-## Consequential decisions in the plan
+### 1. Implement
 
-Compare the final reviewed implementation with the approved spec/plan, accepted amendments and
-starting code, not only with intermediate task commits. Add a callout when the final behavior,
-contract or architectural approach materially differs from what the approved plan led the user
-to expect; when the run fixes a newly discovered pre-existing defect not already covered by the
-plan; or when an internal fix leaves substantial ongoing complexity even though the approved
-outcome is preserved. Such complexity includes a new cross-layer contract, state mechanism or
-reconciliation path that future maintainers must understand. Explain its cost and why it was
-accepted. Judge the intended outcome, not incidental implementation wording. A small fix that
-restores approved behavior after an implementation or review regression remains routine; keep
-ordinary plan prose accurate without promoting that fix to an `IMPL-DECISION`.
+Spawn the implementer the lot's difficulty names. Its brief: the feature, the lot, the
+`task-implement` skill, and any gate sorted at setup ("ship fully tested; the check is the
+user's"). It reads `map brief <feature>/<lot>` itself. It edits neither `plan.md` nor the
+approval, and it does not chain into the next lot.
 
-Once consequential choices have stabilized, update their relevant plan passages together to reflect the implemented design. Beside each, add a
-visible **`[IMPL-DECISION-01] — APPLIED`** callout with anchor `impl-decision-01`, following the
-[shared decision index and callout format](../spec-plan/references/plan-decision-callouts.md).
-Use stable, increasing IDs across the feature's runs, and a small linked index near the top with
-anchor `impl-decisions`. Ctrl+F `IMPL-DECISION` must find the visible callouts.
+Its report is all that enters your context: the commits, a line a piece; the gates passed; its
+**deviations** (a place not built, a file no place names, a test added, dropped or deleted
+beyond the plan) and its **doubts**. No diff, no narration.
 
-Make each callout self-contained for plan review. State whether it records a material plan
-difference, a newly discovered pre-existing defect or substantial lasting complexity; describe
-the concrete failure or constraint and why the choice matters. For complexity, name the added
-mechanism and maintenance trade-off even when behavior still matches the plan. Link the affected files
-and name the key functions or methods. Explain what changed along the code path and its observable
-effect, including relevant state or metadata that is preserved, remapped, or discarded. Give the
-run/task and the decisive evidence or trade-off. Keep this focused on the consequential choice,
-not a file inventory or a copy of task checks. Include a rejected review suggestion only when
-retaining the existing design is itself consequential. Link to the decision from tasks or handoffs
-when needed; do not duplicate its explanation. The supervisor owns decision resolution and records
-the rationale as choices stabilize; do not postpone it until close-out. Document editing and final
-code-link consolidation may be delegated to the plan-review-guide agent.
+**A migration's piece waits for the user's go** when its tests destroy local state
+(`repository.md` § "Gates"): the lot is built and reviewed without them, and they run last.
 
-When several functions or repositories participate, map each distinct change from its previous
-behavior to its current behavior at the named call site; separate a shared helper from the callers
-that use it. Say which path actually failed and which already handled the case, so one broad claim
-does not imply every path had the same bug. Use short paragraphs or bullets when that makes the
-mapping easier to review. For a superseded decision, name the specific mismatch that ended and
-any generic mechanism that remains.
+### 2. The lot check
 
-Check every APPLIED claim against the final code, especially whether a helper reads, copies, or
-derives its inputs. Distinguish implemented behavior from a possible cleanup or remaining gap;
-label the latter explicitly when material. Use specific titles in the index so a reviewer can
-identify the issue without opening every callout. Audit each callout's code artifacts and exact
-line links using the shared decision format before committing it.
+Run `map check <feature>`. It reads the lot's commits against the approved plan. Each thing it
+lists is a decision, and you settle it now:
 
-For every `IMPL-DECISION` and changed plan passage, follow
-[the shared plan-link convention](../spec-plan/references/plan-review-links.md) for source links,
-the right-click diff menu and link refresh. Refresh review links after the consolidated plan edit,
-unless a link problem requires another pass. The supervisor checks changed claims and decision
-consolidation, including edits delegated to the plan-review-guide agent.
+- a test under no planned title is tagged and explained, or dropped;
+- a deleted test nobody planned, a product file no place names, a place taken off with nothing
+  written, a planned test not written: explained, or undone.
 
-Keep the plan's left reading-order and changed-file column collapsible during review. Use the
-native `details/summary` pattern in `spec-plan/assets/plan.html`: collapsing it should leave a
-narrow visible control and give the walkthrough more width beside an editor. Check that the
-control stays reachable at narrow widths, works by keyboard, and does not hide the file tree in
-print. When editing an older plan, preserve its existing navigation and decision anchors.
+"Explained" is a `Changed:` paragraph in the piece's section of `plan.md`, which you write.
+"Dropped" and "undone" go back to the implementer, resumed.
 
-`APPLIED` is the normal state after implementation. Reserve **PROPOSED** for exceptional decisions
-that actually require the user's authority; keep the current design intact while those are pending.
-When accepted and implemented, integrate the change and mark it APPLIED. If rejected, remove the
-proposal; keep a concise APPLIED callout only if the decision to retain the design merits review.
+### 3. Review
 
-Do not annotate small routine fixes, including regressions introduced and repaired within this
-run without substantial lasting complexity, passing checks or ordinary choices. If there are no consequential
-decisions, add no callouts or index. For a bug batch without a plan, use the same tags beside the
-relevant task in `tasks.md`; do not manufacture another document.
+Spawn a `reviewer` over the lot's commit range, following `task-review`. Hand it the
+implementer's deviations and doubts as pointers: most findings start from one. Tell it what the
+check already holds (every planned test is written, nothing unplanned was added or deleted) and
+ask for the rest:
 
-## Recovery and decisions
+- does the code at each built place do what its clause says;
+- a file with several places, one skipped;
+- a test that asserts less than its title;
+- each deleted test against the holder the plan named;
+- what the next lot stands on.
 
-Resume the same agent once for a diagnosed scoped failure. If the task exceeds its implementation
-tier, move to the appropriate stronger role using the existing work and concrete failure or
-complexity evidence: easy normally moves to `implementer`; use `implementer-hard` when the remaining
-work meets the hard criteria. Update the task's tier and reason. Do not cycle through repeated
-attempts at the same tier or require a failed attempt before correcting a clearly wrong tier.
-Each stronger tier gets at most one escalation attempt. A missing dependency or wrong plan is
-not fixed by spending more reasoning.
+It sets its own depth and returns its findings, each a **defect**, a **gap** (a behaviour nobody
+holds), a **change of the plan**, or **quality**, classed `EVIDENT-FIX` or
+`STRUCTURING-DECISION`, with real alternatives for the second kind. Keep its id.
 
-If still blocked, park that task and its transitive dependents in `tasks.md`, record what is needed and continue independent tasks. Keep completed work and preserve unrelated dirty files. Never label a failed or unverified change complete.
+### 4. Triage and decide
 
-Interrupt the user only for a major blocker that prevents further useful authorized work, a
-necessary change to agreed product scope or constitutional rules, or an operation needing authority
-not already granted. Explain the concrete obstacle and why you cannot resolve it within the approved
-run. Continue independent work while a decision is pending. Do not infer approval from silence.
+- **Approve the evident fixes** you also judge clearly worth doing: correct, in scope, low risk.
+- **Decide the structuring findings yourself.** The reviewer's recommendation is a strong prior.
+  Before taking a structural one, have the reviewer show what it rests on (the consumers it
+  changes, the path that reaches the code) and say what it regresses. When a patch and a
+  structurally better fix are both viable, prefer the better fix; "more work" alone never
+  justifies the patch.
+- **No belt and braces.** The tests are the planned titles. "Add a test" is a finding only when
+  it names a behaviour no planned title holds; you then accept it as a change of the plan, or
+  drop it.
+- **Do not read the code yourself**: ask the reviewer, which holds the context.
+- **A call on thin ground** (the plan is silent and it leans on the user's intent) is made the
+  most reversible way and asked as a `To confirm:` in its piece. Only a call that cannot be made
+  reversibly parks the lot.
+- Anything that would cross `repository.md` § "Autonomy" becomes a post-run operation in the
+  gates file.
 
-Keep only outstanding prerequisites beside the affected tasks: distinguish those blocking code
-work, deployment-only conditions and later human checks, with the needed environment and observable
-result. A deployment or human check does not block independent implementation. Clear resolved
-routine blockers instead of turning them into a history of successful checks.
+Send the approved fixes to the same reviewer. **A fix is a commit of its piece**, with the
+piece's line in its message and the gates a reviewer's fix takes (`repository.md` § "Gates"). Then
+run the lot check again.
 
-## Close-out
+### 5. Write what was decided
 
-- Run a fresh `reviewer` on both repositories' cumulative feature/run ranges, with the same authority for evident scoped fixes. Assign it final validation, including cross-repository integration and any checks needed after its corrections. Reuse completed checks that still cover the final changes; additional runs need a relevant change, failure or coverage gap. Start with any material handoff leads and diff statistics; for interface HTTP-response work, include the [task-implement no-response boundary](../task-implement/SKILL.md#interface-no-response-boundary) so parked network-interruption UX is not promoted into the run. Resolve consequential findings without a routine user checkpoint.
-- After global review and its corrections, assign a fresh `plan-review-guide` agent the [plan-review-guide skill](../plan-review-guide/SKILL.md), the existing plan, approved intent, final ranges in each affected repository, task status and supervisor-resolved decisions. Give it exclusive ownership of the plan during this pass. Preserve the reviewed backbone while linking matching passages to actual code and consolidating decisions in context. For a partial run, cover delivered passages and leave unfinished work explicit; for a bug batch without a plan, skip this pass rather than manufacturing a plan. Resolve reported mismatches yourself and resume the agent for document corrections; escalate substantial unresolved tracing to the standard implementer. Check changed claims and decision consolidation before the final commit without duplicating every link check. Any resulting application corrections go through the responsible implementation/review agent, then the affected guide passages are refreshed.
-- Write one consolidated `CHANGELOG.md` entry in each repository whose production code changed, following the constitution's changelog gate. Describe production changes only; omit SDD, agent workflow, development tooling, and tests from each entry. Resolve outstanding validation through the responsible agent before closing the run. Surface only unresolved failures or unavailable required checks, with enough context to act.
-- Collect usage at close-out and give a compact feature/run summary, separating API-equivalent estimates from any provider credits and identifying material coverage gaps or model deviations. Include costs by task type (role) and agent type (actual model/effort combination), with shared overhead separate; when shadows ran, briefly assess their finding coverage, cost and time against the primary reviewer. The closing snapshot is not an exact final invoice.
-- Commit the final working set. Report the delivered outcome, link to the plan's decision index when present, and list only outstanding blockers or parked work. Omit routine fixes, successful test results and a duplicate decision narrative. Suggest explicit `feature-archive` after shipping and resolution of outstanding work. Do not merge, deploy, archive, or create a new user task merely because the loop ended.
+The plan is the only record of a decision. No callout, no list in a report.
+
+- **`Changed:`** for whatever changes a line of the plan: a deviation you accept, a fix that
+  moves a clause, a test beyond the plan. One paragraph an edit, in the piece's section, in words
+  the reviewer can read without the code.
+- **`Note:`** for a choice that changes no line and that what follows stands on, taken from the
+  implementer's deviations and the reviewer's remarks for the next lot. The next lot's brief
+  prints it. A choice nobody builds on is no note: it is the code's, and its commit's.
+- Nothing for an evident fix, a review depth, a passing check, or a regression the lot made and
+  repaired.
+
+Most lots change no line of the plan. The delivery page then holds nothing to answer, and the
+reviewer goes straight to the code.
+
+### 6. Hand over
+
+1. The lot passes `map check <feature>` and the lot's gate (`repository.md` § "Gates").
+2. Append to the gates file what the lot produced: checks, operations, evidence slots, and the
+   reviewer's **leads for the global review** (what the lot added, introduced, deferred, and any
+   overlap it suspects with another lot).
+3. Commit `plan.md` and the gates file, by name.
+4. Tell the user, in a few lines: what landed, the commits, the decisions to answer and where
+   (the delivery page: "Since your approval", then each built piece with its places and its
+   commits), the gates added, anything parked. No list of routine fixes.
+
+**The reviewer of the plan answers the decisions first, then reads the code**, both on the
+delivery page. Read the answers with `map feedback <feature>`; act on what is not approved. The
+approval that follows is theirs, as for any plan edit, and covers the commits made before it.
+You never run it on your own judgement.
+
+## A lot that will not land
+
+A blocked lot costs that lot, not the run.
+
+1. **Recover once, same agent**: resume it with the failure and a precise instruction.
+2. **Escalate once, when the problem is difficulty**: an `easy` lot goes to `implementer`, a
+   `standard` one to `implementer-hard`, with the same brief and the first attempt's diagnosis in
+   three lines. A wrong plan or a missing dependency is not fixed by a stronger model.
+3. **Park**: the pieces that landed green stay, a commit each; the rest is left clean. Write
+   under "Parked" in the gates file what was tried, why it failed and what a person must decide or
+   supply. A lot whose reason says it waits for the parked one is parked with it. Independent
+   lots go on.
+4. **Halt only when nothing useful is left**, or on one of the conditions at the foot.
+
+## The gates file
+
+The user's to-do list after a run, written so they can act without re-reading the plan. A later
+session reads verdicts from it. It is committed with the run and leaves with the folder.
+
+```markdown
+# <Feature> — gates (for the user, after the run)
+
+## Standing calls        ← the gate sorting, deferred work, spend, a supervisor not on its pinned model
+## Checklist             ← numbered; something downstream waits on each; exact steps, what to look for, a "Verdict:" line
+## Post-run operations   ← the exact commands, in order, with the confirmation each needs
+## Evidence              ← per evidence gate: which reading the next work needs, and a slot to paste it
+## Watch in normal use   ← the trigger moment and what to observe; no planned effort
+## Parked                ← a lot, what was tried, what a person must decide or supply
+## Leads for the global review   ← per lot, from its reviewer
+## End-of-run gate       ← the full suite and the build; a red suite's diagnosis
+## Spend                 ← the ledger's summary, verbatim, and two sentences at most
+```
+
+- **An evidence gate asks for the raw reading, never for a verdict**, and names the build it must
+  be read on. Never write it as a closed choice between the ranked hypotheses: the reading can
+  refute them all while looking clean, and then nothing ships.
+- **"Checklist" is for what something downstream waits on** and the user must schedule. What they
+  would meet while simply using the product goes under "Watch in normal use".
+
+## When the last lot is reviewed
+
+1. **Global review.** Spawn `reviewer-global` over the delivery's whole range: seams between lots,
+   near-duplicate helpers, early code a later lot half-superseded, dead code, documentation no
+   single lot made stale, tests that overlap. It starts from the gates file's leads and the
+   range's diff statistics, and does not re-argue a lot's review. Triage as in step 4; its fixes
+   are commits of their pieces.
+2. **The final gate.** Spawn `light` to run the end-of-run gate (`repository.md` § "Gates") and
+   report, per red suite, the failing files and the first failing assertion of each. It never
+   edits code. An obvious, scoped cause goes to an `implementer`; anything else is recorded under
+   "End-of-run gate" and the run still closes.
+3. **Measure the run** with the ledger's commands (`repository.md` § "Commands") and paste the
+   summary under "Spend".
+4. **Close**: commit the gates file and the plan, and tell the user what landed, what is parked,
+   the decisions left to answer, the gates, the suite's state and the spend. Suggest
+   `feature-archive` once the gates are cleared. Do not run it.
+
+## A bug batch
+
+A batch diagnosed by `bug-fixes` has no pieces: its unit is a **task** of `tasks.md`, and its plan,
+when `bug-fixes-plan` wrote one, a `plan.html`. Run it with this skill, a task where it says a lot,
+with these differences:
+
+- There is no `map check` and no `Piece:` line. A commit names its task.
+- **A fix is complete when its reproduction passes with its expected-failure marker removed.**
+  The implementer runs it unmasked first and checks it fails as the diagnostic records, never
+  weakens it, and adds no other test unless the task names a new public contract
+  (`bug-fixes` § "Reproduction test").
+- A consequential decision is an `IMPL-DECISION` callout beside the task's step in the plan
+  ([the shared format](../spec-plan/references/plan-decision-callouts.md)), or under the task in
+  `tasks.md` when the batch has no plan. A parked task is marked in `tasks.md`.
+- At close-out, after the final gate, a `plan-review-guide` agent turns the batch's plan into the
+  guide for reviewing the code (`plan-review-guide` skill).
+
+## Halt and surface
+
+Only when: something destructive in production would be needed inside the run to continue; a
+discovery raises the feature's cost far beyond what was approved (park what it touches, with the
+real options, and halt only if it invalidates the run); parking has left nothing to land; a call
+cannot be made reversibly and nothing independent of it is left; the user says stop.
+
+## Keep your context small
+
+A sub-agent's work never enters your context, only its last message. Insist on terse reports,
+leave code reading to the reviewer, write decisions as you go, and stop referring to a lot's
+findings once they are committed.

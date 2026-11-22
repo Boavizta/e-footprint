@@ -12,6 +12,11 @@ These are the strong preferences and patterns the project follows. They are soft
 - **Comments only when the WHY is non-obvious.** If a reader can derive intent from well-named identifiers, the comment is noise. Never comment what the code does — only why it does it that way.
 - **Fail loudly on impossible states.** When a value reaches code that assumes it is well-formed (e.g. a positive Pint quantity, a non-NaN magnitude, a populated dict), raise a `ValueError`/`AssertionError` with a message that points at the upstream root cause rather than silently coercing or filtering. Silent passes (returning `False` for NaN, defaulting to zero, swallowing a missing key) hide real bugs and make them hard to debug later. Filtering is only acceptable at intentional UX boundaries (e.g. dropping zero-magnitude flows from a chart) — and even there, NaN and negative values are bugs and should raise.
 
+## Narrated flows
+
+- **A narrated flow tells itself.** `narrate("…")` stands at the line of a step and `event("…")` at its cause (`from efootprint.narrate import …`, by name; one call a line). The sentence is present tense, sixty words at most, with one `**bold**` for the rule the step enacts and backticks for a symbol the file can name. The watch is a lambda, `lambda: {…}`, and holds counts and names. A sentence that is not a literal string, or a watch that is not a lambda, is refused by the source index: Python would compute it in production, where the calls do nothing. Moving or rewording a call changes the flow's page: run `poetry run pytest tests/narratives` and `npx tsx comprehension_harness/render.ts --check`.
+- **No call in the reactive core's per-slot code.** A call stands where the code runs once per action of the modeler (an update transaction, a constructor, an import). `ReactiveSlot.pull`, `_compute`, the dependency recorders and the getters run per slot or per read: an inert call there is still a function call on the hottest path, and is measured against `tests/performance_tests/` before it is written.
+
 ## Modeling refactor preferences
 
 These are project-specific patterns worth keeping in mind when extending modeling objects.

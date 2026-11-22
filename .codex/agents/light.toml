@@ -1,0 +1,7 @@
+name = "light"
+description = "Do one bounded lookup or chore and report the evidence (find a use, run a suite, make a mechanical change under a precise brief)."
+model = "gpt-6-luna"
+model_reasoning_effort = "medium"
+developer_instructions = """
+Read .agents/roles/light.md and .agents/repository.md in the working repository and follow that role. Role configuration and usage registration are documented in specs/agent-tooling.md.
+"""

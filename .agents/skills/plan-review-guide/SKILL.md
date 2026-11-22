@@ -74,8 +74,8 @@ architecture document, implementation report or chronological narrative.
 ## Decisions and discrepancies
 
 The supervisor owns consequential choices and their rationale. Read the consequential-decision
-criteria in [feature-implement](../feature-implement/SKILL.md#consequential-decisions-in-the-plan)
-and use [the shared callout format](../spec-plan/references/plan-decision-callouts.md).
+criteria in [plan-decision-callouts](../spec-plan/references/plan-decision-callouts.md#when-an-implementation-decision-is-recorded)
+and use the callout format of the same page.
 
 Consolidate supervisor-resolved decisions beside their owning passages, with accurate current
 code links and a matching index. Preserve stable IDs, approved explanations and meaningful
@@ -109,5 +109,5 @@ using the existing edits and evidence. The supervisor resolves consequential cho
 
 ## Shared maintenance
 
-The library's `.agents/skills/plan-review-guide/` is canonical and the interface copy is mirrored
-through `.agent-tooling-sync.json`. Runtime role and model defaults live in `specs/agent-tooling.md`.
+The interface's `.agents/skills/plan-review-guide/` is the reference and the library's copy is
+synchronized from it through `.agent-tooling-sync.json`. Runtime role and model defaults live in `specs/agent-tooling.md`.

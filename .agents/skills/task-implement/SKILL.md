@@ -1,29 +1,92 @@
 ---
 name: task-implement
-description: Implement one approved task using its plan or bug diagnostic, verified brief, repository gates, and a durable review handoff.
+description: Implement one lot of an approved delivery, a commit a piece — the implementer's rules in the fourth stage of the spec-driven workflow, under feature-implement or alone. Reads the lot's brief from the map, turns each planned place into code and each planned test into a test under its title, and reports its deviations and doubts. Also implements one task of a bug batch.
 ---
 
 # task-implement
 
-Implement only the selected task. Read `.agents/repository.md`, the constitution, conventions, and relevant architecture pages from `specs/architecture/index.html`. For cross-repo work read both repositories' guidance.
+You implement **one lot** of a feature's delivery, then stop. A lot is a few pieces of the plan;
+each piece lands as one commit, in the delivery's order.
 
-1. Resolve the driving repo, task and run. Read `tasks.md`, its brief when present, and the relevant approved spec/plan or linked bug diagnostic. Verify pointers against the current code; earlier tasks may have changed them.
-2. Record each affected repository's baseline and pre-existing changes. Respect parallel ownership. Implement the agreed behavior in its authoritative layer, including necessary internal adjustments. Surface consequential design choices to the supervisor for the plan's implementation-decision callouts; ordinary implementation details need no additional approval. A change to agreed product scope remains exceptional.
-3. Run applicable constitution gates. Use focused checks while iterating, then required full checks before calling the task done; review tiers never waive them. Diagnose clear in-scope failures and fix their supported cause. Do not hide failures with skips, fabricated state, fallbacks, or repeated unexplained retries.
-4. Update owning documentation when this change makes it stale.
-5. Mark done only when applicable gates pass; otherwise record implemented/pending-validation or blocked status accurately. Commit only named owned files, using `[ADD]`/`[FIX]`/`[REFACTO]`/`[UPDATE]`/... and `task N: <summary>` under a feature supervisor, or `<feature>: <task title>` standalone.
-6. Write and commit the minimal [handoff](references/handoff.md): implementation ranges, useful review pointers and any material unresolved concerns. Omit routine fixes and successful test results. Keep feature/task references out of product and test comments: explain code in durable terms instead.
-7. Return outcome, commits, handoff path and only consequential choices or outstanding problems. Required checks still run; disclose unresolved failures and unavailable required checks without a passing-results inventory. Standalone execution does not chain to another task or archive the feature.
+Read `.agents/repository.md` (the stack's spellings, the commands, § "Gates"), then
+`map brief <feature>/<lot>` (the map's command: `code-map` skill). The brief is what you are
+handed: each piece with its statement, the code at each of its places, who will call each new
+function, the decisions across pieces, the notes earlier lots left, the tests to write, change
+and delete, and the journey cases of the lot's screens. How a piece becomes code:
+[`specs/workflow-formats.md`](../../../specs/workflow-formats.md) § "Implementing a piece" and
+§ "A `narrate` sentence". Read the project's rules for its quality gates and the architecture
+pages that own what the lot touches.
 
-Under `feature-implement`, surface blockers to the supervisor. Standalone, surface load-bearing product/contract, missing-authority or unexplained validation blockers to the user. Never reset, stash, or discard pre-existing work to make a tree look clean.
+**You edit neither `plan.md` nor `plan.approved.json`.** The plan is the reviewer's; what you had
+to do differently goes in your report.
 
-## Interface no-response boundary
+## A piece
 
-For `e-footprint-interface`, request-with-no-response UX belongs to the parked
-`specs/backlog/network-interruption-message/problem.md` item. A task scoped to HTTP responses
-must not add timeout/abort-specific messages, per-field reload or retry behavior, or tests that
-establish a new no-response policy. Preserve existing generic request handling and surface any
-regression this task causes; defer new network-interruption UX until an approved task promotes
-that backlog item.
+1. **Each place becomes code**: a `planned` call is replaced by what its clause says, a shell
+   gets its body, a comment goes with the change it announced. The clause is what was approved:
+   when the code cannot do what it says, stop at that piece and report it.
+2. **Each planned test becomes a test under the same title**, tag and `[rule]` kept. An existing
+   case extended takes the planned title. A test under an `@planned.remove` comment is deleted,
+   one under an `@planned` comment changed as the comment says.
+3. **No test beyond the planned titles.** A test nobody planned is a change of the plan: if a
+   behaviour is truly held by no planned title, write the test under the piece's tag and say so
+   in your deviations. The same holds for a planned test you could not write and for a deletion
+   nobody planned.
+4. **A `narrate` sentence the code makes false is corrected here.** New and removed steps wait
+   for the lot's last commit.
+5. **Docs the change makes stale are updated in the same commit.**
+6. **Commit the piece**: its files staged by name, the repository's message convention, and a
+   last line `Piece: <feature>#<slug>`. A fix of an earlier piece is a commit of that piece. A
+   piece that cannot pass its gate alone lands with the piece it needs, in one commit naming both.
+7. **The commit passes a piece's gate** (`repository.md` § "Gates"): the types, and the tests
+   related to what it changed. Not the whole suite: that is the lot's.
 
-Role setup and usage attribution: `specs/agent-tooling.md`.
+## The lot's last commit
+
+- **The steps**: write the `narrate` and `event` calls the lot's pieces add, remove those of what
+  went, in one pass. A step is where a reader would stop, not every line that changed. Run the
+  narrative tests that cross them and read the story you changed.
+- **The journey cases** of the lot's screens, each under its planned title.
+- Its message names every piece whose steps it tells, a `Piece:` line each.
+- **The lot's gate** runs before it (`repository.md` § "Gates").
+
+## What you do not do
+
+- Touch a file no place of the lot names without saying so. No opportunistic refactor, no
+  speculative abstraction, no test for a state nothing can produce.
+- Hide a failure with a skip, a fabricated state, a fallback or an unexplained retry.
+- Run what `repository.md` says is never run unprompted, or a gate that waits for the user's go.
+- Reset, stash or discard work that was there before you.
+- Chain into the next lot.
+
+A failure in a file your lot did not touch may come from the previous lot's review fixes. Fix it
+when it is trivial and say so; otherwise report it.
+
+## Report
+
+End your turn only when the work is durable: committed, nothing running. Then report tersely:
+
+- **Commits**: a line a piece, with its sha.
+- **Gates**: what ran and passed; anything red or not run, and why.
+- **Deviations**: a place not built or built otherwise, a file no place names, a test added,
+  not written or deleted beyond the plan. Each with its reason in a sentence.
+- **Doubts**: what you did not verify, where you cut a corner, where you want a second pair of
+  eyes. Never empty: if you have none, say what you checked to conclude that.
+- **Docs** updated, one line each.
+
+The reviewer starts from your deviations and doubts. They are a map, not a defence of the work.
+
+## One task of a bug batch
+
+A batch from `bug-fixes` has tasks, not lots. Read the task in `tasks.md`, its diagnostic, and its
+step in the batch's `plan.html` when there is one. Touch the files the task lists. **The fix is
+done when the task's reproduction passes with its expected-failure marker removed**: run it
+unmasked first and check it fails the way the diagnostic records; never weaken it; add no other
+test unless the task names a new public contract (`bug-fixes` § "Reproduction test"). Mark the
+task done in `tasks.md`, commit naming the task, and report as above.
+
+## Alone, without a supervisor
+
+Tell the user what was built, what passes and what is left in the delivery, and suggest
+`task-review` on the lot's commits. Do not start the next lot without their word. A blocker (a
+wrong clause, a missing dependency, a need outside the lot) is surfaced, not worked around.

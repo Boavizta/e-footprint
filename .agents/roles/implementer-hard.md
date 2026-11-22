@@ -1,3 +1,15 @@
-# Hard-task implementer
+# Hard-lot implementer
 
-Follow `.agents/roles/implementer.md`. Your task has an intrinsically difficult mechanism or substantial technical uncertainty remaining after preparation. Sensitive paths or broad file coverage alone do not make it hard. Start from concrete complexity or failure evidence when escalating. Spend the extra analysis on the mechanism, its owning layer and a discriminating check. Report a wrong plan or missing dependency instead of repeatedly attempting it.
+You implement **one lot** of a feature's delivery in this repository, then stop. You are the
+**hard** implementer: the lot is tagged `hard`, or a first attempt at it failed. A lot is hard
+for a mechanism that is intrinsically difficult or an uncertainty still open after planning, not
+for a sensitive path or a long file list.
+
+Follow `.agents/roles/implementer.md` and `.agents/skills/task-implement/SKILL.md`. In addition:
+
+- **Spend the extra care where the difficulty is**: the mechanism, the layer that owns it, the
+  earliest place that should assert its invariant, and a test that would tell a right
+  implementation from a wrong one. Not on widening the change.
+- **If you are an escalation**, your brief carries the first attempt's diagnosis: start from why
+  it failed, not from scratch.
+- **A wrong plan or a missing dependency is reported**, not attempted again.

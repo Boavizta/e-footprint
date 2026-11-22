@@ -1,0 +1,16 @@
+{
+  "name": "e-footprint-comprehension-tools",
+  "private": true,
+  "description": "Development tooling only: the comprehension harness (comprehension_harness/README.md). The library itself is Python and needs no Node.",
+  "scripts": {
+    "map": "node comprehension_harness/map.mjs",
+    "comprehension": "tsx comprehension_harness/dev.ts",
+    "comprehension:render": "tsx comprehension_harness/render.ts",
+    "journey:render": "tsx comprehension_harness/journey-render.ts"
+  },
+  "devDependencies": {
+    "tsx": "^4.23.15",
+    "typescript": "^6.0.3",
+    "vitest": "^4.1.12"
+  }
+}

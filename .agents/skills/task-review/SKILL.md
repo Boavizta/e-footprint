@@ -1,49 +1,116 @@
 ---
 name: task-review
-description: Review a task's explicit commit range for correctness, complexity, invariant ownership and test quality. Apply scoped corrections when authorized; otherwise return actionable findings.
+description: Review one lot's commits (or one bug-batch task's) for whether the code does what the approved plan says, complexity, dead code, missed invariants, test quality and wider code quality — at a depth (LIGHT / STANDARD / FULL) the reviewer sets itself from the diff. Returns numbered findings; applies only the fixes it is then told to. Use after task-implement delivers a lot.
 ---
 
 # task-review
 
-Read `.agents/repository.md` for local risk surfaces and standards. Inspect the assigned change
-before editing. A `feature-implement` assignment normally authorizes evident scoped fixes up front;
-apply those in the same pass. A standalone review stays read-only unless fixes were requested.
+You review **one lot** of a feature: the commits its implementer made, a piece each. You are a
+critic until told otherwise: you return findings and touch no file. When the supervisor or the
+user sends back a list of approved fixes, you apply exactly those.
 
-1. Identify the task and exact implementation range from the supervisor or handoff metadata. For standalone last-commit review use `git show HEAD` only when it is the requested implementation commit. Handoff and bookkeeping commits may follow it. Cross-repo tasks have one range per repo.
-2. Read the actual diffs before the implementer's narrative. Inspect source size separately from tests/docs, while still reviewing the tests and docs.
-3. Choose the highest applicable tier:
+Read `.agents/repository.md` § "Review surfaces" and § "Gates". `map …` is the map's command
+(`code-map` skill).
 
-| Tier | Trigger | Depth |
-|---|---|---|
-| FULL | Repository-specific high-risk surface; changed invariant enforcement; missing handoff; exceptionally broad change (roughly >1,000 source lines or >25 source files) | Trace affected invariants, callers, consumers and cross-repo contracts; load relevant spec/plan and standards fully. |
-| LIGHT | All: at most about 120 source lines and 5 source files; contained copy/style/docs/test change; no new public contract, dependency, persistence or state transition | Diff, task and handoff; follow an evidence-backed concern farther when needed. |
-| STANDARD | Other changes | Relevant plan/spec sections, standards and adjacent code mapped by the handoff. |
+## Process
 
-You may raise the tier with a reason, never lower it below a triggered rule. Tier controls exploration, not validation requirements. No fixed quota of findings.
+1. **Get the diff before anything else.** The lot's commits are those whose message holds a
+   `Piece: <feature>#<slug>` line of the lot's pieces; your brief gives the range. Read the
+   statistics of the range, then each commit: a piece's commit should hold that piece. Form your
+   own reading before anyone's account of the change.
 
-Implementation difficulty and model choice do not determine review depth. An `Implementation: easy`
-task can require FULL review; assess the actual diff and affected contracts independently.
+2. **Set your depth from the diff, never from the report.** Take the highest tier a rule gives:
 
-4. Read the handoff as a map and verify claims you rely on. Investigate doubts. For normal features consult the approved spec/plan; for bug batches the linked diagnostic supplies intent.
-5. Apply the checklist at the chosen depth:
+   | Tier | When | What you read |
+   |---|---|---|
+   | **FULL** | The diff touches a surface `repository.md` lists as FULL · the lot is `hard` · it introduces a pattern other code will copy (a port, a gateway, a convention, a helper meant for reuse) · more than about 1,000 changed source lines or 25 source files · no implementer's report | The plan and the spec; the project's rules in full; the callers and consumers of every changed export; each invariant traced to the earliest layer that should assert it |
+   | **STANDARD** | Neither FULL nor LIGHT | The lot's pieces; the rules the diff touches; adjacent code where the report and the brief point |
+   | **LIGHT** | All of: at most about 120 changed source lines and 5 source files · only the surfaces `repository.md` opens to LIGHT · no new export, dependency or state | The diff, the pieces and the report. The checklist limited to correctness, conventions, test quality and scope |
 
+   Count source only, as `repository.md` says. Size alone is a weak reason for FULL: where a
+   change lands is what makes it dangerous. A lot's difficulty says how hard it was to write; it
+   never lowers your tier. You may raise the tier on judgement and say why, never lower it.
 
-   - **Complexity** — recursive traversal, multi-layer indirection, or private helpers that could be a flat loop or direct inline logic, or client-side arbitration between requests where a lock would do.
-   - **Dead defensive code** — code guarding hypothetical cases not grounded in real data or an enforced invariant.
-   - **Defensive-code provenance** — for every new guard, fallback, reconciliation hook, duplicated validation, or hardening, identify the concrete producer of the guarded state, a supported application path that reaches it, and the layer that owns the invariant. A test that directly assigns an impossible internal state is not production evidence. If no supported path exists, flag the code for removal; if another component creates the state, flag a downstream workaround in favour of fixing that component.
-   - **Missed invariant** — a constraint that is assumed downstream but not asserted at the earliest possible layer.
-   - **Test quality** — piecemeal property assertions instead of full expected-state assertions; tests covering scenarios that can't actually happen; tests that manufacture internal state to justify production integration code instead of exercising the real producer and supported entry point. Direct state manipulation may test a low-level helper, but cannot by itself justify a global hook or boundary defence.
-   - **Bug-batch reproduction** — the fix removed the reproduction's expected-failure marker rather than rewriting the test; any assertion change encodes a settled decision named in the task, and a sibling reproduction was folded back into the test it tightened. Any test added beyond the task's list is a scope delta unless it covers a new public contract the task names.
-   - **Scope delta** — inspect every hunk not required by the task. A boy-scout change needs a concrete defect or maintainability problem, an evidenced reproduction when behavioural, and a fix in the owning layer.
-   - **Cross-path consistency** — when parsing, validation, rendering, or error-handling responsibility moves, inspect sibling creation, editing, preview, import/export, and relevant unit/integration/E2E paths for stale copies or expectations.
-   - **Integration coverage of new public-API consumption** — if the diff calls a public method/property/dict-attr on a `ModelingObject` subclass that no existing test path was reaching, flag whether the relevant integration fixture has an assertion that touches the new call site. `run_test_materialize_all_cached_properties` already covers new `cached_property` definitions; this rule catches the rest (plain `@property`, methods, dict lookups, new behavioural shapes on existing APIs).
-   - **Convention violation** — anything contradicting `constitution.md` or `conventions.md`.
-   - **Code quality / boy scout** — concrete problems in touched or adjacent code worth improving regardless of the task: poor naming, un-Pythonic patterns, structural awkwardness, or circumvolutions forced by the existing code shape. Surface observed defects and smells even if the task itself is clean; do not propose protection against hypothetical callers or unreachable states.
+3. **Read the plan the lot was built from**: `map brief <feature>/<lot>`. Then the implementer's
+   deviations and doubts, as a map: they say where to look, never what to conclude. Verify any
+   claim you lean on. A thin "doubts" is itself a finding.
 
+4. **Ask what no tool holds.** The lot check already says that every planned test is written and
+   that nothing was added or deleted beyond the plan. You are asked for the rest:
 
-6. With fix authority, apply evident corrections and report only unresolved findings or material choices to the supervisor, with location, consequence, evidence and a proposed resolution. A `STRUCTURING-DECISION` needs the supervisor's judgement, not automatically the user's approval. In review-only mode, return actionable findings with the same evidence. Do not manufacture concerns or persist a review-tier log.
-7. Resume for choices needing the supervisor's direction. Group related edits, run affected checks and required gates, and return the final implementation range. Add only material cross-task concerns or decision links to the handoff; omit resolved routine fixes and passing test results. Surface unresolved failures or unavailable required checks. Never include another session's changes in a fix commit.
+   - **Does the code at each built place do what its clause says?**
+   - **A file with several places**: was one skipped?
+   - **Does each test assert what its title says**, or less? A moved assertion is compared with
+     the one it replaces by value, not by title.
+   - **Each deleted test against the holder the plan named**: does the holder's assertion fail
+     if the behaviour breaks?
+   - **The steps written in the last commit**: read the story. Is a sentence now false, a step
+     missing where a reader would stop?
+   - **What the next lot stands on**: a choice made here that no line of the plan says.
 
-For interface HTTP-response work, apply the [task-implement no-response boundary](../task-implement/SKILL.md#interface-no-response-boundary). Flag regressions to existing generic request handling, but do not turn the parked network-interruption message into an in-scope fix or a new UX test.
+5. **Then the checklist**, at your tier's depth:
 
-The global review is always FULL but focuses on cumulative seams, duplicated helpers, superseded early work, contract mismatches and documentation drift. Start with handoff leads and diff statistics; inspect the cumulative diff where warranted instead of repeating every task review. Own final validation, including cross-repository integration and checks affected by your corrections. Reuse completed checks that still cover the final changes; rerun for relevant changes, failures or coverage gaps.
+   - **Complexity**: recursion, layers of indirection or private helpers where a flat loop or
+     inline logic would do; arbitration between requests where a lock would do.
+   - **Dead defensive code**: a guard on a case nothing real produces.
+   - **Defensive-code provenance**: for every new guard, fallback, reconciliation or duplicated
+     validation, name the producer of the state it guards, a supported path that reaches it, and
+     the layer that owns the invariant. A test that assigns an impossible state is no evidence.
+     No supported path: flag for removal. Another component produces it: fix that component.
+   - **Missed invariant**: assumed downstream, not asserted at the earliest layer.
+   - **What the diff feeds** (STANDARD and FULL): the consumers of what changed, and the state
+     one step later in time. Name what renders a value the diff produces, what reads a row it
+     writes, the fixture that produces its input, the docs that quote a changed line, and read
+     them. Most weighty misses sit one step outside the hunks.
+   - **Cross-path consistency**: when parsing, validation, rendering or error handling moves,
+     the sibling paths (create, edit, preview, import, export) and their tests.
+   - **Test quality**: piecemeal assertions where the whole expected state could be asserted; a
+     scenario that cannot happen; internal state manufactured to justify product code instead of
+     driving the real producer.
+   - **Scope**: every hunk no place of the lot asked for. A boy-scout change earns its place with
+     a concrete defect and a fix in the layer that owns it.
+   - **Conventions**: anything against the project's rules.
+   - **Code quality**: naming, awkward structure, a detour the existing shape forced that a wider
+     refactor would remove. Report a smell the lot revealed even when the lot itself is clean.
+   - What `repository.md` § "Review surfaces" adds for this stack.
+
+6. **Report.** First line: `Tier: LIGHT | STANDARD | FULL — <the rule that set it>`. Then each
+   finding:
+
+   ```
+   #N [defect | gap | plan | quality] file:line — the problem in one sentence.
+      Class: EVIDENT-FIX | STRUCTURING-DECISION — why, in a line.
+      Recommended: what you would do, in a sentence.
+      Options (STRUCTURING only, 2 to 4, the recommended one first): <label> — <the trade-off>
+   ```
+
+   A **defect** is wrong behaviour; a **gap** a behaviour nobody holds; **plan** a place where the
+   code and the approved plan differ; **quality** the rest. "Add a test" is a finding only when it
+   names the behaviour no planned title holds. `EVIDENT-FIX` is what any careful reviewer would
+   just do; `STRUCTURING-DECISION` is where reasonable choices diverge, with options that are
+   real alternatives, the recommended one serving code quality over the cheapest patch. With
+   nothing found: the tier line, then "LGTM — no findings."
+
+   Close with **what the next lot stands on** and, under a supervisor, your **leads for the
+   global review**: what the lot added (exports, helpers, test helpers), introduced (names,
+   patterns), deferred, and any overlap you suspect with another lot.
+
+7. **Wait.** When fixes are approved, apply exactly those. **A fix is a commit of its piece**:
+   the piece's `Piece:` line, files staged by name, verified as `repository.md` says a
+   reviewer's fix is. Report tersely what you committed.
+
+## A bug-batch task
+
+The same process over the task's commit, with the task in `tasks.md` and its diagnostic as the
+intent. Add to the checklist: the fix removed the reproduction's expected-failure marker rather
+than rewriting the test; any assertion change encodes a decision the task names, never a
+weakening; a test beyond the task's list is a scope finding unless it covers a new public
+contract the task names.
+
+## The global review
+
+Always FULL, over the whole delivery's range, and about what no lot's reviewer could see: seams
+between lots, near-duplicate helpers, early code a later lot half-superseded, dead code the
+sequence left, documentation no single lot made stale, tests that overlap or leave a hole. Start
+from the leads the lot reviewers left and the range's statistics; read the diffs where a lead or
+the statistics point. Do not re-argue a lot's review.

@@ -22,13 +22,14 @@ This file orients agents and contributors. It is intentionally short. Substance 
 | What's planned and in flight | `specs/roadmap.md` |
 | Modeling-method questions needing scientific grounding (ship honest fallback, avoid false precision) | `specs/modeling_logic_roadmap.md` |
 | Lifecycle-phase and "embodied" definitions (sourced, digital/ICT scope) | `docs_sources/mkdocs_sourcefiles/environmental_footprint_definitions.md` |
-| The spec-driven workflow (specify → plan → tasks → implement) | `specs/workflow.md` |
+| The spec-driven workflow (specify → plan → tasks → implement → archive) and the forms of a feature's files | `specs/workflow.md`, `specs/workflow-formats.md` |
+| The comprehension tools (the narrative and plan pages, the map), how they are installed, and what this project gives them | [`comprehension_harness/README.md`](comprehension_harness/README.md), `comprehension.config.json`, `.agents/repository.md` § "The stack" |
 | Active feature work | `specs/features/<feature-name>/` |
-| Feature plan links, one-click reproduction debugging, decision indexes and callouts | `.agents/skills/spec-plan/references/plan-review-links.md` and `.agents/skills/spec-plan/references/plan-decision-callouts.md` |
-| Final plan review guide (preserved structure, implementation links, consolidated decisions) | `.agents/skills/plan-review-guide/SKILL.md`; delegated at `feature-implement` close-out to the `plan-review-guide` agent, with supervisor-owned decisions |
+| A bug batch's `plan.html`: source links, one-click reproduction debugging, decision indexes and callouts | `.agents/skills/spec-plan/references/plan-review-links.md` and `.agents/skills/spec-plan/references/plan-decision-callouts.md` |
+| A bug batch's final plan review guide (preserved structure, implementation links, consolidated decisions) | `.agents/skills/plan-review-guide/SKILL.md`; delegated at `feature-implement` close-out to the `plan-review-guide` agent, with supervisor-owned decisions |
 | Past investigations and dated decisions | `archives/` |
 
-In feature plans, HTML documentation links open in a new browser tab; production source links (including HTML templates) open in VS Code. See the plan-link convention above.
+In a bug batch's plan, HTML documentation links open in a new browser tab; production source links (including HTML templates) open in VS Code. See the plan-link convention above.
 
 ## Dev commands
 
@@ -37,23 +38,35 @@ poetry install --with dev --all-extras   # all-extras: viz + boaviztapi optional
 poetry run pytest                              # full suite
 poetry run pytest tests/path/to/test_file.py   # single test
 mkdocs serve                                   # local docs preview
+
+# Development tooling only (the comprehension harness): the library itself needs no Node
+npm install
+npm run map                                    # the narrated flows, one line each
+npm run comprehension:render                   # the narrative and plan pages, under specs/comprehension_harness/
 ```
 
 For full setup, see [`INSTALL.md`](INSTALL.md). For release, see [`RELEASE_PROCESS.md`](RELEASE_PROCESS.md).
 
 ## Spec-driven workflow at a glance
 
-Feature work follows four stages. Review the spec, plan and tasks before implementation;
-an authorized `feature-implement` run then completes implementation and reviews autonomously,
-recording only consequential decisions in context in the plan.
+Feature work follows five stages, with a person approving between them. `specs/workflow.md` says
+what each is for and who approves what.
 
-1. **Specify** — write `specs/features/<name>/spec.html` (problem, scope, success criteria). Skill: `spec-specify`.
-2. **Plan** — write `plan.html` (approach, affected modules, risks); surface code-grounded spec simplifications for review. Skill: `spec-plan`.
-3. **Tasks** — write `tasks.md` (ordered, independently-shippable steps). Skill: `spec-tasks`.
-4. **Implement** — execute one task at a time, respecting constitution gates. Skill: `task-implement`.
+1. **Specify** — `specs/features/<name>/spec.md`: the problem, the change, the rules no test shows by itself. Skill: `spec-specify`.
+2. **Plan** — the plan is written into the code as pieces (planned calls, planned tests) and a short `plan.md`; the reviewer reads the plan page generated from them and approves it. Skill: `spec-plan`.
+3. **Tasks** — the delivery: the pieces cut into lots, with the unit tests of each. Skill: `spec-tasks`.
+4. **Implement** — one lot a run: built, checked against the approved plan, reviewed. Skills: `feature-implement`, `task-implement`, `task-review`.
+5. **Archive** — durable facts promoted to the reference docs, the feature folder deleted. Skill: `feature-archive`.
 
-Investigations and ad-hoc design work are exempt; the four-stage flow is for features that ship.
-Conversational bug batches use `bug-fixes` (diagnostics plus `tasks.md`), then `bug-fixes-plan` (`plan.html` grouping the bugs and ordering the runs), followed by the normal implement/review/archive stages.
+Stages 2 to 4 run on the Python stack of the comprehension tools: the `narrate`, `event` and
+`planned` calls of `efootprint/narrate.py`, and the test declarations and the three commands of
+`comprehension_harness/python/` (`.agents/repository.md` § "The stack" says how each is spelled,
+and where a call may stand). `efootprint/narrate.py` is this project's copy of the stack's
+reference file: the library imports the calls from it, and nothing of the harness. A feature in
+flight on `plan.html` and `tasks.md` is finished by hand.
+
+Investigations and ad-hoc design work are exempt; the staged flow is for features that ship.
+Conversational bug batches use `bug-fixes` (diagnostics plus `tasks.md`), then `bug-fixes-plan` (`plan.html` grouping the bugs and ordering the runs), followed by the implement, review and archive stages.
 
 ## Documentation upkeep
 

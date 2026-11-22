@@ -1,123 +1,136 @@
 # Spec-driven development workflow
 
-Canonical in e-footprint, synchronized unchanged into e-footprint-interface. Repository-specific
-architecture, gates and review-risk surfaces live in `.agents/repository.md`; runtime roles,
-synchronization and local usage collection are described in `specs/agent-tooling.md`.
+Five stages for a feature that ships: specify, plan, tasks, implement, archive. A person reviews
+and approves between them. What is particular to this project (its rules, its commands, its
+gates, how its stack spells the method's calls) is `.agents/repository.md`; the forms of every
+file a stage writes are [`workflow-formats.md`](workflow-formats.md). This page says what each
+stage is for, who approves what, and what never happens without a person.
 
-## Scope and ownership
+## The idea
 
-Features follow specify → plan → tasks → implement, with human approval between design stages,
-then explicit archive after shipping. A user's clear request to implement an already agreed
-change is authorization; do not manufacture another approval gate.
+**The plan is not a page someone keeps: it is written into the code, and the pages are generated.**
 
-Small fixes, local refactors and investigations may go directly to work. A conversational bug
-batch uses `bug-fixes`: evidence-backed diagnostics plus one task list replace the spec, then
-`bug-fixes-plan` writes the `plan.html` that groups the bugs by mechanism and orders the runs. The
-normal implement/review/archive steps still apply. This workflow does not authorize deployments,
-publication, destructive operations or paid external actions beyond the user's actual grants.
+- A flow of the product is a **narrative**: the code tells it, one `narrate` call per step, and a
+  test crosses the steps in order. Its page is rendered from the run, so it cannot drift.
+- A feature's plan is its **pieces**, each tagged at the places it changes: a `planned` call
+  where a change lands, a test title with no body, a comment where no line runs. The plan page
+  draws the flows the change lands in, each change at the step it lands in, then a card a piece.
+  A piece no flow shows, in no narrative or with no place in this repository, is put first.
+- **A plan is local to the changes of its repository.** A feature that changes two has a plan
+  in each, and the one that relies on a piece of the other points at it
+  (`workflow-formats.md` § "A feature that changes two repositories").
+- **The reviewer reads everything that is generated for them.** So each fact has one home, under
+  a budget of words, and what is not worth reading is not written.
+- **No edit of an approved plan is silent.** The approval is a committed file; whatever differs
+  from it afterwards carries its reason, and the reviewer answers it.
 
-Library-only and library-driven changes live under the library's `specs/features/<feature>/`.
-Interface-driven and other interface/cross-repo changes live in the interface. Cross-repo work
-has ONE task list in the driving repo, with explicit repository ownership and dependencies.
+The flows a feature lands in are told before it is planned: a narrative is written, and read by
+the reviewer, ahead of the plan that changes it.
 
-## 1. Specify
+## Scope
 
-`spec-specify` writes self-contained `spec.html`: problem, audience, scope, success criteria and
-open product decisions. It is not an implementation design. After approval, start planning in a
-fresh session from the approved document; preserve a design-rich kickoff's draft plan for refinement.
+Features go through the five stages. A user's clear request to implement an already agreed change
+is authorisation; no stage manufactures another approval.
 
-## 2. Plan
+These go directly to work: a bug fix that introduces no pattern and touches no security boundary,
+a local refactor with no change to an external interface, an investigation. A **bug batch** uses
+`bug-fixes`, then `bug-fixes-plan`: diagnostics, a reproduction a bug and a `plan.html` replace
+the spec and the plan, in the earlier form, and stages 4 and 5 apply.
 
-`spec-plan` writes/refines `plan.html` as an anticipated code review. Ground it in current code,
-follow user interactions or library caller operations, show changed structures/contracts, and
-provide linked changed-file navigation. Separate reading order from delivery dependencies and
-map important behavior to verification. Keep the existing level of architectural explanation;
-link owning pages where helpful, without adding a teaching section.
-Source-file links and the right-click diff menu follow `spec-plan/references/plan-review-links.md`
-throughout later plan amendments and implementation decisions.
+Nothing here authorises a deployment, a publication, a destructive operation or a paid external
+action beyond what the user granted.
 
-When code grounding reveals substantial complexity that a small behavior change could remove,
-surface a spec-change proposal beside the affected plan passage using the existing `PLAN-UPDATE`
-callouts. Link the spec clause and code evidence, explain the user tradeoff and recommendation,
-and preserve the approved spec while pending. Continue unaffected planning, mark dependent passages
-provisional, and present proposals together with the plan for review. Accepted capability changes
-update the spec and plan together; rejected proposals retain the approved requirement.
+## 1. Specify — `spec-specify`
 
-Review and approve the plan, then start tasks in a fresh session. Missing decisions in the
-persisted documents must be resolved instead of inferred from another session's memory.
+Writes `spec.md`: the problem, the change, the rules no screen shows, what is left out. Where the
+repository draws journeys, what changes on screen is declared in the journey tests: the changed
+screens with a mockup, and a case to write for each criterion a screen shows. The scope is shaped
+against the project's priorities first, and split when it has grown. No product code.
 
-## 3. Tasks and briefs
+**Gate:** the user approves the spec. Planning starts in a fresh session, from the committed spec.
 
-`spec-tasks` produces a concise `tasks.md` overview and `briefs/task-N.md` for implementers.
-Tasks are review-sized behavioral increments with acceptance, ownership, dependencies and
-`Implementation: easy | standard | hard`. Difficulty describes the work remaining after preparation;
-review depth follows the actual change independently. See `spec-tasks` for classification rules.
-Briefs verify symbols, reusable mechanisms, earlier-task effects, invariants and exact checks.
-The same agent writes every brief in dependency order, then checks that dependent tasks' assumptions
-match their predecessors' planned outputs. It completes the full preparation pass autonomously,
-collecting proposals for one combined review. Only a major blocker that prevents a coherent working
-set even with explicit provisional assumptions warrants interruption; finish unaffected work first.
+## 2. Plan — `spec-plan`
 
-Gaps found during grounding become visible `[PLAN-UPDATE-01] — PROPOSED` callouts beside affected
-passages in `plan.html`, with stable IDs and a small linked index near the top. Search `PLAN-UPDATE`
-to find them. `tasks.md` links to the proposals; affected tasks and briefs remain provisional while
-decisions are pending. The approved design stays intact until acceptance, then the plan/tasks/briefs
-are synchronized and the callout is marked ACCEPTED. Amendments, task ordering and completeness
-can be approved in the same review before implementation. Named runs keep large features manageable.
-No plan amendments is also a valid result: leave the plan unchanged, omit amendment sections and
-report “No plan changes proposed” with the completed task breakdown and briefs.
+Reads the map, then writes the pieces: the sites in the code, the titles of the narrative and
+server tests, and `plan.md` (a statement and a reason a piece, the decisions across pieces, the
+rules no test holds). Nothing the product does changes.
 
-## 4. Implement and review
+How a plan is reviewed:
 
-An approved `feature-implement` run proceeds end-to-end through implementation, independent review,
-corrections and global review. The supervisor resolves technical choices within the agreed outcomes;
-user intervention is reserved for major blockers, necessary changes to agreed product scope or
-constitutional rules, and operations outside existing authority. Continue independent work when
-a task must be parked, preserving pre-existing changes and other sessions' ownership.
+- The reviewer reads the plan page top down: the flows, then the cards. They ask in the session
+  that holds the plan; each answer is an edit in place and a commit.
+- A simplification of the underlying code found on the way is made in another session, and the
+  plan is then rewritten against it.
+- **The plan is approved when no question is left and the reviewer says so.** The session then
+  runs the approval command, and the file it writes is committed as the approval. An agent never
+  runs it on its own judgement.
 
-`task-implement` runs required gates and writes a minimal committed handoff with implementation
-ranges, useful review pointers and material unresolved concerns. `task-review` reads the actual
-diff first and chooses LIGHT/STANDARD/FULL internally. Feature-review assignments authorize evident
-scoped fixes in the same pass; standalone review remains read-only unless fixes are requested.
-Review depth does not waive quality gates. The implementer and reviewer execute checks; the
-supervisor tracks completion and routes missing checks or failures back to the responsible agent.
+**Gate:** the approval.
 
-Consequential decisions update the relevant plan text with visible `[IMPL-DECISION-01] — APPLIED`
-callouts and a linked index; use PROPOSED only for exceptional decisions requiring the user's
-authority. A bug batch without a plan uses the same tags beside the affected tasks. Routine fixes,
-ordinary choices and successful test results do not need annotations or reports. No judgement
-files or gate journals: `tasks.md` holds status and outstanding blockers/prerequisites only,
-distinguishing code blockers, deployment-only conditions and later human checks.
-Both plan-amendment and implementation-decision indexes and callouts use the shared
-`spec-plan/references/plan-decision-callouts.md` presentation.
+## 3. Tasks — `spec-tasks`
 
-Finish with global review and, when production code changes, a
-consolidated changelog entry written by the `feature-implement` supervisor. The global
-reviewer owns final checks, including cross-repository integration, reusing completed checks that
-still cover the final changes. Unresolved failures and unavailable required checks remain explicit; never treat
-them as success. The user receives the delivered outcome, any consequential decisions in the plan,
-outstanding exceptions and a compact usage summary. The configured `reviewer` role handles both
-per-task and global review; see [`agent-tooling.md`](agent-tooling.md).
+Prepares the delivery, in a fresh session. It cuts the pieces into **lots** (what one implementer
+delivers and one reviewer reads, a commit a piece), each of which compiles and stays green alone.
+It plans the unit tests of each lot: the titles to write, and the existing tests that change or
+go, each removal naming what holds the behaviour instead. Where grounding the plan shows a gap it
+edits the plan in place, each edit under a `Changed:` paragraph.
 
-After global review and corrections, `plan-review-guide` converts the existing plan into the
-final review guide before the final commit and handoff. Preserve the reviewed structure and
-examples, link matching claims to actual implementation, and integrate supervisor-resolved
-decisions beside their owning passages. The `plan-review-guide` agent reports uncertain
-claims to the supervisor; it does not resolve material departures from the plan. Partial runs
-leave unfinished passages explicit; bug batches without a plan do not create one for this step.
+There is no task list and no hand-written brief: the map prints a lot's brief from the plan.
 
-## 5. Archive
+**Gate:** the reviewer reads what moved on the delivery page, answers each edit there or in the
+session, and approves again.
 
-Invoke `feature-archive` explicitly after shipping and resolving gates. Promote durable insight
-into owning architecture pages, conventions, testing, design/published docs as appropriate.
-Park actionable unfinished work with enough context to survive deletion. Update the roadmap,
-then delete the committed feature working set, including briefs and minimal handoffs.
-Git history is the archive; do not create a redundant per-feature summary. Never automatically
-retire migration or serialization-upgrade tests as a side effect of archiving.
+## 4. Implement and review — `feature-implement`
+
+A supervisor delivers one lot a run, then stops for the reviewer:
+
+1. An implementer builds the lot (`task-implement`): each planned place becomes code, each
+   planned test a test under its title, a commit a piece whose message names it.
+2. The lot check reads the commits against the approved plan: a test nobody planned, a planned
+   one not written, a deletion or a file the plan does not name. Each is settled.
+3. A reviewer reads the lot's commits (`task-review`), setting its own depth from the diff, and
+   is asked for what no tool holds: whether the code at each place does what its clause says.
+   The supervisor triages its findings and the reviewer applies the approved fixes.
+4. **A decision is written into the plan and nowhere else**: a `Changed:` for what changes a line
+   of it, a `Note:` for a choice the next lot stands on. No callout, no judgement file, no list
+   of routine fixes.
+5. The reviewer of the plan answers the decisions first, then reads the code, both on the
+   delivery page, which lists each built piece with its places and its commits. The approval that
+   follows is theirs.
+
+A lot that cannot land is parked and the independent lots go on. What only the user can do (a
+check on a device, a production operation, a reading that decides later work) goes to the
+feature's **gates file**, never into a pause. Once the last lot is reviewed, a **global review**
+reads the whole delivery for the seams between lots, the full gate runs, and the run's cost is
+measured.
+
+The quality gates (what a piece's commit, a lot and a run must pass) are the project's:
+`.agents/repository.md` § "Gates". A review's depth never waives one. If an unrelated bug is
+found, it is fixed in a commit of its own or reported; never papered over.
+
+## 5. Archive — `feature-archive`
+
+Invoked explicitly, once the feature is final. The archive gate holds while anything planned
+remains or a rule has no owner. Then every durable fact is promoted to the reference docs,
+unfinished work is parked where it will be picked up, the tags come off the test titles, and the
+feature folder is deleted. Git history is the archive: no per-feature summary is ever written.
+
+**Gate:** the user confirms the deletion.
+
+## Sessions and roles
+
+- **A fresh session for each of specify, plan, tasks, and for each implementation run.** A
+  decision that exists only in a conversation is a gap to resolve, not something to infer.
+- The roles are `implementer`, `implementer-easy`, `implementer-hard`, `reviewer`,
+  `reviewer-global` and `light`, with `diagnostician` and `plan-review-guide` for a bug batch.
+  A role's text is `.agents/roles/<role>.md`. Its model and effort are pinned in the runtime's
+  agent definition and named nowhere else: skills and documents name roles.
+- Stateful test suites and mutable application databases are never shared between parallel
+  agents.
 
 ## Maintenance
 
-Skills are committed under `.agents/skills/`; `.claude/skills` is a compatibility symlink.
-Shared files are explicitly synchronized; local references stay local. Every repository remains
-independently usable. Update affected documentation with the pattern it describes. Constitutional
-changes use `update-constitution` and remain separate from ordinary feature changes.
+The skills are under `.agents/skills/` and the roles under `.agents/roles/`; a runtime's own
+folder holds adapters that point at them. They, this page and the format reference are written
+for any project and name none: a project's specifics go to its `.agents/repository.md`. A change
+to the constitution uses `update-constitution`, in a commit of its own.
