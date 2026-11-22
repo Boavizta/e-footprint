@@ -81,6 +81,7 @@ def test_the_example_written_by_hand_is_what_the_command_prints_for_its_source()
     assert done.returncode == 0, done.stderr
     printed, by_hand = json.loads(done.stdout), json.loads((SHOP / "source-index.json").read_text())
 
+    assert printed["looksDeclared"] == by_hand["looksDeclared"]
     assert printed["narratives"] == by_hand["narratives"]
     assert sorted(printed["files"]) == sorted(by_hand["files"])
     for file, tables in by_hand["files"].items():

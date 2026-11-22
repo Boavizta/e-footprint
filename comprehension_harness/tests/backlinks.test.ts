@@ -11,7 +11,7 @@ import { mkdirSync, mkdtempSync, rmSync, writeFileSync } from 'node:fs';
 import { tmpdir } from 'node:os';
 import { dirname, join } from 'node:path';
 import { afterAll, beforeAll, describe, expect, it, vi } from 'vitest';
-import { buildBacklinks, LOOKS_DECLARED, unresolvedDeclaredLooking, type BacklinkIndex, type PageEntry, type PageToken, type UnscopedResolver } from '../backlinks';
+import { buildBacklinks, unresolvedDeclaredLooking, type BacklinkIndex, type PageEntry, type PageToken, type UnscopedResolver } from '../backlinks';
 
 vi.mock('../config', () => ({
   config: { docs: 'docs', pagesNamingCode: [{ page: 'docs/conventions.md', kind: 'convention', split: 'heading' }], source: { words: ['app', 'tests'] } },
@@ -58,14 +58,6 @@ describe('buildBacklinks', () => {
   });
 });
 
-describe('LOOKS_DECLARED', () => {
-  it.each(['Basket', 'applyDiscount', 'apply_discount', 'apply_discount_2', '_apply_discount', '__basket_id', 'MAX_ITEMS'])(
-    'takes `%s` for a declared symbol', (name) => expect(LOOKS_DECLARED.test(name)).toBe(true));
-
-  it.each(['total', 'id', '_total', '__init__', 'apply-discount', 'apply_', 'basket.total'])(
-    'does not take `%s` for one', (name) => expect(LOOKS_DECLARED.test(name)).toBe(false));
-});
-
 describe('unresolvedDeclaredLooking', () => {
   let root = '';
   beforeAll(() => {
@@ -86,7 +78,9 @@ describe('unresolvedDeclaredLooking', () => {
     const entry: PageEntry = { kind: 'convention', page: 'docs/conventions.md', title: 'Pricing', lead: 'Pricing', line: 3, tokens, keys: new Set() };
     return { entries: [entry], byKey: new Map() };
   };
-  const found = (...tokens: PageToken[]) => unresolvedDeclaredLooking(indexOf(...tokens), root).map((u) => [u.token.name, u.appearsIn]);
+  // What a name is shaped like is the stack's to say; here a stack that declares in every style.
+  const ANY_STYLE = /^(?:[A-Z][A-Za-z0-9]{2,}|[a-z][a-z0-9]*[A-Z][A-Za-z0-9]*|_*[a-z][a-z0-9]*(?:_[a-z0-9]+)+|[A-Z][A-Z0-9]*(?:_[A-Z0-9]+)+)$/;
+  const found = (...tokens: PageToken[]) => unresolvedDeclaredLooking(indexOf(...tokens), root, ANY_STYLE).map((u) => [u.token.name, u.appearsIn]);
 
   it('says in which code folders a word still appears, whatever language the file is written in', () => {
     expect(found(symbol('apply_discount'), symbol('RATE_OF_DISCOUNT'), symbol('emptyBasket'))).toEqual([

@@ -97,7 +97,7 @@ import { SourceIndex, type SourceSite } from './source-index';
 import type { Location, NarrativeKind, PlannedSite, Resolution, SourceReader, Story, StoryFrame, StoryHit } from './stack';
 import { assemblePlans, editItems, filesNamed, findings, isOwnNotice, lotLeft, names, NOTES, UNPLANNED, type PieceCommit, overSentenceBudget, parseTag, pieceDocOf, pieceQuestion, planDocOf, reviewItems, waiverQuestion, type PointerTarget, replaceSlugRefs, scanJourneyCases, scanPlannedComments, scanTodos, todosByTier, TIERS, type FeatureDocs, type JourneyCase, type PlanBaseline, type DeltaLine, type PlanChange, type PlanFeedback, type PlanLot, type PlanMove, type ReviewItem, type UnitDelta, type Plan, type PlanGroup, type PlanSite, type PlanPiece, type PlanTodo, type StaticSite } from './plan';
 import { readPieceCommits } from './commits';
-import { buildBacklinks, describeEntry, LOOKS_DECLARED, markersFor, unresolvedDeclaredLooking, untracedEntries, type BacklinkIndex, type Marker, type PageEntry, type StepKeys } from './backlinks';
+import { buildBacklinks, describeEntry, markersFor, unresolvedDeclaredLooking, untracedEntries, type BacklinkIndex, type Marker, type PageEntry, type StepKeys } from './backlinks';
 
 export type { PlannedSite, Story, StoryFrame, StoryHit };
 export { SourceIndex };
@@ -410,8 +410,8 @@ function sentenceHtml(sentence: string, site: SourceSite, index: SourceIndex, st
   return { html, tokens };
 }
 
-// `--check` holds a sentence to `LOOKS_DECLARED` (`backlinks.ts`): a token shaped like a declared
-// symbol that is not a watch key of the step must have linked.
+// `--check` holds a sentence to the stack's `looksDeclared` (`stack.ts`): a token shaped like a name the
+// language declares, that is not a watch key of the step, must have linked.
 
 function watchKeys(step: Step): Set<string> {
   const keys = new Set<string>();
@@ -2046,7 +2046,7 @@ export function check(source: SourceReader = openSource(), archive: string | nul
       }
       for (const t of unlinked) {
         if (t.resolution.linked) continue;
-        const miss = LOOKS_DECLARED.test(t.name) && !keys.has(t.name);
+        const miss = index.looksDeclared.test(t.name) && !keys.has(t.name);
         if (miss) flagged.push(`${n.title}, step ${step.n} \`${t.name}\` — ${t.resolution.reason}`);
         console.log(`    ${miss ? 'MISS    ' : 'unlinked'} \`${t.name}\` — ${t.resolution.reason}${!miss && keys.has(t.name) ? ' (a watch key)' : ''}`);
       }
@@ -2142,7 +2142,7 @@ export function check(source: SourceReader = openSource(), archive: string | nul
   // entry whose named symbols and files no story's hit or frame ever touched.
   const backlinks = buildBacklinks(index, ROOT);
   console.log(`\ninfo: backlink index — ${backlinks.entries.length} entries over ${PAGES_SUMMARY(backlinks)}, ${backlinks.byKey.size} keys (symbol or file) named by at least one entry`);
-  const unresolved = unresolvedDeclaredLooking(backlinks, ROOT);
+  const unresolved = unresolvedDeclaredLooking(backlinks, ROOT, index.looksDeclared);
   const stale = unresolved.filter((u) => u.appearsIn.length === 0);
   console.log(`info: ${unresolved.length} page token${unresolved.length === 1 ? '' : 's'} look declared and resolve to nothing — ${stale.length} appear nowhere in the code (stale?), ${unresolved.length - stale.length} appear but not as a top-level declaration under ${APP}:`);
   for (const u of unresolved) console.log(`  ${u.appearsIn.length ? `seen in ${u.appearsIn.join(', ')}` : 'NOWHERE'}  \`${u.token.name}\` — ${describeEntry(u.entry)}`);

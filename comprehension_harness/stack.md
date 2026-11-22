@@ -87,6 +87,7 @@ row.
 | Where a name of a sentence is declared, seen from a site | In order: an import of the file, a local of the functions around the call (nearest first), a top-level declaration of the file, one unique across the source. Otherwise the reason, for `--check` | Identities with a type checker, names without |
 | The same with no site | For a name `plan.md`, a test title or a page of rules gives: in the files named beside it, else unique across the source, else nearest to the piece's places | Same |
 | Where a function uses a symbol | The first line of a function (by `file` and `fn`) referring to the symbol declared at a place: "Open call" | Same |
+| What a declared name is shaped like | A pattern: a token of a sentence, or of a page of rules, that has that shape and resolves to nothing is flagged | The language's own styles |
 | The function around a site | The nearest named function, its first and last line, who refers to it and what it calls, each marked as holding a `narrate` or not (`map step`, `map around`) | Candidates in both |
 
 The stack's reader refuses, with the file and the line: a `planned` call whose tag or sentence is
@@ -101,6 +102,7 @@ source by the test.
 
 ```json
 {
+  "looksDeclared": "^(?:[A-Z][A-Za-z0-9]{2,}|_*[a-z][a-z0-9]*(?:_[a-z0-9]+)+|[A-Z][A-Z0-9]*(?:_[A-Z0-9]+)+)$",
   "narratives": [{ "file": "tests/…", "title": "…", "line": 12, "summary": "…", "firstTest": "…" }],
   "files": {
     "app/importer.py": {
@@ -115,6 +117,12 @@ source by the test.
 }
 ```
 
+- `looksDeclared` is the shape of a name the language declares, as the source of a regular
+  expression its own engine and JavaScript read the same. A backticked token of that shape that
+  resolves to nothing fails the check. It is the stack's to say, since the shape is the
+  language's: words joined by an underscore are a function in Python, and in TypeScript a
+  database column no sentence should be held to. A stack that runs in Node gives it as a
+  `RegExp` (`SourceReader.looksDeclared`).
 - `files` holds every file of the source folders and every test file that declares a narrative.
 - A `planned` site adds `"planned": { "feature", "slug", "change", "signature" }`, `change` being
   `changed`, `removed` or `added`.

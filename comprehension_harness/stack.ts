@@ -140,6 +140,11 @@ export interface Around {
 
 /** Everything the tools ask the source. Each answer is read from the source as it stands. */
 export interface SourceReader {
+  /** The shape of a name this language declares, in whichever of its styles: a backticked token of that shape
+   *  that resolves to nothing is what `--check` holds a sentence and a page of rules to. It is the stack's to
+   *  say: words joined by an underscore are a function in Python and a database column in TypeScript. One
+   *  lowercase word is shaped like any word, and is in no stack's shape. */
+  looksDeclared: RegExp;
   /** The sites of a file, in source order. Throws for a file the stack does not read; refuses, with the file and
    *  the line, a `planned` call whose tag or sentence is no literal and a shell that throws anything but its tag. */
   sites(file: string): RawSite[];
@@ -177,6 +182,9 @@ export interface SourceReader {
  * has no identities.
  */
 export interface SourceIndexDocument {
+  /** The shape of a name the language declares (`SourceReader.looksDeclared`), as the source of a regular
+   *  expression both the stack's language and JavaScript read the same. */
+  looksDeclared: string;
   /** Every narrative a test file declares. */
   narratives: Array<{ file: string; title: string; line: number; summary: string; firstTest: string | null }>;
   /** Every file of the source folders, and every test file that declares a narrative or holds a site. */

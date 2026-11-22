@@ -31,6 +31,12 @@ export function checkSourceIndex(document: unknown, from: string): SourceIndexDo
   const doc = document as Partial<SourceIndexDocument> | null;
   if (doc === null || typeof doc !== 'object') return fail('the source index is not an object');
   if (!Array.isArray(doc.narratives)) return fail('"narratives" is not a list');
+  try {
+    if (typeof doc.looksDeclared !== 'string') throw new Error('not a string');
+    new RegExp(doc.looksDeclared);
+  } catch (error) {
+    return fail(`"looksDeclared" is not the source of a regular expression, the shape of a name the language declares — ${(error as Error).message}`);
+  }
   for (const n of doc.narratives) if (typeof n?.file !== 'string' || typeof n.title !== 'string' || typeof n.line !== 'number' || typeof n.summary !== 'string') fail(`a narrative is not { file, title, line, summary, firstTest }: ${JSON.stringify(n)}`);
   if (doc.files === null || typeof doc.files !== 'object' || Array.isArray(doc.files)) return fail('"files" is not an object, a file each');
   for (const [file, tables] of Object.entries(doc.files)) {
@@ -58,6 +64,7 @@ export function openJsonSource(command: readonly string[], cwd: string, isSource
 }
 
 export class JsonSource implements SourceReader {
+  readonly looksDeclared: RegExp;
   private declaredByName: Map<string, Location[]> | null = null;
   private filesUsing: Map<string, Set<string>> | null = null;
 
@@ -65,7 +72,9 @@ export class JsonSource implements SourceReader {
     private readonly document: SourceIndexDocument,
     private readonly isSource: (file: string) => boolean,
     private readonly reopen: () => SourceReader = () => this,
-  ) {}
+  ) {
+    this.looksDeclared = new RegExp(document.looksDeclared);
+  }
 
   fresh(): SourceReader {
     return this.reopen();

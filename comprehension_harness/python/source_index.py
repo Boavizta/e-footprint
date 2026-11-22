@@ -12,7 +12,8 @@ What this stack knows and the tools do not:
   configuration names, imported by name; a function of the same name from anywhere else is no site;
 - a narrative is a test class under ``@narrative("…")`` of ``declare.py``; its summary is the first
   paragraph of the class docstring, its first test the first ``test_…`` method;
-- a function is named by its ``__qualname__``, which is what a frame of a story prints.
+- a function is named by its ``__qualname__``, which is what a frame of a story prints;
+- a declared name is in PascalCase, snake_case or CONSTANT_CASE (``looksDeclared`` of the document).
 
 A parser gives names, not identities. A reference is placed at its declaration when Python's own scoping says
 where the name is bound: a top-level declaration of the file, an import followed to the file it names (through
@@ -46,6 +47,10 @@ CONFIG_FILE = "comprehension.config.json"
 REFERENCE_CALLS = "comprehension_harness.python.narrate"
 DECLARE_MODULE = "comprehension_harness.python.declare"
 KINDS = {"narrate": "step", "event": "event", "planned": "planned"}
+# The shape of a name Python declares: a class in PascalCase, a function or a variable in snake_case, with the
+# underscores a private name opens with, a constant in CONSTANT_CASE. A backticked token of that shape that the
+# index cannot place fails `--check`. Written to be read the same by `re` and by JavaScript.
+LOOKS_DECLARED = r"^(?:[A-Z][A-Za-z0-9]{2,}|_*[a-z][a-z0-9]*(?:_[a-z0-9]+)+|[A-Z][A-Z0-9]*(?:_[A-Z0-9]+)+)$"
 PLANNED_TAG = re.compile(r"^([a-z0-9]+(?:-[a-z0-9]+)*)#([a-z0-9]+(?:-[a-z0-9]+)*)$")
 FUNCTIONS = (ast.FunctionDef, ast.AsyncFunctionDef)
 # What has names of its own. A list, set or dict comprehension runs in its function's frame; a generator
@@ -492,7 +497,7 @@ def build(root: Path, settings: dict, declare: str = DECLARE_MODULE) -> dict:
         if file in source_files or index.narratives or index.sites:
             narratives.extend(index.narratives)
             files[file] = index.tables()
-    return {"narratives": narratives, "files": files}
+    return {"looksDeclared": LOOKS_DECLARED, "narratives": narratives, "files": files}
 
 
 def main() -> int:

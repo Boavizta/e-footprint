@@ -156,6 +156,21 @@ describe('a document of another shape', () => {
     noSentence.files[CHECKOUT].sites[2].sentence = null;
     expect(() => checkSourceIndex(noSentence, 'x.json')).toThrow(/the planned call at shop\/checkout\.py:18 needs a literal sentence/);
     expect(() => checkSourceIndex({ files: {} }, 'x.json')).toThrow(/"narratives" is not a list/);
+    expect(() => checkSourceIndex({ ...document(), looksDeclared: undefined }, 'x.json')).toThrow(/x\.json — "looksDeclared" is not the source of a regular expression/);
+    expect(() => checkSourceIndex({ ...document(), looksDeclared: '(' }, 'x.json')).toThrow(/"looksDeclared" is not the source of a regular expression/);
+  });
+});
+
+describe('the shape of a declared name', () => {
+  // The example is Python's: a class, a function with the underscores a private one opens with, a constant.
+  it.each(['Basket', 'apply_discount', 'apply_discount_2', '_apply_discount', '__basket_id', 'MAX_ITEMS'])(
+    'is the stack\'s to say: the example takes `%s` for one', (name) => expect(reader().looksDeclared.test(name)).toBe(true));
+
+  it.each(['total', 'id', '_total', '__init__', 'applyDiscount', 'apply-discount', 'apply_', 'basket.total'])(
+    'and does not take `%s` for one', (name) => expect(reader().looksDeclared.test(name)).toBe(false));
+
+  it('reaches the check through the index, as every stack\'s does', () => {
+    expect(new SourceIndex(reader()).looksDeclared.test('apply_discount')).toBe(true);
   });
 });
 

@@ -23,6 +23,11 @@ export class SourceIndex {
 
   constructor(private readonly reader: SourceReader) {}
 
+  /** The shape of a name the stack's language declares (`SourceReader.looksDeclared`). */
+  get looksDeclared(): RegExp {
+    return this.reader.looksDeclared;
+  }
+
   /** The `narrate`, `event` and `planned` sites of a file, keyed by line, each with its function and ordinal. */
   sites(file: string): Map<number, SourceSite> {
     let sites = this.sitesByFile.get(file);

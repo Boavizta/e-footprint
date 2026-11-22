@@ -76,11 +76,6 @@ export interface BacklinkIndex {
 
 const IDENTIFIER = /^[A-Za-z_$][A-Za-z0-9_$]*$/;
 
-/** What `--check` holds a token to: a token shaped like a declared symbol, in whichever style the code is
- *  written. PascalCase or camelCase (≥ 3 chars), or words joined by an underscore: snake_case, with the
- *  underscores a private name opens with, and CONSTANT_CASE. One lowercase word is shaped like any word. */
-export const LOOKS_DECLARED = /^(?:[A-Z][A-Za-z0-9]{2,}|[a-z][a-z0-9]*[A-Z][A-Za-z0-9]*|_*[a-z][a-z0-9]*(?:_[a-z0-9]+)+|[A-Z][A-Z0-9]*(?:_[A-Z0-9]+)+)$/;
-
 // ── Splitting ──────────────────────────────────────────────────────────────────
 
 interface RawEntry {
@@ -273,13 +268,13 @@ export interface Unresolved {
 }
 
 /** List 1: a token that looks declared and resolved to nothing, with where (if anywhere) the word still appears. */
-export function unresolvedDeclaredLooking(index: BacklinkIndex, root: string): Unresolved[] {
+export function unresolvedDeclaredLooking(index: BacklinkIndex, root: string, looksDeclared: RegExp): Unresolved[] {
   const words = codeWords(root);
   const out: Unresolved[] = [];
   const seen = new Set<string>();
   for (const entry of index.entries) {
     for (const token of entry.tokens) {
-      if (token.shape !== 'symbol' || token.name === null || token.key !== null || !LOOKS_DECLARED.test(token.name)) continue;
+      if (token.shape !== 'symbol' || token.name === null || token.key !== null || !looksDeclared.test(token.name)) continue;
       const dedupe = `${entry.page}:${entry.line}:${token.name}`;
       if (seen.has(dedupe)) continue;
       seen.add(dedupe);
