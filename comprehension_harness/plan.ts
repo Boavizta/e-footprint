@@ -19,7 +19,7 @@
  * Each fact has one home. A site says what changes at its place, in one clause. A test title says the behaviour
  * and its case. `specs/features/<feature>/plan.md` holds the rest: a title, a lead, then one `## #slug` section
  * per piece — its statement (the first paragraph), its reason (what follows), at most one paragraph opening
- * `To confirm:` for a point the reviewer must answer, its question in bold, and any paragraph opening `Note:`
+ * `To confirm:` for a point the reviewer must answer, its proposal in bold, and any paragraph opening `Note:`
  * for something the piece was built with that no line of the plan says and what follows stands on, its
  * point in bold: it is read, kept, and asks no answer. A section with any other title is a
  * decision across pieces; it names the pieces it concerns as `#slug`, and each piece lists the sections naming it.
@@ -285,7 +285,8 @@ export interface PlanPieceDoc {
   what: string;
   /** The reason, and what was refused: the blocks after the statement. */
   why: MdBlock[];
-  /** A point the reviewer must answer: the paragraph opening `To confirm:`, its bold part the question. */
+  /** A point the reviewer must answer: the paragraph opening `To confirm:`, its bold part the proposal, which the
+   *  approval writes in when the page answered "Yes, as proposed". */
   ask: { question: string; detail: string; line: number } | null;
   /** What the piece was built with that no line of the plan says, and that a later lot or the reader of the
    *  code stands on: the paragraphs opening `Note:`, the bold part the point. A note asks no answer and no
@@ -609,6 +610,32 @@ export function reviewItems(plan: Pick<Plan, 'delta' | 'pieces' | 'doc'>): Revie
     ...plan.pieces.flatMap((piece) => pieceQuestion(piece) ?? []),
     ...(plan.doc?.waivers ?? []).filter((w) => w.toConfirm).map(waiverQuestion),
   ];
+}
+
+/** `plan.md`, given as `text`, with each point the reviewer answered "Yes, as proposed" on the page written in as
+ *  its proposal: a piece's `To confirm:` paragraph becomes its bold part, a waiver loses the prefix. Any other
+ *  answer is the agent's to write in. `applied` names the units written in. */
+export function writeAcceptedAnswers(text: string, plan: Pick<Plan, 'pieces' | 'doc' | 'feedback'>): { text: string; applied: string[] } {
+  const accepted = (item: ReviewItem) => plan.feedback[item.key]?.verdict === 'approved';
+  const lines = text.split('\n');
+  const edits: Array<{ start: number; end: number; lines: string[]; unit: string }> = [];
+  for (const piece of plan.pieces) {
+    const item = pieceQuestion(piece);
+    const ask = piece.doc?.ask;
+    if (!item || !ask || !accepted(item)) continue;
+    let end = ask.line - 1;
+    while (end + 1 < lines.length && lines[end + 1].trim() !== '') end += 1;
+    const proposal = ask.question.trim();
+    edits.push({ start: ask.line - 1, end, lines: [/[.!?]$/.test(proposal) ? proposal : `${proposal}.`], unit: item.unit });
+  }
+  for (const waiver of plan.doc?.waivers ?? []) {
+    const item = waiverQuestion(waiver);
+    if (!waiver.toConfirm || !accepted(item)) continue;
+    const at = waiver.line - 1;
+    edits.push({ start: at, end: at, lines: [lines[at].replace(/To confirm:\s*/, '')], unit: item.unit });
+  }
+  for (const e of [...edits].sort((a, b) => b.start - a.start)) lines.splice(e.start, e.end - e.start + 1, ...e.lines);
+  return { text: lines.join('\n'), applied: edits.map((e) => e.unit) };
 }
 
 // ── The tag ────────────────────────────────────────────────────────────────────
@@ -1162,16 +1189,21 @@ export function filesNamed(snapshot: PlanSnapshot): Set<string> {
  *
  *  - a test deleted with nothing planned on it, and a file of the product's code that no place of the plan
  *    names (`named`: the approved plan's and the plan's as it stands) — under the first piece the commit names;
- *  - a place the approval held and the code no longer holds, in a file the piece's commits touched and added
- *    no line to: its planned line was taken off and nothing was written. The approval holds the clause, git
- *    what was written: neither alone tells a place built from a place dropped. A removal is not read this way
- *    (it adds nothing by design), nor a proposed migration, which moves to another folder.
+ *  - a place the approval held and the code no longer holds, in a file the piece's commits touched, where
+ *    nothing was written: its planned line was taken off and that is all. The approval holds the clause, git
+ *    what was written: neither alone tells a place built from a place dropped. A place in a function is read
+ *    by that function (`gained`): it is built when the function holds a line it did not hold when the plan
+ *    was approved. So a place skipped beside places that were built is told, and so is one a later commit
+ *    undid. Where no function can be placed (a template, a comment, a stack that gives no lines) the place is
+ *    read by its file: the piece's commits added no line to it. A removal is not read this way (it adds nothing
+ *    by design), nor a proposed migration, which moves to another folder.
  *
  * Each is a line of the piece's delta, so the piece's section says why in a `Changed:` and the reviewer answers
- * it like any other edit. A test file a commit only edits is no line: a literal that gains a field changes no
- * test. A file that holds several places, one built and one skipped, is not caught: the file gained lines.
+ * it like any other edit: the place is taken back (`takeBack`), or the edit says that it was built by taking
+ * lines off, which reads the same as nothing written. A test file a commit only edits is no line: a literal
+ * that gains a field changes no test. What was written is not judged: a place built wrongly reads as built.
  */
-export function unplannedLines(commits: PieceCommit[], named: ReadonlySet<string>, layout: Layout, pieces: PlanPiece[] = []): Map<string, string[]> {
+export function unplannedLines(commits: PieceCommit[], named: ReadonlySet<string>, layout: Layout, pieces: PlanPiece[] = [], gained: FeatureDocs['gained'] = undefined): Map<string, string[]> {
   const out = new Map<string, string[]>();
   const add = (slug: string, line: string) => {
     const lines = out.get(slug) ?? [];
@@ -1186,9 +1218,13 @@ export function unplannedLines(commits: PieceCommit[], named: ReadonlySet<string
     const since = piece.commits.filter((c) => c.sinceApproval);
     const addedTo = (file: string) => piece.commits.reduce((n, c) => n + (c.files.find((f) => f.file === file)?.added ?? 0), 0);
     for (const line of [...piece.built.sites, ...piece.built.comments]) {
-      const m = /^(changed|added|changes) (\S+) (?:in \S+ )?— (.*)$/.exec(line);
+      const m = /^(changed|added|changes) (\S+) (?:in (\S+) )?— (.*)$/.exec(line);
       if (!m || (m[2].startsWith('specs/features/') && m[2].endsWith('.sql'))) continue;
-      if (since.some((c) => c.files.some((f) => f.file === m[2])) && addedTo(m[2]) === 0) add(piece.slug, `place ${m[2]} — planned there, and the piece's commits added no line to the file: ${m[3]}`);
+      if (!since.some((c) => c.files.some((f) => f.file === m[2]))) continue;
+      // The second of two functions of one name in a file is `fn#2` on its line: it is read by its file.
+      const inFunction = m[3] === undefined ? null : gained?.(m[2], m[3]) ?? null;
+      if (inFunction === 0) add(piece.slug, `place ${m[2]} — planned in ${m[3]}, which gained no line since the approval: ${m[4]}`);
+      else if (inFunction === null && addedTo(m[2]) === 0) add(piece.slug, `place ${m[2]} — planned there, and the piece's commits added no line to the file: ${m[4]}`);
     }
   }
   return out;
@@ -1291,6 +1327,10 @@ export interface FeatureDocs {
   commits?: { list: PieceCommit[]; baseKnown: boolean } | null;
   /** What a repository says of a piece of this feature it plans; null when no checkout of it is known. */
   pointed?: (repository: string, slug: string) => PointerTarget | null;
+  /** How many lines the function `fn` of `file` holds that it did not hold at the commit of the approval, the
+   *  lines that stand directly on it counted with it; null when no such function can be placed, or no such
+   *  commit read. What tells a place built from a place skipped or undone (`unplannedLines`). */
+  gained?: (file: string, fn: string) => number | null;
 }
 
 export interface PlanInput {
@@ -1417,7 +1457,7 @@ export function assemblePlans(input: PlanInput): Plan[] {
     const diffed = approved ? diffSnapshots(approved.baseline, snapshot, explained, input.layout) : null;
     // What the commits made since the approval did beyond the plan joins the delta of the piece each names.
     if (diffed && implementing) {
-      for (const [slug, lines] of unplannedLines(commits, new Set([...filesNamed(approved!.baseline), ...filesNamed(snapshot)]), input.layout, [...bySlug.values()])) {
+      for (const [slug, lines] of unplannedLines(commits, new Set([...filesNamed(approved!.baseline), ...filesNamed(snapshot)]), input.layout, [...bySlug.values()], docs.gained)) {
         if (!bySlug.has(slug)) continue;
         const name = `#${slug}`;
         let d = diffed.delta.find((x) => x.kind === 'piece' && x.name === name);
@@ -1507,7 +1547,7 @@ export function findings(plan: Plan, archive = false): { failures: string[]; inf
       const where = `${plan.doc!.file}:${s.doc.section.line} #${s.slug}`;
       over(words(s.doc.what), BUDGET.what, where, 'states the piece', 'the statement is the first paragraph, the reason the next');
       over(s.doc.why.reduce((n, b) => n + (b.kind === 'p' ? words(b.text) : b.items.reduce((m, i) => m + words(i.text), 0)), 0), BUDGET.why, where, 'gives its reason', 'what the sites and the titles already say is not said again');
-      if (s.doc.ask) over(words(`${s.doc.ask.question} ${s.doc.ask.detail}`), BUDGET.ask, `${plan.doc!.file}:${s.doc.ask.line} #${s.slug}`, 'asks its question', 'the question in bold, then the alternative');
+      if (s.doc.ask) over(words(`${s.doc.ask.question} ${s.doc.ask.detail}`), BUDGET.ask, `${plan.doc!.file}:${s.doc.ask.line} #${s.slug}`, 'asks its question', 'the proposal in bold, then the alternative');
       for (const n of s.doc.notes) {
         over(words(n.text), BUDGET.note, `${plan.doc!.file}:${n.line} #${s.slug}`, 'notes what it was built with', 'one point a note: a second point is a second "Note:"');
         if (n.what === null) failures.push(`planned: ${plan.doc!.file}:${n.line} #${s.slug} holds a note with no point — "Note: **the point.** what follows from it", so the reader knows what to keep before reading why`);

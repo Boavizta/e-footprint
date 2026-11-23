@@ -95,7 +95,7 @@ import { blocksHtml, parseIntent, type MdBlock } from './intent-md';
 import { loadPlanDiff, openSource, titles } from './project-stack';
 import { SourceIndex, type SourceSite } from './source-index';
 import type { Location, NarrativeKind, PlannedSite, Resolution, SourceReader, Story, StoryFrame, StoryHit } from './stack';
-import { assemblePlans, editItems, filesNamed, findings, isOpenTest, isOwnNotice, isStoryOf, lotLeft, names, shared, siteLineOf, unexpected, type Crossing, type FrozenChain, NOTES, REPRODUCTIONS, UNPLANNED, chainsToFreeze, fixedChains, isBuiltPlace, placesCrossed, reproductionKeyOf, type PieceCommit, overSentenceBudget, parseTag, pieceDocOf, pieceQuestion, planDocOf, reviewItems, waiverQuestion, type PointerTarget, replaceSlugRefs, scanJourneyCases, scanPlannedComments, scanTodos, todosByTier, TIERS, type FeatureDocs, type JourneyCase, type PlanBaseline, type DeltaLine, type PlanChange, type PlanFeedback, type PlanLot, type PlanMove, type ReviewItem, type UnitDelta, type Plan, type PlanGroup, type PlanSite, type PlanSection, type PlanPiece, type PlanTodo, type StaticSite } from './plan';
+import { assemblePlans, editItems, filesNamed, findings, isOpenTest, isOwnNotice, isStoryOf, lotLeft, names, shared, siteLineOf, unexpected, type Crossing, type FrozenChain, NOTES, REPRODUCTIONS, UNPLANNED, chainsToFreeze, fixedChains, isBuiltPlace, placesCrossed, reproductionKeyOf, type PieceCommit, overSentenceBudget, parseTag, pieceDocOf, pieceQuestion, planDocOf, reviewItems, waiverQuestion, writeAcceptedAnswers, type PointerTarget, replaceSlugRefs, scanJourneyCases, scanPlannedComments, scanTodos, todosByTier, TIERS, type FeatureDocs, type JourneyCase, type PlanBaseline, type DeltaLine, type PlanChange, type PlanFeedback, type PlanLot, type PlanMove, type ReviewItem, type UnitDelta, type Plan, type PlanGroup, type PlanSite, type PlanSection, type PlanPiece, type PlanTodo, type StaticSite } from './plan';
 import { readPieceCommits } from './commits';
 import { buildBacklinks, describeEntry, markersFor, unresolvedDeclaredLooking, untracedEntries, type BacklinkIndex, type Marker, type PageEntry, type StepKeys } from './backlinks';
 
@@ -952,6 +952,37 @@ export function runReproductions(files: string[]): { ran: number; ok: boolean; c
 /** What a run of the reproductions that did not end well says, in a few lines. */
 const reproductionsFailed = (run: { command: string; output: string }) => `the reproductions did not run as expected — ${run.command}\n${run.output.trim().split('\n').slice(-12).map((line) => `    ${line}`).join('\n')}`;
 
+/**
+ * How many lines a function holds that it did not hold at `base`, the commit of an approval: what tells a place
+ * built from one that was skipped or undone (`FeatureDocs.gained`). The function is the source index's, as the
+ * code stands; what stands directly on it, up to the first blank line, is counted with it, since a decorator or
+ * an attribute is where a change of the function is often written. The lines are git's, from `base` to the
+ * working tree. Null where the index places no single function of that name, and where git cannot read `base`.
+ */
+export function gainedSince(base: string, index: SourceIndex): NonNullable<FeatureDocs['gained']> {
+  const added = new Map<string, Array<[number, number]> | null>();
+  const addedTo = (file: string) => {
+    if (!added.has(file)) {
+      let ranges: Array<[number, number]> | null = null;
+      try {
+        const diff = execFileSync('git', ['diff', '--unified=0', '--no-renames', base, '--', file], { cwd: ROOT, encoding: 'utf8', maxBuffer: 256 * 1024 * 1024, stdio: ['ignore', 'pipe', 'ignore'] });
+        ranges = [...diff.matchAll(/^@@ -\d+(?:,\d+)? \+(\d+)(?:,(\d+))? @@/gm)].map((m): [number, number] => [Number(m[1]), Number(m[1]) + Number(m[2] ?? 1) - 1]).filter(([from, to]) => to >= from);
+      } catch { ranges = null; }
+      added.set(file, ranges);
+    }
+    return added.get(file)!;
+  };
+  return (file, fn) => {
+    const lines = existsSync(join(ROOT, file)) ? index.lines(file, fn) : null;
+    const ranges = lines ? addedTo(file) : null;
+    if (!lines || !ranges) return null;
+    const text = readFileSync(join(ROOT, file), 'utf8').split('\n');
+    let from = lines[0];
+    while (from > 1 && (text[from - 2] ?? '').trim() !== '') from -= 1;
+    return ranges.reduce((n, [a, b]) => n + Math.max(0, Math.min(b, lines[1]) - Math.max(a, from) + 1), 0);
+  };
+}
+
 /** What a feature folder holds beside its sites: `plan.md` and `spec.md`, parsed. */
 function featureDocs(feature: string): FeatureDocs {
   const dir = featureFolder(feature);
@@ -1029,15 +1060,29 @@ const APPROVED_FILE = 'plan.approved.json';
  * `Changed:` paragraphs off `plan.md` — they told the reviewer what moved, and it is approved. Refuses while a
  * point is still to confirm: an approval with a question open approves nothing. Run on the reviewer's word.
  */
-export function approve(feature: string, source: SourceReader = openSource()): { file: string; units: number; cleared: number } {
+export function approve(feature: string, source: SourceReader = openSource()): { file: string; units: number; cleared: number; answered: string[] } {
   const index = new SourceIndex(source);
   const stories = readStories();
   index.realign(stories);
-  const plan = derivePlans(stories, deriveNarratives(stories, index), index).find((p) => p.feature === feature);
+  const planOf = () => derivePlans(stories, deriveNarratives(stories, index), index).find((p) => p.feature === feature);
+  let plan = planOf();
   if (!plan?.doc) throw new Error(`comprehension-render --approve ${feature}: ${plan ? `${featureFolder(feature)}/plan.md does not exist` : 'no planned site names it'}`);
-  const open = [...plan.pieces.filter((x) => x.doc?.ask).map((x) => `#${x.slug}`), ...plan.doc.waivers.filter((w) => w.toConfirm).map((w) => `the waiver of [${w.rule}]`)];
-  if (open.length) throw new Error(`comprehension-render --approve ${feature}: ${open.join(', ')} still ${open.length === 1 ? 'holds' : 'hold'} a "To confirm:" — answer it, then approve`);
   const md = join(ROOT, plan.doc.file);
+  // A point answered "Yes, as proposed" on the page is written in as its proposal; the plan is then read again,
+  // and approved only if it still passes.
+  const answered = writeAcceptedAnswers(readFileSync(md, 'utf8'), plan);
+  if (answered.applied.length) {
+    writeFileSync(md, answered.text);
+    plan = planOf()!;
+    const failures = findings(plan).failures;
+    if (failures.length) throw new Error(`comprehension-render --approve ${feature}: ${answered.applied.join(', ')} answered as proposed ${answered.applied.length === 1 ? 'is' : 'are'} written into ${plan.doc!.file}, and the plan no longer passes — ${failures.join('; ')}`);
+  }
+  const said = (item: ReviewItem) => {
+    const answer = plan!.feedback[item.key];
+    return answer?.verdict === 'refused' ? `answered on the page: "${answer.note}" — write the answer in as a statement` : 'not answered on the page — answer it';
+  };
+  const open = [...plan.pieces.flatMap((x) => pieceQuestion(x) ?? []), ...plan.doc!.waivers.filter((w) => w.toConfirm).map(waiverQuestion)];
+  if (open.length) throw new Error(`comprehension-render --approve ${feature}: a "To confirm:" stands — ${open.map((i) => `${i.unit}, ${said(i)}`).join('; ')}; then approve`);
   const lines = readFileSync(md, 'utf8').split('\n');
   // A `Changed:` paragraph runs to the next blank line; the blank line before it goes with it.
   const kept: string[] = [];
@@ -1065,7 +1110,7 @@ export function approve(feature: string, source: SourceReader = openSource()): {
   writeFileSync(join(ROOT, file), `${JSON.stringify(baseline, null, 2)}\n`);
   // The answers were on the plan that is now approved: the round is closed.
   if (existsSync(feedbackPath(feature))) rmSync(feedbackPath(feature));
-  return { file, units: baseline.units.length, cleared };
+  return { file, units: baseline.units.length, cleared, answered: answered.applied };
 }
 
 /**
@@ -1142,7 +1187,12 @@ export function derivePlans(stories: Story[], narratives: Narrative[], index: So
     todos,
     journeyCases: sources.journeyCases,
     narratives: narratives.filter((n) => n.canonical).map((n) => ({ title: n.title, kind: n.kind, steps: n.steps.map((step) => `${label(step, index)} — ${step.sentence}`) })),
-    docs: featureDocs,
+    // A place of an approved plan is read by its function: what it gained since the approval.
+    docs: (feature) => {
+      const docs = featureDocs(feature);
+      const base = docs.approved?.baseline.base;
+      return base ? { ...docs, gained: gainedSince(base, index) } : docs;
+    },
     layout,
   });
 }
@@ -1819,7 +1869,7 @@ function movesHtml(plan: Plan, index: SourceIndex): string {
 }
 
 /** The legend of the delta's rows. */
-const DELTA_LEGEND = 'An edit at a time: what moved in bold, why, then the lines that edit comes to. <span class="dl add inline"><span class="sign">+</span></span> in the plan now, not in what you approved · <span class="dl rem inline"><span class="sign">−</span></span> approved, no longer in the plan · <b>was / now</b> one place reworded · <b>file</b>, <b>test goes</b> on a <span class="dl add inline"><span class="sign">+</span></span> line with no place in the plan: what a commit did beyond it · <b>not built</b> a planned place taken off, in a file its commits added nothing to · <b>taken back</b> a place that read as built, which its edit names: the code does not do what its clause said · <b>reproduction</b>, was / now: a test you approved as the bug\'s reproduction was edited since, by more than its declaration. A place that became code is no difference: it is listed with its piece, as built.';
+const DELTA_LEGEND = 'An edit at a time: what moved in bold, why, then the lines that edit comes to. <span class="dl add inline"><span class="sign">+</span></span> in the plan now, not in what you approved · <span class="dl rem inline"><span class="sign">−</span></span> approved, no longer in the plan · <b>was / now</b> one place reworded · <b>file</b>, <b>test goes</b> on a <span class="dl add inline"><span class="sign">+</span></span> line with no place in the plan: what a commit did beyond it · <b>not built</b> a planned place taken off, in a function that gained no line since, or a file its commits added nothing to · <b>taken back</b> a place that read as built, which its edit names: the code does not do what its clause said · <b>reproduction</b>, was / now: a test you approved as the bug\'s reproduction was edited since, by more than its declaration. A place that became code is no difference: it is listed with its piece, as built.';
 
 /** The reviewer's answer to one item, and the buttons that give it. The page posts to the local app, which
  *  writes `plan-feedback.json`; opened as a file, the buttons are off and say where to open it. */
@@ -2339,7 +2389,7 @@ if (process.argv[1] && import.meta.url === pathToFileURL(process.argv[1]).href) 
     const feature = process.argv[process.argv.indexOf('--approve') + 1];
     if (!feature) throw new Error('comprehension-render --approve <feature>: the feature name is missing');
     const done = approve(feature);
-    console.log(`comprehension-render --approve: ${done.file} — ${done.units} units${done.cleared ? `, ${done.cleared} "Changed:" paragraph${done.cleared === 1 ? '' : 's'} taken off plan.md` : ''}`);
+    console.log(`comprehension-render --approve: ${done.file} — ${done.units} units${done.cleared ? `, ${done.cleared} "Changed:" paragraph${done.cleared === 1 ? '' : 's'} taken off plan.md` : ''}${done.answered.length ? `, ${done.answered.join(', ')} answered as proposed and written in` : ''}`);
   } else if (process.argv.includes('--check')) {
     const at = process.argv.indexOf('--archive');
     const archive = at >= 0 ? process.argv[at + 1] ?? null : null;

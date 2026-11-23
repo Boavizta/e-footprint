@@ -14,8 +14,8 @@ import { parseIntent, sluggedItems } from '../intent-md';
 import {
   BUDGET, SENTENCE_BUDGET, overSentenceBudget,
   assemblePlans, findings, parseTag, parseTodoTitle, replaceSlugRefs, rulesOf, slugRefs, todosByTier,
-  lotLeft, planDocOf, reviewItems, chainsToFreeze, fixedChains,
-  type FeatureDocs, type PieceCommit, type PlanBaseline, type PlanInput, type PlanSite, type PlanTodo, type StaticSite,
+  lotLeft, planDocOf, reviewItems, writeAcceptedAnswers, chainsToFreeze, fixedChains,
+  type FeatureDocs, type PlanFeedback, type PieceCommit, type PlanBaseline, type PlanInput, type PlanSite, type PlanTodo, type StaticSite,
 } from '../plan';
 import * as plan from '../plan';
 import { LAYOUT } from './layout';
@@ -611,6 +611,30 @@ describe('a new function nobody names', () => {
   });
 });
 
+describe('answers given as proposed', () => {
+  const TEXT = '# P\n\n## #cut\n\nThe reader cuts.\n\nTo confirm: **The cap is two.** The alternative is three,\nread from the settings.\n\n## #save\n\nSave sends it.\n\nTo confirm: **Save retries once** or never.\n\n## Rules no test holds\n\n- **owned-by-none** To confirm: the reader returns what the rule says.\n';
+  const planWith = (feedback: PlanFeedback) => assemble({ sites: [site('cut', 'src/reader.ts', 1), site('save', 'src/card.tsx', 2)], docs: (f) => ({ ...docs(TEXT)(f), feedback }) })[0];
+  const keyOf = (unit: string) => reviewItems(planWith({})).find((i) => i.unit === unit)!.key;
+  const answer = (verdict: 'approved' | 'refused', ...units: string[]): PlanFeedback => Object.fromEntries(units.map((u) => [keyOf(u), { unit: u, what: '', verdict, note: verdict === 'refused' ? 'three' : '', at: '' }]));
+
+  it("writes a piece's proposal in as a statement, and the whole paragraph goes", () => {
+    const { text, applied } = writeAcceptedAnswers(TEXT, planWith(answer('approved', '#cut')));
+    expect(applied).toEqual(['#cut']);
+    expect(text).toContain('The reader cuts.\n\nThe cap is two.\n\n## #save');
+    expect(text).toContain('To confirm: **Save retries once**');
+  });
+
+  it('ends a proposal with a full stop, and takes the prefix off a waiver', () => {
+    const { text } = writeAcceptedAnswers(TEXT, planWith(answer('approved', '#save', 'no test for owned-by-none')));
+    expect(text).toContain('Save sends it.\n\nSave retries once.\n');
+    expect(text).toContain('- **owned-by-none** the reader returns what the rule says.');
+  });
+
+  it('leaves a point answered otherwise, or not answered, for the agent', () => {
+    expect(writeAcceptedAnswers(TEXT, planWith(answer('refused', '#cut')))).toEqual({ text: TEXT, applied: [] });
+  });
+});
+
 describe('the delivery', () => {
   const PIECES = '# P\n\n## #cut\n\nThe reader cuts.\n\n## #save\n\nSave sends it.\n';
   const lots = (items: string) => `${PIECES}\n## Delivery\n\n${items}\n`;
@@ -954,6 +978,32 @@ describe('a plan being implemented', () => {
     expect(now(built, [touched(6)]).delta).toEqual([]);
     // A later commit of the piece that writes there settles it.
     expect(now(built, [touched(0), commit('2222222233', ['cut'], { files: [{ file: 'src/reader.ts', added: 2, removed: 0, line: 151 }] })]).delta).toEqual([]);
+  });
+
+  it('tells a place whose function gained no line, in a file that did: skipped beside a built one, or undone since', () => {
+    // The piece's commits wrote in the file: read by the file, every place of it is built.
+    const wrote = commit('1111111122', ['cut'], { files: [{ file: 'src/reader.ts', added: 6, removed: 1, line: 151 }] });
+    const read = (gained: FeatureDocs['gained'], md = MD) => assemble({
+      ...planned, ...built,
+      docs: (feature) => ({ ...docs(md, null)(feature), approved: { file: 'specs/features/demo/plan.approved.json', baseline: BASELINE }, commits: { list: [wrote], baseKnown: true }, gained }),
+    })[0];
+    expect(read(undefined).delta).toEqual([]);
+    expect(read(() => 2).delta).toEqual([]);
+    // Its own function holds nothing new: the place was taken off, and nothing was written there.
+    const asked: string[] = [];
+    const bare = read((file, fn) => { asked.push(`${file} ${fn}`); return 0; });
+    expect(asked).toEqual(['src/reader.ts fn']);
+    expect(bare.delta).toMatchObject([{ name: '#cut', reason: 'needed', facets: [{ facet: 'unplanned', added: ['place src/reader.ts — planned in fn, which gained no line since the approval: cut happens.'], removed: [] }] }]);
+    expect(findings(bare).failures).toEqual([expect.stringContaining('#cut is not as approved')]);
+    // Taken back, it is a line the piece lost and no place left to build: the edit stands on it.
+    const taken = read(() => 0, MD.replace('The reader cuts.\n', 'The reader cuts.\n\nChanged: **The reader no longer cuts.** A page keeps its whole. → unbuilt src/reader.ts\n'));
+    expect(taken.delta!.map((d) => d.facets.map((f) => f.facet))).toEqual([['sites']]);
+    expect(findings(taken).failures).toEqual([]);
+    // Built by taking lines off, it is explained as any line beyond the plan.
+    const explained = read(() => 0, MD.replace('The reader cuts.\n', 'The reader cuts.\n\nChanged: **The cut is the guard\'s removal.** Nothing replaces it.\n'));
+    expect(findings(explained).failures).toEqual([]);
+    // A function that cannot be placed leaves the place to its file.
+    expect(read(() => null).delta).toEqual([]);
   });
 
   it('takes back a built place a "Changed:" names: the piece loses it, and so does the next approval', () => {

@@ -162,7 +162,7 @@ Three paragraphs have a prefix:
 
 | Prefix | Is | Written when |
 |---|---|---|
-| `To confirm: **the question.** the alternative` | A question, one per piece at most | Only the reviewer can decide. Answered, it becomes a statement and the paragraph goes |
+| `To confirm: **the proposal.** the alternative` | A point to decide, one per piece at most: the proposal stated as the plan would state it | Only the reviewer can decide. Answered as proposed on the page, the approval command writes the proposal in; another answer is the agent's to write in. Either way the paragraph goes |
 | `Changed: **what moved.** why → its lines` | One edit of an approved plan | A unit no longer reads as approved |
 | `Note: **the point.** what follows from it` | Something to know, asking no answer | A piece was built with a choice no line of the plan says and a later lot stands on |
 
@@ -176,8 +176,9 @@ plan alone can say that the code does not do what its clause said, because a rev
 because it was never written beside places that were. An `unbuilt` claim names such a place by a
 fragment of its line: `→ unbuilt get_calculus_graph`. The place is then a line the piece lost,
 drawn "taken back" under its edit, and the next approval no longer holds it. A claim that names
-no built place fails the check. The check cannot ask for the paragraph itself: only a reading of
-the code tells that one is owed.
+no built place fails the check. The check asks for the paragraph where nothing was written at the
+place (§ "Commits, and the lot check"); where something was, and does not do what the clause
+says, only a reading of the code tells that one is owed.
 
 Each fact has one home, and each home a budget in words, which the check enforces:
 
@@ -222,8 +223,9 @@ collects its own alone (`comprehension_harness/README.md` § "The Python stack")
 `plan.approved.json` is written by the approval command and by nothing else. It is committed: it
 is the approval. It holds the plan a unit at a time, with no line number, and for a piece that
 fixes a bug what each reproduction told that day (§ "A bug"), which is kept and never compared.
-The command refuses while a `To confirm:` stands, and takes the `Changed:` paragraphs off
-`plan.md`.
+The command first writes in each point answered "Yes, as proposed" on the page, and approves only
+if the plan then passes. It refuses while a `To confirm:` stands, saying what the page answered,
+and takes the `Changed:` paragraphs off `plan.md`.
 
 From then on the check lists every unit that is not as approved, and fails:
 
@@ -273,7 +275,11 @@ each of these is settled:
 - a test added under no planned title. It takes the piece's tag and a `Changed:`, or it goes;
 - a test deleted with no `@planned.remove` on it, and a file of the product's code no place of
   the plan names;
-- a place the approval held, taken off with nothing written in its file;
+- a place the approval held, taken off with nothing written: its function holds no line it did
+  not hold when the plan was approved, what stands directly on the function counted with it. A
+  place in no function, as a template's, is read by its file. Skipped beside places that were
+  built, or undone by a later commit, it is taken back with an `unbuilt` claim (§ "`plan.md`");
+  built by taking lines off, which reads the same, its `Changed:` says so;
 - a delivered lot one of whose pieces no commit names.
 
 Each is a decision: a `Changed:` in the piece's section, in words the reviewer can read without

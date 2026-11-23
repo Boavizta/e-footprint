@@ -123,6 +123,7 @@ export class SourceIndex {
   useIn(file: string, fn: string, name: string, at: Location): Location | null { return this.reader.useIn(file, fn, name, at); }
   sourceFile(token: string): string | null { return this.reader.sourceFile(token); }
   around(site: RawSite): Around | null { return this.reader.around(site); }
+  lines(file: string, fn: string): [number, number] | null { return this.reader.lines?.(file, fn) ?? null; }
   siteFiles(): string[] { return this.reader.siteFiles(); }
   narrativeTestFiles(): string[] { return this.reader.narrativeTestFiles(); }
 }

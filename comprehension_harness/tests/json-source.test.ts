@@ -123,6 +123,16 @@ describe('where a function uses a symbol', () => {
   });
 });
 
+describe('the lines of a function', () => {
+  it('are those of the one function of that name in the file, and nothing for a name it does not hold once', () => {
+    expect(reader().lines(CHECKOUT, 'pay')).toEqual([15, 19]);
+    expect(reader().lines(CHECKOUT, 'Basket.total')).toEqual([9, 12]);
+    expect(reader().lines(CHECKOUT, 'total')).toBeNull();
+    expect(reader().lines('shop/nowhere.py', 'pay')).toBeNull();
+    expect(new SourceIndex(reader()).lines(PRICING, 'with_tax')).toEqual([6, 9]);
+  });
+});
+
 describe('the code around a site', () => {
   it('is its function, who refers to it — and who refers to those that hold no narrate — and what it calls', () => {
     expect(reader().around(siteAt(CHECKOUT, 23))).toEqual({

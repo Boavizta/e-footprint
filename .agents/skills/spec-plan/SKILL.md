@@ -130,11 +130,12 @@ title is `spec-tasks`' to plan.
 
 ## Points to confirm
 
-- One per piece at most: the question in bold, then the alternative. Only what is the reviewer's
-  to decide.
+- One per piece at most: the proposal in bold, stated as the plan would state it, then the
+  alternative. Only what is the reviewer's to decide.
 - **State the content, never a rule's name alone.** "Applied offline is owned by one case" reads
   as if offline saving were planned.
-- An answer is written into the piece as a statement, and the paragraph goes.
+- An answer "Yes, as proposed" is written in by the approval command. Any other is yours to write
+  into the piece as a statement, and the paragraph goes.
 
 ## While editing, and before handing over
 

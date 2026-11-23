@@ -195,6 +195,11 @@ export class JsonSource implements SourceReader {
     return named.length === 1 ? this.firstUse({ ...named[0], file }, name, at) : null;
   }
 
+  lines(file: string, fn: string): [number, number] | null {
+    const named = (this.document.files[file]?.functions ?? []).filter((f) => f.fn === fn);
+    return named.length === 1 ? [named[0].line, named[0].endLine] : null;
+  }
+
   sourceFile(token: string): string | null {
     const files = this.sourceFiles();
     if (token.includes('/')) return files.includes(token) ? token : null;

@@ -196,6 +196,10 @@ export interface SourceReader {
   sourceFile(token: string): string | null;
   /** The function around a site; null when the site sits in no named function. */
   around(site: RawSite): Around | null;
+  /** Optional. The line the name of the function `fn` of `file` is on, and its last line; null when the file
+   *  holds no single function of that name. What a place of a plan is once it is code: a stack that gives none
+   *  has its places read by their file. */
+  lines?(file: string, fn: string): [number, number] | null;
   /** A reader of the source as it is now, reusing what it can of this one (a live page re-renders at each save). */
   fresh(): SourceReader;
 }
