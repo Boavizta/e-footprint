@@ -79,7 +79,8 @@ One of three, each carrying `<feature>#<slug>`:
 
 On code that runs, a site is a call, never a comment: no test crosses a comment. A new function
 is named, in backticks, by the clause of the site that will call it; a shell no clause names is
-drawn in no narrative and fails the check.
+drawn in no narrative and fails the check. An entry point that nothing in the repository calls is
+named by the title of a planned test that calls it, as the test stands for its caller.
 
 An existing test that changes carries an `@planned` comment. One a planned case now holds carries
 an `@planned.remove` comment naming the holder, and says "planned" when the holder is not written

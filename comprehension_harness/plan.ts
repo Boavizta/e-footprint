@@ -1256,6 +1256,12 @@ export function callersOf(plan: Pick<Plan, 'pieces'>, shell: PlanSite): PlanSite
   return plan.pieces.flatMap((piece) => piece.sites).filter((x) => x !== shell && names(x.sentence, shell.fn));
 }
 
+/** The planned tests whose title names a shell's function: an entry point nothing in the repository calls is
+ *  called by the test that simulates its caller. */
+export function testsNaming(plan: Pick<Plan, 'pieces'>, shell: PlanSite): PlanTodo[] {
+  return plan.pieces.flatMap((piece) => piece.todos).filter((t) => names(t.title, shell.fn));
+}
+
 /** What a lot still owes: its pieces' open sites and tests, and the journey cases of its screens. All zero, it
  *  is delivered — nobody writes that down. */
 export function lotLeft(plan: Pick<Plan, 'pieces' | 'journeyCases'>, lot: PlanLot): { sites: number; tests: number; cases: number } {
@@ -1520,10 +1526,11 @@ export function findings(plan: Plan, archive = false): { failures: string[]; inf
       else if (claims && x.seenBy.length > 0 && !showsTheBug(x)) failures.push(`planned: ${at(x)} ${claims}, and that is what ${x.seenBy.length === 1 ? 'the reproduction that crosses it' : `the ${x.seenBy.length} reproductions that cross it`} saw at every crossing — the bug does not show at this place: correct the diagnosis, or take the expectation off`);
     }
   }
-  // A shell nobody names is drawn on no flow: the reviewer cannot see where the new code runs.
+  // A shell nobody names is drawn on no flow: the reviewer cannot see where the new code runs. An entry point
+  // nothing in the repository calls is named by the title of a planned test that calls it.
   for (const s of plan.pieces) {
     for (const x of s.sites) {
-      if (x.change === 'added' && callersOf(plan, x).length === 0) failures.push(`planned: ${at(x)} the new \`${x.fn}\` (#${s.slug}) is named by no other site — the clause of the place that will call it names it in backticks, and the page draws it there`);
+      if (x.change === 'added' && callersOf(plan, x).length === 0 && testsNaming(plan, x).length === 0) failures.push(`planned: ${at(x)} the new \`${x.fn}\` (#${s.slug}) is named by no other site — the clause of the place that will call it names it in backticks, and the page draws it there; an entry point nothing calls is named by the title of a planned test that calls it`);
     }
   }
   // The approved plan: what differs from it says why, and a "Changed:" stands on a difference.

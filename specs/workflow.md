@@ -25,7 +25,9 @@ stage is for, who approves what, and what never happens without a person.
   from it afterwards carries its reason, and the reviewer answers it.
 
 The narratives a feature lands in are told before it is planned: a missing one is written, and
-read by the reviewer, ahead of the plan that changes it.
+read by the reviewer, ahead of the plan that changes it. A narrative takes the place of the prose
+that told its steps: that prose goes, and a link to the narrative's page stands where it was.
+Prose about what no step tells stays.
 
 ## Scope
 

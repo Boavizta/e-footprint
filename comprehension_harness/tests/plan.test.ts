@@ -594,7 +594,7 @@ describe('a new function nobody names', () => {
 
   it('fails: no clause says where it will be called from, so no flow shows it', () => {
     const [plan] = assemble({ sites: [shell, site('cut', 'src/reader.ts', 151)], docs: docs(null, null) });
-    expect(findings(plan).failures).toEqual(['planned: src/due.ts:59 the new `latestPriors` (#seam) is named by no other site — the clause of the place that will call it names it in backticks, and the page draws it there']);
+    expect(findings(plan).failures).toEqual(['planned: src/due.ts:59 the new `latestPriors` (#seam) is named by no other site — the clause of the place that will call it names it in backticks, and the page draws it there; an entry point nothing calls is named by the title of a planned test that calls it']);
   });
 
   it('passes once the clause of the place that will call it names it, as a symbol or as a call', () => {
@@ -602,6 +602,12 @@ describe('a new function nobody names', () => {
       const [plan] = assemble({ sites: [shell, { ...site('cut', 'src/reader.ts', 151), sentence }], docs: docs(null, null) });
       expect(findings(plan).failures).toEqual([]);
     }
+  });
+
+  it('passes for an entry point nothing calls once a planned test that calls it names it in its title', () => {
+    const caller = { ...todo('seam', 'tests/narratives/due.test.ts', 12, null, 'narrative'), title: '`latestPriors` lists the two latest priors' };
+    const [plan] = assemble({ sites: [shell], todos: [caller], docs: docs(null, null) });
+    expect(findings(plan).failures).toEqual([]);
   });
 });
 

@@ -40,7 +40,7 @@ The `references/` and `assets/` beside this file belong to the earlier `plan.htm
   reference case, the branch cases the rules need, and the functions its steps stand in.
 - **The narratives the change lands in are reviewed before the plan is written.** A missing one,
   or one whose steps read wrong, is told or corrected first, in its own commit and preferably its
-  own session; say so and stop. A plan written on a narrative nobody has read is
+  own session, which takes out the prose it replaces (`workflow.md`); say so and stop. A plan written on a narrative nobody has read is
   rewritten when someone does.
 - **Trace the real code and tests** along every path the feature touches: success, error,
   cancellation, retry, rendering, persistence. A document is no evidence of what a function does
@@ -93,7 +93,8 @@ This audits your reasoning. It is no section of `plan.md`.
 - **A clause states the change at its place**, not what the code does today: one clause, no
   reason, no list of cases. The reason is the piece's, in `plan.md`.
 - **A new function is a shell, and the clause of the site that will call it names it in
-  backticks.** Without that the piece is drawn in no narrative, and the check fails.
+  backticks.** Without that the piece is drawn in no narrative, and the check fails. An entry
+  point nothing in the repository calls is named by the title of a planned test that calls it.
 - **On code that runs, a site is a call.** A comment is for a type, a schema, a migration, a doc.
   No test crosses a comment, so no narrative shows it and no test reaches it.
 - **A mechanical ripple is stated once, at its cause.** When one site makes twenty literals or
