@@ -8,14 +8,11 @@ from efootprint.narrate import event, narrate
 
 
 def assign_fresh_system_id(system) -> "System":
-    """Re-id the System object in place with an id distinct from its current one, leaving every other
-    object's id untouched.
-
-    Backs the workspace distinct-system-id invariant for the non-duplicate paths (import / example /
-    workspace import), where two slots must not hold the same system id while object ids stay shared.
-    The new id is always different from the old one — under the name-as-id convention a fresh uuid suffix
-    keeps it distinct even when the system name is unchanged (e.g. a duplicate that keeps its name).
-    """
+    """Re-id the System in place. Under the name-as-id convention, a fresh uuid suffix keeps the new id
+    distinct from the old one even when the system's name is unchanged."""
+    narrate("The System takes an id of its own, and every other object keeps its id: **two systems that share "
+            "their objects' ids stay distinct**, and a comparison pairs their objects by id.",
+            lambda: {"system": system.id})
     suffix = str(uuid.uuid4())[:12]
     system.id = f"{css_escape(system.name)}-{suffix}" if ModelingObject._use_name_as_id else suffix
 
@@ -23,21 +20,12 @@ def assign_fresh_system_id(system) -> "System":
 
 
 def duplicate_system(system) -> "System":
-    """Return a deep copy of ``system`` with a fresh System id and every object id preserved.
-
-    Serialize→deserialize round-trip: the JSON carries the original ids, so the copy's objects keep them
-    (which lets the comparison diff pair objects by identity), and only the System gets a new id. The
-    round-trip happens in-process at the current version, so cached computed values carry over as
-    trusted caches — reading the duplicate does not recompute what the original had already computed.
-    """
+    """A deep copy of ``system``: every object keeps its id, and the System takes a fresh one."""
     event("The modeler duplicates a system.", lambda: {"system": system.id})
     narrate("The copy is a save and a load in memory, at this version: **the copy's values attach as trusted "
             "caches**, so reading it does not recompute what the original had computed.")
     system_dict = system_to_json(system)
     class_obj_dict, _, _ = json_to_system(system_dict)
-    duplicated_system = assign_fresh_system_id(next(iter(class_obj_dict["System"].values())))
-    narrate("`assign_fresh_system_id` gives the copy's System an id of its own, and every other object keeps "
-            "its id: **the copy's objects pair with the original's by id**, and the two systems stay distinct.",
-            lambda: {"original": system.id, "copy": duplicated_system.id})
+    duplicated_system = next(iter(class_obj_dict["System"].values()))
 
-    return duplicated_system
+    return assign_fresh_system_id(duplicated_system)

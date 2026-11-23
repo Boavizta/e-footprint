@@ -139,14 +139,13 @@ def _address_sort_key(address):
 
 
 def calculation_graph_section(objects) -> dict:
-    """The values-free calculation-graph section: every computing slot's dependency edges (calculus
-    and structural), slot-addressed as (container id, attribute name, dict key) triples where the dict
-    key is null, a modeling object's id, or a key object's class name and components by object id.
-    At load, these edges are reinstalled directly, so invalidation waves triggered by later edits
-    traverse valueless intermediate slots and reach the cached serialized values below them. Labels
-    of currently cached values ride along (best effort) so consumers can display the graph shape
-    without computing. Node order and edge lists are sorted, so the section is deterministic for a
-    given model state."""
+    """The calculation-graph section of a document: each node a (container id, attribute name, dict key)
+    triple, the dict key null, a modeling object's id, or a key object's class name and components by
+    object id; each edge calculus or structural; the labels of the values cached at save, best effort.
+    Nodes and edges are sorted, so a given model state always gives the same section."""
+    narrate("The calculation graph is written beside the objects: which computed slot read which, **the slots "
+            "whose values are not saved included**, so that an edit after the load reaches the saved values "
+            "through them.")
     serialized_object_ids = {obj.id for obj in objects}
     address_by_slot_id = {}
     slot_by_address = {}
@@ -229,26 +228,26 @@ def system_to_json(input_system, output_filepath=None, indent=4, save_computed_s
     Its output is the supported input to ``json_to_system``; arbitrary externally authored or untrusted
     JSON is outside the serialization contract.
 
-    Anything absent recomputes on read after a load. ``save_computed_state=False`` writes a pure
-    inputs-only file (no stored values, no calculation graph) — for lean committed files and
-    from-scratch rebuilds. The top-level ``Sources`` block holds only sources a serialized value
-    references; pure computed-attribute provenance is re-attached on recompute, so it is not
-    persisted (see ``collect_referenced_source_ids``)."""
+    ``save_computed_state=False`` writes a pure inputs-only file (no stored values, no calculation
+    graph) — for lean committed files and from-scratch rebuilds."""
     event("A system is saved to its JSON form.", lambda: {"system": input_system.id})
-    output_dict = {"efootprint_version": efootprint.__version__}
     narrate("The document is stamped with the library's `efootprint` version: **a later load compares it with "
             "its own to decide whether the saved values can be trusted**.",
-            lambda: {"efootprint_version": output_dict["efootprint_version"]})
+            lambda: {"efootprint_version": efootprint.__version__})
+    output_dict = {"efootprint_version": efootprint.__version__}
     sources_by_id = {}
     collected_objects = []
-    recursively_write_json_dict(
-        output_dict, input_system, save_computed_state, sources_by_id=sources_by_id,
-        collected_objects=collected_objects)
     narrate("`recursively_write_json_dict` writes each object reached from the system through its inputs, with "
             "its inputs and, when the computed state is saved, its serialized values. **Saving reads values and "
             "never computes them**: a value not computed yet is not written, and computes after the load.",
-            lambda: {"objects": len(collected_objects), "save computed state": save_computed_state})
+            lambda: {"save computed state": save_computed_state})
+    recursively_write_json_dict(
+        output_dict, input_system, save_computed_state, sources_by_id=sources_by_id,
+        collected_objects=collected_objects)
 
+    narrate("The Sources block keeps only the sources a written value refers to, as "
+            "`collect_referenced_source_ids` finds them: a computed value gets its provenance back when it "
+            "recomputes.", lambda: {"candidate sources": len(sources_by_id)})
     if sources_by_id:
         referenced_source_ids = collect_referenced_source_ids(output_dict)
         sources_block = {
@@ -257,15 +256,9 @@ def system_to_json(input_system, output_filepath=None, indent=4, save_computed_s
             # Insert Sources block right after efootprint_version, before modeling-class blocks.
             output_dict = {"efootprint_version": output_dict["efootprint_version"], "Sources": sources_block,
                            **{k: v for k, v in output_dict.items() if k != "efootprint_version"}}
-    narrate("The Sources block keeps only the sources a written value refers to, as "
-            "`collect_referenced_source_ids` finds them: a computed value gets its provenance back when it "
-            "recomputes.", lambda: {"sources": len(output_dict.get("Sources", {}))})
 
     if save_computed_state:
         output_dict[CALCULATION_GRAPH_KEY] = calculation_graph_section(collected_objects)
-        narrate("`calculation_graph_section` writes the calculation graph beside the objects: which computed "
-                "slot read which, without their values, which the object blocks already hold.",
-                lambda: {"nodes": len(output_dict[CALCULATION_GRAPH_KEY]["nodes"])})
 
     if output_filepath is not None:
         with open(output_filepath, "w") as file:

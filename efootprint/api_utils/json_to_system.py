@@ -30,6 +30,9 @@ def explainable_object_dict_class_from_init_annotation(modeling_obj_class, attr_
 
 
 def validate_system_dict_structure(system_dict, valid_class_keys):
+    narrate("The block of each known class is checked, and every other key is passed over: **a key that names "
+            "no class is ignored, not refused**, so what another tool adds to a document does not stop the load.",
+            lambda: {"keys naming no class": sorted(key for key in system_dict if key not in valid_class_keys)})
     for class_key, class_dict in system_dict.items():
         if class_key not in valid_class_keys:
             continue
@@ -130,6 +133,10 @@ def upgrade_system_dict_to_current_version(system_dict, efootprint_classes_dict=
         if efootprint_classes_dict is None:
             efootprint_classes_dict = {cls.__name__: cls for cls in ALL_EFOOTPRINT_CLASSES}
         system_dict = deepcopy(system_dict)
+        narrate("A document of an earlier major version goes through the upgrade handlers in order, one a major "
+                "version: **every change of the format ships with the handler that upgrades it**, so a file of "
+                "any version since 9 still loads.",
+                lambda: {"from": json_efootprint_version, "to": efootprint.__version__})
         for version in range(json_major_version, efootprint_major_version):
             system_dict = VERSION_UPGRADE_HANDLERS[version](system_dict, efootprint_classes_dict)
     elif json_major_version > efootprint_major_version:
@@ -164,13 +171,8 @@ def json_to_system(system_dict, efootprint_classes_dict=None):
     untrusted JSON is not supported: this loader performs the structural checks needed for canonical
     persistence, not exhaustive schema or domain validation of externally authored payloads.
 
-    Loading is version-aware: on an exact ``efootprint_version`` match, stored computed values attach
-    as trusted slot caches and the serialized calculation graph reinstalls the dependency edges, so
-    later edits invalidate exactly as on a live model. On ANY version mismatch, schema upgrade
-    handlers run, then whatever stored values survive them are demoted to an in-memory,
-    session-scoped baseline retained on each System (see ``System.compare_to_version_baseline``) —
-    the slots stay void and recompute on read, so methodology or upstream-data drift surfaces at
-    upgrade time instead of persisting silently."""
+    Returns the objects by class and by id, and the document as upgraded. A document of another version
+    leaves its saved values as a baseline on its System (``System.compare_to_version_baseline``)."""
     event("A system is loaded from its JSON form.",
           lambda: {"efootprint_version": system_dict.get("efootprint_version")})
     if efootprint_classes_dict is None:
@@ -180,21 +182,11 @@ def json_to_system(system_dict, efootprint_classes_dict=None):
     valid_class_keys = set(classes_generation_order) | set(ALL_SUPPRESSED_EFOOTPRINT_CLASSES_DICT)
 
     validate_system_dict_structure(system_dict, valid_class_keys)
-    narrate("`validate_system_dict_structure` checks the block of each known class and passes over every "
-            "other key: **a key that names no class is ignored, not refused**, so what another tool adds to a "
-            "document does not stop the load.",
-            lambda: {"keys naming no class": sorted(key for key in system_dict if key not in valid_class_keys)})
 
     file_version = system_dict.get("efootprint_version")
     version_matches = file_version == efootprint.__version__
     if not version_matches:
         system_dict = upgrade_system_dict_to_current_version(system_dict, efootprint_classes_dict)
-        narrate("A document of another version goes through `upgrade_system_dict_to_current_version`, one "
-                "handler a major version, before any object is built.",
-                lambda: {"from": file_version, "to": efootprint.__version__})
-    # Stored values are only trusted as caches when their dependency edges can be reinstalled: a
-    # values-bearing file always carries the calculation-graph section, so its absence means an
-    # inputs-only file (nothing to attach anyway).
     trust_stored_values = version_matches and CALCULATION_GRAPH_KEY in system_dict
     narrate("**Saved values are trusted only when the document is of this version and holds its calculation "
             "graph**: a value computed by another version may differ from what this one computes, and a cached "
@@ -203,6 +195,8 @@ def json_to_system(system_dict, efootprint_classes_dict=None):
 
     sources_dict = build_sources_dict_from_system_dict(system_dict)
 
+    narrate("Objects are built class by class, in an order where what an object points to is built before it, "
+            "each from its own block: trusted values attach as caches, and untrusted ones are left out.")
     class_obj_dict = {}
     flat_obj_dict = {}
     explainable_object_dicts_to_create_after_objects_creation = {}
@@ -226,9 +220,6 @@ def json_to_system(system_dict, efootprint_classes_dict=None):
             flat_obj_dict[class_instance_key] = new_obj
 
         class_obj_dict[class_key] = current_class_dict
-    narrate("Objects are built class by class, in an order where what an object points to is built before it, "
-            "each from its own block: trusted values attach as caches, and untrusted ones are left out.",
-            lambda: {"objects": len(flat_obj_dict)})
 
     for (modeling_obj, attr_key), attr_value in explainable_object_dicts_to_create_after_objects_creation.items():
         if attr_key in modeling_obj.calculated_attributes:
@@ -259,17 +250,11 @@ def json_to_system(system_dict, efootprint_classes_dict=None):
 
     if trust_stored_values:
         rebuild_dependency_graph(system_dict[CALCULATION_GRAPH_KEY], flat_obj_dict)
-        narrate("`rebuild_dependency_graph` reinstalls the saved edges, so **an edit of the loaded system voids "
-                "exactly what it would have voided on the system that was saved**.",
-                lambda: {"edges": len(system_dict[CALCULATION_GRAPH_KEY]["edges"])})
 
     baseline_values = None
     if not trust_stored_values and file_version is not None:
         baseline_values = collect_baseline_values_from_other_version(
             system_dict, efootprint_classes_dict, sources_dict)
-        narrate("The values an untrusted document still holds are kept on the System as the baseline it can be "
-                "compared against, by `collect_baseline_values_from_other_version`: **they are never attached, "
-                "and every value computes on read**.", lambda: {"baseline values": len(baseline_values)})
     for system in class_obj_dict.get("System", {}).values():
         if baseline_values:
             system.__dict__["_version_baseline"] = {
@@ -281,9 +266,10 @@ def json_to_system(system_dict, efootprint_classes_dict=None):
 
 
 def rebuild_dependency_graph(calculation_graph, flat_obj_dict):
-    """Reinstall the serialized slot-level dependency edges (calculus and structural): materialize
-    each node's slot — computed attribute, computed structure, dict sub-slot or getter-less bump node — then wire the edges,
-    so later writes invalidate through the graph exactly as on the model that was saved."""
+    """A node's slot is a computed attribute, a computed structure, a dict sub-slot or a getter-less bump
+    node; a node naming an object absent from the file is refused."""
+    narrate("The saved edges are reinstalled between the slots they address, so **an edit of the loaded system "
+            "voids exactly what it would have voided on the system that was saved**.")
     from efootprint.abstract_modeling_classes.reactive_core import (
         _node_slot, computed_slots, computed_structures)
 
@@ -328,9 +314,9 @@ def _dict_key_from_json(key_json, flat_obj_dict):
 
 
 def collect_baseline_values_from_other_version(system_dict, efootprint_classes_dict, sources_dict):
-    """Parse the stored computed values a version-mismatched file carries (after upgrade handlers
-    ran) into a side-band value bag keyed by (object id, attribute name, dict key id or None) — the
-    in-memory, never-serialized "as computed by vX" baseline the drift-comparison hook reads."""
+    """The stored values of a document, keyed by (object id, attribute name, dict key id or None)."""
+    narrate("The values an untrusted document still holds are kept aside as the baseline its System can be "
+            "compared against: **they are never attached, and every value computes on read**.")
     from efootprint.abstract_modeling_classes.reactive_core import computed_slots, serialized_slots
 
     baseline_values = {}
