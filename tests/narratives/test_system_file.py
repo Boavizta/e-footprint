@@ -9,9 +9,11 @@ import pytest
 
 from comprehension_harness.python.declare import narrative, titled
 from efootprint.abstract_modeling_classes.reactive_core import computed_slots
+from efootprint.abstract_modeling_classes.source_objects import SourceValue
 from efootprint.api_utils.json_to_system import json_to_system, json_to_systems
 from efootprint.api_utils.system_to_json import system_to_json, systems_to_json
 from efootprint.comparison.duplication import duplicate_system
+from efootprint.constants.units import u
 from tests.integration_tests.integration_simple_system_base_class import IntegrationTestSimpleSystemBaseClass
 
 
@@ -83,10 +85,10 @@ class TestSystemFile:
             "order, each as its own save and load gives it [round-trip]")
     def test_systems_saved_to_one_file_load_back_in_their_order(self, system):
         other = duplicate_system(system)
+        other.servers[0].base_ram_consumption = SourceValue(400 * u.MB_ram)
+        other.total_footprint
 
         loaded_systems = json_to_systems(systems_to_json([other, system]))
 
-        assert [loaded.id for loaded in loaded_systems] == [other.id, system.id]
-        for loaded, original in zip(loaded_systems, [other, system]):
-            assert is_cached(loaded)
-            assert loaded.total_footprint == original.total_footprint
+        assert [system_to_json(loaded) for loaded in loaded_systems] == [system_to_json(other), system_to_json(system)]
+        assert all(is_cached(loaded) for loaded in loaded_systems)
