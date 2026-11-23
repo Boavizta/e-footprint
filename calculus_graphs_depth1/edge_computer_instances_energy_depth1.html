@@ -31,7 +31,7 @@
         </center>
         <style type="text/css">
 
-             #mynetwork_3d265e {
+             #mynetwork_3dc7ae {
                  width: 760px;
                  height: 300px;
                  background-color: #ffffff;
@@ -53,7 +53,7 @@
         <div class="card" style="width: 100%">
             
             
-            <div id="mynetwork_3d265e" class="card-body"></div>
+            <div id="mynetwork_3dc7ae" class="card-body"></div>
         </div>
 
         
@@ -83,12 +83,12 @@
 
               // This method is responsible for drawing the graph, returns the drawn network
               function drawGraph() {
-                  var container = document.getElementById('mynetwork_3d265e');
+                  var container = document.getElementById('mynetwork_3dc7ae');
 
                   
 
                   // parsing and collecting nodes and edges from the python
-                  nodes = new vis.DataSet([{"color": null, "id": "Total energy consumed across usage patterns", "label": "Total energy\nconsumed across\nusage patterns", "shape": "dot", "size": 15, "title": "Total energy consumed across usage patterns\n=\nHourly energy consumed by instances for Default edge usage pattern\n=\n105192 values from 2025-01-01 00:00:00+00:00 to 2037-01-01 00:00:00+00:00:\nfirst=8.96 Wh, last=5.12 Wh, mean=87.2 MWh, min=0, max=174 MWh, std=50.3 MWh\n=\n105192 values from 2025-01-01 00:00:00+00:00 to 2037-01-01 00:00:00+00:00:\nfirst=8.96 Wh, last=5.12 Wh, mean=87.2 MWh, min=0, max=174 MWh, std=50.3 MWh", "x": 0.0, "y": 1350}, {"color": null, "id": "Hourly energy consumed by instances for Default edge usage pattern", "label": "Hourly energy\nconsumed by\ninstances for\nDefault edge usage\npattern", "shape": "dot", "size": 15, "title": "Hourly energy consumed by instances for Default edge usage pattern\n=\n(Hourly energy consumed by per edge device for Default edge usage pattern +\nHourly energy consumed by per edge device for Default edge usage pattern) * no\ngroup (default count\n=\n1)\n=\n(105192 values from 2025-01-01 00:00:00+00:00 to 2037-01-01 00:00:00+00:00:\nfirst=8.96 Wh, last=5.12 Wh, mean=87.2 MWh, min=0, max=174 MWh, std=50.3 MWh +\n105192 values from 2025-01-01 00:00:00+00:00 to 2037-01-01 00:00:00+00:00:\nfirst=0, last=0, mean=0, min=0, max=0, std=0) * 1\n=\n105192 values from 2025-01-01 00:00:00+00:00 to 2037-01-01 00:00:00+00:00:\nfirst=8.96 Wh, last=5.12 Wh, mean=87.2 MWh, min=0, max=174 MWh, std=50.3 MWh", "x": 0.0, "y": 1200}]);
+                  nodes = new vis.DataSet([{"color": null, "id": "Total energy consumed across usage patterns", "label": "Total energy\nconsumed across\nusage patterns", "shape": "dot", "size": 15, "title": "Total energy consumed across usage patterns\n=\nHourly energy consumed by instances for Default edge usage pattern\n=\n105192 values from 2025-01-01 00:00:00+00:00 to 2037-01-01 00:00:00+00:00:\nfirst=0, last=0, mean=87.2 MWh, min=0, max=174 MWh, std=50.3 MWh\n=\n105192 values from 2025-01-01 00:00:00+00:00 to 2037-01-01 00:00:00+00:00:\nfirst=0, last=0, mean=87.2 MWh, min=0, max=174 MWh, std=50.3 MWh", "x": 0.0, "y": 1350}, {"color": null, "id": "Hourly energy consumed by instances for Default edge usage pattern", "label": "Hourly energy\nconsumed by\ninstances for\nDefault edge usage\npattern", "shape": "dot", "size": 15, "title": "Hourly energy consumed by instances for Default edge usage pattern\n=\n(Hourly energy consumed by per edge device for Default edge usage pattern +\nHourly energy consumed by per edge device for Default edge usage pattern) * no\ngroup (default count\n=\n1)\n=\n(105192 values from 2025-01-01 00:00:00+00:00 to 2037-01-01 00:00:00+00:00:\nfirst=0, last=0, mean=87.2 MWh, min=0, max=174 MWh, std=50.3 MWh + 105192 values\nfrom 2025-01-01 00:00:00+00:00 to 2037-01-01 00:00:00+00:00: first=0, last=0,\nmean=0, min=0, max=0, std=0) * 1\n=\n105192 values from 2025-01-01 00:00:00+00:00 to 2037-01-01 00:00:00+00:00:\nfirst=0, last=0, mean=87.2 MWh, min=0, max=174 MWh, std=50.3 MWh", "x": 0.0, "y": 1200}]);
                   edges = new vis.DataSet([{"arrows": "to", "from": "Hourly energy consumed by instances for Default edge usage pattern", "to": "Total energy consumed across usage patterns"}]);
 
                   nodeColors = {};

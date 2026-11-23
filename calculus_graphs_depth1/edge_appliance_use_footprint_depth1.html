@@ -31,7 +31,7 @@
         </center>
         <style type="text/css">
 
-             #mynetwork_925103 {
+             #mynetwork_48503f {
                  width: 760px;
                  height: 300px;
                  background-color: #ffffff;
@@ -53,7 +53,7 @@
         <div class="card" style="width: 100%">
             
             
-            <div id="mynetwork_925103" class="card-body"></div>
+            <div id="mynetwork_48503f" class="card-body"></div>
         </div>
 
         
@@ -83,12 +83,12 @@
 
               // This method is responsible for drawing the graph, returns the drawn network
               function drawGraph() {
-                  var container = document.getElementById('mynetwork_925103');
+                  var container = document.getElementById('mynetwork_48503f');
 
                   
 
                   // parsing and collecting nodes and edges from the python
-                  nodes = new vis.DataSet([{"color": null, "id": "Total use footprint across usage patterns", "label": "Total use footprint\nacross usage\npatterns", "shape": "dot", "size": 15, "title": "Total use footprint across usage patterns\n=\nUse footprint for Default edge usage pattern\n=\n105192 values from 2025-01-01 00:00:00+00:00 to 2037-01-01 00:00:00+00:00:\nfirst=1.58 g, last=903 mg, mean=15.4 t, min=0, max=30.7 t, std=8.87 t\n=\n105192 values from 2025-01-01 00:00:00+00:00 to 2037-01-01 00:00:00+00:00:\nfirst=1.58 g, last=903 mg, mean=15.4 t, min=0, max=30.7 t, std=8.87 t", "x": 0.0, "y": 1500}, {"color": null, "id": "Use footprint for Default edge usage pattern", "label": "Use footprint for\nDefault edge usage\npattern", "shape": "dot", "size": 15, "title": "Use footprint for Default edge usage pattern\n=\nUse footprint per edge device for Default edge usage pattern * no group (default\ncount\n=\n1)\n=\n105192 values from 2025-01-01 00:00:00+00:00 to 2037-01-01 00:00:00+00:00:\nfirst=1.58 g, last=903 mg, mean=15.4 t, min=0, max=30.7 t, std=8.87 t * 1\n=\n105192 values from 2025-01-01 00:00:00+00:00 to 2037-01-01 00:00:00+00:00:\nfirst=1.58 g, last=903 mg, mean=15.4 t, min=0, max=30.7 t, std=8.87 t", "x": 0.0, "y": 1350}]);
+                  nodes = new vis.DataSet([{"color": null, "id": "Total use footprint across usage patterns", "label": "Total use footprint\nacross usage\npatterns", "shape": "dot", "size": 15, "title": "Total use footprint across usage patterns\n=\nUse footprint for Default edge usage pattern\n=\n105192 values from 2025-01-01 00:00:00+00:00 to 2037-01-01 00:00:00+00:00:\nfirst=0, last=0, mean=15.4 t, min=0, max=30.7 t, std=8.87 t\n=\n105192 values from 2025-01-01 00:00:00+00:00 to 2037-01-01 00:00:00+00:00:\nfirst=0, last=0, mean=15.4 t, min=0, max=30.7 t, std=8.87 t", "x": 0.0, "y": 1500}, {"color": null, "id": "Use footprint for Default edge usage pattern", "label": "Use footprint for\nDefault edge usage\npattern", "shape": "dot", "size": 15, "title": "Use footprint for Default edge usage pattern\n=\nUse footprint per edge device for Default edge usage pattern * no group (default\ncount\n=\n1)\n=\n105192 values from 2025-01-01 00:00:00+00:00 to 2037-01-01 00:00:00+00:00:\nfirst=0, last=0, mean=15.4 t, min=0, max=30.7 t, std=8.87 t * 1\n=\n105192 values from 2025-01-01 00:00:00+00:00 to 2037-01-01 00:00:00+00:00:\nfirst=0, last=0, mean=15.4 t, min=0, max=30.7 t, std=8.87 t", "x": 0.0, "y": 1350}]);
                   edges = new vis.DataSet([{"arrows": "to", "from": "Use footprint for Default edge usage pattern", "to": "Total use footprint across usage patterns"}]);
 
                   nodeColors = {};

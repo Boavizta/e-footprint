@@ -19,7 +19,7 @@
       
       
       <link rel="icon" href="../assets/images/favicon.png">
-      <meta name="generator" content="mkdocs-1.6.1, mkdocs-material-9.7.7">
+      <meta name="generator" content="mkdocs-1.6.1, mkdocs-material-9.8.2">
     
     
       
@@ -27,7 +27,7 @@
       
     
     
-      <link rel="stylesheet" href="../assets/stylesheets/main.ec1eaa64.min.css">
+      <link rel="stylesheet" href="../assets/stylesheets/main.57a0d79d.min.css">
       
       
 
@@ -445,6 +445,34 @@
     
   
     Web vs edge modeling
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../environmental_footprint_definitions/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Environmental footprint reference definitions
   
 
     
@@ -4027,7 +4055,7 @@
 <h3 id="hourly_occurrences_per_usage_pattern">hourly_occurrences_per_usage_pattern</h3>
 <p>Hourly count of job invocations broken down by usage pattern, derived from when each usage pattern's journeys start and at what point in the journey this job is triggered.  </p>
 <p>Example value: {<br />
-UsagePattern usage pattern (e28419e5-c9b): 26298 values from 2025-01-01 00:00:00+00:00 to 2028-01-01 18:00:00+00:00: first=9 , last=4 , mean=5 , min=1 , max=9 , std=2.58 , <br />
+UsagePattern usage pattern (99a0e0f7-b1e): 26298 values from 2025-01-01 00:00:00+00:00 to 2028-01-01 18:00:00+00:00: first=8 , last=1 , mean=4.98 , min=1 , max=9 , std=2.57 , <br />
 }  </p>
 <p>Depends directly on:  </p>
 <ul>
@@ -4070,7 +4098,7 @@ UsagePattern usage pattern (e28419e5-c9b): 26298 values from 2025-01-01 00:00:00
         </center>
         <style type="text/css">
 
-             #mynetwork_f1b1a6 {
+             #mynetwork_53d639 {
                  width: 760px;
                  height: 300px;
                  background-color: #ffffff;
@@ -4092,7 +4120,7 @@ UsagePattern usage pattern (e28419e5-c9b): 26298 values from 2025-01-01 00:00:00
         <div class="card" style="width: 100%">
 
 
-            <div id="mynetwork_f1b1a6" class="card-body"></div>
+            <div id="mynetwork_53d639" class="card-body"></div>
         </div>
 
 
@@ -4122,12 +4150,12 @@ UsagePattern usage pattern (e28419e5-c9b): 26298 values from 2025-01-01 00:00:00
 
               // This method is responsible for drawing the graph, returns the drawn network
               function drawGraph() {
-                  var container = document.getElementById('mynetwork_f1b1a6');
+                  var container = document.getElementById('mynetwork_53d639');
 
 
 
                   // parsing and collecting nodes and edges from the python
-                  nodes = new vis.DataSet([{"color": null, "id": "Hourly occurrences in usage pattern", "label": "Hourly occurrences\nin usage pattern", "shape": "dot", "size": 15, "title": "Hourly occurrences in usage pattern\n=\n(Hourly nb of pattern occurrences (UTC) shifted by no value) * Journeys per\npattern occurrence * Times per journey * Times per step\n=\n(26298 values from 2025-01-01 00:00:00+00:00 to 2028-01-01 18:00:00+00:00:\nfirst=9 , last=4 , mean=5 , min=1 , max=9 , std=2.58 shifted by no value) * 1 *\n1 * 1\n=\n26298 values from 2025-01-01 00:00:00+00:00 to 2028-01-01 18:00:00+00:00:\nfirst=9 , last=4 , mean=5 , min=1 , max=9 , std=2.58", "x": 0.0, "y": 450}, {"color": null, "id": "Hourly nb of pattern occurrences (UTC)", "label": "Hourly nb of pattern\noccurrences (UTC)", "shape": "dot", "size": 15, "title": "Hourly nb of pattern occurrences (UTC)\n=\nHourly nb of pattern occurrences converted to UTC from Timezone\n=\n26298 values from 2025-01-01 00:00:00 to 2028-01-01 18:00:00: first=4 , last=5 ,\nmean=5 , min=1 , max=9 , std=2.58 converted to UTC from Europe/Paris\n=\n26298 values from 2025-01-01 00:00:00+00:00 to 2028-01-01 18:00:00+00:00:\nfirst=9 , last=4 , mean=5 , min=1 , max=9 , std=2.58", "x": -225.0, "y": 300}, {"color": "darkred", "id": "Journeys per pattern occurrence", "label": "Journeys per pattern\noccurrence", "shape": "dot", "size": 15, "title": "Journeys per pattern occurrence = 1", "x": -75.0, "y": 300}, {"color": "darkred", "id": "Times per journey", "label": "Times per journey", "shape": "dot", "size": 15, "title": "Times per journey = 1", "x": 75.0, "y": 300}, {"color": "darkred", "id": "Times per step", "label": "Times per step", "shape": "dot", "size": 15, "title": "Times per step = 1", "x": 225.0, "y": 300}]);
+                  nodes = new vis.DataSet([{"color": null, "id": "Hourly occurrences in usage pattern", "label": "Hourly occurrences\nin usage pattern", "shape": "dot", "size": 15, "title": "Hourly occurrences in usage pattern\n=\n(Hourly nb of pattern occurrences (UTC) shifted by no value) * Journeys per\npattern occurrence * Times per journey * Times per step\n=\n(26298 values from 2025-01-01 00:00:00+00:00 to 2028-01-01 18:00:00+00:00:\nfirst=8 , last=1 , mean=4.98 , min=1 , max=9 , std=2.57 shifted by no value) * 1\n* 1 * 1\n=\n26298 values from 2025-01-01 00:00:00+00:00 to 2028-01-01 18:00:00+00:00:\nfirst=8 , last=1 , mean=4.98 , min=1 , max=9 , std=2.57", "x": 0.0, "y": 450}, {"color": null, "id": "Hourly nb of pattern occurrences (UTC)", "label": "Hourly nb of pattern\noccurrences (UTC)", "shape": "dot", "size": 15, "title": "Hourly nb of pattern occurrences (UTC)\n=\nHourly nb of pattern occurrences converted to UTC from Timezone\n=\n26298 values from 2025-01-01 00:00:00 to 2028-01-01 18:00:00: first=1 , last=2 ,\nmean=4.98 , min=1 , max=9 , std=2.57 converted to UTC from Europe/Paris\n=\n26298 values from 2025-01-01 00:00:00+00:00 to 2028-01-01 18:00:00+00:00:\nfirst=8 , last=1 , mean=4.98 , min=1 , max=9 , std=2.57", "x": -225.0, "y": 300}, {"color": "darkred", "id": "Journeys per pattern occurrence", "label": "Journeys per pattern\noccurrence", "shape": "dot", "size": 15, "title": "Journeys per pattern occurrence = 1", "x": -75.0, "y": 300}, {"color": "darkred", "id": "Times per journey", "label": "Times per journey", "shape": "dot", "size": 15, "title": "Times per journey = 1", "x": 75.0, "y": 300}, {"color": "darkred", "id": "Times per step", "label": "Times per step", "shape": "dot", "size": 15, "title": "Times per step = 1", "x": 225.0, "y": 300}]);
                   edges = new vis.DataSet([{"arrows": "to", "from": "Hourly nb of pattern occurrences (UTC)", "to": "Hourly occurrences in usage pattern"}, {"arrows": "to", "from": "Journeys per pattern occurrence", "to": "Hourly occurrences in usage pattern"}, {"arrows": "to", "from": "Times per journey", "to": "Hourly occurrences in usage pattern"}, {"arrows": "to", "from": "Times per step", "to": "Hourly occurrences in usage pattern"}]);
 
                   nodeColors = {};
@@ -4197,7 +4225,7 @@ UsagePattern usage pattern (e28419e5-c9b): 26298 values from 2025-01-01 00:00:00
 <h3 id="hourly_avg_occurrences_per_usage_pattern">hourly_avg_occurrences_per_usage_pattern</h3>
 <p>Hourly count of job invocations averaged with respect to job duration, so a job that runs longer than an hour contributes a fractional occurrence to several modeling buckets.  </p>
 <p>Example value: {<br />
-UsagePattern usage pattern (e28419e5-c9b): 26298 values from 2025-01-01 00:00:00+00:00 to 2028-01-01 18:00:00+00:00: first=0.568 , last=0.253 , mean=0.316 , min=0.0631 , max=0.568 , std=0.163 , <br />
+UsagePattern usage pattern (99a0e0f7-b1e): 26298 values from 2025-01-01 00:00:00+00:00 to 2028-01-01 18:00:00+00:00: first=0.505 , last=0.0631 , mean=0.314 , min=0.0631 , max=0.568 , std=0.162 , <br />
 }  </p>
 <p>Depends directly on:  </p>
 <ul>
@@ -4238,7 +4266,7 @@ UsagePattern usage pattern (e28419e5-c9b): 26298 values from 2025-01-01 00:00:00
         </center>
         <style type="text/css">
 
-             #mynetwork_deec9a {
+             #mynetwork_6f237b {
                  width: 760px;
                  height: 300px;
                  background-color: #ffffff;
@@ -4260,7 +4288,7 @@ UsagePattern usage pattern (e28419e5-c9b): 26298 values from 2025-01-01 00:00:00
         <div class="card" style="width: 100%">
 
 
-            <div id="mynetwork_deec9a" class="card-body"></div>
+            <div id="mynetwork_6f237b" class="card-body"></div>
         </div>
 
 
@@ -4290,12 +4318,12 @@ UsagePattern usage pattern (e28419e5-c9b): 26298 values from 2025-01-01 00:00:00
 
               // This method is responsible for drawing the graph, returns the drawn network
               function drawGraph() {
-                  var container = document.getElementById('mynetwork_deec9a');
+                  var container = document.getElementById('mynetwork_6f237b');
 
 
 
                   // parsing and collecting nodes and edges from the python
-                  nodes = new vis.DataSet([{"color": null, "id": "Average hourly occurrences in usage pattern", "label": "Average hourly\noccurrences in usage\npattern", "shape": "dot", "size": 15, "title": "Average hourly occurrences in usage pattern\n=\nHourly occurrences in usage pattern hourly occurrences average Ecologits\ngeneration_latency for sora-2-pro\n=\n26298 values from 2025-01-01 00:00:00+00:00 to 2028-01-01 18:00:00+00:00:\nfirst=9 , last=4 , mean=5 , min=1 , max=9 , std=2.58 hourly occurrences average\n3.79 min\n=\n26298 values from 2025-01-01 00:00:00+00:00 to 2028-01-01 18:00:00+00:00:\nfirst=0.568 , last=0.253 , mean=0.316 , min=0.0631 , max=0.568 , std=0.163", "x": 0.0, "y": 1050}, {"color": null, "id": "Hourly occurrences in usage pattern", "label": "Hourly occurrences\nin usage pattern", "shape": "dot", "size": 15, "title": "Hourly occurrences in usage pattern\n=\n(Hourly nb of pattern occurrences (UTC) shifted by no value) * Journeys per\npattern occurrence * Times per journey * Times per step\n=\n(26298 values from 2025-01-01 00:00:00+00:00 to 2028-01-01 18:00:00+00:00:\nfirst=9 , last=4 , mean=5 , min=1 , max=9 , std=2.58 shifted by no value) * 1 *\n1 * 1\n=\n26298 values from 2025-01-01 00:00:00+00:00 to 2028-01-01 18:00:00+00:00:\nfirst=9 , last=4 , mean=5 , min=1 , max=9 , std=2.58", "x": 0.0, "y": 900}, {"color": null, "id": "Ecologits generation_latency for sora-2-pro", "label": "Ecologits\ngeneration_latency\nfor sora-2-pro", "shape": "dot", "size": 15, "title": "Ecologits generation_latency for sora-2-pro\n=\nduplicate (Ecologits generation_latency for sora-2-pro)\n=\nduplicate (3.79 min)\n=\n3.79 min", "x": 420.0, "y": 750}]);
+                  nodes = new vis.DataSet([{"color": null, "id": "Average hourly occurrences in usage pattern", "label": "Average hourly\noccurrences in usage\npattern", "shape": "dot", "size": 15, "title": "Average hourly occurrences in usage pattern\n=\nHourly occurrences in usage pattern hourly occurrences average Ecologits\ngeneration_latency for sora-2-pro\n=\n26298 values from 2025-01-01 00:00:00+00:00 to 2028-01-01 18:00:00+00:00:\nfirst=8 , last=1 , mean=4.98 , min=1 , max=9 , std=2.57 hourly occurrences\naverage 3.79 min\n=\n26298 values from 2025-01-01 00:00:00+00:00 to 2028-01-01 18:00:00+00:00:\nfirst=0.505 , last=0.0631 , mean=0.314 , min=0.0631 , max=0.568 , std=0.162", "x": 0.0, "y": 1050}, {"color": null, "id": "Hourly occurrences in usage pattern", "label": "Hourly occurrences\nin usage pattern", "shape": "dot", "size": 15, "title": "Hourly occurrences in usage pattern\n=\n(Hourly nb of pattern occurrences (UTC) shifted by no value) * Journeys per\npattern occurrence * Times per journey * Times per step\n=\n(26298 values from 2025-01-01 00:00:00+00:00 to 2028-01-01 18:00:00+00:00:\nfirst=8 , last=1 , mean=4.98 , min=1 , max=9 , std=2.57 shifted by no value) * 1\n* 1 * 1\n=\n26298 values from 2025-01-01 00:00:00+00:00 to 2028-01-01 18:00:00+00:00:\nfirst=8 , last=1 , mean=4.98 , min=1 , max=9 , std=2.57", "x": 0.0, "y": 900}, {"color": null, "id": "Ecologits generation_latency for sora-2-pro", "label": "Ecologits\ngeneration_latency\nfor sora-2-pro", "shape": "dot", "size": 15, "title": "Ecologits generation_latency for sora-2-pro\n=\nduplicate (Ecologits generation_latency for sora-2-pro)\n=\nduplicate (3.79 min)\n=\n3.79 min", "x": 420.0, "y": 750}]);
                   edges = new vis.DataSet([{"arrows": "to", "from": "Hourly occurrences in usage pattern", "to": "Average hourly occurrences in usage pattern"}, {"arrows": "to", "from": "Ecologits generation_latency for sora-2-pro", "to": "Average hourly occurrences in usage pattern"}]);
 
                   nodeColors = {};
@@ -4365,7 +4393,7 @@ UsagePattern usage pattern (e28419e5-c9b): 26298 values from 2025-01-01 00:00:00
 <h3 id="hourly_data_transferred_per_usage_pattern">hourly_data_transferred_per_usage_pattern</h3>
 <p>Hourly volume of data transferred over the network by this job, broken down by usage pattern.  </p>
 <p>Example value: {<br />
-UsagePattern usage pattern (e28419e5-c9b): 26298 values from 2025-01-01 00:00:00+00:00 to 2028-01-01 18:00:00+00:00: first=19.9 MB, last=8.85 MB, mean=11.1 MB, min=2.21 MB, max=19.9 MB, std=5.72 MB, <br />
+UsagePattern usage pattern (99a0e0f7-b1e): 26298 values from 2025-01-01 00:00:00+00:00 to 2028-01-01 18:00:00+00:00: first=17.7 MB, last=2.21 MB, mean=11 MB, min=2.21 MB, max=19.9 MB, std=5.69 MB, <br />
 }  </p>
 <p>Depends directly on:  </p>
 <ul>
@@ -4407,7 +4435,7 @@ UsagePattern usage pattern (e28419e5-c9b): 26298 values from 2025-01-01 00:00:00
         </center>
         <style type="text/css">
 
-             #mynetwork_cb82a9 {
+             #mynetwork_1e0f4e {
                  width: 760px;
                  height: 300px;
                  background-color: #ffffff;
@@ -4429,7 +4457,7 @@ UsagePattern usage pattern (e28419e5-c9b): 26298 values from 2025-01-01 00:00:00
         <div class="card" style="width: 100%">
 
 
-            <div id="mynetwork_cb82a9" class="card-body"></div>
+            <div id="mynetwork_1e0f4e" class="card-body"></div>
         </div>
 
 
@@ -4459,12 +4487,12 @@ UsagePattern usage pattern (e28419e5-c9b): 26298 values from 2025-01-01 00:00:00
 
               // This method is responsible for drawing the graph, returns the drawn network
               function drawGraph() {
-                  var container = document.getElementById('mynetwork_cb82a9');
+                  var container = document.getElementById('mynetwork_1e0f4e');
 
 
 
                   // parsing and collecting nodes and edges from the python
-                  nodes = new vis.DataSet([{"color": null, "id": "Hourly data transferred in usage pattern", "label": "Hourly data\ntransferred in usage\npattern", "shape": "dot", "size": 15, "title": "Hourly data transferred in usage pattern\n=\nAverage hourly occurrences in usage pattern * (Data transferred for sora-2-pro *\none hour / Ecologits generation_latency for sora-2-pro)\n=\n26298 values from 2025-01-01 00:00:00+00:00 to 2028-01-01 18:00:00+00:00:\nfirst=0.568 , last=0.253 , mean=0.316 , min=0.0631 , max=0.568 , std=0.163 *\n(2.21 MB * 1 h / 3.79 min)\n=\n26298 values from 2025-01-01 00:00:00+00:00 to 2028-01-01 18:00:00+00:00:\nfirst=19.9 MB, last=8.85 MB, mean=11.1 MB, min=2.21 MB, max=19.9 MB, std=5.72 MB", "x": 0.0, "y": 1200}, {"color": null, "id": "Average hourly occurrences in usage pattern", "label": "Average hourly\noccurrences in usage\npattern", "shape": "dot", "size": 15, "title": "Average hourly occurrences in usage pattern\n=\nHourly occurrences in usage pattern hourly occurrences average Ecologits\ngeneration_latency for sora-2-pro\n=\n26298 values from 2025-01-01 00:00:00+00:00 to 2028-01-01 18:00:00+00:00:\nfirst=9 , last=4 , mean=5 , min=1 , max=9 , std=2.58 hourly occurrences average\n3.79 min\n=\n26298 values from 2025-01-01 00:00:00+00:00 to 2028-01-01 18:00:00+00:00:\nfirst=0.568 , last=0.253 , mean=0.316 , min=0.0631 , max=0.568 , std=0.163", "x": -375.0, "y": 1050}, {"color": null, "id": "Data transferred for sora-2-pro", "label": "Data transferred for\nsora-2-pro", "shape": "dot", "size": 15, "title": "Data transferred for sora-2-pro\n=\nVideo duration * Bits per pixel * ( pixel count computation (Resolution)) *\nFrames per second\n=\n8 s * 0.0125 B * ( pixel count computation (720p (1280 x 720))) * 24 1/s\n=\n2.21 MB", "x": 375.0, "y": 1050}, {"color": null, "id": "Ecologits generation_latency for sora-2-pro", "label": "Ecologits\ngeneration_latency\nfor sora-2-pro", "shape": "dot", "size": 15, "title": "Ecologits generation_latency for sora-2-pro\n=\nduplicate (Ecologits generation_latency for sora-2-pro)\n=\nduplicate (3.79 min)\n=\n3.79 min", "x": 375.0, "y": 750}]);
+                  nodes = new vis.DataSet([{"color": null, "id": "Hourly data transferred in usage pattern", "label": "Hourly data\ntransferred in usage\npattern", "shape": "dot", "size": 15, "title": "Hourly data transferred in usage pattern\n=\nAverage hourly occurrences in usage pattern * (Data transferred for sora-2-pro *\none hour / Ecologits generation_latency for sora-2-pro)\n=\n26298 values from 2025-01-01 00:00:00+00:00 to 2028-01-01 18:00:00+00:00:\nfirst=0.505 , last=0.0631 , mean=0.314 , min=0.0631 , max=0.568 , std=0.162 *\n(2.21 MB * 1 h / 3.79 min)\n=\n26298 values from 2025-01-01 00:00:00+00:00 to 2028-01-01 18:00:00+00:00:\nfirst=17.7 MB, last=2.21 MB, mean=11 MB, min=2.21 MB, max=19.9 MB, std=5.69 MB", "x": 0.0, "y": 1200}, {"color": null, "id": "Average hourly occurrences in usage pattern", "label": "Average hourly\noccurrences in usage\npattern", "shape": "dot", "size": 15, "title": "Average hourly occurrences in usage pattern\n=\nHourly occurrences in usage pattern hourly occurrences average Ecologits\ngeneration_latency for sora-2-pro\n=\n26298 values from 2025-01-01 00:00:00+00:00 to 2028-01-01 18:00:00+00:00:\nfirst=8 , last=1 , mean=4.98 , min=1 , max=9 , std=2.57 hourly occurrences\naverage 3.79 min\n=\n26298 values from 2025-01-01 00:00:00+00:00 to 2028-01-01 18:00:00+00:00:\nfirst=0.505 , last=0.0631 , mean=0.314 , min=0.0631 , max=0.568 , std=0.162", "x": -375.0, "y": 1050}, {"color": null, "id": "Data transferred for sora-2-pro", "label": "Data transferred for\nsora-2-pro", "shape": "dot", "size": 15, "title": "Data transferred for sora-2-pro\n=\nVideo duration * Bits per pixel * ( pixel count computation (Resolution)) *\nFrames per second\n=\n8 s * 0.0125 B * ( pixel count computation (720p (1280 x 720))) * 24 1/s\n=\n2.21 MB", "x": 375.0, "y": 1050}, {"color": null, "id": "Ecologits generation_latency for sora-2-pro", "label": "Ecologits\ngeneration_latency\nfor sora-2-pro", "shape": "dot", "size": 15, "title": "Ecologits generation_latency for sora-2-pro\n=\nduplicate (Ecologits generation_latency for sora-2-pro)\n=\nduplicate (3.79 min)\n=\n3.79 min", "x": 375.0, "y": 750}]);
                   edges = new vis.DataSet([{"arrows": "to", "from": "Average hourly occurrences in usage pattern", "to": "Hourly data transferred in usage pattern"}, {"arrows": "to", "from": "Data transferred for sora-2-pro", "to": "Hourly data transferred in usage pattern"}, {"arrows": "to", "from": "Ecologits generation_latency for sora-2-pro", "to": "Hourly data transferred in usage pattern"}]);
 
                   nodeColors = {};
@@ -4534,7 +4562,7 @@ UsagePattern usage pattern (e28419e5-c9b): 26298 values from 2025-01-01 00:00:00
 <h3 id="hourly_data_stored_per_usage_pattern">hourly_data_stored_per_usage_pattern</h3>
 <p>Hourly net change in storage volume caused by this job, broken down by usage pattern.  </p>
 <p>Example value: {<br />
-UsagePattern usage pattern (e28419e5-c9b): 26298 values from 2025-01-01 00:00:00+00:00 to 2028-01-01 18:00:00+00:00: first=0, last=0, mean=0, min=0, max=0, std=0, <br />
+UsagePattern usage pattern (99a0e0f7-b1e): 26298 values from 2025-01-01 00:00:00+00:00 to 2028-01-01 18:00:00+00:00: first=0, last=0, mean=0, min=0, max=0, std=0, <br />
 }  </p>
 <p>Depends directly on:  </p>
 <ul>
@@ -4576,7 +4604,7 @@ UsagePattern usage pattern (e28419e5-c9b): 26298 values from 2025-01-01 00:00:00
         </center>
         <style type="text/css">
 
-             #mynetwork_66c3c4 {
+             #mynetwork_2cac37 {
                  width: 760px;
                  height: 300px;
                  background-color: #ffffff;
@@ -4598,7 +4626,7 @@ UsagePattern usage pattern (e28419e5-c9b): 26298 values from 2025-01-01 00:00:00
         <div class="card" style="width: 100%">
 
 
-            <div id="mynetwork_66c3c4" class="card-body"></div>
+            <div id="mynetwork_2cac37" class="card-body"></div>
         </div>
 
 
@@ -4628,12 +4656,12 @@ UsagePattern usage pattern (e28419e5-c9b): 26298 values from 2025-01-01 00:00:00
 
               // This method is responsible for drawing the graph, returns the drawn network
               function drawGraph() {
-                  var container = document.getElementById('mynetwork_66c3c4');
+                  var container = document.getElementById('mynetwork_2cac37');
 
 
 
                   // parsing and collecting nodes and edges from the python
-                  nodes = new vis.DataSet([{"color": null, "id": "Hourly data stored in usage pattern", "label": "Hourly data stored\nin usage pattern", "shape": "dot", "size": 15, "title": "Hourly data stored in usage pattern\n=\nAverage hourly occurrences in usage pattern * (Data stored by request * one hour\n/ Ecologits generation_latency for sora-2-pro)\n=\n26298 values from 2025-01-01 00:00:00+00:00 to 2028-01-01 18:00:00+00:00:\nfirst=0.568 , last=0.253 , mean=0.316 , min=0.0631 , max=0.568 , std=0.163 * (0\nB stored * 1 h / 3.79 min)\n=\n26298 values from 2025-01-01 00:00:00+00:00 to 2028-01-01 18:00:00+00:00:\nfirst=0, last=0, mean=0, min=0, max=0, std=0", "x": 0.0, "y": 1200}, {"color": null, "id": "Average hourly occurrences in usage pattern", "label": "Average hourly\noccurrences in usage\npattern", "shape": "dot", "size": 15, "title": "Average hourly occurrences in usage pattern\n=\nHourly occurrences in usage pattern hourly occurrences average Ecologits\ngeneration_latency for sora-2-pro\n=\n26298 values from 2025-01-01 00:00:00+00:00 to 2028-01-01 18:00:00+00:00:\nfirst=9 , last=4 , mean=5 , min=1 , max=9 , std=2.58 hourly occurrences average\n3.79 min\n=\n26298 values from 2025-01-01 00:00:00+00:00 to 2028-01-01 18:00:00+00:00:\nfirst=0.568 , last=0.253 , mean=0.316 , min=0.0631 , max=0.568 , std=0.163", "x": -375.0, "y": 1050}, {"color": "darkred", "id": "Data stored by request", "label": "Data stored by\nrequest", "shape": "dot", "size": 15, "title": "Data stored by request = 0 B stored", "x": 375.0, "y": 1050}, {"color": null, "id": "Ecologits generation_latency for sora-2-pro", "label": "Ecologits\ngeneration_latency\nfor sora-2-pro", "shape": "dot", "size": 15, "title": "Ecologits generation_latency for sora-2-pro\n=\nduplicate (Ecologits generation_latency for sora-2-pro)\n=\nduplicate (3.79 min)\n=\n3.79 min", "x": 375.0, "y": 750}]);
+                  nodes = new vis.DataSet([{"color": null, "id": "Hourly data stored in usage pattern", "label": "Hourly data stored\nin usage pattern", "shape": "dot", "size": 15, "title": "Hourly data stored in usage pattern\n=\nAverage hourly occurrences in usage pattern * (Data stored by request * one hour\n/ Ecologits generation_latency for sora-2-pro)\n=\n26298 values from 2025-01-01 00:00:00+00:00 to 2028-01-01 18:00:00+00:00:\nfirst=0.505 , last=0.0631 , mean=0.314 , min=0.0631 , max=0.568 , std=0.162 * (0\nB stored * 1 h / 3.79 min)\n=\n26298 values from 2025-01-01 00:00:00+00:00 to 2028-01-01 18:00:00+00:00:\nfirst=0, last=0, mean=0, min=0, max=0, std=0", "x": 0.0, "y": 1200}, {"color": null, "id": "Average hourly occurrences in usage pattern", "label": "Average hourly\noccurrences in usage\npattern", "shape": "dot", "size": 15, "title": "Average hourly occurrences in usage pattern\n=\nHourly occurrences in usage pattern hourly occurrences average Ecologits\ngeneration_latency for sora-2-pro\n=\n26298 values from 2025-01-01 00:00:00+00:00 to 2028-01-01 18:00:00+00:00:\nfirst=8 , last=1 , mean=4.98 , min=1 , max=9 , std=2.57 hourly occurrences\naverage 3.79 min\n=\n26298 values from 2025-01-01 00:00:00+00:00 to 2028-01-01 18:00:00+00:00:\nfirst=0.505 , last=0.0631 , mean=0.314 , min=0.0631 , max=0.568 , std=0.162", "x": -375.0, "y": 1050}, {"color": "darkred", "id": "Data stored by request", "label": "Data stored by\nrequest", "shape": "dot", "size": 15, "title": "Data stored by request = 0 B stored", "x": 375.0, "y": 1050}, {"color": null, "id": "Ecologits generation_latency for sora-2-pro", "label": "Ecologits\ngeneration_latency\nfor sora-2-pro", "shape": "dot", "size": 15, "title": "Ecologits generation_latency for sora-2-pro\n=\nduplicate (Ecologits generation_latency for sora-2-pro)\n=\nduplicate (3.79 min)\n=\n3.79 min", "x": 375.0, "y": 750}]);
                   edges = new vis.DataSet([{"arrows": "to", "from": "Average hourly occurrences in usage pattern", "to": "Hourly data stored in usage pattern"}, {"arrows": "to", "from": "Data stored by request", "to": "Hourly data stored in usage pattern"}, {"arrows": "to", "from": "Ecologits generation_latency for sora-2-pro", "to": "Hourly data stored in usage pattern"}]);
 
                   nodeColors = {};
@@ -4702,7 +4730,7 @@ UsagePattern usage pattern (e28419e5-c9b): 26298 values from 2025-01-01 00:00:00
 <p>You can also visit the <a href='../calculus_graphs/Generative_AI_video_model_job_hourly_data_stored_per_usage_pattern.html' target='_blank'>link to Hourly data stored in usage pattern’s full calculation graph</a>.</p>
 <h3 id="hourly_avg_occurrences_across_usage_patterns">hourly_avg_occurrences_across_usage_patterns</h3>
 <p>Total hourly count of duration-averaged job invocations summed over every usage pattern.  </p>
-<p>Example value: 26298 values from 2025-01-01 00:00:00+00:00 to 2028-01-01 18:00:00+00:00: first=0.568 , last=0.253 , mean=0.316 , min=0.0631 , max=0.568 , std=0.163   </p>
+<p>Example value: 26298 values from 2025-01-01 00:00:00+00:00 to 2028-01-01 18:00:00+00:00: first=0.505 , last=0.0631 , mean=0.314 , min=0.0631 , max=0.568 , std=0.162   </p>
 <p>Depends directly on:  </p>
 <ul>
 <li><a href="./#hourly_avg_occurrences_per_usage_pattern">Average hourly occurrences in usage pattern</a>  </li>
@@ -4741,7 +4769,7 @@ UsagePattern usage pattern (e28419e5-c9b): 26298 values from 2025-01-01 00:00:00
         </center>
         <style type="text/css">
 
-             #mynetwork_776645 {
+             #mynetwork_c68d1a {
                  width: 760px;
                  height: 300px;
                  background-color: #ffffff;
@@ -4763,7 +4791,7 @@ UsagePattern usage pattern (e28419e5-c9b): 26298 values from 2025-01-01 00:00:00
         <div class="card" style="width: 100%">
 
 
-            <div id="mynetwork_776645" class="card-body"></div>
+            <div id="mynetwork_c68d1a" class="card-body"></div>
         </div>
 
 
@@ -4793,12 +4821,12 @@ UsagePattern usage pattern (e28419e5-c9b): 26298 values from 2025-01-01 00:00:00
 
               // This method is responsible for drawing the graph, returns the drawn network
               function drawGraph() {
-                  var container = document.getElementById('mynetwork_776645');
+                  var container = document.getElementById('mynetwork_c68d1a');
 
 
 
                   // parsing and collecting nodes and edges from the python
-                  nodes = new vis.DataSet([{"color": null, "id": "Hourly average occurrences across usage patterns", "label": "Hourly average\noccurrences across\nusage patterns", "shape": "dot", "size": 15, "title": "Hourly average occurrences across usage patterns\n=\nAverage hourly occurrences in usage pattern\n=\n26298 values from 2025-01-01 00:00:00+00:00 to 2028-01-01 18:00:00+00:00:\nfirst=0.568 , last=0.253 , mean=0.316 , min=0.0631 , max=0.568 , std=0.163\n=\n26298 values from 2025-01-01 00:00:00+00:00 to 2028-01-01 18:00:00+00:00:\nfirst=0.568 , last=0.253 , mean=0.316 , min=0.0631 , max=0.568 , std=0.163", "x": 0.0, "y": 1200}, {"color": null, "id": "Average hourly occurrences in usage pattern", "label": "Average hourly\noccurrences in usage\npattern", "shape": "dot", "size": 15, "title": "Average hourly occurrences in usage pattern\n=\nHourly occurrences in usage pattern hourly occurrences average Ecologits\ngeneration_latency for sora-2-pro\n=\n26298 values from 2025-01-01 00:00:00+00:00 to 2028-01-01 18:00:00+00:00:\nfirst=9 , last=4 , mean=5 , min=1 , max=9 , std=2.58 hourly occurrences average\n3.79 min\n=\n26298 values from 2025-01-01 00:00:00+00:00 to 2028-01-01 18:00:00+00:00:\nfirst=0.568 , last=0.253 , mean=0.316 , min=0.0631 , max=0.568 , std=0.163", "x": 0.0, "y": 1050}]);
+                  nodes = new vis.DataSet([{"color": null, "id": "Hourly average occurrences across usage patterns", "label": "Hourly average\noccurrences across\nusage patterns", "shape": "dot", "size": 15, "title": "Hourly average occurrences across usage patterns\n=\nAverage hourly occurrences in usage pattern\n=\n26298 values from 2025-01-01 00:00:00+00:00 to 2028-01-01 18:00:00+00:00:\nfirst=0.505 , last=0.0631 , mean=0.314 , min=0.0631 , max=0.568 , std=0.162\n=\n26298 values from 2025-01-01 00:00:00+00:00 to 2028-01-01 18:00:00+00:00:\nfirst=0.505 , last=0.0631 , mean=0.314 , min=0.0631 , max=0.568 , std=0.162", "x": 0.0, "y": 1200}, {"color": null, "id": "Average hourly occurrences in usage pattern", "label": "Average hourly\noccurrences in usage\npattern", "shape": "dot", "size": 15, "title": "Average hourly occurrences in usage pattern\n=\nHourly occurrences in usage pattern hourly occurrences average Ecologits\ngeneration_latency for sora-2-pro\n=\n26298 values from 2025-01-01 00:00:00+00:00 to 2028-01-01 18:00:00+00:00:\nfirst=8 , last=1 , mean=4.98 , min=1 , max=9 , std=2.57 hourly occurrences\naverage 3.79 min\n=\n26298 values from 2025-01-01 00:00:00+00:00 to 2028-01-01 18:00:00+00:00:\nfirst=0.505 , last=0.0631 , mean=0.314 , min=0.0631 , max=0.568 , std=0.162", "x": 0.0, "y": 1050}]);
                   edges = new vis.DataSet([{"arrows": "to", "from": "Average hourly occurrences in usage pattern", "to": "Hourly average occurrences across usage patterns"}]);
 
                   nodeColors = {};
@@ -4867,7 +4895,7 @@ UsagePattern usage pattern (e28419e5-c9b): 26298 values from 2025-01-01 00:00:00
 <p>You can also visit the <a href='../calculus_graphs/Generative_AI_video_model_job_hourly_avg_occurrences_across_usage_patterns.html' target='_blank'>link to Hourly average occurrences across usage patterns’s full calculation graph</a>.</p>
 <h3 id="hourly_data_transferred_across_usage_patterns">hourly_data_transferred_across_usage_patterns</h3>
 <p>Total hourly volume of data transferred over the network by this job, summed over every usage pattern.  </p>
-<p>Example value: 26298 values from 2025-01-01 00:00:00+00:00 to 2028-01-01 18:00:00+00:00: first=19.9 MB, last=8.85 MB, mean=11.1 MB, min=2.21 MB, max=19.9 MB, std=5.72 MB  </p>
+<p>Example value: 26298 values from 2025-01-01 00:00:00+00:00 to 2028-01-01 18:00:00+00:00: first=17.7 MB, last=2.21 MB, mean=11 MB, min=2.21 MB, max=19.9 MB, std=5.69 MB  </p>
 <p>Depends directly on:  </p>
 <ul>
 <li><a href="./#hourly_data_transferred_per_usage_pattern">Hourly data transferred in usage pattern</a>  </li>
@@ -4906,7 +4934,7 @@ UsagePattern usage pattern (e28419e5-c9b): 26298 values from 2025-01-01 00:00:00
         </center>
         <style type="text/css">
 
-             #mynetwork_798448 {
+             #mynetwork_3a5759 {
                  width: 760px;
                  height: 300px;
                  background-color: #ffffff;
@@ -4928,7 +4956,7 @@ UsagePattern usage pattern (e28419e5-c9b): 26298 values from 2025-01-01 00:00:00
         <div class="card" style="width: 100%">
 
 
-            <div id="mynetwork_798448" class="card-body"></div>
+            <div id="mynetwork_3a5759" class="card-body"></div>
         </div>
 
 
@@ -4958,12 +4986,12 @@ UsagePattern usage pattern (e28419e5-c9b): 26298 values from 2025-01-01 00:00:00
 
               // This method is responsible for drawing the graph, returns the drawn network
               function drawGraph() {
-                  var container = document.getElementById('mynetwork_798448');
+                  var container = document.getElementById('mynetwork_3a5759');
 
 
 
                   // parsing and collecting nodes and edges from the python
-                  nodes = new vis.DataSet([{"color": null, "id": "Hourly data transferred across usage patterns", "label": "Hourly data\ntransferred across\nusage patterns", "shape": "dot", "size": 15, "title": "Hourly data transferred across usage patterns\n=\nHourly data transferred in usage pattern\n=\n26298 values from 2025-01-01 00:00:00+00:00 to 2028-01-01 18:00:00+00:00:\nfirst=19.9 MB, last=8.85 MB, mean=11.1 MB, min=2.21 MB, max=19.9 MB, std=5.72 MB\n=\n26298 values from 2025-01-01 00:00:00+00:00 to 2028-01-01 18:00:00+00:00:\nfirst=19.9 MB, last=8.85 MB, mean=11.1 MB, min=2.21 MB, max=19.9 MB, std=5.72 MB", "x": 0.0, "y": 1350}, {"color": null, "id": "Hourly data transferred in usage pattern", "label": "Hourly data\ntransferred in usage\npattern", "shape": "dot", "size": 15, "title": "Hourly data transferred in usage pattern\n=\nAverage hourly occurrences in usage pattern * (Data transferred for sora-2-pro *\none hour / Ecologits generation_latency for sora-2-pro)\n=\n26298 values from 2025-01-01 00:00:00+00:00 to 2028-01-01 18:00:00+00:00:\nfirst=0.568 , last=0.253 , mean=0.316 , min=0.0631 , max=0.568 , std=0.163 *\n(2.21 MB * 1 h / 3.79 min)\n=\n26298 values from 2025-01-01 00:00:00+00:00 to 2028-01-01 18:00:00+00:00:\nfirst=19.9 MB, last=8.85 MB, mean=11.1 MB, min=2.21 MB, max=19.9 MB, std=5.72 MB", "x": 0.0, "y": 1200}]);
+                  nodes = new vis.DataSet([{"color": null, "id": "Hourly data transferred across usage patterns", "label": "Hourly data\ntransferred across\nusage patterns", "shape": "dot", "size": 15, "title": "Hourly data transferred across usage patterns\n=\nHourly data transferred in usage pattern\n=\n26298 values from 2025-01-01 00:00:00+00:00 to 2028-01-01 18:00:00+00:00:\nfirst=17.7 MB, last=2.21 MB, mean=11 MB, min=2.21 MB, max=19.9 MB, std=5.69 MB\n=\n26298 values from 2025-01-01 00:00:00+00:00 to 2028-01-01 18:00:00+00:00:\nfirst=17.7 MB, last=2.21 MB, mean=11 MB, min=2.21 MB, max=19.9 MB, std=5.69 MB", "x": 0.0, "y": 1350}, {"color": null, "id": "Hourly data transferred in usage pattern", "label": "Hourly data\ntransferred in usage\npattern", "shape": "dot", "size": 15, "title": "Hourly data transferred in usage pattern\n=\nAverage hourly occurrences in usage pattern * (Data transferred for sora-2-pro *\none hour / Ecologits generation_latency for sora-2-pro)\n=\n26298 values from 2025-01-01 00:00:00+00:00 to 2028-01-01 18:00:00+00:00:\nfirst=0.505 , last=0.0631 , mean=0.314 , min=0.0631 , max=0.568 , std=0.162 *\n(2.21 MB * 1 h / 3.79 min)\n=\n26298 values from 2025-01-01 00:00:00+00:00 to 2028-01-01 18:00:00+00:00:\nfirst=17.7 MB, last=2.21 MB, mean=11 MB, min=2.21 MB, max=19.9 MB, std=5.69 MB", "x": 0.0, "y": 1200}]);
                   edges = new vis.DataSet([{"arrows": "to", "from": "Hourly data transferred in usage pattern", "to": "Hourly data transferred across usage patterns"}]);
 
                   nodeColors = {};
@@ -5071,7 +5099,7 @@ UsagePattern usage pattern (e28419e5-c9b): 26298 values from 2025-01-01 00:00:00
         </center>
         <style type="text/css">
 
-             #mynetwork_a9a2c0 {
+             #mynetwork_d00f64 {
                  width: 760px;
                  height: 300px;
                  background-color: #ffffff;
@@ -5093,7 +5121,7 @@ UsagePattern usage pattern (e28419e5-c9b): 26298 values from 2025-01-01 00:00:00
         <div class="card" style="width: 100%">
 
 
-            <div id="mynetwork_a9a2c0" class="card-body"></div>
+            <div id="mynetwork_d00f64" class="card-body"></div>
         </div>
 
 
@@ -5123,12 +5151,12 @@ UsagePattern usage pattern (e28419e5-c9b): 26298 values from 2025-01-01 00:00:00
 
               // This method is responsible for drawing the graph, returns the drawn network
               function drawGraph() {
-                  var container = document.getElementById('mynetwork_a9a2c0');
+                  var container = document.getElementById('mynetwork_d00f64');
 
 
 
                   // parsing and collecting nodes and edges from the python
-                  nodes = new vis.DataSet([{"color": null, "id": "Hourly data stored across usage patterns", "label": "Hourly data stored\nacross usage\npatterns", "shape": "dot", "size": 15, "title": "Hourly data stored across usage patterns\n=\nHourly data stored in usage pattern\n=\n26298 values from 2025-01-01 00:00:00+00:00 to 2028-01-01 18:00:00+00:00:\nfirst=0, last=0, mean=0, min=0, max=0, std=0\n=\n26298 values from 2025-01-01 00:00:00+00:00 to 2028-01-01 18:00:00+00:00:\nfirst=0, last=0, mean=0, min=0, max=0, std=0", "x": 0.0, "y": 1350}, {"color": null, "id": "Hourly data stored in usage pattern", "label": "Hourly data stored\nin usage pattern", "shape": "dot", "size": 15, "title": "Hourly data stored in usage pattern\n=\nAverage hourly occurrences in usage pattern * (Data stored by request * one hour\n/ Ecologits generation_latency for sora-2-pro)\n=\n26298 values from 2025-01-01 00:00:00+00:00 to 2028-01-01 18:00:00+00:00:\nfirst=0.568 , last=0.253 , mean=0.316 , min=0.0631 , max=0.568 , std=0.163 * (0\nB stored * 1 h / 3.79 min)\n=\n26298 values from 2025-01-01 00:00:00+00:00 to 2028-01-01 18:00:00+00:00:\nfirst=0, last=0, mean=0, min=0, max=0, std=0", "x": 0.0, "y": 1200}]);
+                  nodes = new vis.DataSet([{"color": null, "id": "Hourly data stored across usage patterns", "label": "Hourly data stored\nacross usage\npatterns", "shape": "dot", "size": 15, "title": "Hourly data stored across usage patterns\n=\nHourly data stored in usage pattern\n=\n26298 values from 2025-01-01 00:00:00+00:00 to 2028-01-01 18:00:00+00:00:\nfirst=0, last=0, mean=0, min=0, max=0, std=0\n=\n26298 values from 2025-01-01 00:00:00+00:00 to 2028-01-01 18:00:00+00:00:\nfirst=0, last=0, mean=0, min=0, max=0, std=0", "x": 0.0, "y": 1350}, {"color": null, "id": "Hourly data stored in usage pattern", "label": "Hourly data stored\nin usage pattern", "shape": "dot", "size": 15, "title": "Hourly data stored in usage pattern\n=\nAverage hourly occurrences in usage pattern * (Data stored by request * one hour\n/ Ecologits generation_latency for sora-2-pro)\n=\n26298 values from 2025-01-01 00:00:00+00:00 to 2028-01-01 18:00:00+00:00:\nfirst=0.505 , last=0.0631 , mean=0.314 , min=0.0631 , max=0.568 , std=0.162 * (0\nB stored * 1 h / 3.79 min)\n=\n26298 values from 2025-01-01 00:00:00+00:00 to 2028-01-01 18:00:00+00:00:\nfirst=0, last=0, mean=0, min=0, max=0, std=0", "x": 0.0, "y": 1200}]);
                   edges = new vis.DataSet([{"arrows": "to", "from": "Hourly data stored in usage pattern", "to": "Hourly data stored across usage patterns"}]);
 
                   nodeColors = {};
@@ -5199,7 +5227,7 @@ UsagePattern usage pattern (e28419e5-c9b): 26298 values from 2025-01-01 00:00:00
 <p>Duration-averaged hourly occurrences for one web step or one recurrent server need within one usage
 pattern.  </p>
 <p>Example value: {<br />
-usage pattern / user journey / 20 min streaming: 26298 values from 2025-01-01 00:00:00+00:00 to 2028-01-01 18:00:00+00:00: first=0.568 , last=0.253 , mean=0.316 , min=0.0631 , max=0.568 , std=0.163 , <br />
+usage pattern / user journey / 20 min streaming: 26298 values from 2025-01-01 00:00:00+00:00 to 2028-01-01 18:00:00+00:00: first=0.505 , last=0.0631 , mean=0.314 , min=0.0631 , max=0.568 , std=0.162 , <br />
 }  </p>
 <p>Depends directly on:  </p>
 <ul>
@@ -5243,7 +5271,7 @@ usage pattern / user journey / 20 min streaming: 26298 values from 2025-01-01 00
         </center>
         <style type="text/css">
 
-             #mynetwork_16bd80 {
+             #mynetwork_0ef806 {
                  width: 760px;
                  height: 300px;
                  background-color: #ffffff;
@@ -5265,7 +5293,7 @@ usage pattern / user journey / 20 min streaming: 26298 values from 2025-01-01 00
         <div class="card" style="width: 100%">
 
 
-            <div id="mynetwork_16bd80" class="card-body"></div>
+            <div id="mynetwork_0ef806" class="card-body"></div>
         </div>
 
 
@@ -5295,12 +5323,12 @@ usage pattern / user journey / 20 min streaming: 26298 values from 2025-01-01 00
 
               // This method is responsible for drawing the graph, returns the drawn network
               function drawGraph() {
-                  var container = document.getElementById('mynetwork_16bd80');
+                  var container = document.getElementById('mynetwork_0ef806');
 
 
 
                   // parsing and collecting nodes and edges from the python
-                  nodes = new vis.DataSet([{"color": null, "id": "Average hourly occurrences of Generative AI video model job in 20 min streaming for usage pattern", "label": "Average hourly\noccurrences of\nGenerative AI video\nmodel job in 20 min\nstreaming for usage\npattern", "shape": "dot", "size": 15, "title": "Average hourly occurrences of Generative AI video model job in 20 min streaming\nfor usage pattern\n=\n(Hourly nb of pattern occurrences (UTC) shifted by no value) * Journeys per\npattern occurrence * Times per journey * Times per step hourly occurrences\naverage Ecologits generation_latency for sora-2-pro\n=\n(26298 values from 2025-01-01 00:00:00+00:00 to 2028-01-01 18:00:00+00:00:\nfirst=9 , last=4 , mean=5 , min=1 , max=9 , std=2.58 shifted by no value) * 1 *\n1 * 1 hourly occurrences average 3.79 min\n=\n26298 values from 2025-01-01 00:00:00+00:00 to 2028-01-01 18:00:00+00:00:\nfirst=0.568 , last=0.253 , mean=0.316 , min=0.0631 , max=0.568 , std=0.163", "x": 0.0, "y": 1050}, {"color": null, "id": "Hourly nb of pattern occurrences (UTC)", "label": "Hourly nb of pattern\noccurrences (UTC)", "shape": "dot", "size": 15, "title": "Hourly nb of pattern occurrences (UTC)\n=\nHourly nb of pattern occurrences converted to UTC from Timezone\n=\n26298 values from 2025-01-01 00:00:00 to 2028-01-01 18:00:00: first=4 , last=5 ,\nmean=5 , min=1 , max=9 , std=2.58 converted to UTC from Europe/Paris\n=\n26298 values from 2025-01-01 00:00:00+00:00 to 2028-01-01 18:00:00+00:00:\nfirst=9 , last=4 , mean=5 , min=1 , max=9 , std=2.58", "x": -393.75, "y": 900}, {"color": "darkred", "id": "Journeys per pattern occurrence", "label": "Journeys per pattern\noccurrence", "shape": "dot", "size": 15, "title": "Journeys per pattern occurrence = 1", "x": -131.25, "y": 900}, {"color": "darkred", "id": "Times per journey", "label": "Times per journey", "shape": "dot", "size": 15, "title": "Times per journey = 1", "x": 131.25, "y": 900}, {"color": "darkred", "id": "Times per step", "label": "Times per step", "shape": "dot", "size": 15, "title": "Times per step = 1", "x": 393.75, "y": 900}, {"color": null, "id": "Ecologits generation_latency for sora-2-pro", "label": "Ecologits\ngeneration_latency\nfor sora-2-pro", "shape": "dot", "size": 15, "title": "Ecologits generation_latency for sora-2-pro\n=\nduplicate (Ecologits generation_latency for sora-2-pro)\n=\nduplicate (3.79 min)\n=\n3.79 min", "x": 350.0, "y": 750}]);
+                  nodes = new vis.DataSet([{"color": null, "id": "Average hourly occurrences of Generative AI video model job in 20 min streaming for usage pattern", "label": "Average hourly\noccurrences of\nGenerative AI video\nmodel job in 20 min\nstreaming for usage\npattern", "shape": "dot", "size": 15, "title": "Average hourly occurrences of Generative AI video model job in 20 min streaming\nfor usage pattern\n=\n(Hourly nb of pattern occurrences (UTC) shifted by no value) * Journeys per\npattern occurrence * Times per journey * Times per step hourly occurrences\naverage Ecologits generation_latency for sora-2-pro\n=\n(26298 values from 2025-01-01 00:00:00+00:00 to 2028-01-01 18:00:00+00:00:\nfirst=8 , last=1 , mean=4.98 , min=1 , max=9 , std=2.57 shifted by no value) * 1\n* 1 * 1 hourly occurrences average 3.79 min\n=\n26298 values from 2025-01-01 00:00:00+00:00 to 2028-01-01 18:00:00+00:00:\nfirst=0.505 , last=0.0631 , mean=0.314 , min=0.0631 , max=0.568 , std=0.162", "x": 0.0, "y": 1050}, {"color": null, "id": "Hourly nb of pattern occurrences (UTC)", "label": "Hourly nb of pattern\noccurrences (UTC)", "shape": "dot", "size": 15, "title": "Hourly nb of pattern occurrences (UTC)\n=\nHourly nb of pattern occurrences converted to UTC from Timezone\n=\n26298 values from 2025-01-01 00:00:00 to 2028-01-01 18:00:00: first=1 , last=2 ,\nmean=4.98 , min=1 , max=9 , std=2.57 converted to UTC from Europe/Paris\n=\n26298 values from 2025-01-01 00:00:00+00:00 to 2028-01-01 18:00:00+00:00:\nfirst=8 , last=1 , mean=4.98 , min=1 , max=9 , std=2.57", "x": -393.75, "y": 900}, {"color": "darkred", "id": "Journeys per pattern occurrence", "label": "Journeys per pattern\noccurrence", "shape": "dot", "size": 15, "title": "Journeys per pattern occurrence = 1", "x": -131.25, "y": 900}, {"color": "darkred", "id": "Times per journey", "label": "Times per journey", "shape": "dot", "size": 15, "title": "Times per journey = 1", "x": 131.25, "y": 900}, {"color": "darkred", "id": "Times per step", "label": "Times per step", "shape": "dot", "size": 15, "title": "Times per step = 1", "x": 393.75, "y": 900}, {"color": null, "id": "Ecologits generation_latency for sora-2-pro", "label": "Ecologits\ngeneration_latency\nfor sora-2-pro", "shape": "dot", "size": 15, "title": "Ecologits generation_latency for sora-2-pro\n=\nduplicate (Ecologits generation_latency for sora-2-pro)\n=\nduplicate (3.79 min)\n=\n3.79 min", "x": 350.0, "y": 750}]);
                   edges = new vis.DataSet([{"arrows": "to", "from": "Hourly nb of pattern occurrences (UTC)", "to": "Average hourly occurrences of Generative AI video model job in 20 min streaming for usage pattern"}, {"arrows": "to", "from": "Journeys per pattern occurrence", "to": "Average hourly occurrences of Generative AI video model job in 20 min streaming for usage pattern"}, {"arrows": "to", "from": "Times per journey", "to": "Average hourly occurrences of Generative AI video model job in 20 min streaming for usage pattern"}, {"arrows": "to", "from": "Times per step", "to": "Average hourly occurrences of Generative AI video model job in 20 min streaming for usage pattern"}, {"arrows": "to", "from": "Ecologits generation_latency for sora-2-pro", "to": "Average hourly occurrences of Generative AI video model job in 20 min streaming for usage pattern"}]);
 
                   nodeColors = {};
@@ -5370,7 +5398,7 @@ usage pattern / user journey / 20 min streaming: 26298 values from 2025-01-01 00
 <h3 id="hourly_data_transferred_per_coordinate">hourly_data_transferred_per_coordinate</h3>
 <p>Hourly network data transferred for one web-step or recurrent-server-need occurrence coordinate.  </p>
 <p>Example value: {<br />
-usage pattern / user journey / 20 min streaming: 26298 values from 2025-01-01 00:00:00+00:00 to 2028-01-01 18:00:00+00:00: first=19.9 MB, last=8.85 MB, mean=11.1 MB, min=2.21 MB, max=19.9 MB, std=5.72 MB, <br />
+usage pattern / user journey / 20 min streaming: 26298 values from 2025-01-01 00:00:00+00:00 to 2028-01-01 18:00:00+00:00: first=17.7 MB, last=2.21 MB, mean=11 MB, min=2.21 MB, max=19.9 MB, std=5.69 MB, <br />
 }  </p>
 <p>Depends directly on:  </p>
 <ul>
@@ -5412,7 +5440,7 @@ usage pattern / user journey / 20 min streaming: 26298 values from 2025-01-01 00
         </center>
         <style type="text/css">
 
-             #mynetwork_b36ecd {
+             #mynetwork_a4368e {
                  width: 760px;
                  height: 300px;
                  background-color: #ffffff;
@@ -5434,7 +5462,7 @@ usage pattern / user journey / 20 min streaming: 26298 values from 2025-01-01 00
         <div class="card" style="width: 100%">
 
 
-            <div id="mynetwork_b36ecd" class="card-body"></div>
+            <div id="mynetwork_a4368e" class="card-body"></div>
         </div>
 
 
@@ -5464,12 +5492,12 @@ usage pattern / user journey / 20 min streaming: 26298 values from 2025-01-01 00
 
               // This method is responsible for drawing the graph, returns the drawn network
               function drawGraph() {
-                  var container = document.getElementById('mynetwork_b36ecd');
+                  var container = document.getElementById('mynetwork_a4368e');
 
 
 
                   // parsing and collecting nodes and edges from the python
-                  nodes = new vis.DataSet([{"color": null, "id": "Hourly data transferred by Generative AI video model job in 20 min streaming for usage pattern", "label": "Hourly data\ntransferred by\nGenerative AI video\nmodel job in 20 min\nstreaming for usage\npattern", "shape": "dot", "size": 15, "title": "Hourly data transferred by Generative AI video model job in 20 min streaming for\nusage pattern\n=\nAverage hourly occurrences of Generative AI video model job in 20 min streaming\nfor usage pattern * (Data transferred for sora-2-pro * one hour / Ecologits\ngeneration_latency for sora-2-pro)\n=\n26298 values from 2025-01-01 00:00:00+00:00 to 2028-01-01 18:00:00+00:00:\nfirst=0.568 , last=0.253 , mean=0.316 , min=0.0631 , max=0.568 , std=0.163 *\n(2.21 MB * 1 h / 3.79 min)\n=\n26298 values from 2025-01-01 00:00:00+00:00 to 2028-01-01 18:00:00+00:00:\nfirst=19.9 MB, last=8.85 MB, mean=11.1 MB, min=2.21 MB, max=19.9 MB, std=5.72 MB", "x": 0.0, "y": 1200}, {"color": null, "id": "Average hourly occurrences of Generative AI video model job in 20 min streaming for usage pattern", "label": "Average hourly\noccurrences of\nGenerative AI video\nmodel job in 20 min\nstreaming for usage\npattern", "shape": "dot", "size": 15, "title": "Average hourly occurrences of Generative AI video model job in 20 min streaming\nfor usage pattern\n=\n(Hourly nb of pattern occurrences (UTC) shifted by no value) * Journeys per\npattern occurrence * Times per journey * Times per step hourly occurrences\naverage Ecologits generation_latency for sora-2-pro\n=\n(26298 values from 2025-01-01 00:00:00+00:00 to 2028-01-01 18:00:00+00:00:\nfirst=9 , last=4 , mean=5 , min=1 , max=9 , std=2.58 shifted by no value) * 1 *\n1 * 1 hourly occurrences average 3.79 min\n=\n26298 values from 2025-01-01 00:00:00+00:00 to 2028-01-01 18:00:00+00:00:\nfirst=0.568 , last=0.253 , mean=0.316 , min=0.0631 , max=0.568 , std=0.163", "x": -300.0, "y": 1050}, {"color": null, "id": "Data transferred for sora-2-pro", "label": "Data transferred for\nsora-2-pro", "shape": "dot", "size": 15, "title": "Data transferred for sora-2-pro\n=\nVideo duration * Bits per pixel * ( pixel count computation (Resolution)) *\nFrames per second\n=\n8 s * 0.0125 B * ( pixel count computation (720p (1280 x 720))) * 24 1/s\n=\n2.21 MB", "x": 300.0, "y": 1050}, {"color": null, "id": "Ecologits generation_latency for sora-2-pro", "label": "Ecologits\ngeneration_latency\nfor sora-2-pro", "shape": "dot", "size": 15, "title": "Ecologits generation_latency for sora-2-pro\n=\nduplicate (Ecologits generation_latency for sora-2-pro)\n=\nduplicate (3.79 min)\n=\n3.79 min", "x": 150.0, "y": 750}]);
+                  nodes = new vis.DataSet([{"color": null, "id": "Hourly data transferred by Generative AI video model job in 20 min streaming for usage pattern", "label": "Hourly data\ntransferred by\nGenerative AI video\nmodel job in 20 min\nstreaming for usage\npattern", "shape": "dot", "size": 15, "title": "Hourly data transferred by Generative AI video model job in 20 min streaming for\nusage pattern\n=\nAverage hourly occurrences of Generative AI video model job in 20 min streaming\nfor usage pattern * (Data transferred for sora-2-pro * one hour / Ecologits\ngeneration_latency for sora-2-pro)\n=\n26298 values from 2025-01-01 00:00:00+00:00 to 2028-01-01 18:00:00+00:00:\nfirst=0.505 , last=0.0631 , mean=0.314 , min=0.0631 , max=0.568 , std=0.162 *\n(2.21 MB * 1 h / 3.79 min)\n=\n26298 values from 2025-01-01 00:00:00+00:00 to 2028-01-01 18:00:00+00:00:\nfirst=17.7 MB, last=2.21 MB, mean=11 MB, min=2.21 MB, max=19.9 MB, std=5.69 MB", "x": 0.0, "y": 1200}, {"color": null, "id": "Average hourly occurrences of Generative AI video model job in 20 min streaming for usage pattern", "label": "Average hourly\noccurrences of\nGenerative AI video\nmodel job in 20 min\nstreaming for usage\npattern", "shape": "dot", "size": 15, "title": "Average hourly occurrences of Generative AI video model job in 20 min streaming\nfor usage pattern\n=\n(Hourly nb of pattern occurrences (UTC) shifted by no value) * Journeys per\npattern occurrence * Times per journey * Times per step hourly occurrences\naverage Ecologits generation_latency for sora-2-pro\n=\n(26298 values from 2025-01-01 00:00:00+00:00 to 2028-01-01 18:00:00+00:00:\nfirst=8 , last=1 , mean=4.98 , min=1 , max=9 , std=2.57 shifted by no value) * 1\n* 1 * 1 hourly occurrences average 3.79 min\n=\n26298 values from 2025-01-01 00:00:00+00:00 to 2028-01-01 18:00:00+00:00:\nfirst=0.505 , last=0.0631 , mean=0.314 , min=0.0631 , max=0.568 , std=0.162", "x": -300.0, "y": 1050}, {"color": null, "id": "Data transferred for sora-2-pro", "label": "Data transferred for\nsora-2-pro", "shape": "dot", "size": 15, "title": "Data transferred for sora-2-pro\n=\nVideo duration * Bits per pixel * ( pixel count computation (Resolution)) *\nFrames per second\n=\n8 s * 0.0125 B * ( pixel count computation (720p (1280 x 720))) * 24 1/s\n=\n2.21 MB", "x": 300.0, "y": 1050}, {"color": null, "id": "Ecologits generation_latency for sora-2-pro", "label": "Ecologits\ngeneration_latency\nfor sora-2-pro", "shape": "dot", "size": 15, "title": "Ecologits generation_latency for sora-2-pro\n=\nduplicate (Ecologits generation_latency for sora-2-pro)\n=\nduplicate (3.79 min)\n=\n3.79 min", "x": 150.0, "y": 750}]);
                   edges = new vis.DataSet([{"arrows": "to", "from": "Average hourly occurrences of Generative AI video model job in 20 min streaming for usage pattern", "to": "Hourly data transferred by Generative AI video model job in 20 min streaming for usage pattern"}, {"arrows": "to", "from": "Data transferred for sora-2-pro", "to": "Hourly data transferred by Generative AI video model job in 20 min streaming for usage pattern"}, {"arrows": "to", "from": "Ecologits generation_latency for sora-2-pro", "to": "Hourly data transferred by Generative AI video model job in 20 min streaming for usage pattern"}]);
 
                   nodeColors = {};
@@ -5578,7 +5606,7 @@ usage pattern / user journey / 20 min streaming: 26298 values from 2025-01-01 00
         </center>
         <style type="text/css">
 
-             #mynetwork_31a62c {
+             #mynetwork_2b23b0 {
                  width: 760px;
                  height: 300px;
                  background-color: #ffffff;
@@ -5600,7 +5628,7 @@ usage pattern / user journey / 20 min streaming: 26298 values from 2025-01-01 00
         <div class="card" style="width: 100%">
 
 
-            <div id="mynetwork_31a62c" class="card-body"></div>
+            <div id="mynetwork_2b23b0" class="card-body"></div>
         </div>
 
 
@@ -5630,7 +5658,7 @@ usage pattern / user journey / 20 min streaming: 26298 values from 2025-01-01 00
 
               // This method is responsible for drawing the graph, returns the drawn network
               function drawGraph() {
-                  var container = document.getElementById('mynetwork_31a62c');
+                  var container = document.getElementById('mynetwork_2b23b0');
 
 
 
@@ -5743,7 +5771,7 @@ usage pattern / user journey / 20 min streaming: 26298 values from 2025-01-01 00
         </center>
         <style type="text/css">
 
-             #mynetwork_d41d3e {
+             #mynetwork_fde317 {
                  width: 760px;
                  height: 300px;
                  background-color: #ffffff;
@@ -5765,7 +5793,7 @@ usage pattern / user journey / 20 min streaming: 26298 values from 2025-01-01 00
         <div class="card" style="width: 100%">
 
 
-            <div id="mynetwork_d41d3e" class="card-body"></div>
+            <div id="mynetwork_fde317" class="card-body"></div>
         </div>
 
 
@@ -5795,7 +5823,7 @@ usage pattern / user journey / 20 min streaming: 26298 values from 2025-01-01 00
 
               // This method is responsible for drawing the graph, returns the drawn network
               function drawGraph() {
-                  var container = document.getElementById('mynetwork_d41d3e');
+                  var container = document.getElementById('mynetwork_fde317');
 
 
 
@@ -5869,7 +5897,7 @@ usage pattern / user journey / 20 min streaming: 26298 values from 2025-01-01 00
 <p>You can also visit the <a href='../calculus_graphs/Generative_AI_video_model_job_request_duration.html' target='_blank'>link to Ecologits generation_latency for sora-2-pro’s full calculation graph</a>.</p>
 <h3 id="hourly_occurrences_across_usage_patterns">hourly_occurrences_across_usage_patterns</h3>
 <p>Hourly count of occurrences of this job summed across all usage patterns that trigger it.  </p>
-<p>Example value: 26298 values from 2025-01-01 00:00:00+00:00 to 2028-01-01 18:00:00+00:00: first=9 , last=4 , mean=5 , min=1 , max=9 , std=2.58   </p>
+<p>Example value: 26298 values from 2025-01-01 00:00:00+00:00 to 2028-01-01 18:00:00+00:00: first=8 , last=1 , mean=4.98 , min=1 , max=9 , std=2.57   </p>
 <p>Depends directly on:  </p>
 <ul>
 <li><a href="./#hourly_occurrences_per_usage_pattern">Hourly occurrences in usage pattern</a>  </li>
@@ -5908,7 +5936,7 @@ usage pattern / user journey / 20 min streaming: 26298 values from 2025-01-01 00
         </center>
         <style type="text/css">
 
-             #mynetwork_6989f8 {
+             #mynetwork_32f6a5 {
                  width: 760px;
                  height: 300px;
                  background-color: #ffffff;
@@ -5930,7 +5958,7 @@ usage pattern / user journey / 20 min streaming: 26298 values from 2025-01-01 00
         <div class="card" style="width: 100%">
 
 
-            <div id="mynetwork_6989f8" class="card-body"></div>
+            <div id="mynetwork_32f6a5" class="card-body"></div>
         </div>
 
 
@@ -5960,12 +5988,12 @@ usage pattern / user journey / 20 min streaming: 26298 values from 2025-01-01 00
 
               // This method is responsible for drawing the graph, returns the drawn network
               function drawGraph() {
-                  var container = document.getElementById('mynetwork_6989f8');
+                  var container = document.getElementById('mynetwork_32f6a5');
 
 
 
                   // parsing and collecting nodes and edges from the python
-                  nodes = new vis.DataSet([{"color": null, "id": "Hourly occurrences across usage patterns", "label": "Hourly occurrences\nacross usage\npatterns", "shape": "dot", "size": 15, "title": "Hourly occurrences across usage patterns\n=\nHourly occurrences in usage pattern\n=\n26298 values from 2025-01-01 00:00:00+00:00 to 2028-01-01 18:00:00+00:00:\nfirst=9 , last=4 , mean=5 , min=1 , max=9 , std=2.58\n=\n26298 values from 2025-01-01 00:00:00+00:00 to 2028-01-01 18:00:00+00:00:\nfirst=9 , last=4 , mean=5 , min=1 , max=9 , std=2.58", "x": 0.0, "y": 600}, {"color": null, "id": "Hourly occurrences in usage pattern", "label": "Hourly occurrences\nin usage pattern", "shape": "dot", "size": 15, "title": "Hourly occurrences in usage pattern\n=\n(Hourly nb of pattern occurrences (UTC) shifted by no value) * Journeys per\npattern occurrence * Times per journey * Times per step\n=\n(26298 values from 2025-01-01 00:00:00+00:00 to 2028-01-01 18:00:00+00:00:\nfirst=9 , last=4 , mean=5 , min=1 , max=9 , std=2.58 shifted by no value) * 1 *\n1 * 1\n=\n26298 values from 2025-01-01 00:00:00+00:00 to 2028-01-01 18:00:00+00:00:\nfirst=9 , last=4 , mean=5 , min=1 , max=9 , std=2.58", "x": 0.0, "y": 450}]);
+                  nodes = new vis.DataSet([{"color": null, "id": "Hourly occurrences across usage patterns", "label": "Hourly occurrences\nacross usage\npatterns", "shape": "dot", "size": 15, "title": "Hourly occurrences across usage patterns\n=\nHourly occurrences in usage pattern\n=\n26298 values from 2025-01-01 00:00:00+00:00 to 2028-01-01 18:00:00+00:00:\nfirst=8 , last=1 , mean=4.98 , min=1 , max=9 , std=2.57\n=\n26298 values from 2025-01-01 00:00:00+00:00 to 2028-01-01 18:00:00+00:00:\nfirst=8 , last=1 , mean=4.98 , min=1 , max=9 , std=2.57", "x": 0.0, "y": 600}, {"color": null, "id": "Hourly occurrences in usage pattern", "label": "Hourly occurrences\nin usage pattern", "shape": "dot", "size": 15, "title": "Hourly occurrences in usage pattern\n=\n(Hourly nb of pattern occurrences (UTC) shifted by no value) * Journeys per\npattern occurrence * Times per journey * Times per step\n=\n(26298 values from 2025-01-01 00:00:00+00:00 to 2028-01-01 18:00:00+00:00:\nfirst=8 , last=1 , mean=4.98 , min=1 , max=9 , std=2.57 shifted by no value) * 1\n* 1 * 1\n=\n26298 values from 2025-01-01 00:00:00+00:00 to 2028-01-01 18:00:00+00:00:\nfirst=8 , last=1 , mean=4.98 , min=1 , max=9 , std=2.57", "x": 0.0, "y": 450}]);
                   edges = new vis.DataSet([{"arrows": "to", "from": "Hourly occurrences in usage pattern", "to": "Hourly occurrences across usage patterns"}]);
 
                   nodeColors = {};
@@ -6079,7 +6107,7 @@ usage pattern / user journey / 20 min streaming: 26298 values from 2025-01-01 00
         </center>
         <style type="text/css">
 
-             #mynetwork_52f6ad {
+             #mynetwork_9ebb3e {
                  width: 760px;
                  height: 300px;
                  background-color: #ffffff;
@@ -6101,7 +6129,7 @@ usage pattern / user journey / 20 min streaming: 26298 values from 2025-01-01 00
         <div class="card" style="width: 100%">
 
 
-            <div id="mynetwork_52f6ad" class="card-body"></div>
+            <div id="mynetwork_9ebb3e" class="card-body"></div>
         </div>
 
 
@@ -6131,7 +6159,7 @@ usage pattern / user journey / 20 min streaming: 26298 values from 2025-01-01 00
 
               // This method is responsible for drawing the graph, returns the drawn network
               function drawGraph() {
-                  var container = document.getElementById('mynetwork_52f6ad');
+                  var container = document.getElementById('mynetwork_9ebb3e');
 
 
 
@@ -6244,7 +6272,7 @@ usage pattern / user journey / 20 min streaming: 26298 values from 2025-01-01 00
         </center>
         <style type="text/css">
 
-             #mynetwork_82f1a5 {
+             #mynetwork_056c59 {
                  width: 760px;
                  height: 300px;
                  background-color: #ffffff;
@@ -6266,7 +6294,7 @@ usage pattern / user journey / 20 min streaming: 26298 values from 2025-01-01 00
         <div class="card" style="width: 100%">
 
 
-            <div id="mynetwork_82f1a5" class="card-body"></div>
+            <div id="mynetwork_056c59" class="card-body"></div>
         </div>
 
 
@@ -6296,7 +6324,7 @@ usage pattern / user journey / 20 min streaming: 26298 values from 2025-01-01 00
 
               // This method is responsible for drawing the graph, returns the drawn network
               function drawGraph() {
-                  var container = document.getElementById('mynetwork_82f1a5');
+                  var container = document.getElementById('mynetwork_056c59');
 
 
 
@@ -6409,7 +6437,7 @@ usage pattern / user journey / 20 min streaming: 26298 values from 2025-01-01 00
         </center>
         <style type="text/css">
 
-             #mynetwork_2567fd {
+             #mynetwork_2fc027 {
                  width: 760px;
                  height: 300px;
                  background-color: #ffffff;
@@ -6431,7 +6459,7 @@ usage pattern / user journey / 20 min streaming: 26298 values from 2025-01-01 00
         <div class="card" style="width: 100%">
 
 
-            <div id="mynetwork_2567fd" class="card-body"></div>
+            <div id="mynetwork_2fc027" class="card-body"></div>
         </div>
 
 
@@ -6461,7 +6489,7 @@ usage pattern / user journey / 20 min streaming: 26298 values from 2025-01-01 00
 
               // This method is responsible for drawing the graph, returns the drawn network
               function drawGraph() {
-                  var container = document.getElementById('mynetwork_2567fd');
+                  var container = document.getElementById('mynetwork_2fc027');
 
 
 
@@ -6574,7 +6602,7 @@ usage pattern / user journey / 20 min streaming: 26298 values from 2025-01-01 00
         </center>
         <style type="text/css">
 
-             #mynetwork_4b7cac {
+             #mynetwork_a5d226 {
                  width: 760px;
                  height: 300px;
                  background-color: #ffffff;
@@ -6596,7 +6624,7 @@ usage pattern / user journey / 20 min streaming: 26298 values from 2025-01-01 00
         <div class="card" style="width: 100%">
 
 
-            <div id="mynetwork_4b7cac" class="card-body"></div>
+            <div id="mynetwork_a5d226" class="card-body"></div>
         </div>
 
 
@@ -6626,7 +6654,7 @@ usage pattern / user journey / 20 min streaming: 26298 values from 2025-01-01 00
 
               // This method is responsible for drawing the graph, returns the drawn network
               function drawGraph() {
-                  var container = document.getElementById('mynetwork_4b7cac');
+                  var container = document.getElementById('mynetwork_a5d226');
 
 
 
@@ -6739,7 +6767,7 @@ usage pattern / user journey / 20 min streaming: 26298 values from 2025-01-01 00
         </center>
         <style type="text/css">
 
-             #mynetwork_0c5dc6 {
+             #mynetwork_9819fc {
                  width: 760px;
                  height: 300px;
                  background-color: #ffffff;
@@ -6761,7 +6789,7 @@ usage pattern / user journey / 20 min streaming: 26298 values from 2025-01-01 00
         <div class="card" style="width: 100%">
 
 
-            <div id="mynetwork_0c5dc6" class="card-body"></div>
+            <div id="mynetwork_9819fc" class="card-body"></div>
         </div>
 
 
@@ -6791,7 +6819,7 @@ usage pattern / user journey / 20 min streaming: 26298 values from 2025-01-01 00
 
               // This method is responsible for drawing the graph, returns the drawn network
               function drawGraph() {
-                  var container = document.getElementById('mynetwork_0c5dc6');
+                  var container = document.getElementById('mynetwork_9819fc');
 
 
 
@@ -6904,7 +6932,7 @@ usage pattern / user journey / 20 min streaming: 26298 values from 2025-01-01 00
         </center>
         <style type="text/css">
 
-             #mynetwork_935956 {
+             #mynetwork_05dc05 {
                  width: 760px;
                  height: 300px;
                  background-color: #ffffff;
@@ -6926,7 +6954,7 @@ usage pattern / user journey / 20 min streaming: 26298 values from 2025-01-01 00
         <div class="card" style="width: 100%">
 
 
-            <div id="mynetwork_935956" class="card-body"></div>
+            <div id="mynetwork_05dc05" class="card-body"></div>
         </div>
 
 
@@ -6956,7 +6984,7 @@ usage pattern / user journey / 20 min streaming: 26298 values from 2025-01-01 00
 
               // This method is responsible for drawing the graph, returns the drawn network
               function drawGraph() {
-                  var container = document.getElementById('mynetwork_935956');
+                  var container = document.getElementById('mynetwork_05dc05');
 
 
 
@@ -7069,7 +7097,7 @@ usage pattern / user journey / 20 min streaming: 26298 values from 2025-01-01 00
         </center>
         <style type="text/css">
 
-             #mynetwork_76885d {
+             #mynetwork_df6bb7 {
                  width: 760px;
                  height: 300px;
                  background-color: #ffffff;
@@ -7091,7 +7119,7 @@ usage pattern / user journey / 20 min streaming: 26298 values from 2025-01-01 00
         <div class="card" style="width: 100%">
 
 
-            <div id="mynetwork_76885d" class="card-body"></div>
+            <div id="mynetwork_df6bb7" class="card-body"></div>
         </div>
 
 
@@ -7121,7 +7149,7 @@ usage pattern / user journey / 20 min streaming: 26298 values from 2025-01-01 00
 
               // This method is responsible for drawing the graph, returns the drawn network
               function drawGraph() {
-                  var container = document.getElementById('mynetwork_76885d');
+                  var container = document.getElementById('mynetwork_df6bb7');
 
 
 
@@ -7242,10 +7270,10 @@ usage pattern / user journey / 20 min streaming: 26298 values from 2025-01-01 00
     
       
       
-      <script id="__config" type="application/json">{"annotate": null, "base": "..", "features": ["content.code.copy"], "search": "../assets/javascripts/workers/search.2c215733.min.js", "tags": null, "translations": {"clipboard.copied": "Copied to clipboard", "clipboard.copy": "Copy to clipboard", "search.result.more.one": "1 more on this page", "search.result.more.other": "# more on this page", "search.result.none": "No matching documents", "search.result.one": "1 matching document", "search.result.other": "# matching documents", "search.result.placeholder": "Type to start searching", "search.result.term.missing": "Missing", "select.version": "Select version"}, "version": null}</script>
+      <script id="__config" type="application/json">{"annotate": null, "base": "..", "features": ["content.code.copy"], "search": "../assets/javascripts/workers/search.a7633da7.min.js", "tags": null, "translations": {"clipboard.copied": "Copied to clipboard", "clipboard.copy": "Copy to clipboard", "search.result.more.one": "1 more on this page", "search.result.more.other": "# more on this page", "search.result.none": "No matching documents", "search.result.one": "1 matching document", "search.result.other": "# matching documents", "search.result.placeholder": "Type to start searching", "search.result.term.missing": "Missing", "select.version": "Select version"}, "version": null}</script>
     
     
-      <script src="../assets/javascripts/bundle.d7400e89.min.js"></script>
+      <script src="../assets/javascripts/bundle.a5f9d56c.min.js"></script>
       
     
   </body>

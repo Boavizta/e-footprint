@@ -31,7 +31,7 @@
         </center>
         <style type="text/css">
 
-             #mynetwork_c31eaf {
+             #mynetwork_202dc7 {
                  width: 760px;
                  height: 300px;
                  background-color: #ffffff;
@@ -53,7 +53,7 @@
         <div class="card" style="width: 100%">
             
             
-            <div id="mynetwork_c31eaf" class="card-body"></div>
+            <div id="mynetwork_202dc7" class="card-body"></div>
         </div>
 
         
@@ -83,12 +83,12 @@
 
               // This method is responsible for drawing the graph, returns the drawn network
               function drawGraph() {
-                  var container = document.getElementById('mynetwork_c31eaf');
+                  var container = document.getElementById('mynetwork_202dc7');
 
                   
 
                   // parsing and collecting nodes and edges from the python
-                  nodes = new vis.DataSet([{"color": null, "id": "Hourly use footprint", "label": "Hourly use footprint", "shape": "dot", "size": 15, "title": "Hourly use footprint\n=\nHourly load use footprint\n=\nno value\n=\nno value", "x": 0.0, "y": 1200}, {"color": null, "id": "Hourly idle use footprint", "label": "Hourly idle use\nfootprint", "shape": "dot", "size": 15, "title": "Hourly idle use footprint\n=\nAverage carbon intensity of electricity * Idle power * PUE * one hour * Hourly\nnumber of instances\n=\n100 g/kWh * 0 mW * 1.2 * 1 h * no value\n=\nno value", "x": -337.5, "y": 1050}, {"color": null, "id": "Hourly load use footprint", "label": "Hourly load use\nfootprint", "shape": "dot", "size": 15, "title": "Hourly load use footprint\n=\nAverage carbon intensity of electricity * (Power - Idle power) * PUE * one hour\n* Hourly raw number of instances\n=\n100 g/kWh * (40.1 W - 0 mW) * 1.2 * 1 h * no value\n=\nno value", "x": 337.5, "y": 1050}]);
+                  nodes = new vis.DataSet([{"color": null, "id": "Hourly use footprint", "label": "Hourly use footprint", "shape": "dot", "size": 15, "title": "Hourly use footprint\n=\nHourly load use footprint\n=\nno value\n=\nno value", "x": 0.0, "y": 1200}, {"color": null, "id": "Hourly idle use footprint", "label": "Hourly idle use\nfootprint", "shape": "dot", "size": 15, "title": "Hourly idle use footprint\n=\nAverage carbon intensity of electricity * Idle power * PUE * one hour * Hourly\nnumber of instances\n=\n100 g/kWh * 0 mW * 1.2 * 1 h * no value\n=\nno value", "x": -337.5, "y": 1050}, {"color": null, "id": "Hourly load use footprint", "label": "Hourly load use\nfootprint", "shape": "dot", "size": 15, "title": "Hourly load use footprint\n=\nAverage carbon intensity of electricity * (Power - Idle power) * PUE * one hour\n* Hourly raw number of instances\n=\n100 g/kWh * (33.7 W - 0 mW) * 1.2 * 1 h * no value\n=\nno value", "x": 337.5, "y": 1050}]);
                   edges = new vis.DataSet([{"arrows": "to", "from": "Hourly idle use footprint", "to": "Hourly use footprint"}, {"arrows": "to", "from": "Hourly load use footprint", "to": "Hourly use footprint"}]);
 
                   nodeColors = {};

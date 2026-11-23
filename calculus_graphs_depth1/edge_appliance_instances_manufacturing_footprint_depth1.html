@@ -31,7 +31,7 @@
         </center>
         <style type="text/css">
 
-             #mynetwork_112a90 {
+             #mynetwork_63399e {
                  width: 760px;
                  height: 300px;
                  background-color: #ffffff;
@@ -53,7 +53,7 @@
         <div class="card" style="width: 100%">
             
             
-            <div id="mynetwork_112a90" class="card-body"></div>
+            <div id="mynetwork_63399e" class="card-body"></div>
         </div>
 
         
@@ -83,12 +83,12 @@
 
               // This method is responsible for drawing the graph, returns the drawn network
               function drawGraph() {
-                  var container = document.getElementById('mynetwork_112a90');
+                  var container = document.getElementById('mynetwork_63399e');
 
                   
 
                   // parsing and collecting nodes and edges from the python
-                  nodes = new vis.DataSet([{"color": null, "id": "Total manufacturing footprint across usage patterns", "label": "Total manufacturing\nfootprint across\nusage patterns", "shape": "dot", "size": 15, "title": "Total manufacturing footprint across usage patterns\n=\nHourly instances manufacturing footprint for Default edge usage pattern\n=\n105192 values from 2025-01-01 00:00:00+00:00 to 2037-01-01 00:00:00+00:00:\nfirst=909 mg, last=519 mg, mean=8.84 t, min=0, max=17.7 t, std=5.1 t\n=\n105192 values from 2025-01-01 00:00:00+00:00 to 2037-01-01 00:00:00+00:00:\nfirst=909 mg, last=519 mg, mean=8.84 t, min=0, max=17.7 t, std=5.1 t", "x": 0.0, "y": 900}, {"color": null, "id": "Hourly instances manufacturing footprint for Default edge usage pattern", "label": "Hourly instances\nmanufacturing\nfootprint for\nDefault edge usage\npattern", "shape": "dot", "size": 15, "title": "Hourly instances manufacturing footprint for Default edge usage pattern\n=\nHourly structure manufacturing footprint for Default edge usage pattern + Hourly\nmanufacturing footprint per edge device for Default edge usage pattern * no\ngroup (default count\n=\n1)\n=\n105192 values from 2025-01-01 00:00:00+00:00 to 2037-01-01 00:00:00+00:00:\nfirst=909 mg, last=519 mg, mean=8.84 t, min=0, max=17.7 t, std=5.1 t + 105192\nvalues from 2025-01-01 00:00:00+00:00 to 2037-01-01 00:00:00+00:00: first=0,\nlast=0, mean=0, min=0, max=0, std=0 * 1\n=\n105192 values from 2025-01-01 00:00:00+00:00 to 2037-01-01 00:00:00+00:00:\nfirst=909 mg, last=519 mg, mean=8.84 t, min=0, max=17.7 t, std=5.1 t", "x": 0.0, "y": 750}]);
+                  nodes = new vis.DataSet([{"color": null, "id": "Total manufacturing footprint across usage patterns", "label": "Total manufacturing\nfootprint across\nusage patterns", "shape": "dot", "size": 15, "title": "Total manufacturing footprint across usage patterns\n=\nHourly instances manufacturing footprint for Default edge usage pattern\n=\n105192 values from 2025-01-01 00:00:00+00:00 to 2037-01-01 00:00:00+00:00:\nfirst=0, last=0, mean=8.84 t, min=0, max=17.7 t, std=5.1 t\n=\n105192 values from 2025-01-01 00:00:00+00:00 to 2037-01-01 00:00:00+00:00:\nfirst=0, last=0, mean=8.84 t, min=0, max=17.7 t, std=5.1 t", "x": 0.0, "y": 900}, {"color": null, "id": "Hourly instances manufacturing footprint for Default edge usage pattern", "label": "Hourly instances\nmanufacturing\nfootprint for\nDefault edge usage\npattern", "shape": "dot", "size": 15, "title": "Hourly instances manufacturing footprint for Default edge usage pattern\n=\nHourly structure manufacturing footprint for Default edge usage pattern + Hourly\nmanufacturing footprint per edge device for Default edge usage pattern * no\ngroup (default count\n=\n1)\n=\n105192 values from 2025-01-01 00:00:00+00:00 to 2037-01-01 00:00:00+00:00:\nfirst=0, last=0, mean=8.84 t, min=0, max=17.7 t, std=5.1 t + 105192 values from\n2025-01-01 00:00:00+00:00 to 2037-01-01 00:00:00+00:00: first=0, last=0, mean=0,\nmin=0, max=0, std=0 * 1\n=\n105192 values from 2025-01-01 00:00:00+00:00 to 2037-01-01 00:00:00+00:00:\nfirst=0, last=0, mean=8.84 t, min=0, max=17.7 t, std=5.1 t", "x": 0.0, "y": 750}]);
                   edges = new vis.DataSet([{"arrows": "to", "from": "Hourly instances manufacturing footprint for Default edge usage pattern", "to": "Total manufacturing footprint across usage patterns"}]);
 
                   nodeColors = {};

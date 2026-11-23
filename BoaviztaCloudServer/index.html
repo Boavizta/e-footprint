@@ -19,7 +19,7 @@
       
       
       <link rel="icon" href="../assets/images/favicon.png">
-      <meta name="generator" content="mkdocs-1.6.1, mkdocs-material-9.7.7">
+      <meta name="generator" content="mkdocs-1.6.1, mkdocs-material-9.8.2">
     
     
       
@@ -27,7 +27,7 @@
       
     
     
-      <link rel="stylesheet" href="../assets/stylesheets/main.ec1eaa64.min.css">
+      <link rel="stylesheet" href="../assets/stylesheets/main.57a0d79d.min.css">
       
       
 
@@ -445,6 +445,34 @@
     
   
     Web vs edge modeling
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../environmental_footprint_definitions/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Environmental footprint reference definitions
   
 
     
@@ -4238,7 +4266,7 @@
         </center>
         <style type="text/css">
 
-             #mynetwork_27d8aa {
+             #mynetwork_cc1cc0 {
                  width: 760px;
                  height: 300px;
                  background-color: #ffffff;
@@ -4260,7 +4288,7 @@
         <div class="card" style="width: 100%">
 
 
-            <div id="mynetwork_27d8aa" class="card-body"></div>
+            <div id="mynetwork_cc1cc0" class="card-body"></div>
         </div>
 
 
@@ -4290,7 +4318,7 @@
 
               // This method is responsible for drawing the graph, returns the drawn network
               function drawGraph() {
-                  var container = document.getElementById('mynetwork_27d8aa');
+                  var container = document.getElementById('mynetwork_cc1cc0');
 
 
 
@@ -4404,7 +4432,7 @@
         </center>
         <style type="text/css">
 
-             #mynetwork_ea9db6 {
+             #mynetwork_4c177d {
                  width: 760px;
                  height: 300px;
                  background-color: #ffffff;
@@ -4426,7 +4454,7 @@
         <div class="card" style="width: 100%">
 
 
-            <div id="mynetwork_ea9db6" class="card-body"></div>
+            <div id="mynetwork_4c177d" class="card-body"></div>
         </div>
 
 
@@ -4456,7 +4484,7 @@
 
               // This method is responsible for drawing the graph, returns the drawn network
               function drawGraph() {
-                  var container = document.getElementById('mynetwork_ea9db6');
+                  var container = document.getElementById('mynetwork_4c177d');
 
 
 
@@ -4573,7 +4601,7 @@
         </center>
         <style type="text/css">
 
-             #mynetwork_c7afd1 {
+             #mynetwork_4a23d3 {
                  width: 760px;
                  height: 300px;
                  background-color: #ffffff;
@@ -4595,7 +4623,7 @@
         <div class="card" style="width: 100%">
 
 
-            <div id="mynetwork_c7afd1" class="card-body"></div>
+            <div id="mynetwork_4a23d3" class="card-body"></div>
         </div>
 
 
@@ -4625,12 +4653,12 @@
 
               // This method is responsible for drawing the graph, returns the drawn network
               function drawGraph() {
-                  var container = document.getElementById('mynetwork_c7afd1');
+                  var container = document.getElementById('mynetwork_4a23d3');
 
 
 
                   // parsing and collecting nodes and edges from the python
-                  nodes = new vis.DataSet([{"color": null, "id": "Hourly energy consumed by instances", "label": "Hourly energy\nconsumed by\ninstances", "shape": "dot", "size": 15, "title": "Hourly energy consumed by instances\n=\nIdle power * PUE * one hour * Hourly number of instances + (Power - Idle power)\n* PUE * one hour * Hourly raw number of instances\n=\n0 mW * 1.2 * 1 h * no value + (40.1 W - 0 mW) * 1.2 * 1 h * no value\n=\nno value", "x": 0.0, "y": 1050}, {"color": "darkred", "id": "Idle power", "label": "Idle power", "shape": "dot", "size": 15, "title": "Idle power = 0 mW", "x": -540.0, "y": 900}, {"color": null, "id": "PUE", "label": "PUE", "shape": "dot", "size": 15, "title": "PUE = 1.2", "x": -270.0, "y": 900}, {"color": null, "id": "Hourly number of instances", "label": "Hourly number of\ninstances", "shape": "dot", "size": 15, "title": "Hourly number of instances\n=\ncopy (Hourly raw number of instances) logically dependent on Server type\n=\ncopy (no value) logically dependent on serverless\n=\nno value", "x": 0.0, "y": 900}, {"color": null, "id": "Power", "label": "Power", "shape": "dot", "size": 15, "title": "Power\n=\ndata extraction from (API call response)\n=\ndata extraction from ({\u0027impacts\u0027: {\u0027gwp\u0027: {\u0027unit\u0027: \u0027kgCO2eq\u0027, \u0027description\u0027:\n\u0027Tota...)\n=\n40.1 W", "x": 270.0, "y": 900}, {"color": null, "id": "Hourly raw number of instances", "label": "Hourly raw number of\ninstances", "shape": "dot", "size": 15, "title": "Hourly raw number of instances\n=\nHour by hour ram need / Available RAM per instance max compared with Hour by\nhour compute need / Available CPU per instance\n=\nno value / 28.8 GB ram max compared with no value / 7.2 cpu core\n=\nno value", "x": -562.5, "y": 750}]);
+                  nodes = new vis.DataSet([{"color": null, "id": "Hourly energy consumed by instances", "label": "Hourly energy\nconsumed by\ninstances", "shape": "dot", "size": 15, "title": "Hourly energy consumed by instances\n=\nIdle power * PUE * one hour * Hourly number of instances + (Power - Idle power)\n* PUE * one hour * Hourly raw number of instances\n=\n0 mW * 1.2 * 1 h * no value + (33.7 W - 0 mW) * 1.2 * 1 h * no value\n=\nno value", "x": 0.0, "y": 1050}, {"color": "darkred", "id": "Idle power", "label": "Idle power", "shape": "dot", "size": 15, "title": "Idle power = 0 mW", "x": -540.0, "y": 900}, {"color": null, "id": "PUE", "label": "PUE", "shape": "dot", "size": 15, "title": "PUE = 1.2", "x": -270.0, "y": 900}, {"color": null, "id": "Hourly number of instances", "label": "Hourly number of\ninstances", "shape": "dot", "size": 15, "title": "Hourly number of instances\n=\ncopy (Hourly raw number of instances) logically dependent on Server type\n=\ncopy (no value) logically dependent on serverless\n=\nno value", "x": 0.0, "y": 900}, {"color": null, "id": "Power", "label": "Power", "shape": "dot", "size": 15, "title": "Power\n=\ndata extraction from (API call response)\n=\ndata extraction from ({\u0027impacts\u0027: {\u0027gwp\u0027: {\u0027unit\u0027: \u0027kgCO2eq\u0027, \u0027description\u0027:\n\u0027Tota...)\n=\n33.7 W", "x": 270.0, "y": 900}, {"color": null, "id": "Hourly raw number of instances", "label": "Hourly raw number of\ninstances", "shape": "dot", "size": 15, "title": "Hourly raw number of instances\n=\nHour by hour ram need / Available RAM per instance max compared with Hour by\nhour compute need / Available CPU per instance\n=\nno value / 28.8 GB ram max compared with no value / 7.2 cpu core\n=\nno value", "x": -562.5, "y": 750}]);
                   edges = new vis.DataSet([{"arrows": "to", "from": "Idle power", "to": "Hourly energy consumed by instances"}, {"arrows": "to", "from": "PUE", "to": "Hourly energy consumed by instances"}, {"arrows": "to", "from": "Hourly number of instances", "to": "Hourly energy consumed by instances"}, {"arrows": "to", "from": "Power", "to": "Hourly energy consumed by instances"}, {"arrows": "to", "from": "Hourly raw number of instances", "to": "Hourly energy consumed by instances"}]);
 
                   nodeColors = {};
@@ -4740,7 +4768,7 @@
         </center>
         <style type="text/css">
 
-             #mynetwork_8906f4 {
+             #mynetwork_d21b35 {
                  width: 760px;
                  height: 300px;
                  background-color: #ffffff;
@@ -4762,7 +4790,7 @@
         <div class="card" style="width: 100%">
 
 
-            <div id="mynetwork_8906f4" class="card-body"></div>
+            <div id="mynetwork_d21b35" class="card-body"></div>
         </div>
 
 
@@ -4792,7 +4820,7 @@
 
               // This method is responsible for drawing the graph, returns the drawn network
               function drawGraph() {
-                  var container = document.getElementById('mynetwork_8906f4');
+                  var container = document.getElementById('mynetwork_d21b35');
 
 
 
@@ -4906,7 +4934,7 @@
         </center>
         <style type="text/css">
 
-             #mynetwork_c31eaf {
+             #mynetwork_202dc7 {
                  width: 760px;
                  height: 300px;
                  background-color: #ffffff;
@@ -4928,7 +4956,7 @@
         <div class="card" style="width: 100%">
 
 
-            <div id="mynetwork_c31eaf" class="card-body"></div>
+            <div id="mynetwork_202dc7" class="card-body"></div>
         </div>
 
 
@@ -4958,12 +4986,12 @@
 
               // This method is responsible for drawing the graph, returns the drawn network
               function drawGraph() {
-                  var container = document.getElementById('mynetwork_c31eaf');
+                  var container = document.getElementById('mynetwork_202dc7');
 
 
 
                   // parsing and collecting nodes and edges from the python
-                  nodes = new vis.DataSet([{"color": null, "id": "Hourly use footprint", "label": "Hourly use footprint", "shape": "dot", "size": 15, "title": "Hourly use footprint\n=\nHourly load use footprint\n=\nno value\n=\nno value", "x": 0.0, "y": 1200}, {"color": null, "id": "Hourly idle use footprint", "label": "Hourly idle use\nfootprint", "shape": "dot", "size": 15, "title": "Hourly idle use footprint\n=\nAverage carbon intensity of electricity * Idle power * PUE * one hour * Hourly\nnumber of instances\n=\n100 g/kWh * 0 mW * 1.2 * 1 h * no value\n=\nno value", "x": -337.5, "y": 1050}, {"color": null, "id": "Hourly load use footprint", "label": "Hourly load use\nfootprint", "shape": "dot", "size": 15, "title": "Hourly load use footprint\n=\nAverage carbon intensity of electricity * (Power - Idle power) * PUE * one hour\n* Hourly raw number of instances\n=\n100 g/kWh * (40.1 W - 0 mW) * 1.2 * 1 h * no value\n=\nno value", "x": 337.5, "y": 1050}]);
+                  nodes = new vis.DataSet([{"color": null, "id": "Hourly use footprint", "label": "Hourly use footprint", "shape": "dot", "size": 15, "title": "Hourly use footprint\n=\nHourly load use footprint\n=\nno value\n=\nno value", "x": 0.0, "y": 1200}, {"color": null, "id": "Hourly idle use footprint", "label": "Hourly idle use\nfootprint", "shape": "dot", "size": 15, "title": "Hourly idle use footprint\n=\nAverage carbon intensity of electricity * Idle power * PUE * one hour * Hourly\nnumber of instances\n=\n100 g/kWh * 0 mW * 1.2 * 1 h * no value\n=\nno value", "x": -337.5, "y": 1050}, {"color": null, "id": "Hourly load use footprint", "label": "Hourly load use\nfootprint", "shape": "dot", "size": 15, "title": "Hourly load use footprint\n=\nAverage carbon intensity of electricity * (Power - Idle power) * PUE * one hour\n* Hourly raw number of instances\n=\n100 g/kWh * (33.7 W - 0 mW) * 1.2 * 1 h * no value\n=\nno value", "x": 337.5, "y": 1050}]);
                   edges = new vis.DataSet([{"arrows": "to", "from": "Hourly idle use footprint", "to": "Hourly use footprint"}, {"arrows": "to", "from": "Hourly load use footprint", "to": "Hourly use footprint"}]);
 
                   nodeColors = {};
@@ -5071,7 +5099,7 @@
         </center>
         <style type="text/css">
 
-             #mynetwork_ea7ca4 {
+             #mynetwork_1a1620 {
                  width: 760px;
                  height: 300px;
                  background-color: #ffffff;
@@ -5093,7 +5121,7 @@
         <div class="card" style="width: 100%">
 
 
-            <div id="mynetwork_ea7ca4" class="card-body"></div>
+            <div id="mynetwork_1a1620" class="card-body"></div>
         </div>
 
 
@@ -5123,7 +5151,7 @@
 
               // This method is responsible for drawing the graph, returns the drawn network
               function drawGraph() {
-                  var container = document.getElementById('mynetwork_ea7ca4');
+                  var container = document.getElementById('mynetwork_1a1620');
 
 
 
@@ -5236,7 +5264,7 @@
         </center>
         <style type="text/css">
 
-             #mynetwork_cadc94 {
+             #mynetwork_8e491a {
                  width: 760px;
                  height: 300px;
                  background-color: #ffffff;
@@ -5258,7 +5286,7 @@
         <div class="card" style="width: 100%">
 
 
-            <div id="mynetwork_cadc94" class="card-body"></div>
+            <div id="mynetwork_8e491a" class="card-body"></div>
         </div>
 
 
@@ -5288,7 +5316,7 @@
 
               // This method is responsible for drawing the graph, returns the drawn network
               function drawGraph() {
-                  var container = document.getElementById('mynetwork_cadc94');
+                  var container = document.getElementById('mynetwork_8e491a');
 
 
 
@@ -5401,7 +5429,7 @@
         </center>
         <style type="text/css">
 
-             #mynetwork_78d053 {
+             #mynetwork_a004f3 {
                  width: 760px;
                  height: 300px;
                  background-color: #ffffff;
@@ -5423,7 +5451,7 @@
         <div class="card" style="width: 100%">
 
 
-            <div id="mynetwork_78d053" class="card-body"></div>
+            <div id="mynetwork_a004f3" class="card-body"></div>
         </div>
 
 
@@ -5453,7 +5481,7 @@
 
               // This method is responsible for drawing the graph, returns the drawn network
               function drawGraph() {
-                  var container = document.getElementById('mynetwork_78d053');
+                  var container = document.getElementById('mynetwork_a004f3');
 
 
 
@@ -5566,7 +5594,7 @@
         </center>
         <style type="text/css">
 
-             #mynetwork_7c8fd9 {
+             #mynetwork_0e562e {
                  width: 760px;
                  height: 300px;
                  background-color: #ffffff;
@@ -5588,7 +5616,7 @@
         <div class="card" style="width: 100%">
 
 
-            <div id="mynetwork_7c8fd9" class="card-body"></div>
+            <div id="mynetwork_0e562e" class="card-body"></div>
         </div>
 
 
@@ -5618,7 +5646,7 @@
 
               // This method is responsible for drawing the graph, returns the drawn network
               function drawGraph() {
-                  var container = document.getElementById('mynetwork_7c8fd9');
+                  var container = document.getElementById('mynetwork_0e562e');
 
 
 
@@ -5733,7 +5761,7 @@
         </center>
         <style type="text/css">
 
-             #mynetwork_6fd30f {
+             #mynetwork_48196f {
                  width: 760px;
                  height: 300px;
                  background-color: #ffffff;
@@ -5755,7 +5783,7 @@
         <div class="card" style="width: 100%">
 
 
-            <div id="mynetwork_6fd30f" class="card-body"></div>
+            <div id="mynetwork_48196f" class="card-body"></div>
         </div>
 
 
@@ -5785,7 +5813,7 @@
 
               // This method is responsible for drawing the graph, returns the drawn network
               function drawGraph() {
-                  var container = document.getElementById('mynetwork_6fd30f');
+                  var container = document.getElementById('mynetwork_48196f');
 
 
 
@@ -5900,7 +5928,7 @@
         </center>
         <style type="text/css">
 
-             #mynetwork_382eac {
+             #mynetwork_b87468 {
                  width: 760px;
                  height: 300px;
                  background-color: #ffffff;
@@ -5922,7 +5950,7 @@
         <div class="card" style="width: 100%">
 
 
-            <div id="mynetwork_382eac" class="card-body"></div>
+            <div id="mynetwork_b87468" class="card-body"></div>
         </div>
 
 
@@ -5952,7 +5980,7 @@
 
               // This method is responsible for drawing the graph, returns the drawn network
               function drawGraph() {
-                  var container = document.getElementById('mynetwork_382eac');
+                  var container = document.getElementById('mynetwork_b87468');
 
 
 
@@ -6068,7 +6096,7 @@
         </center>
         <style type="text/css">
 
-             #mynetwork_037423 {
+             #mynetwork_63bfe7 {
                  width: 760px;
                  height: 300px;
                  background-color: #ffffff;
@@ -6090,7 +6118,7 @@
         <div class="card" style="width: 100%">
 
 
-            <div id="mynetwork_037423" class="card-body"></div>
+            <div id="mynetwork_63bfe7" class="card-body"></div>
         </div>
 
 
@@ -6120,7 +6148,7 @@
 
               // This method is responsible for drawing the graph, returns the drawn network
               function drawGraph() {
-                  var container = document.getElementById('mynetwork_037423');
+                  var container = document.getElementById('mynetwork_63bfe7');
 
 
 
@@ -6237,7 +6265,7 @@
         </center>
         <style type="text/css">
 
-             #mynetwork_af5484 {
+             #mynetwork_040952 {
                  width: 760px;
                  height: 300px;
                  background-color: #ffffff;
@@ -6259,7 +6287,7 @@
         <div class="card" style="width: 100%">
 
 
-            <div id="mynetwork_af5484" class="card-body"></div>
+            <div id="mynetwork_040952" class="card-body"></div>
         </div>
 
 
@@ -6289,12 +6317,12 @@
 
               // This method is responsible for drawing the graph, returns the drawn network
               function drawGraph() {
-                  var container = document.getElementById('mynetwork_af5484');
+                  var container = document.getElementById('mynetwork_040952');
 
 
 
                   // parsing and collecting nodes and edges from the python
-                  nodes = new vis.DataSet([{"color": null, "id": "Hourly load use footprint", "label": "Hourly load use\nfootprint", "shape": "dot", "size": 15, "title": "Hourly load use footprint\n=\nAverage carbon intensity of electricity * (Power - Idle power) * PUE * one hour\n* Hourly raw number of instances\n=\n100 g/kWh * (40.1 W - 0 mW) * 1.2 * 1 h * no value\n=\nno value", "x": 0.0, "y": 900}, {"color": null, "id": "Average carbon intensity of electricity", "label": "Average carbon\nintensity of\nelectricity", "shape": "dot", "size": 15, "title": "Average carbon intensity of electricity = 100 g/kWh", "x": -300.0, "y": 750}, {"color": null, "id": "Power", "label": "Power", "shape": "dot", "size": 15, "title": "Power\n=\ndata extraction from (API call response)\n=\ndata extraction from ({\u0027impacts\u0027: {\u0027gwp\u0027: {\u0027unit\u0027: \u0027kgCO2eq\u0027, \u0027description\u0027:\n\u0027Tota...)\n=\n40.1 W", "x": -150.0, "y": 750}, {"color": "darkred", "id": "Idle power", "label": "Idle power", "shape": "dot", "size": 15, "title": "Idle power = 0 mW", "x": 0.0, "y": 750}, {"color": null, "id": "PUE", "label": "PUE", "shape": "dot", "size": 15, "title": "PUE = 1.2", "x": 150.0, "y": 750}, {"color": null, "id": "Hourly raw number of instances", "label": "Hourly raw number of\ninstances", "shape": "dot", "size": 15, "title": "Hourly raw number of instances\n=\nHour by hour ram need / Available RAM per instance max compared with Hour by\nhour compute need / Available CPU per instance\n=\nno value / 28.8 GB ram max compared with no value / 7.2 cpu core\n=\nno value", "x": 300.0, "y": 750}]);
+                  nodes = new vis.DataSet([{"color": null, "id": "Hourly load use footprint", "label": "Hourly load use\nfootprint", "shape": "dot", "size": 15, "title": "Hourly load use footprint\n=\nAverage carbon intensity of electricity * (Power - Idle power) * PUE * one hour\n* Hourly raw number of instances\n=\n100 g/kWh * (33.7 W - 0 mW) * 1.2 * 1 h * no value\n=\nno value", "x": 0.0, "y": 900}, {"color": null, "id": "Average carbon intensity of electricity", "label": "Average carbon\nintensity of\nelectricity", "shape": "dot", "size": 15, "title": "Average carbon intensity of electricity = 100 g/kWh", "x": -300.0, "y": 750}, {"color": null, "id": "Power", "label": "Power", "shape": "dot", "size": 15, "title": "Power\n=\ndata extraction from (API call response)\n=\ndata extraction from ({\u0027impacts\u0027: {\u0027gwp\u0027: {\u0027unit\u0027: \u0027kgCO2eq\u0027, \u0027description\u0027:\n\u0027Tota...)\n=\n33.7 W", "x": -150.0, "y": 750}, {"color": "darkred", "id": "Idle power", "label": "Idle power", "shape": "dot", "size": 15, "title": "Idle power = 0 mW", "x": 0.0, "y": 750}, {"color": null, "id": "PUE", "label": "PUE", "shape": "dot", "size": 15, "title": "PUE = 1.2", "x": 150.0, "y": 750}, {"color": null, "id": "Hourly raw number of instances", "label": "Hourly raw number of\ninstances", "shape": "dot", "size": 15, "title": "Hourly raw number of instances\n=\nHour by hour ram need / Available RAM per instance max compared with Hour by\nhour compute need / Available CPU per instance\n=\nno value / 28.8 GB ram max compared with no value / 7.2 cpu core\n=\nno value", "x": 300.0, "y": 750}]);
                   edges = new vis.DataSet([{"arrows": "to", "from": "Average carbon intensity of electricity", "to": "Hourly load use footprint"}, {"arrows": "to", "from": "Power", "to": "Hourly load use footprint"}, {"arrows": "to", "from": "Idle power", "to": "Hourly load use footprint"}, {"arrows": "to", "from": "PUE", "to": "Hourly load use footprint"}, {"arrows": "to", "from": "Hourly raw number of instances", "to": "Hourly load use footprint"}]);
 
                   nodeColors = {};
@@ -6403,7 +6431,7 @@
         </center>
         <style type="text/css">
 
-             #mynetwork_8ec5c3 {
+             #mynetwork_7520d1 {
                  width: 760px;
                  height: 300px;
                  background-color: #ffffff;
@@ -6425,7 +6453,7 @@
         <div class="card" style="width: 100%">
 
 
-            <div id="mynetwork_8ec5c3" class="card-body"></div>
+            <div id="mynetwork_7520d1" class="card-body"></div>
         </div>
 
 
@@ -6455,7 +6483,7 @@
 
               // This method is responsible for drawing the graph, returns the drawn network
               function drawGraph() {
-                  var container = document.getElementById('mynetwork_8ec5c3');
+                  var container = document.getElementById('mynetwork_7520d1');
 
 
 
@@ -6569,7 +6597,7 @@
         </center>
         <style type="text/css">
 
-             #mynetwork_081caa {
+             #mynetwork_c9093f {
                  width: 760px;
                  height: 300px;
                  background-color: #ffffff;
@@ -6591,7 +6619,7 @@
         <div class="card" style="width: 100%">
 
 
-            <div id="mynetwork_081caa" class="card-body"></div>
+            <div id="mynetwork_c9093f" class="card-body"></div>
         </div>
 
 
@@ -6621,7 +6649,7 @@
 
               // This method is responsible for drawing the graph, returns the drawn network
               function drawGraph() {
-                  var container = document.getElementById('mynetwork_081caa');
+                  var container = document.getElementById('mynetwork_c9093f');
 
 
 
@@ -6734,7 +6762,7 @@
         </center>
         <style type="text/css">
 
-             #mynetwork_cc3032 {
+             #mynetwork_54f910 {
                  width: 760px;
                  height: 300px;
                  background-color: #ffffff;
@@ -6756,7 +6784,7 @@
         <div class="card" style="width: 100%">
 
 
-            <div id="mynetwork_cc3032" class="card-body"></div>
+            <div id="mynetwork_54f910" class="card-body"></div>
         </div>
 
 
@@ -6786,7 +6814,7 @@
 
               // This method is responsible for drawing the graph, returns the drawn network
               function drawGraph() {
-                  var container = document.getElementById('mynetwork_cc3032');
+                  var container = document.getElementById('mynetwork_54f910');
 
 
 
@@ -6860,7 +6888,7 @@
 <p>You can also visit the <a href='../calculus_graphs/serverless_cloud_functions_carbon_footprint_manufacturing.html' target='_blank'>link to Manufacturing carbon footprint’s full calculation graph</a>.</p>
 <h3 id="power">power</h3>
 <p>Average power drawn by one instance, taken from the Boavizta API response.  </p>
-<p>Example value: 40.1 W  </p>
+<p>Example value: 33.7 W  </p>
 <p>Depends directly on:  </p>
 <ul>
 <li><a href="./#api_call_response">API call response</a>  </li>
@@ -6899,7 +6927,7 @@
         </center>
         <style type="text/css">
 
-             #mynetwork_732b5d {
+             #mynetwork_bf14df {
                  width: 760px;
                  height: 300px;
                  background-color: #ffffff;
@@ -6921,7 +6949,7 @@
         <div class="card" style="width: 100%">
 
 
-            <div id="mynetwork_732b5d" class="card-body"></div>
+            <div id="mynetwork_bf14df" class="card-body"></div>
         </div>
 
 
@@ -6951,12 +6979,12 @@
 
               // This method is responsible for drawing the graph, returns the drawn network
               function drawGraph() {
-                  var container = document.getElementById('mynetwork_732b5d');
+                  var container = document.getElementById('mynetwork_bf14df');
 
 
 
                   // parsing and collecting nodes and edges from the python
-                  nodes = new vis.DataSet([{"color": null, "id": "Power", "label": "Power", "shape": "dot", "size": 15, "title": "Power\n=\ndata extraction from (API call response)\n=\ndata extraction from ({\u0027impacts\u0027: {\u0027gwp\u0027: {\u0027unit\u0027: \u0027kgCO2eq\u0027, \u0027description\u0027:\n\u0027Tota...)\n=\n40.1 W", "x": 0.0, "y": 450}, {"color": null, "id": "API call response", "label": "API call response", "shape": "dot", "size": 15, "title": "API call response\n=\nCloud provider combined in Boavizta API call with Instance type\n=\nscaleway combined in Boavizta API call with ent1-s\n=\n{\u0027impacts\u0027: {\u0027gwp\u0027: {\u0027unit\u0027: \u0027kgCO2eq\u0027, \u0027description\u0027: \u0027Tota...", "x": 0.0, "y": 300}]);
+                  nodes = new vis.DataSet([{"color": null, "id": "Power", "label": "Power", "shape": "dot", "size": 15, "title": "Power\n=\ndata extraction from (API call response)\n=\ndata extraction from ({\u0027impacts\u0027: {\u0027gwp\u0027: {\u0027unit\u0027: \u0027kgCO2eq\u0027, \u0027description\u0027:\n\u0027Tota...)\n=\n33.7 W", "x": 0.0, "y": 450}, {"color": null, "id": "API call response", "label": "API call response", "shape": "dot", "size": 15, "title": "API call response\n=\nCloud provider combined in Boavizta API call with Instance type\n=\nscaleway combined in Boavizta API call with ent1-s\n=\n{\u0027impacts\u0027: {\u0027gwp\u0027: {\u0027unit\u0027: \u0027kgCO2eq\u0027, \u0027description\u0027: \u0027Tota...", "x": 0.0, "y": 300}]);
                   edges = new vis.DataSet([{"arrows": "to", "from": "API call response", "to": "Power"}]);
 
                   nodeColors = {};
@@ -7064,7 +7092,7 @@
         </center>
         <style type="text/css">
 
-             #mynetwork_414b8b {
+             #mynetwork_c6a463 {
                  width: 760px;
                  height: 300px;
                  background-color: #ffffff;
@@ -7086,7 +7114,7 @@
         <div class="card" style="width: 100%">
 
 
-            <div id="mynetwork_414b8b" class="card-body"></div>
+            <div id="mynetwork_c6a463" class="card-body"></div>
         </div>
 
 
@@ -7116,7 +7144,7 @@
 
               // This method is responsible for drawing the graph, returns the drawn network
               function drawGraph() {
-                  var container = document.getElementById('mynetwork_414b8b');
+                  var container = document.getElementById('mynetwork_c6a463');
 
 
 
@@ -7229,7 +7257,7 @@
         </center>
         <style type="text/css">
 
-             #mynetwork_943e15 {
+             #mynetwork_0554bc {
                  width: 760px;
                  height: 300px;
                  background-color: #ffffff;
@@ -7251,7 +7279,7 @@
         <div class="card" style="width: 100%">
 
 
-            <div id="mynetwork_943e15" class="card-body"></div>
+            <div id="mynetwork_0554bc" class="card-body"></div>
         </div>
 
 
@@ -7281,7 +7309,7 @@
 
               // This method is responsible for drawing the graph, returns the drawn network
               function drawGraph() {
-                  var container = document.getElementById('mynetwork_943e15');
+                  var container = document.getElementById('mynetwork_0554bc');
 
 
 
@@ -7402,10 +7430,10 @@
     
       
       
-      <script id="__config" type="application/json">{"annotate": null, "base": "..", "features": ["content.code.copy"], "search": "../assets/javascripts/workers/search.2c215733.min.js", "tags": null, "translations": {"clipboard.copied": "Copied to clipboard", "clipboard.copy": "Copy to clipboard", "search.result.more.one": "1 more on this page", "search.result.more.other": "# more on this page", "search.result.none": "No matching documents", "search.result.one": "1 matching document", "search.result.other": "# matching documents", "search.result.placeholder": "Type to start searching", "search.result.term.missing": "Missing", "select.version": "Select version"}, "version": null}</script>
+      <script id="__config" type="application/json">{"annotate": null, "base": "..", "features": ["content.code.copy"], "search": "../assets/javascripts/workers/search.a7633da7.min.js", "tags": null, "translations": {"clipboard.copied": "Copied to clipboard", "clipboard.copy": "Copy to clipboard", "search.result.more.one": "1 more on this page", "search.result.more.other": "# more on this page", "search.result.none": "No matching documents", "search.result.one": "1 matching document", "search.result.other": "# matching documents", "search.result.placeholder": "Type to start searching", "search.result.term.missing": "Missing", "select.version": "Select version"}, "version": null}</script>
     
     
-      <script src="../assets/javascripts/bundle.d7400e89.min.js"></script>
+      <script src="../assets/javascripts/bundle.a5f9d56c.min.js"></script>
       
     
   </body>

@@ -31,7 +31,7 @@
         </center>
         <style type="text/css">
 
-             #mynetwork_8c4454 {
+             #mynetwork_8b8664 {
                  width: 760px;
                  height: 300px;
                  background-color: #ffffff;
@@ -53,7 +53,7 @@
         <div class="card" style="width: 100%">
             
             
-            <div id="mynetwork_8c4454" class="card-body"></div>
+            <div id="mynetwork_8b8664" class="card-body"></div>
         </div>
 
         
@@ -83,12 +83,12 @@
 
               // This method is responsible for drawing the graph, returns the drawn network
               function drawGraph() {
-                  var container = document.getElementById('mynetwork_8c4454');
+                  var container = document.getElementById('mynetwork_8b8664');
 
                   
 
                   // parsing and collecting nodes and edges from the python
-                  nodes = new vis.DataSet([{"color": null, "id": "Hourly manufacturing footprint per edge device for Default edge usage pattern", "label": "Hourly manufacturing\nfootprint per edge\ndevice for Default\nedge usage pattern", "shape": "dot", "size": 15, "title": "Hourly manufacturing footprint per edge device for Default edge usage pattern\n=\nHourly nb of deployments in parallel * (Carbon footprint manufacturing /\nLifespan) * one hour\n=\n105192 values from 2025-01-01 00:00:00+00:00 to 2037-01-01 00:00:00+00:00:\nfirst=1.06 , last=0.607 , mean=10.3 M, min=0, max=20.7 M, std=5.96 M * (0 mg / 8\nyr) * 1 h\n=\n105192 values from 2025-01-01 00:00:00+00:00 to 2037-01-01 00:00:00+00:00:\nfirst=0, last=0, mean=0, min=0, max=0, std=0", "x": 0.0, "y": 600}, {"color": null, "id": "Hourly nb of deployments in parallel", "label": "Hourly nb of\ndeployments in\nparallel", "shape": "dot", "size": 15, "title": "Hourly nb of deployments in parallel\n=\nHourly nb of deployment starts (UTC) hourly occurrences average Usage span\n=\n52597 values from 2025-01-01 00:00:00+00:00 to 2031-01-01 13:00:00+00:00:\nfirst=0, last=0, mean=393 , min=0, max=1 k, std=488 hourly occurrences average 6\nyr\n=\n105192 values from 2025-01-01 00:00:00+00:00 to 2037-01-01 00:00:00+00:00:\nfirst=1.06 , last=0.607 , mean=10.3 M, min=0, max=20.7 M, std=5.96 M", "x": -187.5, "y": 450}, {"color": null, "id": "Carbon footprint manufacturing", "label": "Carbon footprint\nmanufacturing", "shape": "dot", "size": 15, "title": "Carbon footprint manufacturing\n=\nCarbon footprint manufacturing per unit * Number of units\n=\n0 mg * 1\n=\n0 mg", "x": 187.5, "y": 450}, {"color": null, "id": "Lifespan", "label": "Lifespan", "shape": "dot", "size": 15, "title": "Lifespan\n=\nduplicate (Lifespan)\n=\nduplicate (8 yr)\n=\n8 yr", "x": 300.0, "y": 300}]);
+                  nodes = new vis.DataSet([{"color": null, "id": "Hourly manufacturing footprint per edge device for Default edge usage pattern", "label": "Hourly manufacturing\nfootprint per edge\ndevice for Default\nedge usage pattern", "shape": "dot", "size": 15, "title": "Hourly manufacturing footprint per edge device for Default edge usage pattern\n=\nHourly nb of deployments in parallel * (Carbon footprint manufacturing /\nLifespan) * one hour\n=\n105192 values from 2025-01-01 00:00:00+00:00 to 2037-01-01 00:00:00+00:00:\nfirst=0, last=0, mean=10.3 M, min=0, max=20.7 M, std=5.96 M * (0 mg / 8 yr) * 1\nh\n=\n105192 values from 2025-01-01 00:00:00+00:00 to 2037-01-01 00:00:00+00:00:\nfirst=0, last=0, mean=0, min=0, max=0, std=0", "x": 0.0, "y": 600}, {"color": null, "id": "Hourly nb of deployments in parallel", "label": "Hourly nb of\ndeployments in\nparallel", "shape": "dot", "size": 15, "title": "Hourly nb of deployments in parallel\n=\nHourly nb of deployment starts (UTC) hourly occurrences average Usage span\n=\n52597 values from 2025-01-01 00:00:00+00:00 to 2031-01-01 13:00:00+00:00:\nfirst=0, last=0, mean=393 , min=0, max=1 k, std=488 hourly occurrences average 6\nyr\n=\n105192 values from 2025-01-01 00:00:00+00:00 to 2037-01-01 00:00:00+00:00:\nfirst=0, last=0, mean=10.3 M, min=0, max=20.7 M, std=5.96 M", "x": -187.5, "y": 450}, {"color": null, "id": "Carbon footprint manufacturing", "label": "Carbon footprint\nmanufacturing", "shape": "dot", "size": 15, "title": "Carbon footprint manufacturing\n=\nCarbon footprint manufacturing per unit * Number of units\n=\n0 mg * 1\n=\n0 mg", "x": 187.5, "y": 450}, {"color": null, "id": "Lifespan", "label": "Lifespan", "shape": "dot", "size": 15, "title": "Lifespan\n=\nduplicate (Lifespan)\n=\nduplicate (8 yr)\n=\n8 yr", "x": 300.0, "y": 300}]);
                   edges = new vis.DataSet([{"arrows": "to", "from": "Hourly nb of deployments in parallel", "to": "Hourly manufacturing footprint per edge device for Default edge usage pattern"}, {"arrows": "to", "from": "Carbon footprint manufacturing", "to": "Hourly manufacturing footprint per edge device for Default edge usage pattern"}, {"arrows": "to", "from": "Lifespan", "to": "Hourly manufacturing footprint per edge device for Default edge usage pattern"}]);
 
                   nodeColors = {};

@@ -19,7 +19,7 @@
       
       
       <link rel="icon" href="../assets/images/favicon.png">
-      <meta name="generator" content="mkdocs-1.6.1, mkdocs-material-9.7.7">
+      <meta name="generator" content="mkdocs-1.6.1, mkdocs-material-9.8.2">
     
     
       
@@ -27,7 +27,7 @@
       
     
     
-      <link rel="stylesheet" href="../assets/stylesheets/main.ec1eaa64.min.css">
+      <link rel="stylesheet" href="../assets/stylesheets/main.57a0d79d.min.css">
       
       
 
@@ -445,6 +445,34 @@
     
   
     Web vs edge modeling
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../environmental_footprint_definitions/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Environmental footprint reference definitions
   
 
     
@@ -3008,10 +3036,10 @@
 </li>
         
           <li class="md-nav__item">
-  <a href="#unitary_hourly_volume_per_usage_pattern" class="md-nav__link">
+  <a href="#hourly_volume_per_usage_pattern" class="md-nav__link">
     <span class="md-ellipsis">
       
-        unitary_hourly_volume_per_usage_pattern
+        hourly_volume_per_usage_pattern
       
     </span>
   </a>
@@ -3519,10 +3547,10 @@
 </li>
         
           <li class="md-nav__item">
-  <a href="#unitary_hourly_volume_per_usage_pattern" class="md-nav__link">
+  <a href="#hourly_volume_per_usage_pattern" class="md-nav__link">
     <span class="md-ellipsis">
       
-        unitary_hourly_volume_per_usage_pattern
+        hourly_volume_per_usage_pattern
       
     </span>
   </a>
@@ -3612,7 +3640,7 @@
         </center>
         <style type="text/css">
 
-             #mynetwork_f0e9ff {
+             #mynetwork_895ef0 {
                  width: 760px;
                  height: 300px;
                  background-color: #ffffff;
@@ -3634,7 +3662,7 @@
         <div class="card" style="width: 100%">
 
 
-            <div id="mynetwork_f0e9ff" class="card-body"></div>
+            <div id="mynetwork_895ef0" class="card-body"></div>
         </div>
 
 
@@ -3664,7 +3692,7 @@
 
               // This method is responsible for drawing the graph, returns the drawn network
               function drawGraph() {
-                  var container = document.getElementById('mynetwork_f0e9ff');
+                  var container = document.getElementById('mynetwork_895ef0');
 
 
 
@@ -3736,16 +3764,17 @@
 </html>
 
 <p>You can also visit the <a href='../calculus_graphs/Server_need_recurrent_need_validation.html' target='_blank'>link to Validated recurrent need’s full calculation graph</a>.</p>
-<h3 id="unitary_hourly_volume_per_usage_pattern">unitary_hourly_volume_per_usage_pattern</h3>
-<p>Hourly job-trigger volume for one edge device, derived by replaying the typical week over the deployment calendar and scaling by the need's containment-path count across selected edge usage journeys.  </p>
+<h3 id="hourly_volume_per_usage_pattern">hourly_volume_per_usage_pattern</h3>
+<p>Hourly job-trigger volume every deployed unit of the edge device sends, derived by replaying the typical week over the deployment calendar, scaling by the need's containment-path count across selected edge usage journeys, by the device's total number of units per deployment and by the deployments in service.  </p>
 <p>Example value: {<br />
-EdgeUsagePattern Default edge usage pattern (bef658ad-bde): 105192 values from 2025-01-01 00:00:00+00:00 to 2037-01-01 00:00:00+00:00: first=1 , last=1 , mean=1 , min=1 , max=1 , std=0, <br />
+EdgeUsagePattern Default edge usage pattern (5f4ee663-935): 105192 values from 2025-01-01 00:00:00+00:00 to 2037-01-01 00:00:00+00:00: first=0, last=0, mean=10.3 M, min=0, max=20.7 M, std=5.96 M, <br />
 }  </p>
 <p>Depends directly on:  </p>
 <ul>
 <li><a href="./#recurrent_volume_per_edge_device">unnamed source</a></li>
 <li><a href="../EdgeUsagePattern/#nb_deployments_in_parallel">Hourly nb of deployments in parallel</a></li>
-<li><a href="../Country/#timezone">Timezone</a>  </li>
+<li><a href="../Country/#timezone">Timezone</a></li>
+<li><a href="../EdgeComputer/#total_nb_of_units">no group (default count = 1)</a>  </li>
 </ul>
 <p>through the following calculations:  </p>
 <html>
@@ -3781,7 +3810,7 @@ EdgeUsagePattern Default edge usage pattern (bef658ad-bde): 105192 values from 2
         </center>
         <style type="text/css">
 
-             #mynetwork_b1e4a1 {
+             #mynetwork_2e0058 {
                  width: 760px;
                  height: 300px;
                  background-color: #ffffff;
@@ -3803,7 +3832,7 @@ EdgeUsagePattern Default edge usage pattern (bef658ad-bde): 105192 values from 2
         <div class="card" style="width: 100%">
 
 
-            <div id="mynetwork_b1e4a1" class="card-body"></div>
+            <div id="mynetwork_2e0058" class="card-body"></div>
         </div>
 
 
@@ -3833,13 +3862,13 @@ EdgeUsagePattern Default edge usage pattern (bef658ad-bde): 105192 values from 2
 
               // This method is responsible for drawing the graph, returns the drawn network
               function drawGraph() {
-                  var container = document.getElementById('mynetwork_b1e4a1');
+                  var container = document.getElementById('mynetwork_2e0058');
 
 
 
                   // parsing and collecting nodes and edges from the python
-                  nodes = new vis.DataSet([{"color": null, "id": "Unitary hourly need for Default edge usage pattern", "label": "Unitary hourly need\nfor Default edge\nusage pattern", "shape": "dot", "size": 15, "title": "Unitary hourly need for Default edge usage pattern\n=\n(unnamed source expanded over timespan Hourly nb of deployments in parallel\nconverted to UTC from Timezone) * Occurrences within Default edge usage pattern\n=\n(168 values: first=1 , last=1 , mean=1 , min=1 , max=1 , std=0 expanded over\ntimespan 105192 values from 2025-01-01 00:00:00+00:00 to 2037-01-01\n00:00:00+00:00: first=1.06 , last=0.607 , mean=10.3 M, min=0, max=20.7 M,\nstd=5.96 M converted to UTC from Europe/Paris) * 1\n=\n105192 values from 2025-01-01 00:00:00+00:00 to 2037-01-01 00:00:00+00:00:\nfirst=1 , last=1 , mean=1 , min=1 , max=1 , std=0", "x": 0.0, "y": 600}, {"color": null, "id": "unnamed source", "label": "unnamed source", "shape": "dot", "size": 15, "title": "unnamed source = 168 values: first=1 , last=1 , mean=1 , min=1 , max=1 , std=0", "x": -150.0, "y": 450}, {"color": null, "id": "Hourly nb of deployments in parallel", "label": "Hourly nb of\ndeployments in\nparallel", "shape": "dot", "size": 15, "title": "Hourly nb of deployments in parallel\n=\nHourly nb of deployment starts (UTC) hourly occurrences average Usage span\n=\n52597 values from 2025-01-01 00:00:00+00:00 to 2031-01-01 13:00:00+00:00:\nfirst=0, last=0, mean=393 , min=0, max=1 k, std=488 hourly occurrences average 6\nyr\n=\n105192 values from 2025-01-01 00:00:00+00:00 to 2037-01-01 00:00:00+00:00:\nfirst=1.06 , last=0.607 , mean=10.3 M, min=0, max=20.7 M, std=5.96 M", "x": 0.0, "y": 450}, {"color": "gold", "id": "Timezone", "label": "Timezone", "shape": "dot", "size": 15, "title": "Timezone = Europe/Paris", "x": 112.5, "y": 150}]);
-                  edges = new vis.DataSet([{"arrows": "to", "from": "unnamed source", "to": "Unitary hourly need for Default edge usage pattern"}, {"arrows": "to", "from": "Hourly nb of deployments in parallel", "to": "Unitary hourly need for Default edge usage pattern"}, {"arrows": "to", "from": "Timezone", "to": "Unitary hourly need for Default edge usage pattern"}]);
+                  nodes = new vis.DataSet([{"color": null, "id": "Hourly volume for Default edge usage pattern", "label": "Hourly volume for\nDefault edge usage\npattern", "shape": "dot", "size": 15, "title": "Hourly volume for Default edge usage pattern\n=\n(unnamed source expanded over timespan Hourly nb of deployments in parallel\nconverted to UTC from Timezone) * Occurrences within Default edge usage pattern\n* no group (default count\n=\n1) * Hourly nb of deployments in parallel\n=\n(168 values: first=1 , last=1 , mean=1 , min=1 , max=1 , std=0 expanded over\ntimespan 105192 values from 2025-01-01 00:00:00+00:00 to 2037-01-01\n00:00:00+00:00: first=0, last=0, mean=10.3 M, min=0, max=20.7 M, std=5.96 M\nconverted to UTC from Europe/Paris) * 1 * 1 * 105192 values from 2025-01-01\n00:00:00+00:00 to 2037-01-01 00:00:00+00:00: first=0, last=0, mean=10.3 M,\nmin=0, max=20.7 M, std=5.96 M\n=\n105192 values from 2025-01-01 00:00:00+00:00 to 2037-01-01 00:00:00+00:00:\nfirst=0, last=0, mean=10.3 M, min=0, max=20.7 M, std=5.96 M", "x": 0.0, "y": 600}, {"color": null, "id": "unnamed source", "label": "unnamed source", "shape": "dot", "size": 15, "title": "unnamed source = 168 values: first=1 , last=1 , mean=1 , min=1 , max=1 , std=0", "x": -225.0, "y": 450}, {"color": null, "id": "Hourly nb of deployments in parallel", "label": "Hourly nb of\ndeployments in\nparallel", "shape": "dot", "size": 15, "title": "Hourly nb of deployments in parallel\n=\nHourly nb of deployment starts (UTC) hourly occurrences average Usage span\n=\n52597 values from 2025-01-01 00:00:00+00:00 to 2031-01-01 13:00:00+00:00:\nfirst=0, last=0, mean=393 , min=0, max=1 k, std=488 hourly occurrences average 6\nyr\n=\n105192 values from 2025-01-01 00:00:00+00:00 to 2037-01-01 00:00:00+00:00:\nfirst=0, last=0, mean=10.3 M, min=0, max=20.7 M, std=5.96 M", "x": -75.0, "y": 450}, {"color": "gold", "id": "Timezone", "label": "Timezone", "shape": "dot", "size": 15, "title": "Timezone = Europe/Paris", "x": 150.0, "y": 150}, {"color": null, "id": "no group (default count = 1)", "label": "no group (default\ncount = 1)", "shape": "dot", "size": 15, "title": "no group (default count = 1) = 1", "x": 225.0, "y": 450}]);
+                  edges = new vis.DataSet([{"arrows": "to", "from": "unnamed source", "to": "Hourly volume for Default edge usage pattern"}, {"arrows": "to", "from": "Hourly nb of deployments in parallel", "to": "Hourly volume for Default edge usage pattern"}, {"arrows": "to", "from": "Timezone", "to": "Hourly volume for Default edge usage pattern"}, {"arrows": "to", "from": "no group (default count = 1)", "to": "Hourly volume for Default edge usage pattern"}]);
 
                   nodeColors = {};
                   allNodes = nodes.get({ returnType: "Object" });
@@ -3904,7 +3933,7 @@ EdgeUsagePattern Default edge usage pattern (bef658ad-bde): 105192 values from 2
     </body>
 </html>
 
-<p>You can also visit the <a href='../calculus_graphs/Server_need_unitary_hourly_volume_per_usage_pattern.html' target='_blank'>link to Unitary hourly need for Default edge usage pattern’s full calculation graph</a>.</p>
+<p>You can also visit the <a href='../calculus_graphs/Server_need_hourly_volume_per_usage_pattern.html' target='_blank'>link to Hourly volume for Default edge usage pattern’s full calculation graph</a>.</p>
 
 
 
@@ -3954,10 +3983,10 @@ EdgeUsagePattern Default edge usage pattern (bef658ad-bde): 105192 values from 2
     
       
       
-      <script id="__config" type="application/json">{"annotate": null, "base": "..", "features": ["content.code.copy"], "search": "../assets/javascripts/workers/search.2c215733.min.js", "tags": null, "translations": {"clipboard.copied": "Copied to clipboard", "clipboard.copy": "Copy to clipboard", "search.result.more.one": "1 more on this page", "search.result.more.other": "# more on this page", "search.result.none": "No matching documents", "search.result.one": "1 matching document", "search.result.other": "# matching documents", "search.result.placeholder": "Type to start searching", "search.result.term.missing": "Missing", "select.version": "Select version"}, "version": null}</script>
+      <script id="__config" type="application/json">{"annotate": null, "base": "..", "features": ["content.code.copy"], "search": "../assets/javascripts/workers/search.a7633da7.min.js", "tags": null, "translations": {"clipboard.copied": "Copied to clipboard", "clipboard.copy": "Copy to clipboard", "search.result.more.one": "1 more on this page", "search.result.more.other": "# more on this page", "search.result.none": "No matching documents", "search.result.one": "1 matching document", "search.result.other": "# matching documents", "search.result.placeholder": "Type to start searching", "search.result.term.missing": "Missing", "select.version": "Select version"}, "version": null}</script>
     
     
-      <script src="../assets/javascripts/bundle.d7400e89.min.js"></script>
+      <script src="../assets/javascripts/bundle.a5f9d56c.min.js"></script>
       
     
   </body>
