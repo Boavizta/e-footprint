@@ -128,8 +128,9 @@ what is left once the cause is known: a diagnosed fix is often `easy`).
 
 - `map check <feature>` in a screen, then the whole check once before the commit: it runs the
   reproductions itself, and fails on one that passes.
-- Tell the reviewer where the plan page is, the bugs in reading order, the points to confirm, and
-  any diagnosed bug the plan holds no piece for, with the reason.
+- **Hand over only what the page does not hold**: where it is, what blocks the check or the
+  commit, and any diagnosed bug the plan holds no piece for, with the reason. The reviewer reads
+  the bugs, their pieces and the points to confirm on the page; do not restate them.
 - **The plan is approved with its delivery**, on the reviewer's word and by the approval command
   alone. The approval keeps each reproduction as written and what it saw that day. The next
   stage is `feature-implement`, a lot a run, in a fresh session.

@@ -117,9 +117,9 @@ paragraph or the check fails.
 
 1. `map check <feature>` is clean but for what awaits the reviewer. Run the gate of a plan edit
    (`repository.md` § "Gates"), then commit the stage's files by name.
-2. Tell the user: the lots and their order, the tests each lot writes, changes and deletes in
-   numbers, the edits of the plan with where to read them (the delivery page), the questions, and
-   any wider reorganisation worth a lot or a parking place.
+2. **Hand over only what the delivery page does not hold**: where it is, what blocks the check or
+   the commit, and any wider reorganisation worth a lot or a parking place. The reviewer reads the
+   lots, their tests, the edits of the plan and the questions on the page; do not restate them.
 3. The reviewer reads the delta on the delivery page and answers there or in the session. Read
    the answers with `map feedback <feature>`, act on what is not approved, and turn each answered
    question into a statement.

@@ -1,6 +1,6 @@
 {
   "upstream": "https://github.com/Boavizta/e-footprint-interface",
-  "commit": "9a140a358af6b778ca863ca5c45313dda4ed7fd9",
+  "commit": "39e1c64ff9f37d99b7796cd91c912ff3d6a290aa",
   "licence": "Apache-2.0",
   "notice": "The files under \"hashes\" are copied from the repository named in \"upstream\", at the commit named in \"commit\", where they are published under the licence named in \"licence\" (the LICENSE file of that repository). A file edited here differs from that commit until the next sync.",
   "lists": [
@@ -21,7 +21,7 @@
     ".agents/skills/feature-implement/SKILL.md": "c1a3f90ea526cefb03d1b6ea7666e14443f2b26160c69ebb886cbd5400688500",
     ".agents/skills/spec-plan/SKILL.md": "b917d155a168805c724ad65893fc3a2555aa77f0a31926fb0eb6380988bcabd9",
     ".agents/skills/spec-specify/SKILL.md": "f6577ce783ae19f6b3266445562d019b2172b8ffddec4937b2c1afc377079b7c",
-    ".agents/skills/spec-tasks/SKILL.md": "b5524dbb5b5ebcc987f43f15ed71a93ea13ef6dbadfcaf0110a215f82f6cb2a2",
+    ".agents/skills/spec-tasks/SKILL.md": "59de682ebc8066c33100b2e7173451c47e1b97b26b47b29ec9122335b42e75e2",
     ".agents/skills/task-implement/SKILL.md": "328e8dbd7b24034b8720b4814a6c128cad42d5e3feddd4e64c62c6b4e40b0605",
     ".agents/skills/task-review/SKILL.md": "eb79753b27a2f0bfef96f222708c764c7c0a545d9b7d23b111dd4d6b812dd783",
     ".agents/skills/update-constitution/SKILL.md": "cce7955fff229287ab339ab21d331b922d5ac83f6d23e154cd77b32fca8743ea",
@@ -89,7 +89,7 @@
     "comprehension_harness/python/tests/test_titles.py": "208234554c737c49b75d9d06d350ccef590820e2cb51ed087fc6647bcda669b4",
     ".agents/roles/diagnostician.md": "ddf6f3d227f6ade067aad84c522456105f5fe1ed0d216a2b270687d1b8c9c374",
     ".agents/roles/plan-review-guide.md": "ada1e8ab3f6146f6dff9d5d685d4eba0823c48c119ee7d85f3980838e1f88a35",
-    ".agents/skills/bug-fixes-plan/SKILL.md": "0c1696ba444f097386c28cae05d18e41750820e5c3253647c3d2ef9198d6568d",
+    ".agents/skills/bug-fixes-plan/SKILL.md": "6412868d9b4329913e55c86d378ac7150f4b39d958b4d40b59c1a8f17789455e",
     ".agents/skills/bug-fixes/SKILL.md": "d9d00f5cd703475a574eb66afc878b42441f1c6fd6d17fdd3f26b862abb1d19c",
     ".agents/skills/feature-implement/scripts/test_vscode_review_links.py": "7065e424856210053a1a775d39d3451daea3a7a472c5713c655daee733a0fee1",
     ".agents/skills/feature-implement/scripts/vscode_review_links.py": "5e70f27b9448dd587ad840ed99f86f9752cb8bed5c54268d16c5d47ad21ab11c",
