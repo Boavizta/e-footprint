@@ -105,6 +105,9 @@ in run order with the values it saw at each, then how it failed.
   written, it asserts what should be, and a run expects its failure, strictly. It observes
   everything it has to and asserts once, at its end: a story stops where its test fails. A bug
   whose chain crosses a process has one reproduction per process, joined by the piece.
+  **The approval holds it as written.** The fix makes it pass and changes its declaration, not
+  its lines: one edited since, to pass or to assert more, is a line of the piece's difference
+  and takes a `Changed:` (`→ test "<its title>"`).
 - **Evidence** is a call on a line the bug shows at, with a watch: what is seen there today. It
   marks no change, so it stands where the cause is even when the fix is elsewhere.
 - **`expect`**, on evidence or on a `planned` call, gives the value a key of the watch should
@@ -125,6 +128,11 @@ under the debugger writes no story.
 
 Under the chain, the piece lists what the chain does not show: the places no reproduction
 crosses, and the tests that are no reproduction.
+
+**The chain outlives the fix.** Built, a piece has no evidence left and its reproductions pass:
+no run tells the bug again. So the approval freezes each reproduction's chain as it stands, and
+the pages draw it under the built piece, beside the test that now passes: what was approved as
+wrong, then the code that fixed it. A bug reads "fixed" once every piece under it is built.
 
 The check fails on evidence in a piece with no reproduction, on a place whose reproductions saw
 only what it expects, or a value of its own at each crossing where it names distinct keys (the
@@ -158,9 +166,17 @@ Three paragraphs have a prefix:
 | `Note: **the point.** what follows from it` | Something to know, asking no answer | A piece was built with a choice no line of the plan says and a later lot stands on |
 
 After ` → `, a `Changed:` names the lines of the difference it comes to, parted by `;`: a kind
-(`code`, `test`, `statement`, `reason`, `text`) and a fragment the line holds, in double quotes
+(`code`, `test`, `statement`, `reason`, `text`, `unbuilt`) and a fragment the line holds, in double quotes
 when it has a space. `Changed: **Its narrative case leaves for #wrap-row.** It reads the row the
 other piece adds → test "a wrapped order"`. A section with one such paragraph needs no claim.
+
+**A claim takes back a built place.** Once a place is code, nothing in the source marks it: the
+plan alone can say that the code does not do what its clause said, because a review undid it or
+because it was never written beside places that were. An `unbuilt` claim names such a place by a
+fragment of its line: `→ unbuilt get_calculus_graph`. The place is then a line the piece lost,
+drawn "taken back" under its edit, and the next approval no longer holds it. A claim that names
+no built place fails the check. The check cannot ask for the paragraph itself: only a reading of
+the code tells that one is owed.
 
 Each fact has one home, and each home a budget in words, which the check enforces:
 
@@ -203,13 +219,16 @@ collects its own alone (`comprehension_harness/README.md` § "The Python stack")
 ## The approval, and what moved since
 
 `plan.approved.json` is written by the approval command and by nothing else. It is committed: it
-is the approval. It holds the plan a unit at a time, with no line number. The command refuses
-while a `To confirm:` stands, and takes the `Changed:` paragraphs off `plan.md`.
+is the approval. It holds the plan a unit at a time, with no line number, and for a piece that
+fixes a bug what each reproduction told that day (§ "A bug"), which is kept and never compared.
+The command refuses while a `To confirm:` stands, and takes the `Changed:` paragraphs off
+`plan.md`.
 
 From then on the check lists every unit that is not as approved, and fails:
 
 - a piece that gained a line, or lost one of its statement, its reason or its tests, and a
   decision that is new or reads differently, while its section holds no `Changed:`;
+- a reproduction whose lines are not those approved, the same way (§ "A bug");
 - a `Changed:` that stands on no difference.
 
 What asks nothing:
@@ -219,7 +238,7 @@ What asks nothing:
 - **The tasks stage's own output**, until a delivery is approved: the delivery, the unit-tier
   titles and the comments on unit tests.
 - **A site that became code**, once the approval holds a delivery: the piece keeps its line, as
-  approved, and reads as built.
+  approved, and reads as built, until a `Changed:` takes it back (§ "`plan.md`").
 
 The reviewer answers on the served pages: under each edit and each question, approve, or say what
 should change. A question is answered where it is stated, on the plan page and the delivery page,
@@ -284,12 +303,20 @@ has neither one owner nor a confirmed waiver. The archive then takes the tags of
 5. **Sixty words, one bold at most, an opening clause that stands alone.** The bold is the rule
    the step enacts. The opening clause is what the plan page prints for the step.
 
-A step lives in a named function, one call a line. A user's action calls `event` at its handler;
-a cause a test simulates calls it in the test. No prose names a step by its number: it moves.
+A step lives in a named function, one call a line. **It stands in the function it tells**, as its
+first statement, unless that function runs more than once per action or the step is a decision
+of its caller: then it stands in the caller. The function's docstring keeps its contract and does
+not repeat the step. **A call stands above the code it tells, as a comment would**, and its watch
+shows what that code starts from or decides. It stands after only when what the code produced is
+the point of the step, and its watch then shows that result.
+
+A user's action calls `event` at its handler; a cause a test simulates calls it in the test. No
+prose names a step by its number: it moves.
 
 ## The earlier form
 
-A bug batch still writes `tasks.md`, diagnostics and a `plan.html` with its callouts (the
-`bug-fixes` and `bug-fixes-plan` skills). So does a feature planned before pieces, until it is
-ported. One batch is being ported to pieces, a bug at a time, to settle the forms of "A bug"
-above before those skills are rewritten.
+A feature planned before pieces keeps its `tasks.md` and its `plan.html`, with its callouts, until
+it is ported or finished by hand. No skill writes that form any more: a bug batch is diagnosed
+and planned in pieces (`bug-fixes`, `bug-fixes-plan`, § "A bug"). The batch `bug-fixes-2026-10`
+keeps the `plan.html` and the `tasks.md` it was first written in, as the baseline it is ported
+from: they are not run.

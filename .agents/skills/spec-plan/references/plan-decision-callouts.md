@@ -42,8 +42,6 @@ Before handoff, inspect every inline `<code>` element in `aside[id^="plan-update
 
 ## When an implementation decision is recorded
 
-`feature-implement` § "A bug batch" sends its supervisor here.
-
 Compare the final reviewed implementation with the approved spec/plan, accepted amendments and
 starting code, not only with intermediate task commits. Add a callout when the final behavior,
 contract or architectural approach materially differs from what the approved plan led the user
@@ -106,5 +104,4 @@ proposal; keep a concise APPLIED callout only if the decision to retain the desi
 
 Do not annotate small routine fixes, including regressions introduced and repaired within this
 run without substantial lasting complexity, passing checks or ordinary choices. If there are no consequential
-decisions, add no callouts or index. For a bug batch without a plan, use the same tags beside the
-relevant task in `tasks.md`; do not manufacture another document.
+decisions, add no callouts or index.

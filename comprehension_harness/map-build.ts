@@ -226,6 +226,11 @@ const map = (() => {
     process.exit(1);
   }
 })();
+/** A story file older than its source, and what clears it: its test run again, or the file deleted when its test
+ *  is gone and nothing will write it again. */
+const staleSaid = (file: string) => (existsSync(join(ROOT, file))
+  ? `${file} — a step it crossed is no longer a \`narrate\` line: run its tests again`
+  : `${file} — the test file is gone: delete ${rel(storyFile(file))}`);
 mkdirSync(dirname(NARRATIVE_MAP), { recursive: true });
 writeFileSync(NARRATIVE_MAP, JSON.stringify(map));
-console.error(`map-build: ${rel(NARRATIVE_MAP)} — ${map.narratives.length} narratives, ${map.narratives.reduce((a, n) => a + n.steps.length, 0)} steps${map.stale.length ? `, ${map.stale.length} stale story file(s)` : ''}`);
+console.error(`map-build: ${rel(NARRATIVE_MAP)} — ${map.narratives.length} narratives, ${map.narratives.reduce((a, n) => a + n.steps.length, 0)} steps${map.stale.length ? `, ${map.stale.length} stale story file(s): ${map.stale.map(staleSaid).join('; ')}` : ''}`);

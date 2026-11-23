@@ -129,6 +129,9 @@ export interface PlanTodo extends PlannedTag, At {
   /** What a reproduction's last run said: its state, and how it failed. Null for any other test, and for a
    *  reproduction no run has told yet. */
   run: { state: string | undefined; failure: StoryFailure | null } | null;
+  /** The test as written, hashed by the stack (`TestTitle.body`); null for a test to write, and where the stack
+   *  gives none. What the approval holds of a reproduction: the fix makes it pass, and does not edit it. */
+  body: string | null;
 }
 
 /** A test of a plan that is still owed: one to write, or a reproduction that still fails. */
@@ -166,6 +169,48 @@ export function shared(distinct: string[], crossings: Crossing[]): Crossing[][] 
 /** Whether a reproduction saw at a site a value the site does not expect, or one value at two crossings that
  *  should each have their own: the bug shows there. */
 export const showsTheBug = (site: Pick<PlanSite, 'seenBy' | 'distinct'>) => site.seenBy.some((s) => s.crossings.some((c) => unexpected(c).length > 0) || shared(site.distinct, s.crossings).length > 0);
+
+/**
+ * What one reproduction told of a bug when the plan was approved, kept in the approval: once the piece is built
+ * its evidence is gone from the source and the test passes, so no run can tell it again. The places of the
+ * piece the test crossed, in run order, with what it saw at each, then how it failed.
+ */
+export interface FrozenChain {
+  /** The test, by what its fix does not move: its file and its title (`reproductionKeyOf`). */
+  file: string;
+  title: string;
+  failure: StoryFailure | null;
+  crossed: Array<Pick<PlanSite, 'change' | 'file' | 'fn' | 'sentence' | 'expect' | 'distinct'> & { crossings: Crossing[] }>;
+}
+
+/** The places of a piece one of its reproductions crossed, in run order, with what it saw at each. */
+export function placesCrossed(piece: Pick<PlanPiece, 'sites'>, t: PlanTodo): Array<{ site: PlanSite; seen: PlanSite['seenBy'][number] }> {
+  return piece.sites.flatMap((site) => site.seenBy.filter((s) => isStoryOf(t, s)).map((seen) => ({ site, seen }))).sort((a, b) => a.seen.at - b.seen.at);
+}
+
+/** Whether a frozen chain is that of a test. */
+export const isChainOf = (chain: Pick<FrozenChain, 'file' | 'title'>, t: Pick<PlanTodo, 'file' | 'title'>) => chain.file === t.file && chain.title === t.title;
+
+/**
+ * What an approval keeps of a piece's bug: the chain of each reproduction a run has told, as it stands, then
+ * the chains an earlier approval froze for the tests that are no reproduction any more — a piece built between
+ * two approvals keeps what it was approved on. A reproduction no run has told freezes nothing.
+ */
+export function chainsToFreeze(piece: Pick<PlanPiece, 'sites' | 'todos' | 'frozen'>): FrozenChain[] {
+  const failing = piece.todos.filter((t) => t.reproduction);
+  const told = failing.filter((t) => t.run !== null).map((t): FrozenChain => ({
+    file: t.file, title: t.title, failure: t.run!.failure,
+    crossed: placesCrossed(piece, t).map(({ site, seen }) => ({ change: site.change, file: site.file, fn: site.fn, sentence: site.sentence, expect: site.expect, distinct: site.distinct, crossings: seen.crossings })),
+  }));
+  return [...told, ...piece.frozen.filter((chain) => !failing.some((t) => isChainOf(chain, t)))];
+}
+
+/** The chains of a piece's bug that only the approval can still tell: those of tests that are no reproduction
+ *  any more. */
+export const fixedChains = (piece: Pick<PlanPiece, 'todos' | 'frozen'>) => piece.frozen.filter((chain) => !piece.todos.some((t) => t.reproduction && isChainOf(chain, t)));
+
+/** Evidence that went was no place to build: it is not counted as one, and never taken back. */
+export const isBuiltPlace = (line: string) => !line.startsWith('evidence ');
 
 /** A case the spec declared in a journey test and nobody has written yet: `todo(<feature>, <screen>, <title>)`
  *  inside `journey('<name>', …)`. It is a criterion of the spec, tagged with the feature and with no piece: a
@@ -210,8 +255,12 @@ export interface PlanChange {
 }
 
 /** The kinds a claim names a line by: a place in the code, a test (to write, changing or going), the piece's
- *  statement, its reason, a decision's text. */
-export const CLAIM_KINDS = ['code', 'test', 'statement', 'reason', 'text'] as const;
+ *  statement, its reason, a decision's text — and `unbuilt`, a place that reads as built and is not
+ *  (`takeBack`). */
+export const CLAIM_KINDS = ['code', 'test', 'statement', 'reason', 'text', 'unbuilt'] as const;
+/** The claim that takes a built place back. It is a kind of its own: a `code` claim names a line of the
+ *  difference, and must never drop a built place whose line happens to hold its fragment. */
+export const UNBUILT = 'unbuilt';
 
 export type Difficulty = 'easy' | 'standard' | 'hard';
 
@@ -337,6 +386,17 @@ export interface PlanPiece {
    *  line that went was taken off the plan. A built line stays in the plan, so the approval is still read once
    *  the place is code. */
   built: { sites: string[]; comments: string[] };
+  /** What was built of the piece and is taken back: the lines the approval holds, whose place holds no planned
+   *  line any more, and that a `Changed:` of the piece's section names with an `unbuilt` claim (`takeBack`).
+   *  The code does not do what such a clause says — a review undid it, or it was never written beside places
+   *  that were. Nothing in the source marks that, so the plan does: the line leaves `built`, is a `−` of the
+   *  delta under the edit that names it, and the next approval no longer holds it. */
+  takenBack: { sites: string[]; comments: string[] };
+  /** The tests the approval holds as reproductions of the piece, by file and title (`reproductionKeyOf`): each
+   *  goes on being compared with the body approved once it passes and is declared a test like another. */
+  reproduced: string[];
+  /** The chains the approval froze for the piece (`FrozenChain`): what its reproductions told before the fix. */
+  frozen: FrozenChain[];
   /** The commits that deliver the piece, oldest first: those whose message names it (`PieceCommit`). */
   commits: PieceCommit[];
 }
@@ -459,6 +519,9 @@ export interface PlanBaseline extends PlanSnapshot {
   /** The commit the approval was given on: what the code and the tests were, for whoever compares them later. */
   base: string;
   approvedOn: string;
+  /** By piece, what each of its reproductions told when the plan was approved (`chainsToFreeze`). Read by the
+   *  pages once the piece is built; never compared, so it is no unit and no line of a delta. */
+  chains?: Record<string, FrozenChain[]>;
 }
 
 /** A unit that is not as approved. `reason`: `needed`, the change is one the reviewer must be told of and the
@@ -675,7 +738,7 @@ export function scanTodos(file: string, text: string, titles: TitleReader): Arra
   for (const t of titles.read(file, text).tests) {
     if (!t.planned && !TODO_TAG.test(t.title)) continue;
     const parsed = parseTodoTitle(t.title, `${file}:${t.line}`);
-    if (parsed) out.push({ ...parsed, file, line: t.line, column: t.column, written: !t.planned, reproduction: t.reproduction === true, run: null });
+    if (parsed) out.push({ ...parsed, file, line: t.line, column: t.column, written: !t.planned, reproduction: t.reproduction === true, run: null, body: t.planned ? null : t.body ?? null });
   }
   return out;
 }
@@ -921,6 +984,15 @@ export const commentLineOf = (x: StaticSite) => `${x.removes ? 'removes' : 'chan
 export const testLineOf = (t: PlanTodo) => `${t.tier} ${t.file} — ${t.title}${t.rule ? ` [${t.rule}]` : ''}`;
 const caseLineOf = (c: JourneyCase) => `${c.journey} · ${c.screen} — ${c.title}`;
 
+/** The facet of a piece that holds its reproductions as written: a line a test, its body's hash last. */
+export const REPRODUCTIONS = 'reproductions';
+/** A reproduction by what does not move when it is fixed: its file and its title. */
+export const reproductionKeyOf = (t: Pick<PlanTodo, 'file' | 'title' | 'rule'>) => `${t.file} — ${t.title}${t.rule ? ` [${t.rule}]` : ''}`;
+const BODY = ' ⇒ ';
+const reproductionLineOf = (t: PlanTodo) => `${reproductionKeyOf(t)}${BODY}${t.body}`;
+/** The key of a line of the facet: the line without its hash. */
+const reproductionOfLine = (line: string) => line.slice(0, line.lastIndexOf(BODY));
+
 const blockTexts = (blocks: MdBlock[]) => blocks.flatMap((b) => (b.kind === 'p' ? [b.text] : b.items.map((i) => `- ${i.slug ? `**${i.slug}** ` : ''}${i.text}`)));
 
 /** The plan as lines. A piece is its statement, its reason, its sites and its comments — those still planned,
@@ -937,6 +1009,9 @@ export function snapshotOf(plan: Pick<Plan, 'pieces' | 'doc' | 'journeyCases'> &
       sites: [...piece.sites.map(siteLineOf), ...piece.built.sites],
       comments: [...piece.statics.map(commentLineOf), ...piece.built.comments],
       tests: piece.todos.map(testLineOf),
+      // A reproduction as written, and still as written once it passes: a body edited since the approval is a
+      // line of the delta. A test the approval did not hold as one is no line, written or not.
+      [REPRODUCTIONS]: piece.todos.filter((t) => t.body !== null && (t.reproduction || piece.reproduced.includes(reproductionKeyOf(t)))).map(reproductionLineOf),
       // An approved plan holds none: a question a later stage raises is a line of the delta.
       question: piece.doc?.ask ? [askLine(piece.doc.ask)] : [],
       // What it was built with, told for whoever builds on it: listed when new, and asks nothing.
@@ -972,7 +1047,9 @@ const ASKS_NOTHING = ['question', NOTES];
 
 /** A line of the unit tier: a unit title to write, or a comment on a test file that is neither a narrative's nor
  *  a journey's. It touches neither the product's code nor what a narrative tells. */
-export const isUnitTestLine = (facet: string, line: string, layout: Layout) => (facet === 'tests' ? line.startsWith('unit ') : facet === 'comments' && layout.isUnitTest(/^\S+ (\S*)/.exec(line)?.[1] ?? ''));
+export const isUnitTestLine = (facet: string, line: string, layout: Layout) => (facet === 'tests' ? line.startsWith('unit ')
+  : facet === REPRODUCTIONS ? layout.isUnitTest(/^(\S*)/.exec(line)?.[1] ?? '')
+    : facet === 'comments' && layout.isUnitTest(/^\S+ (\S*)/.exec(line)?.[1] ?? ''));
 
 /** The lines of `now` that `was` does not hold, each as many times as it is over. */
 const linesOver = (now: string[], was: string[]) => {
@@ -1046,6 +1123,8 @@ export function placeOfLine(line: DeltaLine): string {
   if (line.facet === UNPLANNED) return `${UNPLANNED} ${line.text}`;
   const site = /^(?:changed|added|removed|evidence) (\S+) in (\S+) — /.exec(line.facet === 'sites' ? line.text : '');
   if (site) return `sites ${site[1]} ${site[2]}`;
+  // A reproduction is its own place: its body as approved and its body now are one rewording.
+  if (line.facet === REPRODUCTIONS) return `${REPRODUCTIONS} ${reproductionOfLine(line.text)}`;
   const filed = /^\S+ (\S+) — /.exec(line.facet === 'comments' || line.facet === 'tests' ? line.text : '');
   return filed ? `${line.facet} ${filed[1]}` : line.facet;
 }
@@ -1053,7 +1132,7 @@ export function placeOfLine(line: DeltaLine): string {
 /** The kind a claim names a line by. */
 export function kindOfLine(line: DeltaLine): string {
   if (line.facet === 'sites') return 'code';
-  if (line.facet === 'tests') return 'test';
+  if (line.facet === 'tests' || line.facet === REPRODUCTIONS) return 'test';
   if (line.facet === 'comments') return /^\S+ tests\//.test(line.text) ? 'test' : 'code';
   if (line.facet === UNPLANNED) return line.text.startsWith('test ') ? 'test' : 'code';
   return line.facet;
@@ -1115,6 +1194,32 @@ export function unplannedLines(commits: PieceCommit[], named: ReadonlySet<string
   return out;
 }
 
+/** What a claim's fragment is looked for in: the line's text, and for a comment the plan holds, the title of
+ *  the test it stands on. */
+const heldBy = (l: DeltaLine, piece: PlanPiece | undefined) => `${l.text}${l.facet === 'comments' && l.sign === '+' ? ` ${(piece?.statics ?? []).filter((x) => commentLineOf(x) === l.text).map((x) => x.on ?? '').join(' ')}` : ''}`;
+
+/** Whether a claim names a line of a delta: by its kind and a fragment the line holds. An `unbuilt` claim names
+ *  the line of a place it took back, and no other. */
+const claims = (claim: PlanChange['claims'][number], l: DeltaLine, piece: PlanPiece | undefined) => (claim.kind === UNBUILT
+  ? l.sign === '−' && (l.facet === 'sites' || l.facet === 'comments') && (piece?.takenBack[l.facet].includes(l.text) ?? false)
+  : claim.kind === kindOfLine(l)) && heldBy(l, piece).includes(claim.fragment);
+
+/**
+ * Takes back the built places a piece's `Changed:` paragraphs name: each line of `built` that holds the fragment
+ * of an `unbuilt` claim leaves it for `takenBack`. Run before the plan is read as a snapshot, so that the line
+ * is one the piece lost.
+ */
+export function takeBack(piece: PlanPiece, changes: PlanChange[]): void {
+  for (const claim of changes.flatMap((c) => c.claims)) {
+    if (claim.kind !== UNBUILT) continue;
+    for (const facet of ['sites', 'comments'] as const) {
+      const named = piece.built[facet].filter((text) => isBuiltPlace(text) && text.includes(claim.fragment));
+      piece.built[facet] = piece.built[facet].filter((text) => !named.includes(text));
+      piece.takenBack[facet].push(...named);
+    }
+  }
+}
+
 /**
  * Gives each `Changed:` paragraph of a unit the lines it comes to, so the reviewer reads an edit, its reason
  * and its lines together. One paragraph: every line is its. Several: a line goes to the first paragraph a claim
@@ -1124,12 +1229,11 @@ export function unplannedLines(commits: PieceCommit[], named: ReadonlySet<string
 export function groupEdits(delta: UnitDelta, changes: PlanChange[], piece: PlanPiece | undefined): void {
   const lines = delta.facets.flatMap(linesOf);
   const claimable = lines.filter((l) => !isOwnNotice(l.facet));
-  const holds = (l: DeltaLine) => `${l.text}${l.facet === 'comments' && l.sign === '+' ? ` ${(piece?.statics ?? []).filter((x) => `${x.removes ? 'removes' : 'changes'} ${x.file} — ${x.text}` === l.text).map((x) => x.on ?? '').join(' ')}` : ''}`;
   const owner = new Map<DeltaLine, PlanChange>();
   if (changes.length === 1) for (const l of claimable) owner.set(l, changes[0]);
   else {
     for (const l of claimable) {
-      const by = changes.find((c) => c.claims.some((claim) => claim.kind === kindOfLine(l) && holds(l).includes(claim.fragment)));
+      const by = changes.find((c) => c.claims.some((claim) => claims(claim, l, piece)));
       if (by) owner.set(l, by);
     }
     for (const l of claimable) {
@@ -1142,7 +1246,7 @@ export function groupEdits(delta: UnitDelta, changes: PlanChange[], piece: PlanP
   delta.edits = changes.map((change) => ({
     change,
     lines: lines.filter((l) => owner.get(l) === change),
-    unmatched: changes.length === 1 ? [] : change.claims.filter((claim) => !claimable.some((l) => claim.kind === kindOfLine(l) && holds(l).includes(claim.fragment))).map((claim) => `${claim.kind} "${claim.fragment}"`),
+    unmatched: changes.length === 1 ? [] : change.claims.filter((claim) => !claimable.some((l) => claims(claim, l, piece))).map((claim) => `${claim.kind} "${claim.fragment}"`),
   }));
   delta.unclaimed = lines.filter((l) => !owner.has(l));
 }
@@ -1217,6 +1321,9 @@ export function assemblePlans(input: PlanInput): Plan[] {
           bug: doc?.sections.find((s) => s.bug && s.anchor === own?.under) ?? null,
           decidedIn: doc ? doc.sections.filter((s) => s.piece === null && !s.bug && s.slugs.includes(slug)) : [],
           built: { sites: [], comments: [] },
+          takenBack: { sites: [], comments: [] },
+          reproduced: [],
+          frozen: docs.approved?.baseline.chains?.[slug] ?? [],
           commits: [],
         };
         bySlug.set(slug, piece);
@@ -1237,6 +1344,11 @@ export function assemblePlans(input: PlanInput): Plan[] {
     const approved = docs.approved ?? null;
     const approvedPieces = (approved?.baseline.units ?? []).filter((u) => u.kind === 'piece');
     const implementing = approved !== null && approved.baseline.units.some((u) => u.kind === 'delivery');
+    // A test the approval holds as a reproduction is compared with the body approved from then on.
+    for (const unit of approvedPieces) {
+      const piece = bySlug.get(unit.name.slice(1));
+      if (piece) piece.reproduced = (unit.facets[REPRODUCTIONS] ?? []).map(reproductionOfLine);
+    }
     if (implementing) {
       const heldBy = new Map<string, string>();
       for (const piece of bySlug.values()) for (const line of [...piece.sites.map(siteLineOf), ...piece.statics.map(commentLineOf)]) heldBy.set(line, piece.slug);
@@ -1290,9 +1402,12 @@ export function assemblePlans(input: PlanInput): Plan[] {
     // The stories the plan is read against: of every narrative a site lands in, and of every one the approved
     // plan landed in, so that a story is still compared once the sites that crossed it are code.
     const landed = new Set([...pieces.flatMap((x) => x.sites.flatMap((s) => s.crossedBy.map((c) => c.narrative))), ...(approved?.baseline.units ?? []).filter((u) => u.kind === 'story').map((u) => u.name)]);
-    const snapshot = snapshotOf({ pieces, doc, journeyCases, builtCases }, narratives.flatMap((n) => (landed.has(n.title) && n.steps ? [{ title: n.title, steps: n.steps }] : [])));
     const sectionOf = (kind: UnitKind, name: string) => (kind === 'piece' ? doc?.sections.find((x) => x.piece === name.slice(1)) : kind === 'decision' ? doc?.sections.find((x) => x.piece === null && unitNameOf(x) === name) : undefined);
     const explained = (kind: UnitKind, name: string) => (sectionOf(kind, name)?.changed.length ?? 0) > 0;
+    // A built place a `Changed:` says is unbuilt is taken back before the plan is read: it is then a line the
+    // piece lost, which the edit stands on.
+    for (const piece of pieces) takeBack(piece, sectionOf('piece', `#${piece.slug}`)?.changed ?? []);
+    const snapshot = snapshotOf({ pieces, doc, journeyCases, builtCases }, narratives.flatMap((n) => (landed.has(n.title) && n.steps ? [{ title: n.title, steps: n.steps }] : [])));
     const diffed = approved ? diffSnapshots(approved.baseline, snapshot, explained, input.layout) : null;
     // What the commits made since the approval did beyond the plan joins the delta of the piece each names.
     if (diffed && implementing) {
@@ -1434,6 +1549,9 @@ export function findings(plan: Plan, archive = false): { failures: string[]; inf
       const where = `${plan.doc!.file}:${c.line} ${unitOf(section)}`;
       over(words(c.text), BUDGET.changed, where, 'says what moved and why', 'one edit a paragraph: a second edit is a second "Changed:"');
       if (c.what === null) failures.push(`planned: ${where} gives a reason and does not say what moved — "Changed: **what moved.** why", one edit a paragraph, so the reviewer knows which change the reason speaks of`);
+      // A claim that takes a place back names one: checked whatever the number of edits, since nothing else would say.
+      const took = section.piece === null ? [] : Object.values(plan.pieces.find((x) => x.slug === section.piece)?.takenBack ?? {}).flat();
+      for (const claim of c.claims) if (claim.kind === UNBUILT && !took.some((line) => line.includes(claim.fragment))) failures.push(`planned: ${where} claims ${UNBUILT} "${claim.fragment}", and no built place of ${section.piece === null ? 'a decision' : `#${section.piece}`} holds that fragment — it names a place the approval holds and that reads as built, by a fragment of its line`);
       if (plan.delta === null) failures.push(`planned: ${where} says "Changed:" and the plan was never approved — there is nothing to have changed from`);
       else if (!plan.delta.some((d) => d.name === unitOf(section))) failures.push(`planned: ${where} says "Changed:" and is as approved (${plan.approved!.file}) — the paragraph goes`);
     }

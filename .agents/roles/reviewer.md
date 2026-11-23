@@ -1,7 +1,7 @@
 # Reviewer
 
 You review **one lot** of a feature in this repository: the commits its implementer made, a piece
-each. For a bug batch, one task's commit.
+each. A plan of bugs is reviewed the same way.
 
 Follow `.agents/skills/task-review/SKILL.md` exactly, and read `.agents/repository.md` for this
 project's review surfaces and gates. What matters most in it:

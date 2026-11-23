@@ -28,6 +28,7 @@
 import { spawnSync } from 'node:child_process';
 import { existsSync, readFileSync, readdirSync, statSync } from 'node:fs';
 import { join } from 'node:path';
+import { fileURLToPath } from 'node:url';
 import { logMapEvent } from './map-log.mjs';
 import { readProject } from './project.mjs';
 
@@ -294,9 +295,10 @@ function blockLines(blocks, first) {
 }
 
 /** A piece of a plan as text. `code` adds the lines around each of its sites: what an implementer starts from.
- *  What is left to do is told in full; what is done is one line, unless `whole` asks for each place that became
- *  code and each test written (one piece asked for by name). A piece with nothing left is its statement and
- *  that line. */
+ *  What is left to do is told in full. What is built is told by the approval: each place that became code with
+ *  its clause as approved, each test written under its title — what a reviewer sets the code against, and what
+ *  the next piece stands on. A place has no line once it is code: it is its file and its function. `whole` (one
+ *  piece asked for by name) adds the reason to a piece with nothing left. */
 function pieceText(plan, piece, code, whole = false, printed = new Map()) {
   const out = [`#${piece.slug}${piece.doc ? ` — ${piece.doc.what}` : ''}`];
   // A comment standing on a test this piece writes is a note on that test: it is told under the test's title,
@@ -310,16 +312,26 @@ function pieceText(plan, piece, code, whole = false, printed = new Map()) {
     notes.set(t, [...(notes.get(t) ?? []), x]);
     return false;
   });
-  const builtLines = [...piece.built.sites, ...piece.built.comments];
+  // Evidence that went was no place to build: it is told apart, and not counted as one.
+  const everBuilt = [...piece.built.sites, ...piece.built.comments];
+  const builtLines = everBuilt.filter((line) => !line.startsWith('evidence '));
+  const goneEvidence = everBuilt.filter((line) => line.startsWith('evidence '));
+  const takenBack = [...(piece.takenBack?.sites ?? []), ...(piece.takenBack?.comments ?? [])];
   const toWrite = piece.todos.filter((t) => !t.written).length;
-  const done = piece.sites.length + piece.statics.length + toWrite === 0 && builtLines.length + piece.todos.length > 0;
+  const done = piece.sites.length + piece.statics.length + toWrite === 0 && everBuilt.length + piece.todos.length > 0;
   const commits = piece.commits.map((c) => c.sha.slice(0, 8)).join(', ');
-  const builtLine = builtLines.length || piece.commits.length
-    ? [`  built: ${plural(builtLines.length, 'place')}${piece.todos.length > toWrite ? `, ${plural(piece.todos.length - toWrite, 'test')} written` : ''} — ${commits ? `git show ${commits}` : 'no commit names the piece'}`]
+  const builtLine = everBuilt.length || piece.commits.length
+    ? [`  built: ${plural(builtLines.length, 'place')}${piece.todos.length > toWrite ? `, ${plural(piece.todos.length - toWrite, 'test')} written` : ''} — ${commits ? `git show ${commits}` : 'no commit names the piece'}`,
+      ...builtLines.map((line) => `    built       ${line.replace(/^(?:changed|changes) /, '')}`),
+      ...goneEvidence.map((line) => `    evidence    ${line.slice('evidence '.length)}  · gone with the fix`),
+      ...takenBack.map((line) => `    TAKEN BACK  ${line.replace(/^(?:changed|changes) /, '')}  · read as built, and is not: its "Changed:" says why`)]
     : [];
   // What it was built with that no line of the plan says: whoever builds on the piece reads it.
   const pieceNotes = (piece.doc?.notes ?? []).map((n) => `  note: ${n.text}`);
-  if (done && !whole) return [...out, ...builtLine, ...pieceNotes];
+  // A test that was the bug's reproduction says so: it is read against the body the approval holds.
+  const wasReproduction = (t) => (piece.reproduced ?? []).includes(`${t.file} — ${t.title}${t.rule ? ` [${t.rule}]` : ''}`);
+  const writtenTests = piece.todos.filter((t) => t.written && !t.reproduction).map((t) => `    ${at(t)}  written${wasReproduction(t) ? ', was the reproduction' : ''} — ${t.title}${t.rule ? `  [owns ${t.rule}]` : ''}`);
+  if (done && !whole) return [...out, ...builtLine, ...(writtenTests.length ? ['  tests:', ...writtenTests] : []), ...pieceNotes];
   if (piece.doc) {
     out.push(...blockLines(piece.doc.why, '  why: '));
     if (piece.doc.ask) out.push(`  TO CONFIRM: ${piece.doc.ask.question}${piece.doc.ask.detail ? ` ${piece.doc.ask.detail}` : ''}`);
@@ -344,7 +356,8 @@ function pieceText(plan, piece, code, whole = false, printed = new Map()) {
     }
     return [`  ${x.change}  ${at(x)}  in ${x.fn} — ${x.sentence}${should(x)}`,
       ...(x.change === 'added' ? [`    called from: ${(plan.calledFrom?.[x.id] ?? []).map((c) => `${at(c)} (#${c.slug})`).join(', ') || 'NOWHERE — no site names it'}`] : []),
-      `    ${x.change === 'added' ? `new seam: ${x.signature ?? x.fn}` : inside ? `lands in ${inside}` : 'crossed by no narrative'}${tests ? `  · reached by ${plural(tests, 'test')} in ${plural(x.reachedBy.length, 'file')}` : x.change === 'added' ? '' : '  · seen by no run yet: run the narrative tests it should sit in, then ask again'}`];
+      // A bug sits in no told flow: a place of its piece no test reaches is said so, with no narrative to run.
+      `    ${x.change === 'added' ? `new seam: ${x.signature ?? x.fn}` : inside ? `lands in ${inside}` : 'crossed by no narrative'}${tests ? `  · reached by ${plural(tests, 'test')} in ${plural(x.reachedBy.length, 'file')}` : x.change === 'added' ? '' : piece.bug ? '  · reached by no test in the stories on file' : '  · seen by no run yet: run the narrative tests it should sit in, then ask again'}`];
   };
   // A comment on a test names the test on its own line, then says what becomes of it: the two together run long.
   const staticHead = (x) => (/^(?:it|test)\b/.test(x.on ?? '')
@@ -396,7 +409,6 @@ function pieceText(plan, piece, code, whole = false, printed = new Map()) {
     flush();
   }
   out.push(...builtLine);
-  if (whole) out.push(...builtLines.map((line) => `    ${line}`));
   for (const f of piece.sql) out.push(`  migration proposed in ${f}`);
   for (const tier of TIERS) {
     const todos = piece.todos.filter((t) => t.tier === tier);

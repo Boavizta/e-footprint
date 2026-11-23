@@ -9,7 +9,8 @@ commit.
 - A test is a function named ``test_…`` at the top of the file or in a class named ``Test…``. Its title is its
   function's name, or the string of ``@titled("…")`` above it. ``@planned_test("…")`` on a function with an
   empty body is a test to write, and ``@reproduces("…")`` a written test that fails today for a bug to fix
-  (``declare.py``).
+  (``declare.py``). A written test declared with a title carries ``body``, a short hash of its lines from its
+  ``def`` down: what an approval holds of a reproduction, which is not edited to pass.
 - A stand is the line that opens a test, a class or another declaration of the file or of a class: its first
   decorator when it has one. A ``@planned`` comment right above that line stands on it.
 - A journey case is ``@planned_case("<feature>", "<screen>", "<title>")`` on a test with an empty body, in a
@@ -22,9 +23,11 @@ one string, stops the command with the file and the line.
 Standard library only.
 """
 import ast
+import hashlib
 import json
 import re
 import sys
+import textwrap
 
 TITLE_DECORATORS = ("titled", "planned_test", "reproduces")
 DEFINITION = re.compile(r"(?:async\s+)?(?:def|class)\s+")
@@ -100,6 +103,14 @@ def declared_title(function, file: str) -> tuple[str, str | None]:
     return arguments[0].value, kind
 
 
+def body_hash(function, lines: list[str]) -> str:
+    """A test as written, hashed: its lines from its ``def`` down. Its decorators are left out, so a
+    reproduction declared a written test under the same title keeps its hash; so are its indentation and the
+    spaces that end a line."""
+    written = "\n".join(line.rstrip() for line in lines[function.lineno - 1:function.end_lineno])
+    return hashlib.sha1(textwrap.dedent(written).encode()).hexdigest()[:12]
+
+
 def journey_name(node) -> str | None:
     """The journey a class walks, as ``@journey("<name>", …)`` above it says."""
     for decorator in node.decorator_list:
@@ -168,7 +179,9 @@ def read(file: str, text: str) -> dict:
                     line, column = name_position(node, lines)
                     answer["tests"].append({"title": title, "line": line, "column": column,
                                             "planned": declared_by == "planned_test",
-                                            **({"reproduction": True} if declared_by == "reproduces" else {})})
+                                            **({"reproduction": True} if declared_by == "reproduces" else {}),
+                                            **({"body": body_hash(node, lines)}
+                                               if declared_by in ("titled", "reproduces") else {})})
                 answer["stands"].append({"line": opening_line(node), "label": f'test "{title}"' if test else node.name,
                                          "test": title if test else None})
             elif isinstance(node, ast.ClassDef):

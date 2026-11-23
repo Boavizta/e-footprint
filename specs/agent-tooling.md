@@ -25,7 +25,7 @@ The method is [`workflow.md`](workflow.md); the forms of a feature's files are
 | `core` | The comprehension tools and their tests, the stylesheet and the script of the generated pages, the method's two documents, the stage skills, the roles' instructions, the review-link extension, the synchronization script and its test | Every project that uses the method |
 | `python` | The Python stack of the comprehension tools, `comprehension_harness/python/`, with its tests: the three calls, the test declarations, the pytest plugin, the source index, the title reader and the watch loop | Every Python project that uses the method |
 | `python-journeys` | The journey helper of the Python stack, with its page script and its tests: a journey drawn from a run of a browser test | A Python project whose browser tests run on pytest and Playwright |
-| `e-footprint` | The bug-batch skills of the `plan.html` form with their references, their two roles and their link converter, the usage collector, the Codex hooks, this page | The library |
+| `e-footprint` | The bug-batch skills and the `diagnostician` role, the references, the role and the link converter of the earlier `plan.html` form, the usage collector, the Codex hooks, this page | The library |
 
 A project that takes lists runs the script from its own checkout, with this one as upstream:
 
@@ -64,12 +64,12 @@ The runtime agent definitions are the single source of truth for each role's mod
 each repository's own. Read the selected runtime's agent definition at dispatch time; do not
 infer one runtime's settings from the other or copy them into workflow guidance. The configured
 roles are `implementer-easy`, `implementer`, `implementer-hard`, `reviewer`, `reviewer-global`
-and `light`, with `diagnostician` and `plan-review-guide` for a bug batch.
+and `light`, with `diagnostician` for a bug batch and `plan-review-guide` for a `plan.html` of the
+earlier form.
 The supervisor/planning session preferably uses the configured `implementer-hard` settings.
 An explicit user model choice overrides that workflow recommendation.
 
-A lot's difficulty (`easy`, `standard` or `hard`; for a bug-batch task, its `Implementation:`
-line) selects the corresponding implementer role, by the
+A lot's difficulty (`easy`, `standard` or `hard`) selects the corresponding implementer role, by the
 [difficulty rules](../.agents/skills/spec-tasks/SKILL.md#difficulty). Standard is the default;
 easy covers well-defined transformations and known-cause fixes, including broad mechanical
 renames. Review depth and required checks remain independent.
@@ -80,10 +80,10 @@ spawn tool, read the chosen `.codex/agents/<role>.toml` and pass its model/effor
 with the role instructions in the brief.
 If a runtime cannot apply a requested setting, report it and use the user's permitted alternative;
 never claim an unobserved model pin worked. A role description is not a tool permission boundary.
-The `reviewer` role reads one lot's commits, or one task of a bug batch; `reviewer-global` reads
+The `reviewer` role reads one lot's commits; `reviewer-global` reads
 the whole delivery once its last lot is reviewed. Both can apply approved fixes. `light` runs a
 suite or a lookup and reports the evidence.
-The plan-review-guide role performs the final documentation pass of a bug batch after global review and corrections;
+The plan-review-guide role performs the final documentation pass of a delivered `plan.html` of the earlier form;
 it preserves the approved plan and adds implementation evidence. The supervisor owns consequential
 decisions and checks changed claims. Substantial unresolved tracing escalates to the standard
 implementer; see [the skill](../.agents/skills/plan-review-guide/SKILL.md). Adjust its agent
@@ -96,20 +96,19 @@ Implementation follows the delivery's order of lots. Never share stateful test s
 application databases between parallel agents.
 
 Label delegated work `<feature>--impl-lot-<lot>`, `--review-lot-<lot>`, `--review-global` or
-`--gate-full`, `<lot>` being the lot's slug; for a bug batch `--impl-task-N`, `--review-task-N`,
-`--diag-<bug>` or `--plan-review-guide`. In Claude place the label in the description;
+`--gate-full`, `<lot>` being the lot's slug, and `--diag-<bug>` for a diagnosis. In Claude place the label in the description;
 use plain unnamed subagents so role effort is not lost to teammate inheritance. Do not transfer
 that Claude-specific naming workaround to Codex. Stable session bindings below are preferred
 where labels cannot carry the owner, run or runtime identity reliably. A lot's label gives the
-ledger the feature and the role; only a task's label carries a number it records.
+ledger the feature and the role.
 
 ## Implementation review
 
 An authorized `feature-implement` run delivers one lot, then stops for the reviewer
 ([`workflow.md`](workflow.md) § 4). A decision is written into the plan and nowhere else: a
 `Changed:` paragraph for what changes a line of it, a `Note:` for a choice the next lot stands
-on. What only the user can do goes to the feature's gates file. A bug batch keeps its
-`tasks.md`, and records a consequential choice as an `IMPL-DECISION` callout of its `plan.html`.
+on. What only the user can do goes to the feature's gates file. A bug batch is delivered the
+same way.
 Routine fixes and successful test results are omitted from review artifacts and reports; required
 checks still run, and unresolved failures remain visible. No separate judgement or gate journals.
 

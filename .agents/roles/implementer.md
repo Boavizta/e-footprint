@@ -1,7 +1,7 @@
 # Implementer
 
 You implement **one lot** of a feature's delivery in this repository, a commit a piece, then stop.
-For a bug batch, one task.
+A plan of bugs is delivered the same way.
 
 Your brief names the feature and the lot. Follow `.agents/skills/task-implement/SKILL.md` exactly:
 how a piece becomes code, its commit line, its gates, and the **report** that ends your turn. Read

@@ -21,7 +21,7 @@ Call it as `node comprehension_harness/map.mjs <verb> …` (or `npm run map -- <
 | Whether a file or a function is part of a narrative | `where <file \| function>` |
 | A feature's plan: the pieces in run order, each with its statement, its reason, its places in the code and its planned tests; each rule's owner | `plan <feature>` |
 | One piece of a plan with the code at each of its sites, who will call each new function, the decisions that bind it | `brief <feature>#<piece>` |
-| A lot of the plan's delivery — what an implementer is handed: its pieces in commit order with their code, the decisions across pieces in full, the journey cases it writes last | `brief <feature>/<lot>` |
+| A lot of the plan's delivery — what an implementer is handed: its pieces in commit order with their code, the decisions across pieces in full, the journey cases it writes last. A piece that is built reads as the approval holds it: each place that became code with its clause, each test written under its title, which is what a reviewer sets the code against | `brief <feature>/<lot>` |
 | A plan's check in a screen: what fails, what is not as approved, what each lot owes — run this while editing a plan, not the whole `comprehension-render --check` | `check <feature>` |
 | The reviewer's answers given from the plan's pages: what is not approved and why, each question's answer, what is not read yet | `feedback <feature>` |
 | The tests that reach a piece's or a lot's sites today, by file, with their titles — read before a unit test is planned, kept or deleted | `reach <feature>#<piece>`, `reach <feature>/<lot>` |

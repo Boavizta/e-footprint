@@ -62,7 +62,7 @@ def test_a_test_is_titled_by_its_name_or_its_decorator_and_planned_when_it_has_n
     assert answer["tests"] == [
         {"title": "test_plain", "line": 11, "column": 5, "planned": False},
         {"title": "gift-cards#deduct-the-card: the amount due loses the card's balance [card-first]",
-         "line": 18, "column": 5, "planned": False},
+         "line": 18, "column": 5, "planned": False, "body": answer["tests"][1]["body"]},
         {"title": "gift-cards#refund-to-card: a refund goes back to the card first",
          "line": 27, "column": 9, "planned": True},
         {"title": "test_async", "line": 30, "column": 15, "planned": False},
@@ -84,7 +84,38 @@ def test_a_reproduction_is_a_written_test_declared_to_fail_today():
     [answer] = read(("tests/test_pay.py", text))
 
     assert answer["tests"] == [{"title": "gift-cards#deduct-the-card: a card of zero is charged nothing",
-                                "line": 5, "column": 5, "planned": False, "reproduction": True}]
+                                "line": 5, "column": 5, "planned": False, "reproduction": True,
+                                "body": answer["tests"][0]["body"]}]
+
+
+def test_a_declared_test_carries_its_body_which_its_declaration_and_its_place_do_not_move():
+    def body(text: str) -> str:
+        [answer] = read(("tests/test_pay.py", textwrap.dedent(text).lstrip("\n")))
+        return answer["tests"][0]["body"]
+
+    reproduction = body('''
+        @reproduces("gift-cards#deduct-the-card: a card of zero is charged nothing")
+        def test_zero_card():
+            assert charge(0) == 0
+    ''')
+
+    # Declared a written test once it passes, moved down the file and into a class: the same test.
+    assert reproduction == body('''
+        import pytest
+
+
+        class TestCards:
+            @pytest.mark.django_db
+            @titled("gift-cards#deduct-the-card: a card of zero is charged nothing")
+            def test_zero_card():
+                assert charge(0) == 0
+    ''')
+    # Asserting something else is another test.
+    assert reproduction != body('''
+        @titled("gift-cards#deduct-the-card: a card of zero is charged nothing")
+        def test_zero_card():
+            assert charge(0) >= 0
+    ''')
 
 
 def test_a_stand_is_the_line_that_opens_a_test_a_class_or_a_declaration():

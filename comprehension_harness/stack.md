@@ -164,7 +164,7 @@ a commit. The answer:
 
 | Field | Holds |
 |---|---|
-| `tests` | Every test in file order: `{ title, line, column, planned }`. `planned` is a test declared with no body: `it.todo` in vitest, a function under a marker that carries the title in pytest. `reproduction: true` is added for a written test declared to fail today, for a bug to fix |
+| `tests` | Every test in file order: `{ title, line, column, planned }`. `planned` is a test declared with no body: `it.todo` in vitest, a function under a marker that carries the title in pytest. `reproduction: true` is added for a written test declared to fail today, for a bug to fix. `body` is optional: a short hash of a written test's own lines, its declaration left out, so that it is the same once a reproduction is declared a test like another. An approval holds it for each reproduction, and the check lists one edited since |
 | `stands` | For each line that opens a test, a group of tests or a declaration: `{ line, label, test }`. A `@planned` comment right above that line stands on it. `label` is what the pages print; `test` is the title when the line opens one test |
 | `journeyCases` | The cases a feature will add to a journey, declared in a journey test: `{ feature, journey, screen, title, line, column }` |
 

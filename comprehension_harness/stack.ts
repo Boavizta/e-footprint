@@ -257,6 +257,9 @@ export interface TestTitle {
   planned: boolean;
   /** Written, and declared to fail today for a bug its piece fixes. */
   reproduction?: boolean;
+  /** A short hash of a written test's own lines, its declaration left out: the same once a reproduction is
+   *  declared a test like another. What an approval holds of a reproduction (`PlanTodo.body`). */
+  body?: string;
 }
 
 /** A case a feature will add to a journey, declared in a journey test. */

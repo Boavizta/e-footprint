@@ -202,6 +202,8 @@
   .mark.evidence { background: #ede9fe; color: #6d28d9; } .mark.failing { background: #fee2e2; color: #b91c1c; }
   .bug { border: 1px solid var(--line); border-left: 3px solid #ef4444; border-radius: 6px; padding: .45rem .7rem .55rem; margin: .6rem 0; }
   .bug .bug-head { margin: 0 0 .35rem; font-size: .86rem; color: var(--muted); } .bug .bug-head b { color: var(--ink); }
+  .bug.fixed { border-left-color: #9ca3af; } .bug.fixed .repro-head .now { margin-left: auto; display: flex; gap: .4rem; align-items: baseline; font-size: .85rem; white-space: nowrap; }
+  .abug.fixed h3 { color: var(--muted); }
   .bug .repro + .repro { border-top: 1px dashed var(--line); margin-top: .55rem; padding-top: .5rem; }
   .bug .repro-head { display: flex; gap: .6rem; align-items: baseline; flex-wrap: wrap; font-size: .9rem; }
   .bug .repro-head a[data-debug-reproduction] { margin-left: auto; font-size: .85rem; font-weight: 600; white-space: nowrap; text-decoration: none; }

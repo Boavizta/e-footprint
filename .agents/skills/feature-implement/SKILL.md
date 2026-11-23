@@ -1,6 +1,6 @@
 ---
 name: feature-implement
-description: Supervise the implementation of an approved delivery, lot by lot — fourth stage of the spec-driven workflow. For each lot the supervisor spawns an implementer, runs the lot check against the approved plan, spawns a reviewer over the lot's commits, triages the findings itself, and hands the reviewer of the plan every decision as a Changed paragraph to answer on the delivery page. It parks a lot it cannot land, keeps a gates file of what only the user can do, and closes the last lot with a global review and the full gate. Also runs the tasks of a bug batch. Autonomous by default; human input is needed only for the approvals, for production-destructive actions, or for a run that cannot usefully continue.
+description: Supervise the implementation of an approved delivery, lot by lot — fourth stage of the spec-driven workflow. For each lot the supervisor spawns an implementer, runs the lot check against the approved plan, spawns a reviewer over the lot's commits, triages the findings itself, and hands the reviewer of the plan every decision as a Changed paragraph to answer on the delivery page. It parks a lot it cannot land, keeps a gates file of what only the user can do, and closes the last lot with a global review and the full gate. A plan of bugs is delivered the same way. Autonomous by default; human input is needed only for the approvals, for production-destructive actions, or for a run that cannot usefully continue.
 ---
 
 # feature-implement
@@ -34,7 +34,7 @@ skills, which your sub-agents follow. `map …` is the map's command (`code-map`
    is nothing to implement: say what is missing and stop.
 3. **Read the plan through the map**, not the files: `map plan <feature>` for the whole,
    `map brief <feature>/<lot>` for the lot, with the notes earlier lots left.
-4. **Sort the lot's user-held gates**, from its reason and its pieces:
+4. **Sort the lot's user-held gates**, from its reason, its pieces and the bugs they fix:
    - a **validation**: a check on a device, by eye or by ear. The lot ships fully tested and the
      check goes to the gates file. A failed check reopens the lot later; it never holds the run;
    - an **evidence gate**: later work hinges on a reading the run cannot produce. Only what comes
@@ -75,6 +75,16 @@ approval, and it does not chain into the next lot.
 Its report is all that enters your context: the commits, a line a piece; the gates passed; its
 **deviations** (a place not built, a file no place names, a test added, dropped or deleted
 beyond the plan) and its **doubts**. No diff, no narration.
+
+**A place not built is a decision, whatever the check says.** In a file where the piece built
+other places, the check reads it as built. You settle it at step 2 as the rest: explained, in a
+`Changed:` whose claim names the place and takes it back (`→ unbuilt <a fragment of its line>`,
+`specs/workflow-formats.md` § "`plan.md`"), or sent back to be built.
+
+**A lot that fixes bugs is a lot like another.** Its brief shows the reproductions that fail
+today and the evidence that goes with the fix, and its implementer follows `task-implement`
+§ "A piece that fixes a bug". It is delivered when no evidence call and no reproduction stands:
+the check runs the reproductions itself, and fails on one that passes while still declared one.
 
 **A migration's piece waits for the user's go** when its tests destroy local state
 (`repository.md` § "Gates"): the lot is built and reviewed without them, and they run last.
@@ -136,7 +146,9 @@ The plan is the only record of a decision. No callout, no list in a report.
 
 - **`Changed:`** for whatever changes a line of the plan: a deviation you accept, a fix that
   moves a clause, a test beyond the plan. One paragraph an edit, in the piece's section, in words
-  the reviewer can read without the code.
+  the reviewer can read without the code. **A fix that undoes a built place takes it back**, by an
+  `unbuilt` claim on its line: no tool sees that the code stopped doing what a clause says, so the
+  pages go on reading the place as built until you write it.
 - **`Note:`** for a choice that changes no line and that what follows stands on, taken from the
   implementer's deviations and the reviewer's remarks for the next lot. The next lot's brief
   prints it. A choice nobody builds on is no note: it is the code's, and its commit's.
@@ -217,23 +229,6 @@ session reads verdicts from it. It is committed with the run and leaves with the
 4. **Close**: commit the gates file and the plan, and tell the user what landed, what is parked,
    the decisions left to answer, the gates, the suite's state and the spend. Suggest
    `feature-archive` once the gates are cleared. Do not run it.
-
-## A bug batch
-
-A batch diagnosed by `bug-fixes` has no pieces: its unit is a **task** of `tasks.md`, and its plan,
-when `bug-fixes-plan` wrote one, a `plan.html`. Run it with this skill, a task where it says a lot,
-with these differences:
-
-- There is no `map check` and no `Piece:` line. A commit names its task.
-- **A fix is complete when its reproduction passes with its expected-failure marker removed.**
-  The implementer runs it unmasked first and checks it fails as the diagnostic records, never
-  weakens it, and adds no other test unless the task names a new public contract
-  (`bug-fixes` § "Reproduction test").
-- A consequential decision is an `IMPL-DECISION` callout beside the task's step in the plan
-  ([the shared format](../spec-plan/references/plan-decision-callouts.md)), or under the task in
-  `tasks.md` when the batch has no plan. A parked task is marked in `tasks.md`.
-- At close-out, after the final gate, a `plan-review-guide` agent turns the batch's plan into the
-  guide for reviewing the code (`plan-review-guide` skill).
 
 ## Halt and surface
 

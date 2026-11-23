@@ -1,6 +1,6 @@
 ---
 name: task-implement
-description: Implement one lot of an approved delivery, a commit a piece — the implementer's rules in the fourth stage of the spec-driven workflow, under feature-implement or alone. Reads the lot's brief from the map, turns each planned place into code and each planned test into a test under its title, and reports its deviations and doubts. Also implements one task of a bug batch.
+description: Implement one lot of an approved delivery, a commit a piece — the implementer's rules in the fourth stage of the spec-driven workflow, under feature-implement or alone. Reads the lot's brief from the map, turns each planned place into code and each planned test into a test under its title, and reports its deviations and doubts. A piece that fixes a bug is built the same way, from its reproduction.
 ---
 
 # task-implement
@@ -25,6 +25,10 @@ to do differently goes in your report.
 1. **Each place becomes code**: a `planned` call is replaced by what its clause says, a shell
    gets its body, a comment goes with the change it announced. The clause is what was approved:
    when the code cannot do what it says, stop at that piece and report it.
+   **Read each place against what the piece's reason leaves as it is.** A reason that says what
+   stays (a kind of view, a file, a case) rules places out, and a clause repeated over many
+   places hides the one it does not fit. A place the reason rules out is not built: its call
+   goes, nothing is written, and it is the first of your deviations.
 2. **Each planned test becomes a test under the same title**, tag and `[rule]` kept. An existing
    case extended takes the planned title. A test under an `@planned.remove` comment is deleted,
    one under an `@planned` comment changed as the comment says.
@@ -41,13 +45,33 @@ to do differently goes in your report.
 7. **The commit passes a piece's gate** (`repository.md` § "Gates"): the types, and the tests
    related to what it changed. Not the whole suite: that is the lot's.
 
+## A piece that fixes a bug
+
+Its brief shows it: a reproduction reads "FAILS TODAY", and evidence "goes with the fix"
+(`specs/workflow-formats.md` § "A bug"). It is built as any piece, and:
+
+1. **See each reproduction fail first**, the way the brief says it fails. One that passes, or
+   fails for another reason, is a diagnosis that no longer holds: stop at the piece and report it.
+2. **Each evidence call goes, with nothing written in its place**, and so do the `expect` and the
+   `distinct` of the piece's other calls. An import or a load line that served only the calls that
+   went goes with them.
+3. **Each reproduction passes, and is then declared a written test under the same title**
+   (`repository.md` § "The stack" says how). Its body is not touched: a reproduction is never
+   weakened to pass, and one that should assert more is a doubt you report, not an edit you make.
+   The approval holds its lines, and the check lists one that changed.
+
+The reproductions are the piece's tests. Nothing else is written (rule 3 of "A piece").
+
 ## The lot's last commit
 
 - **The steps**: write the `narrate` and `event` calls the lot's pieces add, remove those of what
   went, in one pass. A step is where a reader would stop, not every line that changed. Run the
   narrative tests that cross them and read the story you changed.
 - **The journey cases** of the lot's screens, each under its planned title.
-- Its message names every piece whose steps it tells, a `Piece:` line each.
+- **What the repository asks of production code that is delivered** (`repository.md` § "Gates":
+  a changelog entry, where it asks one): the lot's part of it, said for whoever uses the product.
+- Its message names every piece it tells of, a `Piece:` line each. A lot with no step, no case and
+  no such entry has no last commit.
 - **The lot's gate** runs before it (`repository.md` § "Gates").
 
 ## What you do not do
@@ -75,15 +99,6 @@ End your turn only when the work is durable: committed, nothing running. Then re
 - **Docs** updated, one line each.
 
 The reviewer starts from your deviations and doubts. They are a map, not a defence of the work.
-
-## One task of a bug batch
-
-A batch from `bug-fixes` has tasks, not lots. Read the task in `tasks.md`, its diagnostic, and its
-step in the batch's `plan.html` when there is one. Touch the files the task lists. **The fix is
-done when the task's reproduction passes with its expected-failure marker removed**: run it
-unmasked first and check it fails the way the diagnostic records; never weaken it; add no other
-test unless the task names a new public contract (`bug-fixes` § "Reproduction test"). Mark the
-task done in `tasks.md`, commit naming the task, and report as above.
 
 ## Alone, without a supervisor
 

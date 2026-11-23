@@ -25,7 +25,7 @@ gates, § "Planning checks") and [`specs/workflow-formats.md`](../../../specs/wo
 the tools' source to learn it. `map …` below is the map's command (`code-map` skill).
 
 The `references/` and `assets/` beside this file belong to the earlier `plan.html` form, which
-`bug-fixes-plan` and `plan-review-guide` still write.
+`plan-review-guide` still reads.
 
 ## Before writing
 

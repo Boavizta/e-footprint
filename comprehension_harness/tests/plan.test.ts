@@ -14,7 +14,7 @@ import { parseIntent, sluggedItems } from '../intent-md';
 import {
   BUDGET, SENTENCE_BUDGET, overSentenceBudget,
   assemblePlans, findings, parseTag, parseTodoTitle, replaceSlugRefs, rulesOf, slugRefs, todosByTier,
-  lotLeft, planDocOf, reviewItems,
+  lotLeft, planDocOf, reviewItems, chainsToFreeze, fixedChains,
   type FeatureDocs, type PieceCommit, type PlanBaseline, type PlanInput, type PlanSite, type PlanTodo, type StaticSite,
 } from '../plan';
 import * as plan from '../plan';
@@ -164,7 +164,7 @@ const site = (slug: string, file: string, line: number, crossedBy: PlanSite['cro
   crossedBy, reachedBy: [], expect: null, distinct: [], seenBy: [],
 });
 const comment = (slug: string, file: string, line: number, removes = false): StaticSite => ({ feature: 'demo', slug, file, line, column: 4, text: `${slug} in a comment`, removes, on: null });
-const todo = (slug: string, file: string, line: number, rule: string | null = null, tier: PlanTodo['tier'] = 'unit'): PlanTodo => ({ feature: 'demo', slug, file, line, column: 3, title: `${slug} is tested`, rule, tier, written: false, reproduction: false, run: null });
+const todo = (slug: string, file: string, line: number, rule: string | null = null, tier: PlanTodo['tier'] = 'unit'): PlanTodo => ({ feature: 'demo', slug, file, line, column: 3, title: `${slug} is tested`, rule, tier, written: false, reproduction: false, run: null, body: null });
 const crossed = (narrative: string, at: number) => ({ narrative, at, step: null });
 
 const SPEC = '# Demo\n\n## Rules no screen shows\n\n- **owned-once** One owner.\n- **owned-twice** Two owners.\n- **owned-by-none** No owner.\n';
@@ -484,8 +484,50 @@ describe('a bug', () => {
     expect(plan.siteLineOf(evidence(null))).toBe("evidence src/a.ts in fn — cut happens. ⇒ {'due': total - card}");
     expect(plan.siteLineOf(evidence(null, null))).toBe('evidence src/a.ts in fn — cut happens.');
     // A place built is one its commits wrote at; evidence goes with the fix and nothing is written there.
-    const lines = plan.unplannedLines([], new Set(), LAYOUT, [{ slug: 'cut', sites: [], statics: [], todos: [], sql: [], doc: null, bug: null, decidedIn: [], built: { sites: [plan.siteLineOf(evidence(null))], comments: [] }, commits: [{ sha: '1', subject: 's', pieces: ['cut'], sinceApproval: true, files: [{ file: 'src/a.ts', added: 0, removed: 3, line: 1 }], untagged: [], deleted: [], planned: [] }] }]);
+    const lines = plan.unplannedLines([], new Set(), LAYOUT, [{ slug: 'cut', sites: [], statics: [], todos: [], sql: [], doc: null, bug: null, decidedIn: [], built: { sites: [plan.siteLineOf(evidence(null))], comments: [] }, takenBack: { sites: [], comments: [] }, reproduced: [], frozen: [], commits: [{ sha: '1', subject: 's', pieces: ['cut'], sinceApproval: true, files: [{ file: 'src/a.ts', added: 0, removed: 3, line: 1 }], untagged: [], deleted: [], planned: [] }] }]);
     expect([...lines]).toEqual([]);
+  });
+
+  it('holds a reproduction to the body it was approved with, once it passes too: one edited since says why', () => {
+    const MD = '# P\n\n## #cut\n\nCuts.\n\n## Delivery\n\n- **a** #cut — why\n';
+    const failing = { ...reproduction(), body: 'aaa111' };
+    const approved: PlanBaseline = { feature: 'demo', base: 'abc12345', approvedOn: '2026-11-23', units: assemble({ todos: [failing], docs: docs(MD, null) })[0].snapshot.units };
+    expect(approved.units.find((u) => u.name === '#cut')!.facets.reproductions).toEqual(['tests/x.test.ts — cut is tested ⇒ aaa111']);
+    const fix: PieceCommit = { sha: '1111111122', subject: 'cut lands', pieces: ['cut'], sinceApproval: true, files: [], untagged: [], deleted: [], planned: [] };
+    const now = (todos: PlanTodo[], md = MD) => assemble({ todos, docs: (feature) => ({ ...docs(md, null)(feature), approved: { file: 'specs/features/demo/plan.approved.json', baseline: approved }, commits: { list: [fix], baseKnown: true } }) })[0];
+    // Fixed: it passes, is declared a test like another, and reads as it did.
+    const fixed = { ...failing, reproduction: false };
+    expect(now([fixed]).delta).toEqual([]);
+    expect(now([fixed]).snapshot.units.find((u) => u.name === '#cut')!.facets.reproductions).toEqual(['tests/x.test.ts — cut is tested ⇒ aaa111']);
+    // Edited on the way, to pass or to assert more: a line of the piece's delta, which its section explains.
+    const edited = now([{ ...fixed, body: 'bbb222' }]);
+    expect(edited.delta).toMatchObject([{ name: '#cut', reason: 'needed', facets: [{ facet: 'reproductions', added: ['tests/x.test.ts — cut is tested ⇒ bbb222'], removed: ['tests/x.test.ts — cut is tested ⇒ aaa111'] }] }]);
+    expect(findings(edited).failures).toEqual([expect.stringContaining('#cut is not as approved')]);
+    const told = now([{ ...fixed, body: 'bbb222' }], MD.replace('Cuts.\n', 'Cuts.\n\nChanged: **The test asserts the label too.** Its title says it. → test "cut is tested"\n'));
+    expect(findings(told).failures).toEqual([]);
+    expect(told.delta![0].edits[0].lines.map((l) => l.sign)).toEqual(['−', '+']);
+    // A test the approval did not hold as a reproduction is no line, written or edited.
+    expect(now([fixed, { ...todo('cut', 'tests/x.test.ts', 12), title: 'the rest is tested', written: true, body: 'ccc333' }]).delta!.flatMap((d) => d.facets.map((f) => f.facet))).toEqual(['tests']);
+  });
+
+  it('freezes what each reproduction tells at the approval, and keeps it once the test is one like another', () => {
+    const MD = '# P\n\n## #cut\n\nCuts.\n\n## Delivery\n\n- **a** #cut — why\n';
+    const failure = { message: 'assert 5 == 6', file: 'tests/x.test.ts', line: 7 };
+    const failing = { ...reproduction(), run: { state: 'failed', failure } };
+    const [today] = assemble({ sites: [evidence([{ due: 5 }])], todos: [failing], docs: docs(MD, null) });
+    const chains = chainsToFreeze(today.pieces[0]);
+    expect(chains).toEqual([{ file: 'tests/x.test.ts', title: 'cut is tested', failure, crossed: [{ change: 'evidence', file: 'src/a.ts', fn: 'fn', sentence: 'cut happens.', expect: "{'due': total - card}", distinct: [], crossings: [{ watch: { due: 5 }, expect: { due: 6 } }] }] }]);
+    // While the test still fails, a run tells the bug: the approval's chain is not the one to read.
+    const approved: PlanBaseline = { feature: 'demo', base: 'abc12345', approvedOn: '2026-11-23', units: today.snapshot.units, chains: { cut: chains } };
+    const now = (input: Partial<PlanInput>) => assemble({ ...input, docs: (feature) => ({ ...docs(MD, null)(feature), approved: { file: 'specs/features/demo/plan.approved.json', baseline: approved } }) })[0].pieces[0];
+    expect(fixedChains(now({ sites: [evidence([{ due: 5 }])], todos: [failing] }))).toEqual([]);
+    // Fixed: the evidence is gone, the test passes and is no reproduction. The approval alone still tells the bug,
+    // and the next approval keeps it.
+    const fixed = now({ todos: [{ ...reproduction(), reproduction: false }] });
+    expect(fixedChains(fixed)).toEqual(chains);
+    expect(chainsToFreeze(fixed)).toEqual(chains);
+    // A reproduction no run has told freezes nothing.
+    expect(chainsToFreeze(assemble({ todos: [reproduction()], docs: docs(MD, null) })[0].pieces[0])).toEqual([]);
   });
 
   it('reads a bug as a section of plan.md, and the pieces whose sections stand under it as what fixes it', () => {
@@ -906,6 +948,30 @@ describe('a plan being implemented', () => {
     expect(now(built, [touched(6)]).delta).toEqual([]);
     // A later commit of the piece that writes there settles it.
     expect(now(built, [touched(0), commit('2222222233', ['cut'], { files: [{ file: 'src/reader.ts', added: 2, removed: 0, line: 151 }] })]).delta).toEqual([]);
+  });
+
+  it('takes back a built place a "Changed:" names: the piece loses it, and so does the next approval', () => {
+    const undone = MD.replace('The reader cuts.\n', 'The reader cuts.\n\nChanged: **The reader no longer cuts.** A page keeps its whole. → unbuilt src/reader.ts\n');
+    const plan = now(built, [commit('1111111122', ['cut'])], undone);
+    const cutPiece = plan.pieces.find((x) => x.slug === 'cut')!;
+    // The comment on a test is a line of another kind: the claim names the place in the code alone.
+    expect(cutPiece.built).toEqual({ sites: [], comments: ['removes tests/x.test.ts — cut in a comment'] });
+    expect(cutPiece.takenBack).toEqual({ sites: ['changed src/reader.ts in fn — cut happens.'], comments: [] });
+    expect(plan.delta).toMatchObject([{ name: '#cut', reason: 'given', facets: [{ facet: 'sites', added: [], removed: ['changed src/reader.ts in fn — cut happens.'] }] }]);
+    expect(plan.delta![0].edits.map((e) => e.lines.map((l) => `${l.sign} ${l.text}`))).toEqual([['− changed src/reader.ts in fn — cut happens.']]);
+    expect(findings(plan).failures).toEqual([]);
+    expect(plan.snapshot.units.find((u) => u.name === '#cut')!.facets.sites).toEqual([]);
+    // A `code` claim names a line of the difference, never a built place whose line holds its fragment.
+    const stale = undone.replace('→ unbuilt src/reader.ts', '→ code src/reader.ts');
+    const kept = now(built, [commit('1111111122', ['cut'])], stale);
+    expect(kept.pieces.find((x) => x.slug === 'cut')!.takenBack.sites).toEqual([]);
+    expect(findings(kept).failures).toEqual([expect.stringContaining('says "Changed:" and is as approved')]);
+    // A claim that takes back no built place says so, whatever else its section holds.
+    const nowhere = undone.replace('→ unbuilt src/reader.ts', '→ unbuilt src/nowhere.ts');
+    expect(findings(now(built, [commit('1111111122', ['cut'])], nowhere)).failures).toEqual([
+      expect.stringContaining('claims unbuilt "src/nowhere.ts", and no built place of #cut holds that fragment'),
+      expect.stringContaining('says "Changed:" and is as approved'),
+    ]);
   });
 
   it('reads a note as what a piece was built with: listed when new, asking nothing, kept by the approval', () => {

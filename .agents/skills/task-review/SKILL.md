@@ -1,6 +1,6 @@
 ---
 name: task-review
-description: Review one lot's commits (or one bug-batch task's) for whether the code does what the approved plan says, complexity, dead code, missed invariants, test quality and wider code quality — at a depth (LIGHT / STANDARD / FULL) the reviewer sets itself from the diff. Returns numbered findings; applies only the fixes it is then told to. Use after task-implement delivers a lot.
+description: Review one lot's commits for whether the code does what the approved plan says, complexity, dead code, missed invariants, test quality and wider code quality — at a depth (LIGHT / STANDARD / FULL) the reviewer sets itself from the diff. Returns numbered findings; applies only the fixes it is then told to. Use after task-implement delivers a lot.
 ---
 
 # task-review
@@ -31,7 +31,8 @@ Read `.agents/repository.md` § "Review surfaces" and § "Gates". `map …` is t
    change lands is what makes it dangerous. A lot's difficulty says how hard it was to write; it
    never lowers your tier. You may raise the tier on judgement and say why, never lower it.
 
-3. **Read the plan the lot was built from**: `map brief <feature>/<lot>`. Then the implementer's
+3. **Read the plan the lot was built from**: `map brief <feature>/<lot>`, which prints each built
+   place with its clause as approved, and each test written under its title. Then the implementer's
    deviations and doubts, as a map: they say where to look, never what to conclude. Verify any
    claim you lean on. A thin "doubts" is itself a finding.
 
@@ -42,10 +43,14 @@ Read `.agents/repository.md` § "Review surfaces" and § "Gates". `map …` is t
    - **A file with several places**: was one skipped?
    - **Does each test assert what its title says**, or less? A moved assertion is compared with
      the one it replaces by value, not by title.
-   - **Each deleted test against the holder the plan named**: does the holder's assertion fail
-     if the behaviour breaks?
-   - **The steps written in the last commit**: read the story. Is a sentence now false, a step
-     missing where a reader would stop?
+   - **Each deleted test against the holder the plan named**, when the lot deleted one: does the
+     holder's assertion fail if the behaviour breaks?
+   - **The steps written in the last commit**, when it wrote any: read the story. Is a sentence
+     now false, a step missing where a reader would stop?
+   - **A piece that fixes a bug** (`specs/workflow-formats.md` § "A bug"): the check holds that
+     each reproduction is declared a written test and reads as approved. Did it fail before the
+     fix for the reason the piece gives? Is an evidence call left, or something written where
+     one stood? A reproduction you would have assert more is a finding, and a change of the plan.
    - **What the next lot stands on**: a choice made here that no line of the plan says.
 
 5. **Then the checklist**, at your tier's depth:
@@ -97,15 +102,8 @@ Read `.agents/repository.md` § "Review surfaces" and § "Gates". `map …` is t
 
 7. **Wait.** When fixes are approved, apply exactly those. **A fix is a commit of its piece**:
    the piece's `Piece:` line, files staged by name, verified as `repository.md` says a
-   reviewer's fix is. Report tersely what you committed.
-
-## A bug-batch task
-
-The same process over the task's commit, with the task in `tasks.md` and its diagnostic as the
-intent. Add to the checklist: the fix removed the reproduction's expected-failure marker rather
-than rewriting the test; any assertion change encodes a decision the task names, never a
-weakening; a test beyond the task's list is a scope finding unless it covers a new public
-contract the task names.
+   reviewer's fix is. A fix that makes a line of the docs or of the lot's changelog entry false
+   corrects that line in the same commit. Report tersely what you committed.
 
 ## The global review
 

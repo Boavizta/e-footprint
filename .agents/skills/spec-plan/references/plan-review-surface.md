@@ -1,7 +1,7 @@
 # Plan review surface
 
-Shared rules for every `plan.html`, whether it plans a feature (`spec-plan`) or a diagnosed bug batch
-(`bug-fixes-plan`). Those skills own the reading order and the content of their plans; this reference
+Shared rules for a `plan.html` of the earlier form, which no skill writes any more: a feature and a
+bug batch are planned in pieces (`spec-plan`, `bug-fixes-plan`). This reference
 owns how a code-grounded walkthrough is written, how the HTML surface is built, and what to audit
 before handoff. Edit it here; do not restate these rules in a skill.
 

@@ -1,148 +1,149 @@
 ---
 name: bug-fixes-plan
-description: Write or refine plan.html for a diagnosed bug batch after bug-fixes closes. Group the confirmed bugs by failure mechanism, digest each root cause and fix from its diagnostic, attach the refactors they motivate, and order the feature-implement runs. Planning only; no fixes.
+description: Write or refine the plan of a diagnosed bug batch after bug-fixes closes. The plan is a section a bug and the pieces that fix it, written into the code as planned and evidence calls, with the delivery in lots; the reviewer reads the plan page generated from them. Planning only; no fixes.
 ---
 
 # bug-fixes-plan
 
-Help the reviewer discover a bug batch: what is broken, why, what changes, and in what order.
-The diagnostics already hold the evidence; the plan is their digest and the single owner of
-run ordering and later implementation decisions. It is not a third copy of the diagnostics.
+Help the reviewer see a bug batch: what is wrong, where it shows, what changes, and in what order
+it is delivered. The diagnostics hold the investigation; the plan is not a copy of them. It is the
+batch's **pieces**, each tagged at the places it changes, under the bug it fixes, and the page is
+generated from them with what each reproduction saw.
 
-Input: `specs/features/bug-fixes-<YYYY-MM>/tasks.md`, its `diagnostics/*.md` and, when present,
-`smell-sweep.md`. Output: `plan.html` beside them, in the driving repository.
+This is `spec-plan` for bugs. Follow [`spec-plan`](../spec-plan/SKILL.md) for how a piece, a
+clause, a point to confirm and `plan.md` are written, for the audit of complexity, and for the
+review and the approval. This skill says what a plan of bugs adds and what it leaves out. The
+form is [`specs/workflow-formats.md`](../../../specs/workflow-formats.md) § "A bug", § "A site"
+and § "`plan.md`": its budgets are checked.
 
-Start in a fresh session after `bug-fixes` has closed the batch. Refine an existing plan in place.
-Read `.agents/repository.md` for local adaptations. Use the collection/binding commands in
-`specs/agent-tooling.md` at stage start and close-out; attribute the session to the driving repo,
-the batch folder as feature and the `plan` stage.
+Input: the working set `bug-fixes` left under `specs/features/bug-fixes-<YYYY-MM>/`, its
+`diagnostics/*.md` and its reproductions, failing, and `smell-sweep.md` when there is one.
+Output: `plan.md` beside them, the sites in the code, and `## Delivery`. Nothing the product does
+changes: a `planned` call and an evidence call are inert.
 
-Shared ground with `spec-plan`, owned there and never restated here:
+Run it in a fresh session once `bug-fixes` has closed the batch; refine a plan in place. Read
+`.agents/repository.md` (the stack's spellings, the commands, § "Planning checks", § "Lots").
+`map …` below is the map's command (`code-map` skill).
 
-- Grounding in repository docs and code: [spec-plan's grounding rules](../spec-plan/SKILL.md#before-writing).
-- Complexity audit for proposed mechanisms and refactors: [spec-plan's audit](../spec-plan/SKILL.md#audit-complexity-before-the-review).
-- Walkthrough writing, HTML surface, iteration and handoff audit: [plan review surface](../spec-plan/references/plan-review-surface.md).
-- Source links and the right-click diff menu: [plan-review-links](../spec-plan/references/plan-review-links.md).
-- Decision indexes and callouts: [plan-decision-callouts](../spec-plan/references/plan-decision-callouts.md).
-- Page layout: [the HTML starter](../spec-plan/assets/plan.html).
+## What differs from a feature's plan
 
-This skill owns what a bug-batch plan contains and in which order.
+- **The diagnostics stand where the spec does.** There is no `spec.md`, no rule to own and no
+  journey case. A product fork a diagnostic left open is a `To confirm:` of the piece it concerns;
+  what its `## Decisions` settled stays settled.
+- **A bug is in no narrative**, or it would not be one: the pieces are told a bug at a time, in
+  the order of `plan.md`, not in run order. A narrative the fix lands in is still read first,
+  when there is one.
+- **The tests are written already.** A reproduction is the piece's test: you plan no other,
+  unless a check the diagnostic lists beyond it is worth one.
+- **There is no tasks stage.** The reproductions are the unit tests and the diagnosis is the
+  grounding, so this skill writes the lots too, and one approval holds the plan and its
+  delivery.
 
 ## Ground the plan
 
-- Read `tasks.md` in full, every diagnostic and the smell sweep. Note the commit each diagnostic
-  was traced on; code may have moved since. Verify every line you link, and re-trace only where a
-  claim needs a line the diagnostics do not give or where two documents disagree. Do not
-  re-diagnose a confirmed cause.
-- Check the batch is closed: every `CONFIRMED` or `PLAUSIBLE` diagnostic has exactly one task,
-  every task links a diagnostic or a smell-sweep finding, each confirmed bug has a committed
-  reproduction or a stated reason for none, and every user-approved refactor has a task. Close a
-  missing reproduction by delegating it to a `diagnostician` under the
-  [bug-fixes reproduction rules](../bug-fixes/SKILL.md#reproduction-test); it writes the test and
-  the diagnostic's Reproduction section, and the plan step is written from those. When a plan
-  predates the reproductions, do this cluster by cluster in reading order and commit each cluster's
-  tests, diagnostics and rewritten steps together, so review can start before the batch is done. A diagnostic without a task is a gap: append the task to `tasks.md` in the
-  [bug-fixes task format](../bug-fixes/SKILL.md#task-format) with the next number, and tell the
-  user. Do not drop a diagnosed bug silently and do not renumber.
-- Settled `## Decisions` in a diagnostic stay settled. Open forks go to the plan's decisions
-  section, linked from the bug that raises them.
+- Read every diagnostic and the smell sweep. Note the commit each was traced on: code may have
+  moved. Verify each line you tag, and trace again only where a claim needs a line the diagnostic
+  does not give or where two disagree. Do not diagnose a confirmed cause a second time.
+- **Check the batch is closed**: each `CONFIRMED` diagnostic has its reproductions or a stated
+  reason for none, and their files fail today as recorded. One that is missing is delegated to a
+  `diagnostician` under [the reproduction's rules](../bug-fixes/SKILL.md#the-reproduction). A
+  diagnosed bug is never dropped silently.
+- **Group what one mechanism explains.** Two reports with one cause are one bug, or two bugs
+  whose pieces say which fixes which: say for each pair that could be the same cause whether it
+  is.
 
-## Reading order
+## A bug
 
-Cluster the tasks by failure mechanism: the same code path, the same mistaken assumption, or the
-same files. Order clusters with the [bug-fixes ordering rule](../bug-fixes/SKILL.md#close-the-batch):
-data-loss and silent-correctness first, then contained UI fixes, then larger or staged work, then
-behavior-preserving refactors, with test-only locks last. Task numbers stay as stable labels;
-reading position is not task number, and the navigation shows both.
+One `## Bug: <what is wrong>` section a confirmed bug, in the order they are read: what loses
+data or is silently wrong first, then what is contained to a screen, then what is larger or waits
+on a gate.
 
-Open each cluster with one paragraph on the mechanism as it exists today, linked to code, that
-explains all of the cluster's bugs. No architecture teaching; link the owning page.
+- **What whoever meets it sees**, in sixty words: where, what happens, what should. The cause is
+  no part of it: it is the pieces', and their chains'. Link the diagnostic.
+- **The pieces that fix it follow it**, a `## #slug` section each, up to the next bug. A piece
+  under no bug stands above the first: an approved refactor of the smell sweep is one.
+- A bug with no piece under it fails the check, and so does one that says too much.
 
-### Bug step
+## The pieces of a bug
 
-One `data-step` article per task, in this order and scaled to the bug. The reproduction is the
-task's only test; name an extra test only when the task lists one for a new public contract. An easy one-line fix can
-take five lines; do not pad a step to fill the shape.
+A piece is what the diagnostic's fix approach names, under the tag its reproduction already
+carries. Its section says what changes, then why and what was refused: the diagnostic's
+alternatives, in a clause each.
 
-1. Heading `Task N · <title>` with chips: verdict (`CONFIRMED` or `PLAUSIBLE`, the latter styled
-   `data-chip="review"`), repository, implementation difficulty. Link the diagnostic.
-   When a supported reproduction exists, place a **Debug reproduction** button immediately below
-   the heading, before chips and file metadata, using the
-   [shared reproduction-link convention](../spec-plan/references/plan-review-links.md#one-click-pytest-reproductions).
-   Keep the debug recipe and copyable command below; unsupported runners follow that convention's fallback.
-2. **Symptom**: what the user sees, in one or two sentences, with the reproduction test linked at
-   its function line and its recorded failure quoted. A bug with no reproduction says why.
-3. **Root cause**: explain only what the reproduction cannot show by itself. Do not retell the
-   test's fixture or act; link the test and let the reader read code. In this order:
-   - the mechanism in one sentence; when the reporter's hypothesis was disproven, say so here;
-   - the causal chain that puts the bad state in place: three to five numbered steps, each with
-     its code link (the breakpoint), a watch expression and the value observed in the recorded run;
-   - the trimmed traceback from the recorded run with each frame linked, which explains the crash
-     site without prose; omit it when the failure is a wrong value rather than an error;
-   - a debug recipe: the test line to break on right after the act, and the unmasked run command.
-   State tables and narrated walkthroughs of the act are what the breakpoints replace.
-4. **Fix**: the narrated anticipated diff, directly after the chain, since a small diff often
-   states the cause better than prose. Add a snippet only where prose would leave the shape of the
-   change unclear; mark existing versus proposed code.
-5. **Settled** decisions as plain text, **open** forks as a link to the decisions section, and the
-   diagnostic's flags (invariants, cross-repository ordering, serialization, local-only validation).
-   For a `PLAUSIBLE` task, state the staged gate: the observation to add first, then the
-   outcome-specific fix.
+- **Each place the fix changes is a `planned` call** with its clause, on the line the change
+  lands at. In a template it is a tag; where no line runs, a comment.
+- **Each line the bug shows at and the fix does not change is an evidence call**: what is seen
+  there today, with its watch. It marks no change, so it stands where the cause is even when the
+  fix is elsewhere, and it goes with the fix.
+- **`expect` says what a place should see**, on evidence or on a `planned` call: once for the
+  place, or computed at each crossing where the right value depends on it. **`distinct`** names
+  the keys each crossing should see its own value for, for a bug no crossing shows alone.
+- **Watch what is wrong, not what led to it.** "Should be" is read as a claim about the watched
+  value: a value that is right and only reaches the wrong branch is context, with no `expect`.
+- **Evidence is a piece's own.** A reproduction that also crosses another piece's places draws
+  nothing under the first.
+- **A place is written or it is not.** A plan leaves nothing "optional" to the implementer: what
+  the diagnostic left open is decided here, or asked.
+- **Read each place against the piece's own reason.** A clause repeated over many places hides
+  the one it does not fit: a reason that says what stays as it is (a full page, a download) rules
+  places out, and one of those is no place of the plan.
+- **A ripple needs a place in each file it changes**: the lot check refuses a file of the
+  product's code no place names.
 
-### Refactor step
+Then make the reproductions tell it:
 
-Place each refactor at the end of the cluster that motivates it, labelled with its smell-sweep
-finding ids. Explain it through the shared refactor rule: what happens today, what is extracted
-and who uses it, which bugs above it would have prevented or which next one it prevents. Mark the
-parts that deliberately change behavior. When the cluster does not earn the refactor's cost, say so
-as a review decision with the smaller alternative; do not drop an approved refactor silently.
+- **One reproduction a piece**, under the piece's tag. Split one that spans two pieces, each half
+  failing for its own reason; rewrite one that stops at its first assertion to observe, then
+  assert once. The body you leave is the one the approval holds.
+- **Run the check and read the chain** on the plan page: each reproduction, the places it
+  crossed in run order with the values it saw, then how it failed. The check fails on a place
+  whose reproductions saw only what it expects: the bug does not show there, and the diagnosis or
+  the expectation is corrected.
+- **What a diagnostic lists beyond its reproduction** is one of three things, and the plan says
+  which: a test, planned under the piece; a check only the user can make, named in its lot's
+  reason; or dropped, in a clause of the piece's reason.
 
-### Execution plan
+## A cause that is only plausible
 
-A dedicated `#execution-plan` section owns run ordering. For each `feature-implement` run, list the
-task numbers in order with dependency, shared-file, cross-repository and user-validation notes,
-following the run-size and ordering rules in [bug-fixes](../bug-fixes/SKILL.md#close-the-batch).
-Give each run one command that runs its reproductions unmasked, such as
-`pytest --runxfail <test ids>`, so the reviewer can read the real tracebacks.
-Add a one-line deduplication verdict for each pair of tasks that could be the same cause. Draw a
-small dependency diagram when the dependencies are not a straight line, labelling hard
-dependencies, soft ordering and shared files distinctly.
+A `PLAUSIBLE` diagnostic has no reproduction and no fix to plan yet. Its piece is what produces
+the reading that tells the hypotheses apart; what follows the reading is another piece, in a
+later lot whose reason says what it waits on. The plan ranks the hypotheses and commits to none.
 
-Replace the execution-plan placeholder in `tasks.md` with a one-line pointer to
-`plan.html#execution-plan`. The plan is the only place that orders runs.
+## The delivery
 
-A verification table is useful when several tasks share one new test file or harness; otherwise
-the per-step tests suffice.
+Write `## Delivery` as `spec-tasks` cuts lots
+([§ "Cutting the lots"](../spec-tasks/SKILL.md#cutting-the-lots), and its difficulty, set on
+what is left once the cause is known: a diagnosed fix is often `easy`).
 
-### Changed-file tree
+- **A lot is one subject for one reviewer**: the bugs of one surface, the pieces that share a
+  file or a test file. A piece that another piece's fix makes show something goes after it, in
+  the same lot or a later one; the reason says so.
+- **The order of the lots is the order of the bugs**: what loses data first, refactors last.
+- **A gate only the user can pass** is named in the reason of the lot it follows, with what
+  waits on it.
+- A change in the other repository is no lot here: it is a pointer of `## Planned elsewhere`,
+  and a lot that stands on it says so.
 
-Steps are tasks, so `data-steps` lists task ids and the tree highlights the files of the selected
-task. A file touched by several tasks lists all of them; that is where run ordering and conflicts
-are decided.
+## Before handing over
 
-## Header and decisions
-
-The header links `tasks.md`, `smell-sweep.md` when present, and the changed-file tree; there is no
-spec. Keep a decisions section only for open forks and refactor cost calls, each grounded in a
-concrete scenario from a diagnostic.
-
-## Handoff
-
-Run the [shared handoff audit](../spec-plan/references/plan-review-surface.md#handoff-audit).
-Report the plan path, the clusters, tasks added to `tasks.md`, and open decisions. Wait for review.
-After approval, hand each run to a fresh `feature-implement` session; it reads the run's steps and
-their diagnostics, and records `IMPL-DECISION` callouts beside the affected step using the shared
-format. `plan-review-guide` applies at close-out as for a feature plan. Use `feature-archive`
-after all runs have shipped.
+- `map check <feature>` in a screen, then the whole check once before the commit: it runs the
+  reproductions itself, and fails on one that passes.
+- Tell the reviewer where the plan page is, the bugs in reading order, the points to confirm, and
+  any diagnosed bug the plan holds no piece for, with the reason.
+- **The plan is approved with its delivery**, on the reviewer's word and by the approval command
+  alone. The approval keeps each reproduction as written and what it saw that day. The next
+  stage is `feature-implement`, a lot a run, in a fresh session.
 
 ## Guardrails
 
-- Do not implement fixes or edit product code, including apparent one-liners.
-- Do not reopen settled diagnostic decisions or reinterpret a disproven hypothesis as open.
-- Do not duplicate diagnostic evidence; link it.
+- Fix nothing, an apparent one-liner included: a site is inert, and the product behaves as it did.
+- Do not reopen a decision a diagnostic settled, nor treat a disproven hypothesis as open.
+- Do not copy a diagnostic into `plan.md`: link it.
+- Weaken no reproduction to make a chain read better.
 
 ## Maintaining this skill
 
-The interface repository's `.agents/skills/bug-fixes-plan/` is the reference; the library's copy
-is synchronized from it (`specs/agent-tooling.md`). Rules shared with `spec-plan` live in `spec-plan/references/` and `spec-plan/assets/`:
-change them there and synchronize both repositories. Keep only bug-batch content rules here.
+The interface repository's copy is the reference; the library's is synchronized from it
+(`specs/agent-tooling.md`). What a plan of bugs shares with a feature's lives in `spec-plan`,
+`spec-tasks` and `specs/workflow-formats.md`: change it there. Keep here only what a batch of
+bugs adds.

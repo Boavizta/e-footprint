@@ -34,8 +34,8 @@ is authorisation; no stage manufactures another approval.
 
 These go directly to work: a bug fix that introduces no pattern and touches no security boundary,
 a local refactor with no change to an external interface, an investigation. A **bug batch** uses
-`bug-fixes`, then `bug-fixes-plan`: diagnostics, a reproduction a bug and a `plan.html` replace
-the spec and the plan, in the earlier form, and stages 4 and 5 apply.
+`bug-fixes`, then `bug-fixes-plan`: its diagnostics stand where the spec does, its plan is written
+in pieces with a section a bug and its delivery, it has no tasks stage, and stages 4 and 5 apply.
 
 Nothing here authorises a deployment, a publication, a destructive operation or a paid external
 action beyond what the user granted.
@@ -122,7 +122,8 @@ feature folder is deleted. Git history is the archive: no per-feature summary is
 - **A fresh session for each of specify, plan, tasks, and for each implementation run.** A
   decision that exists only in a conversation is a gap to resolve, not something to infer.
 - The roles are `implementer`, `implementer-easy`, `implementer-hard`, `reviewer`,
-  `reviewer-global` and `light`, with `diagnostician` and `plan-review-guide` for a bug batch.
+  `reviewer-global` and `light`, with `diagnostician` for a bug batch and `plan-review-guide` for
+  a `plan.html` of the earlier form.
   A role's text is `.agents/roles/<role>.md`. Its model and effort are pinned in the runtime's
   agent definition and named nowhere else: skills and documents name roles.
 - Stateful test suites and mutable application databases are never shared between parallel
