@@ -270,11 +270,16 @@ def system_to_json(input_system, output_filepath=None, indent=4, save_computed_s
 def systems_to_json(systems, output_filepath=None):
     """Writes ``systems`` in order, the first being the reference, as a comparison file: a dict whose ``models``
     key lists each system's ``system_to_json`` document. Two systems sharing a System id are refused."""
+    narrate("The systems are written in order, the first the reference, each as its own `system_to_json` save: "
+            "**a System id shared by two systems is refused, never renamed**, since the System id is what tells the "
+            "reference from its variant once the file is loaded.",
+            lambda: {"system ids": [system.id for system in systems]})
     seen_system_ids = set()
     for system in systems:
         if system.id in seen_system_ids:
             raise ValueError(f"Two systems share the System id {system.id!r}: a comparison file holds one system per "
-                             f"id. Give one of them its own id with duplicate_system.")
+                             f"id. Make the variant with duplicate_system(reference), which gives the copy its own "
+                             f"System id.")
         seen_system_ids.add(system.id)
     comparison_dict = {"models": [system_to_json(system) for system in systems]}
     if output_filepath is not None:

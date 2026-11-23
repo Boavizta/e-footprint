@@ -74,7 +74,7 @@ class TestSystemFile:
             "duplicate_system [distinct-systems]")
     def test_two_systems_sharing_a_system_id_are_refused(self, system):
         with pytest.raises(ValueError) as error:
-            systems_to_json([system, system])
+            systems_to_json([system, loaded_system(system_to_json(system))])
 
         assert system.id in str(error.value)
         assert "duplicate_system" in str(error.value)
