@@ -6,6 +6,10 @@ and this project adheres to [Semantic Versioning](http://semver.org/)
 
 ## [Unreleased]
 
+### Added
+- `efootprint.api_utils.system_to_json.systems_to_json(systems, output_filepath=None)` saves several systems to one comparison file, in the order given, the first being the reference. Two systems sharing a System id are refused: give one of them its own id with `duplicate_system`.
+- `efootprint.api_utils.json_to_system.json_to_systems(comparison_dict)` loads the systems of a comparison file back, in the file's order, each as its own `json_to_system` load gives it.
+
 ## [V27.1.0] - 2026-11-23
 
 ### Changed
