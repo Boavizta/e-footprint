@@ -267,7 +267,7 @@ def json_to_system(system_dict, efootprint_classes_dict=None):
 
 def json_to_systems(comparison_dict):
     planned("comparison-file#load", "Loads each document under the models key through `json_to_system`, in order, "
-                                    "and returns their systems; every other key is ignored.")
+                                    "and returns their systems.")
     raise NotImplementedError("planned: comparison-file#load")
 
 

@@ -9,20 +9,14 @@ library calls either: both are new entry points for the modeler.
 `systems_to_json` writes the systems in order, the first the reference, as a dict whose `models`
 key lists each one's `system_to_json` document. Systems sharing a System id are refused.
 
-The key is the one the interface writes today, so the files it saved load unchanged. Each document
-is its own save, so the single-system format and its schema version stay as they are, and the file
-needs no version of its own. Refused: renaming a colliding System, which would hide which system is
-which.
-
-To confirm: **No function takes documents: the interface shares only the key.** Its documents hold
-objects no System reaches, and it opens them as documents through its own import, so neither
-function fits it. The alternative is a function wrapping documents under the key, which the export
-would call too, and the interface for its saves.
+Each document is its own save, so the single-system format and its schema version stay as they
+are, and the file needs no version of its own. Refused: renaming a colliding System, which would
+hide which system is which.
 
 ## #load
 
 `json_to_systems` returns a comparison file's systems in the file's order, each loaded from its
-document by `json_to_system`. Keys it does not own are ignored, at both levels.
+document by `json_to_system`.
 
 Systems alone are returned: a modeler compares systems, and each one reaches its objects. Two
 documents sharing a System id are not checked: only a file assembled by hand can, and their loads

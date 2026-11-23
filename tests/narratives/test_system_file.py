@@ -79,8 +79,3 @@ class TestSystemFile:
                   "their order, each as its own save and load gives it [round-trip]")
     def test_systems_saved_to_one_file_load_back_in_their_order(self, system):
         ...
-
-    @planned_test("comparison-file#load: `json_to_systems` loads a comparison file the interface saved, ignoring "
-                  "what the interface added [library-reads-interface-files]")
-    def test_a_comparison_file_the_interface_saved_loads(self, system):
-        ...
