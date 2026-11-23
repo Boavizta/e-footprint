@@ -325,11 +325,24 @@ function pieceText(plan, piece, code, whole = false, printed = new Map()) {
     if (piece.doc.ask) out.push(`  TO CONFIRM: ${piece.doc.ask.question}${piece.doc.ask.detail ? ` ${piece.doc.ask.detail}` : ''}`);
     out.push(...pieceNotes);
   } else if (plan.doc) out.push(`  (no section "## #${piece.slug}" in ${plan.doc.file}: the piece has no statement)`);
+  if (piece.bug && code) out.push(`  fixes the bug: ${piece.bug.title}  (${plan.doc.file}:${piece.bug.line})`);
   if (piece.decidedIn.length) out.push(`  also decided in: ${piece.decidedIn.map((d) => `"${d.title}"`).join(', ')}`);
+  // What a place says it should see: values, and the keys each crossing should see its own of.
+  const should = (x) => `${x.expect ? `  · should see ${x.expect}` : ''}${x.distinct?.length ? `  · each crossing its own ${x.distinct.join(', ')}` : ''}`;
   const siteHead = (x) => {
     const inside = x.crossedBy.map((c) => `${c.narrative}${c.step ? ` step ${c.step.n} (${c.step.how === 'in' ? 'in' : c.step.how === 'via' ? 'through' : 'right after'} ${c.step.label})` : ', in no step'}`).join('; ');
     const tests = x.reachedBy.reduce((a, r) => a + r.tests, 0);
-    return [`  ${x.change}  ${at(x)}  in ${x.fn} — ${x.sentence}`,
+    // Evidence marks no change: it says what a reproduction saw at the place, and goes with the fix.
+    if (x.change === 'evidence') {
+      // A crossing whose watch is not what it should have seen is said first, with what it should: that is the bug.
+      const differs = (c) => Object.entries(c.expect ?? {}).some(([key, value]) => JSON.stringify(c.watch?.[key]) !== JSON.stringify(value));
+      const said = (c) => `${JSON.stringify(c.watch)}${differs(c) ? ` (should be ${JSON.stringify(c.expect)})` : ''}`;
+      const crossings = (x.seenBy ?? []).flatMap((s) => s.crossings).filter((c) => c.watch !== null).sort((a, b) => Number(differs(b)) - Number(differs(a)));
+      const seen = [...new Set(crossings.map(said))];
+      return [`  evidence ${at(x)}  in ${x.fn} — ${x.sentence}`,
+        `    goes with the fix${should(x)}${seen.length ? `  · a reproduction saw ${seen.slice(0, 3).join(' | ')}${seen.length > 3 ? ` … (${seen.length} values)` : ''}` : '  · crossed by no reproduction yet'}`];
+    }
+    return [`  ${x.change}  ${at(x)}  in ${x.fn} — ${x.sentence}${should(x)}`,
       ...(x.change === 'added' ? [`    called from: ${(plan.calledFrom?.[x.id] ?? []).map((c) => `${at(c)} (#${c.slug})`).join(', ') || 'NOWHERE — no site names it'}`] : []),
       `    ${x.change === 'added' ? `new seam: ${x.signature ?? x.fn}` : inside ? `lands in ${inside}` : 'crossed by no narrative'}${tests ? `  · reached by ${plural(tests, 'test')} in ${plural(x.reachedBy.length, 'file')}` : x.change === 'added' ? '' : '  · seen by no run yet: run the narrative tests it should sit in, then ask again'}`];
   };
@@ -388,7 +401,10 @@ function pieceText(plan, piece, code, whole = false, printed = new Map()) {
   for (const tier of TIERS) {
     const todos = piece.todos.filter((t) => t.tier === tier);
     const toWrite = todos.filter((t) => !t.written).length;
-    if (todos.length) out.push(`  ${tier} tests (${toWrite} to write${todos.length > toWrite ? `, ${todos.length - toWrite} written` : ''}):`, ...todos.filter((t) => whole || !t.written).flatMap((t) => [`    ${at(t)}  ${t.written ? 'written — ' : ''}${t.title}${t.rule ? `  [owns ${t.rule}]` : ''}`, ...(notes.get(t) ?? []).map((x) => `      how: ${x.text}  (the comment at :${x.line}, which goes)`)]));
+    const failing = todos.filter((t) => t.reproduction).length;
+    // A reproduction is written and fails today: it is owed until the piece is built and it is declared a test like another.
+    const said = (t) => (t.reproduction ? `FAILS TODAY, a reproduction${t.run?.failure ? ` (${t.run.failure.message.split('\n')[0].slice(0, 120)})` : ''} — ` : t.written ? 'written — ' : '');
+    if (todos.length) out.push(`  ${tier} tests (${toWrite} to write${failing ? `, ${failing} failing today` : ''}${todos.length > toWrite + failing ? `, ${todos.length - toWrite - failing} written` : ''}):`, ...todos.filter((t) => whole || !t.written || t.reproduction).flatMap((t) => [`    ${at(t)}  ${said(t)}${t.title}${t.rule ? `  [owns ${t.rule}]` : ''}`, ...(notes.get(t) ?? []).map((x) => `      how: ${x.text}  (the comment at :${x.line}, which goes)`)]));
   }
   if (piece.todos.length === 0) out.push('  no test to write');
   const moved = code ? (plan.delta ?? []).find((d) => d.kind === 'piece' && d.name === `#${piece.slug}`) : undefined;
@@ -402,11 +418,21 @@ function plan(map, feature) {
   if (p.doc) say(`# ${p.doc.title}   (${p.doc.file}: each piece's statement and reason)`, ...blockLines(p.doc.lead, ''), '', '─'.repeat(60));
   else say(`(no ${FEATURES}/${feature}/plan.md: the pieces have no statement and no reason)`, '');
   const bySlug = new Map(p.pieces.map((s) => [s.slug, s]));
+  // A piece of a bug is told under its bug, below: the groups hold the others.
   for (const g of p.groups) {
+    const slugs = g.slugs.filter((slug) => !bySlug.get(slug).bug);
+    if (slugs.length === 0) continue;
     say(g.kind === 'narrative' ? `In run order — ${g.narrative}` : g.kind === 'uncrossed' ? 'Pieces crossed by no narrative' : 'Pieces with no runtime line', '');
-    for (const slug of g.slugs) say(...pieceText(p, bySlug.get(slug), false), '');
+    for (const slug of slugs) say(...pieceText(p, bySlug.get(slug), false), '');
   }
-  for (const section of p.doc ? p.doc.sections.filter((x) => x.piece === null) : []) say(`Decided across pieces — ${section.title}`, ...blockLines(section.blocks, '  '), '');
+  // A bug at a time, as the plan page tells them: what is wrong, then the pieces that fix it, in the file's order.
+  const sections = p.doc?.sections ?? [];
+  for (const bug of sections.filter((x) => x.bug)) {
+    const fixing = p.pieces.filter((piece) => piece.bug?.anchor === bug.anchor).sort((a, b) => (a.doc?.section.line ?? 0) - (b.doc?.section.line ?? 0));
+    say(`Bug — ${bug.title}   (${p.doc.file}:${bug.line}, fixed by ${fixing.map((piece) => `#${piece.slug}`).join(', ') || 'NO PIECE'})`, ...blockLines(bug.blocks, '  '), '');
+    for (const piece of fixing) say(...pieceText(p, piece, false), '');
+  }
+  for (const section of sections.filter((x) => x.piece === null && !x.bug)) say(`Decided across pieces — ${section.title}`, ...blockLines(section.blocks, '  '), '');
   if (p.journeyCases?.length) {
     say('─'.repeat(60), `Journey cases of the spec, to write — ${p.journeyCases.length}, each once the pieces behind it are in`);
     for (const journey of [...new Set(p.journeyCases.map((c) => c.journey))]) {
@@ -532,8 +558,8 @@ function brief(map, name) {
   const printed = new Map();
   for (const piece of pieces) say(...pieceText(p, piece, true, !lot, printed), '');
   // The decisions across pieces are told whole: they hold what no site carries (a snapshot to regenerate, a doc made stale).
-  const decisions = (p.doc?.sections ?? []).filter((d) => d.piece === null && pieces.some((piece) => d.slugs.includes(piece.slug)));
-  for (const d of decisions) say(`Decided across pieces — ${d.title}  (${p.doc.file}:${d.line})`, ...blockLines(d.blocks, '  '), '');
+  const decisions = (p.doc?.sections ?? []).filter((d) => d.piece === null && pieces.some((piece) => (d.bug ? piece.bug?.anchor === d.anchor : d.slugs.includes(piece.slug))));
+  for (const d of decisions) say(`${d.bug ? 'Bug' : 'Decided across pieces'} — ${d.title}  (${p.doc.file}:${d.line})`, ...blockLines(d.blocks, '  '), '');
   // What the pieces outside this brief were built with, that this work may stand on.
   const before = p.pieces.filter((x) => !pieces.includes(x)).flatMap((x) => (x.doc?.notes ?? []).map((n) => `  #${x.slug}: ${n.text}`));
   if (before.length) say('Notes on what is built elsewhere in the plan:', ...before, '');
@@ -562,6 +588,8 @@ function reach(map, name) {
   if (untraced.length) say(`NOT LISTED ABOVE — the tests of what ${untraced.length === 1 ? 'this comment site changes' : `these ${untraced.length} comment sites change`}: a comment is crossed by no run, so find them by the symbol`, ...untraced.map((x) => `    ${at(x)} — ${x.text}`), '');
   const planned = pieces.flatMap((piece) => piece.todos.filter((t) => !t.written));
   if (planned.length) say(`Planned, to write — ${planned.length}`, ...planned.map((t) => `    ${at(t)}  ${t.tier} — ${t.title}`));
+  const failing = pieces.flatMap((piece) => piece.todos.filter((t) => t.reproduction));
+  if (failing.length) say(`Failing today, the reproductions — ${failing.length}`, ...failing.map((t) => `    ${at(t)}  ${t.tier} — ${t.title}`));
 }
 
 const VERBS = {

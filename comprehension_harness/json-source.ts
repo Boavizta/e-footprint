@@ -13,6 +13,7 @@
  * A document that is not of the shape `stack.ts` gives stops the tool, naming the file and the table.
  */
 import { execFileSync } from 'node:child_process';
+import { PLANNED_CHANGES } from './stack';
 import type { Around, Declaration, Location, Neighbour, RawSite, Resolution, SourceFileIndex, SourceIndexDocument, SourceReader } from './stack';
 
 const IDENTIFIER = /^[A-Za-z_$][A-Za-z0-9_$]*$/;
@@ -43,7 +44,7 @@ export function checkSourceIndex(document: unknown, from: string): SourceIndexDo
     for (const table of TABLES) if (!Array.isArray((tables as Partial<SourceFileIndex>)?.[table])) fail(`"${table}" of ${file} is not a list`);
     for (const site of tables.sites) {
       if (!['step', 'event', 'planned'].includes(site.kind) || typeof site.line !== 'number' || typeof site.column !== 'number' || typeof site.fn !== 'string') fail(`a site of ${file} is not { kind, line, column, fn, sentence }: ${JSON.stringify(site)}`);
-      if (site.kind === 'planned' && (site.sentence === null || typeof site.planned?.feature !== 'string' || typeof site.planned.slug !== 'string' || !['changed', 'removed', 'added'].includes(site.planned.change))) {
+      if (site.kind === 'planned' && (site.sentence === null || typeof site.planned?.feature !== 'string' || typeof site.planned.slug !== 'string' || !PLANNED_CHANGES.includes(site.planned.change))) {
         fail(`the planned call at ${file}:${site.line} needs a literal sentence and "planned": { feature, slug, change, signature }`);
       }
     }

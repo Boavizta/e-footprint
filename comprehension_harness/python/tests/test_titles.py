@@ -71,6 +71,22 @@ def test_a_test_is_titled_by_its_name_or_its_decorator_and_planned_when_it_has_n
     assert all(lines[test["line"] - 1][test["column"] - 1:].startswith("test_") for test in answer["tests"])
 
 
+def test_a_reproduction_is_a_written_test_declared_to_fail_today():
+    text = textwrap.dedent('''
+        from comprehension_harness.python.declare import reproduces
+
+
+        @reproduces("gift-cards#deduct-the-card: a card of zero is charged nothing")
+        def test_zero_card():
+            assert charge(0) == 0
+    ''').lstrip("\n")
+
+    [answer] = read(("tests/test_pay.py", text))
+
+    assert answer["tests"] == [{"title": "gift-cards#deduct-the-card: a card of zero is charged nothing",
+                                "line": 5, "column": 5, "planned": False, "reproduction": True}]
+
+
 def test_a_stand_is_the_line_that_opens_a_test_a_class_or_a_declaration():
     [answer] = read(("tests/test_pay.py", TEST_FILE))
 
@@ -101,6 +117,7 @@ def test_a_batch_is_answered_in_order_and_a_file_that_is_not_python_holds_nothin
     ('TITLE = "a#b: c"\n\n@titled(TITLE)\ndef test_x():\n    pass\n',
      "t.py:3 — @titled(…) takes the test's title as one literal string"),
     ('@titled("a")\n@planned_test("b")\ndef test_x():\n    pass\n', "t.py:1 — a test has one title"),
+    ('@reproduces("a#b: c")\ndef test_x():\n    pass\n', "t.py:1 — @reproduces stands on a written test"),
     ('@titled("a")\ndef check_x():\n    pass\n', "t.py:1 — @titled(…) stands on a test function"),
     ("def test_x(:\n    pass\n", "t.py:1 — the Python parser refuses the file"),
 ])

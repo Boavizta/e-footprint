@@ -16,7 +16,8 @@
  *  - `actor`: the word a product narrative's causes open with ("The user taps …" for `user`); any other cause is the world's;
  *  - `source` and `tests`: what a file is, by its path (`layout.ts`);
  *  - `pagesNamingCode`: the pages whose entries mark the steps they name: debts, rules, conventions;
- *  - `commands`: how a tool, the narrative tests and the journeys are run here;
+ *  - `commands`: how a tool, the narrative tests and the journeys are run here. `tests` also runs the test files
+ *    that hold a plan's reproduction, before a plan's page is drawn or checked;
  *  - `planDiff`: a module that draws what a proposed migration does to the database, or null;
  *  - `repositories`, optional: where the checkout of another repository is, by its name, as a path from the
  *    root. A plan that points at a piece planned there is read against it (`plan.md` § "Planned elsewhere").

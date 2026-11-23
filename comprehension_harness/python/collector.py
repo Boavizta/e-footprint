@@ -4,13 +4,19 @@ A project loads it for every run: ``pytest_plugins = ["comprehension_harness.pyt
 conftest of its tests. For the lifetime of a run it is the collector of the project's own calls, the module
 ``stack.calls`` of the configuration names, and of no other project's: a dependency's calls stay inert. Each
 ``narrate``, ``event`` or ``planned`` call a test crosses is a hit: its sentence, its watch's value, the frame of
-the call and the repository's frames above it. A test's hits are its story; a test file's stories are one JSON
+the call and the repository's frames above it. A call a template makes is a hit at its tag, under the frames
+that rendered the template. A test's hits are its story; a test file's stories are one JSON
 array at ``<cache>/stories/<the file, "/" written "__">.json``, deleted when the file's run starts and written
-when it ends. A test that crosses no call has no story.
+when it ends. A test that crosses no call has no story, but for a reproduction (``@reproduces`` of
+``declare.py``): its story is the bug's evidence, and holds how the test fails whatever it crossed.
 
 A hit carries no identity: the tools derive ``<file>#<function>#<ordinal>`` from the source index. A frame's
 function is its ``__qualname__``, as the index names it; its line and column are where the call expression
 starts, as ``ast`` has them.
+
+A run started for a person and not for the pages writes no story and deletes none: with
+``COMPREHENSION_STORIES=off`` in its environment, as a debug run of one test has it, the calls are collected as
+ever and the story files are left as the last whole run wrote them.
 
 Under pytest-xdist a file's tests run in several processes: each worker hands its stories to the controller,
 which writes the files when the run ends.
@@ -22,16 +28,24 @@ import itertools
 import json
 import math
 import os
+import re
 import time
 from pathlib import Path
 
 import pytest
 
+from comprehension_harness.python.source_index import TEMPLATE_FN, TEMPLATE_TAG
+
 CONFIG_FILE = "comprehension.config.json"
 # A site keeps its first hits of a test in full and counts the rest: a test that loops over a narrated line
 # would otherwise pay a stack and a watch per pass.
 MAX_HITS_PER_SITE = 50
+# What a story keeps of the message a test failed with: an assertion's own lines, not the values it prints after.
+MAX_FAILURE_CHARS = 1200
+PYTEST_HINT = re.compile(r"^\s*(?:Use -v+ to get more diff|Omitting \d+ identical items, use -v+ to show)\s*$")
 KINDS = ("product", "mechanism")
+# The environment of a run that writes no story: a debug run of one test would leave its file's stories with one.
+STORIES_SWITCH = "COMPREHENSION_STORIES"
 WORKER_OUTPUT = "narrate_stories"
 
 
@@ -65,9 +79,9 @@ def plain(value, depth: int = 0):
 
 
 def title_of(item) -> str:
-    """The one title of a test: its ``@titled`` or ``@planned_test`` string, else its function's name, with
-    pytest's ``[case]`` after it when the test is parametrized."""
-    marker = item.get_closest_marker("titled") or item.get_closest_marker("planned_test")
+    """The one title of a test: its ``@titled``, ``@reproduces`` or ``@planned_test`` string, else its function's
+    name, with pytest's ``[case]`` after it when the test is parametrized."""
+    marker = next(filter(None, map(item.get_closest_marker, ("titled", "reproduces", "planned_test"))), None)
     name = getattr(item, "originalname", None) or item.name
     return (marker.args[0] if marker else name) + item.name[len(name):]
 
@@ -85,10 +99,12 @@ class StoryRecorder:
                                     f'project imports narrate, event and planned from')
         self.calls = importlib.import_module(stack["calls"])
         self.is_worker = hasattr(config, "workerinput")
+        self.writes = os.environ.get(STORIES_SWITCH, "").lower() != "off"
         self.config = config
         self.own_files = {os.path.realpath(self.calls.__file__), os.path.realpath(__file__)}
         self.relative_paths: dict[str, str | None] = {}
         self.positions: dict[tuple, tuple[int, int]] = {}
+        self.tag_columns: dict[tuple[str, int], int] = {}
         self.order: dict[str, int] = {}
         # The stories of a run, by test file, until they are written.
         self.pending: dict[str, list[dict]] = {}
@@ -124,17 +140,35 @@ class StoryRecorder:
         return {"file": file, "line": line, "column": column,
                 "fn": None if code.co_name.startswith("<") else code.co_qualname}
 
+    def site_of(self, kind: str, where) -> dict:
+        """Where a call was made: its frame, or for a template's call the place its tag says."""
+        in_template = isinstance(where, self.calls.Place)
+        filename, line = (where.file, where.line) if in_template else (where.f_code.co_filename, where.f_lineno)
+        file = self.relative(filename)
+        if file is None:
+            raise RuntimeError(f"{kind} call at {filename}:{line} is outside the repository {self.root}: a site is "
+                               f"a file of it")
+        # A template's tag sits in no function: it is named as the source index names it, and its column is
+        # where the tag opens on its line.
+        return {"file": file, "line": line, "column": self.tag_column(filename, line), "fn": TEMPLATE_FN} \
+            if in_template else self.frame(where, file)
+
+    def tag_column(self, filename: str, line: int) -> int:
+        key = (filename, line)
+        if key not in self.tag_columns:
+            written = Path(filename).read_text().split("\n")[line - 1:line]
+            tag = TEMPLATE_TAG.search(written[0]) if written else None
+            self.tag_columns[key] = tag.start() + 1 if tag else 1
+        return self.tag_columns[key]
+
     # ── Hits ────────────────────────────────────────────────────────────────────────────────────────
 
     def collect(self, kind, sentence, watch, frame, planned_as) -> None:
         test = self.current
         if test is None:
             return  # Outside a test (an import, a fixture of the session): nobody's story.
-        file = self.relative(frame.f_code.co_filename)
-        if file is None:
-            raise RuntimeError(f"{kind} call at {frame.f_code.co_filename}:{frame.f_lineno} is outside the "
-                               f"repository {self.root}: a site is a file of it")
-        site = self.frame(frame, file)
+        site = self.site_of(kind, frame)
+        file = site["file"]
         counted = {"file": file, "line": site["line"], "kept": 0, "omitted": 0}
         tally = test["tallies"].setdefault((file, site["line"]), counted)
         if tally["kept"] >= MAX_HITS_PER_SITE:
@@ -142,23 +176,31 @@ class StoryRecorder:
             return
         tally["kept"] += 1
         stack = []
-        above = frame.f_back
+        above = frame.above if isinstance(frame, self.calls.Place) else frame.f_back
         while above is not None:
             own = self.relative(above.f_code.co_filename)
             if own is not None:
                 stack.append(self.frame(above, own))
             above = above.f_back
-        value = None
-        if watch is not None:
-            try:
-                value = plain(watch())
-            except Exception as error:  # A watch documents a run and never fails it.
-                value = {"error": f"{type(error).__name__}: {error}"}
-        hit = {"kind": kind, "sentence": sentence, "watch": value, "site": site, "stack": stack,
+        hit = {"kind": kind, "sentence": sentence, "watch": self.read(watch), "site": site, "stack": stack,
                "atMs": round((time.perf_counter() - test["started"]) * 1000, 1)}
         if planned_as is not None:
-            hit["planned"] = dict(zip(("feature", "slug", "change"), planned_as))
+            *piece, expect = planned_as
+            hit["planned"] = dict(zip(("feature", "slug", "change"), piece))
+            if expect is not None:
+                # What this crossing should have seen: said once for the place, or computed for the crossing.
+                hit["expect"] = self.read(expect)
         test["hits"].append(hit)
+
+    @staticmethod
+    def read(said):
+        """A watch's value, or what a place expects: a function is called, anything else is the value."""
+        if said is None:
+            return None
+        try:
+            return plain(said() if callable(said) else said)
+        except Exception as error:  # A watch documents a run and never fails it.
+            return {"error": f"{type(error).__name__}: {error}"}
 
     # ── Tests ───────────────────────────────────────────────────────────────────────────────────────
 
@@ -188,7 +230,7 @@ class StoryRecorder:
         if file is None:
             yield
             return
-        if file not in self.started:
+        if file not in self.started and self.writes:
             # A file's run rewrites its stories from nothing: a run that dies leaves none to be read as fresh.
             self.started.add(file)
             self.story_file(file).unlink(missing_ok=True)
@@ -197,7 +239,7 @@ class StoryRecorder:
             yield
         finally:
             test, self.current = self.current, None
-        if test["hits"]:
+        if test["hits"] or item.get_closest_marker("reproduces"):
             self.pending.setdefault(file, []).append(self.story(item, file, test))
         if not self.is_worker and (nextitem is None or self.test_file(nextitem) != file):
             self.write(file)
@@ -208,9 +250,22 @@ class StoryRecorder:
         if self.current is not None:
             self.current["reports"].append(outcome.get_result())
 
+    def failure(self, report) -> dict | None:
+        """How a test failed, for a story: the message and the line, of a failure a run expected too."""
+        crash = getattr(getattr(report, "longrepr", None), "reprcrash", None)
+        if crash is None or report.outcome == "passed":
+            return None
+        # What pytest adds for whoever reads a terminal is no part of how the test failed.
+        said = "\n".join(line for line in crash.message.split("\n") if not PYTEST_HINT.search(line))
+        message = said if len(said) <= MAX_FAILURE_CHARS else f"{said[:MAX_FAILURE_CHARS]}…"
+        return {"message": message, "file": self.relative(str(crash.path)), "line": crash.lineno}
+
     def story(self, item, file: str, test: dict) -> dict:
         reports = test["reports"]
-        state = next((r.outcome for r in reports if r.outcome != "passed"), "passed" if reports else None)
+        unexpected = next((r for r in reports if r.outcome != "passed"), None)
+        # A failure the run expected is reported as a skip: a story says which of the two it was.
+        state = "xfailed" if hasattr(unexpected, "wasxfail") else unexpected.outcome if unexpected else \
+            "passed" if reports else None
         call = next((r for r in reports if r.when == "call"), None)
         narrative = item.get_closest_marker("narrative")
         story = {
@@ -223,6 +278,11 @@ class StoryRecorder:
             "durationMs": None if call is None else round(call.duration * 1000, 1),
             "hits": test["hits"],
         }
+        if item.get_closest_marker("reproduces"):
+            story["reproduction"] = True
+        failed = self.failure(unexpected) if unexpected else None
+        if failed:
+            story["failure"] = failed
         capped = [tally for tally in test["tallies"].values() if tally["omitted"]]
         if capped:
             story["capped"] = capped
@@ -235,7 +295,7 @@ class StoryRecorder:
 
     def write(self, file: str) -> None:
         stories = self.pending.pop(file, [])
-        if not stories:
+        if not stories or not self.writes:
             return
         target = self.story_file(file)
         # Tests of one file that ran in two stretches of a run are one file's stories.
@@ -265,6 +325,7 @@ def pytest_configure(config):
     config.addinivalue_line("markers", "canonical: the reference case of its narrative (declare.py)")
     config.addinivalue_line("markers", "titled(title): the test's title, when its name cannot hold it (declare.py)")
     config.addinivalue_line("markers", "planned_test(title): a test to write, with an empty body (declare.py)")
+    config.addinivalue_line("markers", "reproduces(title): a test that fails today, for a bug to fix (declare.py)")
     recorder = StoryRecorder(config)
     config.pluginmanager.register(recorder, "narrate-collector")
     recorder.calls.install_collector(recorder.collect)

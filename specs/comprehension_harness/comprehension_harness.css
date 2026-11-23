@@ -198,6 +198,27 @@
   .built-note { border-left: 3px solid #60a5fa; background: #eff6ff; padding: .35rem .6rem; border-radius: 4px; max-width: 54rem; margin: .35rem 0; font-size: .92rem; }
   .notemark { font: 700 .64rem/1.7 system-ui, sans-serif; letter-spacing: .06em; text-transform: uppercase; color: #1d4ed8; margin-right: .3rem; }
   .mark.done { background: #e5e7eb; color: #4b5563; } .pline.built .clause { color: var(--muted); }
+  /* A bug's piece: what its reproductions saw, and how they fail. */
+  .mark.evidence { background: #ede9fe; color: #6d28d9; } .mark.failing { background: #fee2e2; color: #b91c1c; }
+  .bug { border: 1px solid var(--line); border-left: 3px solid #ef4444; border-radius: 6px; padding: .45rem .7rem .55rem; margin: .6rem 0; }
+  .bug .bug-head { margin: 0 0 .35rem; font-size: .86rem; color: var(--muted); } .bug .bug-head b { color: var(--ink); }
+  .bug .repro + .repro { border-top: 1px dashed var(--line); margin-top: .55rem; padding-top: .5rem; }
+  .bug .repro-head { display: flex; gap: .6rem; align-items: baseline; flex-wrap: wrap; font-size: .9rem; }
+  .bug .repro-head a[data-debug-reproduction] { margin-left: auto; font-size: .85rem; font-weight: 600; white-space: nowrap; text-decoration: none; }
+  .bug .plines { margin-top: .3rem; }
+  .abug { margin: 2.2rem 0 .6rem; padding: .1rem 0 .1rem .9rem; border-left: 4px solid #dc2626; }
+  .abug h3 { margin: 0 0 .3rem; font-size: 1.15rem; } .abug p { margin: .3rem 0; max-width: 60rem; }
+  .pline.bugrow:not(:first-child) { border-top: 1px solid var(--line); padding-top: .5rem; }
+  .bug .seen { display: flex; flex-wrap: wrap; gap: .1rem .9rem; align-items: baseline; margin-top: .2rem; font-size: .8rem; }
+  .bug .seen .k { font-family: ui-monospace, SFMono-Regular, Menlo, monospace; font-size: .76rem; color: var(--adp); }
+  .bug .seen code { font-size: .78rem; } .bug .seen .times { color: var(--faint); min-width: 1.6rem; }
+  .bug .seen + .seen { border-top: 1px dotted var(--line); padding-top: .2rem; }
+  .bug .seen.each, .bug .seen + .seen.each { margin: .15rem 0 0 1.6rem; padding: 0 0 0 .5rem; border-top: 0; border-left: 2px solid var(--line); }
+  .bug .pair.wrong > code, .bug .pair.wrong > pre.val { background: #fee2e2; color: #b91c1c; }
+  .bug .should, .bug .should code { color: #047857; } .bug .should { font-size: .78rem; }
+  .bug details.pfold { margin-top: .15rem; }
+  .bug .failure { margin-top: .4rem; } .bug .failure small { color: var(--faint); }
+  .bug .failure pre { margin: .15rem 0 0; padding: .4rem .55rem; background: #fef2f2; border-radius: 4px; font-size: .76rem; white-space: pre-wrap; overflow-wrap: anywhere; }
   .piece.built { border-left: 3px solid #86efac; } .piece header b.ok { color: #15803d; }
   .commits { margin-top: .5rem; border-top: 1px solid var(--line); padding-top: .35rem; }
   .crow { display: grid; grid-template-columns: 4.6rem 1fr; gap: .1rem .6rem; font-size: .86rem; padding: .12rem 0; align-items: baseline; }

@@ -15,7 +15,7 @@ def run_python(script: str) -> subprocess.CompletedProcess:
 
 def test_without_a_collector_a_call_returns_nothing_and_its_watch_is_never_called():
     done = run_python("""
-        from comprehension_harness.python.narrate import event, narrate, planned
+        from comprehension_harness.python.narrate import event, narrate, planned, template_call
 
         def watch():
             raise AssertionError("the watch was called")
@@ -24,6 +24,12 @@ def test_without_a_collector_a_call_returns_nothing_and_its_watch_is_never_calle
         assert event("A cause.", watch) is None
         assert planned("gift-cards#deduct-the-card", "A change.", watch) is None
         assert planned.remove("gift-cards#deduct-the-card", "A function that goes.") is None
+        assert planned.evidence("gift-cards#deduct-the-card", "A bug shows.", watch, expect={"due": 0}) is None
+        assert planned("gift-cards#deduct-the-card", "A change.", watch, expect={"due": 0}) is None
+        assert template_call("narrate", "pages/rows.html", 2, "A step.", watch) is None
+        assert planned.evidence("gift-cards#deduct-the-card", "A bug shows.", watch, expect=watch) is None
+        assert planned.evidence("gift-cards#deduct-the-card", "A bug shows.", watch, distinct="row") is None
+        assert planned("gift-cards#deduct-the-card", "A change.", watch, distinct=("row", "of")) is None
     """)
 
     assert done.returncode == 0, done.stderr

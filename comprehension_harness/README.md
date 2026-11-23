@@ -123,7 +123,7 @@ plugin and the declarations, which are pytest's.
 | File | Gives |
 |---|---|
 | `narrate.py` | The three calls, as the reference a project copies into its own package |
-| `declare.py` | What a test declares: `@narrative`, `@canonical`, `@titled`, `@planned_test` |
+| `declare.py` | What a test declares: `@narrative`, `@canonical`, `@titled`, `@planned_test`, `@reproduces` |
 | `collector.py` | The pytest plugin that writes the stories |
 | `source_index.py`, `titles.py`, `watch.py` | The three commands of the configuration |
 | `journey.py`, `journey_page.js` | The journey helper, a pytest plugin over Playwright's browser tests, and what it runs in the page: `@journey`, `screen`, `@planned_case`, `seeded`, `pause_clock`, `elapse` |
@@ -137,6 +137,10 @@ What the project writes to use it, the same in every project:
   ["python3", "-m", "comprehension_harness.python.source_index"], "titles": ["python3", "-m",
   "comprehension_harness.python.titles"] }` and `"watch": ["python3", "-m",
   "comprehension_harness.python.watch"]` under `commands`.
+- Where its templates hold logic, a tag library of its web framework that hands each tag to
+  `template_call` of its copy of the calls, with the template's file and the tag's line. The source
+  index reads the tags `narrate`, `event`, `planned` and `evidence` in the `.html` files of the source
+  folders. For Django it is some forty lines: `model_builder/templatetags/narrate.py` of the reference.
 - `comprehension_harness/python/tests` among the paths its pytest run collects. A run that collects from
   the root takes them without a word, and leaves the tools' fixtures alone.
 

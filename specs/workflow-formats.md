@@ -15,6 +15,10 @@ repository's (`.agents/repository.md`).
 - A **rule** is a behaviour of the spec that no screen shows. One test owns it, or a **waiver**
   says why none does.
 - A **lot** is what one implementer delivers and one reviewer reads: a few pieces, a commit each.
+- A **bug** is what is wrong for whoever meets it, with the pieces that fix it: one, or several
+  when the fix is several decisions.
+- A **reproduction** is a written test that fails today, for the bug its piece fixes. **Evidence**
+  is a place the bug shows, with the values a reproduction saw there.
 - A **unit** is one thing the reviewer approves: a piece, a decision across pieces, the waivers,
   the delivery, the journey cases, a narrative's steps.
 
@@ -80,12 +84,62 @@ an `@planned.remove` comment naming the holder, and says "planned" when the hold
 yet. An existing case extended is a planned test beside it, under a comment saying which case it
 is and that no case is added.
 
+## A bug
+
+A bug is a section of `plan.md`, `## Bug: <what is wrong>`: its title and its paragraphs say what
+whoever meets it sees, and where it was diagnosed. The pieces whose sections stand under it, up to
+the next bug, fix it. The page is then read a bug at a time: what is wrong, then its pieces, in
+the order of the file. The cause is no part of the section: it is its pieces', and their chains'.
+
+A plan of bugs has no tasks stage. Its reproductions are its unit tests, written and failing,
+and its diagnosis is its grounding: what is left of that stage is the lots, which the plan stage
+writes itself, as `## Delivery`. One approval holds the plan and its delivery.
+
+A piece that fixes a bug says, beside what changes, what is wrong today. Two forms carry it, and
+the plan page draws them as one chain under the piece: each reproduction, the places it crossed
+in run order with the values it saw at each, then how it failed.
+
+- **A reproduction** is declared in place of a planned test, under the same kind of title. It is
+  written, it asserts what should be, and a run expects its failure, strictly. It observes
+  everything it has to and asserts once, at its end: a story stops where its test fails. A bug
+  whose chain crosses a process has one reproduction per process, joined by the piece.
+- **Evidence** is a call on a line the bug shows at, with a watch: what is seen there today. It
+  marks no change, so it stands where the cause is even when the fix is elsewhere.
+- **`expect`**, on evidence or on a `planned` call, gives the value a key of the watch should
+  have. The page sets it against what the reproduction saw, in red where it differs. It is said
+  once for the place, or computed at each crossing where the right value depends on it: a line
+  crossed for every row, each with its own.
+- **`distinct`**, on the same calls, names keys of the watch that each crossing should see a value
+  of its own for. It is for a bug no crossing shows alone: one value written at several, as an id
+  three rows share. The page draws those crossings together, the shared value once and in red,
+  then what else each saw; the others are counted, and folded.
+- **Watch what is wrong, not what led to it.** "Should be" reads as a claim about the watched
+  value: a value that is right and only reaches the wrong branch is context, with no `expect`.
+
+The render and the check run the plans' reproductions first, whole files, so the page shows what
+they see now and not what the last run happened to leave: the served pages rerun them at each
+save. A reproduction a browser runs is left out, and its page says when no run tells it. A run
+under the debugger writes no story.
+
+Under the chain, the piece lists what the chain does not show: the places no reproduction
+crosses, and the tests that are no reproduction.
+
+The check fails on evidence in a piece with no reproduction, on a place whose reproductions saw
+only what it expects, or a value of its own at each crossing where it names distinct keys (the
+bug does not show there), and when the reproductions do not run as expected: one that passes
+fails its run. The piece is built when its evidence is gone and its
+reproductions are declared as written tests; until then its lot is not delivered and the archive
+gate holds.
+
 ## `plan.md`
 
 A title, a lead, then:
 
 - **One `## #slug` section per piece**: its statement in the first paragraph, then its reason
   and what was refused.
+- **A `## Bug: <what is wrong>` section**, in a plan that fixes bugs: the sections of the pieces
+  that fix it follow it. A piece of no bug stands above the first. A bug with no piece under it
+  fails the check. It is approved as a unit, as a decision is.
 - **Any other title** is a decision across pieces, which names the pieces it concerns as `#slug`.
 - **`## Rules no test holds`**: the waivers, `- **the-rule** why no test holds it`, for a rule
   that is true by the shape of the code.
@@ -115,6 +169,7 @@ Each fact has one home, and each home a budget in words, which the check enforce
 | What a piece changes, as a whole | The first paragraph of its section | 30 |
 | Why, and what was refused | The rest of the section | 60 |
 | A point to confirm, a waiver | Its paragraph, its item | 60 |
+| What is wrong, for whoever meets a bug | The bug's section | 60 |
 | An edit, a note, a lot's reason | Its paragraph, its item | 40 |
 
 A word is a run of characters between spaces. The tag, the `[rule]` suffix, the prefixes and a
@@ -206,6 +261,8 @@ the code.
 
 - Each `planned` call becomes code, and each comment goes.
 - Each planned test becomes a test under the same title, tag and `[rule]` kept until the archive.
+- Each evidence call goes, with nothing written in its place, and each reproduction passes and is
+  declared as a written test, under the same title.
 - **A `planned` call does not become a `narrate` by rule.** A sentence the code makes false is
   corrected in the piece's commit. New and removed steps are written in one pass, the lot's last
   commit.
@@ -232,4 +289,5 @@ a cause a test simulates calls it in the test. No prose names a step by its numb
 
 A bug batch still writes `tasks.md`, diagnostics and a `plan.html` with its callouts (the
 `bug-fixes` and `bug-fixes-plan` skills). So does a feature planned before pieces, until it is
-ported.
+ported. One batch is being ported to pieces, a bug at a time, to settle the forms of "A bug"
+above before those skills are rewritten.

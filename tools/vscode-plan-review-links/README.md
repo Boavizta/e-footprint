@@ -18,7 +18,7 @@ No route sets a breakpoint: set your own before clicking. The browser or VS Code
 ```bash
 cd tools/vscode-plan-review-links
 npx --yes @vscode/vsce package --allow-missing-repository
-code --install-extension plan-review-links-0.0.11.vsix
+code --install-extension plan-review-links-0.0.12.vsix
 ```
 
 If `code` is not on your PATH, use `"/Applications/Visual Studio Code.app/Contents/Resources/app/bin/code"`. `code --list-extensions | grep plan` confirms it: `local.plan-review-links`.
@@ -49,7 +49,7 @@ If pausing on raised exceptions is enabled, VS Code may pause with no source bre
 
 On a Python file, `debug-test` reads the `def test_…` that opens at the linked line or one of the two lines after it, else the test whose body holds the line, and puts its `Test…` class in front; in no test, it runs the whole file. `debug-pytest` takes the selector from the link. Both then do the same.
 
-Each link runs only its pytest function (its parameter cases included) and stops at the first failure. It uses the repository's Poetry interpreter, loads its `.env`, sets `RAISE_EXCEPTIONS=1`, and runs with `--runxfail --no-cov -o addopts= -s -vv --tb=long -x`. `PYTEST_ADDOPTS` is cleared for the run, so inherited coverage or parallel execution does not interfere with breakpoints. The Python `poetryPath` setting of VS Code is respected; otherwise the route uses `~/.local/bin/poetry` when present, or `poetry` on the PATH. `justMyCode: false` lets the debugger step into an editable companion library.
+Each link runs only its pytest function (its parameter cases included) and stops at the first failure. It uses the repository's Poetry interpreter, loads its `.env`, sets `RAISE_EXCEPTIONS=1` and `COMPREHENSION_STORIES=off` (a debug run writes no story: the comprehension pages keep those of the last whole run), and runs with `--runxfail --no-cov -o addopts= -s -vv --tb=long -x`. `PYTEST_ADDOPTS` is cleared for the run, so inherited coverage or parallel execution does not interfere with breakpoints. The Python `poetryPath` setting of VS Code is respected; otherwise the route uses `~/.local/bin/poetry` when present, or `poetry` on the PATH. `justMyCode: false` lets the debugger step into an editable companion library.
 
 A test under `tests/e2e/` gets `--base-url http://localhost:8000 --headed`: start the server there first. Python breakpoints apply to the pytest process; the server process and the browser's JavaScript each need their own debugger attached.
 

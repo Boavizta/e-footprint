@@ -144,7 +144,8 @@ async function handleDebugTest(uri) {
     cwd: repoRoot,
     // A bug-fixes reproduction runs as `it.fails` until its fix: unmasked, the debug run ends on
     // the real assertion or stack instead of an expected-failure pass. No effect on other tests.
-    env: { REPRO_UNMASK: "1" },
+    // A debug run is for the person: the comprehension collector writes no story from it.
+    env: { REPRO_UNMASK: "1", COMPREHENSION_STORIES: "off" },
     console: "integratedTerminal",
     autoAttachChildProcesses: true,
     smartStep: true,
@@ -207,7 +208,9 @@ async function debugPytest(query, testOf) {
     args: pytestArgs(relativePath, test),
     cwd: repoRoot,
     envFile: path.join(repoRoot, ".env"),
-    env: { RAISE_EXCEPTIONS: "1", PYTEST_ADDOPTS: "" },
+    // A debug run is for the person: the comprehension collector writes no story from it, so the
+    // pages keep those of the last whole run.
+    env: { RAISE_EXCEPTIONS: "1", PYTEST_ADDOPTS: "", COMPREHENSION_STORIES: "off" },
     console: "integratedTerminal",
     redirectOutput: true,
     justMyCode: false,

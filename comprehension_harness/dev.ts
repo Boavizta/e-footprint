@@ -29,13 +29,14 @@ import { extname, join, normalize, relative } from 'node:path';
 import { FEATURES, JOURNEYS, PAGES, ROOT, STORIES_DIR, config } from './config';
 import { openSource, toolSources } from './project-stack';
 import type { SourceReader } from './stack';
-import { approveFromPage, planDbDiffs, PRODUCT_PAGE, readPlanSources, render, saveFeedback, SCANNED } from './render';
+import { approveFromPage, planDbDiffs, PRODUCT_PAGE, readPlanSources, render, reproductionFiles, saveFeedback, SCANNED } from './render';
 
-// The test files to keep running: every one that declares a narrative, found in the source.
+// The test files to keep running: every one that declares a narrative, found in the source, and every one that
+// holds a reproduction of a plan, whose page shows what it sees now.
 // The source reader is kept between renders: `fresh()` re-reads only what changed, so a
 // re-render after one save pays for one file, not for the whole source.
 let source: SourceReader = openSource();
-const NARRATIVE_TESTS = source.narrativeTestFiles();
+const NARRATIVE_TESTS = [...new Set([...source.narrativeTestFiles(), ...reproductionFiles(readPlanSources())])];
 const SERVE_ROOT = join(ROOT, config.docs);
 
 const TYPES: Record<string, string> = {

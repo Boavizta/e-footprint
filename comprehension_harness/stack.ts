@@ -55,6 +55,8 @@ export interface StoryHit {
   stack: StoryFrame[];
   /** Milliseconds since the test began. */
   atMs: number;
+  /** For a planned hit whose site says what it should see: that, at this crossing, a key of the watch each. */
+  expect?: unknown;
 }
 
 /** A site that fired more often in one test than a story keeps. */
@@ -76,25 +78,47 @@ export interface Story {
   canonical: boolean;
   /** Grows with the run: a narrative's variants are told in this order. */
   order: number;
-  /** Shown, never judged. */
+  /** Shown, never judged. `xfailed` for a failure the run expected. */
   state: string | undefined;
   durationMs: number | null;
   hits: StoryHit[];
   capped?: CappedSite[];
+  /** The test is declared to fail today, for a bug its piece fixes: it has a story whatever it crossed. */
+  reproduction?: boolean;
+  /** How the test failed, of a failure the run expected too: the message, and where. */
+  failure?: StoryFailure;
+}
+
+export interface StoryFailure {
+  message: string;
+  /** Null for a failure raised outside the repository's files. */
+  file: string | null;
+  line: number;
 }
 
 // ── 2. The source index ────────────────────────────────────────────────────────
 
-/** A `planned` site, as the source states it: its piece (`<feature>#<slug>`) and what kind of change it announces —
- *  `changed` (a `planned` on existing code), `removed` (`planned.remove`), `added` (the only body of a shell:
- *  the call then a `throw`, in which case `signature` is the shell's declaration text up to its body). */
+/** What a planned site says of its place: `changed` (a `planned` on existing code), `removed`
+ *  (`planned.remove`), `added` (the only body of a shell), `evidence` (a place a bug shows, which marks no
+ *  change and goes with the fix). */
+export type PlannedChange = 'changed' | 'removed' | 'added' | 'evidence';
+export const PLANNED_CHANGES: readonly PlannedChange[] = ['changed', 'removed', 'added', 'evidence'];
+
+/** A `planned` site, as the source states it: its piece (`<feature>#<slug>`) and what kind of change it announces
+ *  (`PlannedChange`). `signature` is a shell's declaration text up to its body. */
 export interface PlannedSite {
   feature: string;
   slug: string;
-  /** What changes at this place, in one clause, as written at the site. */
+  /** What changes at this place, in one clause, as written at the site; for evidence, what is seen there today. */
   sentence: string;
-  change: 'changed' | 'removed' | 'added';
+  change: PlannedChange;
   signature: string | null;
+  /** What the place should see, as the site writes it: a literal, or an expression computed at each crossing.
+   *  Its value at a crossing is the story's (`StoryHit.expect`). */
+  expect?: string;
+  /** The keys of the watch each crossing should see a value of its own for: the bug shows where two crossings
+   *  of a test saw the same. */
+  distinct?: string[];
 }
 
 /** A `narrate`, `event` or `planned` call, as the source holds it. */
@@ -199,7 +223,7 @@ export interface SourceFileIndex {
     column: number;
     fn: string;
     sentence: string | null;
-    planned?: { feature: string; slug: string; change: 'changed' | 'removed' | 'added'; signature: string | null };
+    planned?: { feature: string; slug: string; change: PlannedChange; signature: string | null; expect?: string; distinct?: string[] };
   }>;
   /** Every named function, with the line its name is on and its last line. A site, a local or a use belongs to
    *  the functions whose lines hold it, the innermost first. */
@@ -231,6 +255,8 @@ export interface TestTitle {
   column: number;
   /** Declared with no body: a test to write. */
   planned: boolean;
+  /** Written, and declared to fail today for a bug its piece fixes. */
+  reproduction?: boolean;
 }
 
 /** A case a feature will add to a journey, declared in a journey test. */

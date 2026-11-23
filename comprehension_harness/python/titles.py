@@ -8,7 +8,8 @@ commit.
 
 - A test is a function named ``test_…`` at the top of the file or in a class named ``Test…``. Its title is its
   function's name, or the string of ``@titled("…")`` above it. ``@planned_test("…")`` on a function with an
-  empty body is a test to write (``declare.py``).
+  empty body is a test to write, and ``@reproduces("…")`` a written test that fails today for a bug to fix
+  (``declare.py``).
 - A stand is the line that opens a test, a class or another declaration of the file or of a class: its first
   decorator when it has one. A ``@planned`` comment right above that line stands on it.
 - A journey case is ``@planned_case("<feature>", "<screen>", "<title>")`` on a test with an empty body, in a
@@ -25,7 +26,7 @@ import json
 import re
 import sys
 
-TITLE_DECORATORS = ("titled", "planned_test")
+TITLE_DECORATORS = ("titled", "planned_test", "reproduces")
 DEFINITION = re.compile(r"(?:async\s+)?(?:def|class)\s+")
 
 
@@ -74,15 +75,16 @@ def has_empty_body(function) -> bool:
     return all(isinstance(statement, ast.Pass) or says_nothing(statement) for statement in function.body)
 
 
-def declared_title(function, file: str) -> tuple[str, bool]:
-    """A function's title and whether it is a test to write, as its decorators say; refuses a title that is not
-    one string, two titles, a title on a function pytest does not collect, a planned test with a body."""
+def declared_title(function, file: str) -> tuple[str, str | None]:
+    """A function's title and what declares it, ``planned_test`` for a test to write and ``reproduces`` for one
+    that fails today, as its decorators say; refuses a title that is not one string, two titles, a title on a
+    function pytest does not collect, a planned test with a body, a reproduction without one."""
     found = [d for d in function.decorator_list if decorator_name(d) in TITLE_DECORATORS]
     if not found:
-        return function.name, False
+        return function.name, None
     where = f"{file}:{found[0].lineno}"
     if len(found) > 1:
-        raise Refusal(f"{where} — a test has one title: @titled(…) or @planned_test(…), not both")
+        raise Refusal(f"{where} — a test has one title: @titled(…), @planned_test(…) or @reproduces(…), not two")
     decorator, kind = found[0], decorator_name(found[0])
     arguments = decorator.args if isinstance(decorator, ast.Call) and not decorator.keywords else []
     if len(arguments) != 1 or not isinstance(arguments[0], ast.Constant) or not isinstance(arguments[0].value, str):
@@ -92,7 +94,10 @@ def declared_title(function, file: str) -> tuple[str, bool]:
     if kind == "planned_test" and not has_empty_body(function):
         raise Refusal(f"{where} — @planned_test stands on a test with an empty body; "
                       f"a written test carries its title with @titled(…)")
-    return arguments[0].value, kind == "planned_test"
+    if kind == "reproduces" and has_empty_body(function):
+        raise Refusal(f"{where} — @reproduces stands on a written test, which fails today; "
+                      f"a test to write is declared with @planned_test(…)")
+    return arguments[0].value, kind
 
 
 def journey_name(node) -> str | None:
@@ -157,11 +162,13 @@ def read(file: str, text: str) -> dict:
                     answer["stands"].append({"line": opening_line(node), "label": f'case "{case["title"]}"',
                                              "test": None})
                     continue
-                title, planned = declared_title(node, file)
+                title, declared_by = declared_title(node, file)
                 test = collected and is_test_function(node)
                 if test:
                     line, column = name_position(node, lines)
-                    answer["tests"].append({"title": title, "line": line, "column": column, "planned": planned})
+                    answer["tests"].append({"title": title, "line": line, "column": column,
+                                            "planned": declared_by == "planned_test",
+                                            **({"reproduction": True} if declared_by == "reproduces" else {})})
                 answer["stands"].append({"line": opening_line(node), "label": f'test "{title}"' if test else node.name,
                                          "test": title if test else None})
             elif isinstance(node, ast.ClassDef):

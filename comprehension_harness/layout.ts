@@ -52,6 +52,8 @@ export interface Layout {
   isServerTest(file: string): boolean;
   /** A test file that is neither a narrative's nor a browser's. */
   isUnitTest(file: string): boolean;
+  /** A test a browser runs: slow, and not run by a tool on its own. */
+  isBrowserTest(file: string): boolean;
   /** Where server steps are declared, each naming the test that is its truth. */
   declaresTruths(file: string): boolean;
   /** The tier of a test file. `truthSources` is the text of every file that declares server steps. */
@@ -76,6 +78,7 @@ export function layoutOf(settings: LayoutSettings): Layout {
     isJourneyTest: (file) => journeys.test(file),
     isServerTest,
     isUnitTest: (file) => isTest(file) && !isNarrative(file) && !isBrowser(file),
+    isBrowserTest: isBrowser,
     declaresTruths: under(settings.tests.server?.namedIn ?? []),
     tierOf: (file, truthSources) => (isNarrative(file) ? 'narrative' : isServerTest(file) && truthSources.includes(file) ? 'server' : 'unit'),
   };
