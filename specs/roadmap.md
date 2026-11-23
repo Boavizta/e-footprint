@@ -18,6 +18,13 @@ as they are touched. The first read of a computed value sits in the reactive cor
 code: its narrative waits for a measure against the performance baselines. A feature in flight on
 `plan.html` and `tasks.md` (`edge-networks`, `workflow-improvements`) is finished by hand.
 
+### Comparison file — specified, awaiting the spec's approval
+
+[`features/comparison-file/`](features/comparison-file/spec.md): the library exports an ordered
+list of systems to one file and loads it back, in the format the interface already saves a
+comparison in. Changes both repositories; the interface's plan is written in its worktree. It comes
+before `agent-guidance`, whose guide tells a coding agent how to hand over a comparison.
+
 ### Not yet wired: `mkdocs build --strict` in CI
 
 SSOT metadata content (`param_descriptions`, docstrings, `tests/test_descriptions.py`) shipped, and `mkdocs build --strict` runs clean locally (verified 2026-07-01) — but the follow-up step, wiring it into `.github/workflows/ci.yml`, was never done. Just add the step; no doc fixes needed first.
