@@ -7,8 +7,10 @@ repository's (`.agents/repository.md`).
 
 ## The words
 
-- A **narrative** is a flow the code tells itself: one `narrate` call per **step**, and a test that
-  crosses the steps in order. An `event` call is a **cause**: something done to the system.
+- A **narrative** is what the code does for one action on the product, told by the code itself:
+  one `narrate` call per **step**, and a test that crosses the steps in order. A narrative the
+  code does not tell yet is **missing**. An `event` call is a **cause**: something done to the
+  system.
 - A **piece** is one statement about a feature, with its reason, its changes and its tests. It is
   atomic to read and to approve, not to ship. Its name is `<feature>#<slug>`, both kebab-case.
 - A **site** is one place tagged with a piece. Several sites share a piece; nothing is numbered.
@@ -77,7 +79,7 @@ One of three, each carrying `<feature>#<slug>`:
 
 On code that runs, a site is a call, never a comment: no test crosses a comment. A new function
 is named, in backticks, by the clause of the site that will call it; a shell no clause names is
-drawn on no flow and fails the check.
+drawn in no narrative and fails the check.
 
 An existing test that changes carries an `@planned` comment. One a planned case now holds carries
 an `@planned.remove` comment naming the holder, and says "planned" when the holder is not written

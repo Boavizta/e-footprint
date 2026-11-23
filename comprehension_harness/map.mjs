@@ -130,14 +130,14 @@ function neighbours(list, indent = '    ') {
 }
 
 function narratives(map) {
-  say('Narratives — a flow told by its own code, step by step, in the order one test crosses it.', '');
+  say('Narratives — what the code does for one action, told by the code step by step, in the order one test crosses it.', '');
   for (const n of map.narratives) say(`${n.kind === 'mechanism' ? 'mechanism' : 'product  '}  ${n.slug}`, `           ${n.title} — ${plural(n.steps.length, 'step')}, ${plural(n.branches.length, 'branch').replace('branchs', 'branches')}, ${n.file}`);
   say('', `next: npm run map -- narrative <slug>   (any part of a slug that names one)`);
 }
 
 /** Says when a narrative's files were edited after the run its steps were read from. */
 const edited = (n) => (n.editedSince.length
-  ? ['', `note: ${n.editedSince.join(', ')} changed after the run these steps were read from. They were found again by their sentences; to observe the flow again: ${typed(TESTS, n.file)}`]
+  ? ['', `note: ${n.editedSince.join(', ')} changed after the run these steps were read from. They were found again by their sentences; to observe the narrative again: ${typed(TESTS, n.file)}`]
   : []);
 
 function narrative(map, name) {
@@ -223,7 +223,7 @@ function where(map, what) {
     for (const x of list) if (!x.narrated && match(x)) near.set(`${x.fn}|${n.slug}|${s.n}`, `  ${x.fn}  ${at(x)} — ${side} step ${s.n} of ${n.slug} (${s.fn})${x.how ? `, ${x.how}` : ''}`);
   }
   if (out.length === 0 && near.size === 0) {
-    say(`unmapped: no narrative step is in ${what}, and nothing in it refers to or is called by a step's function.`, 'Read the code directly. If the change makes this a flow worth telling, that is a narrative to write.');
+    say(`unmapped: no narrative step is in ${what}, and nothing in it refers to or is called by a step's function.`, 'Read the code directly. If the change makes this worth telling, that is a missing narrative to write.');
     return;
   }
   if (out.length) say(`${what} carries ${plural(out.length, 'narrated site')}:`, ...out);

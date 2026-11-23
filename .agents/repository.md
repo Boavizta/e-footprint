@@ -29,9 +29,9 @@ is particular to this one here. `AGENTS.md` stays the entry point and wins where
 ## The stack
 
 The Python stack of the comprehension harness is written to its contract
-(`comprehension_harness/stack.md`), and `comprehension.config.json` names its commands. One flow
-is narrated, the edit of a live model (`tests/narratives/test_model_edit.py`); the others have
-no narrative yet. A feature in flight on `plan.html` and `tasks.md` is finished by hand or
+(`comprehension_harness/stack.md`), and `comprehension.config.json` names its commands. One narrative
+is told, the edit of a live model (`tests/narratives/test_model_edit.py`); the others are
+missing. A feature in flight on `plan.html` and `tasks.md` is finished by hand or
 ported; a bug batch keeps its own form (`bug-fixes`, `bug-fixes-plan`).
 
 | The method says | Here |
@@ -41,7 +41,7 @@ ported; a bug batch keeps its own form (`bug-fixes`, `bug-fixes-plan`).
 | A place that changes, a place that goes, a shell | `planned("<feature>#<slug>", "<sentence>")` on existing code; `planned.remove(…)` in a function that goes; a shell is a new function whose whole body, under an optional docstring, is the `planned` call then `raise NotImplementedError("planned: <feature>#<slug>")`. One call a line |
 | A planned test | `@planned_test("<feature>#<slug>: <title> [<rule>]")` of `comprehension_harness/python/declare.py` on a test function with an empty body: skipped by a run, listed by the plan |
 | A written test of a plan | The same title under `@titled("…")` once the body is written: `@planned_test` refuses a body. A test with neither is titled by its function's name, and a parametrized case adds pytest's `[case]` |
-| A narrative, its reference case | A test class under `@narrative("<title>")` of the same `declare.py`, in a file under `tests/narratives/`; `@narrative.mechanism("<title>")` for a mechanism, which is what a flow of the engine (`efootprint/abstract_modeling_classes/`) is. Its summary is the first paragraph of the class docstring. Its reference case is its first test, or the one marked `@canonical`; a reference case is not parametrized. A narrative test builds real objects, never mocks: the steps are what the code did |
+| A narrative, its reference case | A test class under `@narrative("<title>")` of the same `declare.py`, in a file under `tests/narratives/`; `@narrative.mechanism("<title>")` for a mechanism, which is what a narrative of the engine (`efootprint/abstract_modeling_classes/`) is. Its summary is the first paragraph of the class docstring. Its reference case is its first test, or the one marked `@canonical`; a reference case is not parametrized. A narrative test builds real objects, never mocks: the steps are what the code did |
 | What each test crossed | `comprehension_harness/python/collector.py`, a pytest plugin `tests/conftest.py` loads for every run: one story file a test file under `node_modules/.cache/comprehension_harness/stories/` |
 | The source index, the test titles, the watch | `source_index.py`, `titles.py` and `watch.py` of `comprehension_harness/python/`: the three commands of the configuration, standard library only, run as `python3 -m comprehension_harness.python.<name>` |
 | A symbol in a sentence | A name the index can place: an import of the file, a local of the function, a top-level declaration. A method or a dotted name stays plain: name its class. A backticked name shaped like a declaration (`CamelCase`, or words joined by `_`) that the index cannot place fails `--check`, so a dict key, a field or a method is written without backticks |

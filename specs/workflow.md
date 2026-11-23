@@ -10,12 +10,12 @@ stage is for, who approves what, and what never happens without a person.
 
 **The plan is not a page someone keeps: it is written into the code, and the pages are generated.**
 
-- A flow of the product is a **narrative**: the code tells it, one `narrate` call per step, and a
-  test crosses the steps in order. Its page is rendered from the run, so it cannot drift.
+- What the product does for one action is a **narrative**: the code tells it, one `narrate` call
+  per step, and a test crosses the steps in order. Its page is rendered from the run, so it cannot drift.
 - A feature's plan is its **pieces**, each tagged at the places it changes: a `planned` call
   where a change lands, a test title with no body, a comment where no line runs. The plan page
-  draws the flows the change lands in, each change at the step it lands in, then a card a piece.
-  A piece no flow shows, in no narrative or with no place in this repository, is put first.
+  draws the narratives the change lands in, each change at the step it lands in, then a card a
+  piece. A piece no narrative shows, in none yet or with no place in this repository, is put first.
 - **A plan is local to the changes of its repository.** A feature that changes two has a plan
   in each, and the one that relies on a piece of the other points at it
   (`workflow-formats.md` § "A feature that changes two repositories").
@@ -24,8 +24,8 @@ stage is for, who approves what, and what never happens without a person.
 - **No edit of an approved plan is silent.** The approval is a committed file; whatever differs
   from it afterwards carries its reason, and the reviewer answers it.
 
-The flows a feature lands in are told before it is planned: a narrative is written, and read by
-the reviewer, ahead of the plan that changes it.
+The narratives a feature lands in are told before it is planned: a missing one is written, and
+read by the reviewer, ahead of the plan that changes it.
 
 ## Scope
 
@@ -57,7 +57,7 @@ rules no test holds). Nothing the product does changes.
 
 How a plan is reviewed:
 
-- The reviewer reads the plan page top down: the flows, then the cards. They ask in the session
+- The reviewer reads the plan page top down: the narratives, then the cards. They ask in the session
   that holds the plan; each answer is an edit in place and a commit.
 - A simplification of the underlying code found on the way is made in another session, and the
   plan is then rewritten against it.

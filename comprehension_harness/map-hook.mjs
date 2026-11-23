@@ -53,7 +53,7 @@ try {
 
   const stale = statSync(path).mtimeMs > (map.inputs[file] ?? Infinity);
   const text = [
-    lines.length ? `${file} is part of a narrative — a flow told step by step by \`narrate\` calls in the code, in the order one test crosses it:` : `${file} holds no \`narrate\` call and sits next to narrated code:`,
+    lines.length ? `${file} is part of a narrative — what the code does for one action, told step by step by \`narrate\` calls in the code, in the order one test crosses it:` : `${file} holds no \`narrate\` call and sits next to narrated code:`,
     ...lines,
     ...(near.size ? [`${lines.length ? '- also next to narrated code, un-narrated: ' : '- '}${[...near].slice(0, 8).join(', ')}${near.size > 8 ? `, and ${near.size - 8} more` : ''}`] : []),
     ...(tests.size ? [`The tests that tell it: ${[...tests].join(', ')}. A \`narrate\` sentence states what the code at that line does: change the code and the sentence together.`] : []),

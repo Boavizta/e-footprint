@@ -33,16 +33,21 @@ The `references/` and `assets/` beside this file belong to the earlier `plan.htm
   names, then `step` for the steps you will change. It gives a `file:line` for what matters, so
   you read ranges, not files. Then the spec, `plan-draft.md` if the spec stage left one, the
   project's rules and the architecture pages that own what the change touches.
-- **The narratives the change lands in are reviewed before the plan is written.** A flow that has
-  no narrative, or one whose steps read wrong, is told or corrected first, in its own commit and
-  preferably its own session; say so and stop. A plan written on a narrative nobody has read is
+- **List the narratives the change lands in, missing ones included.** From the spec's rules,
+  name each action of the product the change enters and set it against the map: told, told
+  wrongly, or missing. `map spec` names only the told ones, so a missing one is found from the
+  rules. For each missing or wrong one, propose its narrative to the reviewer: its title, its
+  reference case, the branch cases the rules need, and the functions its steps stand in.
+- **The narratives the change lands in are reviewed before the plan is written.** A missing one,
+  or one whose steps read wrong, is told or corrected first, in its own commit and preferably its
+  own session; say so and stop. A plan written on a narrative nobody has read is
   rewritten when someone does.
 - **Trace the real code and tests** along every path the feature touches: success, error,
   cancellation, retry, rendering, persistence. A document is no evidence of what a function does
   today.
 - **Look for the existing mechanism** before proposing a new one. For each interaction, make the
   checks of `repository.md` § "Planning checks" and say which it touches.
-- A feature with no existing flow to land in has shells that never run, so its pieces have no
+- A feature that lands in no code that runs today has shells that never run, so its pieces have no
   run order on the page. Tell the reviewer; the order is then `plan.md`'s.
 
 ## Audit complexity before the review
@@ -88,9 +93,9 @@ This audits your reasoning. It is no section of `plan.md`.
 - **A clause states the change at its place**, not what the code does today: one clause, no
   reason, no list of cases. The reason is the piece's, in `plan.md`.
 - **A new function is a shell, and the clause of the site that will call it names it in
-  backticks.** Without that the piece is drawn on no flow, and the check fails.
+  backticks.** Without that the piece is drawn in no narrative, and the check fails.
 - **On code that runs, a site is a call.** A comment is for a type, a schema, a migration, a doc.
-  No test crosses a comment, so no flow shows it and no test reaches it.
+  No test crosses a comment, so no narrative shows it and no test reaches it.
 - **A mechanical ripple is stated once, at its cause.** When one site makes twenty literals or
   assertions change the same way, its clause says so, and the twenty carry no tag. A place is
   tagged when its change is a decision.
@@ -145,7 +150,7 @@ title is `spec-tasks`' to plan.
 
 ## The review, and the approval
 
-- The reviewer reads the page top down: the pieces no flow shows, the flows the change lands in,
+- The reviewer reads the page top down: the pieces no narrative shows, the narratives the change lands in,
   then a card a piece, those of the first block first. They ask in this session, and answer each
   point to confirm under it on the served page (`npm run comprehension`). Read those answers with
   `map feedback <feature>`; each answer is an edit in place and a commit.

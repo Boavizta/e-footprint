@@ -105,5 +105,5 @@ why, and ask. If the user prefers one spec, write one.
 ## After writing
 
 Tell the user, in a few lines: the files written, where the spec page is, the open questions, the
-narratives the change rides on and any flow worth narrating first. Then wait for the review. When
+narratives the change rides on and any missing narrative worth writing first. Then wait for the review. When
 the spec is approved, the next stage is `spec-plan`, in a fresh session.

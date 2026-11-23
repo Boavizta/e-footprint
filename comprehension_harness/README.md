@@ -189,7 +189,7 @@ The first needs Node alone. The other two need the stack and a first narrative: 
 the narrative tests when its snapshot is older than the source, and the check reads their
 stories.
 
-The first flow to tell is the project's own choice: one `narrate` call per step and a test that
+The first narrative to tell is the project's own choice: one `narrate` call per step and a test that
 crosses them. The product page needs its hand-written head first, a title and a lede in
 `specs/comprehension_harness/narratives/<productPage>.skeleton.html`; the render stops and says
 so when it is missing.

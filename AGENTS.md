@@ -41,7 +41,7 @@ mkdocs serve                                   # local docs preview
 
 # Development tooling only (the comprehension harness): the library itself needs no Node
 npm install
-npm run map                                    # the narrated flows, one line each
+npm run map                                    # the narratives, one line each
 npm run comprehension:render                   # the narrative and plan pages, under specs/comprehension_harness/
 ```
 

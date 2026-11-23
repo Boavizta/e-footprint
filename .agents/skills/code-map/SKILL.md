@@ -1,11 +1,11 @@
 ---
 name: code-map
-description: Use BEFORE reading source to plan, task or change a flow of the app — `npm run map` answers, in a screen of text, what a feature's spec changes, which narrative steps a flow is made of (each a `file:line`), what code sits around them, and which tests tell them. Triggers — writing or refining a plan or tasks for a feature that has a spec, "how does X work" about a flow that has `narrate` calls, "what touches this file", "what does this change ride on", about to edit a source file you have not read. Read-only; an answer costs 0.1 s.
+description: Use BEFORE reading source to plan, task or change what the app does for an action — `npm run map` answers, in a screen of text, what a feature's spec changes, which steps a narrative is made of (each a `file:line`), what code sits around them, and which tests tell them. Triggers — writing or refining a plan or tasks for a feature that has a spec, "how does X work" about code that has `narrate` calls, "what touches this file", "what does this change ride on", about to edit a source file you have not read. Read-only; an answer costs 0.1 s.
 ---
 
 # code-map
 
-Some flows of this app are **narratives**: the code tells them itself, one `narrate('sentence')` call
+Some of what this app does is told as **narratives**: the code tells it itself, one `narrate('sentence')` call
 per step, and a test crosses those steps in order. `npm run map` is that knowledge as text. Ask it
 before opening files: it gives the `file:line` of what matters, so you read ranges, not files.
 
@@ -15,10 +15,10 @@ Call it as `node comprehension_harness/map.mjs <verb> …` (or `npm run map -- <
 |---|---|
 | What a feature changes: intent, changed screens, cases to add, narrative steps it rides on, server steps a stub answered | `spec <feature>` |
 | The list of narratives | *(no verb)* |
-| One flow, step by step, under its causes; branches; mechanisms it rides on | `narrative <slug>` |
+| One narrative, step by step, under its causes; branches; mechanisms it rides on | `narrative <slug>` |
 | One step: its function's source, who refers to it, what it calls, the tests reaching it, the debts and rules naming it | `step <slug>#<n>` |
-| The functions next to a flow that hold no `narrate` (handlers, helpers, the page that renders it) | `around <slug>` |
-| Whether a file or a function is part of a told flow | `where <file \| function>` |
+| The functions next to a narrative that hold no `narrate` (handlers, helpers, the page that renders it) | `around <slug>` |
+| Whether a file or a function is part of a narrative | `where <file \| function>` |
 | A feature's plan: the pieces in run order, each with its statement, its reason, its places in the code and its planned tests; each rule's owner | `plan <feature>` |
 | One piece of a plan with the code at each of its sites, who will call each new function, the decisions that bind it | `brief <feature>#<piece>` |
 | A lot of the plan's delivery — what an implementer is handed: its pieces in commit order with their code, the decisions across pieces in full, the journey cases it writes last | `brief <feature>/<lot>` |
@@ -39,8 +39,8 @@ A slug can be any part that names one narrative (`checkout`, `sign-in`).
 3. **`step` only for the steps you will change.** It prints the function, so you rarely need to Read
    the file as well.
 4. **`where` before reading a file nothing pointed you to.** "unmapped" is a normal answer: most of
-   the app has no narrative yet. Then read the code directly — and if your change makes that flow
-   worth telling, say so in your report.
+   the app has no narrative yet. Then read the code directly — and if your change makes that code
+   worth telling, say in your report that a narrative is missing.
 
 Every line carries a `file:line`. When you do open a file, Read that range.
 
@@ -59,7 +59,7 @@ Every line carries a `file:line`. When you do open a file, Read that range.
 
 The answers are read from a snapshot. When a file it was read from has moved, the command rebuilds
 it first and says so on stderr: 4 to 5 s. A step whose line moved is found again by its sentence; the
-answer then ends with a note naming the test to run if you need the flow observed again (after a
+answer then ends with a note naming the test to run if you need the narrative observed again (after a
 change of behaviour, not after adding a comment or a `planned` call). Two cases it will not fix by
 itself, and says how to:
 

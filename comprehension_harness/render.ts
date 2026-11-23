@@ -1641,11 +1641,11 @@ ${plan.pointers.length ? `
 <div class="pbox outside">${plan.pointers.map((p) => pointerHtml(p, plan)).join('')}</div>
 <p class="legend">Each is planned, built and approved in its own repository, under this feature's name. This plan relies on it and holds none of it.</p>` : ''}
 ${outside.length ? `
-<h2 id="outside">Outside the narrated flows — ${plural(outside.length, 'piece')}</h2>
+<h2 id="outside">Outside the narratives — ${plural(outside.length, 'piece')}</h2>
 <div class="pbox outside">${byBug(outside, outsideRow, (bug) => `<div class="pline bugrow"><span class="where"><a href="#${bug.anchor}"><span class="mark failing">bug</span></a></span><span class="clause"><b>${planInline(bug.title, plan)}</b></span></div>`).join('')}</div>
-<p class="legend">No flow${flows.length ? ' below' : ''} shows ${outside.length === 1 ? 'this piece' : 'these pieces'}: ${outside.length === 1 ? 'its card is' : 'their cards are'} the first of the pieces.</p>` : ''}
+<p class="legend">No narrative${flows.length ? ' below' : ''} shows ${outside.length === 1 ? 'this piece' : 'these pieces'}: ${outside.length === 1 ? 'its card is' : 'their cards are'} the first of the pieces.</p>` : ''}
 ${flows.length ? `
-<h2 id="flows">The change, in the ${flows.length === 1 ? 'flow' : `${flows.length} flows`} it lands in</h2>
+<h2 id="flows">The change, in the ${flows.length === 1 ? 'narrative' : `${flows.length} narratives`} it lands in</h2>
 <div class="flows">
 ${flows.map((f) => flowHtml(f, ctx)).join('\n')}
 </div>
