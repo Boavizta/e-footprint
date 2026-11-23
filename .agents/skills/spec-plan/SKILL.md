@@ -145,8 +145,10 @@ title is `spec-tasks`' to plan.
   checked: a rename, a retag.
 - **Delete `plan-draft.md` once each of its lines is a piece**, a reason or a point to confirm.
   A line you do not follow is said to the reviewer, not dropped. Commit the plan's files by name.
-- Tell the reviewer where the plan page is, the points to confirm, and **what you read that no
-  verb of the map pointed at**: those are the map's gaps.
+- **Hand over only what the page does not hold**: where it is, what blocks the check or the commit,
+  a line of the draft that no piece, reason or point to confirm carries, and **what you read that
+  no verb of the map pointed at**: those are the map's gaps. The reviewer reads the pieces, their
+  reasons and the points to confirm on the page; do not restate them.
 
 ## The review, and the approval
 
