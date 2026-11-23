@@ -223,7 +223,8 @@ assume Standard and count those assumptions explicitly; the observed Codex logs 
 this setting. Known unsupported regional conditions remain unpriced. API-equivalent reports omit
 provider-side tool charges and are not invoices or subscription quota measurements. Claude factors
 are imported and have not been independently verified against provider pricing, except Claude Haiku 5.5: its two rate cards (split at a 100K-token prompt, stored as
-`long_prompt` in `prices.json`) follow the published input/output rates and cache multipliers. Refresh them
+`long_prompt` in `prices.json`) follow the published input/output rates and cache multipliers. Claude Fable 5.2
+likewise follows the published pricing page, including its fast-mode multiplier. Refresh them
 before relying on a new model's estimate. No cost or carbon estimate is
 stored as a raw fact. Environmental factors and uncertainty belong in a separately documented
 model over these measurements.
