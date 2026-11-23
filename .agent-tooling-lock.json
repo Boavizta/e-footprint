@@ -1,6 +1,6 @@
 {
   "upstream": "https://github.com/Boavizta/e-footprint-interface",
-  "commit": "4e3602dabd3398ef4d860b192997908311b2d328",
+  "commit": "fdac5641218c48cf42982a0031dd1c977abccf70",
   "licence": "Apache-2.0",
   "notice": "The files under \"hashes\" are copied from the repository named in \"upstream\", at the commit named in \"commit\", where they are published under the licence named in \"licence\" (the LICENSE file of that repository). A file edited here differs from that commit until the next sync.",
   "lists": [
@@ -25,7 +25,7 @@
     ".agents/skills/task-implement/SKILL.md": "e37ced33d4f604c4075495e8513e58368ea6e24b9e22506aa7de0ddb73eeb274",
     ".agents/skills/task-review/SKILL.md": "aed86f9b2f70333c3e38be0dd871b365e20bf1610398dfb97472dd03a206b237",
     ".agents/skills/update-constitution/SKILL.md": "cce7955fff229287ab339ab21d331b922d5ac83f6d23e154cd77b32fca8743ea",
-    "comprehension_harness/README.md": "133e24aeef04a86daf810d83f48f21d7c08dfb9aa0302df04f92ea75e60f18b7",
+    "comprehension_harness/README.md": "6a091e5e4740d12a663a964830ea6ec3cbde76a2666f89d94baf6118ead2fcc5",
     "comprehension_harness/backlinks.ts": "c5b7969ccab5e2dc7014e9fbfc315f0b04cf0225b81fcf8192579346875fdfaa",
     "comprehension_harness/commits.ts": "bc638c39cf1c00885e16eca57e294fe7fe349f43c81aff77b35aad4f8eea7466",
     "comprehension_harness/config.ts": "79eab975e95617d7dfd156cf5481a91643222f88f8fe85ba7bd107e64fe104c0",

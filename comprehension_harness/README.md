@@ -149,9 +149,10 @@ What a project writes to draw journeys, on top of that:
   `request_answers(<the request's Cookie header>)`. The page numbers the user's actions in a
   cookie; this is how a call is filed under the action that caused it. A project that forgets it
   fails its first case, which says so.
-- **A `page` fixture** whose context is opened with `CONTEXT`: the viewport, the time zone, the
-  locale, what a capture must not vary with. The clock is the helper's, pinned at the journey's
-  `now`.
+- **A `page` fixture** whose context is opened with `CONTEXT`, the time zone, the locale and what
+  else a capture must not vary with, and with **the project's viewport**: the one size its
+  journeys are captured at, a phone's or a desktop's. A run writes down the viewport its page has,
+  and the pages are drawn at it. The clock is the helper's, pinned at the journey's `now`.
 - **What the server draws at random, pinned** for the journey tests: generated ids, a token
   written on the page. Two runs of an unchanged app then write the same captures, and a variant
   differs from the reference run by what it shows alone.
