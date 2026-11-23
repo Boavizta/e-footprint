@@ -5,7 +5,7 @@ from efootprint.api_utils.system_to_json import systems_to_json
 from tests.integration_tests.integration_simple_system_base_class import IntegrationTestSimpleSystemBaseClass
 
 
-@titled("`systems_to_json` writes the dict it returns to the file it is given")
+@titled("comparison-file#export: `systems_to_json` writes the dict it returns to the file it is given")
 def test_systems_to_json_writes_the_file_it_is_given(tmp_path):
     """Test that systems_to_json writes to the file given the dict it returns."""
     system, _ =IntegrationTestSimpleSystemBaseClass.generate_simple_system()

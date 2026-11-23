@@ -70,8 +70,8 @@ class TestSystemFile:
         assert {obj.id for obj in copy.all_linked_objects} == {obj.id for obj in system.all_linked_objects}
         assert is_cached(copy)
 
-    @titled("`systems_to_json` refuses two systems sharing a System id, naming the id and duplicate_system "
-            "[distinct-systems]")
+    @titled("comparison-file#export: `systems_to_json` refuses two systems sharing a System id, naming the id and "
+            "duplicate_system [distinct-systems]")
     def test_two_systems_sharing_a_system_id_are_refused(self, system):
         with pytest.raises(ValueError) as error:
             systems_to_json([system, system])
