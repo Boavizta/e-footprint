@@ -4,6 +4,7 @@ from efootprint.abstract_modeling_classes.modeling_object import ModelingObject
 from efootprint.abstract_modeling_classes.utils import css_escape
 from efootprint.api_utils.json_to_system import json_to_system
 from efootprint.api_utils.system_to_json import system_to_json
+from efootprint.narrate import event, narrate
 
 
 def assign_fresh_system_id(system) -> "System":
@@ -29,8 +30,14 @@ def duplicate_system(system) -> "System":
     round-trip happens in-process at the current version, so cached computed values carry over as
     trusted caches — reading the duplicate does not recompute what the original had already computed.
     """
+    event("The modeler duplicates a system.", lambda: {"system": system.id})
+    narrate("The copy is a save and a load in memory, at this version: **the copy's values attach as trusted "
+            "caches**, so reading it does not recompute what the original had computed.")
     system_dict = system_to_json(system)
     class_obj_dict, _, _ = json_to_system(system_dict)
-    duplicated_system = next(iter(class_obj_dict["System"].values()))
+    duplicated_system = assign_fresh_system_id(next(iter(class_obj_dict["System"].values())))
+    narrate("`assign_fresh_system_id` gives the copy's System an id of its own, and every other object keeps "
+            "its id: **the copy's objects pair with the original's by id**, and the two systems stay distinct.",
+            lambda: {"original": system.id, "copy": duplicated_system.id})
 
-    return assign_fresh_system_id(duplicated_system)
+    return duplicated_system

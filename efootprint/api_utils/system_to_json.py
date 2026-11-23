@@ -6,6 +6,7 @@ from efootprint.abstract_modeling_classes.explainable_object_dict import Explain
 from efootprint.abstract_modeling_classes.modeling_object import ModelingObject
 from efootprint.abstract_modeling_classes.reactive_core import (
     computed_slots, peek_instance_slot_registry, serialized_slots)
+from efootprint.narrate import event, narrate
 
 CALCULATION_GRAPH_KEY = "calculation_graph"
 
@@ -233,12 +234,20 @@ def system_to_json(input_system, output_filepath=None, indent=4, save_computed_s
     from-scratch rebuilds. The top-level ``Sources`` block holds only sources a serialized value
     references; pure computed-attribute provenance is re-attached on recompute, so it is not
     persisted (see ``collect_referenced_source_ids``)."""
+    event("A system is saved to its JSON form.", lambda: {"system": input_system.id})
     output_dict = {"efootprint_version": efootprint.__version__}
+    narrate("The document is stamped with the library's `efootprint` version: **a later load compares it with "
+            "its own to decide whether the saved values can be trusted**.",
+            lambda: {"efootprint_version": output_dict["efootprint_version"]})
     sources_by_id = {}
     collected_objects = []
     recursively_write_json_dict(
         output_dict, input_system, save_computed_state, sources_by_id=sources_by_id,
         collected_objects=collected_objects)
+    narrate("`recursively_write_json_dict` writes each object reached from the system through its inputs, with "
+            "its inputs and, when the computed state is saved, its serialized values. **Saving reads values and "
+            "never computes them**: a value not computed yet is not written, and computes after the load.",
+            lambda: {"objects": len(collected_objects), "save computed state": save_computed_state})
 
     if sources_by_id:
         referenced_source_ids = collect_referenced_source_ids(output_dict)
@@ -248,9 +257,15 @@ def system_to_json(input_system, output_filepath=None, indent=4, save_computed_s
             # Insert Sources block right after efootprint_version, before modeling-class blocks.
             output_dict = {"efootprint_version": output_dict["efootprint_version"], "Sources": sources_block,
                            **{k: v for k, v in output_dict.items() if k != "efootprint_version"}}
+    narrate("The Sources block keeps only the sources a written value refers to, as "
+            "`collect_referenced_source_ids` finds them: a computed value gets its provenance back when it "
+            "recomputes.", lambda: {"sources": len(output_dict.get("Sources", {}))})
 
     if save_computed_state:
         output_dict[CALCULATION_GRAPH_KEY] = calculation_graph_section(collected_objects)
+        narrate("`calculation_graph_section` writes the calculation graph beside the objects: which computed "
+                "slot read which, without their values, which the object blocks already hold.",
+                lambda: {"nodes": len(output_dict[CALCULATION_GRAPH_KEY]["nodes"])})
 
     if output_filepath is not None:
         with open(output_filepath, "w") as file:

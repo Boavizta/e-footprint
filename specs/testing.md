@@ -14,14 +14,14 @@ than platform-independent memory thresholds. Keep deterministic cache-shape asse
 
 ## Narrative tests (`tests/narratives/`)
 
-A narrative test crosses one flow in order so that its page can be drawn
-(`npm run comprehension:render`, then `specs/comprehension_harness/`). The flow tells itself:
+A narrative test crosses the steps of one narrative in order so that its page can be drawn
+(`npm run comprehension:render`, then `specs/comprehension_harness/`). The code tells it itself:
 `narrate` at each step and `event` at its cause, imported from `efootprint/narrate.py` and inert
 outside a test run of this repository. The test declares the narrative with
 `comprehension_harness/python/declare.py`:
 
-- `@narrative.mechanism("<title>")` on a test class for a flow of the engine, `@narrative("<title>")`
-  for a flow a modeler sets off; the first paragraph of its docstring is the summary.
+- `@narrative.mechanism("<title>")` on a test class for a narrative of the engine, `@narrative("<title>")`
+  for one a modeler sets off; the first paragraph of its docstring is the summary.
 - Its first test is the reference case, the one the page tells step by step, unless another is
   marked `@canonical`. The other tests are variants: another kind of edit, a failure.
 - It builds real objects, never mocks, and asserts what the flow gives, as any test does. The

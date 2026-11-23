@@ -13,6 +13,7 @@ from efootprint.api_utils.suppressed_efootprint_classes import ALL_SUPPRESSED_EF
 from efootprint.api_utils.system_to_json import CALCULATION_GRAPH_KEY
 from efootprint.constants.sources import Sources
 from efootprint.logger import logger
+from efootprint.narrate import event, narrate
 from efootprint.utils.tools import get_init_signature_params
 
 
@@ -170,6 +171,8 @@ def json_to_system(system_dict, efootprint_classes_dict=None):
     session-scoped baseline retained on each System (see ``System.compare_to_version_baseline``) —
     the slots stay void and recompute on read, so methodology or upstream-data drift surfaces at
     upgrade time instead of persisting silently."""
+    event("A system is loaded from its JSON form.",
+          lambda: {"efootprint_version": system_dict.get("efootprint_version")})
     if efootprint_classes_dict is None:
         efootprint_classes_dict = {modeling_object_class.__name__: modeling_object_class
                                    for modeling_object_class in ALL_EFOOTPRINT_CLASSES}
@@ -177,15 +180,26 @@ def json_to_system(system_dict, efootprint_classes_dict=None):
     valid_class_keys = set(classes_generation_order) | set(ALL_SUPPRESSED_EFOOTPRINT_CLASSES_DICT)
 
     validate_system_dict_structure(system_dict, valid_class_keys)
+    narrate("`validate_system_dict_structure` checks the block of each known class and passes over every "
+            "other key: **a key that names no class is ignored, not refused**, so what another tool adds to a "
+            "document does not stop the load.",
+            lambda: {"keys naming no class": sorted(key for key in system_dict if key not in valid_class_keys)})
 
     file_version = system_dict.get("efootprint_version")
     version_matches = file_version == efootprint.__version__
     if not version_matches:
         system_dict = upgrade_system_dict_to_current_version(system_dict, efootprint_classes_dict)
+        narrate("A document of another version goes through `upgrade_system_dict_to_current_version`, one "
+                "handler a major version, before any object is built.",
+                lambda: {"from": file_version, "to": efootprint.__version__})
     # Stored values are only trusted as caches when their dependency edges can be reinstalled: a
     # values-bearing file always carries the calculation-graph section, so its absence means an
     # inputs-only file (nothing to attach anyway).
     trust_stored_values = version_matches and CALCULATION_GRAPH_KEY in system_dict
+    narrate("**Saved values are trusted only when the document is of this version and holds its calculation "
+            "graph**: a value computed by another version may differ from what this one computes, and a cached "
+            "value without its edges would survive the edits that should void it.",
+            lambda: {"version matches": version_matches, "trusted": trust_stored_values})
 
     sources_dict = build_sources_dict_from_system_dict(system_dict)
 
@@ -212,6 +226,9 @@ def json_to_system(system_dict, efootprint_classes_dict=None):
             flat_obj_dict[class_instance_key] = new_obj
 
         class_obj_dict[class_key] = current_class_dict
+    narrate("Objects are built class by class, in an order where what an object points to is built before it, "
+            "each from its own block: trusted values attach as caches, and untrusted ones are left out.",
+            lambda: {"objects": len(flat_obj_dict)})
 
     for (modeling_obj, attr_key), attr_value in explainable_object_dicts_to_create_after_objects_creation.items():
         if attr_key in modeling_obj.calculated_attributes:
@@ -242,11 +259,17 @@ def json_to_system(system_dict, efootprint_classes_dict=None):
 
     if trust_stored_values:
         rebuild_dependency_graph(system_dict[CALCULATION_GRAPH_KEY], flat_obj_dict)
+        narrate("`rebuild_dependency_graph` reinstalls the saved edges, so **an edit of the loaded system voids "
+                "exactly what it would have voided on the system that was saved**.",
+                lambda: {"edges": len(system_dict[CALCULATION_GRAPH_KEY]["edges"])})
 
     baseline_values = None
     if not trust_stored_values and file_version is not None:
         baseline_values = collect_baseline_values_from_other_version(
             system_dict, efootprint_classes_dict, sources_dict)
+        narrate("The values an untrusted document still holds are kept on the System as the baseline it can be "
+                "compared against, by `collect_baseline_values_from_other_version`: **they are never attached, "
+                "and every value computes on read**.", lambda: {"baseline values": len(baseline_values)})
     for system in class_obj_dict.get("System", {}).values():
         if baseline_values:
             system.__dict__["_version_baseline"] = {
