@@ -100,7 +100,7 @@ row.
 | The same with no site | For a name `plan.md`, a test title or a page of rules gives: in the files named beside it, else unique across the source, else nearest to the piece's places | Same |
 | Where a function uses a symbol | The first line of a function (by `file` and `fn`) referring to the symbol declared at a place: "Open call" | Same |
 | What a declared name is shaped like | A pattern: a token of a sentence, or of a page of rules, that has that shape and resolves to nothing is flagged | The language's own styles |
-| The lines of a function | By `file` and `fn`: the line its name is on and its last line, or nothing when the file holds no single function of that name. Optional: a place of a plan is then read by its file, not by its function | From `functions` |
+| The functions of a file | Each with the line its name is on and its last line. Optional: without it a place of a plan, and a change a lot made, are read by their file, not by their function | From `functions` |
 | The function around a site | The nearest named function, its first and last line, who refers to it and what it calls, each marked as holding a `narrate` or not (`map step`, `map around`) | Candidates in both |
 
 The stack's reader refuses, with the file and the line: a `planned` call whose tag or sentence is

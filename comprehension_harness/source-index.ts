@@ -123,7 +123,18 @@ export class SourceIndex {
   useIn(file: string, fn: string, name: string, at: Location): Location | null { return this.reader.useIn(file, fn, name, at); }
   sourceFile(token: string): string | null { return this.reader.sourceFile(token); }
   around(site: RawSite): Around | null { return this.reader.around(site); }
-  lines(file: string, fn: string): [number, number] | null { return this.reader.lines?.(file, fn) ?? null; }
+
+  /** The named functions of a file, by the line of their name; none where the stack gives none. */
+  functions(file: string): Array<{ fn: string; line: number; endLine: number }> {
+    return [...(this.reader.functions?.(file) ?? [])].sort((a, b) => a.line - b.line);
+  }
+
+  /** The line the name of the function `fn` of `file` is on, and its last line; null when the file holds no
+   *  single function of that name. */
+  lines(file: string, fn: string): [number, number] | null {
+    const named = this.functions(file).filter((f) => f.fn === fn);
+    return named.length === 1 ? [named[0].line, named[0].endLine] : null;
+  }
   siteFiles(): string[] { return this.reader.siteFiles(); }
   narrativeTestFiles(): string[] { return this.reader.narrativeTestFiles(); }
 }

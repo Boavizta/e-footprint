@@ -195,9 +195,8 @@ export class JsonSource implements SourceReader {
     return named.length === 1 ? this.firstUse({ ...named[0], file }, name, at) : null;
   }
 
-  lines(file: string, fn: string): [number, number] | null {
-    const named = (this.document.files[file]?.functions ?? []).filter((f) => f.fn === fn);
-    return named.length === 1 ? [named[0].line, named[0].endLine] : null;
+  functions(file: string): Array<{ fn: string; line: number; endLine: number }> {
+    return (this.document.files[file]?.functions ?? []).map(({ fn, line, endLine }) => ({ fn, line, endLine }));
   }
 
   sourceFile(token: string): string | null {
@@ -208,7 +207,7 @@ export class JsonSource implements SourceReader {
   }
 
   /** Every function of the source with its file. */
-  private functions(): Fn[] {
+  private everyFunction(): Fn[] {
     return this.sourceFiles().flatMap((file) => this.document.files[file].functions.map((fn) => ({ ...fn, file })));
   }
 
@@ -253,7 +252,7 @@ export class JsonSource implements SourceReader {
       this.filesUsing = new Map();
       for (const file of this.sourceFiles()) for (const use of this.document.files[file].uses) this.filesUsing.set(use.name, (this.filesUsing.get(use.name) ?? new Set<string>()).add(file));
     }
-    const functions = this.functions();
+    const functions = this.everyFunction();
     const callees: Neighbour[] = [];
     for (const use of this.document.files[target.file].uses) {
       if (!holds(target, use.line) || THE_CALLS.includes(use.name) || (this.filesUsing.get(use.name)?.size ?? 0) > AMBIENT_FILES) continue;

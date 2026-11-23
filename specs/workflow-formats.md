@@ -104,8 +104,9 @@ in run order with the values it saw at each, then how it failed.
 
 - **A reproduction** is declared in place of a planned test, under the same kind of title. It is
   written, it asserts what should be, and a run expects its failure, strictly. It observes
-  everything it has to and asserts once, at its end: a story stops where its test fails. A bug
-  whose chain crosses a process has one reproduction per process, joined by the piece.
+  everything it has to and asserts once, at its end: a story stops where its test fails. It is
+  one test, which reads its cases itself: one run a case at a time is refused. A bug whose chain
+  crosses a process has one reproduction per process, joined by the piece.
   **The approval holds it as written.** The fix makes it pass and changes its declaration, not
   its lines: one edited since, to pass or to assert more, is a line of the piece's difference
   and takes a `Changed:` (`→ test "<its title>"`).
@@ -236,6 +237,8 @@ From then on the check lists every unit that is not as approved, and fails:
 
 What asks nothing:
 
+- **A new piece under a new bug.** The bug's `Changed:` says why both are there. A piece that
+  joins a bug the approval holds takes its own.
 - **A line that moved word for word** from one piece to another. A line reworded on the way is a
   loss and a gain, each with its reason: so a line that moves keeps its words.
 - **The tasks stage's own output**, until a delivery is approved: the delivery, the unit-tier
@@ -284,6 +287,14 @@ each of these is settled:
 
 Each is a decision: a `Changed:` in the piece's section, in words the reviewer can read without
 the code.
+
+**What a lot changed at no place of the plan, in a file the plan names, is listed and asks
+nothing.** A ripple and a small extraction are common and sound: the reviewer is shown them, with
+the piece, and an edit names one (`→ code <fragment>`) only when it is a decision. In code it is a
+function that changed and that no place names; a line in no function, as an import, and a new
+function that a line written elsewhere names are left out. A file with no function, as a
+template, lists only what is certain: a change above its first place, since a tag stands above
+what it changes and nothing says how far down that goes.
 
 ## Implementing a piece
 

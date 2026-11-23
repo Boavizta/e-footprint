@@ -123,13 +123,18 @@ describe('where a function uses a symbol', () => {
   });
 });
 
-describe('the lines of a function', () => {
-  it('are those of the one function of that name in the file, and nothing for a name it does not hold once', () => {
-    expect(reader().lines(CHECKOUT, 'pay')).toEqual([15, 19]);
-    expect(reader().lines(CHECKOUT, 'Basket.total')).toEqual([9, 12]);
-    expect(reader().lines(CHECKOUT, 'total')).toBeNull();
-    expect(reader().lines('shop/nowhere.py', 'pay')).toBeNull();
-    expect(new SourceIndex(reader()).lines(PRICING, 'with_tax')).toEqual([6, 9]);
+describe('the functions of a file', () => {
+  it('are each its name, the line of it and its last line, and none for a file the document does not hold', () => {
+    expect(reader().functions(PRICING)).toEqual([{ fn: 'with_tax', line: 6, endLine: 9 }, { fn: 'round_price', line: 12, endLine: 13 }]);
+    expect(reader().functions('shop/nowhere.py')).toEqual([]);
+  });
+
+  it('give the lines of the one function of a name, and nothing for a name the file does not hold once', () => {
+    const index = new SourceIndex(reader());
+    expect(index.lines(CHECKOUT, 'pay')).toEqual([15, 19]);
+    expect(index.lines(CHECKOUT, 'Basket.total')).toEqual([9, 12]);
+    expect(index.lines(CHECKOUT, 'total')).toBeNull();
+    expect(index.lines('shop/nowhere.py', 'pay')).toBeNull();
   });
 });
 

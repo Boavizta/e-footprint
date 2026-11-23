@@ -72,8 +72,10 @@ Read `.agents/repository.md` § "Review surfaces" and § "Gates". `map …` is t
    - **Test quality**: piecemeal assertions where the whole expected state could be asserted; a
      scenario that cannot happen; internal state manufactured to justify product code instead of
      driving the real producer.
-   - **Scope**: every hunk no place of the lot asked for. A boy-scout change earns its place with
-     a concrete defect and a fix in the layer that owns it.
+   - **Scope**: every hunk no place of the lot asked for. The brief lists, under each built piece,
+     what its commits changed at no place of the plan: start there, and do not stop there, since a
+     template lists only what stands above its first place. A boy-scout change earns its place
+     with a concrete defect and a fix in the layer that owns it.
    - **Conventions**: anything against the project's rules.
    - **Code quality**: naming, awkward structure, a detour the existing shape forced that a wider
      refactor would remove. Report a smell the lot revealed even when the lot itself is clean.

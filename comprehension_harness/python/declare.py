@@ -10,7 +10,8 @@
 - ``@reproduces("<feature>#<slug>: <title> [<rule>]")`` is a written test that fails today, for the bug its piece
   fixes: it asserts what should be. A run expects its failure, strictly: the fix cannot land without the
   declaration becoming ``@titled``, under the same title. Its story is the bug's evidence, so it observes
-  everything it has to and asserts once, at its end: a story stops where its test fails.
+  everything it has to and asserts once, at its end: a story stops where its test fails. It is one test, not
+  one a case: it reads its cases itself (``titles.py`` refuses a parametrized one).
 
 All five are pytest markers. ``collector.py`` reads them when it writes a test's story; ``source_index.py``
 and ``titles.py`` read them from the source.

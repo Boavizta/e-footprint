@@ -10,7 +10,8 @@ commit.
   function's name, or the string of ``@titled("…")`` above it. ``@planned_test("…")`` on a function with an
   empty body is a test to write, and ``@reproduces("…")`` a written test that fails today for a bug to fix
   (``declare.py``). A written test declared with a title carries ``body``, a short hash of its lines from its
-  ``def`` down: what an approval holds of a reproduction, which is not edited to pass.
+  ``def`` down: what an approval holds of a reproduction, which is not edited to pass. A reproduction is one
+  test: a parametrized one is refused.
 - A stand is the line that opens a test, a class or another declaration of the file or of a class: its first
   decorator when it has one. A ``@planned`` comment right above that line stands on it.
 - A journey case is ``@planned_case("<feature>", "<screen>", "<title>")`` on a test with an empty body, in a
@@ -81,7 +82,8 @@ def has_empty_body(function) -> bool:
 def declared_title(function, file: str) -> tuple[str, str | None]:
     """A function's title and what declares it, ``planned_test`` for a test to write and ``reproduces`` for one
     that fails today, as its decorators say; refuses a title that is not one string, two titles, a title on a
-    function pytest does not collect, a planned test with a body, a reproduction without one."""
+    function pytest does not collect, a planned test with a body, a reproduction without one or run a case at a
+    time."""
     found = [d for d in function.decorator_list if decorator_name(d) in TITLE_DECORATORS]
     if not found:
         return function.name, None
@@ -100,6 +102,9 @@ def declared_title(function, file: str) -> tuple[str, str | None]:
     if kind == "reproduces" and has_empty_body(function):
         raise Refusal(f"{where} — @reproduces stands on a written test, which fails today; "
                       f"a test to write is declared with @planned_test(…)")
+    if kind == "reproduces" and any(decorator_name(d) == "parametrize" for d in function.decorator_list):
+        raise Refusal(f"{where} — @reproduces stands on one test, and this one is parametrized: a plan draws one "
+                      f"run and one failure. It reads its cases itself, then asserts once")
     return arguments[0].value, kind
 
 

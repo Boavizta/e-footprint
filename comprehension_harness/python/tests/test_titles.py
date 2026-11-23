@@ -149,6 +149,8 @@ def test_a_batch_is_answered_in_order_and_a_file_that_is_not_python_holds_nothin
      "t.py:3 — @titled(…) takes the test's title as one literal string"),
     ('@titled("a")\n@planned_test("b")\ndef test_x():\n    pass\n', "t.py:1 — a test has one title"),
     ('@reproduces("a#b: c")\ndef test_x():\n    pass\n', "t.py:1 — @reproduces stands on a written test"),
+    ('@reproduces("a#b: c")\n@pytest.mark.parametrize("n", [1, 2])\ndef test_x(n):\n    assert n\n',
+     "t.py:1 — @reproduces stands on one test, and this one is parametrized"),
     ('@titled("a")\ndef check_x():\n    pass\n', "t.py:1 — @titled(…) stands on a test function"),
     ("def test_x(:\n    pass\n", "t.py:1 — the Python parser refuses the file"),
 ])

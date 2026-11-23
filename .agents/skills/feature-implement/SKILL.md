@@ -100,6 +100,9 @@ lists is a decision, and you settle it now:
 - a deleted test nobody planned, a product file no place names, a place taken off with nothing
   written, a planned test not written: explained, or undone.
 
+What the check lists as changed "at no place of the plan" fails nothing: it is shown to the
+reviewer with the piece. Write a `Changed:` for one only when it is a decision, not a ripple.
+
 "Explained" is a `Changed:` paragraph in the piece's section of `plan.md`, which you write.
 "Dropped" and "undone" go back to the implementer, resumed.
 

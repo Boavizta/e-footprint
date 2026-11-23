@@ -843,6 +843,8 @@ const NOTE = /^Note:\s*/;
 export const NOTES = 'notes';
 /** The facets whose lines are their own notice: listed, drawn as what they are, named by no edit. */
 export const isOwnNotice = (facet: string) => facet === 'question' || facet === NOTES;
+/** The facets an edit may name and need not: a line of one that no edit names is listed, and no failure. */
+export const asksNoEdit = (facet: string) => isOwnNotice(facet) || facet === BESIDE;
 
 /** A clause names a function when it holds it in backticks, alone or opening a call. */
 export const names = (sentence: string, fn: string) => sentence.includes(`\`${fn}\``) || sentence.includes(`\`${fn}(`);
@@ -1091,14 +1093,15 @@ const linesOver = (now: string[], was: string[]) => {
 /**
  * What differs from the approved plan, a unit at a time, in the order of the plan as it stands, then what is
  * gone. A reason is needed for a piece that gained a line of any facet or lost one of its statement, its reason
- * or its tests, and for a decision that is new or reads differently. The waivers, the lots, the journey cases
+ * or its tests, and for a decision that is new or reads differently. A new piece under a new bug (`bugOf`, the
+ * name of the bug's unit) asks nothing of its own: the bug's paragraph says why both are there. The waivers, the lots, the journey cases
  * and the stories are listed and ask nothing: a waiver and a lot carry their reason, a story moves because the
  * plan is being implemented. A `To confirm:` a later stage adds is listed too, and is its own notice. While no
  * delivery is approved, the delivery and the unit tier (`isUnitTestLine`) are the tasks stage's output: they are
  * read on the delivery page, lot by lot, and are no line of the delta. A line one piece lost and another gained,
  * word for word, is a move: it leaves both deltas and is returned apart, of second order. `explained` says whether the unit's section holds a `Changed:`.
  */
-export function diffSnapshots(approved: PlanSnapshot, now: PlanSnapshot, explained: (kind: UnitKind, name: string) => boolean, layout: Layout): { delta: UnitDelta[]; moves: PlanMove[] } {
+export function diffSnapshots(approved: PlanSnapshot, now: PlanSnapshot, explained: (kind: UnitKind, name: string) => boolean, bugOf: (piece: string) => string | null, layout: Layout): { delta: UnitDelta[]; moves: PlanMove[] } {
   const key = (u: SnapshotUnit) => `${u.kind} ${u.name}`;
   const was = new Map(approved.units.map((u) => [key(u), u]));
   // Until a delivery is approved, what the tasks stage writes is its output and no change of the plan: the
@@ -1135,7 +1138,9 @@ export function diffSnapshots(approved: PlanSnapshot, now: PlanSnapshot, explain
       .map((f) => ({ ...f, added: f.added.filter((line) => !(tasksOpen && isUnitTestLine(f.facet, line, layout))) }))
       .filter((f) => f.added.length + f.removed.length > 0);
     if (facets.length === 0 && u.state === 'changed') continue;
-    const asks = u.state !== 'gone' && (u.kind === 'decision' || (u.kind === 'piece' && facets.some((f) => !ASKS_NOTHING.includes(f.facet) && (f.added.length > 0 || (f.removed.length > 0 && LOSS_IS_A_CHANGE.includes(f.facet))))));
+    const bug = u.kind === 'piece' && u.state === 'new' ? bugOf(u.name) : null;
+    const joinsWithItsBug = bug !== null && !was.has(`decision ${bug}`);
+    const asks = u.state !== 'gone' && !joinsWithItsBug && (u.kind === 'decision' || (u.kind === 'piece' && facets.some((f) => !ASKS_NOTHING.includes(f.facet) && (f.added.length > 0 || (f.removed.length > 0 && LOSS_IS_A_CHANGE.includes(f.facet))))));
     delta.push({ kind: u.kind, name: u.name, state: u.state, facets, reason: explained(u.kind, u.name) ? 'given' : asks ? 'needed' : 'none', edits: [], unclaimed: facets.flatMap(linesOf) });
   }
   return { delta, moves };
@@ -1147,7 +1152,7 @@ const linesOf = (f: UnitDelta['facets'][number]): DeltaLine[] => [...f.removed.m
  *  One line out and one line in at the same place are one rewording. */
 export function placeOfLine(line: DeltaLine): string {
   // What a commit did beyond the plan is no rewording of anything: each line is its own place.
-  if (line.facet === UNPLANNED) return `${UNPLANNED} ${line.text}`;
+  if (line.facet === UNPLANNED || line.facet === BESIDE) return `${line.facet} ${line.text}`;
   const site = /^(?:changed|added|removed|evidence) (\S+) in (\S+) — /.exec(line.facet === 'sites' ? line.text : '');
   if (site) return `sites ${site[1]} ${site[2]}`;
   // A reproduction is its own place: its body as approved and its body now are one rewording.
@@ -1162,6 +1167,7 @@ export function kindOfLine(line: DeltaLine): string {
   if (line.facet === 'tests' || line.facet === REPRODUCTIONS) return 'test';
   if (line.facet === 'comments') return /^\S+ tests\//.test(line.text) ? 'test' : 'code';
   if (line.facet === UNPLANNED) return line.text.startsWith('test ') ? 'test' : 'code';
+  if (line.facet === BESIDE) return 'code';
   return line.facet;
 }
 
@@ -1170,6 +1176,116 @@ export function kindOfLine(line: DeltaLine): string {
 /** The facet of a piece's delta that holds what its commits did and the plan did not say. Its lines are read
  *  from git, never from the plan: no snapshot holds them, and an approval covers the commits made before it. */
 export const UNPLANNED = 'unplanned';
+
+/** The facet of a piece's delta that holds what a lot changed at no place of the plan, in a file the plan names
+ *  (`changedAway`). Read from git as `UNPLANNED` is, and unlike it listed, not asked about: a ripple and a small
+ *  extraction are common and sound, so the reviewer is shown them, and an edit names one only when it is a
+ *  decision. */
+export const BESIDE = 'beside';
+
+/** One stretch of a file's difference since the approval. `was` is the old lines it took off and `now` the new
+ *  lines it wrote, each null when there is none; `at` is where it stands in the old file and in the new: its
+ *  first line, or the line it comes after when it holds none on that side. */
+export interface Hunk {
+  was: [number, number] | null;
+  now: [number, number] | null;
+  at: { old: number; now: number };
+  removed: string[];
+  added: string[];
+}
+
+/** A function as a change is read into it: its lines, and above them what stands directly on it. */
+export interface FunctionLines {
+  fn: string;
+  /** The first line that stands on it: a decorator, a comment, else its own. */
+  from: number;
+  /** The line its name is on. */
+  line: number;
+  endLine: number;
+}
+
+/**
+ * What a file's difference since the approval changed at no place of the plan, as lines of `BESIDE`.
+ *
+ * Where the stack gives the file's functions, a change is read by its function: one that changed and that no
+ * place names is listed. A line in no function is not (an import, a constant: what a place brings with it). Nor
+ * is the helper of a place: a new function that a line written in a function a place names, or in another such
+ * helper, names. A function is new when its name's line was written and no line taken off held its name: one
+ * whose signature changed is not.
+ *
+ * Where it gives none (a template, a stylesheet), a place has no extent to read a change into: its tag stands
+ * above what it changes, and nothing says how far down that goes. So only what is certain is listed: a change
+ * above the first place of the file. A file that held no tag of the feature at the approval lists nothing.
+ */
+export function changedAway(file: string, hunks: Hunk[], feature: string, named: ReadonlySet<string>, functions: FunctionLines[]): string[] {
+  if (functions.length === 0) {
+    const tagged = hunks.flatMap((h) => h.removed.flatMap((text, i) => (text.includes(`${feature}#`) ? [h.was![0] + i] : [])));
+    if (tagged.length === 0) return [];
+    const first = Math.min(...tagged);
+    const above = hunks.filter((h) => (h.was ? h.was[1] : h.at.old) < first);
+    const said = (h: Hunk) => (h.now === null ? `${h.removed.length === 1 ? 'a line' : `${h.removed.length} lines`} taken off after line ${h.at.now}` : h.now[0] === h.now[1] ? `line ${h.now[0]}` : `lines ${h.now[0]}–${h.now[1]}`);
+    return above.length ? [`lines ${file} — changed above the first place of the file: ${above.map(said).join(', ')}`] : [];
+  }
+  // The innermost function that holds a line: the one whose name comes last.
+  const holder = (line: number) => functions.filter((f) => f.from <= line && line <= f.endLine).sort((a, b) => b.line - a.line)[0] ?? null;
+  const touched = new Map<FunctionLines, Hunk[]>();
+  for (const h of hunks) {
+    const lines = h.now ? Array.from({ length: h.now[1] - h.now[0] + 1 }, (_, i) => h.now![0] + i) : [h.at.now, h.at.now + 1];
+    const holders = new Set(lines.map(holder).filter((f): f is FunctionLines => f !== null));
+    // Lines that went between two functions belong to neither.
+    if (h.now === null && holders.size > 1) continue;
+    for (const f of holders) touched.set(f, [...(touched.get(f) ?? []), h]);
+  }
+  const names = (f: FunctionLines) => new RegExp(`\\b${f.fn.split('.').pop()!.replace(/[^A-Za-z0-9_]/g, '\\$&')}\\b`);
+  const isNew = (f: FunctionLines) => hunks.some((h) => h.now !== null && h.now[0] <= f.line && f.line <= h.now[1]) && !hunks.some((h) => h.removed.some((text) => names(f).test(text)));
+  // The lines written, each with the function it was written in.
+  const written = hunks.flatMap((h) => h.added.map((text, i) => ({ text, in: holder(h.now![0] + i) })));
+  // The helpers of the places: found from the functions the places name, then from the helpers found.
+  const others = [...touched.keys()].filter((f) => !named.has(f.fn));
+  const helpers = new Set<FunctionLines>();
+  for (let found = true; found;) {
+    found = false;
+    for (const f of others) {
+      if (helpers.has(f) || !isNew(f)) continue;
+      if (!written.some((w) => w.in !== null && w.in !== f && (named.has(w.in.fn) || helpers.has(w.in)) && names(f).test(w.text))) continue;
+      helpers.add(f);
+      found = true;
+    }
+  }
+  return others.filter((f) => !helpers.has(f)).sort((a, b) => a.line - b.line).map((f) => `function ${file} in ${f.fn} — ${isNew(f) ? 'new' : 'changed'}, and no place of the plan names it`);
+}
+
+/** The functions the places of a plan name in each file: those still planned, those built, those taken back. */
+export function functionsNamed(pieces: PlanPiece[]): Map<string, Set<string>> {
+  const out = new Map<string, Set<string>>();
+  for (const piece of pieces) for (const line of [...piece.sites.map(siteLineOf), ...piece.built.sites, ...piece.takenBack.sites]) {
+    const m = /^\S+ (\S+) in (\S+) — /.exec(line);
+    if (m) out.set(m[1], (out.get(m[1]) ?? new Set<string>()).add(m[2].replace(/#\d+$/, '')));
+  }
+  return out;
+}
+
+/**
+ * What the commits made since the approval changed at no place of the plan, by piece: each file of the
+ * product's code they touched and the plan names, read once (`away`, which `changedAway` answers from git), and
+ * given to the first piece whose commit touched it. A file no place names is `unplannedLines`': it fails.
+ */
+export function besideLines(commits: PieceCommit[], named: ReadonlySet<string>, layout: Layout, pieces: PlanPiece[], away: FeatureDocs['away']): Map<string, string[]> {
+  const out = new Map<string, string[]>();
+  if (!away) return out;
+  const fns = functionsNamed(pieces);
+  const read = new Set<string>();
+  for (const c of commits) {
+    if (!c.sinceApproval || c.pieces.length === 0) continue;
+    for (const f of c.files) {
+      if (read.has(f.file) || f.line === null || !layout.isProduct(f.file) || !named.has(f.file)) continue;
+      read.add(f.file);
+      const lines = away(f.file, fns.get(f.file) ?? new Set());
+      if (lines.length) out.set(c.pieces[0], [...(out.get(c.pieces[0]) ?? []), ...lines]);
+    }
+  }
+  return out;
+}
 
 
 /** The files a snapshot's pieces name: where a site, a comment or a test stands. */
@@ -1266,7 +1382,8 @@ export function groupEdits(delta: UnitDelta, changes: PlanChange[], piece: PlanP
   const lines = delta.facets.flatMap(linesOf);
   const claimable = lines.filter((l) => !isOwnNotice(l.facet));
   const owner = new Map<DeltaLine, PlanChange>();
-  if (changes.length === 1) for (const l of claimable) owner.set(l, changes[0]);
+  // One edit: every line is its, but one it need not name and does not (what changed at no place of the plan).
+  if (changes.length === 1) for (const l of claimable) { if (l.facet !== BESIDE || changes[0].claims.some((claim) => claims(claim, l, piece))) owner.set(l, changes[0]); }
   else {
     for (const l of claimable) {
       const by = changes.find((c) => c.claims.some((claim) => claims(claim, l, piece)));
@@ -1327,6 +1444,9 @@ export interface FeatureDocs {
   commits?: { list: PieceCommit[]; baseKnown: boolean } | null;
   /** What a repository says of a piece of this feature it plans; null when no checkout of it is known. */
   pointed?: (repository: string, slug: string) => PointerTarget | null;
+  /** What `file` changed at no place of the plan since the commit of the approval, as lines of `BESIDE`, given
+   *  the functions the plan's places name in it (`changedAway`). */
+  away?: (file: string, named: ReadonlySet<string>) => string[];
   /** How many lines the function `fn` of `file` holds that it did not hold at the commit of the approval, the
    *  lines that stand directly on it counted with it; null when no such function can be placed, or no such
    *  commit read. What tells a place built from a place skipped or undone (`unplannedLines`). */
@@ -1454,7 +1574,12 @@ export function assemblePlans(input: PlanInput): Plan[] {
     // piece lost, which the edit stands on.
     for (const piece of pieces) takeBack(piece, sectionOf('piece', `#${piece.slug}`)?.changed ?? []);
     const snapshot = snapshotOf({ pieces, doc, journeyCases, builtCases }, narratives.flatMap((n) => (landed.has(n.title) && n.steps ? [{ title: n.title, steps: n.steps }] : [])));
-    const diffed = approved ? diffSnapshots(approved.baseline, snapshot, explained, input.layout) : null;
+    const bugOf = (name: string) => {
+      const under = sectionOf('piece', name)?.under;
+      const bug = under ? doc?.sections.find((x) => x.bug && x.anchor === under) : undefined;
+      return bug ? unitNameOf(bug) : null;
+    };
+    const diffed = approved ? diffSnapshots(approved.baseline, snapshot, explained, bugOf, input.layout) : null;
     // What the commits made since the approval did beyond the plan joins the delta of the piece each names.
     if (diffed && implementing) {
       for (const [slug, lines] of unplannedLines(commits, new Set([...filesNamed(approved!.baseline), ...filesNamed(snapshot)]), input.layout, [...bySlug.values()], docs.gained)) {
@@ -1464,6 +1589,14 @@ export function assemblePlans(input: PlanInput): Plan[] {
         if (!d) diffed.delta.push(d = { kind: 'piece', name, state: 'changed', facets: [], reason: 'none', edits: [], unclaimed: [] });
         d.facets.push({ facet: UNPLANNED, added: lines, removed: [] });
         d.reason = explained('piece', name) ? 'given' : 'needed';
+      }
+      // What they changed at no place, in a file the plan names: listed with the piece, and asks nothing.
+      for (const [slug, lines] of besideLines(commits, new Set([...filesNamed(approved!.baseline), ...filesNamed(snapshot)]), input.layout, [...bySlug.values()], docs.away)) {
+        if (!bySlug.has(slug)) continue;
+        const name = `#${slug}`;
+        let d = diffed.delta.find((x) => x.kind === 'piece' && x.name === name);
+        if (!d) diffed.delta.push(d = { kind: 'piece', name, state: 'changed', facets: [], reason: 'none', edits: [], unclaimed: [] });
+        d.facets.push({ facet: BESIDE, added: lines, removed: [] });
       }
     }
     return {
@@ -1581,7 +1714,7 @@ export function findings(plan: Plan, archive = false): { failures: string[]; inf
   for (const d of plan.delta ?? []) {
     const where = d.kind === 'piece' ? d.name : `"${d.name}"`;
     for (const e of d.edits) for (const claim of e.unmatched) failures.push(`planned: ${plan.doc!.file}:${e.change.line} ${where} claims ${claim}, and no line of its delta is of that kind and holds that fragment`);
-    const loose = d.edits.length > 1 ? d.unclaimed.filter((l) => !isOwnNotice(l.facet)) : [];
+    const loose = d.edits.length > 1 ? d.unclaimed.filter((l) => !asksNoEdit(l.facet)) : [];
     if (loose.length) failures.push(`planned: ${where} holds ${d.edits.length} "Changed:" and ${loose.length} line${loose.length === 1 ? '' : 's'} of its delta that none of them names — an edit ends ' → kind "fragment"; …' naming its lines:${loose.map((l) => `\n      ${l.sign} ${kindOfLine(l)}: ${l.text}`).join('')}`);
   }
   // A bug is what its pieces fix: one with no piece under it is fixed by nothing the plan holds.

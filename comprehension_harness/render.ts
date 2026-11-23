@@ -95,7 +95,7 @@ import { blocksHtml, parseIntent, type MdBlock } from './intent-md';
 import { loadPlanDiff, openSource, titles } from './project-stack';
 import { SourceIndex, type SourceSite } from './source-index';
 import type { Location, NarrativeKind, PlannedSite, Resolution, SourceReader, Story, StoryFrame, StoryHit } from './stack';
-import { assemblePlans, editItems, filesNamed, findings, isOpenTest, isOwnNotice, isStoryOf, lotLeft, names, shared, siteLineOf, unexpected, type Crossing, type FrozenChain, NOTES, REPRODUCTIONS, UNPLANNED, chainsToFreeze, fixedChains, isBuiltPlace, placesCrossed, reproductionKeyOf, type PieceCommit, overSentenceBudget, parseTag, pieceDocOf, pieceQuestion, planDocOf, reviewItems, waiverQuestion, writeAcceptedAnswers, type PointerTarget, replaceSlugRefs, scanJourneyCases, scanPlannedComments, scanTodos, todosByTier, TIERS, type FeatureDocs, type JourneyCase, type PlanBaseline, type DeltaLine, type PlanChange, type PlanFeedback, type PlanLot, type PlanMove, type ReviewItem, type UnitDelta, type Plan, type PlanGroup, type PlanSite, type PlanSection, type PlanPiece, type PlanTodo, type StaticSite } from './plan';
+import { assemblePlans, editItems, filesNamed, findings, isOpenTest, isOwnNotice, isStoryOf, lotLeft, names, shared, siteLineOf, unexpected, type Crossing, type FrozenChain, type FunctionLines, type Hunk, BESIDE, NOTES, asksNoEdit, changedAway, REPRODUCTIONS, UNPLANNED, chainsToFreeze, fixedChains, isBuiltPlace, placesCrossed, reproductionKeyOf, type PieceCommit, overSentenceBudget, parseTag, pieceDocOf, pieceQuestion, planDocOf, reviewItems, waiverQuestion, writeAcceptedAnswers, type PointerTarget, replaceSlugRefs, scanJourneyCases, scanPlannedComments, scanTodos, todosByTier, TIERS, type FeatureDocs, type JourneyCase, type PlanBaseline, type DeltaLine, type PlanChange, type PlanFeedback, type PlanLot, type PlanMove, type ReviewItem, type UnitDelta, type Plan, type PlanGroup, type PlanSite, type PlanSection, type PlanPiece, type PlanTodo, type StaticSite } from './plan';
 import { readPieceCommits } from './commits';
 import { buildBacklinks, describeEntry, markersFor, unresolvedDeclaredLooking, untracedEntries, type BacklinkIndex, type Marker, type PageEntry, type StepKeys } from './backlinks';
 
@@ -953,33 +953,73 @@ export function runReproductions(files: string[]): { ran: number; ok: boolean; c
 const reproductionsFailed = (run: { command: string; output: string }) => `the reproductions did not run as expected — ${run.command}\n${run.output.trim().split('\n').slice(-12).map((line) => `    ${line}`).join('\n')}`;
 
 /**
+ * A file's difference from `base`, the commit of an approval, to the working tree, a stretch at a time (`Hunk`):
+ * what the lot check reads a place and a change into. Null where git cannot read `base`. Read once a file for
+ * the same `base`.
+ */
+const hunksRead = new Map<string, Hunk[] | null>();
+function hunksSince(base: string, file: string): Hunk[] | null {
+  const key = `${base}\n${file}`;
+  if (hunksRead.has(key)) return hunksRead.get(key)!;
+  let hunks: Hunk[] | null = null;
+  try {
+    const diff = execFileSync('git', ['diff', '--unified=0', '--no-renames', base, '--', file], { cwd: ROOT, encoding: 'utf8', maxBuffer: 256 * 1024 * 1024, stdio: ['ignore', 'pipe', 'ignore'] });
+    hunks = [];
+    for (const row of diff.split('\n')) {
+      const head = /^@@ -(\d+)(?:,(\d+))? \+(\d+)(?:,(\d+))? @@/.exec(row);
+      const last = hunks[hunks.length - 1];
+      if (head) {
+        const [oldAt, oldN, nowAt, nowN] = [Number(head[1]), Number(head[2] ?? 1), Number(head[3]), Number(head[4] ?? 1)];
+        hunks.push({ was: oldN ? [oldAt, oldAt + oldN - 1] : null, now: nowN ? [nowAt, nowAt + nowN - 1] : null, at: { old: oldAt, now: nowAt }, removed: [], added: [] });
+      } else if (last && row.startsWith('-') && !row.startsWith('---')) last.removed.push(row.slice(1));
+      else if (last && row.startsWith('+') && !row.startsWith('+++')) last.added.push(row.slice(1));
+    }
+  } catch { hunks = null; }
+  hunksRead.set(key, hunks);
+  return hunks;
+}
+
+/** A line that stands on the declaration under it: a decorator, an attribute, a comment. The line above a
+ *  nested function is often its enclosing function's own code, so nothing else is taken for the function's. */
+const STANDS_ON = /^\s*(?:@|#|\/\/|\/\*|\*|\[)/;
+
+/**
+ * The functions of a file as a change is read into them (`FunctionLines`): the source index's, as the code
+ * stands, each with the lines that stand directly on it (`STANDS_ON`) — a decorator is where a change of a
+ * function is often written. None for a file the stack gives no function of.
+ */
+function functionLines(file: string, index: SourceIndex): FunctionLines[] {
+  const functions = existsSync(join(ROOT, file)) ? index.functions(file) : [];
+  if (functions.length === 0) return [];
+  const text = readFileSync(join(ROOT, file), 'utf8').split('\n');
+  return functions.map((f) => {
+    let from = f.line;
+    while (from > 1 && STANDS_ON.test(text[from - 2] ?? '')) from -= 1;
+    return { ...f, from };
+  });
+}
+
+/**
  * How many lines a function holds that it did not hold at `base`, the commit of an approval: what tells a place
- * built from one that was skipped or undone (`FeatureDocs.gained`). The function is the source index's, as the
- * code stands; what stands directly on it, up to the first blank line, is counted with it, since a decorator or
- * an attribute is where a change of the function is often written. The lines are git's, from `base` to the
- * working tree. Null where the index places no single function of that name, and where git cannot read `base`.
+ * built from one that was skipped or undone (`FeatureDocs.gained`). Null where the index places no single
+ * function of that name, and where git cannot read `base`.
  */
 export function gainedSince(base: string, index: SourceIndex): NonNullable<FeatureDocs['gained']> {
-  const added = new Map<string, Array<[number, number]> | null>();
-  const addedTo = (file: string) => {
-    if (!added.has(file)) {
-      let ranges: Array<[number, number]> | null = null;
-      try {
-        const diff = execFileSync('git', ['diff', '--unified=0', '--no-renames', base, '--', file], { cwd: ROOT, encoding: 'utf8', maxBuffer: 256 * 1024 * 1024, stdio: ['ignore', 'pipe', 'ignore'] });
-        ranges = [...diff.matchAll(/^@@ -\d+(?:,\d+)? \+(\d+)(?:,(\d+))? @@/gm)].map((m): [number, number] => [Number(m[1]), Number(m[1]) + Number(m[2] ?? 1) - 1]).filter(([from, to]) => to >= from);
-      } catch { ranges = null; }
-      added.set(file, ranges);
-    }
-    return added.get(file)!;
-  };
   return (file, fn) => {
-    const lines = existsSync(join(ROOT, file)) ? index.lines(file, fn) : null;
-    const ranges = lines ? addedTo(file) : null;
-    if (!lines || !ranges) return null;
-    const text = readFileSync(join(ROOT, file), 'utf8').split('\n');
-    let from = lines[0];
-    while (from > 1 && (text[from - 2] ?? '').trim() !== '') from -= 1;
-    return ranges.reduce((n, [a, b]) => n + Math.max(0, Math.min(b, lines[1]) - Math.max(a, from) + 1), 0);
+    const named = functionLines(file, index).filter((f) => f.fn === fn);
+    const hunks = named.length === 1 ? hunksSince(base, file) : null;
+    if (named.length !== 1 || !hunks) return null;
+    const [{ from, endLine }] = named;
+    return hunks.reduce((n, h) => n + (h.now ? Math.max(0, Math.min(h.now[1], endLine) - Math.max(h.now[0], from) + 1) : 0), 0);
+  };
+}
+
+/** What a file changed at no place of a plan since `base`, the commit of its approval (`FeatureDocs.away`,
+ *  `changedAway`): the difference is git's, the functions the source index's. */
+export function awaySince(base: string, feature: string, index: SourceIndex): NonNullable<FeatureDocs['away']> {
+  return (file, named) => {
+    const hunks = hunksSince(base, file);
+    return hunks ? changedAway(file, hunks, feature, named, functionLines(file, index)) : [];
   };
 }
 
@@ -1187,11 +1227,12 @@ export function derivePlans(stories: Story[], narratives: Narrative[], index: So
     todos,
     journeyCases: sources.journeyCases,
     narratives: narratives.filter((n) => n.canonical).map((n) => ({ title: n.title, kind: n.kind, steps: n.steps.map((step) => `${label(step, index)} — ${step.sentence}`) })),
-    // A place of an approved plan is read by its function: what it gained since the approval.
+    // A place of an approved plan is read by its function: what it gained since the approval. So is what a
+    // lot changed beside its places.
     docs: (feature) => {
       const docs = featureDocs(feature);
       const base = docs.approved?.baseline.base;
-      return base ? { ...docs, gained: gainedSince(base, index) } : docs;
+      return base ? { ...docs, gained: gainedSince(base, index), away: awaySince(base, feature, index) } : docs;
     },
     layout,
   });
@@ -1722,7 +1763,7 @@ ${plan.pointers.length ? `
 ${outside.length ? `
 <h2 id="outside">Outside the narratives — ${plural(outside.length, 'piece')}</h2>
 <div class="pbox outside">${byBug(outside, outsideRow, (bug) => `<div class="pline bugrow"><span class="where"><a href="#${bug.anchor}"><span class="mark failing">bug</span></a></span><span class="clause"><b>${planInline(bug.title, plan)}</b></span></div>`).join('')}</div>
-<p class="legend">No narrative${flows.length ? ' below' : ''} shows ${outside.length === 1 ? 'this piece' : 'these pieces'}: ${outside.length === 1 ? 'its card is' : 'their cards are'} the first of the pieces.</p>` : ''}
+<p class="legend">No narrative${flows.length ? ' below' : ''} shows ${outside.length === 1 ? 'this piece' : 'these pieces'}: ${bugs.length ? `${outside.length === 1 ? 'its card stands' : 'their cards stand'} below in the order of plan.md, a bug at a time` : `${outside.length === 1 ? 'its card is' : 'their cards are'} the first of the pieces`}.</p>` : ''}
 ${flows.length ? `
 <h2 id="flows">The change, in the ${flows.length === 1 ? 'narrative' : `${flows.length} narratives`} it lands in</h2>
 <div class="flows">
@@ -1785,7 +1826,7 @@ const filesOf = (piece: PlanPiece | undefined) => [
 ].filter((x) => layout.isApp(x.file));
 
 /** What a line of the delta is, in the reader's words: the facet says how the plan stores it, this says what it is. */
-const LINE_KIND: Record<string, string> = { statement: 'statement', reason: 'reason', question: 'question', text: 'text', waivers: 'waiver', pointers: 'planned elsewhere', lots: 'lot', cases: 'journey case', steps: 'story step', tests: 'test to write', [UNPLANNED]: 'beyond the plan', [NOTES]: 'note', [REPRODUCTIONS]: 'reproduction' };
+const LINE_KIND: Record<string, string> = { statement: 'statement', reason: 'reason', question: 'question', text: 'text', waivers: 'waiver', pointers: 'planned elsewhere', lots: 'lot', cases: 'journey case', steps: 'story step', tests: 'test to write', [UNPLANNED]: 'beyond the plan', [NOTES]: 'note', [REPRODUCTIONS]: 'reproduction', [BESIDE]: 'at no place of the plan' };
 const commentKind = (file: string, removes: boolean) => (removes ? 'test goes' : layout.isTest(file) ? 'test changes' : file.endsWith('.sql') ? 'migration' : /\.(?:md|html)$/.test(file) ? 'doc' : 'code');
 
 /**
@@ -1834,6 +1875,10 @@ function deltaLinesHtml(lines: DeltaLine[], d: Pick<UnitDelta, 'kind' | 'name'>,
     }
     // What a commit did and the plan did not say — a test it deleted, a file of the product it changed — and a
     // planned place it took off and wrote nothing at.
+    // What a lot changed at no place of the plan, in a file the plan names: a function, or lines of a file
+    // with none. Listed, and asked about only when an edit names it.
+    const beside = /^(function|lines) (\S+) (?:in (\S+) )?— (.*)$/.exec(facet === BESIDE ? line : '');
+    if (beside) return { sign, kind: 'at no place', at: `${BESIDE} ${line}`, html: `${file(beside[2])}${beside[3] ? ` in ${fn(beside[2], beside[3])}` : ''} — ${inline(beside[4])}` };
     const beyond = /^(file|test|place) (\S+) — (.*)$/.exec(facet === UNPLANNED ? line : '');
     if (beyond) return { sign, kind: beyond[1] === 'test' ? 'test goes' : beyond[1] === 'place' ? 'not built' : 'file', at: `${UNPLANNED} ${line}`, html: `${file(beyond[2])} — ${inline(beyond[3])}` };
     return { sign, kind: LINE_KIND[facet] ?? facet, at: facet, html: inline(line) };
@@ -1869,7 +1914,7 @@ function movesHtml(plan: Plan, index: SourceIndex): string {
 }
 
 /** The legend of the delta's rows. */
-const DELTA_LEGEND = 'An edit at a time: what moved in bold, why, then the lines that edit comes to. <span class="dl add inline"><span class="sign">+</span></span> in the plan now, not in what you approved · <span class="dl rem inline"><span class="sign">−</span></span> approved, no longer in the plan · <b>was / now</b> one place reworded · <b>file</b>, <b>test goes</b> on a <span class="dl add inline"><span class="sign">+</span></span> line with no place in the plan: what a commit did beyond it · <b>not built</b> a planned place taken off, in a function that gained no line since, or a file its commits added nothing to · <b>taken back</b> a place that read as built, which its edit names: the code does not do what its clause said · <b>reproduction</b>, was / now: a test you approved as the bug\'s reproduction was edited since, by more than its declaration. A place that became code is no difference: it is listed with its piece, as built.';
+const DELTA_LEGEND = 'An edit at a time: what moved in bold, why, then the lines that edit comes to. <span class="dl add inline"><span class="sign">+</span></span> in the plan now, not in what you approved · <span class="dl rem inline"><span class="sign">−</span></span> approved, no longer in the plan · <b>was / now</b> one place reworded · <b>file</b>, <b>test goes</b> on a <span class="dl add inline"><span class="sign">+</span></span> line with no place in the plan: what a commit did beyond it · <b>not built</b> a planned place taken off, in a function that gained no line since, or a file its commits added nothing to · <b>taken back</b> a place that read as built, which its edit names: the code does not do what its clause said · <b>at no place</b> a function the lot changed, or lines above a template\'s first place, that no place of the plan names: shown, and asked about only when an edit names it · <b>reproduction</b>, was / now: a test you approved as the bug\'s reproduction was edited since, by more than its declaration. A place that became code is no difference: it is listed with its piece, as built.';
 
 /** The reviewer's answer to one item, and the buttons that give it. The page posts to the local app, which
  *  writes `plan-feedback.json`; opened as a file, the buttons are off and say where to open it. */
@@ -1908,7 +1953,9 @@ function unitDeltaHtml(d: UnitDelta, plan: Plan, index: SourceIndex): string {
   const edits = d.edits.map((e, n) => `<div class="edit">${said(e.change)}${e.lines.length ? `<div class="plines">${deltaLinesHtml(e.lines, d, plan, index)}</div>` : ''}${verdictHtml(items[n], plan)}</div>`).join('');
   // A note is drawn with its piece, as a note: it is no line to answer.
   const lines = d.unclaimed.filter((l) => !isOwnNotice(l.facet));
-  const loose = lines.length ? `${d.edits.length > 1 ? '<p class="note red">Lines no edit names:</p>' : ''}<div class="plines">${deltaLinesHtml(lines, d, plan, index)}</div>` : '';
+  // A line no edit has to name is listed with no flag: what the lot changed at no place of the plan.
+  const owed = d.edits.length > 1 && lines.some((l) => !asksNoEdit(l.facet));
+  const loose = lines.length ? `${owed ? '<p class="note red">Lines no edit names:</p>' : ''}<div class="plines">${deltaLinesHtml(lines, d, plan, index)}</div>` : '';
   return `${need}${edits}${loose}`;
 }
 

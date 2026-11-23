@@ -331,7 +331,11 @@ function pieceText(plan, piece, code, whole = false, printed = new Map()) {
   // A test that was the bug's reproduction says so: it is read against the body the approval holds.
   const wasReproduction = (t) => (piece.reproduced ?? []).includes(`${t.file} — ${t.title}${t.rule ? ` [${t.rule}]` : ''}`);
   const writtenTests = piece.todos.filter((t) => t.written && !t.reproduction).map((t) => `    ${at(t)}  written${wasReproduction(t) ? ', was the reproduction' : ''} — ${t.title}${t.rule ? `  [owns ${t.rule}]` : ''}`);
-  if (done && !whole) return [...out, ...builtLine, ...(writtenTests.length ? ['  tests:', ...writtenTests] : []), ...pieceNotes];
+  // What its commits changed at no place of the plan, in a file the plan names: where a reviewer's reading of
+  // the lot's scope starts. Listed, not asked about.
+  const beside = ((plan.delta ?? []).find((d) => d.kind === 'piece' && d.name === `#${piece.slug}`)?.facets ?? []).filter((f) => f.facet === 'beside').flatMap((f) => f.added);
+  const besideLines = beside.length ? ['  changed at no place of the plan:', ...beside.map((line) => `    ${line}`)] : [];
+  if (done && !whole) return [...out, ...builtLine, ...(writtenTests.length ? ['  tests:', ...writtenTests] : []), ...besideLines, ...pieceNotes];
   if (piece.doc) {
     out.push(...blockLines(piece.doc.why, '  why: '));
     if (piece.doc.ask) out.push(`  TO CONFIRM: ${piece.doc.ask.question}${piece.doc.ask.detail ? ` ${piece.doc.ask.detail}` : ''}`);

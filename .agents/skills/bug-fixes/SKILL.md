@@ -87,7 +87,9 @@ and edits none of its lines (`specs/workflow-formats.md` § "A bug").
 - **It observes everything, then asserts once, at its end.** A story stops where its test fails,
   and what it crossed before that is the bug's chain on the plan page. Assert one value of named
   observations, so that the failure reads without the test: "a stale delete confirmation: a raw
-  500".
+  500". Keep each observation short: the test runner cuts a long one in its middle.
+- **It is one test, not one a case.** A bug that shows on several inputs is one test that reads
+  them all: the page draws one run and one failure, and a parametrized reproduction is refused.
 - **At the supported boundary** (a view, a use case, a browser), by the cheapest tier of
   `specs/testing.md` that meets the real failure, with the repository's fixtures. Never inside a
   helper the fix may introduce. Size it to what the diagnostic names: every affected class,

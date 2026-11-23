@@ -14,8 +14,8 @@ import { parseIntent, sluggedItems } from '../intent-md';
 import {
   BUDGET, SENTENCE_BUDGET, overSentenceBudget,
   assemblePlans, findings, parseTag, parseTodoTitle, replaceSlugRefs, rulesOf, slugRefs, todosByTier,
-  lotLeft, planDocOf, reviewItems, writeAcceptedAnswers, chainsToFreeze, fixedChains,
-  type FeatureDocs, type PlanFeedback, type PieceCommit, type PlanBaseline, type PlanInput, type PlanSite, type PlanTodo, type StaticSite,
+  lotLeft, planDocOf, reviewItems, writeAcceptedAnswers, chainsToFreeze, fixedChains, changedAway,
+  type FeatureDocs, type FunctionLines, type Hunk, type PlanFeedback, type PieceCommit, type PlanBaseline, type PlanInput, type PlanSite, type PlanTodo, type StaticSite,
 } from '../plan';
 import * as plan from '../plan';
 import { LAYOUT } from './layout';
@@ -558,6 +558,26 @@ describe('a bug', () => {
     expect(() => planDocOf(parseIntent('# P\n\n## Bug:\n\nNothing.\n', 'plan.md'), 'plan.md')).toThrow(/plan\.md:3 — "## Bug:": a bug's section is titled with what is wrong/);
   });
 
+  it('asks a bug that joins an approved plan for one paragraph, and the new pieces under it for none', () => {
+    const was = '# P\n\n## Bug: The total ignores the card\n\nThe buyer pays the whole amount.\n\n## #cut\n\nCuts.\n';
+    const baseline: PlanBaseline = { feature: 'demo', base: 'abc12345', approvedOn: '2026-11-13', units: assemble({ sites: [site('cut', 'src/a.ts', 2)], docs: docs(was, null) })[0].snapshot.units };
+    const joined = (saveSays = '', bugSays = '') => assemble({
+      sites: [site('cut', 'src/a.ts', 2), site('save', 'src/a.ts', 3), site('row', 'src/a.ts', 4)],
+      docs: (feature) => ({
+        ...docs(`${was}\n## #save\n\nSaves.\n${saveSays}\n## Bug: Two rows share an id\n\nOne click opens both.\n${bugSays}\n## #row\n\nRows.\n`, null)(feature),
+        approved: { file: 'specs/features/demo/plan.approved.json', baseline },
+      }),
+    })[0];
+    // The new bug owes its paragraph, and the piece that joins with it owes none. A new piece under a bug the
+    // approval holds is an edit of that bug's fix: it owes its own.
+    const bare = joined();
+    expect(Object.fromEntries(bare.delta!.map((d) => [d.name, `${d.state}, ${d.reason}`]))).toEqual({ '#save': 'new, needed', 'Bug: Two rows share an id': 'new, needed', '#row': 'new, none' });
+    expect(findings(bare).failures.map((f) => f.split(' is not as approved')[0])).toEqual(['planned: #save', 'planned: "Bug: Two rows share an id"']);
+    const told = joined('\nChanged: **The card is saved too.** The first fix left it.\n', '\nChanged: **A second bug joins the plan.** Found since.\n');
+    expect(findings(told).failures).toEqual([]);
+    expect(reviewItems(told).map((item) => item.unit)).toEqual(['#save', 'Bug: Two rows share an id']);
+  });
+
   it('matches a story to its tagged test by file and title, a parametrized case included', () => {
     const t = reproduction();
     expect(plan.isStoryOf(t, { file: 'tests/x.test.ts', test: 'demo#cut: cut is tested' })).toBe(true);
@@ -1006,6 +1026,39 @@ describe('a plan being implemented', () => {
     expect(read(() => null).delta).toEqual([]);
   });
 
+  it('lists what a lot changed at no place of the plan, in a file the plan names, and asks nothing of it', () => {
+    const wrote = commit('1111111122', ['cut'], { files: [{ file: 'src/reader.ts', added: 6, removed: 1, line: 151 }, { file: 'tests/x.test.ts', added: 1, removed: 0, line: 9 }, { file: 'src/other.ts', added: 1, removed: 0, line: 3 }] });
+    const asked: string[] = [];
+    const away: FeatureDocs['away'] = (file, named) => { asked.push(`${file} [${[...named].join(' ')}]`); return [`function ${file} in helper — changed, and no place of the plan names it`]; };
+    const read = (md = MD, commits = [wrote]) => assemble({
+      ...planned, ...built,
+      docs: (feature) => ({ ...docs(md, null)(feature), approved: { file: 'specs/features/demo/plan.approved.json', baseline: BASELINE }, commits: { list: commits, baseKnown: true }, away }),
+    })[0];
+    const plan = read();
+    // A file of the product the plan names is read, with the functions its places name there. A test file is
+    // not; a file no place names is another matter, and fails.
+    expect(asked).toEqual(['src/reader.ts [fn]']);
+    const cutDelta = plan.delta!.find((d) => d.name === '#cut')!;
+    expect(cutDelta.facets.find((f) => f.facet === 'beside')).toEqual({ facet: 'beside', added: ['function src/reader.ts in helper — changed, and no place of the plan names it'], removed: [] });
+    expect(cutDelta.unclaimed.map((l) => l.facet)).toContain('beside');
+    expect(findings(plan).failures).toEqual([expect.stringContaining('#cut is not as approved')]);
+    expect(findings(plan).failures[0]).toContain('unplanned +1');
+    // Alone, it is listed and nothing fails: no edit is owed, and none is to answer.
+    const only = read(MD, [{ ...wrote, files: wrote.files.slice(0, 2) }]);
+    expect(only.delta).toMatchObject([{ name: '#cut', reason: 'none', facets: [{ facet: 'beside' }] }]);
+    expect(findings(only).failures).toEqual([]);
+    expect(reviewItems(only)).toEqual([]);
+    // An edit about something else does not take it for one of its lines; an edit that names it does.
+    const other = MD.replace('The reader cuts.\n', 'The reader cuts.\n\nChanged: **`other` gains the field.** Its literal is typed.\n');
+    expect(read(other).delta!.find((d) => d.name === '#cut')!.edits[0].lines.map((l) => l.facet)).toEqual(['unplanned']);
+    const naming = MD.replace('The reader cuts.\n', 'The reader cuts.\n\nChanged: **The reader\'s helper counts whole lines.** The cut needs it. → code "in helper"\n');
+    const named = read(naming, [{ ...wrote, files: wrote.files.slice(0, 2) }]);
+    expect(named.delta![0].edits[0].lines.map((l) => l.facet)).toEqual(['beside']);
+    expect(reviewItems(named).map((i) => i.what)).toEqual(['The reader\'s helper counts whole lines']);
+    // A commit the approval covers is not read.
+    expect(read(MD, [{ ...wrote, sinceApproval: false }]).delta).toEqual([]);
+  });
+
   it('takes back a built place a "Changed:" names: the piece loses it, and so does the next approval', () => {
     const undone = MD.replace('The reader cuts.\n', 'The reader cuts.\n\nChanged: **The reader no longer cuts.** A page keeps its whole. → unbuilt src/reader.ts\n');
     const plan = now(built, [commit('1111111122', ['cut'])], undone);
@@ -1055,6 +1108,57 @@ describe('a plan being implemented', () => {
     const plan = assemble({ ...built, docs: (feature) => ({ ...docs(md, null)(feature), approved: { file: 'x', baseline: approved }, commits: { list: [commit('1111111122', ['cut'])], baseKnown: true } }) })[0];
     expect(plan.builtCases).toEqual(['Change the rule · review-rule — the row reads 2']);
     expect(plan.delta).toEqual([]);
+  });
+});
+
+describe('what a file changed at no place of the plan', () => {
+  const wrote = (from: number, to: number, added: string[] = []): Hunk => ({ was: null, now: [from, to], at: { old: from - 1, now: from }, removed: [], added });
+  const took = (oldFrom: number, oldTo: number, after: number, removed: string[] = []): Hunk => ({ was: [oldFrom, oldTo], now: null, at: { old: oldFrom, now: after }, removed, added: [] });
+  // Three functions: a decorator stands on the second, and the third is new.
+  const FUNCTIONS: FunctionLines[] = [{ fn: 'read', from: 10, line: 10, endLine: 20 }, { fn: 'Cart.save', from: 23, line: 24, endLine: 30 }, { fn: 'whole_lines', from: 33, line: 33, endLine: 36 }];
+  const away = (hunks: Hunk[], named: string[] = ['read']) => changedAway('src/reader.py', hunks, 'demo', new Set(named), FUNCTIONS);
+
+  it('reads a change by its function: one no place names is listed, one a place names is not', () => {
+    expect(away([wrote(12, 13)])).toEqual([]);
+    expect(away([wrote(12, 13), wrote(26, 26)])).toEqual(['function src/reader.py in Cart.save — changed, and no place of the plan names it']);
+    // What stands directly on a function is its: a decorator written above it.
+    expect(away([wrote(23, 23)])).toEqual(['function src/reader.py in Cart.save — changed, and no place of the plan names it']);
+    expect(away([wrote(23, 23)], ['read', 'Cart.save'])).toEqual([]);
+    // Lines taken off, and nothing written.
+    expect(away([took(27, 28, 26)])).toEqual(['function src/reader.py in Cart.save — changed, and no place of the plan names it']);
+    // A function inside another is the one a line of it is read into: the place names it, not what holds it.
+    const nested: FunctionLines[] = [{ fn: 'guard', from: 40, line: 40, endLine: 46 }, { fn: 'guard.<locals>.wrapper', from: 41, line: 41, endLine: 45 }];
+    expect(changedAway('src/reader.py', [wrote(45, 45)], 'demo', new Set(['guard.<locals>.wrapper']), nested)).toEqual([]);
+    expect(changedAway('src/reader.py', [wrote(46, 46)], 'demo', new Set(['guard.<locals>.wrapper']), nested)).toEqual(['function src/reader.py in guard — changed, and no place of the plan names it']);
+  });
+
+  it('leaves out a line in no function, and the helper of a place: a new function its function now names', () => {
+    expect(away([wrote(2, 3, ['import os', 'LIMIT = 3'])])).toEqual([]);
+    const helper = wrote(33, 36, ['def whole_lines(text):', '    return text', '', '']);
+    expect(away([wrote(12, 12, ['    return whole_lines(text)']), helper])).toEqual([]);
+    // A helper's helper is one too: found from the helper.
+    const second: FunctionLines = { fn: 'strip', from: 38, line: 38, endLine: 39 };
+    expect(changedAway('src/reader.py', [wrote(12, 12, ['    return whole_lines(text)']), wrote(33, 36, ['def whole_lines(text):', '    return strip(text)', '', '']), wrote(38, 39, ['def strip(text):', '    return text'])], 'demo', new Set(['read']), [...FUNCTIONS, second])).toEqual([]);
+    // No function a place names calls it: it is listed, as new — named by a line in no function, or by a
+    // function no place names, which is listed with it.
+    const listed = 'function src/reader.py in whole_lines — new, and no place of the plan names it';
+    expect(away([wrote(12, 12, ['    return text']), helper])).toEqual([listed]);
+    expect(away([wrote(3, 3, ['READERS = [whole_lines]']), helper])).toEqual([listed]);
+    expect(away([wrote(26, 26, ['    return whole_lines(text)']), helper])).toEqual(['function src/reader.py in Cart.save — changed, and no place of the plan names it', listed]);
+    // A function whose signature changed is no new function: a line taken off held its name.
+    const resigned: Hunk = { was: [33, 33], now: [33, 33], at: { old: 33, now: 33 }, removed: ['def whole_lines(text):'], added: ['def whole_lines(text, width):'] };
+    expect(away([wrote(12, 12, ['    return whole_lines(text, 3)']), resigned])).toEqual(['function src/reader.py in whole_lines — changed, and no place of the plan names it']);
+  });
+
+  it('where the file has no function, lists what changed above its first place, and nothing it cannot tell', () => {
+    const template = (hunks: Hunk[]) => changedAway('templates/row.html', hunks, 'demo', new Set(), []);
+    const place = took(25, 25, 24, [`{% ${'planned'} "demo#cut" "the row is cut" %}`]);
+    // Under a place nothing says how far its change goes: not listed.
+    expect(template([place, wrote(40, 41)])).toEqual([]);
+    expect(template([took(2, 2, 1, ['{% load narrate %}']), { ...wrote(16, 17), at: { old: 17, now: 16 } }, place])).toEqual(['lines templates/row.html — changed above the first place of the file: a line taken off after line 1, lines 16–17']);
+    // A file that held no place of the feature at the approval says nothing.
+    expect(template([wrote(3, 4)])).toEqual([]);
+    expect(template([took(25, 25, 24, [`{% ${'planned'} "other#cut" "the row" %}`]), wrote(3, 4)])).toEqual([]);
   });
 });
 

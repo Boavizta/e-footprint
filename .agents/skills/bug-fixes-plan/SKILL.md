@@ -63,6 +63,9 @@ on a gate.
 - **The pieces that fix it follow it**, a `## #slug` section each, up to the next bug. A piece
   under no bug stands above the first: an approved refactor of the smell sweep is one.
 - A bug with no piece under it fails the check, and so does one that says too much.
+- **A bug that joins an approved plan takes one `Changed:`**, in its own section, for itself and
+  the pieces that come with it. A piece added under a bug the approval holds takes its own; the
+  lot takes none.
 
 ## The pieces of a bug
 
@@ -93,8 +96,8 @@ alternatives, in a clause each.
 Then make the reproductions tell it:
 
 - **One reproduction a piece**, under the piece's tag. Split one that spans two pieces, each half
-  failing for its own reason; rewrite one that stops at its first assertion to observe, then
-  assert once. The body you leave is the one the approval holds.
+  failing for its own reason; rewrite one that stops at its first assertion, or that runs a
+  case at a time, to observe, then assert once. The body you leave is the one the approval holds.
 - **Run the check and read the chain** on the plan page: each reproduction, the places it
   crossed in run order with the values it saw, then how it failed. The check fails on a place
   whose reproductions saw only what it expects: the bug does not show there, and the diagnosis or
