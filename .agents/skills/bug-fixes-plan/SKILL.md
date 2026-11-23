@@ -1,14 +1,15 @@
 ---
 name: bug-fixes-plan
-description: Write or refine the plan of a diagnosed bug batch after bug-fixes closes. The plan is a section a bug and the pieces that fix it, written into the code as planned and evidence calls, with the delivery in lots; the reviewer reads the plan page generated from them. Planning only; no fixes.
+description: Write or refine the plan of a diagnosed bug batch after bug-fixes closes. The plan is a section a bug and the pieces that fix it, written into the code as planned and evidence calls, with the delivery in lots; the reviewer reads the plan page generated from them, with what each reproduction saw. Planning only; no fixes.
 ---
 
 # bug-fixes-plan
 
 Help the reviewer see a bug batch: what is wrong, where it shows, what changes, and in what order
-it is delivered. The diagnostics hold the investigation; the plan is not a copy of them. It is the
-batch's **pieces**, each tagged at the places it changes, under the bug it fixes, and the page is
-generated from them with what each reproduction saw.
+it is delivered. They read the plan to keep their grip on the application's code and to push back
+on a fix before it is built. The diagnostics hold the investigation; the plan is not a copy of them. It
+is the batch's **pieces**, each tagged at the places it changes, under the bug it fixes, and the
+page is generated from them with what each reproduction saw.
 
 This is `spec-plan` for bugs. Follow [`spec-plan`](../spec-plan/SKILL.md) for how a piece, a
 clause, a point to confirm and `plan.md` are written, for the audit of complexity, and for the
@@ -23,7 +24,8 @@ changes: a `planned` call and an evidence call are inert.
 
 Run it in a fresh session once `bug-fixes` has closed the batch; refine a plan in place. Read
 `.agents/repository.md` (the stack's spellings, the commands, § "Planning checks", § "Lots").
-`map …` below is the map's command (`code-map` skill).
+`map …` below is the map's command (`code-map` skill). Spawn any sub-agent unnamed and labelled
+(§ "Sub-agents and the ledger"); a diagnostician closing a gap is `<feature>--diag-<bug-slug>`.
 
 ## What differs from a feature's plan
 
@@ -45,9 +47,11 @@ Run it in a fresh session once `bug-fixes` has closed the batch; refine a plan i
   moved. Verify each line you tag, and trace again only where a claim needs a line the diagnostic
   does not give or where two disagree. Do not diagnose a confirmed cause a second time.
 - **Check the batch is closed**: each `CONFIRMED` diagnostic has its reproductions or a stated
-  reason for none, and their files fail today as recorded. One that is missing is delegated to a
-  `diagnostician` under [the reproduction's rules](../bug-fixes/SKILL.md#the-reproduction). A
-  diagnosed bug is never dropped silently.
+  reason for none, and they fail today as recorded. The check runs those the configuration's test
+  command reaches; have a `light` sub-agent run the others (a browser's, a layer with its own
+  runner) and report each failure. One that is missing, or that now passes or fails differently, is delegated
+  to a `diagnostician` under [the reproduction's rules](../bug-fixes/SKILL.md#the-reproduction).
+  A diagnosed bug is never dropped silently.
 - **Group what one mechanism explains.** Two reports with one cause are one bug, or two bugs
   whose pieces say which fixes which: say for each pair that could be the same cause whether it
   is.
@@ -76,11 +80,12 @@ alternatives, in a clause each.
 - **Each place the fix changes is a `planned` call** with its clause, on the line the change
   lands at. In a template it is a tag; where no line runs, a comment.
 - **Each line the bug shows at and the fix does not change is an evidence call**: what is seen
-  there today, with its watch. It marks no change, so it stands where the cause is even when the
-  fix is elsewhere, and it goes with the fix.
+  there today, with its watch. It marks no change, so it
+  stands where the cause is even when the fix is elsewhere, and it goes with the fix.
 - **`expect` says what a place should see**, on evidence or on a `planned` call: once for the
   place, or computed at each crossing where the right value depends on it. **`distinct`** names
-  the keys each crossing should see its own value for, for a bug no crossing shows alone.
+  the keys each crossing should see its own value for, for a bug no crossing shows alone. `repository.md` § "The stack"
+  spells both.
 - **Watch what is wrong, not what led to it.** "Should be" is read as a claim about the watched
   value: a value that is right and only reaches the wrong branch is context, with no `expect`.
 - **Evidence is a piece's own.** A reproduction that also crosses another piece's places draws
@@ -89,19 +94,22 @@ alternatives, in a clause each.
   the diagnostic left open is decided here, or asked.
 - **Read each place against the piece's own reason.** A clause repeated over many places hides
   the one it does not fit: a reason that says what stays as it is (a full page, a download) rules
-  places out, and one of those is no place of the plan.
+  places out, and one of
+  those is no place of the plan.
 - **A ripple needs a place in each file it changes**: the lot check refuses a file of the
   product's code no place names.
 
 Then make the reproductions tell it:
 
 - **One reproduction a piece**, under the piece's tag. Split one that spans two pieces, each half
-  failing for its own reason; rewrite one that stops at its first assertion, or that runs a
-  case at a time, to observe, then assert once. The body you leave is the one the approval holds.
-- **Run the check and read the chain** on the plan page: each reproduction, the places it
-  crossed in run order with the values it saw, then how it failed. The check fails on a place
-  whose reproductions saw only what it expects: the bug does not show there, and the diagnosis or
-  the expectation is corrected.
+  failing for its own reason; rewrite one that stops at its first assertion, or that runs a case
+  at a time, to observe, then assert once. The body you leave is the one the approval holds.
+- **Run the check and read the chain** on the plan page: each reproduction, the places it crossed
+  in run order with the values it saw, then how it failed. The check fails on a place whose
+  reproductions saw only what it expects: the bug does not show there, and the diagnosis or the
+  expectation is corrected. A reproduction the tools do not run (a browser's, one their test
+  command does not reach) has no chain on the page: its piece's section links the diagnostic's
+  recorded failure.
 - **What a diagnostic lists beyond its reproduction** is one of three things, and the plan says
   which: a test, planned under the piece; a check only the user can make, named in its lot's
   reason; or dropped, in a clause of the piece's reason.
@@ -109,8 +117,10 @@ Then make the reproductions tell it:
 ## A cause that is only plausible
 
 A `PLAUSIBLE` diagnostic has no reproduction and no fix to plan yet. Its piece is what produces
-the reading that tells the hypotheses apart; what follows the reading is another piece, in a
-later lot whose reason says what it waits on. The plan ranks the hypotheses and commits to none.
+the reading that tells the hypotheses apart, designed as [bug-fixes](../bug-fixes/SKILL.md#a-cause-that-is-only-plausible)
+says: the sequence instrumented, an exit when the reading refutes them all, the build it is read
+on. What follows the reading is another piece, in a later lot whose reason says what it waits
+on. The plan ranks the hypotheses and commits to none.
 
 ## The delivery
 
@@ -121,11 +131,16 @@ what is left once the cause is known: a diagnosed fix is often `easy`).
 - **A lot is one subject for one reviewer**: the bugs of one surface, the pieces that share a
   file or a test file. A piece that another piece's fix makes show something goes after it, in
   the same lot or a later one; the reason says so.
-- **The order of the lots is the order of the bugs**: what loses data first, refactors last.
+- **The order of the lots is the order of the bugs**: what loses data first, refactors last
+  (a behaviour-preserving extraction only after every lot editing those files).
 - **A gate only the user can pass** is named in the reason of the lot it follows, with what
-  waits on it.
-- A change in the other repository is no lot here: it is a pointer of `## Planned elsewhere`,
-  and a lot that stands on it says so.
+  waits on it: a reading on a device, a paid check, a reproduction the tools do not run. Each
+  gate says which of three it is, since the next lot may start before anyone reads the last:
+  it blocks the next lot (a later lot's work changes without it: rare), it blocks the next
+  deploy only, or it waits for the end of the batch (the default). Say explicitly, with the
+  reason, when nothing blocks the next lot.
+- A change in another repository is no lot here: it is a pointer of `## Planned elsewhere`, and a
+  lot that stands on it says so.
 
 ## Before handing over
 
@@ -147,7 +162,6 @@ what is left once the cause is known: a diagnosed fix is often `easy`).
 
 ## Maintaining this skill
 
-The interface repository's copy is the reference; the library's is synchronized from it
-(`specs/agent-tooling.md`). What a plan of bugs shares with a feature's lives in `spec-plan`,
-`spec-tasks` and `specs/workflow-formats.md`: change it there. Keep here only what a batch of
-bugs adds.
+What a plan of bugs shares with a feature's lives in
+`spec-plan`, `spec-tasks` and `specs/workflow-formats.md`: change it there. Keep here only what a
+batch of bugs adds.

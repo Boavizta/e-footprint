@@ -32,13 +32,15 @@ The Python stack of the comprehension harness is written to its contract
 (`comprehension_harness/stack.md`), and `comprehension.config.json` names its commands. Two narratives
 are told, the edit of a live model (`tests/narratives/test_model_edit.py`) and a system saved
 and loaded back (`tests/narratives/test_system_file.py`); the others are missing. A feature in flight on `plan.html` and `tasks.md` is finished by hand or
-ported; a bug batch keeps its own form (`bug-fixes`, `bug-fixes-plan`).
+ported; a bug batch is planned in pieces too (`bug-fixes`, `bug-fixes-plan`).
 
 | The method says | Here |
 |---|---|
 | The three calls | `from efootprint.narrate import narrate, event, planned`, always by name. The file is this project's copy of `comprehension_harness/python/narrate.py`, held identical by a test and never edited here; it ships in the published package and imports the standard library alone. Inert unless a test run of this repository installed the collector: the interface's test runs never receive these calls. The sentence is a literal string and the watch a lambda, `narrate("…", lambda: {"count": n})`: the index refuses anything Python would compute in production |
 | Where a call may stand | Anywhere that runs once per action of the modeler: a constructor, an update transaction, an import, an export. **Not in the reactive core's per-slot code** (`ReactiveSlot.pull`, `_compute`, the dependency recorders, a getter): an inert call there is still a function call on the hottest path. A narrative that needs one is measured first, against `tests/performance_tests/` |
 | A place that changes, a place that goes, a shell | `planned("<feature>#<slug>", "<sentence>")` on existing code; `planned.remove(…)` in a function that goes; a shell is a new function whose whole body, under an optional docstring, is the `planned` call then `raise NotImplementedError("planned: <feature>#<slug>")`. One call a line |
+| Evidence of a bug, and what a place should see | `planned.evidence("<feature>#<slug>", "<what is seen here today>", lambda: {…}, expect={…})`, on the line the bug shows at; `expect=` on a `planned(…)` call too. `expect` is a literal dict, a key of the watch each, or a lambda giving one where the right value depends on the crossing. `distinct="<key>"`, or a tuple of keys, on either call: the keys of the watch each crossing should see a value of its own for. The same rule as every call: none in the reactive core's per-slot code |
+| A reproduction | `@reproduces("<feature>#<slug>: <title> [<rule>]")` of `comprehension_harness/python/declare.py` on a written test that fails today: a run expects the failure, strictly. Built, it becomes `@titled("…")` under the same title. It observes, then asserts once at its end, and is not parametrized |
 | A planned test | `@planned_test("<feature>#<slug>: <title> [<rule>]")` of `comprehension_harness/python/declare.py` on a test function with an empty body: skipped by a run, listed by the plan |
 | A written test of a plan | The same title under `@titled("…")` once the body is written: `@planned_test` refuses a body. A test with neither is titled by its function's name, and a parametrized case adds pytest's `[case]` |
 | A narrative, its reference case | A test class under `@narrative("<title>")` of the same `declare.py`, in a file under `tests/narratives/`; `@narrative.mechanism("<title>")` for a mechanism, which is what a narrative of the engine (`efootprint/abstract_modeling_classes/`) is. Its summary is the first paragraph of the class docstring. Its reference case is its first test, or the one marked `@canonical`; a reference case is not parametrized. A narrative test builds real objects, never mocks: the steps are what the code did |
@@ -149,13 +151,23 @@ publication to PyPI or of the documentation), a force push, a branch deletion or
 - A role's model and effort are pinned in its runtime adapter, `.claude/agents/<role>.md` or
   `.codex/agents/<role>.toml`, and named nowhere else (`specs/agent-tooling.md` § "Agent roles").
 - A spawn is labelled `<feature>--impl-lot-<lot>`, `--review-lot-<lot>`, `--review-global`,
-  `--gate-full`, `<lot>` being the lot's slug; for a bug batch `--impl-task-<n>`,
-  `--review-task-<n>`, `--diag-<bug>` and `--plan-review-guide`. The ledger reads the feature and
-  the role from a lot's label, and the task from a task's.
+  `--gate-full`, `<lot>` being the lot's slug; a bug batch adds `--diag-<bug>` and
+  `--smell-sweep`, and a `plan.html` of the earlier form `--plan-review-guide`. The ledger reads the
+  feature and the role from the label.
 - In Claude Code the label opens the spawn's description, and a spawn takes no name: a named
   agent inherits the session's effort and loses its own. Under Codex, bind the session
   (`specs/agent-tooling.md` § "Attribute current work").
 - A stateful test suite is never shared between parallel agents.
+
+## Diagnosis
+
+- **The repository that drives a batch**: bugs of the library alone are driven from here; interface
+  bugs and bugs that cross the two from `e-footprint-interface`, whose working set then holds this
+  repository's diagnostics too, and whose pieces here are planned in a session run here. The
+  library is the truth of modeling.
+- **The layers open to a reproduction** are those of `specs/testing.md`. The tools run every
+  reproduction themselves, by `commands.tests`; there is no browser tier. A reproduction never
+  stands in `tests/performance_tests/`: a timing is no failure a run expects strictly.
 
 ## Archive
 

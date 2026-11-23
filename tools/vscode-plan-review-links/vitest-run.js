@@ -6,11 +6,9 @@
 /** Playwright's specs: not vitest files, and no route of this extension debugs them. */
 const PLAYWRIGHT_DIR = "tests/e2e/";
 
-/** `it(` / `test(` / `describe(`, modifiers allowed, then the case name (group 2). */
-const CASE_CALL = /^\s*(?:it|test|describe)(?:\.(?:only|skip|fails|each|skipIf|runIf)(?:\([^)]*\))?)*\s*\(\s*(['"`])((?:\\.|(?!\1).)*)\1/;
-/** A bug-fixes reproduction, `reproduction('<batch> Task N', '<name>', fn)`, whose case name is
- *  its second argument (group 3). */
-const REPRODUCTION_CALL = /^\s*reproduction\s*\(\s*(['"`])(?:\\.|(?!\1).)*\1\s*,\s*(['"`])((?:\\.|(?!\2).)*)\2/;
+/** `it(` / `test(` / `describe(`, modifiers allowed, or a reproduction declared to fail today
+ *  (`reproduction(`), then the case name (group 2). */
+const CASE_CALL = /^\s*(?:it|test|describe|reproduction)(?:\.(?:only|skip|fails|each|skipIf|runIf)(?:\([^)]*\))?)*\s*\(\s*(['"`])((?:\\.|(?!\1).)*)\1/;
 
 /** The case a test-file `line` names, as vitest's `-t` wants it: the call opening at `line` or
  *  one of the two lines after it, its arguments possibly wrapped onto the following lines.
@@ -20,8 +18,7 @@ function testNameAt(source, line) {
   for (let i = line - 1; i < Math.min(lines.length, line + 2); i += 1) {
     if (i < 0) continue;
     const call = lines.slice(i, i + 4).join("\n");
-    const reproduction = call.match(REPRODUCTION_CALL);
-    const name = reproduction ? reproduction[3] : call.match(CASE_CALL)?.[2];
+    const name = call.match(CASE_CALL)?.[2];
     if (name !== undefined) return name.replace(/\\(['"`])/g, "$1");
   }
   return null;
