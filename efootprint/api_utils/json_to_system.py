@@ -13,7 +13,7 @@ from efootprint.api_utils.suppressed_efootprint_classes import ALL_SUPPRESSED_EF
 from efootprint.api_utils.system_to_json import CALCULATION_GRAPH_KEY
 from efootprint.constants.sources import Sources
 from efootprint.logger import logger
-from efootprint.narrate import event, narrate, planned
+from efootprint.narrate import event, narrate
 from efootprint.utils.tools import get_init_signature_params
 
 
@@ -266,9 +266,13 @@ def json_to_system(system_dict, efootprint_classes_dict=None):
 
 
 def json_to_systems(comparison_dict):
-    planned("comparison-file#load", "Loads each document under the models key through `json_to_system`, in order, "
-                                    "and returns their systems.")
-    raise NotImplementedError("planned: comparison-file#load")
+    """Loads the systems of a comparison file in the file's order: each document under the ``models`` key is loaded
+    by ``json_to_system``, as its own save and load would give it."""
+    systems = []
+    for system_dict in comparison_dict["models"]:
+        class_obj_dict, _, _ = json_to_system(system_dict)
+        systems.append(next(iter(class_obj_dict["System"].values())))
+    return systems
 
 
 def rebuild_dependency_graph(calculation_graph, flat_obj_dict):

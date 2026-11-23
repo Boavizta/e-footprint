@@ -7,9 +7,9 @@ round-trip gives, as any test does.
 """
 import pytest
 
-from comprehension_harness.python.declare import narrative, planned_test, titled
+from comprehension_harness.python.declare import narrative, titled
 from efootprint.abstract_modeling_classes.reactive_core import computed_slots
-from efootprint.api_utils.json_to_system import json_to_system
+from efootprint.api_utils.json_to_system import json_to_system, json_to_systems
 from efootprint.api_utils.system_to_json import system_to_json, systems_to_json
 from efootprint.comparison.duplication import duplicate_system
 from tests.integration_tests.integration_simple_system_base_class import IntegrationTestSimpleSystemBaseClass
@@ -79,7 +79,14 @@ class TestSystemFile:
         assert system.id in str(error.value)
         assert "duplicate_system" in str(error.value)
 
-    @planned_test("comparison-file#load: systems written by `systems_to_json` come back from `json_to_systems` in "
-                  "their order, each as its own save and load gives it [round-trip]")
+    @titled("systems written by `systems_to_json` come back from `json_to_systems` in their order, each as its own "
+            "save and load gives it [round-trip]")
     def test_systems_saved_to_one_file_load_back_in_their_order(self, system):
-        ...
+        other = duplicate_system(system)
+
+        loaded_systems = json_to_systems(systems_to_json([other, system]))
+
+        assert [loaded.id for loaded in loaded_systems] == [other.id, system.id]
+        for loaded, original in zip(loaded_systems, [other, system]):
+            assert is_cached(loaded)
+            assert loaded.total_footprint == original.total_footprint
