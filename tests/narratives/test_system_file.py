@@ -79,8 +79,8 @@ class TestSystemFile:
         assert system.id in str(error.value)
         assert "duplicate_system" in str(error.value)
 
-    @titled("systems written by `systems_to_json` come back from `json_to_systems` in their order, each as its own "
-            "save and load gives it [round-trip]")
+    @titled("comparison-file#load: systems written by `systems_to_json` come back from `json_to_systems` in their "
+            "order, each as its own save and load gives it [round-trip]")
     def test_systems_saved_to_one_file_load_back_in_their_order(self, system):
         other = duplicate_system(system)
 
