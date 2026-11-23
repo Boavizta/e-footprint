@@ -7,7 +7,7 @@ round-trip gives, as any test does.
 """
 import pytest
 
-from comprehension_harness.python.declare import narrative
+from comprehension_harness.python.declare import narrative, planned_test
 from efootprint.abstract_modeling_classes.reactive_core import computed_slots
 from efootprint.api_utils.json_to_system import json_to_system
 from efootprint.api_utils.system_to_json import system_to_json
@@ -69,3 +69,18 @@ class TestSystemFile:
         assert copy.id != system.id
         assert {obj.id for obj in copy.all_linked_objects} == {obj.id for obj in system.all_linked_objects}
         assert is_cached(copy)
+
+    @planned_test("comparison-file#export: `systems_to_json` refuses two systems sharing a System id, naming the id "
+                  "and duplicate_system [distinct-systems]")
+    def test_two_systems_sharing_a_system_id_are_refused(self, system):
+        ...
+
+    @planned_test("comparison-file#load: systems written by `systems_to_json` come back from `json_to_systems` in "
+                  "their order, each as its own save and load gives it [round-trip]")
+    def test_systems_saved_to_one_file_load_back_in_their_order(self, system):
+        ...
+
+    @planned_test("comparison-file#load: `json_to_systems` loads a comparison file the interface saved, ignoring "
+                  "what the interface added [library-reads-interface-files]")
+    def test_a_comparison_file_the_interface_saved_loads(self, system):
+        ...

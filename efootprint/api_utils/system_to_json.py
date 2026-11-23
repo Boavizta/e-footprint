@@ -6,7 +6,7 @@ from efootprint.abstract_modeling_classes.explainable_object_dict import Explain
 from efootprint.abstract_modeling_classes.modeling_object import ModelingObject
 from efootprint.abstract_modeling_classes.reactive_core import (
     computed_slots, peek_instance_slot_registry, serialized_slots)
-from efootprint.narrate import event, narrate
+from efootprint.narrate import event, narrate, planned
 
 CALCULATION_GRAPH_KEY = "calculation_graph"
 
@@ -265,3 +265,9 @@ def system_to_json(input_system, output_filepath=None, indent=4, save_computed_s
             file.write(json.dumps(output_dict, indent=indent))
 
     return output_dict
+
+
+def systems_to_json(systems, output_filepath=None):
+    planned("comparison-file#export", "Refuses systems sharing a System id, naming it and duplicate_system; writes each "
+                                      "one's `system_to_json`, in order, under the models key, to any file given.")
+    raise NotImplementedError("planned: comparison-file#export")
