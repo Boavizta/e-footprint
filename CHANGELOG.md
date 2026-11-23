@@ -6,6 +6,8 @@ and this project adheres to [Semantic Versioning](http://semver.org/)
 
 ## [Unreleased]
 
+## [V27.1.0] - 2026-11-23
+
 ### Changed
 - `pip install efootprint` now installs the core only (modeling, computation, JSON import / export). Plots, Sankey figures and object / calculation graphs need `pip install "efootprint[viz]"` (matplotlib, plotly, pyvis); the offline fallback of the Boavizta server builders needs `pip install "efootprint[boaviztapi]"`; `efootprint[all]` installs both. A missing optional package raises an error naming the group to install.
 - Without the `boaviztapi` group, Boavizta server builders rely on the https://api.boavizta.org web API and fail with an explicit error when it is unreachable.
