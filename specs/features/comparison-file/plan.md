@@ -20,11 +20,8 @@ document by `json_to_system`.
 
 Systems alone are returned: a modeler compares systems, and each one reaches its objects. Two
 documents sharing a System id are not checked: only a file assembled by hand can, and their loads
-give separate objects.
-
-To confirm: **A single-system file given to the load fails with a KeyError on `models`.** The
-alternative is a check of its own, saying to use `json_to_system`, for a mix-up a modeler can
-make.
+give separate objects. A single-system file given to the load fails with a KeyError on `models`:
+the mix-up gets no check of its own.
 
 ## Rules no test holds
 
