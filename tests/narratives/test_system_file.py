@@ -7,10 +7,10 @@ round-trip gives, as any test does.
 """
 import pytest
 
-from comprehension_harness.python.declare import narrative, planned_test
+from comprehension_harness.python.declare import narrative, planned_test, titled
 from efootprint.abstract_modeling_classes.reactive_core import computed_slots
 from efootprint.api_utils.json_to_system import json_to_system
-from efootprint.api_utils.system_to_json import system_to_json
+from efootprint.api_utils.system_to_json import system_to_json, systems_to_json
 from efootprint.comparison.duplication import duplicate_system
 from tests.integration_tests.integration_simple_system_base_class import IntegrationTestSimpleSystemBaseClass
 
@@ -70,10 +70,14 @@ class TestSystemFile:
         assert {obj.id for obj in copy.all_linked_objects} == {obj.id for obj in system.all_linked_objects}
         assert is_cached(copy)
 
-    @planned_test("comparison-file#export: `systems_to_json` refuses two systems sharing a System id, naming the id "
-                  "and duplicate_system [distinct-systems]")
+    @titled("`systems_to_json` refuses two systems sharing a System id, naming the id and duplicate_system "
+            "[distinct-systems]")
     def test_two_systems_sharing_a_system_id_are_refused(self, system):
-        ...
+        with pytest.raises(ValueError) as error:
+            systems_to_json([system, system])
+
+        assert system.id in str(error.value)
+        assert "duplicate_system" in str(error.value)
 
     @planned_test("comparison-file#load: systems written by `systems_to_json` come back from `json_to_systems` in "
                   "their order, each as its own save and load gives it [round-trip]")

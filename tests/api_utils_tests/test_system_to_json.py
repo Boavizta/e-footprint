@@ -1,7 +1,16 @@
-from comprehension_harness.python.declare import planned_test
+import json
+
+from comprehension_harness.python.declare import titled
+from efootprint.api_utils.system_to_json import systems_to_json
+from tests.integration_tests.integration_simple_system_base_class import IntegrationTestSimpleSystemBaseClass
 
 
-# No narrative case passes a file: the save-and-load narrative works on the returned dict.
-@planned_test("comparison-file#export: `systems_to_json` writes the dict it returns to the file it is given")
+@titled("`systems_to_json` writes the dict it returns to the file it is given")
 def test_systems_to_json_writes_the_file_it_is_given(tmp_path):
-    ...
+    """Test that systems_to_json writes to the file given the dict it returns."""
+    system, _ =IntegrationTestSimpleSystemBaseClass.generate_simple_system()
+    output_filepath = tmp_path / "comparison.json"
+
+    comparison_dict = systems_to_json([system], output_filepath=output_filepath)
+
+    assert json.loads(output_filepath.read_text()) == comparison_dict

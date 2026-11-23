@@ -6,7 +6,7 @@ from efootprint.abstract_modeling_classes.explainable_object_dict import Explain
 from efootprint.abstract_modeling_classes.modeling_object import ModelingObject
 from efootprint.abstract_modeling_classes.reactive_core import (
     computed_slots, peek_instance_slot_registry, serialized_slots)
-from efootprint.narrate import event, narrate, planned
+from efootprint.narrate import event, narrate
 
 CALCULATION_GRAPH_KEY = "calculation_graph"
 
@@ -268,6 +268,16 @@ def system_to_json(input_system, output_filepath=None, indent=4, save_computed_s
 
 
 def systems_to_json(systems, output_filepath=None):
-    planned("comparison-file#export", "Refuses systems sharing a System id, naming it and duplicate_system; writes each "
-                                      "one's `system_to_json`, in order, under the models key, to any file given.")
-    raise NotImplementedError("planned: comparison-file#export")
+    """Writes ``systems`` in order, the first being the reference, as a comparison file: a dict whose ``models``
+    key lists each system's ``system_to_json`` document. Two systems sharing a System id are refused."""
+    seen_system_ids = set()
+    for system in systems:
+        if system.id in seen_system_ids:
+            raise ValueError(f"Two systems share the System id {system.id!r}: a comparison file holds one system per "
+                             f"id. Give one of them its own id with duplicate_system.")
+        seen_system_ids.add(system.id)
+    comparison_dict = {"models": [system_to_json(system) for system in systems]}
+    if output_filepath is not None:
+        with open(output_filepath, "w") as file:
+            file.write(json.dumps(comparison_dict, indent=4))
+    return comparison_dict
