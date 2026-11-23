@@ -23,6 +23,10 @@ documents sharing a System id are not checked: only a file assembled by hand can
 give separate objects. A single-system file given to the load fails with a KeyError on `models`:
 the mix-up gets no check of its own.
 
+Changed: **`duplicate_system` and the two example loaders now take a document's System through
+the new `load_system`, as `json_to_systems` does.** The feature had taken that line to five copies;
+`System`'s own loader keeps its own, needing the flat object dict.
+
 ## Rules no test holds
 
 - **any-count** Both functions walk the list and neither counts it, so no limit can be reached.
