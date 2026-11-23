@@ -25,6 +25,19 @@ list of systems to one file and loads it back, in the format the interface alrea
 comparison in. Library-only: the interface opens the file as it is (its `start-from-ai-agent`
 feature checks it). It comes before `agent-guidance`, whose guide tells a coding agent how to hand over a comparison.
 
+### Agent guidance — specified, awaiting the spec's approval
+
+[`features/agent-guidance/`](features/agent-guidance/spec.md): a short guide for coding agents ships
+in the package, and `python -m efootprint.agent_guide` prints it, a class's reference, a how-to
+topic or the list of examples. The how-to pages move into the package, the earlier web-chat prompt
+and kit leave the repository, and the defects three trial runs met are fixed. Library-only.
+
+### Edge example — specified, awaiting the spec's approval
+
+[`features/edge-example/`](features/edge-example/spec.md): the Industrial IoT starter moves from
+the interface into the package's examples, with a group of devices. Changes both repositories; the
+interface's plan is written in its worktree. Independent of `agent-guidance`.
+
 ### Not yet wired: `mkdocs build --strict` in CI
 
 SSOT metadata content (`param_descriptions`, docstrings, `tests/test_descriptions.py`) shipped, and `mkdocs build --strict` runs clean locally (verified 2026-07-01) — but the follow-up step, wiring it into `.github/workflows/ci.yml`, was never done. Just add the step; no doc fixes needed first.
