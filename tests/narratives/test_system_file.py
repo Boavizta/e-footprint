@@ -10,7 +10,7 @@ import pytest
 from comprehension_harness.python.declare import narrative, titled
 from efootprint.abstract_modeling_classes.reactive_core import computed_slots
 from efootprint.abstract_modeling_classes.source_objects import SourceValue
-from efootprint.api_utils.json_to_system import json_to_system, json_to_systems
+from efootprint.api_utils.json_to_system import json_to_systems, load_system
 from efootprint.api_utils.system_to_json import system_to_json, systems_to_json
 from efootprint.comparison.duplication import duplicate_system
 from efootprint.constants.units import u
@@ -25,11 +25,6 @@ def system():
     return system
 
 
-def loaded_system(system_dict):
-    class_obj_dict, _, _ = json_to_system(system_dict)
-    return next(iter(class_obj_dict["System"].values()))
-
-
 def is_cached(system) -> bool:
     return computed_slots(type(system))["total_footprint"].peek(system) is not None
 
@@ -41,14 +36,14 @@ class TestSystemFile:
     otherwise every value computes on read, and the values the document held are kept as a baseline."""
 
     def test_a_system_loaded_at_its_own_version_keeps_its_ids_and_its_values(self, system):
-        loaded = loaded_system(system_to_json(system))
+        loaded = load_system(system_to_json(system))
 
         assert loaded.id == system.id
         assert is_cached(loaded)
         assert loaded.total_footprint == system.total_footprint
 
     def test_an_inputs_only_document_computes_its_values_on_read(self, system):
-        loaded = loaded_system(system_to_json(system, save_computed_state=False))
+        loaded = load_system(system_to_json(system, save_computed_state=False))
 
         assert not is_cached(loaded)
         assert loaded.total_footprint == system.total_footprint
@@ -59,7 +54,7 @@ class TestSystemFile:
         # this version no longer writes, so the upgrade runs on a document it accepts.
         system_dict["efootprint_version"] = "26.0.0"
 
-        loaded = loaded_system(system_dict)
+        loaded = load_system(system_dict)
 
         assert not is_cached(loaded)
         assert loaded.has_version_baseline
@@ -76,7 +71,7 @@ class TestSystemFile:
             "duplicate_system [distinct-systems]")
     def test_two_systems_sharing_a_system_id_are_refused(self, system):
         with pytest.raises(ValueError) as error:
-            systems_to_json([system, loaded_system(system_to_json(system))])
+            systems_to_json([system, load_system(system_to_json(system))])
 
         assert system.id in str(error.value)
         assert "duplicate_system" in str(error.value)

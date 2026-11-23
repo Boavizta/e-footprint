@@ -2,7 +2,7 @@ import uuid
 
 from efootprint.abstract_modeling_classes.modeling_object import ModelingObject
 from efootprint.abstract_modeling_classes.utils import css_escape
-from efootprint.api_utils.json_to_system import json_to_system
+from efootprint.api_utils.json_to_system import load_system
 from efootprint.api_utils.system_to_json import system_to_json
 from efootprint.narrate import event, narrate
 
@@ -24,8 +24,4 @@ def duplicate_system(system) -> "System":
     event("The modeler duplicates a system.", lambda: {"system": system.id})
     narrate("The copy is a save and a load in memory, at this version: **the copy's values attach as trusted "
             "caches**, so reading it does not recompute what the original had computed.")
-    system_dict = system_to_json(system)
-    class_obj_dict, _, _ = json_to_system(system_dict)
-    duplicated_system = next(iter(class_obj_dict["System"].values()))
-
-    return assign_fresh_system_id(duplicated_system)
+    return assign_fresh_system_id(load_system(system_to_json(system)))

@@ -265,14 +265,16 @@ def json_to_system(system_dict, efootprint_classes_dict=None):
     return class_obj_dict, flat_obj_dict, system_dict
 
 
+def load_system(system_dict):
+    """The System of a single-system document: what ``json_to_system`` builds from it, the System alone."""
+    class_obj_dict, _, _ = json_to_system(system_dict)
+    return next(iter(class_obj_dict["System"].values()))
+
+
 def json_to_systems(comparison_dict):
     """Loads the systems of a comparison file in the file's order: each document under the ``models`` key is loaded
     by ``json_to_system``, as its own save and load would give it."""
-    systems = []
-    for system_dict in comparison_dict["models"]:
-        class_obj_dict, _, _ = json_to_system(system_dict)
-        systems.append(next(iter(class_obj_dict["System"].values())))
-    return systems
+    return [load_system(system_dict) for system_dict in comparison_dict["models"]]
 
 
 def rebuild_dependency_graph(calculation_graph, flat_obj_dict):

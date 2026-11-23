@@ -52,17 +52,15 @@ def get_introductory_example(example_id: str) -> IntroductoryExample:
 
 def load_example_system(example_id: str):
     import json
-    from efootprint.api_utils.json_to_system import json_to_system
+    from efootprint.api_utils.json_to_system import load_system
     example = get_example(example_id)
     with open(example.json_path) as f:
-        class_obj_dict, _, _ = json_to_system(json.load(f))
-    return next(iter(class_obj_dict["System"].values()))
+        return load_system(json.load(f))
 
 
 def load_introductory_example_system(example_id: str):
     import json
-    from efootprint.api_utils.json_to_system import json_to_system
+    from efootprint.api_utils.json_to_system import load_system
     example = get_introductory_example(example_id)
     with open(example.json_path) as f:
-        class_obj_dict, _, _ = json_to_system(json.load(f))
-    return next(iter(class_obj_dict["System"].values()))
+        return load_system(json.load(f))
