@@ -1,6 +1,6 @@
 {
   "feature": "comparison-file",
-  "base": "2a5a46d392c777452987e1d3d5b850aa893355ba",
+  "base": "db3dd7126f66f1742f012ed06c4826cc4ea76d77",
   "approvedOn": "2026-11-23",
   "units": [
     {
@@ -40,6 +40,7 @@
         ],
         "comments": [],
         "tests": [
+          "unit tests/api_utils_tests/test_system_to_json.py — `systems_to_json` writes the dict it returns to the file it is given",
           "narrative tests/narratives/test_system_file.py — `systems_to_json` refuses two systems sharing a System id, naming the id and duplicate_system [distinct-systems]"
         ],
         "reproductions": [],
@@ -55,6 +56,15 @@
           "any-count — Both functions walk the list and neither counts it, so no limit can be reached.",
           "each-is-a-system-file — Each element of the list is what `system_to_json` returns for its system, unchanged.",
           "old-files-upgrade — The load hands each document to `json_to_system`, whose earlier-version case of the save-and-load narrative holds the upgrade and the baseline."
+        ]
+      }
+    },
+    {
+      "kind": "delivery",
+      "name": "Delivery",
+      "facets": {
+        "lots": [
+          "comparison-file (easy) #export #load — Two new functions of a few lines each, whose design the plan leaves nothing open in, and no existing code changes. #export is committed first: the round-trip case of #load writes its file with `systems_to_json`."
         ]
       }
     }

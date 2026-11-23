@@ -18,7 +18,7 @@ as they are touched. The first read of a computed value sits in the reactive cor
 code: its narrative waits for a measure against the performance baselines. A feature in flight on
 `plan.html` and `tasks.md` (`edge-networks`, `workflow-improvements`) is finished by hand.
 
-### Comparison file — plan approved, delivery awaiting approval
+### Comparison file — delivery approved, to implement
 
 [`features/comparison-file/`](features/comparison-file/spec.md): the library exports an ordered
 list of systems to one file and loads it back, in the format the interface already saves a
