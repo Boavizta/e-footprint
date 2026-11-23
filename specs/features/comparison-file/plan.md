@@ -30,3 +30,7 @@ the mix-up gets no check of its own.
   system, unchanged.
 - **old-files-upgrade** The load hands each document to `json_to_system`, whose earlier-version
   case of the save-and-load narrative holds the upgrade and the baseline.
+
+## Delivery
+
+- **comparison-file** (easy) #export #load — Two new functions of a few lines each, whose design the plan leaves nothing open in, and no existing code changes. #export is committed first: the round-trip case of #load writes its file with `systems_to_json`.
