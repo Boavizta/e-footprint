@@ -11,7 +11,9 @@ commit.
   empty body is a test to write (``declare.py``).
 - A stand is the line that opens a test, a class or another declaration of the file or of a class: its first
   decorator when it has one. A ``@planned`` comment right above that line stands on it.
-- Journeys are not drawn from a run here: ``journeyCases`` is always empty.
+- A journey case is ``@planned_case("<feature>", "<screen>", "<title>")`` on a test with an empty body, in a
+  class under ``@journey("<name>", …)`` (``journey.py``): a case a feature will add to that journey. It is no
+  test of the file until it is written. The feature is a string, or a constant of the file holding one.
 
 A file that is not Python has no test and no stand. A Python file the parser refuses, or a title that is not
 one string, stops the command with the file and the line.
@@ -93,16 +95,68 @@ def declared_title(function, file: str) -> tuple[str, bool]:
     return arguments[0].value, kind == "planned_test"
 
 
+def journey_name(node) -> str | None:
+    """The journey a class walks, as ``@journey("<name>", …)`` above it says."""
+    for decorator in node.decorator_list:
+        if decorator_name(decorator) == "journey" and isinstance(decorator, ast.Call) and decorator.args:
+            name = decorator.args[0]
+            if isinstance(name, ast.Constant) and isinstance(name.value, str):
+                return name.value
+    return None
+
+
+def planned_case(function, file: str, journey: str | None, constants: dict[str, str]) -> dict | None:
+    """The case a function declares with ``@planned_case(…)``, if it does; refuses one that is not three strings,
+    that stands outside a journey, on a function pytest does not collect, on a body, or beside a title."""
+    found = [d for d in function.decorator_list if decorator_name(d) == "planned_case"]
+    if not found:
+        return None
+    decorator = found[0]
+    where = f"{file}:{decorator.lineno}"
+
+    def string(node) -> str | None:
+        if isinstance(node, ast.Constant) and isinstance(node.value, str):
+            return node.value
+        return None
+
+    arguments = decorator.args if isinstance(decorator, ast.Call) and not decorator.keywords else []
+    feature = constants.get(arguments[0].id) if arguments and isinstance(arguments[0], ast.Name) else None
+    said = [feature or string(arguments[0]), string(arguments[1]), string(arguments[2])] if len(arguments) == 3 else []
+    if len(found) > 1 or len(said) != 3 or not all(said):
+        raise Refusal(f"{where} — @planned_case(feature, screen, title) takes three strings, the feature a string "
+                      f"or a constant of the file holding one")
+    if journey is None:
+        raise Refusal(f"{where} — @planned_case stands on a test of a class under @journey(\"<name>\", …)")
+    if not function.name.startswith("test_"):
+        raise Refusal(f"{where} — @planned_case stands on a test function, and pytest does not collect "
+                      f"`{function.name}`")
+    if any(decorator_name(d) in TITLE_DECORATORS for d in function.decorator_list) or not has_empty_body(function):
+        raise Refusal(f"{where} — @planned_case stands on a test with an empty body; "
+                      f"a written case carries its title with @titled(…)")
+    return {"feature": said[0], "journey": journey, "screen": said[1], "title": said[2], "file": file,
+            "line": decorator.lineno, "column": decorator.col_offset + 1}
+
+
 def read(file: str, text: str) -> dict:
     """What one file's text holds: its tests, in file order, and what each of its lines opens."""
     answer = {"file": file, "tests": [], "stands": [], "journeyCases": []}
     if not file.endswith(".py"):
         return answer
     lines = text.split("\n")
+    tree = parse(file, text)
+    constants = {node.targets[0].id: node.value.value for node in tree.body
+                 if isinstance(node, ast.Assign) and isinstance(node.targets[0], ast.Name)
+                 and isinstance(node.value, ast.Constant) and isinstance(node.value.value, str)}
 
-    def visit(statements, collected: bool) -> None:
+    def visit(statements, collected: bool, journey: str | None) -> None:
         for node in statements:
             if isinstance(node, (ast.FunctionDef, ast.AsyncFunctionDef)):
+                case = planned_case(node, file, journey, constants)
+                if case:
+                    answer["journeyCases"].append(case)
+                    answer["stands"].append({"line": opening_line(node), "label": f'case "{case["title"]}"',
+                                             "test": None})
+                    continue
                 title, planned = declared_title(node, file)
                 test = collected and is_test_function(node)
                 if test:
@@ -112,13 +166,13 @@ def read(file: str, text: str) -> dict:
                                          "test": title if test else None})
             elif isinstance(node, ast.ClassDef):
                 answer["stands"].append({"line": opening_line(node), "label": node.name, "test": None})
-                visit(node.body, collected and is_test_class(node))
+                visit(node.body, collected and is_test_class(node), journey_name(node))
             elif isinstance(node, (ast.Assign, ast.AnnAssign)):
                 target = node.targets[0] if isinstance(node, ast.Assign) else node.target
                 if isinstance(target, ast.Name):
                     answer["stands"].append({"line": node.lineno, "label": target.id, "test": None})
 
-    visit(parse(file, text).body, True)
+    visit(tree.body, True, None)
     return answer
 
 

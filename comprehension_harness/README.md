@@ -57,8 +57,8 @@ They are written for any project. What a project is to them is the three things 
    **A stack lives beside the tools, in `comprehension_harness/<language>/`**, with its own tests:
    the collector, the declarations a test makes, the source index and the title reader. Only the
    three calls are elsewhere, in the product's own package. A Python project that tests with
-   pytest takes `python/` and writes none of the four but the journey helper: "The Python stack"
-   below. A stack no other project uses yet is its project's own, in the same place
+   pytest takes `python/` and writes none of the four: "The Python stack" below, its journey
+   helper included, for a project whose browser tests run on Playwright. A stack no other project uses yet is its project's own, in the same place
    (`typescript/` for one written on the TypeScript compiler and vitest), and is in no shared
    list until a second project takes it.
 
@@ -126,6 +126,7 @@ plugin and the declarations, which are pytest's.
 | `declare.py` | What a test declares: `@narrative`, `@canonical`, `@titled`, `@planned_test` |
 | `collector.py` | The pytest plugin that writes the stories |
 | `source_index.py`, `titles.py`, `watch.py` | The three commands of the configuration |
+| `journey.py`, `journey_page.js` | The journey helper, a pytest plugin over Playwright's browser tests, and what it runs in the page: `@journey`, `screen`, `@planned_case`, `seeded`, `pause_clock`, `elapse` |
 
 What the project writes to use it, the same in every project:
 
@@ -138,6 +139,25 @@ What the project writes to use it, the same in every project:
   "comprehension_harness.python.watch"]` under `commands`.
 - `comprehension_harness/python/tests` among the paths its pytest run collects. A run that collects from
   the root takes them without a word, and leaves the tools' fixtures alone.
+
+What a project writes to draw journeys, on top of that:
+
+- `"comprehension_harness.python.journey"` after the collector in `pytest_plugins`.
+- **A server of the test process.** The helper keeps the `narrate` and `event` calls a request
+  crosses, so the app is served by a thread of the pytest process, not by a server started apart.
+- **When a request starts**, from the web framework's own hook and in the thread that answers it:
+  `request_answers(<the request's Cookie header>)`. The page numbers the user's actions in a
+  cookie; this is how a call is filed under the action that caused it. A project that forgets it
+  fails its first case, which says so.
+- **A `page` fixture** whose context is opened with `CONTEXT`: the viewport, the time zone, the
+  locale, what a capture must not vary with. The clock is the helper's, pinned at the journey's
+  `now`.
+- **What the server draws at random, pinned** for the journey tests: generated ids, a token
+  written on the page. Two runs of an unchanged app then write the same captures, and a variant
+  differs from the reference run by what it shows alone.
+- `commands.journeys` in the configuration: the command that runs the journey tests in one
+  process. A journey's folder is rewritten by the process that runs its cases, so under several
+  pytest-xdist workers they are skipped, naming that command.
 
 **A project's code imports nothing of this folder.** The calls are the one thing that runs in
 production, and each project holds them in its own package, for two reasons. A published package
@@ -172,7 +192,8 @@ so when it is missing.
 ## Keeping the copies in step
 
 The reference repository lists the shared files in `.agent-tooling-sync.json`, in named lists;
-`core` is this package but for `python/`, which is the list `python`. A project records what it took in `.agent-tooling-lock.json`: the lists,
+`core` is this package but for `python/`, which is the list `python`, and for the journey helper
+of that stack, the list `python-journeys`, which a project with no browser test leaves. A project records what it took in `.agent-tooling-lock.json`: the lists,
 the hash of each file at the last sync, and the reference's address, commit and licence. The
 script is copied by hand once, and its first run brings the rest:
 

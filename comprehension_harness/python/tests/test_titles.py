@@ -117,3 +117,60 @@ def test_an_input_of_another_shape_is_refused(stdin, said):
     done = run_stack("titles", stdin=stdin)
 
     assert done.returncode == 1 and said in done.stderr
+
+
+JOURNEY_FILE = textwrap.dedent('''
+    from comprehension_harness.python.declare import titled
+    from comprehension_harness.python.journey import journey, planned_case, screen
+
+    FEATURE = "gift-cards"
+
+
+    @journey("Fill a basket", who="A customer", wants="Their articles", now="2026-01-15T10:00:00Z")
+    class TestFillABasket:
+        @titled("adds an article")
+        def test_adds_an_article(self, page):
+            screen(page, "basket", why="The basket opens empty.")
+
+        @planned_case(FEATURE, "basket", "a gift card shows its balance")
+        def test_gift_card(self):
+            """To write."""
+
+        @planned_case("loyalty", "checkout", "the points earned are shown")
+        def test_points(self):
+            ...
+''').lstrip("\n")
+
+
+def test_a_journey_case_is_a_planned_case_of_a_journey_class_and_no_test_until_written():
+    [answer] = read(("tests/e2e/journeys/test_basket.py", JOURNEY_FILE))
+
+    case = {"journey": "Fill a basket", "file": "tests/e2e/journeys/test_basket.py"}
+    assert answer["journeyCases"] == [
+        {**case, "feature": "gift-cards", "screen": "basket", "title": "a gift card shows its balance",
+         "line": 13, "column": 6},
+        {**case, "feature": "loyalty", "screen": "checkout", "title": "the points earned are shown",
+         "line": 17, "column": 6},
+    ]
+    assert [test["title"] for test in answer["tests"]] == ["adds an article"]
+    stands = {stand["line"]: (stand["label"], stand["test"]) for stand in answer["stands"]}
+    assert stands[13] == ('case "a gift card shows its balance"', None)
+
+
+@pytest.mark.parametrize("source, said", [
+    ('@planned_case("a", "b", "c")\ndef test_x():\n    pass\n',
+     't.py:1 — @planned_case stands on a test of a class under @journey("<name>", …)'),
+    ('@journey("J", who="a", wants="b", now="c")\nclass TestJ:\n    @planned_case("a", "b")\n    def test_x(self):\n'
+     '        pass\n', "t.py:3 — @planned_case(feature, screen, title) takes three strings"),
+    ('@journey("J", who="a", wants="b", now="c")\nclass TestJ:\n    @planned_case("a", "b", "c")\n'
+     '    def test_x(self):\n        assert True\n', "t.py:3 — @planned_case stands on a test with an empty body"),
+    ('@journey("J", who="a", wants="b", now="c")\nclass TestJ:\n    @planned_case("a", "b", "c")\n    @titled("c")\n'
+     '    def test_x(self):\n        pass\n', "t.py:3 — @planned_case stands on a test with an empty body"),
+    ('@journey("J", who="a", wants="b", now="c")\nclass TestJ:\n    @planned_case("a", "b", "c")\n'
+     '    def check_x(self):\n        pass\n', "t.py:3 — @planned_case stands on a test function"),
+])
+def test_a_planned_case_that_does_not_have_the_shape_is_refused_with_its_line(source, said):
+    done = run_stack("titles", stdin=json.dumps([{"file": "t.py", "text": source}]))
+
+    assert done.returncode == 1 and done.stdout == ""
+    assert f"comprehension-titles: {said}" in done.stderr

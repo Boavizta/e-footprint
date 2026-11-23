@@ -168,7 +168,7 @@ folder per journey, `<journeys>/<journey-slug>/`, `<journeys>` being
 
 | File | Holds |
 |---|---|
-| `journey.json` | `{ name, slug, who, wants, now, file, todos }`, `todos` being the planned cases `{ feature, screen, title, line }` |
+| `journey.json` | `{ name, slug, who, wants, now, viewport, file, todos }`, `todos` being the planned cases `{ feature, screen, title, line }` and `viewport` the `{ width, height }` the captures were taken at, left out for a phone's 400 × 800 |
 | `cases/<line, 4 digits>-<case-slug>.json` | One case: `{ journey, title, slug, line, status, screens, after }`. The first case of the file is the reference run |
 | `captures/<case-slug>/<nn>-<screen-id>.html` | The screen as a complete HTML document that opens with no server, `data-journey-screen="<journey-slug>#<id>"` on its root, its stylesheet linked under `css/` |
 
@@ -179,7 +179,10 @@ navigations, server }`, `kind` being `open`, `action` or `time`. `events` and `s
 `event` and `narrate` calls crossed between two screens, each with its sentence and its site
 `{ file, line, fn }`, wherever that code ran: in the browser for an app that runs there, in the
 server process for a page the server renders. `server` lists the server steps a stub answered and
-is empty when the journey runs against the real server. The types are `JourneyCase`,
+is empty when the journey runs against the real server. For a page the server renders, the run
+has to see what the server crossed and which action it answers: the helper says how (the Python
+stack serves the app from the test process, and each request carries the number of the action
+before it). The types are `JourneyCase`,
 `ScreenRecord` and `Cause` of `stack.ts`.
 
 ## Beside the four: a command that keeps the narrative tests running

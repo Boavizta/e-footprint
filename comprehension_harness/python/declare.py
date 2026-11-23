@@ -19,6 +19,11 @@ import pytest
 _EMPTY_BODY = {"RESUME", "RETURN_CONST", "LOAD_CONST", "RETURN_VALUE", "NOP"}
 
 
+def has_empty_body(function) -> bool:
+    """A body that is a docstring, ``pass`` or ``...`` and nothing else: a test to write."""
+    return {instruction.opname for instruction in dis.get_instructions(function.__code__)} <= _EMPTY_BODY
+
+
 def _title(decorator: str, title) -> str:
     if not isinstance(title, str) or not title.strip():
         raise TypeError(f"@{decorator}(…) takes the test's title, a string, not {title!r}")
@@ -47,7 +52,7 @@ def planned_test(title: str):
 
     def declare(function):
         code = function.__code__
-        if not {instruction.opname for instruction in dis.get_instructions(code)} <= _EMPTY_BODY:
+        if not has_empty_body(function):
             raise TypeError(
                 f"{code.co_filename}:{code.co_firstlineno} — @planned_test stands on a test with an empty body; "
                 f"a written test carries its title with @titled(…)")

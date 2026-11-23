@@ -356,7 +356,7 @@ export interface PlannedCase { feature: string; screen: string; title: string; l
 
 /** One case of a journey, as its run wrote it. */
 export interface JourneyCase {
-  journey: { name: string; slug: string; who: string; wants: string; now: string; file: string; todos: PlannedCase[] };
+  journey: { name: string; slug: string; who: string; wants: string; now: string; file: string; todos: PlannedCase[]; viewport?: { width: number; height: number } };
   title: string;
   slug: string;
   line: number;
