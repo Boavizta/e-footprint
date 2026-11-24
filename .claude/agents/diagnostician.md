@@ -1,7 +1,7 @@
 ---
 name: diagnostician
 description: Diagnose one bug; write only its diagnostic.
-model: claude-opus-5-5[1m]
+model: claude-fable-5-2[1m]
 effort: high
 ---
 

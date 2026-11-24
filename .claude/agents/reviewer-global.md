@@ -1,7 +1,7 @@
 ---
 name: reviewer-global
 description: Review a whole delivery once its last lot is reviewed, for the seams between lots.
-model: claude-fable-5-1[1m]
+model: claude-fable-5-2[1m]
 effort: high
 ---
 

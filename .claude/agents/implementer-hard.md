@@ -1,7 +1,7 @@
 ---
 name: implementer-hard
 description: Implement an intrinsically difficult lot or one bounded escalation.
-model: claude-fable-5-1[1m]
+model: claude-fable-5-2[1m]
 effort: high
 ---
 
