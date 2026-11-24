@@ -40,9 +40,9 @@ node_modules/
 !package-lock.json
 !comprehension_harness/**/*.json
 !tools/**/*.json
+specs/comprehension_harness/index.html
 specs/comprehension_harness/narratives/*.html
 specs/comprehension_harness/mechanisms/*.html
-!specs/comprehension_harness/**/*.skeleton.html
 specs/comprehension_harness/plans/
 specs/design/journeys-generated/
 specs/features/*/plan-feedback.json

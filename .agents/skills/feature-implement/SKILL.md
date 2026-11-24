@@ -12,11 +12,13 @@ what their reports raise, and keep the plan true to what is built.
 over the lot's commit range. The trace from a piece to its commits is kept, and a parked lot keeps
 what landed.
 
-**A run delivers one lot and stops** for the reviewer of the plan, so the next lot builds on
-decisions and code that were read. Go through every lot in one run only when the user asks; the
-decisions are then handed over grouped by lot.
+**A run delivers every lot that still owes something, one after another**: each is implemented,
+checked, reviewed and committed before the next starts, and the decisions are handed over at the
+end, grouped by lot. It delivers one lot and stops for the reviewer of the plan only when the user
+asks for that explicitly, by naming the lot or by saying so: the next lot then builds on decisions
+and code that were read.
 
-**Within the lot you are autonomous, and you assume the user is gone.** No kickoff question, no
+**Within the run you are autonomous, and you assume the user is gone.** No kickoff question, no
 pause: a check only the user can do goes onto the gates file, a lot that cannot land is parked,
 and you decide what the review raises. What you may spend and what you never do alone is
 `repository.md` § "Autonomy". If the user says they are around and want to be consulted, put the
@@ -28,17 +30,20 @@ skills, which your sub-agents follow. `map …` is the map's command (`code-map`
 
 ## Setup
 
-1. **The feature and the lot come from the invocation.** With no lot named, take the first lot
-   that still owes something (`map plan <feature>`). Ask only when the feature itself is unclear.
+1. **The feature comes from the invocation, and so does a lot when the user wants one.** With no
+   lot named, the run takes every lot that still owes something, in the order of the delivery
+   (`map plan <feature>`). A lot named is the only one delivered. Ask only when the feature
+   itself is unclear.
 2. **The plan is approved with its delivery, and `map check <feature>` is clean.** Otherwise there
    is nothing to implement: say what is missing and stop.
 3. **Read the plan through the map**, not the files: `map plan <feature>` for the whole,
-   `map brief <feature>/<lot>` for the lot, with the notes earlier lots left.
-4. **Sort the lot's user-held gates**, from its reason, its pieces and the bugs they fix:
+   `map brief <feature>/<lot>` for each lot as you reach it, with the notes earlier lots left.
+4. **Sort each lot's user-held gates**, from its reason, its pieces and the bugs they fix:
    - a **validation**: a check on a device, by eye or by ear. The lot ships fully tested and the
      check goes to the gates file. A failed check reopens the lot later; it never holds the run;
    - an **evidence gate**: later work hinges on a reading the run cannot produce. Only what comes
-     before it ships. Never guess the verdict;
+     before it ships, and the run goes on with the lots that do not wait on it. Never guess the
+     verdict;
    - a **post-run operation**: a deploy, a statement on production. The code lands complete; the
      operation is an ordered step for the user.
 5. **Start or reopen the gates file**, `specs/features/<feature>/gates.md` (template below). You
@@ -69,7 +74,8 @@ pins: say so in the gates file when you do not.
 
 Spawn the implementer the lot's difficulty names. Its brief: the feature, the lot, the
 `task-implement` skill, and any gate sorted at setup ("ship fully tested; the check is the
-user's"). It reads `map brief <feature>/<lot>` itself. It edits neither `plan.md` nor the
+user's"). **On the delivery's last lot the brief says the lot's gate is not run**: the end-of-run
+gate runs the same suites after the global review's fixes, so a run before them is paid twice. It reads `map brief <feature>/<lot>` itself. It edits neither `plan.md` nor the
 approval, and it does not chain into the next lot.
 
 Its report is all that enters your context: the commits, a line a piece; the gates passed; its
@@ -113,7 +119,8 @@ implementer's deviations and doubts as pointers: most findings start from one. T
 check already holds (every planned test is written, nothing unplanned was added or deleted) and
 ask for the rest:
 
-- does the code at each built place do what its clause says;
+- does the code at each built place do what its clause says, and does its `built` call stand on
+  the line where that change is;
 - a file with several places, one skipped;
 - a test that asserts less than its title;
 - each deleted test against the holder the plan named;
@@ -152,9 +159,13 @@ The plan is the only record of a decision. No callout, no list in a report.
 - **`Changed:`** for whatever changes a line of the plan: a deviation you accept, a fix that
   moves a clause, a test beyond the plan. One paragraph an edit, in the piece's section, in words
   the reviewer can read without the code. **A fix that undoes a built place takes it back**, by an
-  `unbuilt` claim on its line. The check asks for it when the fix left nothing at the place; a
+  `unbuilt` claim on its line, and takes its `built` call off: the check fails one left standing. The check asks for it when the fix left nothing at the place; a
   fix that leaves code there which no longer does what the clause says is seen by no tool, and
   the pages read the place as built until you write it.
+- **A paragraph names its commits.** A `Changed:` that a commit made, and a `To confirm:` built
+  the proposed way, end with `→ commit <hash>` for each commit that did it, whatever piece its
+  message names (`workflow-formats.md` § "`plan.md`"). The reviewer then reads the decision
+  with what it changed under it, and opens the commit from the page.
 - **`Note:`** for a choice that changes no line and that what follows stands on, taken from the
   implementer's deviations and the reviewer's remarks for the next lot. The next lot's brief
   prints it. A choice nobody builds on is no note: it is the code's, and its commit's.
@@ -166,14 +177,19 @@ reviewer goes straight to the code.
 
 ### 6. Hand over
 
-1. The lot passes `map check <feature>` and the lot's gate (`repository.md` § "Gates").
+1. The lot passes `map check <feature>` and the lot's gate (`repository.md` § "Gates"). The last
+   lot passes the check alone: its gate is the end-of-run gate.
 2. Append to the gates file what the lot produced: checks, operations, evidence slots, and the
    reviewer's **leads for the global review** (what the lot added, introduced, deferred, and any
    overlap it suspects with another lot).
 3. Commit `plan.md` and the gates file, by name.
-4. Tell the user, in a few lines: what landed, the commits, the decisions to answer and where
-   (the delivery page: "Since your approval", then each built piece with its places and its
-   commits), the gates added, anything parked. No list of routine fixes.
+4. Go on to the next lot that owes something. A decision the plan now holds is not waited on:
+   the reviewer answers it after the run, and a lot that would be built on an answer nobody gave
+   is built on what the plan says. When the user asked for one lot, stop here and tell them, in a
+   few lines: what landed, the commits, the decisions to answer and where (the delivery page:
+   "Since your approval", then each built piece with its places and its commits), the gates
+   added, anything parked. No list of routine fixes. A run of every lot says it once, at its
+   close, a lot at a time.
 
 **The reviewer of the plan answers the decisions first, then reads the code**, both on the
 delivery page. Read the answers with `map feedback <feature>`; act on what is not approved. The
@@ -213,6 +229,11 @@ session reads verdicts from it. It is committed with the run and leaves with the
 ## Spend                 ← the ledger's summary, verbatim, and two sentences at most
 ```
 
+- **Nothing the delivery page shows is written again here**: a decision to answer, the answer it
+  got, the state of the approval, what a piece built, a note of the plan. The page is where the
+  reviewer reads and answers them, and a second copy goes stale at the next answer. A step that
+  needs one names its piece (`plan.md` § `#piece`) and says only what the user must do, run or
+  watch.
 - **An evidence gate asks for the raw reading, never for a verdict**, and names the build it must
   be read on. Never write it as a closed choice between the ranked hypotheses: the reading can
   refute them all while looking clean, and then nothing ships.

@@ -1,10 +1,15 @@
-"""The three calls a flow tells itself with: ``narrate``, ``event`` and ``planned``.
+"""The calls a flow tells itself with: ``narrate``, ``event``, ``planned`` and ``built``.
 
 - ``narrate(sentence, watch)`` is a step, written at the line it describes.
 - ``event(sentence, watch)`` is a cause, written at its handler: the steps that follow answer it.
-- ``planned("<feature>#<slug>", sentence)`` is a place a feature's plan changes, written before the code;
-  ``planned.remove(…)`` marks a function the piece removes. A shell is a new function whose whole body is the
-  ``planned`` call followed by ``raise NotImplementedError("planned: <feature>#<slug>")``.
+- ``planned("<feature>#<slug>:<place>", sentence)`` is a place a feature's plan changes, written before the
+  code: the place is the site's own id within its piece, which the ``built`` call that replaces it carries.
+  ``planned.remove("<feature>#<slug>", sentence)`` marks a function the piece removes, and names no place. A
+  shell is a new function whose whole body is the ``planned`` call followed by
+  ``raise NotImplementedError("planned: <feature>#<slug>")``.
+- ``built("<feature>#<slug>:<place>")`` stands where a ``planned`` call stood once its place is code, until the
+  feature is archived: it names the place of the plan by its id and says nothing else, since the clause is the
+  approval's. It fires like any site, so the stories go on saying which step each built place lands in.
 - ``planned.evidence("<feature>#<slug>", sentence, watch, expect={…})`` is a place a bug shows, written while it
   is diagnosed: what is seen there today, the watch giving the values. It marks no change and goes with the fix.
   ``expect`` says, a key of the watch each, the value the place should see, which the plan's page sets against
@@ -53,11 +58,13 @@ Expect = Any
 # The keys of the watch each crossing should see a value of its own for: one, or a tuple of them. The source
 # index reads it where it is written; no run does.
 Distinct = Any
-# kind, sentence, watch, the frame of the call or the place a template says, and for a planned call (feature,
-# slug, change, expect).
-Collector = Callable[[str, str, Optional[Watch], "FrameType | Place", Optional[tuple[str, str, str, Expect]]], None]
+# kind, sentence, watch, the frame of the call or the place a template says, and for a planned or a built call
+# (feature, slug, change, expect, place): the place is None where the tag names none.
+Collector = Callable[[str, str, Optional[Watch], "FrameType | Place",
+                      Optional[tuple[str, str, str, Expect, Optional[str]]]], None]
 
-PLANNED_TAG = re.compile(r"^([a-z0-9]+(?:-[a-z0-9]+)*)#([a-z0-9]+(?:-[a-z0-9]+)*)$")
+# `<feature>#<slug>`, then `:<place>` where the site names the place of the piece it is: kebab-case names.
+PLANNED_TAG = re.compile(r"^([a-z0-9]+(?:-[a-z0-9]+)*)#([a-z0-9]+(?:-[a-z0-9]+)*)(?::([a-z0-9]+(?:-[a-z0-9]+)*))?$")
 
 _collector: Optional[Collector] = None
 
@@ -95,11 +102,14 @@ def event(sentence: str, watch: Optional[Watch] = None) -> None:
 
 def _record_planned(tag, change: str, sentence, watch, frame, expect=None) -> None:
     parsed = PLANNED_TAG.match(tag) if isinstance(tag, str) else None
-    if parsed is None:
-        _refuse(frame, f"planned: {tag!r} is not <feature>#<slug>, two kebab-case names around one #")
+    if change == "built":
+        if parsed is None or parsed.group(3) is None:
+            _refuse(frame, f"built: {tag!r} is not <feature>#<slug>:<place>, three kebab-case names")
+    elif parsed is None:
+        _refuse(frame, f"planned: {tag!r} is not <feature>#<slug> or <feature>#<slug>:<place>, kebab-case names")
     if expect is not None and not isinstance(expect, dict) and not callable(expect):
         _refuse(frame, f"expect is a dict or a function (lambda: {{…}}), not {type(expect).__name__}")
-    _record("planned", sentence, watch, frame, (parsed.group(1), parsed.group(2), change, expect))
+    _record("planned", sentence, watch, frame, (parsed.group(1), parsed.group(2), change, expect, parsed.group(3)))
 
 
 class _Planned:
@@ -123,19 +133,29 @@ class _Planned:
 
 planned = _Planned()
 
-_TEMPLATE_CALLS = {"narrate": "step", "event": "event", "planned": "changed", "evidence": "evidence"}
+
+def built(tag: str) -> None:
+    """A place of the plan piece ``tag`` that is code now: ``<feature>#<slug>:<place>``, the place by the id
+    the plan gives it. Written where the ``planned`` call stood, and taken off when the feature is archived."""
+    if _collector is not None:
+        _record_planned(tag, "built", "", None, sys._getframe(1))
+
+
+_TEMPLATE_CALLS = {"narrate": "step", "event": "event", "planned": "changed", "evidence": "evidence",
+                   "built": "built"}
 
 
 def template_call(call: str, file: str, line: int, sentence: str, watch: Optional[Watch] = None,
                   tag: Optional[str] = None, expect: Expect = None) -> None:
-    """A call written as a tag of a template: ``call`` is ``narrate``, ``event``, ``planned`` or ``evidence``, the
-    last two with their ``tag``. Called by the tag as it renders, with where the tag is written."""
+    """A call written as a tag of a template: ``call`` is ``narrate``, ``event``, ``planned``, ``evidence`` or
+    ``built``, the last three with their ``tag``, and ``built`` with an empty sentence. Called by the tag as it
+    renders, with where the tag is written."""
     if _collector is None:
         return
     place = Place(file, line, sys._getframe(1).f_back)
     said = _TEMPLATE_CALLS.get(call)
     if said is None:
-        _refuse(place, f"{call!r} is no call a template makes: narrate, event, planned or evidence")
+        _refuse(place, f"{call!r} is no call a template makes: narrate, event, planned, evidence or built")
     if said in ("step", "event"):
         _record(said, sentence, watch, place)
     else:

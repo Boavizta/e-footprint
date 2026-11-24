@@ -16,6 +16,7 @@ stage is for, who approves what, and what never happens without a person.
   where a change lands, a test title with no body, a comment where no line runs. The plan page
   draws the narratives the change lands in, each change at the step it lands in, then a card a
   piece. A piece no narrative shows, in none yet or with no place in this repository, is put first.
+  A place that is built stays on its flow: the clause approved, under what its step tells now.
 - **A plan is local to the changes of its repository.** A feature that changes two has a plan
   in each, and the one that relies on a piece of the other points at it
   (`workflow-formats.md` § "A feature that changes two repositories").
@@ -84,10 +85,12 @@ session, and approves again.
 
 ## 4. Implement and review — `feature-implement`
 
-A supervisor delivers one lot a run, then stops for the reviewer:
+A supervisor delivers the lots one after another, in one run. It stops after one lot, for the
+reviewer, only when the user asks for that. For each lot:
 
-1. An implementer builds the lot (`task-implement`): each planned place becomes code, each
-   planned test a test under its title, a commit a piece whose message names it.
+1. An implementer builds the lot (`task-implement`): each planned place becomes code, with a
+   `built` call left where it stood, each planned test a test under its title, a commit a piece
+   whose message names it.
 2. The lot check reads the commits against the approved plan: a test nobody planned, a planned
    one not written, a deletion or a file the plan does not name. Each is settled.
 3. A reviewer reads the lot's commits (`task-review`), setting its own depth from the diff, and
@@ -97,8 +100,8 @@ A supervisor delivers one lot a run, then stops for the reviewer:
    of it, a `Note:` for a choice the next lot stands on. No callout, no judgement file, no list
    of routine fixes.
 5. The reviewer of the plan answers the decisions first, then reads the code, both on the
-   delivery page, which lists each built piece with its places and its commits. The approval that
-   follows is theirs.
+   delivery page, which lists each built piece with its places and its commits; the commits of a
+   piece open as the one diff they come to. The approval that follows is theirs.
 
 A lot that cannot land is parked and the independent lots go on. What only the user can do (a
 check on a device, a production operation, a reading that decides later work) goes to the
@@ -113,9 +116,20 @@ found, it is fixed in a commit of its own or reported; never papered over.
 ## 5. Archive — `feature-archive`
 
 Invoked explicitly, once the feature is final. The archive gate holds while anything planned
-remains or a rule has no owner. Then every durable fact is promoted to the reference docs,
-unfinished work is parked where it will be picked up, the tags come off the test titles, and the
-feature folder is deleted. Git history is the archive: no per-feature summary is ever written.
+remains or a rule has no owner.
+
+**Most of a plan goes with its folder.** A fact is kept in the first home that can hold it: a
+test or the code itself; a narrative's sentence, for what happens in order; the reason of one
+object, beside its declaration; and a reference doc only for what none of those can hold: a
+decision across several flows, a constraint no step executes, a rejected alternative. That last
+kind is written only when it is load-bearing: someone reading the code would be tempted to undo
+it, and nothing would stop them. Reference prose that tells the steps of a narrative the feature
+landed in goes, a link to the narrative standing in its place.
+
+Unfinished work is parked where it will be picked up. Last, one command strips the feature's
+marks off the code (the `built` calls, the tags of the test titles, the planned screens) and the
+feature folder is deleted: until then the plan page still shows the delivery. Git history is the
+archive: no per-feature summary is ever written.
 
 **Gate:** the user confirms the deletion.
 

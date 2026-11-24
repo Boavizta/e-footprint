@@ -83,6 +83,8 @@ why, and ask. If the user prefers one spec, write one.
    - **The screens the feature changes are walked by a journey first.** A screen no journey
      reaches gets its journey before the spec, on today's behaviour, in a commit of its own.
    - Mark each changed screen as planned, with a mockup: a full edited copy of today's capture.
+     It opens with a comment saying what was edited in. The lot's brief prints that comment, so
+     whoever writes the screen's case reads it and not the mockup.
    - **A case to write is one criterion, as a title that says what the screen reads.** Its title
      must stay true through the plan's decisions; the plan stage re-reads each.
    - **A journey shows, a narrative proves.** Plan a case for a screen, or a state of one, worth

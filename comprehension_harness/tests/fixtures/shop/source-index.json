@@ -39,12 +39,12 @@
         { "kind": "event", "line": 16, "column": 5, "fn": "pay", "sentence": "The customer presses Pay." },
         {
           "kind": "planned", "line": 18, "column": 5, "fn": "pay", "sentence": "The amount due **loses the card's balance**.",
-          "planned": { "feature": "gift-cards", "slug": "deduct-the-card", "change": "changed", "signature": null }
+          "planned": { "feature": "gift-cards", "slug": "deduct-the-card", "place": "amount-due", "change": "changed", "signature": null }
         },
         { "kind": "step", "line": 23, "column": 5, "fn": "charge", "sentence": "The amount **is charged**." },
         {
           "kind": "planned", "line": 28, "column": 5, "fn": "refund", "sentence": "A refund goes back to the card first.",
-          "planned": { "feature": "gift-cards", "slug": "refund-to-card", "change": "added", "signature": "def refund(amount):" }
+          "planned": { "feature": "gift-cards", "slug": "refund-to-card", "place": "refund", "change": "added", "signature": "def refund(amount):" }
         }
       ],
       "functions": [

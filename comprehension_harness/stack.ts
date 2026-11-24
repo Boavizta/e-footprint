@@ -100,9 +100,10 @@ export interface StoryFailure {
 
 /** What a planned site says of its place: `changed` (a `planned` on existing code), `removed`
  *  (`planned.remove`), `added` (the only body of a shell), `evidence` (a place a bug shows, which marks no
- *  change and goes with the fix). */
-export type PlannedChange = 'changed' | 'removed' | 'added' | 'evidence';
-export const PLANNED_CHANGES: readonly PlannedChange[] = ['changed', 'removed', 'added', 'evidence'];
+ *  change and goes with the fix), `built` (a `built` call: the place is code, and the call stands for it until
+ *  the feature is archived). */
+export type PlannedChange = 'changed' | 'removed' | 'added' | 'evidence' | 'built';
+export const PLANNED_CHANGES: readonly PlannedChange[] = ['changed', 'removed', 'added', 'evidence', 'built'];
 
 /** A `planned` site, as the source states it: its piece (`<feature>#<slug>`) and what kind of change it announces
  *  (`PlannedChange`). `signature` is a shell's declaration text up to its body. */
@@ -112,6 +113,9 @@ export interface PlannedSite {
   /** What changes at this place, in one clause, as written at the site; for evidence, what is seen there today. */
   sentence: string;
   change: PlannedChange;
+  /** The place of the piece the site is, `<feature>#<slug>:<place>`: the id a `planned` site on code that stays
+   *  gives itself, and the one a `built` site stands for. */
+  place?: string;
   signature: string | null;
   /** What the place should see, as the site writes it: a literal, or an expression computed at each crossing.
    *  Its value at a crossing is the story's (`StoryHit.expect`). */
@@ -249,6 +253,18 @@ export interface Stack {
   /** A reader of the source as it stands. */
   openSource(): SourceReader;
   titles: TitleReader;
+  /** Optional. One file's text with what the archive of `feature` takes off it: each `built` call of the
+   *  feature with the import it leaves unused, the tag and the `[rule]` of each test titled
+   *  `<feature>#<slug>: <title> [<rule>]`, and each planned screen of a journey that names the feature. A file
+   *  the stack does not read comes back as it is. It refuses, with the file and the line, a `built` call that
+   *  cannot go without changing the code around it. A stack that gives none has them taken off by hand. */
+  strip?(file: string, text: string, feature: string): Stripped;
+}
+
+/** A file as the archive leaves it, and what was taken off, by the line it stood at. */
+export interface Stripped {
+  text: string;
+  taken: Array<{ line: number; kind: 'built' | 'title' | 'screen'; was: string }>;
 }
 
 // ── 3. Test titles ─────────────────────────────────────────────────────────────
@@ -405,9 +421,10 @@ export interface JourneyCase {
 /** What a proposed migration does to the database, drawn for a plan page. A project that has a way to show it
  *  names a module exporting this (`planDiff` of the configuration); the pages do without otherwise. */
 export interface PlanDiff {
-  /** The diff for one migration's SQL, as a fragment of the page at `page` with its stylesheet; `infidelity`
-   *  lists where the copy it was drawn on reads differently from the real database. Throws when the SQL fails. */
-  draw(sql: string, page: string): Promise<{ html: string; css: string; infidelity: string[] }>;
+  /** The diff for one change's SQL, as a fragment of the page at `page` with its stylesheet: what it adds to the
+   *  state `earlier` leave, the SQL of the feature's files before it, in order. `infidelity` lists where the copy
+   *  it was drawn on reads differently from the real database. Throws when any of the SQL fails. */
+  draw(sql: string, page: string, earlier: readonly string[]): Promise<{ html: string; css: string; infidelity: string[] }>;
   /** Whether an error of `draw` says the database could not be reached, and not that the SQL is wrong. */
   isUnreachable(error: unknown): boolean;
   /** What to run when the database could not be reached. */

@@ -129,12 +129,41 @@ def test_an_evidence_site_says_what_the_place_should_see_as_it_is_written(projec
         {**piece, "change": "evidence", "distinct": ["row", "of"]}]
 
 
+def test_a_place_that_becomes_code_names_itself_and_a_built_call_stands_for_it_once_it_is(project):
+    """The id is the site's own within its piece: the `built` call that replaces a `planned` one carries it."""
+    root = project({"app/due.py": f'''{CALLS}from narrate import built
+
+
+def due(total, card):
+    planned("gift-cards#deduct-the-card:amount-due", "The due amount **loses the card**.")
+    built("gift-cards#deduct-the-card:card-read")
+    return total - card
+
+
+def refund(amount):
+    planned("gift-cards#refund-to-card:refund", "A refund goes back to the card first.")
+    raise NotImplementedError("planned: gift-cards#refund-to-card")
+'''})
+
+    planned, built, shell = indexed(root)["files"]["app/due.py"]["sites"]
+
+    piece = {"feature": "gift-cards", "slug": "deduct-the-card", "signature": None}
+    assert planned["planned"] == {**piece, "place": "amount-due", "change": "changed"}
+    # A built call is a site of the plan with no clause of its own: the approval holds the place's.
+    assert (built["kind"], built["line"], built["column"], built["fn"], built["sentence"]) == ("planned", 7, 5, "due", "")
+    assert built["planned"] == {**piece, "place": "card-read", "change": "built"}
+    # A shell raises its piece, whatever place its call names.
+    assert shell["planned"] == {"feature": "gift-cards", "slug": "refund-to-card", "place": "refund",
+                                "change": "added", "signature": "def refund(amount):"}
+
+
 TEMPLATE = '''<ul>
   {% for row in rows %}
     {% narrate "A row is **drawn**." kind=row.kind %}
-    {% if row.card %}{% planned "gift-cards#card-row" "The row shows the card\'s balance." %}{% endif %}
+    {% if row.card %}{% planned "gift-cards#card-row:balance" "The row shows the card\'s balance." %}{% endif %}
     {% evidence "gift-cards#card-row" "A card is drawn **as a plain row**." drawn_as="row" expect drawn_as=row.kind|lower %}
     {% planned "gift-cards#card-row" "The row\'s id is the card\'s." id=row.kind of=row.card distinct id %}
+    {% built "gift-cards#card-row:row-class" %}
   {% endfor %}
 </ul>
 '''
@@ -154,18 +183,29 @@ def test_a_template_makes_the_calls_as_tags_and_each_is_a_site_of_it_in_no_funct
     assert rows["sites"] == [
         {"kind": "step", "line": 3, "column": 5, "fn": "(template)", "sentence": "A row is **drawn**."},
         {"kind": "planned", "line": 4, "column": 22, "fn": "(template)", "sentence": "The row shows the card's balance.",
-         "planned": {**piece, "change": "changed"}},
+         "planned": {**piece, "place": "balance", "change": "changed"}},
         {"kind": "planned", "line": 5, "column": 5, "fn": "(template)", "sentence": "A card is drawn **as a plain row**.",
          "planned": {**piece, "change": "evidence", "expect": "drawn_as=row.kind|lower"}},
         {"kind": "planned", "line": 6, "column": 5, "fn": "(template)", "sentence": "The row's id is the card's.",
-         "planned": {**piece, "change": "changed", "distinct": ["id"]}}]
+         "planned": {**piece, "change": "changed", "distinct": ["id"]}},
+        {"kind": "planned", "line": 7, "column": 5, "fn": "(template)", "sentence": "",
+         "planned": {**piece, "place": "row-class", "change": "built"}}]
 
 
 @pytest.mark.parametrize("tag, said", [
     ("{% narrate sentence %}", "app/t.html:1 — {% narrate %} opens with its sentence, in double quotes"),
     ('{% planned "a#b" %}', "app/t.html:1 — {% planned %} opens with its tag and its sentence, in double quotes"),
     ('{% planned "NotATag" "A change." %}', 'app/t.html:1 — "NotATag" is not <feature>#<slug>'),
-    ('{% narrate "A step." %}{% event "A cause." %}', "app/t.html:1 — one narrate, event, planned or evidence tag a line"),
+    ('{% narrate "A step." %}{% event "A cause." %}', "app/t.html:1 — one narrate, event, planned, evidence or built "
+                                                      "tag a line"),
+    ('{% planned "a#b:Place" "A change." %}', 'app/t.html:1 — "a#b:Place" is not <feature>#<slug> or '
+                                              '<feature>#<slug>:<place>'),
+    ('{% evidence "a#b:c" "A bug." %}', 'app/t.html:1 — "a#b:c" names a place, and only a place that becomes code '
+                                        'has one'),
+    ('{% built "a#b" %}', 'app/t.html:1 — a built call takes one literal, "<feature>#<slug>:<place>", and "a#b" names '
+                          'no place'),
+    ('{% built "a#b:c" "A change." %}', 'app/t.html:1 — {% built %} takes one literal, "<feature>#<slug>:<place>"'),
+    ("{% built place %}", 'app/t.html:1 — {% built %} takes one literal, "<feature>#<slug>:<place>"'),
     ('{% evidence "a#b" "A bug." kind %}', "app/t.html:1 — after the sentence a tag gives key=value pairs"),
     ('{% evidence "a#b" "A bug." kind=row.kind expect %}', "app/t.html:1 — after the sentence a tag gives key=value pairs"),
     ('{% narrate "A step." expect kind="card" %}', "app/t.html:1 — expect and distinct are said of a planned or an "
@@ -232,11 +272,25 @@ def test_a_shell_is_a_function_whose_body_is_the_call_and_the_raise_of_its_tag(p
 
 
 CALLS = "from narrate import event, narrate, planned\n"
+BUILT = "from narrate import built\n"
 DECLARE = "from declare import narrative\n"
 
 
 @pytest.mark.parametrize("source, said", [
-    (CALLS + 'def f():\n    narrate("a"); narrate("b")\n', "app/x.py:3 — one narrate, event or planned call a line"),
+    (CALLS + 'def f():\n    narrate("a"); narrate("b")\n', "app/x.py:3 — one narrate, event, planned or built call a "
+                                                            "line"),
+    (CALLS + 'def f():\n    planned.remove("a#b:c", "d")\n', 'app/x.py:3 — "a#b:c" names a place, and only a place '
+                                                             'that becomes code has one'),
+    (CALLS + 'def f():\n    planned.evidence("a#b:c", "d")\n', 'app/x.py:3 — "a#b:c" names a place'),
+    (CALLS + 'def f():\n    planned("a#b:c:d", "e")\n', 'app/x.py:3 — "a#b:c:d" is not <feature>#<slug> or '
+                                                        '<feature>#<slug>:<place>'),
+    (BUILT + 'def f():\n    built("a#b")\n', 'app/x.py:3 — a built call takes one literal, "<feature>#<slug>:<place>", '
+                                             'and "a#b" names no place'),
+    (BUILT + 'TAG = "a#b:c"\ndef f():\n    built(TAG)\n', 'app/x.py:4 — built(…) takes one literal'),
+    (BUILT + 'def f():\n    built("a#b:c", "A change.")\n', 'app/x.py:3 — built(…) takes one literal'),
+    (BUILT + 'def f(n):\n    built("a#b:c", watch=lambda: n)\n', 'app/x.py:3 — built(…) takes one literal'),
+    (CALLS + 'def f():\n    planned("a#b:c", "d")\n    raise NotImplementedError("planned: a#other")\n',
+     'app/x.py:4 — the shell must raise NotImplementedError("planned: a#b")'),
     (CALLS + 'TAG = "a#b"\ndef f():\n    planned(TAG, "c")\n', "app/x.py:4 — planned(…) needs a literal"),
     (CALLS + 'def f():\n    planned("NotATag", "c")\n', 'app/x.py:3 — "NotATag" is not <feature>#<slug>'),
     ("import narrate\ndef f():\n    narrate.narrate('a')\n", "app/x.py:3 — the calls are imported by name"),

@@ -39,7 +39,9 @@ Read `.agents/repository.md` § "Review surfaces" and § "Gates". `map …` is t
 4. **Ask what no tool holds.** The lot check already says that every planned test is written and
    that nothing was added or deleted beyond the plan. You are asked for the rest:
 
-   - **Does the code at each built place do what its clause says?**
+   - **Does the code at each built place do what its clause says?** Its `built` call says where
+     the implementer put the change: is that the line the clause speaks of, on a path that runs
+     whenever the change does?
    - **A file with several places**: was one skipped?
    - **Does each test assert what its title says**, or less? A moved assertion is compared with
      the one it replaces by value, not by title.

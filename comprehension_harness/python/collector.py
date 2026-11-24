@@ -3,8 +3,9 @@
 A project loads it for every run: ``pytest_plugins = ["comprehension_harness.python.collector"]`` in the
 conftest of its tests. For the lifetime of a run it is the collector of the project's own calls, the module
 ``stack.calls`` of the configuration names, and of no other project's: a dependency's calls stay inert. Each
-``narrate``, ``event`` or ``planned`` call a test crosses is a hit: its sentence, its watch's value, the frame of
-the call and the repository's frames above it. A call a template makes is a hit at its tag, under the frames
+``narrate``, ``event``, ``planned`` or ``built`` call a test crosses is a hit: its sentence, its watch's value, the
+frame of the call and the repository's frames above it. A ``built`` call is a ``planned`` hit whose change is
+``built``, and a test keeps its first crossing alone: one tells where the place lands. A call a template makes is a hit at its tag, under the frames
 that rendered the template. A test's hits are its story; a test file's stories are one JSON
 array at ``<cache>/stories/<the file, "/" written "__">.json``, deleted when the file's run starts and written
 when it ends. A test that crosses no call has no story, but for a reproduction (``@reproduces`` of
@@ -96,7 +97,7 @@ class StoryRecorder:
         stack = settings.get("stack")
         if not isinstance(stack, dict) or not isinstance(stack.get("calls"), str):
             raise pytest.UsageError(f'narrate collector: {CONFIG_FILE} — "stack.calls" names the module this '
-                                    f'project imports narrate, event and planned from')
+                                    f'project imports narrate, event, planned and built from')
         self.calls = importlib.import_module(stack["calls"])
         self.is_worker = hasattr(config, "workerinput")
         self.writes = os.environ.get(STORIES_SWITCH, "").lower() != "off"
@@ -169,6 +170,10 @@ class StoryRecorder:
             return  # Outside a test (an import, a fixture of the session): nobody's story.
         site = self.site_of(kind, frame)
         file = site["file"]
+        # A `built` call stands for a place of a plan: its first crossing tells where the place lands, and the
+        # others tell nothing more. A place on a path a test loops over is no loop over a narrated site.
+        if planned_as is not None and planned_as[2] == "built" and (file, site["line"]) in test["tallies"]:
+            return
         counted = {"file": file, "line": site["line"], "kept": 0, "omitted": 0}
         tally = test["tallies"].setdefault((file, site["line"]), counted)
         if tally["kept"] >= MAX_HITS_PER_SITE:
@@ -185,8 +190,9 @@ class StoryRecorder:
         hit = {"kind": kind, "sentence": sentence, "watch": self.read(watch), "site": site, "stack": stack,
                "atMs": round((time.perf_counter() - test["started"]) * 1000, 1)}
         if planned_as is not None:
-            *piece, expect = planned_as
-            hit["planned"] = dict(zip(("feature", "slug", "change"), piece))
+            feature, slug, change, expect, place = planned_as
+            hit["planned"] = {"feature": feature, "slug": slug, **({} if place is None else {"place": place}),
+                              "change": change}
             if expect is not None:
                 # What this crossing should have seen: said once for the place, or computed for the crossing.
                 hit["expect"] = self.read(expect)

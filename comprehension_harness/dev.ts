@@ -26,17 +26,19 @@ import { spawn } from 'node:child_process';
 import { existsSync, mkdirSync, readdirSync, readFileSync, statSync, watch } from 'node:fs';
 import { createServer, type ServerResponse } from 'node:http';
 import { extname, join, normalize, relative } from 'node:path';
-import { FEATURES, JOURNEYS, PAGES, ROOT, STORIES_DIR, config } from './config';
+import { FEATURES, PAGES, ROOT, STORIES_DIR, config } from './config';
 import { openSource, toolSources } from './project-stack';
 import type { SourceReader } from './stack';
-import { approveFromPage, planDbDiffs, PRODUCT_PAGE, readPlanSources, render, reproductionFiles, saveFeedback, SCANNED } from './render';
+import { approveFromPage, generatedPages, planDbDiffs, readPlanSources, render, renderIndexPage, reproductionFiles, saveFeedback, SCANNED } from './render';
 
 // The test files to keep running: every one that declares a narrative, found in the source, and every one that
-// holds a reproduction of a plan, whose page shows what it sees now.
+// holds a reproduction of a plan and that `commands.tests` runs, whose page shows what it sees now. A reproduction
+// another command runs (`commands.testsUnder`) is not run at each save: its page shows what the last render's run
+// of it saw.
 // The source reader is kept between renders: `fresh()` re-reads only what changed, so a
 // re-render after one save pays for one file, not for the whole source.
 let source: SourceReader = openSource();
-const NARRATIVE_TESTS = [...new Set([...source.narrativeTestFiles(), ...reproductionFiles(readPlanSources())])];
+const NARRATIVE_TESTS = [...new Set([...source.narrativeTestFiles(), ...reproductionFiles(readPlanSources()).filter((r) => r.command === config.commands.tests).map((r) => r.file)])];
 const SERVE_ROOT = join(ROOT, config.docs);
 
 const TYPES: Record<string, string> = {
@@ -68,31 +70,9 @@ let warned = false;
 /** The address of the pages' list, once the server listens. */
 let base = '';
 
-/** The generated pages there are, by kind, each as a path from the served folder with the title it gives itself. */
-function pagesList(): Array<{ kind: string; pages: Array<{ href: string; title: string }> }> {
-  const htmlOf = (dir: string, keep: (f: string) => boolean = () => true) => (existsSync(dir) ? readdirSync(dir).filter((f) => f.endsWith('.html') && !f.endsWith('.skeleton.html') && keep(f)).sort().map((f) => join(dir, f)) : []);
-  // A page's own title, without what every generated page's title says.
-  const titled = (file: string) => ({ href: relative(SERVE_ROOT, file), title: /<title>([^<]*)<\/title>/.exec(readFileSync(file, 'utf8'))?.[1].replace(/^.*? comprehension — | \(generated\)$/g, '').trim() || relative(SERVE_ROOT, file) });
-  const features = join(ROOT, FEATURES);
-  // A feature's spec page when it is a generated one: a folder may hold a hand-written `spec.html` of an earlier method.
-  const specs = existsSync(features) ? readdirSync(features).map((f) => join(features, f, 'spec.html')).filter((f) => existsSync(f) && readFileSync(f, 'utf8').includes('<meta name="generator"')).sort() : [];
-  return [
-    { kind: 'Narratives', pages: htmlOf(join(ROOT, PAGES, 'narratives')) },
-    { kind: 'Mechanisms', pages: htmlOf(join(ROOT, PAGES, 'mechanisms')) },
-    { kind: 'Plans', pages: htmlOf(join(ROOT, PAGES, 'plans'), (f) => !f.endsWith('-delivery.html')) },
-    { kind: 'Deliveries', pages: htmlOf(join(ROOT, PAGES, 'plans'), (f) => f.endsWith('-delivery.html')) },
-    { kind: 'Journeys', pages: htmlOf(join(ROOT, JOURNEYS)) },
-    { kind: 'Specs', pages: specs },
-  ].map(({ kind, pages }) => ({ kind, pages: pages.map(titled) })).filter((group) => group.pages.length > 0);
-}
-
-/** The page at the server's own address: every generated page, by kind. */
+/** The page at the server's own address: the index the render writes, its paths from the served folder. */
 function pagesIndex(): string {
-  const esc = (t: string) => t.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;');
-  const groups = pagesList().map(({ kind, pages }) => `<h2>${kind}</h2><ul>${pages.map((x) => `<li><a href="/${esc(x.href)}">${esc(x.title)}</a> <small>${esc(x.href)}</small></li>`).join('')}</ul>`).join('');
-  return `<!doctype html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1"><title>${esc(config.name)} — generated pages</title>
-<style>body{font:15px/1.5 system-ui,sans-serif;max-width:52rem;margin:2rem auto;padding:0 1rem}h2{font-size:1rem;margin:1.4rem 0 .3rem}ul{margin:0;padding-left:1.2rem}small{color:#6b7280;margin-left:.4rem}</style></head>
-<body><h1>${esc(config.name)} — generated pages</h1>${groups || '<p>No page yet: the first render follows the first test run.</p>'}</body></html>`;
+  return renderIndexPage(generatedPages(SERVE_ROOT), '/');
 }
 
 async function rerender(reason: string): Promise<void> {
@@ -205,7 +185,6 @@ server.listen(0, '127.0.0.1', () => {
   const port = typeof address === 'object' && address ? address.port : 0;
   base = `http://127.0.0.1:${port}/`;
   console.log(`[comprehension] every page: ${base}`);
-  console.log(`[comprehension] page: http://127.0.0.1:${port}/${relative(SERVE_ROOT, PRODUCT_PAGE)}`);
   // A plan's two pages, where the reviewer answers: the design, then the delivery and what moved since the approval.
   const plans = join(ROOT, PAGES, 'plans');
   for (const f of existsSync(plans) ? readdirSync(plans).filter((x) => x.endsWith('.html')).sort() : []) {

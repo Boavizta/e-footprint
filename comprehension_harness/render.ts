@@ -8,25 +8,29 @@
  *                                              # plus informative lists (unclaimed sites, stale page tokens,
  *                                              # untraced entries, rules with no owner)
  *   npx tsx comprehension_harness/render.ts --check --archive <feature>   # the archive gate: fails while a planned site of it remains
+ *   npx tsx comprehension_harness/render.ts --strip <feature> [--dry-run]  # once the gate passes: takes the feature's `built` calls, the
+ *                                              # tags of its test titles and its planned screens off the code, then
+ *                                              # lists every line outside its folder that still names it; exit 1
+ *                                              # while one is in the code
  *   npx tsx comprehension_harness/render.ts --approve <feature>           # on the reviewer's word only: writes the plan as it stands to
  *                                              # `specs/features/<feature>/plan.approved.json` and takes the `Changed:`
- *                                              # paragraphs off `plan.md`; `--check` then holds every difference to a reason
+ *                                              # paragraphs off `plan.md`, once the plan passes the check; `--check`
+ *                                              # then holds every difference to a reason
  *
  * Reads every story the stack's collector wrote under the stories folder of the project's cache
  * (one JSON array per test file; a cache, so a clean install empties it and a unit run refills it) and
- * renders the product page under `specs/comprehension_harness/narratives/` (the configuration names it), one page per mechanism
- * narrative under `specs/comprehension_harness/mechanisms/` and one plan page per feature with a planned
- * site under `specs/comprehension_harness/plans/`, all on the one stylesheet `specs/comprehension_harness/comprehension_harness.css`
- * (hand-written, inlined). Nothing on a page is declared here: a narrative is declared where
- * its story is produced —
+ * renders one page per product narrative under `specs/comprehension_harness/narratives/`, one page per mechanism
+ * narrative under `specs/comprehension_harness/mechanisms/`, one plan page per feature with a planned
+ * site under `specs/comprehension_harness/plans/`, and `specs/comprehension_harness/index.html`, which lists every
+ * generated page by kind, the journeys' and the specs' included, all on the one stylesheet
+ * `specs/comprehension_harness/comprehension_harness.css` (hand-written, inlined). Nothing on a page is hand-written
+ * or declared here: a narrative is declared where its story is produced —
  *
  *  - the test file declares it, a product narrative or a mechanism, under a title, with the stack's
  *    own declaration; the collector stamps each story with that title and kind. The comment above
  *    the declaration is the summary, read from the source. The first test is canonical unless one
- *    marks itself so; the others are variants;
- *  - the product page's title and lede are the one hand-written input, the skeleton file
- *    `<name>.skeleton.html` beside it. A mechanism page's is optional, a lede only — why it is
- *    shaped so — in `<slug>.skeleton.html` beside it;
+ *    marks itself so; the others are variants. A page's title is the narrative's, its lede the summary;
+ *    why a subsystem is shaped as it is belongs to the document that owns it, which links the page;
  *  - a feature's plan is its tagged sites (`plan.ts` holds the model and the rules): a piece is a
  *    slug, `<feature>#<slug>`, on every `planned('<feature>#<slug>', sentence)` call (or
  *    `planned.remove(…)`, or the only body of a shell that throws after it), every
@@ -90,13 +94,13 @@ import { execFileSync, spawnSync } from 'node:child_process';
 import { existsSync, mkdirSync, readdirSync, readFileSync, rmSync, statSync, writeFileSync } from 'node:fs';
 import { basename, dirname, join, relative, resolve } from 'node:path';
 import { fileURLToPath, pathToFileURL } from 'node:url';
-import { CONFIG_FILE, PAGES, ROOT, STORIES, STORIES_DIR, config, featureFolder, layout, typed } from './config';
+import { CONFIG_FILE, FEATURES, JOURNEYS, PAGES, ROOT, STORIES, STORIES_DIR, config, featureFolder, layout, testCommandOf, typed } from './config';
 import { blocksHtml, parseIntent, type MdBlock } from './intent-md';
-import { loadPlanDiff, openSource, titles } from './project-stack';
+import { loadPlanDiff, openSource, strip, titles } from './project-stack';
 import { SourceIndex, type SourceSite } from './source-index';
-import type { Location, NarrativeKind, PlannedSite, Resolution, SourceReader, Story, StoryFrame, StoryHit } from './stack';
-import { assemblePlans, editItems, filesNamed, findings, isOpenTest, isOwnNotice, isStoryOf, lotLeft, names, shared, siteLineOf, unexpected, type Crossing, type FrozenChain, type FunctionLines, type Hunk, BESIDE, NOTES, asksNoEdit, changedAway, REPRODUCTIONS, UNPLANNED, chainsToFreeze, fixedChains, isBuiltPlace, placesCrossed, reproductionKeyOf, type PieceCommit, overSentenceBudget, parseTag, pieceDocOf, pieceQuestion, planDocOf, reviewItems, waiverQuestion, writeAcceptedAnswers, type PointerTarget, replaceSlugRefs, scanJourneyCases, scanPlannedComments, scanTodos, todosByTier, TIERS, type FeatureDocs, type JourneyCase, type PlanBaseline, type DeltaLine, type PlanChange, type PlanFeedback, type PlanLot, type PlanMove, type ReviewItem, type UnitDelta, type Plan, type PlanGroup, type PlanSite, type PlanSection, type PlanPiece, type PlanTodo, type StaticSite } from './plan';
-import { readPieceCommits } from './commits';
+import type { Location, NarrativeKind, PlannedSite, Resolution, SourceReader, Story, StoryFrame, StoryHit, Stripped } from './stack';
+import { approvalRefusal, assemblePlans, builtPlaceOf, idsToKeep, landingsToFreeze, markOf, type BuiltLanding, commitBlocks, commitsNamed, editItems, filesNamed, findings, isOpenTest, isOwnNotice, namesFeature, isStoryOf, lotLeft, names, shared, siteLineOf, unexpected, type CommitBlock, type Crossing, type FrozenChain, type FunctionLines, BESIDE, NOTES, asksNoEdit, changedAway, REPRODUCTIONS, UNPLANNED, chainsToFreeze, fixedChains, isBuiltPlace, placesCrossed, reproductionKeyOf, type PieceCommit, overSentenceBudget, parseTag, pieceDocOf, pieceQuestion, planDocOf, reviewItems, waiverQuestion, writeAcceptedAnswers, type PointerTarget, replaceSlugRefs, scanJourneyCases, scanPlannedComments, scanTodos, todosByTier, TIERS, type FeatureDocs, type JourneyCase, type PlanBaseline, type DeltaLine, type PlanChange, type PlanFeedback, type PlanLot, type PlanMove, type ReviewItem, type UnitDelta, type Plan, type PlanGroup, type PlanSite, type PlanSection, type PlanPiece, type PlanTodo, type StaticSite } from './plan';
+import { commitsOfLines, hunkReader, readPieceCommits, type HunkReader } from './commits';
 import { buildBacklinks, describeEntry, markersFor, unresolvedDeclaredLooking, untracedEntries, type BacklinkIndex, type Marker, type PageEntry, type StepKeys } from './backlinks';
 
 export type { PlannedSite, Story, StoryFrame, StoryHit };
@@ -108,12 +112,11 @@ export { ROOT };
 /** This script, from the root: what a page and a message tell the reader to run. */
 const SELF = relative(ROOT, fileURLToPath(import.meta.url));
 const PAGE_CSS = join(ROOT, PAGES, 'comprehension_harness.css');
-export const PRODUCT_PAGE = join(ROOT, PAGES, `narratives/${config.productPage}.html`);
-const PRODUCT_SKELETON = join(ROOT, PAGES, `narratives/${config.productPage}.skeleton.html`);
+export const NARRATIVES_DIR = join(ROOT, PAGES, 'narratives');
 export const MECHANISMS_DIR = join(ROOT, PAGES, 'mechanisms');
 export const PLANS_DIR = join(ROOT, PAGES, 'plans');
-/** A mechanism page's optional hand-written head: a lede only, why the mechanism is shaped so. */
-const mechanismSkeleton = (slug: string) => join(MECHANISMS_DIR, `${slug}.skeleton.html`);
+/** The list of every generated page, by kind. */
+export const INDEX_PAGE = join(ROOT, PAGES, 'index.html');
 /** From either page folder to the repository root, for `data-review-source-href`. */
 const TO_ROOT = `${relative(MECHANISMS_DIR, ROOT)}/`;
 /** From either page folder to the documents' folder, where `review-links.js` is. */
@@ -802,12 +805,7 @@ function exercisedByHtml(mechanism: Narrative, narratives: Narrative[], index: S
   return `<small class="kicker">Exercised by</small><div class="narr-list">${rows.length ? rows.join('\n  ') : '<small>no product narrative crosses this mechanism yet</small>'}</div>`;
 }
 
-function listHtml(n: Narrative, stories: Story[], index: SourceIndex): string {
-  const tests = stories.filter((s) => crosses(s, n.stepIds, index)).length;
-  return `<a href="#${esc(n.slug)}"><strong>${esc(n.title)}</strong></a><small>${esc(n.summary)} · ${n.steps.length} steps · ${tests} test${tests === 1 ? '' : 's'} · one debug run of its test · embeds nothing · embedded by nothing yet</small>`;
-}
-
-/** The product page's "Rides on": one line per mechanism any of its narratives' canonical stories crossed. */
+/** A product narrative page's "Rides on": one line per mechanism its canonical story crossed. */
 function ridesOnHtml(products: Narrative[], narratives: Narrative[], index: SourceIndex, links: PageLinks): string {
   const owner = ownership(narratives);
   const lines: string[] = [];
@@ -839,14 +837,8 @@ function pageStyle(): string {
 }
 
 
-/** The one hand-written input to the product page: `<h1>` and the paragraphs under it. */
-function skeleton(): { title: string; html: string } {
-  if (!existsSync(PRODUCT_SKELETON)) throw new Error(`comprehension-render: ${relative(ROOT, PRODUCT_SKELETON)} is missing — the product page's title and lede live there`);
-  const html = readFileSync(PRODUCT_SKELETON, 'utf8').replace(/<!--[\s\S]*?-->\s*/g, '');
-  const m = /<h1>([\s\S]*?)<\/h1>/.exec(html);
-  if (!m) throw new Error(`comprehension-render: the skeleton has no <h1>`);
-  return { title: m[1].replace(/<[^>]+>/g, '').trim(), html };
-}
+/** How the links of a narrative page and a mechanism page are used: the same on every page, so said once. */
+const LINK_HINT = '<p style="font-size:.8rem;color:var(--muted);margin:.2rem 0 .6rem">A dotted link opens VS Code at the line; right-click it for the diff against <code>main</code>, or, on a test, to debug that case. A narrative\'s "▶ debug this narrative" runs its test under the debugger: set breakpoints at the watch points you want first, then continue from one stop to the next beside the steps.</p>';
 
 function pageHtml(title: string, crumb: string, body: string, footerNote: string, extraStyle = ''): string {
   return `<!DOCTYPE html>
@@ -871,17 +863,17 @@ ${body}
 
 const PRODUCT_LINKS: PageLinks = {
   mechanism: (m) => `../mechanisms/${m.slug}.html`,
-  product: (p) => `#${p.slug}`,
+  product: (p) => `${p.slug}.html`,
   plan: (feature) => `../plans/${feature}.html`,
 };
 const MECHANISM_LINKS: PageLinks = {
   mechanism: (m) => `${m.slug}.html`,
-  product: (p) => `../narratives/${basename(PRODUCT_PAGE)}#${p.slug}`,
+  product: (p) => `../narratives/${p.slug}.html`,
   plan: (feature) => `../plans/${feature}.html`,
 };
 const PLAN_LINKS: PageLinks = {
   mechanism: (m) => `../mechanisms/${m.slug}.html`,
-  product: (p) => `../narratives/${basename(PRODUCT_PAGE)}#${p.slug}`,
+  product: (p) => `../narratives/${p.slug}.html`,
   plan: (feature) => `${feature}.html`,
 };
 
@@ -928,56 +920,36 @@ export function readPlanSources(): PlanSources {
   return { statics, todos, journeyCases };
 }
 
-/** The test files that hold a reproduction of a plan and that a plain run of the tests runs: a browser's are
- *  left to whoever starts a browser. */
-export function reproductionFiles(sources: PlanSources): string[] {
-  return [...new Set(sources.todos.filter((t) => t.reproduction && !layout.isBrowserTest(t.file)).map((t) => t.file))].sort();
+/** The test files that hold a reproduction of a plan, each with the command that runs it once (`testCommandOf`):
+ *  null for one no tool runs, left to a run by hand. */
+export function reproductionFiles(sources: PlanSources): Array<{ file: string; command: string[] | null }> {
+  return [...new Set(sources.todos.filter((t) => t.reproduction).map((t) => t.file))].sort().map((file) => ({ file, command: testCommandOf(file) }));
 }
+
+/** One run of the reproductions: the command as typed, its files following, and what it printed. */
+interface ReproductionRun { command: string; ok: boolean; output: string }
 
 /**
  * Runs the reproductions the plans hold, before a page is drawn or a plan checked: a bug's evidence is what its
  * reproductions saw, and a page drawn from whichever run came last says "no run" of a test nobody ran lately.
- * Whole files, by the configuration's own command and no option: a file's stories are then complete, and a
- * failure is worded the same at each render. A run that exits with an error is returned with what it printed: a
- * reproduction that passes fails it, since its failure is expected strictly.
+ * Whole files, a run per command and no option: a file's stories are then complete, and a failure is worded the
+ * same at each render. A run that exits with an error is returned with what it printed: a reproduction that
+ * passes fails it, since its failure is expected strictly, and so does a server its command needs and finds down.
  */
-export function runReproductions(files: string[]): { ran: number; ok: boolean; command: string; output: string } {
-  const [program, ...args] = [...config.commands.tests, ...files];
-  const command = typed(config.commands.tests, ...files);
-  if (files.length === 0) return { ran: 0, ok: true, command, output: '' };
-  const done = spawnSync(program, args, { cwd: ROOT, encoding: 'utf8', maxBuffer: 64 * 1024 * 1024 });
-  return { ran: files.length, ok: done.status === 0, command, output: `${done.stdout ?? ''}${done.stderr ?? ''}${done.error ? String(done.error) : ''}` };
+export function runReproductions(files: Array<{ file: string; command: string[] | null }>): { ran: number; failed: ReproductionRun[] } {
+  const byCommand = new Map<string[], string[]>();
+  for (const { file, command } of files) if (command) byCommand.set(command, [...(byCommand.get(command) ?? []), file]);
+  const failed: ReproductionRun[] = [];
+  for (const [[program, ...args], ofCommand] of byCommand) {
+    const done = spawnSync(program, [...args, ...ofCommand], { cwd: ROOT, encoding: 'utf8', maxBuffer: 64 * 1024 * 1024 });
+    const run = { command: typed([program, ...args], ...ofCommand), ok: done.status === 0, output: `${done.stdout ?? ''}${done.stderr ?? ''}${done.error ? String(done.error) : ''}` };
+    if (!run.ok) failed.push(run);
+  }
+  return { ran: [...byCommand.values()].flat().length, failed };
 }
 
 /** What a run of the reproductions that did not end well says, in a few lines. */
-const reproductionsFailed = (run: { command: string; output: string }) => `the reproductions did not run as expected — ${run.command}\n${run.output.trim().split('\n').slice(-12).map((line) => `    ${line}`).join('\n')}`;
-
-/**
- * A file's difference from `base`, the commit of an approval, to the working tree, a stretch at a time (`Hunk`):
- * what the lot check reads a place and a change into. Null where git cannot read `base`. Read once a file for
- * the same `base`.
- */
-const hunksRead = new Map<string, Hunk[] | null>();
-function hunksSince(base: string, file: string): Hunk[] | null {
-  const key = `${base}\n${file}`;
-  if (hunksRead.has(key)) return hunksRead.get(key)!;
-  let hunks: Hunk[] | null = null;
-  try {
-    const diff = execFileSync('git', ['diff', '--unified=0', '--no-renames', base, '--', file], { cwd: ROOT, encoding: 'utf8', maxBuffer: 256 * 1024 * 1024, stdio: ['ignore', 'pipe', 'ignore'] });
-    hunks = [];
-    for (const row of diff.split('\n')) {
-      const head = /^@@ -(\d+)(?:,(\d+))? \+(\d+)(?:,(\d+))? @@/.exec(row);
-      const last = hunks[hunks.length - 1];
-      if (head) {
-        const [oldAt, oldN, nowAt, nowN] = [Number(head[1]), Number(head[2] ?? 1), Number(head[3]), Number(head[4] ?? 1)];
-        hunks.push({ was: oldN ? [oldAt, oldAt + oldN - 1] : null, now: nowN ? [nowAt, nowAt + nowN - 1] : null, at: { old: oldAt, now: nowAt }, removed: [], added: [] });
-      } else if (last && row.startsWith('-') && !row.startsWith('---')) last.removed.push(row.slice(1));
-      else if (last && row.startsWith('+') && !row.startsWith('+++')) last.added.push(row.slice(1));
-    }
-  } catch { hunks = null; }
-  hunksRead.set(key, hunks);
-  return hunks;
-}
+const reproductionsFailed = (run: ReproductionRun) => `the reproductions did not run as expected — ${run.command}\n${run.output.trim().split('\n').slice(-12).map((line) => `    ${line}`).join('\n')}`;
 
 /** A line that stands on the declaration under it: a decorator, an attribute, a comment. The line above a
  *  nested function is often its enclosing function's own code, so nothing else is taken for the function's. */
@@ -1000,25 +972,26 @@ function functionLines(file: string, index: SourceIndex): FunctionLines[] {
 }
 
 /**
- * How many lines a function holds that it did not hold at `base`, the commit of an approval: what tells a place
- * built from one that was skipped or undone (`FeatureDocs.gained`). Null where the index places no single
- * function of that name, and where git cannot read `base`.
+ * How many lines a function holds that it did not hold at the commit of an approval, whose difference `since`
+ * reads: what tells a place built from one that was skipped or undone (`FeatureDocs.gained`). Null where the
+ * index places no single function of that name, and where git cannot read that commit.
  */
-export function gainedSince(base: string, index: SourceIndex): NonNullable<FeatureDocs['gained']> {
+export function gainedSince(since: HunkReader, index: SourceIndex): NonNullable<FeatureDocs['gained']> {
   return (file, fn) => {
     const named = functionLines(file, index).filter((f) => f.fn === fn);
-    const hunks = named.length === 1 ? hunksSince(base, file) : null;
+    const hunks = named.length === 1 ? since(file) : null;
     if (named.length !== 1 || !hunks) return null;
     const [{ from, endLine }] = named;
     return hunks.reduce((n, h) => n + (h.now ? Math.max(0, Math.min(h.now[1], endLine) - Math.max(h.now[0], from) + 1) : 0), 0);
   };
 }
 
-/** What a file changed at no place of a plan since `base`, the commit of its approval (`FeatureDocs.away`,
- *  `changedAway`): the difference is git's, the functions the source index's. */
-export function awaySince(base: string, feature: string, index: SourceIndex): NonNullable<FeatureDocs['away']> {
+/** What a file changed at no place of a plan since the commit of its approval (`FeatureDocs.away`,
+ *  `changedAway`): the difference is git's (`since`), the functions the source index's, both as the code
+ *  stands at this render. */
+export function awaySince(since: HunkReader, feature: string, index: SourceIndex): NonNullable<FeatureDocs['away']> {
   return (file, named) => {
-    const hunks = hunksSince(base, file);
+    const hunks = since(file);
     return hunks ? changedAway(file, hunks, feature, named, functionLines(file, index)) : [];
   };
 }
@@ -1097,32 +1070,26 @@ const APPROVED_FILE = 'plan.approved.json';
 
 /**
  * Approves a feature's plan as it stands: writes its snapshot, with the commit it was read on, and takes the
- * `Changed:` paragraphs off `plan.md` — they told the reviewer what moved, and it is approved. Refuses while a
- * point is still to confirm: an approval with a question open approves nothing. Run on the reviewer's word.
+ * `Changed:` paragraphs off `plan.md` — they told the reviewer what moved, and it is approved. Refuses, with
+ * nothing written, while a point is still to confirm (an approval with a question open approves nothing) and
+ * while the plan fails the check: what is approved is a plan that passes. Run on the reviewer's word.
  */
 export function approve(feature: string, source: SourceReader = openSource()): { file: string; units: number; cleared: number; answered: string[] } {
   const index = new SourceIndex(source);
   const stories = readStories();
   index.realign(stories);
   const planOf = () => derivePlans(stories, deriveNarratives(stories, index), index).find((p) => p.feature === feature);
-  let plan = planOf();
-  if (!plan?.doc) throw new Error(`comprehension-render --approve ${feature}: ${plan ? `${featureFolder(feature)}/plan.md does not exist` : 'no planned site names it'}`);
-  const md = join(ROOT, plan.doc.file);
-  // A point answered "Yes, as proposed" on the page is written in as its proposal; the plan is then read again,
-  // and approved only if it still passes.
-  const answered = writeAcceptedAnswers(readFileSync(md, 'utf8'), plan);
-  if (answered.applied.length) {
-    writeFileSync(md, answered.text);
-    plan = planOf()!;
-    const failures = findings(plan).failures;
-    if (failures.length) throw new Error(`comprehension-render --approve ${feature}: ${answered.applied.join(', ')} answered as proposed ${answered.applied.length === 1 ? 'is' : 'are'} written into ${plan.doc!.file}, and the plan no longer passes — ${failures.join('; ')}`);
-  }
-  const said = (item: ReviewItem) => {
-    const answer = plan!.feedback[item.key];
-    return answer?.verdict === 'refused' ? `answered on the page: "${answer.note}" — write the answer in as a statement` : 'not answered on the page — answer it';
-  };
-  const open = [...plan.pieces.flatMap((x) => pieceQuestion(x) ?? []), ...plan.doc!.waivers.filter((w) => w.toConfirm).map(waiverQuestion)];
-  if (open.length) throw new Error(`comprehension-render --approve ${feature}: a "To confirm:" stands — ${open.map((i) => `${i.unit}, ${said(i)}`).join('; ')}; then approve`);
+  const read = planOf();
+  if (!read?.doc) throw new Error(`comprehension-render --approve ${feature}: ${read ? `${featureFolder(feature)}/plan.md does not exist` : 'no planned site names it'}`);
+  // Refused before anything is written: a failed approval leaves `plan.md` as the reviewer read it.
+  const refusal = approvalRefusal(read);
+  if (refusal) throw new Error(`comprehension-render --approve ${feature}: ${refusal}`);
+  const md = join(ROOT, read.doc.file);
+  // A point answered "Yes, as proposed" on the page is written in as its proposal, and the plan read again: the
+  // approval holds the line.
+  const answered = writeAcceptedAnswers(readFileSync(md, 'utf8'), read);
+  if (answered.applied.length) writeFileSync(md, answered.text);
+  const plan = answered.applied.length ? planOf()! : read;
   const lines = readFileSync(md, 'utf8').split('\n');
   // A `Changed:` paragraph runs to the next blank line; the blank line before it goes with it.
   const kept: string[] = [];
@@ -1146,6 +1113,12 @@ export function approve(feature: string, source: SourceReader = openSource()): {
   // What each reproduction tells today is kept: once its piece is built, no run tells it again.
   const chains = Object.fromEntries(plan.pieces.map((piece) => [piece.slug, chainsToFreeze(piece)] as const).filter(([, kept]) => kept.length > 0));
   if (Object.keys(chains).length) baseline.chains = chains;
+  // Where each place lands today is kept too: once it is code, no story crosses a `planned` call there.
+  const told = deriveNarratives(stories, index).filter((n) => n.canonical).map((n) => ({ title: n.title, steps: n.steps.map((step) => `${label(step, index)} — ${step.sentence}`) }));
+  const landings = Object.fromEntries(plan.pieces.map((piece) => [piece.slug, landingsToFreeze(piece, told)] as const).filter(([, kept]) => kept.length > 0));
+  if (Object.keys(landings).length) baseline.landings = landings;
+  const ids = Object.fromEntries(plan.pieces.map((piece) => [piece.slug, idsToKeep(piece)] as const).filter(([, kept]) => Object.keys(kept).length > 0));
+  if (Object.keys(ids).length) baseline.ids = ids;
   const file = `${featureFolder(feature)}/${APPROVED_FILE}`;
   writeFileSync(join(ROOT, file), `${JSON.stringify(baseline, null, 2)}\n`);
   // The answers were on the plan that is now approved: the round is closed.
@@ -1212,7 +1185,7 @@ export function derivePlans(stories: Story[], narratives: Narrative[], index: So
     }
     return {
       feature: p.feature, slug: p.slug, id: site.id, file: site.file, line: site.line, column: site.column, fn: site.fn,
-      change: p.change, sentence: p.sentence, signature: p.signature, expect: p.expect ?? null, distinct: p.distinct ?? [], seenBy,
+      change: p.change, ...(p.place ? { place: p.place } : {}), sentence: p.sentence, signature: p.signature, expect: p.expect ?? null, distinct: p.distinct ?? [], seenBy,
       crossedBy, reachedBy: [...reachedBy].sort(([a], [b]) => a.localeCompare(b)).map(([file, titles]) => ({ file, tests: titles.length, titles })),
     };
   });
@@ -1226,13 +1199,16 @@ export function derivePlans(stories: Story[], narratives: Narrative[], index: So
     statics: sources.statics,
     todos,
     journeyCases: sources.journeyCases,
-    narratives: narratives.filter((n) => n.canonical).map((n) => ({ title: n.title, kind: n.kind, steps: n.steps.map((step) => `${label(step, index)} — ${step.sentence}`) })),
+    narratives: narratives.filter((n) => n.canonical).map((n) => ({ title: n.title, kind: n.kind, steps: n.steps.map((step) => `${label(step, index)} — ${step.sentence}`), stepPlaces: n.steps.map((step) => ({ file: step.source.file, fn: step.source.fn })) })),
     // A place of an approved plan is read by its function: what it gained since the approval. So is what a
     // lot changed beside its places.
     docs: (feature) => {
       const docs = featureDocs(feature);
       const base = docs.approved?.baseline.base;
-      return base ? { ...docs, gained: gainedSince(base, index), away: awaySince(base, feature, index) } : docs;
+      if (!base) return docs;
+      // Made here, for this render: the working tree moves between two renders of the local app.
+      const since = hunkReader(base, ROOT);
+      return { ...docs, gained: gainedSince(since, index), away: awaySince(since, feature, index) };
     },
     layout,
   });
@@ -1242,7 +1218,7 @@ export function derivePlans(stories: Story[], narratives: Narrative[], index: So
 
 /** What drawing a proposed migration's diff came to: the fragment, or why there is none. */
 export type DbDiff =
-  | { drawn: true; html: string; css: string; infidelity: string[] }
+  | { drawn: true; html: string; css: string; infidelity: string[]; /** The feature's files applied before it, in order. */ after: string[] }
   | { drawn: false; unreachable: boolean; reason: string };
 
 /** By `.sql` file, relative to the root. */
@@ -1253,13 +1229,16 @@ let planDiff: ReturnType<typeof loadPlanDiff> | undefined;
 const drawnDiffs = new Map<string, DbDiff>();
 
 /**
- * The diff of every proposed migration: a `.sql` file of a feature folder carrying a `@planned` tag, drawn by
- * the project's own hook (`PlanDiff`, `stack.ts`) on a copy of its database. The render never needs that
+ * The diff of every proposed change of the database: a `.sql` file of a feature folder carrying a `@planned`
+ * tag, drawn by the project's own hook (`PlanDiff`, `stack.ts`) on a copy of its database. **A feature's files
+ * are read in name order, and each is diffed against the state the earlier ones leave**: a file that rewrites
+ * what another added shows that rewrite, not both changes at once. The render never needs that
  * database: when it cannot be reached, or with SQL that fails, the diff is a reason the page shows in red, and a
  * warning here. A diff is drawn once per process for the same SQL.
  */
 export async function planDbDiffs(sources: PlanSources = readPlanSources()): Promise<DbDiffs> {
-  const files = [...new Set(sources.statics.filter((s) => s.file.startsWith(`${featureFolder(s.feature)}/`) && s.file.endsWith('.sql')).map((s) => `${s.feature}\n${s.file}`))];
+  const files = [...new Set(sources.statics.filter((s) => s.file.startsWith(`${featureFolder(s.feature)}/`) && s.file.endsWith('.sql')).map((s) => `${s.feature}\n${s.file}`))].sort();
+  const earlierOf = new Map<string, Array<{ file: string; sql: string }>>();
   const out: DbDiffs = new Map();
   if (files.length === 0) return out;
   planDiff ??= loadPlanDiff();
@@ -1268,12 +1247,14 @@ export async function planDbDiffs(sources: PlanSources = readPlanSources()): Pro
   for (const entry of files) {
     const [feature, file] = entry.split('\n');
     const sql = readFileSync(join(ROOT, file), 'utf8');
-    const key = `${feature}\n${sql}`;
+    const earlier = earlierOf.get(feature) ?? [];
+    earlierOf.set(feature, [...earlier, { file, sql }]);
+    const key = [feature, ...earlier.map((e) => e.sql), sql].join('\n');
     let diff = drawnDiffs.get(key);
     if (!diff && unreachable !== null) diff = { drawn: false, unreachable: true, reason: unreachable };
     if (!diff) {
       try {
-        diff = { drawn: true, ...await planDiff.draw(sql, join(PLANS_DIR, `${feature}.html`)) };
+        diff = { drawn: true, after: earlier.map((e) => e.file), ...await planDiff.draw(sql, join(PLANS_DIR, `${feature}.html`), earlier.map((e) => e.sql)) };
         drawnDiffs.set(key, diff);
       } catch (error) {
         const reason = (error as Error).message;
@@ -1306,6 +1287,8 @@ interface PlanContext {
   index: SourceIndex;
   narratives: Narrative[];
   diffs: DbDiffs;
+  /** The commits that changed a function's lines, read once a render (`builtCommits`). */
+  lineCommits: Map<string, string[] | null>;
 }
 
 const narrativeHref = (n: Narrative) => (n.kind === 'product' ? PLAN_LINKS.product(n) : PLAN_LINKS.mechanism(n));
@@ -1331,6 +1314,20 @@ const mdBlocks = (blocks: MdBlock[], plan: Plan) => blocksHtml(blocks, (t) => pl
 
 /** A file reference of a plan line: the file's name and the line, the whole path in the tooltip. */
 const placeLink = (file: string, line: number, column = 1) => srcLink(file, line, column, `${basename(file)}:${line}`, ` title="${esc(file)}:${line}"`);
+
+/** Where the function a place names stands in its file today: the top-level declaration of that name, else the
+ *  one named function of that name the file holds — a function inside another (`moveFigure`, which `stepper`
+ *  returns) is no declaration of the file and is a function of it. Null when the file holds neither. */
+function functionPlace(index: SourceIndex, file: string, fn: string): { file: string; line: number; column: number } | null {
+  const name = fn.replace(/#\d+$/, '');
+  const declared = index.resolveUnscoped(name, [file]);
+  if (declared && declared.file === file) return declared;
+  const lines = index.lines(file, name);
+  return lines ? { file, line: lines[0], column: 1 } : null;
+}
+
+/** A place's id, as its tag writes it after the piece: what its `built` call carries once it is code. */
+const placeId = (place: string | undefined) => (place === undefined ? '' : ` <small title="the place's id: planned('…:${esc(place)}', …), then built('…:${esc(place)}') once it is code">:${esc(place)}</small>`);
 
 /** A piece's chip: the link to its card, amber and marked `?` when the card holds a point to confirm. */
 function pieceChip(piece: PlanPiece): string {
@@ -1363,14 +1360,25 @@ function siteClause(site: PlanSite, ctx: PlanContext): string {
   return sentenceHtml(site.sentence, source, ctx.index).html;
 }
 
-const CHANGE_MARK: Record<PlannedSite['change'], string> = { changed: 'changed', removed: 'removed', added: 'new', evidence: 'evidence' };
+const CHANGE_MARK: Record<PlannedSite['change'], string> = { changed: 'changed', removed: 'removed', added: 'new', evidence: 'evidence', built: 'built' };
 
 // ── The flows ──
 
+/** A place the approval held and that is code now: its line as approved, read (`builtPlaceOf`). */
+type BuiltPlace = NonNullable<ReturnType<typeof builtPlaceOf>> & { line: string };
+
+/** What a step's row carries: a place still planned, or one that is built, drawn where it lands (`BuiltLanding`). */
+type FlowChange =
+  | { site: PlanSite; of: PlanPiece; how: 'in' | 'via' | 'after' }
+  | { built: BuiltPlace; of: PlanPiece; how: 'in' | 'via' | 'after'; by: BuiltLanding['by']; among: number };
+
 type FlowRow =
   | { kind: 'cause'; sentence: string }
-  | { kind: 'step'; step: Step; changes: Array<{ site: PlanSite; of: PlanPiece; how: 'in' | 'via' | 'after' }> }
-  | { kind: 'new'; site: PlanSite; of: PlanPiece };
+  | { kind: 'step'; step: Step; changes: FlowChange[] }
+  | { kind: 'new'; site: PlanSite; of: PlanPiece }
+  | { kind: 'newBuilt'; built: BuiltPlace; of: PlanPiece };
+
+const clauseOf = (c: FlowChange) => ('site' in c ? c.site.sentence : c.built.clause);
 
 interface Flow {
   narrative: Narrative;
@@ -1381,12 +1389,20 @@ interface Flow {
  * The flows a plan lands in: every product narrative one of its sites lands in a step of, then a mechanism only
  * for a change no product flow shows. A flow is the narrative's causes and steps in the order its canonical
  * story crosses them; a step carries the sites that land in it; a shell is a new row after the step of the first
- * site whose clause names its function. `shown` is every site a flow shows.
+ * site whose clause names its function. A place that is built stays on its flow, where the approval froze it or
+ * where its function tells a step now (`PlanPiece.lands`): the reviewer reads the clause approved under what
+ * the step tells today. `shown` is every site a flow shows.
  */
 function planFlows(ctx: PlanContext): { flows: Flow[]; shown: Set<PlanSite> } {
   const { plan } = ctx;
   const all = plan.pieces.flatMap((of) => of.sites.map((site) => ({ site, of })));
+  const built = plan.pieces.flatMap((of) => of.built.sites.flatMap((line) => {
+    const place = builtPlaceOf(line);
+    return place ? [{ built: { ...place, line }, of }] : [];
+  }));
+  const keyOf = (b: { built: BuiltPlace; of: PlanPiece }) => `${b.of.slug}\n${b.built.line}`;
   const shown = new Set<PlanSite>();
+  const shownBuilt = new Set<string>();
   const flows: Flow[] = [];
   const ordered = [...ctx.narratives].sort((a, b) => (a.kind === b.kind ? 0 : a.kind === 'product' ? -1 : 1));
   for (const n of ordered) {
@@ -1395,8 +1411,13 @@ function planFlows(ctx: PlanContext): { flows: Flow[]; shown: Set<PlanSite> } {
       const c = site.crossedBy.find((x) => x.narrative === n.title && x.step !== null);
       return c ? [{ site, of, n: c.step!.n, how: c.step!.how }] : [];
     });
-    if (landing.length === 0) continue;
-    if (n.kind === 'mechanism' && landing.every((l) => shown.has(l.site))) continue;
+    const landed = built.flatMap((b) => {
+      const l = b.of.lands.find((x) => x.line === b.built.line && x.narrative === n.title);
+      const step = l ? n.steps[l.step] : undefined;
+      return l && step ? [{ ...b, n: step.n, how: l.how, by: l.by, among: l.among }] : [];
+    });
+    if (landing.length + landed.length === 0) continue;
+    if (n.kind === 'mechanism' && landing.every((l) => shown.has(l.site)) && landed.every((l) => shownBuilt.has(keyOf(l)))) continue;
     const rows: FlowRow[] = [];
     const told = new Set<Step>();
     for (const segment of deriveSegments(n.canonical)) {
@@ -1405,15 +1426,29 @@ function planFlows(ctx: PlanContext): { flows: Flow[]; shown: Set<PlanSite> } {
       if (segment.event) rows.push({ kind: 'cause', sentence: segment.event.sentence });
       for (const step of steps) {
         told.add(step);
-        const changes = landing.filter((l) => l.n === step.n).map(({ site, of, how }) => ({ site, of, how }));
+        const changes: FlowChange[] = [
+          ...landing.filter((l) => l.n === step.n).map(({ site, of, how }) => ({ site, of, how })),
+          ...landed.filter((l) => l.n === step.n).map(({ built: place, of, how, by, among }) => ({ built: place, of, how, by, among })),
+        ];
         rows.push({ kind: 'step', step, changes });
-        for (const c of changes) shown.add(c.site);
+        for (const c of changes) {
+          if ('site' in c) shown.add(c.site);
+          else shownBuilt.add(keyOf(c));
+        }
         // A shell the plan adds is told where it is first called from.
         for (const shell of all) {
           if (shell.site.change !== 'added' || shown.has(shell.site)) continue;
-          if (changes.some((c) => c.site !== shell.site && names(c.site.sentence, shell.site.fn))) {
+          if (changes.some((c) => !('site' in c && c.site === shell.site) && names(clauseOf(c), shell.site.fn))) {
             rows.push({ kind: 'new', site: shell.site, of: shell.of });
             shown.add(shell.site);
+          }
+        }
+        // So is a function the plan added and that is code, where no step of this narrative is its own.
+        for (const b of built) {
+          if (b.built.change !== 'added' || shownBuilt.has(keyOf(b)) || landed.some((l) => keyOf(l) === keyOf(b))) continue;
+          if (changes.some((c) => !('built' in c && c.built.line === b.built.line) && names(clauseOf(c), b.built.fn))) {
+            rows.push({ kind: 'newBuilt', built: b.built, of: b.of });
+            shownBuilt.add(keyOf(b));
           }
         }
       }
@@ -1421,6 +1456,47 @@ function planFlows(ctx: PlanContext): { flows: Flow[]; shown: Set<PlanSite> } {
     flows.push({ narrative: n, rows });
   }
   return { flows, shown };
+}
+
+/** A built place's clause as approved, its symbols linked to the code that stands today. */
+const builtClause = (place: BuiltPlace, of: PlanPiece, ctx: PlanContext) => codeInline(place.clause, ctx.plan, filesOf(of), ctx.index);
+
+/** A built place's function, linked to where it stands today. */
+function builtFn(place: BuiltPlace, ctx: PlanContext): string {
+  const at = functionPlace(ctx.index, place.file, place.fn);
+  return at ? srcLink(at.file, at.line, at.column, place.fn, ` title="${esc(at.file)}:${at.line}"`) : `<code>${esc(place.fn)}</code>`;
+}
+
+/**
+ * The commits of a built place's piece that changed the function the place stands in, oldest first: the diff a
+ * reviewer reads its clause against. A call marks a line, not a stretch, so the function is what is read; two
+ * places of one function share its commits. Empty where git cannot tell (the file is being edited).
+ */
+function builtCommits(place: BuiltPlace, of: PlanPiece, ctx: PlanContext): PieceCommit[] {
+  const lines = ctx.index.lines(place.file, place.fn);
+  if (lines === null || of.commits.length === 0) return [];
+  const key = `${place.file}:${lines[0]}-${lines[1]}:${of.commits[0].sha}`;
+  if (!ctx.lineCommits.has(key)) ctx.lineCommits.set(key, commitsOfLines(place.file, lines[0], lines[1], of.commits[0].sha, ROOT));
+  const changed = ctx.lineCommits.get(key) ?? [];
+  return of.commits.filter((c) => changed.includes(c.sha));
+}
+
+/** The link from a built line to what was written for it: the commits that changed its function, each one
+ *  opening in the editor and, when they read as one diff, all of them at once; else the piece's commits. */
+function builtCommitsHtml(place: BuiltPlace, of: PlanPiece, ctx: PlanContext): string {
+  const commits = builtCommits(place, of, ctx);
+  const piece = `<a href="${deliveryPage(ctx.plan.feature)}#piece-${of.slug}" title="the piece's commits, as one diff, on the delivery page">its commits</a>`;
+  if (commits.length === 0) return piece;
+  const one = (c: PieceCommit) => `<a href="vscode://local.plan-review-links/commit?sha=${c.sha}" title="${esc(subjectHead(c.subject))}"><code>${c.sha.slice(0, 8)}</code></a>`;
+  const together = commits.length > 1 && commitBlocks(commits, ctx.plan.history).length === 1
+    ? ` <a href="vscode://local.plan-review-links/commits?shas=${commits.map((c) => c.sha.slice(0, 12)).join(',')}&amp;title=${encodeURIComponent(`${ctx.plan.feature}#${of.slug} · ${place.fn}`)}" title="Open what these commits come to as one diff">as one diff</a>` : '';
+  return `<span title="the commits of #${esc(of.slug)} that changed ${esc(place.fn)}">built in ${commits.map(one).join(' ')}</span>${together}`;
+}
+
+/** The line a built place stands at, linked, where its `built` call says it; nothing otherwise. */
+function builtAt(place: BuiltPlace, of: PlanPiece): string {
+  const mark = markOf(of, place.line);
+  return mark ? ` <small>${placeLink(mark.file, mark.line, mark.column)}</small>` : '';
 }
 
 function flowHtml(flow: Flow, ctx: PlanContext): string {
@@ -1431,14 +1507,21 @@ function flowHtml(flow: Flow, ctx: PlanContext): string {
       return `<div class="frow new"><span class="n">+</span><span class="today">${placeLink(row.site.file, row.site.line, row.site.column)} <code>${esc(row.site.fn)}</code></span>
         <span class="chg"><span class="mark added">new</span> ${siteClause(row.site, ctx)}</span>${pieceChip(row.of)}</div>`;
     }
+    if (row.kind === 'newBuilt') {
+      const at = functionPlace(ctx.index, row.built.file, row.built.fn);
+      return `<div class="frow new done"><span class="n">+</span><span class="today">${at ? placeLink(at.file, at.line, at.column) : esc(basename(row.built.file))} <code>${esc(row.built.fn)}</code></span>
+        <span class="chg"><span class="mark done">built</span> ${builtClause(row.built, row.of, ctx)}</span>${pieceChip(row.of)}</div>`;
+    }
     const { step, changes } = row;
     const head = headClause(step.sentence);
     const fn = step.source.fn;
     const rest = head.startsWith(`\`${fn}\` `) ? head.slice(fn.length + 3) : `· ${head}`;
     const today = `${srcLink(step.source.file, step.source.line, step.source.column, fn, ` title="${esc(step.source.file)}:${step.source.line}"`)} ${clauseInline(rest)}`;
-    const lines = changes.map((c) => `
-        <span class="chg"><span class="mark ${c.site.change}">${CHANGE_MARK[c.site.change]}</span> ${siteClause(c.site, ctx)}${c.how === 'in' ? '' : ` <small>in <code>${esc(c.site.fn)}</code></small>`}</span>${pieceChip(c.of)}`).join('');
-    return `<div class="frow ${changes.length ? 'touched' : 'same'}"><span class="n">${step.n}</span><span class="today"><a class="stepref" href="${narrativeHref(n).split('#')[0]}#${esc(n.slug)}-step-${step.n}" title="the step on its narrative page">↗</a> ${today}</span>${lines}</div>`;
+    const lines = changes.map((c) => ('site' in c ? `
+        <span class="chg"><span class="mark ${c.site.change}">${CHANGE_MARK[c.site.change]}</span> ${siteClause(c.site, ctx)}${c.how === 'in' ? '' : ` <small>in <code>${esc(c.site.fn)}</code></small>`}</span>${pieceChip(c.of)}` : `
+        <span class="chg"><span class="mark done">built</span> ${builtClause(c.built, c.of, ctx)}${builtAt(c.built, c.of)}${c.how === 'in' ? '' : ` <small>in ${builtFn(c.built, ctx)}</small>`}${c.among > 1 ? ` <small class="pending" title="${c.by === 'approved' ? 'The step this place was approved in tells another sentence now, and its function tells several steps: this one is the closest to the sentence approved.' : 'Nothing was kept of where this place was approved to land, and its function tells several steps: this is the first of them.'}">step not certain: the ${c.by === 'approved' ? 'closest' : 'first'} of the ${c.among} steps of <code>${esc(step.source.fn)}</code></small>` : ''} · <small>${builtCommitsHtml(c.built, c.of, ctx)}</small></span>${pieceChip(c.of)}`)).join('');
+    const state = changes.length === 0 ? 'same' : changes.every((c) => 'built' in c) ? 'done' : 'touched';
+    return `<div class="frow ${state}"><span class="n">${step.n}</span><span class="today"><a class="stepref" href="${narrativeHref(n).split('#')[0]}#${esc(n.slug)}-step-${step.n}" title="the step on its narrative page">↗</a> ${today}</span>${lines}</div>`;
   });
   return `<div class="flow"><h3><a href="${narrativeHref(n)}">${esc(n.title)}</a></h3>
 ${rows.join('\n')}
@@ -1462,7 +1545,7 @@ function siteLine(site: PlanSite, ctx: PlanContext, ofABug = false): string {
     : site.crossedBy.length === 0 ? ' <small class="pending" title="no narrative\'s reference case crosses this call">no narrative crosses it</small>'
       : '';
   const untested = site.change !== 'added' && site.reachedBy.length === 0 ? ' <small class="pending">no test reaches it</small>' : '';
-  return `<div class="pline" data-planned="${esc(site.id)}"><span class="mark ${site.change}">${CHANGE_MARK[site.change]}</span><span class="where">${placeLink(site.file, site.line, site.column)} <code>${esc(name)}</code></span><span class="clause">${siteClause(site, ctx)}${flag}${untested}</span></div>`;
+  return `<div class="pline" data-planned="${esc(site.id)}"><span class="mark ${site.change}">${CHANGE_MARK[site.change]}</span><span class="where">${placeLink(site.file, site.line, site.column)} <code>${esc(name)}</code>${placeId(site.place)}</span><span class="clause">${siteClause(site, ctx)}${flag}${untested}</span></div>`;
 }
 
 /** A comment on a test says what becomes of the test under it: deleted, or changed. Elsewhere it says what the
@@ -1513,7 +1596,9 @@ function dbDiffHtml(file: string, ctx: PlanContext): string {
       : `the SQL failed on the throwaway copy — <code>${esc(diff.reason)}</code>`}</p>`;
   }
   const infidelity = diff.infidelity.length ? `<p class="fine">The throwaway copy reads differently from the shared database in ${plural(diff.infidelity.length, 'place')}, the same on both sides of the diff.</p>` : '';
-  return `<details class="pfold dbdiff"><summary>${head} — the diff of the view</summary>${infidelity}${diff.html}</details>`;
+  // Open: for a change of the database this is the place to read, and the file is only what produced it.
+  const after = diff.after.length ? `, read after ${diff.after.map((f) => srcLink(f, 1, 1, basename(f))).join(', ')}` : '';
+  return `<details class="pfold dbdiff" open><summary>${head} — the diff of the view${after}</summary>${infidelity}${diff.html}</details>`;
 }
 
 /** Where a piece lands, for its card's header: the steps of each narrative, or why there is none. */
@@ -1526,7 +1611,14 @@ function landsLabel(piece: PlanPiece, group: PlanGroup | undefined, narratives: 
   };
   const lands = stepsOf(piece.sites);
   if (lands) return lands;
-  if (piece.sites.length === 0) return piece.built.sites.length ? 'built: its places are code' : piece.statics.length ? 'no runtime line' : 'no place in this repository\'s code';
+  // A piece all built is told where its places landed.
+  const builtBy = new Map<string, Set<number>>();
+  for (const l of piece.lands) {
+    const step = narratives.find((n) => n.title === l.narrative)?.steps[l.step];
+    if (step) builtBy.set(l.narrative, (builtBy.get(l.narrative) ?? new Set()).add(step.n));
+  }
+  const builtIn = [...builtBy].sort((x, y) => product(x[0]) - product(y[0])).map(([narrative, ns]) => `${esc(narrative)} · ${ns.size === 1 ? 'step' : 'steps'} ${[...ns].sort((x, y) => x - y).join(', ')}`).join(' — ');
+  if (piece.sites.length === 0) return piece.built.sites.length ? (builtIn ? `built, in ${builtIn}` : 'built: its places are code') : piece.statics.length ? 'no runtime line' : 'no place in this repository\'s code';
   // A piece of shells runs where the sites that name its functions land.
   const shells = piece.sites.filter((x) => x.change === 'added');
   const callers = plan.pieces.flatMap((other) => other.sites).filter((x) => !piece.sites.includes(x) && shells.some((shell) => names(x.sentence, shell.fn)));
@@ -1595,6 +1687,16 @@ function seenValuesHtml(site: Pick<PlanSite, 'expect' | 'distinct'>, crossings: 
   return `${sharedRows}${wrong.map(row).join('')}${stated}${right.length ? `<details class="pfold"><summary>${plural(times, 'other crossing')} saw ${site.expect === null ? `a value of ${times === 1 ? 'its' : 'their'} own` : `what ${times === 1 ? 'it' : 'they'} should`}</summary>${list(right)}</details>` : ''}`;
 }
 
+/** Why a reproduction has no story, and what gives it one: the render's own run of it wrote none (a server it
+ *  needs was down, the run died before the file's end), or no tool runs it. */
+function noRunHtml(file: string): string {
+  const command = testCommandOf(file);
+  const link = srcLink(file, 1, 1, file);
+  if (command) return `the render ran ${link} first (<code>${esc(typed(command, file))}</code>) and the run wrote no story: what the render printed says why. Once it can run, render again.`;
+  if (layout.isBrowserTest(file)) return `${link} runs in a browser, whose run writes no story here: its diagnostic holds how it fails.`;
+  return `no tool runs ${link} (<code>commands.testsUnder</code> of <code>${CONFIG_FILE}</code>): run it by hand, then render again.`;
+}
+
 /**
  * The bug a piece fixes, as its reproductions tell it: each test declared to fail today, the places of the
  * piece it crossed in run order with what it saw at each, then how it failed. A reproduction is run under the
@@ -1613,7 +1715,7 @@ function bugHtml(piece: PlanPiece, ctx: PlanContext): { html: string; shown: Set
     const failure = t.run?.failure;
     const failed = failure ? `<div class="failure"><small>it fails at ${failure.file ? placeLink(failure.file, failure.line) : `line ${failure.line}`}:</small><pre>${esc(failure.message)}</pre></div>`
       : t.run ? `<p class="also"><span class="flag">Its last run did not fail (${esc(t.run.state ?? 'no state')}):</span> a reproduction that passes is a test like another, declared as one.</p>`
-        : `<p class="also"><span class="pending">No run on file:</span> run ${srcLink(t.file, 1, 1, t.file)}, then render again.</p>`;
+        : `<p class="also"><span class="pending">No run on file:</span> ${noRunHtml(t.file)}</p>`;
     return `<div class="repro"><div class="repro-head"><span class="mark failing">fails today</span><span>${clauseInline(t.title)}</span>${srcLink(t.file, t.line, t.column, '▶ debug this reproduction', ' data-debug-reproduction title="Run this test under the VS Code debugger, stopping at your breakpoints"')}</div>`
       + `${rows ? `<div class="plines">${rows}</div>` : t.run ? '<p class="also">It crosses no place of the piece.</p>' : ''}${failed}</div>`;
   });
@@ -1709,7 +1811,7 @@ function planRulesHtml(plan: Plan): string {
 
 export function renderPlanPage(plan: Plan, stories: Story[], narratives: Narrative[], index: SourceIndex, diffs: DbDiffs = new Map()): string {
   const generatedAt = new Date().toISOString();
-  const ctx: PlanContext = { plan, index, narratives, diffs };
+  const ctx: PlanContext = { plan, index, narratives, diffs, lineCommits: new Map() };
   const folder = `${featureFolder(plan.feature)}/`;
   const doc = plan.doc;
   const lede = doc
@@ -1769,7 +1871,7 @@ ${flows.length ? `
 <div class="flows">
 ${flows.map((f) => flowHtml(f, ctx)).join('\n')}
 </div>
-<p class="legend">Grey is what a step does today; the line under it is what changes there.${asks.length ? ` A piece marked <span class="slug ask">?</span> holds a point for you to confirm: ${asks.length} in all.` : ''}</p>` : ''}
+<p class="legend">Grey is what a step does today; the line under it is what changes there.${flows.some((f) => f.rows.some((r) => r.kind === 'newBuilt' || (r.kind === 'step' && r.changes.some((c) => 'built' in c)))) ? ' A line marked <span class="mark done">built</span> is the clause you approved, kept where it landed: the step above it is what the code tells now, and the hashes after it are the commits of its piece that changed the function it stands in.' : ''}${asks.length ? ` A piece marked <span class="slug ask">?</span> holds a point for you to confirm: ${asks.length} in all.` : ''}</p>` : ''}
 
 <h2 id="plan">The ${bugs.length ? `${plural(bugs.length, 'bug')}, ` : ''}${plural(plan.pieces.length, 'piece')} — ${plural(places, 'place')} in the code, ${plural(toWrite, 'test')} to write${builtPlaces ? `, ${plural(builtPlaces, 'place')} built` : ''}</h2>
 ${byBug(cards, (s) => planPieceHtml(s, ctx), bugHead).join('\n')}
@@ -1842,8 +1944,8 @@ function deltaLinesHtml(lines: DeltaLine[], d: Pick<UnitDelta, 'kind' | 'name'>,
   const inline = (t: string) => codeInline(t, plan, filesOf(piece), index);
   const file = (f: string) => (existsSync(join(ROOT, f)) ? srcLink(f, 1, 1, basename(f), ` title="${esc(f)}"`) : esc(f));
   const fn = (f: string, name: string) => {
-    const at = index.resolveUnscoped(name.replace(/#\d+$/, ''), [f]);
-    return at && at.file === f ? srcLink(at.file, at.line, at.column, name) : `<code>${esc(name)}</code>`;
+    const at = functionPlace(index, f, name);
+    return at ? srcLink(at.file, at.line, at.column, name) : `<code>${esc(name)}</code>`;
   };
   const tag = (change: string) => (change === 'added' ? ' <span class="badge">new function</span>' : change === 'removed' ? ' <span class="badge">deleted</span>' : '');
   interface Row { sign: '+' | '−'; kind: string; html: string; at: string }
@@ -1914,7 +2016,7 @@ function movesHtml(plan: Plan, index: SourceIndex): string {
 }
 
 /** The legend of the delta's rows. */
-const DELTA_LEGEND = 'An edit at a time: what moved in bold, why, then the lines that edit comes to. <span class="dl add inline"><span class="sign">+</span></span> in the plan now, not in what you approved · <span class="dl rem inline"><span class="sign">−</span></span> approved, no longer in the plan · <b>was / now</b> one place reworded · <b>file</b>, <b>test goes</b> on a <span class="dl add inline"><span class="sign">+</span></span> line with no place in the plan: what a commit did beyond it · <b>not built</b> a planned place taken off, in a function that gained no line since, or a file its commits added nothing to · <b>taken back</b> a place that read as built, which its edit names: the code does not do what its clause said · <b>at no place</b> a function the lot changed, or lines above a template\'s first place, that no place of the plan names: shown, and asked about only when an edit names it · <b>reproduction</b>, was / now: a test you approved as the bug\'s reproduction was edited since, by more than its declaration. A place that became code is no difference: it is listed with its piece, as built.';
+const DELTA_LEGEND = 'An edit at a time: what moved in bold, why, then the lines that edit comes to, then the commits it names: a hash opens its commit in VS Code, every file it changed in one diff. <span class="dl add inline"><span class="sign">+</span></span> in the plan now, not in what you approved · <span class="dl rem inline"><span class="sign">−</span></span> approved, no longer in the plan · <b>was / now</b> one place reworded · <b>file</b>, <b>test goes</b> on a <span class="dl add inline"><span class="sign">+</span></span> line with no place in the plan: what a commit did beyond it · <b>not built</b> a planned place taken off, in a function that gained no line since, or a file its commits added nothing to · <b>taken back</b> a place that read as built, which its edit names: the code does not do what its clause said · <b>at no place</b> a function the lot changed, or lines above a template\'s first place, that no place of the plan names: shown, and asked about only when an edit names it · <b>reproduction</b>, was / now: a test you approved as the bug\'s reproduction was edited since, by more than its declaration. A place that became code is no difference: it is listed with its piece, as built.';
 
 /** The reviewer's answer to one item, and the buttons that give it. The page posts to the local app, which
  *  writes `plan-feedback.json`; opened as a file, the buttons are off and say where to open it. */
@@ -1929,18 +2031,20 @@ function verdictHtml(item: ReviewItem, plan: Plan): string {
 }
 
 /** A question that stands in `plan.md`, with the reviewer's answer under it. */
-const askHtml = (item: ReviewItem, text: string, plan: Plan, id: string) => `<div class="edit" id="${id}"><p class="ask"><span class="askmark">to confirm</span> ${text}</p>${verdictHtml(item, plan)}</div>`;
+const askHtml = (item: ReviewItem, text: string, plan: Plan, id: string, commits = '') => `<div class="edit" id="${id}"><p class="ask"><span class="askmark">to confirm</span> ${text}</p>${commits}${verdictHtml(item, plan)}</div>`;
 
 /** A piece's question on its card, of the plan page and of the delivery page: answered where it is stated, from
- *  the first draft on. */
+ *  the first draft on. The commits it names are listed under it: what was built the proposed way. */
 function pieceAskHtml(piece: PlanPiece, plan: Plan): string {
   const item = pieceQuestion(piece);
-  return item ? askHtml(item, `<b>${planInline(piece.doc!.ask!.question, plan)}</b> ${planInline(piece.doc!.ask!.detail, plan)}`, plan, `ask-${piece.slug}`) : '';
+  const ask = piece.doc?.ask;
+  return item && ask ? askHtml(item, `<b>${planInline(ask.question, plan)}</b> ${planInline(ask.detail, plan)}`, plan, `ask-${piece.slug}`, namedCommitsHtml(ask.commits, plan, piece.slug)) : '';
 }
 
 /**
- * What of a unit is not as approved, an edit at a time: what moved, in bold, then why, then the lines that
- * edit comes to, then the reviewer's answer. A question the unit raises is no line of it: it is drawn on the
+ * What of a unit is not as approved, an edit at a time: marked "changed" as a question is marked "to confirm",
+ * then what moved, in bold, then why, then the lines that
+ * edit comes to, then the commits it names, then the reviewer's answer. A question the unit raises is no line of it: it is drawn on the
  * piece's card. The lines no edit names follow — every line of a unit that says no `Changed:`; under several
  * edits they are flagged, since `--check` fails on them.
  */
@@ -1948,9 +2052,9 @@ function unitDeltaHtml(d: UnitDelta, plan: Plan, index: SourceIndex): string {
   const piece = plan.pieces.find((x) => `#${x.slug}` === d.name);
   const files = filesOf(piece);
   const items = editItems(d);
-  const said = (c: PlanChange) => `<p class="chg">${c.what ? `<b>${codeInline(c.what, plan, files, index)}.</b>` : '<span class="askmark">why</span>'} ${codeInline(c.why, plan, files, index)} <small>${srcLink(plan.doc!.file, c.line, 1, 'plan.md')}</small></p>`;
+  const said = (c: PlanChange) => `<p class="chg"><span class="askmark">changed</span> ${c.what ? `<b>${codeInline(c.what, plan, files, index)}.</b> ` : ''}${codeInline(c.why, plan, files, index)} <small>${srcLink(plan.doc!.file, c.line, 1, 'plan.md')}</small></p>`;
   const need = d.reason === 'needed' ? `<p class="note red">Not as approved, and its section of plan.md says no <code>Changed:</code> — <code>--check</code> fails on it.</p>` : '';
-  const edits = d.edits.map((e, n) => `<div class="edit">${said(e.change)}${e.lines.length ? `<div class="plines">${deltaLinesHtml(e.lines, d, plan, index)}</div>` : ''}${verdictHtml(items[n], plan)}</div>`).join('');
+  const edits = d.edits.map((e, n) => `<div class="edit">${said(e.change)}${e.lines.length ? `<div class="plines">${deltaLinesHtml(e.lines, d, plan, index)}</div>` : ''}${namedCommitsHtml(e.change.commits, plan, piece?.slug ?? null)}${verdictHtml(items[n], plan)}</div>`).join('');
   // A note is drawn with its piece, as a note: it is no line to answer.
   const lines = d.unclaimed.filter((l) => !isOwnNotice(l.facet));
   // A line no edit has to name is listed with no flag: what the lot changed at no place of the plan.
@@ -2042,8 +2146,8 @@ function builtLinesHtml(piece: PlanPiece, plan: Plan, index: SourceIndex, tests 
   for (const line of piece.built.sites) {
     const m = /^(changed|added|removed) (\S+) in (\S+) — (.*)$/.exec(line);
     if (!m) continue;
-    const at = index.resolveUnscoped(m[3].replace(/#\d+$/, ''), [m[2]]);
-    rows.push(row('built', `${at && at.file === m[2] ? placeLink(at.file, at.line, at.column) : file(m[2])} <code>${esc(m[3])}</code>${m[1] === 'added' ? ' <span class="badge">new function</span>' : ''}`, inline(m[4])));
+    const at = markOf(piece, line) ?? functionPlace(index, m[2], m[3]);
+    rows.push(row('built', `${at ? placeLink(at.file, at.line, at.column) : file(m[2])} <code>${esc(m[3])}</code>${placeId(Object.keys(piece.ids).find((place) => piece.ids[place] === line))}${m[1] === 'added' ? ' <span class="badge">new function</span>' : ''}`, inline(m[4])));
   }
   for (const line of piece.built.comments) {
     const m = /^(changes|removes) (\S+) — (.*)$/.exec(line);
@@ -2064,20 +2168,66 @@ function subjectHead(subject: string): string {
 
 /** The commits that deliver a piece, oldest first: the hash, the subject, then each file it touched as a link to
  *  the first line it changed there, the product's code first. A commit made since the approval says so: what it
- *  did beyond the plan is in the piece's delta until the next approval. */
+ *  did beyond the plan is in the piece's delta until the next approval. They stand in blocks (`commitBlocksHtml`). */
 function commitsHtml(piece: PlanPiece, plan: Plan): string {
   if (piece.commits.length === 0) return '';
+  return `<div class="commits">${commitBlocksHtml(piece.commits, plan, piece.slug)}</div>`;
+}
+
+/** Commits in blocks that each read as one diff (`commitBlocks`), oldest first; a block of several commits opens
+ *  as that diff: the `commits` route of the plan-review-links extension, each file from before the block to what
+ *  it left. The commits are one block, unless another commit changed one of their files between two of them:
+ *  the list then says which commit, and which file, before the block that follows. `home` is the piece they are
+ *  listed for, the title of the diff with the feature. */
+function commitBlocksHtml(commits: PieceCommit[], plan: Plan, home: string | null): string {
+  const blocks = commitBlocks(commits, plan.history);
+  const shaLink = (sha: string) => `<a class="csha" href="vscode://local.plan-review-links/commit?sha=${sha}" title="Open the commit in VS Code — in a terminal: git show ${sha.slice(0, 8)}"><code>${sha.slice(0, 8)}</code></a>`;
+  const list = (items: string[]) => (items.length < 2 ? items.join('') : `${items.slice(0, -1).join(', ')} and ${items[items.length - 1]}`);
+  const parted = (block: CommitBlock) => {
+    const others = block.after.map((touch) => {
+      const pieces = commitsNamed(plan.commits, touch.sha)[0]?.pieces ?? [];
+      return `${shaLink(touch.sha)}${pieces.length ? ` <small>of ${pieces.map((x) => `#${esc(x)}`).join(' ')}</small>` : ''} changed ${list(touch.files.map((f) => `<code title="${esc(f)}">${esc(basename(f))}</code>`))}`;
+    });
+    return `<p class="cpart">Not one diff with the commits above: between them, ${others.join('; ')}.</p>`;
+  };
+  const title = encodeURIComponent(home === null ? plan.feature : `${plan.feature}#${home}`);
+  return blocks.map((block, n) => {
+    const shas = block.commits.map((c) => c.sha.slice(0, 12)).join(',');
+    const first = block.commits[0].sha.slice(0, 8);
+    const last = block.commits[block.commits.length - 1].sha.slice(0, 8);
+    const whole = blocks.length === 1 ? `The ${block.commits.length} commits` : `These ${block.commits.length} commits`;
+    const open = block.commits.length < 2 ? ''
+      : `<p class="cblock"><a class="csum" href="vscode://local.plan-review-links/commits?shas=${shas}&amp;title=${title}" title="Open in VS Code what these commits come to, each file once: from before the first of them that changed it to what the last left. No other commit changed these files between them — in a terminal, a file at a time: git diff ${first}^ ${last} -- &lt;file&gt;">${whole} as one diff</a></p>`;
+    return `${n > 0 ? parted(block) : ''}${open}${block.commits.map((c) => commitRowHtml(c, plan, home)).join('')}`;
+  }).join('');
+}
+
+/** One commit: its hash, which opens it in the editor with every file it changed in one diff (the `commit`
+ *  route of the plan-review-links extension, which finds the commit in the open workspace), its subject, the
+ *  pieces it names beside `home`, the piece it is listed for, and its files. */
+function commitRowHtml(c: PieceCommit, plan: Plan, home: string | null): string {
   const named = filesNamed(plan.snapshot);
   const product = (f: string) => layout.isProduct(f);
   const fileHtml = (x: PieceCommit['files'][number]) => `<span class="cfile">${x.line === null ? `<s title="${esc(x.file)}">${esc(basename(x.file))}</s>` : placeLink(x.file, x.line)} <small>+${x.added} −${x.removed}${product(x.file) && !named.has(x.file) ? ' · no place of the plan names it' : ''}</small></span>`;
-  const row = (c: PieceCommit) => {
-    const files = [...c.files].sort((a, b) => Number(product(b.file)) - Number(product(a.file)));
-    const list = files.map(fileHtml).join('');
-    const others = c.pieces.filter((x) => x !== piece.slug);
-    return `<div class="crow"><code title="git show ${c.sha.slice(0, 8)}">${c.sha.slice(0, 8)}</code><span>${esc(subjectHead(c.subject))}${others.length ? ` <small>also ${others.map((x) => `#${esc(x)}`).join(' ')}</small>` : ''}${c.sinceApproval ? ' <span class="badge">since approval</span>' : ''}</span>`
-      + `${files.length > 8 ? `<details class="cfiles"><summary>${plural(files.length, 'file')}</summary>${list}</details>` : `<div class="cfiles">${list}</div>`}</div>`;
-  };
-  return `<div class="commits">${piece.commits.map(row).join('')}</div>`;
+  const files = [...c.files].sort((a, b) => Number(product(b.file)) - Number(product(a.file)));
+  const list = files.map(fileHtml).join('');
+  const others = c.pieces.filter((x) => x !== home);
+  const short = c.sha.slice(0, 8);
+  return `<div class="crow"><a class="csha" href="vscode://local.plan-review-links/commit?sha=${c.sha}" title="Open the commit in VS Code, every file it changed in one diff — in a terminal: git show ${short}"><code>${short}</code></a><span>${esc(subjectHead(c.subject))}${others.length ? ` <small>${home !== null && c.pieces.includes(home) ? 'also' : 'a commit of'} ${others.map((x) => `#${esc(x)}`).join(' ')}</small>` : ''}${c.sinceApproval ? ' <span class="badge">since approval</span>' : ''}</span>`
+    + `${files.length > 8 ? `<details class="cfiles"><summary>${plural(files.length, 'file')}</summary>${list}</details>` : `<div class="cfiles">${list}</div>`}</div>`;
+}
+
+/** The commits a paragraph names, under it: what was built as it says. They stand in blocks, oldest first, as a
+ *  piece's do (`commitBlocksHtml`), whatever order the paragraph names them in. A hash no commit of the feature
+ *  has, or that several open with, says so after them; `--check` fails on it. */
+function namedCommitsHtml(hashes: string[], plan: Plan, home: string | null): string {
+  if (hashes.length === 0) return '';
+  const found = hashes.map((hash) => ({ hash, commits: commitsNamed(plan.commits, hash) }));
+  const named = new Set(found.filter((x) => x.commits.length === 1).map((x) => x.commits[0].sha));
+  const commits = plan.commits.filter((c) => named.has(c.sha));
+  const flags = found.filter((x) => x.commits.length !== 1).map(({ hash, commits: all }) =>
+    `<div class="crow"><code>${esc(hash.slice(0, 8))}</code><span class="flag">${all.length === 0 ? 'no commit of the feature has this hash' : `${all.length} commits of the feature open with this hash`}</span></div>`);
+  return `<div class="commits named">${commits.length ? commitBlocksHtml(commits, plan, home) : ''}${flags.join('')}</div>`;
 }
 
 /** A lot's tests: to write, to change, to delete — each deletion beside what holds it — then its journey cases.
@@ -2195,7 +2345,7 @@ ${ledgerHtml(plan, lot, plan.pieces.filter((x) => lot.pieces.includes(x.slug)), 
 ${lot.pieces.map((slug) => deliveryPieceHtml(plan.pieces.find((x) => x.slug === slug), slug, plan, index)).join('\n')}`;
   const body = `
 <h1>${esc(doc.title.replace(/\s+[—–-]\s+plan$/i, ''))} — delivery</h1>
-<p class="lede">What is not as you approved it, then the lots in the order they are delivered: one implementer and one review a lot, one commit a piece. A piece that is built lists the places that became code, each where it stands today, and its commits. The design is on <a href="${esc(plan.feature)}.html">the plan page</a>.${lots.length ? ` ${lots.map((l, i) => `<a href="#lot-${l.slug}">${i + 1} · ${esc(l.slug)}</a>`).join(' → ')}` : ''}</p>
+<p class="lede">What is not as you approved it, then the lots in the order they are delivered: one implementer and one review a lot, one commit a piece. A piece that is built lists the places that became code, each where it stands today, and its commits, which open as the one diff they come to. The design is on <a href="${esc(plan.feature)}.html">the plan page</a>.${lots.length ? ` ${lots.map((l, i) => `<a href="#lot-${l.slug}">${i + 1} · ${esc(l.slug)}</a>`).join(' → ')}` : ''}</p>
 ${since}
 ${lots.length ? lots.map((l, i) => lotHtml(l, i + 1)).join('\n') : `<h2>No delivery yet</h2><p class="pbox">plan.md holds no "## Delivery": the tasks stage writes it.</p>`}
 ${loose.length && lots.length ? `<h2 id="loose">In no lot</h2>${ledgerHtml(plan, null, loose, index)}${loose.map((x) => deliveryPieceHtml(x, x.slug, plan, index)).join('\n')}` : ''}
@@ -2207,40 +2357,64 @@ ${REVIEW_SCRIPT}
 
 const anchorFor = (name: string) => name.toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/^-|-$/g, '');
 
-export function renderProductPage(stories: Story[], narratives: Narrative[], index: SourceIndex, backlinks: BacklinkIndex): string {
-  const products = narratives.filter((n) => n.kind === 'product');
+export function renderNarrativePage(narrative: Narrative, stories: Story[], narratives: Narrative[], index: SourceIndex, backlinks: BacklinkIndex): string {
   const generatedAt = new Date().toISOString();
-  const { title, html } = skeleton();
   const body = `
-${html}
+<h1>${esc(narrative.title)}</h1>
+<p class="lede">${esc(narrative.summary)} <small>A product narrative, declared by ${srcLink(narrative.file, narrative.declaredAt, 1, narrative.file)}; nothing on this page is hand-written.</small></p>
+${LINK_HINT}
 <h2 id="structure">Rides on</h2>
-${ridesOnHtml(products, narratives, index, PRODUCT_LINKS)}
+${ridesOnHtml([narrative], narratives, index, PRODUCT_LINKS)}
 
-<small class="kicker">Narratives on this page</small>
-<div class="narr-list">
-  ${products.map((n) => listHtml(n, stories, index)).join('\n  ')}
-</div>
-
-<h2 id="narratives">Narratives</h2>
-${products.map((n) => narrativeHtml(n, stories, narratives, index, PRODUCT_LINKS, backlinks)).join('\n')}
+<h2 id="narratives">Narrative</h2>
+${narrativeHtml(narrative, stories, narratives, index, PRODUCT_LINKS, backlinks)}
 `;
-  const crumb = `comprehension · narratives / ${esc(config.productPage)} · <b>generated</b> from ${stories.length} stor${stories.length === 1 ? 'y' : 'ies'} at ${generatedAt}`;
-  return pageHtml(title, crumb, body, 'skeleton (title, lede) hand-written; the narratives from the tests that declare them; every step, link, chip, stop and value from the run, every symbol link from the source index, every "rides on" from the mechanisms\' own stories, every debt / rule / convention marker from the pages that name the code.');
+  const crumb = `comprehension · narratives / ${esc(narrative.slug)} · <b>generated</b> from ${stories.length} stor${stories.length === 1 ? 'y' : 'ies'} at ${generatedAt} · <a href="../index.html">every page</a>`;
+  return pageHtml(narrative.title, crumb, body, 'no hand-written input; the narrative from the test that declares it; every step, link, chip, stop and value from the run, every symbol link from the source index, every "rides on" from the mechanisms\' own stories, every debt / rule / convention marker from the pages that name the code.');
 }
 
 export function renderMechanismPage(mechanism: Narrative, stories: Story[], narratives: Narrative[], index: SourceIndex, backlinks: BacklinkIndex): string {
   const generatedAt = new Date().toISOString();
-  const skeleton = mechanismSkeleton(mechanism.slug);
-  const head = existsSync(skeleton) ? readFileSync(skeleton, 'utf8').replace(/<!--[\s\S]*?-->\s*/g, '').trim() : '';
   const body = `
 <h1>${esc(mechanism.title)}</h1>
-<p class="lede">${esc(mechanism.summary)} <small>A mechanism narrative: the sites are the mechanism's own code, declared by ${srcLink(mechanism.file, mechanism.declaredAt, 1, mechanism.file)}; ${head ? 'the head below is the one hand-written input' : 'nothing on this page is hand-written'}.</small></p>
-${head}
+<p class="lede">${esc(mechanism.summary)} <small>A mechanism narrative: the sites are the mechanism's own code, declared by ${srcLink(mechanism.file, mechanism.declaredAt, 1, mechanism.file)}; nothing on this page is hand-written.</small></p>
+${LINK_HINT}
 <h2 id="narratives">Narrative</h2>
 ${narrativeHtml(mechanism, stories, narratives, index, MECHANISM_LINKS, backlinks)}
 `;
-  const crumb = `comprehension · mechanisms / ${esc(mechanism.slug)} · <b>generated</b> from ${stories.length} stor${stories.length === 1 ? 'y' : 'ies'} at ${generatedAt} · product page: <a href="${MECHANISM_LINKS.product(mechanism).split('#')[0]}">${esc(basename(PRODUCT_PAGE))}</a>`;
-  return pageHtml(mechanism.title, crumb, body, `${head ? 'the head (why it is shaped so) hand-written in its skeleton file' : 'no hand-written input'}; the narrative from the test that declares it; every step, link, chip, stop and value from the run, every symbol link from the source index.`);
+  const crumb = `comprehension · mechanisms / ${esc(mechanism.slug)} · <b>generated</b> from ${stories.length} stor${stories.length === 1 ? 'y' : 'ies'} at ${generatedAt} · <a href="../index.html">every page</a>`;
+  return pageHtml(mechanism.title, crumb, body, 'no hand-written input; the narrative from the test that declares it; every step, link, chip, stop and value from the run, every symbol link from the source index.');
+}
+
+/** A generated page, as the index lists it: its path from the folder the list is read from, and its own title. */
+export interface ListedPage { href: string; title: string }
+
+/** Every generated page on disk, by kind, each with the path from `from` and the title it gives itself. A spec page
+ *  is listed when it is a generated one: a feature folder may hold a hand-written `spec.html` of an earlier method. */
+export function generatedPages(from: string): Array<{ kind: string; pages: ListedPage[] }> {
+  const htmlOf = (dir: string, keep: (f: string) => boolean = () => true) => (existsSync(dir) ? readdirSync(dir).filter((f) => f.endsWith('.html') && !f.endsWith('.skeleton.html') && keep(f)).sort().map((f) => join(dir, f)) : []);
+  // A page's own title, without what every generated page's title says.
+  const titled = (file: string): ListedPage => ({ href: relative(from, file), title: /<title>([^<]*)<\/title>/.exec(readFileSync(file, 'utf8'))?.[1].replace(/^.*? comprehension — | \(generated\)$/g, '').trim() || relative(from, file) });
+  const features = join(ROOT, FEATURES);
+  const specs = existsSync(features) ? readdirSync(features).map((f) => join(features, f, 'spec.html')).filter((f) => existsSync(f) && readFileSync(f, 'utf8').includes('<meta name="generator"')).sort() : [];
+  return [
+    { kind: 'Narratives', pages: htmlOf(NARRATIVES_DIR) },
+    { kind: 'Mechanisms', pages: htmlOf(MECHANISMS_DIR) },
+    { kind: 'Plans', pages: htmlOf(PLANS_DIR, (f) => !f.endsWith('-delivery.html')) },
+    { kind: 'Deliveries', pages: htmlOf(PLANS_DIR, (f) => f.endsWith('-delivery.html')) },
+    { kind: 'Journeys', pages: htmlOf(join(ROOT, JOURNEYS)) },
+    { kind: 'Specs', pages: specs },
+  ].map(({ kind, pages }) => ({ kind, pages: pages.map(titled) })).filter((group) => group.pages.length > 0);
+}
+
+/** The list of every generated page, by kind. `prefix` goes before each path: `/` where a server serves it from the
+ *  documents' folder, nothing in the file under the pages' folder. */
+export function renderIndexPage(groups: Array<{ kind: string; pages: ListedPage[] }>, prefix = ''): string {
+  const list = groups.map(({ kind, pages }) => `<h2>${kind}</h2><ul>${pages.map((x) => `<li><a href="${esc(prefix + x.href)}">${esc(x.title)}</a> <small>${esc(x.href)}</small></li>`).join('')}</ul>`).join('');
+  return `<!doctype html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1"><meta name="generator" content="${esc(SELF)}"><title>${esc(config.name)} — generated pages</title>
+<style>body{font:15px/1.5 system-ui,sans-serif;max-width:52rem;margin:2rem auto;padding:0 1rem}h2{font-size:1rem;margin:1.4rem 0 .3rem}ul{margin:0;padding-left:1.2rem}small{color:#6b7280;margin-left:.4rem}</style></head>
+<body><h1>${esc(config.name)} — generated pages</h1>${HUB ? `<p>${HUB}</p>` : ''}${list || '<p>No page yet: the first render follows the first test run.</p>'}</body></html>
+`;
 }
 
 /** `diffs` are the database diffs of the plans' proposed migrations (`planDbDiffs`, the one part that is async
@@ -2253,15 +2427,18 @@ export function render(source: SourceReader = openSource(), diffs: DbDiffs = new
   const narratives = deriveNarratives(stories, index);
   const backlinks = buildBacklinks(index, ROOT);
   const pages: string[] = [];
-  mkdirSync(dirname(PRODUCT_PAGE), { recursive: true });
-  writeFileSync(PRODUCT_PAGE, renderProductPage(stories, narratives, index, backlinks));
-  pages.push(relative(ROOT, PRODUCT_PAGE));
-  for (const m of narratives) {
-    if (m.kind !== 'mechanism') continue;
-    mkdirSync(MECHANISMS_DIR, { recursive: true });
-    const out = join(MECHANISMS_DIR, `${m.slug}.html`);
-    writeFileSync(out, renderMechanismPage(m, stories, narratives, index, backlinks));
-    pages.push(relative(ROOT, out));
+  // One page per narrative, in the folder of its kind; a page whose narrative is gone is removed.
+  for (const [dir, kind] of [[NARRATIVES_DIR, 'product'], [MECHANISMS_DIR, 'mechanism']] as const) {
+    mkdirSync(dir, { recursive: true });
+    const own = narratives.filter((n) => n.kind === kind);
+    const kept = new Set(own.map((n) => `${n.slug}.html`));
+    // A `*.skeleton.html` is a hand-written head of an earlier version of these pages: never generated, never removed here.
+    for (const f of readdirSync(dir)) if (f.endsWith('.html') && !f.endsWith('.skeleton.html') && !kept.has(f)) rmSync(join(dir, f));
+    for (const n of own) {
+      const out = join(dir, `${n.slug}.html`);
+      writeFileSync(out, kind === 'product' ? renderNarrativePage(n, stories, narratives, index, backlinks) : renderMechanismPage(n, stories, narratives, index, backlinks));
+      pages.push(relative(ROOT, out));
+    }
   }
   // One plan page per feature with a planned site of any kind; a page whose feature has none left is removed.
   const plans = derivePlans(stories, narratives, index, sources);
@@ -2278,7 +2455,63 @@ export function render(source: SourceReader = openSource(), diffs: DbDiffs = new
     writeFileSync(delivery, renderDeliveryPage(p, stories, index));
     pages.push(relative(ROOT, delivery));
   }
+  writeFileSync(INDEX_PAGE, renderIndexPage(generatedPages(dirname(INDEX_PAGE))));
+  pages.push(relative(ROOT, INDEX_PAGE));
   return { stories: stories.length, pages };
+}
+
+// ── `--strip`: what the archive of a feature takes off the code ────────────────
+
+export interface StripReport {
+  /** What was taken off, a file each, by the line it stood at. */
+  files: Array<{ file: string; taken: Stripped['taken'] }>;
+  /** The lines that still name the feature, outside its folder. `code`: in a test or a file of the product,
+   *  where the tools would read it as a mark of a feature that no longer exists. */
+  remains: Array<{ file: string; line: number; text: string; code: boolean }>;
+  /** Whether the stack gives a strip: without one, everything is in `remains`. */
+  stripped: boolean;
+}
+
+/**
+ * Takes a feature's marks off the code, once its archive gate passes: each `built` call, the tag and the rule
+ * of each test title, each planned screen of a journey (`Stack.strip`). Then reads every file outside the
+ * feature's folder for a line that still names a tag of it or a path into the folder. Refuses, with nothing
+ * written, while the gate fails: a mark is what a place still to build or a rule with no owner is read by.
+ * With `write` false nothing is written, and the report says what would go and what would be left.
+ */
+export function stripFeature(feature: string, write: boolean, source: SourceReader = openSource()): StripReport {
+  const folder = featureFolder(feature);
+  // The tracked files and the new ones git does not ignore, the feature's own folder left out.
+  let listed = '';
+  try {
+    listed = execFileSync('git', ['grep', '-l', '-z', '-I', '-F', '--untracked', '-e', feature, '--', '.', `:(exclude)${folder}`], { cwd: ROOT, encoding: 'utf8', maxBuffer: 256 * 1024 * 1024 });
+  } catch (error) {
+    // `git grep` exits 1 when no file holds the word.
+    if ((error as { status?: number }).status !== 1) throw error;
+  }
+  const files = listed.split('\0').filter((f) => f && existsSync(join(ROOT, f))).sort();
+  const read = files.map((file) => {
+    const text = readFileSync(join(ROOT, file), 'utf8');
+    const done = strip(file, text, feature);
+    return { file, text, after: done?.text ?? text, taken: done?.taken ?? [], stripped: done !== null };
+  });
+  const changed = read.filter((f) => f.taken.length > 0);
+  if (changed.length) {
+    const index = new SourceIndex(source);
+    const stories = readStories();
+    index.realign(stories);
+    const plan = derivePlans(stories, deriveNarratives(stories, index), index).find((p) => p.feature === feature);
+    // With its folder gone a feature has no gate left to pass: its marks name nothing, and they go.
+    const failures = plan?.folderExists ? findings(plan, true).failures : [];
+    if (failures.length) throw new Error(`comprehension-render --strip ${feature}: the archive gate does not pass, and nothing is taken off —\n  ${failures.join('\n  ')}`);
+    if (write) for (const f of changed) writeFileSync(join(ROOT, f.file), f.after);
+  }
+  const isCode = (file: string) => layout.isTest(file) || layout.isProduct(file) || layout.isApp(file);
+  return {
+    files: changed.map((f) => ({ file: f.file, taken: f.taken })),
+    remains: read.flatMap((f) => namesFeature(f.after, feature).map((l) => ({ file: f.file, ...l, code: isCode(f.file) }))),
+    stripped: read.length === 0 || read.some((f) => f.stripped),
+  };
 }
 
 // ── `--check`: symbols that did not link, gaps, dead actions, and two informative lines ──
@@ -2359,6 +2592,11 @@ export function check(source: SourceReader = openSource(), archive: string | nul
           const tests = site.reachedBy.reduce((n, r) => n + r.tests, 0);
           console.log(`      ${site.change} ${site.file}:${site.line} in ${site.fn} — ${site.change === 'added' ? `shell: ${site.signature}` : `${tests} test${tests === 1 ? '' : 's'} in ${site.reachedBy.length} file${site.reachedBy.length === 1 ? '' : 's'}${inside ? `; inside ${inside}` : ''}`}`);
         }
+        for (const l of s.lands) {
+          const place = builtPlaceOf(l.line);
+          const step = narratives.find((n) => n.title === l.narrative)?.steps[l.step];
+          if (place && step) console.log(`      built ${place.file} in ${place.fn} — inside ${l.narrative} step ${step.n} (${l.how} ${label(step, index)}, ${l.by === 'call' ? 'by its built call' : l.by === 'approved' ? 'as approved' : 'by its function'})`);
+        }
         for (const site of s.statics) console.log(`      comment ${site.file}:${site.line}${site.on ? ` on ${site.on}` : ''}${s.sql.includes(site.file) ? ' (the proposed migration)' : ''}`);
       }
     }
@@ -2437,6 +2675,30 @@ if (process.argv[1] && import.meta.url === pathToFileURL(process.argv[1]).href) 
     if (!feature) throw new Error('comprehension-render --approve <feature>: the feature name is missing');
     const done = approve(feature);
     console.log(`comprehension-render --approve: ${done.file} — ${done.units} units${done.cleared ? `, ${done.cleared} "Changed:" paragraph${done.cleared === 1 ? '' : 's'} taken off plan.md` : ''}${done.answered.length ? `, ${done.answered.join(', ')} answered as proposed and written in` : ''}`);
+  } else if (process.argv.includes('--strip')) {
+    const feature = process.argv[process.argv.indexOf('--strip') + 1];
+    if (!feature || feature.startsWith('--')) throw new Error('comprehension-render --strip <feature>: the feature name is missing');
+    const dry = process.argv.includes('--dry-run');
+    const report = stripFeature(feature, !dry);
+    const KIND = { built: 'built call', title: 'test title', screen: 'planned screen' } as const;
+    for (const f of report.files) {
+      console.log(`${f.file}`);
+      for (const t of f.taken) console.log(`  :${t.line} ${KIND[t.kind]} — ${t.was}`);
+    }
+    const count = (kind: keyof typeof KIND) => report.files.reduce((n, f) => n + f.taken.filter((t) => t.kind === kind).length, 0);
+    console.log(`\ncomprehension-render --strip ${feature}: ${dry ? 'would take' : 'took'} off ${plural(count('built'), 'built call')}, the tag of ${plural(count('title'), 'test title')} and ${plural(count('screen'), 'planned screen')}, in ${plural(report.files.length, 'file')}${dry ? ' — nothing written (--dry-run)' : ''}`);
+    if (!report.stripped) console.log(`  the stack gives no strip (\`Stack.strip\`): what names the feature is taken off by hand`);
+    const elsewhere = report.remains.filter((r) => !r.code);
+    if (elsewhere.length) {
+      console.log(`\ninfo: ${plural(elsewhere.length, 'line')} outside the code still name${elsewhere.length === 1 ? 's' : ''} ${feature} — to read before its folder goes:`);
+      for (const r of elsewhere) console.log(`  ${r.file}:${r.line} ${r.text.slice(0, 140)}`);
+    }
+    const left = report.remains.filter((r) => r.code);
+    if (left.length) {
+      console.error(`\ncomprehension-render --strip ${feature}: ${plural(left.length, 'line')} of the code still name${left.length === 1 ? 's' : ''} the feature${dry ? ' after the strip' : ''} — taken off by hand:\n  ${left.map((r) => `${r.file}:${r.line} ${r.text.slice(0, 140)}`).join('\n  ')}`);
+      process.exit(1);
+    }
+    console.log(`\ncomprehension-render --strip ${feature}: no line of the code names the feature${dry ? ' once stripped' : ''}`);
   } else if (process.argv.includes('--check')) {
     const at = process.argv.indexOf('--archive');
     const archive = at >= 0 ? process.argv[at + 1] ?? null : null;
@@ -2449,9 +2711,9 @@ if (process.argv[1] && import.meta.url === pathToFileURL(process.argv[1]).href) 
       process.exit(1);
     }
     const flagged = check(undefined, archive);
-    if (!reproductions.ok) {
-      console.error(`\nplanned: ${reproductionsFailed(reproductions)}`);
-      flagged.push('the reproductions did not run as expected');
+    for (const run of reproductions.failed) {
+      console.error(`\nplanned: ${reproductionsFailed(run)}`);
+      flagged.push(`the reproductions did not run as expected — ${run.command}`);
     }
     if (flagged.length) {
       console.error(`\ncomprehension-render --check: ${flagged.length} finding${flagged.length === 1 ? '' : 's'} (a symbol that looks declared and did not link, a gap, a dead action, a cause that was not silent, a sentence over its budget, a plan out of order):\n  ${flagged.join('\n  ')}`);
@@ -2463,7 +2725,7 @@ if (process.argv[1] && import.meta.url === pathToFileURL(process.argv[1]).href) 
     // A plan's page shows what its reproductions see now: they run first, whole files.
     const reproductions = runReproductions(reproductionFiles(sources));
     if (reproductions.ran) console.log(`comprehension-render: ran the reproductions of ${reproductions.ran} test file${reproductions.ran === 1 ? '' : 's'}`);
-    if (!reproductions.ok) console.error(`comprehension-render: ${reproductionsFailed(reproductions)}`);
+    for (const run of reproductions.failed) console.error(`comprehension-render: ${reproductionsFailed(run)}`);
     if (readStories().length === 0) {
       // A cold start, not a failure: rendering would overwrite the pages of an earlier run with empty ones,
       // and `npm run docs` chains this script, so it says so and lets the chain go on.

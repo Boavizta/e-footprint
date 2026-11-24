@@ -20,14 +20,19 @@
  * (`PieceCommit.sinceApproval`); an earlier one is only listed with its piece. A base that is not in the
  * history of `HEAD` — the branch was rebuilt — tells no commit to come after it.
  *
- * What a commit did never changes: it is read once per process and kept by its hash.
+ * Beside them, every commit of the branch from the oldest of them on, with the files it changed (`history`):
+ * a commit that names no piece is not read as a delivery, and still tells that a piece's file moved between
+ * two of the piece's commits, which then do not read as one diff (`commitBlocks`, `comprehension_harness/plan.ts`).
+ *
+ * What a commit did never changes: it is read once per process and kept by its hash. What the working tree
+ * holds does change: a file's difference from the approval to it (`hunkReader`) is kept for one render only.
  */
 import { execFileSync } from 'node:child_process';
 import { existsSync, readFileSync } from 'node:fs';
 import { join } from 'node:path';
 import type { Layout } from './layout';
 import type { TitleReader } from './stack';
-import { testChanges, type PieceCommit } from './plan';
+import { testChanges, type CommitTouch, type Hunk, type PieceCommit } from './plan';
 
 const KEBAB = '[a-z0-9]+(?:-[a-z0-9]+)*';
 
@@ -35,8 +40,9 @@ const KEBAB = '[a-z0-9]+(?:-[a-z0-9]+)*';
 type Read = Omit<PieceCommit, 'sinceApproval' | 'untagged' | 'deleted'> & { feature: string; came: PieceCommit['untagged']; gone: PieceCommit['deleted'] };
 const read = new Map<string, Read>();
 
-/** The commits of `HEAD`'s history that name a piece of `feature`, oldest first. */
-export function readPieceCommits(feature: string, base: string | null, cwd: string, titles: TitleReader, layout: Layout): { list: PieceCommit[]; baseKnown: boolean } {
+/** The commits of `HEAD`'s history that name a piece of `feature`, oldest first, and every commit from the
+ *  oldest of them on, oldest first, with the files it changed. */
+export function readPieceCommits(feature: string, base: string | null, cwd: string, titles: TitleReader, layout: Layout): { list: PieceCommit[]; baseKnown: boolean; history: CommitTouch[] } {
   const git = (...args: string[]) => execFileSync('git', args, { cwd, encoding: 'utf8', maxBuffer: 256 * 1024 * 1024, stdio: ['ignore', 'pipe', 'ignore'] });
   const tried = (...args: string[]) => { try { return git(...args); } catch { return null; } };
   const names = new RegExp(`^Piece:[ \\t]*${feature}#(${KEBAB})[ \\t]*$`, 'gm');
@@ -44,6 +50,10 @@ export function readPieceCommits(feature: string, base: string | null, cwd: stri
   const found = log.split('\x1e').map((entry) => entry.replace(/^\n/, '').split('\x1f')).filter((parts) => parts.length === 3);
   const baseKnown = base !== null && tried('merge-base', '--is-ancestor', base, 'HEAD') !== null;
   const after = new Set(baseKnown ? git('rev-list', `${base}..HEAD`).split('\n').filter(Boolean) : []);
+  // Read anew at each call: the branch grows. The oldest commit that has no parent is the root, read from there.
+  const touches = ['log', '--topo-order', '--reverse', '--no-renames', '--name-only', '--format=%x1e%H'];
+  const history: CommitTouch[] = found.length === 0 ? [] : (tried(...touches, `${found[0][0]}^..HEAD`) ?? git(...touches, 'HEAD'))
+    .split('\x1e').map((entry) => entry.split('\n').filter(Boolean)).filter((rows) => rows.length > 0).map(([sha, ...files]) => ({ sha, files }));
 
   const list = found.map(([sha, subject, body]): Read => {
     const key = `${feature} ${sha}`;
@@ -98,5 +108,56 @@ export function readPieceCommits(feature: string, base: string | null, cwd: stri
   return {
     list: list.map(({ came: _came, gone: _gone, feature: _feature, ...rest }): PieceCommit => ({ ...rest, sinceApproval: after.has(rest.sha), untagged: untagged.get(rest.sha) ?? [], deleted: deleted.get(rest.sha) ?? [] })),
     baseKnown,
+    history,
   };
 }
+
+/** A file's difference from the commit of an approval to the working tree; null where git cannot read that commit. */
+export type HunkReader = (file: string) => Hunk[] | null;
+
+/**
+ * A reader of a file's difference from `base`, the commit of an approval, to the working tree, a stretch at a
+ * time (`Hunk`): what the lot check reads a place and a change into. Null where git cannot read `base`.
+ *
+ * A reader is made for one render and reads each file once in it, however many places ask. It is never kept
+ * between two renders: the working tree moves, and an old difference laid over the functions as they now stand
+ * puts a change in a function it never touched.
+ */
+export function hunkReader(base: string, cwd: string): HunkReader {
+  const read = new Map<string, Hunk[] | null>();
+  return (file) => {
+    if (read.has(file)) return read.get(file)!;
+    let hunks: Hunk[] | null = null;
+    try {
+      const diff = execFileSync('git', ['diff', '--unified=0', '--no-renames', base, '--', file], { cwd, encoding: 'utf8', maxBuffer: 256 * 1024 * 1024, stdio: ['ignore', 'pipe', 'ignore'] });
+      hunks = [];
+      for (const row of diff.split('\n')) {
+        const head = /^@@ -(\d+)(?:,(\d+))? \+(\d+)(?:,(\d+))? @@/.exec(row);
+        const last = hunks[hunks.length - 1];
+        if (head) {
+          const [oldAt, oldN, nowAt, nowN] = [Number(head[1]), Number(head[2] ?? 1), Number(head[3]), Number(head[4] ?? 1)];
+          hunks.push({ was: oldN ? [oldAt, oldAt + oldN - 1] : null, now: nowN ? [nowAt, nowAt + nowN - 1] : null, at: { old: oldAt, now: nowAt }, removed: [], added: [] });
+        } else if (last && row.startsWith('-') && !row.startsWith('---')) last.removed.push(row.slice(1));
+        else if (last && row.startsWith('+') && !row.startsWith('+++')) last.added.push(row.slice(1));
+      }
+    } catch { hunks = null; }
+    read.set(file, hunks);
+    return hunks;
+  };
+}
+
+/**
+ * The commits that changed the lines `from` to `to` of `file`, oldest first, among those from `since` on: what
+ * `git log -L` traces back from the lines as `HEAD` holds them. Null when the working tree's file is not
+ * `HEAD`'s, since the lines asked about are then other lines, and where git cannot tell.
+ */
+export function commitsOfLines(file: string, from: number, to: number, since: string, cwd: string): string[] | null {
+  const git = (...args: string[]) => execFileSync('git', args, { cwd, encoding: 'utf8', maxBuffer: 256 * 1024 * 1024, stdio: ['ignore', 'pipe', 'ignore'] });
+  try {
+    git('diff', '--quiet', 'HEAD', '--', file);
+    return git('log', '--format=%x1e%H', `-L${from},${to}:${file}`, `${since}^..HEAD`).split('\x1e').slice(1).map((entry) => entry.slice(0, 40)).reverse();
+  } catch {
+    return null;
+  }
+}
+

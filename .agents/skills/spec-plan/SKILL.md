@@ -10,7 +10,9 @@ plan is not a document you draw: it is the feature's **pieces**, each tagged at 
 changes, and the page is generated from them. You write:
 
 - the **sites** in the code: `planned` calls where a change lands, shells for new functions,
-  `@planned` comments where no line runs;
+  `@planned` comments where no line runs. A place that becomes code names itself in its tag,
+  `<feature>#<slug>:<place>`: a short name for what changes there, its own within the piece
+  (`workflow-formats.md` § "A site"). The check asks for it;
 - the **planned tests** of the narrative and server tiers, as titles with no body;
 - **`specs/features/<feature>/plan.md`**: a section a piece (its statement, its reason), the
   decisions across pieces, the waivers.
@@ -134,8 +136,9 @@ title is `spec-tasks`' to plan.
   alternative. Only what is the reviewer's to decide.
 - **State the content, never a rule's name alone.** "Applied offline is owned by one case" reads
   as if offline saving were planned.
-- An answer "Yes, as proposed" is written in by the approval command. Any other is yours to write
-  into the piece as a statement, and the paragraph goes.
+- An answer "Yes, as proposed" is written in by the approval command, word for word, into the
+  piece's reason: the check counts the proposal in the reason's budget from the day you write it.
+  Any other answer is yours to write into the piece as a statement, and the paragraph goes.
 
 ## While editing, and before handing over
 

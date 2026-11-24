@@ -142,6 +142,7 @@
   .frow.same { opacity: .55; }
   .frow.touched { border-left-color: #f59e0b; background: #fffbeb; }
   .frow.new { border-left-color: #10b981; background: #ecfdf5; }
+  .frow.done { border-left-color: #9ca3af; background: #f3f4f6; }
   .cards { display: grid; grid-template-columns: repeat(auto-fit, minmax(min(22rem, 100%), 1fr)); gap: .7rem; margin: .4rem 0 1.4rem; }
   .card { border: 1px solid var(--line); border-radius: 12px; background: var(--card); padding: .6rem .9rem; font-size: .9rem; scroll-margin-top: .5rem; }
   .card h2 { font-size: .78rem; letter-spacing: .04em; text-transform: uppercase; margin: 0 0 .35rem; }
@@ -224,7 +225,10 @@
   .piece.built { border-left: 3px solid #86efac; } .piece header b.ok { color: #15803d; }
   .commits { margin-top: .5rem; border-top: 1px solid var(--line); padding-top: .35rem; }
   .crow { display: grid; grid-template-columns: 4.6rem 1fr; gap: .1rem .6rem; font-size: .86rem; padding: .12rem 0; align-items: baseline; }
-  .crow > code { font-size: .76rem; color: var(--muted); } .crow .cfiles { grid-column: 2; font-size: .8rem; } .crow details.cfiles > summary { cursor: pointer; color: var(--muted); }
+  .crow > code, .crow > .csha code { font-size: .76rem; color: var(--muted); } .crow > .csha code { color: var(--accent); border-bottom: 1px dotted var(--accent); }
+  .edit > .commits { margin: .1rem 0 .3rem .9rem; } .crow .cfiles { grid-column: 2; font-size: .8rem; } .crow details.cfiles > summary { cursor: pointer; color: var(--muted); }
   .cfile { display: inline-block; margin-right: .9rem; white-space: nowrap; } .cfile small { color: var(--faint); } .cfile a.src { font-family: ui-monospace, SFMono-Regular, Menlo, monospace; }
+  .commits > .cblock { margin: .1rem 0; font-size: .8rem; } .csum { color: var(--accent); border-bottom: 1px dotted var(--accent); text-decoration: none; }
+  .commits > .cpart { margin: .45rem 0 .2rem; padding: .2rem .5rem; font-size: .8rem; color: #92400e; background: #fffbeb; border-left: 3px solid #fcd34d; } .cpart .csha code { font-size: .76rem; color: var(--accent); border-bottom: 1px dotted var(--accent); }
   .badge { font: 600 .66rem/1.6 system-ui, sans-serif; color: #b45309; background: #fffbeb; border: 1px solid #fcd34d; border-radius: 999px; padding: 0 .45rem; white-space: nowrap; }
   @media (max-width: 46rem) { .pline, .pbox.rules .pline { grid-template-columns: 4.6rem 1fr; } .pline .clause { grid-column: 2; } .pbox.rules .pline .where { grid-column: 2; } .pbox.outside .pline { grid-template-columns: 1fr; } .pbox.outside .pline .clause { grid-column: 1; } }

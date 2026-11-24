@@ -10,7 +10,7 @@
  *   npm run map -- spec <feature>                a feature's spec: intent, changed screens, cases to add, what it rides on
  *   npm run map -- plan <feature>                a feature's plan: plan.md, its pieces in run order with their sites and planned tests, the rules' owners
  *   npm run map -- brief <feature>#<piece>         one piece of a plan, with the code at each of its sites
- *   npm run map -- brief <feature>/<lot>           a lot of the plan's delivery: its pieces with their code, the decisions that bind them, its journey cases
+ *   npm run map -- brief <feature>/<lot>           a lot of the plan's delivery: its pieces with their code, the decisions that bind them, its journey cases, what the spec plans at its screens
  *   npm run map -- check <feature>                 a plan's check in a screen: what fails, what is not as approved, what each lot owes (exit 1 on a failure)
  *   npm run map -- feedback <feature>              the reviewer's answers from the pages: what is not approved and why, each question's answer, what is not read
  *   npm run map -- reach <feature>#<piece>         the tests that reach its sites today, by file (or <feature>/<lot>): read before a unit test is planned, kept or deleted
@@ -338,7 +338,7 @@ function pieceText(plan, piece, code, whole = false, printed = new Map()) {
   if (done && !whole) return [...out, ...builtLine, ...(writtenTests.length ? ['  tests:', ...writtenTests] : []), ...besideLines, ...pieceNotes];
   if (piece.doc) {
     out.push(...blockLines(piece.doc.why, '  why: '));
-    if (piece.doc.ask) out.push(`  TO CONFIRM: ${piece.doc.ask.question}${piece.doc.ask.detail ? ` ${piece.doc.ask.detail}` : ''}`);
+    if (piece.doc.ask) out.push(`  TO CONFIRM: ${piece.doc.ask.question}${piece.doc.ask.detail ? ` ${piece.doc.ask.detail}` : ''}${piece.doc.ask.commits.length ? `  · git show ${piece.doc.ask.commits.join(', ')}` : ''}`);
     out.push(...pieceNotes);
   } else if (plan.doc) out.push(`  (no section "## #${piece.slug}" in ${plan.doc.file}: the piece has no statement)`);
   if (piece.bug && code) out.push(`  fixes the bug: ${piece.bug.title}  (${plan.doc.file}:${piece.bug.line})`);
@@ -358,7 +358,8 @@ function pieceText(plan, piece, code, whole = false, printed = new Map()) {
       return [`  evidence ${at(x)}  in ${x.fn} — ${x.sentence}`,
         `    goes with the fix${should(x)}${seen.length ? `  · a reproduction saw ${seen.slice(0, 3).join(' | ')}${seen.length > 3 ? ` … (${seen.length} values)` : ''}` : '  · crossed by no reproduction yet'}`];
     }
-    return [`  ${x.change}  ${at(x)}  in ${x.fn} — ${x.sentence}${should(x)}`,
+    return [`  ${x.change}  ${at(x)}  in ${x.fn}${x.place ? `  :${x.place}` : ''} — ${x.sentence}${should(x)}`,
+      ...(x.place ? [`    once it is code: built('${x.feature}#${x.slug}:${x.place}') stands where the change is`] : []),
       ...(x.change === 'added' ? [`    called from: ${(plan.calledFrom?.[x.id] ?? []).map((c) => `${at(c)} (#${c.slug})`).join(', ') || 'NOWHERE — no site names it'}`] : []),
       // A bug sits in no told flow: a place of its piece no test reaches is said so, with no narrative to run.
       `    ${x.change === 'added' ? `new seam: ${x.signature ?? x.fn}` : inside ? `lands in ${inside}` : 'crossed by no narrative'}${tests ? `  · reached by ${plural(tests, 'test')} in ${plural(x.reachedBy.length, 'file')}` : x.change === 'added' ? '' : piece.bug ? '  · reached by no test in the stories on file' : '  · seen by no run yet: run the narrative tests it should sit in, then ask again'}`];
@@ -509,7 +510,7 @@ function deltaText(p) {
 function unitLines(p, d) {
   const line = (l, pad) => `${pad}${l.sign} ${l.facet}: ${l.text}${l.facet === 'comments' && l.sign === '+' ? standsOn(p, d.name, l.text) : ''}`;
   return [
-    ...d.edits.flatMap((e) => [`    edit: ${e.change.what ? `${e.change.what} — ` : ''}${e.change.why}`, ...e.lines.map((l) => line(l, '      '))]),
+    ...d.edits.flatMap((e) => [`    edit: ${e.change.what ? `${e.change.what} — ` : ''}${e.change.why}${e.change.commits.length ? `  · git show ${e.change.commits.join(', ')}` : ''}`, ...e.lines.map((l) => line(l, '      '))]),
     ...(d.edits.length > 1 && d.unclaimed.some((l) => l.facet !== 'question' && l.facet !== 'notes') ? ['    NAMED BY NO EDIT:'] : []),
     ...d.unclaimed.map((l) => line(l, '    ')),
   ];
@@ -568,6 +569,22 @@ function scope(map, name, verb) {
   return { p, lot, pieces: lot.pieces.map((slug) => p.pieces.find((s) => s.slug === slug)).filter(Boolean) };
 }
 
+/** What the spec plans at the screens of a lot: the change in a sentence, the mockup, and the comment the mockup opens
+ *  with, which says what was edited into the capture. Read from the last spec snapshot and never refreshed here: a
+ *  brief does not wait for a browser run, and a planned screen is a declaration, which a stale snapshot still holds. */
+function plannedScreens(feature, screens) {
+  const out = [];
+  for (const j of read(join(MAP_DIR, `spec-${feature}.json`))?.journeys ?? []) {
+    for (const c of j.changed) {
+      if (!c.planned || !screens.includes(c.id)) continue;
+      const file = join(ROOT, c.planned.mockup);
+      const comment = existsSync(file) ? /<!--([\s\S]*?)-->/.exec(readFileSync(file, 'utf8'))?.[1].trim() : null;
+      out.push(`  ${j.slug}#${c.id} — ${c.planned.what}`, `    mockup: ${c.planned.mockup}`, ...(comment ? comment.split('\n').map((l) => `      ${l.trim()}`) : []));
+    }
+  }
+  return out;
+}
+
 function brief(map, name) {
   const { p, lot, pieces } = scope(map, name, 'brief');
   if (lot) say(lotLine(p, lot), `  ${lot.reason}`, `  One commit per piece, in this order. Its message ends with the line "Piece: ${p.feature}#<piece>". A piece that cannot typecheck alone lands with the one it needs, in one commit naming both.${lot.screens.length ? ' The journey cases come last.' : ''}`, '');
@@ -581,6 +598,8 @@ function brief(map, name) {
   if (before.length) say('Notes on what is built elsewhere in the plan:', ...before, '');
   const cases = lot ? (p.journeyCases ?? []).filter((c) => lot.screens.includes(c.screen)) : [];
   if (cases.length) say(`Journey cases the lot writes last — ${cases.length}`, ...cases.map((c) => `  ${at(c)}  at ${c.screen} — ${c.title}`), '');
+  const drawn = lot ? plannedScreens(p.feature, lot.screens) : [];
+  if (drawn.length) say('What the spec plans at the lot\'s screens — the mockup\'s opening comment says what it draws, so a case is written without opening it:', ...drawn, '');
   const owned = p.rules.filter((r) => r.owners.some((o) => pieces.some((piece) => piece.slug === o.slug)));
   if (owned.length) say(`Rules of the spec ${lot ? 'the lot' : 'this piece'}'s tests own:`, ...owned.map((r) => `  ${r.slug}: ${r.text}`));
 }

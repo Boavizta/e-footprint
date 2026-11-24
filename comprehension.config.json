@@ -11,6 +11,11 @@
       "python3",
       "-m",
       "comprehension_harness.python.titles"
+    ],
+    "strip": [
+      "python3",
+      "-m",
+      "comprehension_harness.python.strip"
     ]
   },
   "cache": "node_modules/.cache/comprehension_harness",
@@ -19,7 +24,6 @@
     "label": "architecture index",
     "page": "specs/architecture/index.html"
   },
-  "productPage": "modeling",
   "actor": "modeler",
   "source": {
     "scan": [

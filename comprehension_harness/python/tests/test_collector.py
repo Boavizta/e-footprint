@@ -187,6 +187,48 @@ def test_a_reproduction_has_a_story_that_says_how_it_fails_whatever_it_crossed(p
     assert (refunds["hits"], refunds["state"], refunds["failure"]["line"]) == ([], "xfailed", 19)
 
 
+BUILT = '''
+    from shop.narrate import built, planned, template_call
+
+
+    def due(total, cards):
+        planned("gift-cards#deduct-the-card:amount-due", "The due amount **loses the card**.")
+        for card in cards:
+            built("gift-cards#deduct-the-card:card-read")
+            total -= card
+        template_call("built", __file__.replace("due.py", "pages/rows.html"), 1, "", tag="gift-cards#card-row:row-id")
+        return total
+'''
+
+
+def test_a_built_call_is_a_planned_hit_that_names_its_place_and_a_test_keeps_its_first_crossing(project):
+    """One crossing tells where the place lands: a place on a path a test loops over is no loop over a site."""
+    around = {file: text for file, text in PROJECT.items() if not file.startswith("checks/")}
+    root = project({**around, "shop/due.py": BUILT, "shop/pages/rows.html": '{% built "gift-cards#card-row:row-id" %}\n',
+                    "checks/test_checkout.py": "from shop.due import due\n\n\ndef test_due():\n"
+                                               "    assert due(10, [1] * 60) == -50\n    assert due(3, [1]) == 2\n"})
+
+    done = run_tests(root)
+
+    assert done.returncode == 0, done.stdout + done.stderr
+    [story] = stories_of(root)
+    piece = {"feature": "gift-cards", "slug": "deduct-the-card"}
+    # The planned call is crossed by each of the two calls of `due`; each built call is kept once, and none is
+    # counted as capped.
+    assert [(hit["site"]["line"], hit["sentence"], hit["planned"]) for hit in story["hits"]] == [
+        (5, "The due amount **loses the card**.", {**piece, "place": "amount-due", "change": "changed"}),
+        (7, "", {**piece, "place": "card-read", "change": "built"}),
+        (1, "", {"feature": "gift-cards", "slug": "card-row", "place": "row-id", "change": "built"}),
+        (5, "The due amount **loses the card**.", {**piece, "place": "amount-due", "change": "changed"})]
+    assert story["hits"][2]["site"] == {"file": "shop/pages/rows.html", "line": 1, "column": 1, "fn": "(template)"}
+    assert "capped" not in story
+    # The hit is the site the index reads at that line.
+    declare = "comprehension_harness.python.declare"
+    index = json.loads(source_index(root, source="shop/", calls="shop.narrate", declare=declare).stdout)
+    [site] = [site for site in index["files"]["shop/due.py"]["sites"] if site["line"] == 7]
+    assert story["hits"][1]["site"] == {"file": "shop/due.py", **{key: site[key] for key in ("line", "column", "fn")}}
+
+
 def test_a_call_a_template_makes_is_a_hit_at_its_tag_under_the_frames_that_rendered_it(project):
     """No frame of Python says where a tag is written: the tag gives its file and its line."""
     around = {file: text for file, text in PROJECT.items() if not file.startswith("checks/")}
@@ -261,6 +303,8 @@ def test_the_stories_of_a_parallel_run_are_those_of_a_plain_one(project):
      "checks/test_bad.py:5 — the watch is passed as a function"),
     (f'{CALLS} planned\n\n\ndef test_x():\n    planned("NotATag", "A change.")\n',
      "checks/test_bad.py:5 — planned: 'NotATag' is not <feature>#<slug>"),
+    (f'{CALLS} built\n\n\ndef test_x():\n    built("gift-cards#card-row")\n',
+     "checks/test_bad.py:5 — built: 'gift-cards#card-row' is not <feature>#<slug>:<place>"),
 ])
 def test_a_declaration_or_a_call_that_does_not_have_the_shape_fails_the_run_with_its_line(project, test_file, said):
     around = {file: text for file, text in PROJECT.items() if not file.startswith("checks/")}

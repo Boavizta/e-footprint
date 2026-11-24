@@ -36,17 +36,18 @@ ported; a bug batch is planned in pieces too (`bug-fixes`, `bug-fixes-plan`).
 
 | The method says | Here |
 |---|---|
-| The three calls | `from efootprint.narrate import narrate, event, planned`, always by name. The file is this project's copy of `comprehension_harness/python/narrate.py`, held identical by a test and never edited here; it ships in the published package and imports the standard library alone. Inert unless a test run of this repository installed the collector: the interface's test runs never receive these calls. The sentence is a literal string and the watch a lambda, `narrate("…", lambda: {"count": n})`: the index refuses anything Python would compute in production |
+| The calls | `from efootprint.narrate import narrate, event, planned, built`, always by name. The file is this project's copy of `comprehension_harness/python/narrate.py`, held identical by a test and never edited here; it ships in the published package and imports the standard library alone. Inert unless a test run of this repository installed the collector: the interface's test runs never receive these calls. The sentence is a literal string and the watch a lambda, `narrate("…", lambda: {"count": n})`: the index refuses anything Python would compute in production |
 | Where a call may stand | Anywhere that runs once per action of the modeler: a constructor, an update transaction, an import, an export. **Not in the reactive core's per-slot code** (`ReactiveSlot.pull`, `_compute`, the dependency recorders, a getter): an inert call there is still a function call on the hottest path. A narrative that needs one is measured first, against `tests/performance_tests/` |
-| A place that changes, a place that goes, a shell | `planned("<feature>#<slug>", "<sentence>")` on existing code; `planned.remove(…)` in a function that goes; a shell is a new function whose whole body, under an optional docstring, is the `planned` call then `raise NotImplementedError("planned: <feature>#<slug>")`. One call a line |
+| A place that changes, a place that goes, a shell | `planned("<feature>#<slug>:<place>", "<sentence>")` on existing code, the place a short kebab-case name of the site's own within its piece; `planned.remove("<feature>#<slug>", "<sentence>")` in a function that goes, which names no place; a shell is a new function whose whole body, under an optional docstring, is the `planned("<feature>#<slug>:<place>", …)` call then `raise NotImplementedError("planned: <feature>#<slug>")`. One call a line |
+| A place that is code | `built("<feature>#<slug>:<place>")` on a line of its own where the change is, `built` imported from `efootprint.narrate` as `planned` was. It is a statement of a block that holds something else: never an expression's operand, nor all a block holds, which the strip refuses. The same rule as every call: none in the reactive core's per-slot code |
 | Evidence of a bug, and what a place should see | `planned.evidence("<feature>#<slug>", "<what is seen here today>", lambda: {…}, expect={…})`, on the line the bug shows at; `expect=` on a `planned(…)` call too. `expect` is a literal dict, a key of the watch each, or a lambda giving one where the right value depends on the crossing. `distinct="<key>"`, or a tuple of keys, on either call: the keys of the watch each crossing should see a value of its own for. The same rule as every call: none in the reactive core's per-slot code |
 | A reproduction | `@reproduces("<feature>#<slug>: <title> [<rule>]")` of `comprehension_harness/python/declare.py` on a written test that fails today: a run expects the failure, strictly. Built, it becomes `@titled("…")` under the same title. It observes, then asserts once at its end, and is not parametrized |
 | A planned test | `@planned_test("<feature>#<slug>: <title> [<rule>]")` of `comprehension_harness/python/declare.py` on a test function with an empty body: skipped by a run, listed by the plan |
 | A written test of a plan | The same title under `@titled("…")` once the body is written: `@planned_test` refuses a body. A test with neither is titled by its function's name, and a parametrized case adds pytest's `[case]` |
 | A narrative, its reference case | A test class under `@narrative("<title>")` of the same `declare.py`, in a file under `tests/narratives/`; `@narrative.mechanism("<title>")` for a mechanism, which is what a narrative of the engine (`efootprint/abstract_modeling_classes/`) is. Its summary is the first paragraph of the class docstring. Its reference case is its first test, or the one marked `@canonical`; a reference case is not parametrized. A narrative test builds real objects, never mocks: the steps are what the code did |
-| The prose a narrative replaces | A section of a page under `specs/architecture/`. It goes, and a link stands where it was: `../comprehension_harness/narratives/modeling.html#<slug>` for a narrative, `../comprehension_harness/mechanisms/<slug>.html` for a mechanism. The pages are generated and read locally, after `npm run comprehension:render` |
+| The prose a narrative replaces | A section of a page under `specs/architecture/`. It goes, and a link stands where it was: `../comprehension_harness/narratives/<slug>.html` for a narrative, `../comprehension_harness/mechanisms/<slug>.html` for a mechanism, one page a narrative, listed by `specs/comprehension_harness/index.html`. The pages are generated and read locally, after `npm run comprehension:render` |
 | What each test crossed | `comprehension_harness/python/collector.py`, a pytest plugin `tests/conftest.py` loads for every run: one story file a test file under `node_modules/.cache/comprehension_harness/stories/` |
-| The source index, the test titles, the watch | `source_index.py`, `titles.py` and `watch.py` of `comprehension_harness/python/`: the three commands of the configuration, standard library only, run as `python3 -m comprehension_harness.python.<name>` |
+| The source index, the test titles, the watch, the strip | `source_index.py`, `titles.py`, `watch.py` and `strip.py` of `comprehension_harness/python/`: the four commands of the configuration, standard library only, run as `python3 -m comprehension_harness.python.<name>` |
 | A symbol in a sentence | A name the index can place: an import of the file, a local of the function, a top-level declaration. A method or a dotted name stays plain: name its class. A backticked name shaped like a declaration (`CamelCase`, or words joined by `_`) that the index cannot place fails `--check`, so a dict key, a field or a method is written without backticks |
 | A journey | None: the library has no screen. A feature's spec is its `spec.md` |
 | The tier of a test | Where its file stands: narrative under `tests/narratives/`, unit otherwise. There is no browser tier |
@@ -62,6 +63,7 @@ ported; a bug batch is planned in pieces too (`bug-fixes`, `bug-fixes-plan`).
 | The pages served, with the answer buttons | `npm run comprehension` |
 | The approval, on the reviewer's word only | `npx tsx comprehension_harness/render.ts --approve <feature>` |
 | The archive gate | `npx tsx comprehension_harness/render.ts --check --archive <feature>` |
+| The strip of an archive, once the gate passes | `npx tsx comprehension_harness/render.ts --strip <feature>`, with `--dry-run` to list what it would take off and write nothing. It edits files under `efootprint/` and `tests/`, and § "Gates" says what runs after it |
 | The whole suite | `MPLBACKEND=Agg poetry run pytest` (the stack's own tests are collected with it) |
 | The tests of what changed | `MPLBACKEND=Agg poetry run pytest <test files>` |
 | The comprehension tools' own tests | `npx vitest run comprehension_harness` |
@@ -80,7 +82,10 @@ none, and nothing of Node runs in CI.
 - **An edit of a plan or a doc**: the check. Nothing of the product runs for a document.
 - **A piece's commit**: the test files of what it changed.
 - **A lot, and the end of a run**: the whole suite once (constitution §2.1), before the last
-  commit.
+  commit. Not on the last lot of a supervised delivery: the end-of-run gate runs it once the
+  global review's fixes are in.
+- **The strip of an archive**: the whole suite once, which also rewrites the stories of the
+  retitled tests.
 - **A modified `ModelingObject`**: its JSON round-trip is preserved (§2.3).
 - **The JSON schema changed**: an upgrade handler in
   `efootprint/api_utils/version_upgrade_handlers.py` and the schema version bumped (§2.4).
@@ -135,8 +140,8 @@ Nothing else is particular to this project: the rules of `spec-tasks` apply.
 - **LIGHT** is open to docs, copy, tests and a builder's default values. A path sets the depth
   of a review; it does not by itself make a lot hard to implement.
 - The size test counts source only: `-- . ':!tests' ':!specs' ':!docs_sources' ':!*.md'`.
-- **Added to the checklist**: a new `narrate`, `event` or `planned` call stands where the table
-  of "The stack" allows one.
+- **Added to the checklist**: a new `narrate`, `event`, `planned` or `built` call stands where
+  the table of "The stack" allows one.
 
 ## Autonomy
 
@@ -171,9 +176,23 @@ publication to PyPI or of the documentation), a force push, a branch deletion or
 
 ## Archive
 
-- **Where durable insight goes**: the owning page of `specs/architecture/`,
+- **An archive runs in any checkout that holds the stories of a test run**: on one that has
+  none, the whole suite first. The reproductions its gate and its check run, another feature's
+  included, need the test process alone.
+- **Where a load-bearing decision goes**: the owning page of `specs/architecture/`,
   `specs/conventions.md`, `specs/testing.md`, and the published documentation under
-  `docs_sources/` when what a user reads changes.
+  `docs_sources/` when what a user reads changes. It is written as what holds now and why,
+  never as the story of the choice.
+- **Where the reason of one object goes**: the docstring of its declaration, which doc-as-code
+  already makes the truth of an object's meaning (constitution §1), or the comment beside a
+  field or a constant.
+- **The narrative pages a reference doc links to**, in place of prose that told a flow's steps:
+  `specs/comprehension_harness/narratives/<slug>.html` and `…/mechanisms/<slug>.html`, one a
+  narrative, listed by `specs/comprehension_harness/index.html`. They are generated and not
+  committed: the link is written by the page's path, as `specs/architecture/persistence.html`
+  does.
+- **What the strip leaves outside the code** is settled before the folder goes: a link into the
+  folder from a reference doc, an entry of `specs/roadmap.md`.
 - **`CHANGELOG.md` and the roadmap stay accurate**: the feature leaves `specs/roadmap.md`
   § "Active streams".
 - **Unfinished work** goes to a topic folder of `specs/backlog/` or to a horizon of the roadmap.

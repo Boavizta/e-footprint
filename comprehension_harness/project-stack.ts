@@ -11,16 +11,22 @@ import { dirname, join, relative } from 'node:path';
 import { fileURLToPath } from 'node:url';
 import { CONFIG_FILE, ROOT, config, layout } from './config';
 import { openJsonSource } from './json-source';
+import { commandStrip } from './json-strip';
 import { commandTitles } from './json-titles';
-import type { PlanDiff, SourceReader, Stack, TitleReader } from './stack';
+import type { PlanDiff, SourceReader, Stack, Stripped, TitleReader } from './stack';
 
 const load = createRequire(import.meta.url);
 
 function loadStack(): Stack {
-  // A stack that does not run in Node: its two commands print what the readers of this folder answer from.
+  // A stack that does not run in Node: its two commands print what the readers of this folder answer from, and
+  // a third, when it names one, strips a file.
   if (typeof config.stack !== 'string') {
-    const { sourceIndex, titles } = config.stack;
-    return { openSource: () => openJsonSource(sourceIndex, ROOT, (file) => !layout.isTest(file)), titles: commandTitles(titles, ROOT) };
+    const { sourceIndex, titles, strip } = config.stack;
+    return {
+      openSource: () => openJsonSource(sourceIndex, ROOT, (file) => !layout.isTest(file)),
+      titles: commandTitles(titles, ROOT),
+      ...(strip ? { strip: commandStrip(strip, ROOT) } : {}),
+    };
   }
   const module = load(join(ROOT, config.stack)) as { stack?: Partial<Stack> };
   const stack = module.stack;
@@ -39,6 +45,9 @@ export const titles: TitleReader = {
   read: (file, text) => (stack ??= loadStack()).titles.read(file, text),
   prime: (files) => (stack ??= loadStack()).titles.prime?.(files),
 };
+
+/** What the archive of `feature` takes off one file (`Stack.strip`); null when the stack gives no strip. */
+export const strip = (file: string, text: string, feature: string): Stripped | null => (stack ??= loadStack()).strip?.(file, text, feature) ?? null;
 
 /** The project's hook for a proposed migration's diff; null when the configuration names none. */
 export function loadPlanDiff(): PlanDiff | null {

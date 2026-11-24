@@ -1,8 +1,8 @@
 {
   "name": "plan-review-links",
   "displayName": "Plan Review Links",
-  "description": "Open a plan's linked source file or its diff against main, or debug the vitest or pytest case a link names, unmasked — from a page opened as a file or served.",
-  "version": "0.0.12",
+  "description": "Open a plan's linked source file, its diff against main, a commit with every file it changed in one diff or several commits as the one diff they come to, or debug the vitest or pytest case a link names, unmasked — from a page opened as a file or served.",
+  "version": "0.0.14",
   "publisher": "local",
   "license": "Apache-2.0",
   "files": [

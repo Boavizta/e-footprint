@@ -63,6 +63,9 @@ export interface PlanSite extends PlannedTag, At {
   /** `changed`: on existing code. `removed`: `planned.remove`. `added`: the only body of a shell. `evidence`:
    *  `planned.evidence`, a place the bug the piece fixes shows today, which marks no change and goes with the fix. */
   change: PlannedChange;
+  /** The place's id within its piece: written in a `planned` call's tag, kept by the approval beside the
+   *  place's line (`PlanPiece.ids`), and carried by the `built` call that stands for it once it is code. */
+  place?: string;
   /** What changes at this place, in one clause (`BUDGET.clause`). The reason is `plan.md`'s, the cases the
    *  test titles'; the `narrate` sentence is written when the piece is implemented. For evidence, what is seen
    *  at this place today. */
@@ -212,6 +215,135 @@ export const fixedChains = (piece: Pick<PlanPiece, 'todos' | 'frozen'>) => piece
 /** Evidence that went was no place to build: it is not counted as one, and never taken back. */
 export const isBuiltPlace = (line: string) => !line.startsWith('evidence ');
 
+/**
+ * Where one place of a piece landed when the plan was approved, kept in the approval: once the place is code no
+ * story crosses a `planned` call there, so no run can tell it again. The place by its line as approved
+ * (`siteLineOf`), then each narrative whose reference case crossed it, with the step the change landed in;
+ * null where no step could be told. The step is kept by its label and its sentence: building the piece often
+ * gives its function one more step, which moves the ordinal of a label, and the sentence finds the step again.
+ */
+export interface FrozenLanding {
+  line: string;
+  crossedBy: Array<{ narrative: string; step: { label: string; sentence: string; how: 'in' | 'via' | 'after' } | null }>;
+}
+
+/** A narrative's steps as a plan reads them: the lines (`<label> — <sentence>`), and the function each stands in. */
+type NarrativeSteps = { title: string; steps?: string[]; stepPlaces?: Array<{ file: string; fn: string }> };
+
+const STEP_SEP = ' — ';
+const labelOfStep = (line: string) => line.slice(0, line.indexOf(STEP_SEP));
+const sentenceOfStep = (line: string) => line.slice(line.indexOf(STEP_SEP) + STEP_SEP.length);
+
+/**
+ * What an approval keeps of where a piece lands: each place a narrative crosses, as it stands, then what an
+ * earlier approval froze for the places that are code now — a piece built between two approvals keeps where
+ * it was approved to land.
+ */
+export function landingsToFreeze(piece: Pick<PlanPiece, 'slug' | 'sites' | 'built' | 'landed'>, narratives: NarrativeSteps[]): FrozenLanding[] {
+  const sentenceOf = (narrative: string, label: string) => {
+    const line = narratives.find((n) => n.title === narrative)?.steps?.find((step) => labelOfStep(step) === label);
+    if (line === undefined) throw new Error(`landingsToFreeze: #${piece.slug} lands in the step "${label}" of "${narrative}", and the narratives read hold no such step`);
+    return sentenceOfStep(line);
+  };
+  const live = piece.sites.filter((site) => site.crossedBy.length > 0).map((site): FrozenLanding => ({
+    line: siteLineOf(site),
+    crossedBy: site.crossedBy.map((c) => ({ narrative: c.narrative, step: c.step ? { label: c.step.label, sentence: sentenceOf(c.narrative, c.step.label), how: c.step.how } : null })),
+  }));
+  return [...live, ...piece.landed.filter((l) => piece.built.sites.includes(l.line) && !live.some((x) => x.line === l.line))];
+}
+
+/** The `built` call that stands for a built place of a piece, the place by its line as approved; undefined
+ *  when the place has no id, or no call names it. */
+export function markOf(piece: Pick<PlanPiece, 'marks' | 'ids'>, line: string): PlanSite | undefined {
+  const id = Object.keys(piece.ids).find((place) => piece.ids[place] === line);
+  return id === undefined ? undefined : piece.marks.find((mark) => mark.place === id);
+}
+
+/** What an approval keeps of a piece's place ids: those the planned places give themselves, as they stand, and
+ *  those an earlier approval kept for the places that are code now. */
+export function idsToKeep(piece: Pick<PlanPiece, 'sites' | 'built' | 'ids'>): Record<string, string> {
+  const built = Object.entries(piece.ids).filter(([, line]) => piece.built.sites.includes(line));
+  const planned = piece.sites.flatMap((site) => (site.place === undefined ? [] : [[site.place, siteLineOf(site)] as const]));
+  return Object.fromEntries([...built, ...planned]);
+}
+
+/** Whether a site is a place that becomes code, so one that names itself: a change on code that stays, or a
+ *  new function. A function that goes and a place a bug shows keep no call. */
+export const takesAnId = (site: Pick<PlanSite, 'change'>) => site.change === 'changed' || site.change === 'added';
+
+/** A built place, read off its line as approved: `<change> <file> in <function> — <clause>`. Null for a line
+ *  of another form. */
+export function builtPlaceOf(line: string): { change: 'changed' | 'added' | 'removed'; file: string; fn: string; clause: string } | null {
+  const m = /^(changed|added|removed) (\S+) in (\S+) — (.*)$/.exec(line);
+  return m ? { change: m[1] as 'changed' | 'added' | 'removed', file: m[2], fn: m[3], clause: m[4] } : null;
+}
+
+/** The function a step's label names: the label with the ordinal a function of several steps adds taken off. */
+const fnOfLabel = (label: string) => label.replace(/#\d+$/, '');
+
+const wordsOf = (text: string) => new Set(text.toLowerCase().split(/[^a-z0-9]+/).filter(Boolean));
+/** How much two sentences share: the words of both over the words of either. */
+function likeness(a: string, b: string): number {
+  const [x, y] = [wordsOf(a), wordsOf(b)];
+  const both = [...x].filter((w) => y.has(w)).length;
+  return both / (x.size + y.size - both || 1);
+}
+
+/**
+ * The step a frozen one is today, among a narrative's steps: the step of its function that tells the same
+ * sentence, whatever its ordinal became; else the function's only step; else, the sentence reworded in a
+ * function of several steps, the one whose sentence is closest, with `among` the number it was chosen from.
+ * Null when the function tells no step any more.
+ */
+function stepNow(steps: string[], frozen: { label: string; sentence: string }): { step: number; among: number } | null {
+  const ofFn = steps.flatMap((line, at) => (fnOfLabel(labelOfStep(line)) === fnOfLabel(frozen.label) ? [at] : []));
+  if (ofFn.length === 0) return null;
+  const same = ofFn.find((at) => sentenceOfStep(steps[at]) === frozen.sentence);
+  if (same !== undefined) return { step: same, among: 1 };
+  if (ofFn.length === 1) return { step: ofFn[0], among: 1 };
+  const closest = ofFn.reduce((best, at) => (likeness(sentenceOfStep(steps[at]), frozen.sentence) > likeness(sentenceOfStep(steps[best]), frozen.sentence) ? at : best));
+  return { step: closest, among: ofFn.length };
+}
+
+/**
+ * Where a piece's built places land in the narratives today, so that a place that is code is still drawn on its
+ * flow. The first of these that tells:
+ *  - a story crossed its `built` call: the step it lands in, as for a `planned` call, and for certain;
+ *  - the approval froze it: the step that one is today (`stepNow`);
+ *  - its own function tells a step now, the first of them: an implemented piece holds a `narrate` where it held
+ *    a `planned`;
+ *  - a step's sentence names its function in backticks.
+ * A place none tells is in no flow.
+ */
+export function builtLandings(piece: Pick<PlanPiece, 'built' | 'landed' | 'marks' | 'ids'>, narratives: NarrativeSteps[]): BuiltLanding[] {
+  const out: BuiltLanding[] = [];
+  for (const line of piece.built.sites.filter(isBuiltPlace)) {
+    const place = builtPlaceOf(line);
+    if (!place) continue;
+    const before = out.length;
+    for (const c of markOf(piece, line)?.crossedBy ?? []) {
+      const step = c.step ? (narratives.find((n) => n.title === c.narrative)?.steps ?? []).findIndex((text) => labelOfStep(text) === c.step!.label) : -1;
+      if (step >= 0) out.push({ line, narrative: c.narrative, step, how: c.step!.how, by: 'call', among: 1 });
+    }
+    if (out.length > before) continue;
+    for (const c of piece.landed.find((l) => l.line === line)?.crossedBy ?? []) {
+      const now = c.step ? stepNow(narratives.find((n) => n.title === c.narrative)?.steps ?? [], c.step) : null;
+      if (now) out.push({ line, narrative: c.narrative, step: now.step, how: c.step!.how, by: 'approved', among: now.among });
+    }
+    if (out.length > before) continue;
+    for (const n of narratives) {
+      const own = (n.stepPlaces ?? []).flatMap((p, at) => (p.file === place.file && p.fn === place.fn ? [at] : []));
+      if (own.length) out.push({ line, narrative: n.title, step: own[0], how: 'in', by: 'function', among: own.length });
+    }
+    if (out.length > before) continue;
+    for (const n of narratives) {
+      const step = (n.steps ?? []).findIndex((text) => names(sentenceOfStep(text), place.fn));
+      if (step >= 0) out.push({ line, narrative: n.title, step, how: 'via', by: 'function', among: 1 });
+    }
+  }
+  return out;
+}
+
 /** A case the spec declared in a journey test and nobody has written yet: `todo(<feature>, <screen>, <title>)`
  *  inside `journey('<name>', …)`. It is a criterion of the spec, tagged with the feature and with no piece: a
  *  journey case usually needs several pieces, and is written once they are in. */
@@ -242,15 +374,18 @@ export interface PlanSection extends MdSection {
   changed: PlanChange[];
 }
 
-/** One `Changed:` paragraph: `Changed: **what moved.** why → code "fragment"; test "fragment"`. The claims after
- *  the arrow name the lines of the delta the edit comes to, a kind and a fragment the line holds; a section with
- *  one paragraph needs none, every line is its. */
+/** One `Changed:` paragraph: `Changed: **what moved.** why → code "fragment"; test "fragment"; commit 1a2b3c4d`.
+ *  The claims after the arrow name the lines of the delta the edit comes to, a kind and a fragment the line
+ *  holds; a section with one paragraph needs none, every line is its. A `commit` claim names no line: it names
+ *  a commit that made the edit, whose changes the pages list under the paragraph. */
 export interface PlanChange {
   what: string | null;
   why: string;
   /** What and why, the claims left out: what the budget counts. */
   text: string;
   claims: Array<{ kind: string; fragment: string }>;
+  /** The commits it names, each by the start of its hash, as written (`commitsNamed`). */
+  commits: string[];
   line: number;
 }
 
@@ -261,6 +396,9 @@ export const CLAIM_KINDS = ['code', 'test', 'statement', 'reason', 'text', 'unbu
 /** The claim that takes a built place back. It is a kind of its own: a `code` claim names a line of the
  *  difference, and must never drop a built place whose line happens to hold its fragment. */
 export const UNBUILT = 'unbuilt';
+/** The claim that names a commit, `commit <hash>`: seven hex digits of the hash or more. A paragraph names the
+ *  commits that did what it says, whatever piece their message names: a fix is often a commit of another piece. */
+export const COMMIT = 'commit';
 
 export type Difficulty = 'easy' | 'standard' | 'hard';
 
@@ -286,8 +424,9 @@ export interface PlanPieceDoc {
   /** The reason, and what was refused: the blocks after the statement. */
   why: MdBlock[];
   /** A point the reviewer must answer: the paragraph opening `To confirm:`, its bold part the proposal, which the
-   *  approval writes in when the page answered "Yes, as proposed". */
-  ask: { question: string; detail: string; line: number } | null;
+   *  approval writes in when the page answered "Yes, as proposed". `commits` are those it names after ` → `, as
+   *  a `Changed:` does (`PlanChange.commits`): what was built the proposed way, for the reviewer to read. */
+  ask: { question: string; detail: string; commits: string[]; line: number } | null;
   /** What the piece was built with that no line of the plan says, and that a later lot or the reader of the
    *  code stands on: the paragraphs opening `Note:`, the bold part the point. A note asks no answer and no
    *  `Changed:`; it stays in the plan, and the approval holds it. */
@@ -398,8 +537,35 @@ export interface PlanPiece {
   reproduced: string[];
   /** The chains the approval froze for the piece (`FrozenChain`): what its reproductions told before the fix. */
   frozen: FrozenChain[];
+  /** Where the approval froze the piece's places (`FrozenLanding`): the steps they landed in when planned. */
+  landed: FrozenLanding[];
+  /** Where the piece's built places land in the narratives today (`builtLandings`). */
+  lands: BuiltLanding[];
+  /** The `built` calls of the piece, in file order: each stands where a place of the plan became code, and
+   *  names it by its id. They are no place left to build, and the archive takes them off. */
+  marks: PlanSite[];
+  /** The ids of the piece's places, each with the place's line as approved (`PlanBaseline.ids`). */
+  ids: Record<string, string>;
+  /** The planned places whose line the approval holds and whose id it does not: an id written or changed
+   *  since. Built before the next approval, such a place could not be told from its `built` call. */
+  unkept: PlanSite[];
   /** The commits that deliver the piece, oldest first: those whose message names it (`PieceCommit`). */
   commits: PieceCommit[];
+}
+
+/** A built place on a narrative's flow: the place by its line as approved, the step by its position among the
+ *  narrative's steps, from 0. `by` says what told it: `call`, a story crossed the place's `built` call there, in
+ *  this run; `approved`, the approval froze the planned call there;
+ *  `function`, the approval froze nothing and the place's function tells the step, or is named by it. `among`
+ *  is 1 when the step is told for certain, and else the number of steps of the function it was chosen from: the
+ *  closest to the sentence frozen, or the first where nothing was frozen. It may belong to another of them. */
+export interface BuiltLanding {
+  line: string;
+  narrative: string;
+  step: number;
+  how: 'in' | 'via' | 'after';
+  by: 'call' | 'approved' | 'function';
+  among: number;
 }
 
 /**
@@ -427,8 +593,59 @@ export interface PieceCommit {
   planned: Array<{ file: string; title: string; removes: boolean; text: string }>;
 }
 
-/** `narrative`: crossed by that narrative's canonical story, in run order. `uncrossed`: has a `planned` call no
- *  canonical story crosses. `static`: has no `planned` call. */
+/** The commits of a feature whose hash opens with `hash`: one, when a paragraph names a commit rightly. */
+export const commitsNamed = (commits: PieceCommit[], hash: string) => commits.filter((c) => c.sha.startsWith(hash));
+
+/** A commit of the branch and the files it changed, whatever its message names. */
+export interface CommitTouch { sha: string; files: string[] }
+
+/**
+ * Commits of a piece that read as one diff: each file from before the first of them that changed it to what the
+ * last that changed it left is the sum of what they did to it and nothing more, because no other commit changed
+ * that file between two of them. A commit that changed another file between them parts nothing.
+ */
+export interface CommitBlock {
+  commits: PieceCommit[];
+  /** What parts the block from the one before it: the commits outside the piece's that changed, since the
+   *  earlier block changed it, a file this block's first commit changes. Empty for the first block. */
+  after: CommitTouch[];
+}
+
+/**
+ * A piece's commits in blocks (`CommitBlock`), oldest first: one block, unless a commit that is not the piece's
+ * changed one of the piece's files between two of them. `history` is every commit of the branch from the oldest
+ * of `commits` on, oldest first; a commit it does not hold cannot be placed, and that throws.
+ */
+export function commitBlocks(commits: PieceCommit[], history: CommitTouch[]): CommitBlock[] {
+  const own = new Map(commits.map((c) => [c.sha, c]));
+  const blocks: CommitBlock[] = [];
+  // The files the open block changed, and for each the other commits that changed it since.
+  let files = new Set<string>();
+  let since = new Map<string, string[]>();
+  for (const touch of history) {
+    const commit = own.get(touch.sha);
+    if (!commit) {
+      for (const file of touch.files) if (files.has(file)) since.set(file, [...(since.get(file) ?? []), touch.sha]);
+      continue;
+    }
+    own.delete(touch.sha);
+    const parted = new Map<string, string[]>();
+    for (const { file } of commit.files) for (const sha of since.get(file) ?? []) parted.set(sha, [...(parted.get(sha) ?? []), file]);
+    if (blocks.length === 0 || parted.size > 0) {
+      blocks.push({ commits: [], after: [...parted].map(([sha, changed]) => ({ sha, files: changed })) });
+      files = new Set();
+      since = new Map();
+    }
+    blocks[blocks.length - 1].commits.push(commit);
+    for (const { file } of commit.files) files.add(file);
+  }
+  if (own.size > 0) throw new Error(`commitBlocks: the history read holds no commit ${[...own.keys()].join(', ')}, which a piece's commits name`);
+  return blocks;
+}
+
+/** `narrative`: crossed by that narrative's canonical story, in run order, then the pieces with no `planned` call
+ *  left whose built places land in it, in the order of its steps. `uncrossed`: has a `planned` call no canonical
+ *  story crosses. `static`: has no `planned` call, and no built place in a narrative. */
 export interface PlanGroup {
   kind: 'narrative' | 'uncrossed' | 'static';
   narrative: string | null;
@@ -469,6 +686,9 @@ export interface Plan {
   implementing: boolean;
   /** The commits that name a piece of the feature, oldest first. */
   commits: PieceCommit[];
+  /** Every commit of the branch from the oldest of `commits` on, oldest first: what tells which of a piece's
+   *  commits read as one diff (`commitBlocks`). */
+  history: CommitTouch[];
   /** A commit names a piece the plan does not hold. */
   unknownCommitPieces: Array<{ sha: string; slug: string }>;
   /** False when the commit of the approval is not in this branch's history: no commit can be told to come
@@ -523,6 +743,12 @@ export interface PlanBaseline extends PlanSnapshot {
   /** By piece, what each of its reproductions told when the plan was approved (`chainsToFreeze`). Read by the
    *  pages once the piece is built; never compared, so it is no unit and no line of a delta. */
   chains?: Record<string, FrozenChain[]>;
+  /** By piece, where each of its places landed when the plan was approved (`landingsToFreeze`). Read by the
+   *  pages once a place is code; never compared either. */
+  landings?: Record<string, FrozenLanding[]>;
+  /** By piece, the id of each of its places and the place's line as approved: what a `built` call names once
+   *  the place is code (`PlanPiece.marks`). */
+  ids?: Record<string, Record<string, string>>;
 }
 
 /** A unit that is not as approved. `reason`: `needed`, the change is one the reviewer must be told of and the
@@ -595,6 +821,12 @@ const questionItem = (unit: string, what: string): ReviewItem => ({ key: hash(`$
 /** A piece's question, in one line: what it asks, then the alternative. */
 export const askLine = (ask: NonNullable<PlanPieceDoc['ask']>) => `${ask.question}${ask.detail ? ` ${ask.detail}` : ''}`;
 
+/** The line a "Yes, as proposed" writes into the piece's reason: the proposal, ended as a sentence. */
+export const proposalLine = (ask: NonNullable<PlanPieceDoc['ask']>) => {
+  const proposal = ask.question.trim();
+  return /[.!?]$/.test(proposal) ? proposal : `${proposal}.`;
+};
+
 /** The question a piece asks, as an item to answer; null when it asks none. */
 export const pieceQuestion = (piece: PlanPiece): ReviewItem | null => (piece.doc?.ask ? questionItem(`#${piece.slug}`, askLine(piece.doc.ask)) : null);
 
@@ -625,8 +857,7 @@ export function writeAcceptedAnswers(text: string, plan: Pick<Plan, 'pieces' | '
     if (!item || !ask || !accepted(item)) continue;
     let end = ask.line - 1;
     while (end + 1 < lines.length && lines[end + 1].trim() !== '') end += 1;
-    const proposal = ask.question.trim();
-    edits.push({ start: ask.line - 1, end, lines: [/[.!?]$/.test(proposal) ? proposal : `${proposal}.`], unit: item.unit });
+    edits.push({ start: ask.line - 1, end, lines: [proposalLine(ask)], unit: item.unit });
   }
   for (const waiver of plan.doc?.waivers ?? []) {
     const item = waiverQuestion(waiver);
@@ -636,6 +867,25 @@ export function writeAcceptedAnswers(text: string, plan: Pick<Plan, 'pieces' | '
   }
   for (const e of [...edits].sort((a, b) => b.start - a.start)) lines.splice(e.start, e.end - e.start + 1, ...e.lines);
   return { text: lines.join('\n'), applied: edits.map((e) => e.unit) };
+}
+
+/**
+ * Why a plan is not approved as it stands, or null when it is: a point the page did not answer "Yes, as
+ * proposed", then a failure of the check. Read before the approval writes anything, the accepted answers
+ * included: the reviewer said yes to the plan they read, and a proposal is counted in its piece's reason while
+ * it stands (`findings`), so the line a yes writes breaks no budget. Read after, against the approval it
+ * replaces, that line would be an edit no `Changed:` names.
+ */
+export function approvalRefusal(plan: Plan): string | null {
+  const said = (item: ReviewItem) => {
+    const answer = plan.feedback[item.key];
+    return answer?.verdict === 'refused' ? `answered on the page: "${answer.note}" — write the answer in as a statement` : 'not answered on the page — answer it';
+  };
+  const questions = [...plan.pieces.flatMap((piece) => pieceQuestion(piece) ?? []), ...(plan.doc?.waivers ?? []).filter((w) => w.toConfirm).map(waiverQuestion)];
+  const open = questions.filter((item) => plan.feedback[item.key]?.verdict !== 'approved');
+  if (open.length) return `a "To confirm:" stands — ${open.map((i) => `${i.unit}, ${said(i)}`).join('; ')}; then approve`;
+  const { failures } = findings(plan);
+  return failures.length ? `the plan does not pass, and nothing is written — ${failures.join('; ')}` : null;
 }
 
 // ── The tag ────────────────────────────────────────────────────────────────────
@@ -930,6 +1180,33 @@ function pointersOf(section: MdSection | undefined, file: string): PlanPointer[]
 
 const RESERVED_SECTIONS = [WAIVERS_SECTION, DELIVERY_SECTION, ELSEWHERE_SECTION];
 
+const LINE_CLAIM = new RegExp(`^(${CLAIM_KINDS.join('|')})\\s+(?:"([^"]+)"|(\\S+))$`);
+const COMMIT_CLAIM = new RegExp(`^${COMMIT}\\s+([0-9a-f]{7,40})$`);
+const OPENS_A_CLAIM = new RegExp(`^(${[...CLAIM_KINDS, COMMIT].join('|')})\\s`);
+
+/**
+ * A paragraph's words, and what it names after its last ` → `: the lines of the difference, a kind and a
+ * fragment each, and the commits, parted by `;`. A `Changed:` names both. A question names commits only
+ * (`linesToo` false), and its own words may hold an arrow: what follows one is read as claims when it opens as
+ * a claim does.
+ */
+function claimsOf(whole: string, file: string, line: number, linesToo = true): { text: string; claims: PlanChange['claims']; commits: string[] } {
+  const arrow = whole.lastIndexOf(' → ');
+  const tail = arrow < 0 ? '' : whole.slice(arrow + 3);
+  if (arrow < 0 || (!linesToo && !OPENS_A_CLAIM.test(tail))) return { text: whole, claims: [], commits: [] };
+  const claims: PlanChange['claims'] = [];
+  const commits: string[] = [];
+  for (const c of tail.split(';').map((x) => x.trim()).filter(Boolean)) {
+    const commit = COMMIT_CLAIM.exec(c);
+    const named = commit ? null : LINE_CLAIM.exec(c);
+    if (commit) commits.push(commit[1]);
+    else if (named && linesToo) claims.push({ kind: named[1], fragment: named[2] ?? named[3] });
+    else if (named) throw new Error(`comprehension-plan: ${file}:${line} — "${c}" names a line of a difference, and a "To confirm:" has none: after " → " it names commits, "${COMMIT} <hash>", parted by ";"`);
+    else throw new Error(`comprehension-plan: ${file}:${line} — "${c}" is no claim: after " → ", a kind (${CLAIM_KINDS.join(', ')}) and a fragment of the line, in double quotes when it holds a space, or "${COMMIT}" and seven digits of its hash or more, claims parted by ";"`);
+  }
+  return { text: whole.slice(0, arrow), claims, commits };
+}
+
 export function planDocOf(intent: Intent, file: string): PlanDoc {
   const waivers = waiversOf(intent.sections.find((s) => s.title === WAIVERS_SECTION), file);
   const lots = lotsOf(intent.sections.find((s) => s.title === DELIVERY_SECTION), file);
@@ -947,16 +1224,9 @@ export function planDocOf(intent: Intent, file: string): PlanDoc {
     if (piece === null && s.title.startsWith('#')) throw new Error(`comprehension-plan: ${file}:${s.line} — "## ${s.title}": a piece's section is titled with its tag alone, "## #the-slug"`);
     const changed = s.blocks.flatMap((b) => {
       if (b.kind !== 'p' || !CHANGED.test(b.text)) return [];
-      const whole = b.text.replace(CHANGED, '');
-      const arrow = whole.lastIndexOf(' → ');
-      const text = arrow < 0 ? whole : whole.slice(0, arrow);
-      const claims = arrow < 0 ? [] : whole.slice(arrow + 3).split(';').map((c) => c.trim()).filter(Boolean).map((c) => {
-        const m = new RegExp(`^(${CLAIM_KINDS.join('|')})\\s+(?:"([^"]+)"|(\\S+))$`).exec(c);
-        if (!m) throw new Error(`comprehension-plan: ${file}:${b.line} — "${c}" is no claim: after " → ", a kind (${CLAIM_KINDS.join(', ')}) and a fragment of the line, in double quotes when it holds a space, claims parted by ";"`);
-        return { kind: m[1], fragment: m[2] ?? m[3] };
-      });
+      const { text, claims, commits } = claimsOf(b.text.replace(CHANGED, ''), file, b.line);
       const bold = /^\*\*(.+?)\*\*\s*/.exec(text);
-      return [{ what: bold ? bold[1].replace(/\.$/, '') : null, why: bold ? text.slice(bold[0].length) : text, text, claims, line: b.line }];
+      return [{ what: bold ? bold[1].replace(/\.$/, '') : null, why: bold ? text.slice(bold[0].length) : text, text, claims, commits, line: b.line }];
     });
     return { ...s, title, anchor, piece, bug: bug !== null, under: piece === null ? null : under, slugs: slugRefs(texts.join('\n')), changed };
   });
@@ -974,9 +1244,9 @@ export function pieceDocOf(section: PlanSection, file: string): PlanPieceDoc {
   if (asks.length > 1) throw new Error(`comprehension-plan: ${file}:${asks[1].line} — "## ${section.title}" holds ${asks.length} "To confirm:" paragraphs, and a piece asks one thing`);
   let ask: PlanPieceDoc['ask'] = null;
   if (asks[0]) {
-    const text = asks[0].text.replace(ASK, '');
+    const { text, commits } = claimsOf(asks[0].text.replace(ASK, ''), file, asks[0].line, false);
     const bold = /^\*\*(.+?)\*\*\s*/.exec(text);
-    ask = { question: bold ? bold[1] : text, detail: bold ? text.slice(bold[0].length) : '', line: asks[0].line };
+    ask = { question: bold ? bold[1] : text, detail: bold ? text.slice(bold[0].length) : '', commits, line: asks[0].line };
   }
   const notes = rest.flatMap((b): PlanNote[] => {
     if (b.kind !== 'p' || !NOTE.test(b.text)) return [];
@@ -1226,8 +1496,15 @@ export function changedAway(file: string, hunks: Hunk[], feature: string, named:
     const said = (h: Hunk) => (h.now === null ? `${h.removed.length === 1 ? 'a line' : `${h.removed.length} lines`} taken off after line ${h.at.now}` : h.now[0] === h.now[1] ? `line ${h.now[0]}` : `lines ${h.now[0]}–${h.now[1]}`);
     return above.length ? [`lines ${file} — changed above the first place of the file: ${above.map(said).join(', ')}`] : [];
   }
-  // The innermost function that holds a line: the one whose name comes last.
-  const holder = (line: number) => functions.filter((f) => f.from <= line && line <= f.endLine).sort((a, b) => b.line - a.line)[0] ?? null;
+  // The innermost function that holds a line: the one whose name comes last and, of two named on one line,
+  // the one that ends first. Two with one name line and one last line no line tells apart (a function that
+  // returns a function, `const stepper = (field) => function moveFigure() {…}`): the one a place names is
+  // taken, so a change of the function a place names is never listed under the other's name.
+  const holder = (line: number) => {
+    const holding = functions.filter((f) => f.from <= line && line <= f.endLine);
+    const innermost = holding.filter((f) => !holding.some((g) => g.line > f.line || (g.line === f.line && g.endLine < f.endLine)));
+    return innermost.find((f) => named.has(f.fn)) ?? innermost[innermost.length - 1] ?? null;
+  };
   const touched = new Map<FunctionLines, Hunk[]>();
   for (const h of hunks) {
     const lines = h.now ? Array.from({ length: h.now[1] - h.now[0] + 1 }, (_, i) => h.now![0] + i) : [h.at.now, h.at.now + 1];
@@ -1312,7 +1589,8 @@ export function filesNamed(snapshot: PlanSnapshot): Set<string> {
  *    was approved. So a place skipped beside places that were built is told, and so is one a later commit
  *    undid. Where no function can be placed (a template, a comment, a stack that gives no lines) the place is
  *    read by its file: the piece's commits added no line to it. A removal is not read this way (it adds nothing
- *    by design), nor a proposed migration, which moves to another folder.
+ *    by design), nor a proposed migration, which moves to another folder, nor a place in a file that a commit
+ *    of the piece wrote in before the approval: the approval was given on it as built.
  *
  * Each is a line of the piece's delta, so the piece's section says why in a `Changed:` and the reviewer answers
  * it like any other edit: the place is taken back (`takeBack`), or the edit says that it was built by taking
@@ -1333,10 +1611,13 @@ export function unplannedLines(commits: PieceCommit[], named: ReadonlySet<string
   for (const piece of pieces) {
     const since = piece.commits.filter((c) => c.sinceApproval);
     const addedTo = (file: string) => piece.commits.reduce((n, c) => n + (c.files.find((f) => f.file === file)?.added ?? 0), 0);
+    // A commit of the piece the approval covers wrote in the file: the approval was given on places already
+    // built there, and a later commit of the piece edits what stands. Nothing since tells them built or not.
+    const builtBefore = (file: string) => piece.commits.some((c) => !c.sinceApproval && c.files.some((f) => f.file === file));
     for (const line of [...piece.built.sites, ...piece.built.comments]) {
       const m = /^(changed|added|changes) (\S+) (?:in (\S+) )?— (.*)$/.exec(line);
       if (!m || (m[2].startsWith('specs/features/') && m[2].endsWith('.sql'))) continue;
-      if (!since.some((c) => c.files.some((f) => f.file === m[2]))) continue;
+      if (!since.some((c) => c.files.some((f) => f.file === m[2])) || builtBefore(m[2])) continue;
       // The second of two functions of one name in a file is `fn#2` on its line: it is read by its file.
       const inFunction = m[3] === undefined ? null : gained?.(m[2], m[3]) ?? null;
       if (inFunction === 0) add(piece.slug, `place ${m[2]} — planned in ${m[3]}, which gained no line since the approval: ${m[4]}`);
@@ -1439,9 +1720,9 @@ export interface FeatureDocs {
   approved?: { file: string; baseline: PlanBaseline } | null;
   /** `plan-feedback.json`, when the reviewer has answered from the pages. */
   feedback?: PlanFeedback | null;
-  /** The commits whose message names a piece of the feature, oldest first, and whether the commit of the
-   *  approval is in this branch's history. */
-  commits?: { list: PieceCommit[]; baseKnown: boolean } | null;
+  /** The commits whose message names a piece of the feature, oldest first, whether the commit of the
+   *  approval is in this branch's history, and every commit of the branch from the oldest of them on. */
+  commits?: { list: PieceCommit[]; baseKnown: boolean; history: CommitTouch[] } | null;
   /** What a repository says of a piece of this feature it plans; null when no checkout of it is known. */
   pointed?: (repository: string, slug: string) => PointerTarget | null;
   /** What `file` changed at no place of the plan since the commit of the approval, as lines of `BESIDE`, given
@@ -1460,8 +1741,10 @@ export interface PlanInput {
   /** The journey tests' `todo` cases, of every feature. A feature these alone name has a spec and no plan yet. */
   journeyCases?: JourneyCase[];
   /** Every narrative with a canonical story, in any order. `steps` is its story as lines, a step each
-   *  (`<function> — <sentence>`): what a plan landing in it is approved against. */
-  narratives: Array<{ title: string; kind: NarrativeKind; steps?: string[] }>;
+   *  (`<function> — <sentence>`): what a plan landing in it is approved against. `stepPlaces` is the function
+   *  each step stands in, in the order of `steps`: what puts a built place the approval froze nowhere on its
+   *  flow (`builtLandings`). */
+  narratives: Array<{ title: string; kind: NarrativeKind; steps?: string[]; stepPlaces?: Array<{ file: string; fn: string }> }>;
   docs(feature: string): FeatureDocs;
   /** What the project's configuration says of a file: product code, a unit test. */
   layout: Layout;
@@ -1490,13 +1773,19 @@ export function assemblePlans(input: PlanInput): Plan[] {
           takenBack: { sites: [], comments: [] },
           reproduced: [],
           frozen: docs.approved?.baseline.chains?.[slug] ?? [],
+          landed: docs.approved?.baseline.landings?.[slug] ?? [],
+          lands: [],
+          marks: [],
+          ids: docs.approved?.baseline.ids?.[slug] ?? {},
+          unkept: [],
           commits: [],
         };
         bySlug.set(slug, piece);
       }
       return piece;
     };
-    for (const s of input.sites.filter((x) => x.feature === feature).sort(byPlace)) pieceOf(s.slug).sites.push(s);
+    // A `built` call is no place left to build: it stands for one that is code.
+    for (const s of input.sites.filter((x) => x.feature === feature).sort(byPlace)) pieceOf(s.slug)[s.change === 'built' ? 'marks' : 'sites'].push(s);
     for (const s of input.statics.filter((x) => x.feature === feature).sort(byPlace)) {
       const piece = pieceOf(s.slug);
       piece.statics.push(s);
@@ -1513,7 +1802,9 @@ export function assemblePlans(input: PlanInput): Plan[] {
     // A test the approval holds as a reproduction is compared with the body approved from then on.
     for (const unit of approvedPieces) {
       const piece = bySlug.get(unit.name.slice(1));
-      if (piece) piece.reproduced = (unit.facets[REPRODUCTIONS] ?? []).map(reproductionOfLine);
+      if (!piece) continue;
+      piece.reproduced = (unit.facets[REPRODUCTIONS] ?? []).map(reproductionOfLine);
+      piece.unkept = piece.sites.filter((site) => site.place !== undefined && (unit.facets.sites ?? []).includes(siteLineOf(site)) && piece.ids[site.place] !== siteLineOf(site));
     }
     if (implementing) {
       const heldBy = new Map<string, string>();
@@ -1525,6 +1816,7 @@ export function assemblePlans(input: PlanInput): Plan[] {
           return linesOver(unit.facets[facet] ?? [], held).filter((text) => !places.has(placeOfLine({ facet, sign: '−', text })) && (heldBy.get(text) ?? piece.slug) === piece.slug);
         };
         piece.built = { sites: went('sites', piece.sites.map(siteLineOf)), comments: went('comments', piece.statics.map(commentLineOf)) };
+        piece.lands = builtLandings(piece, narratives);
       }
     }
     const commits = docs.commits?.list ?? [];
@@ -1534,12 +1826,16 @@ export function assemblePlans(input: PlanInput): Plan[] {
     const groups: PlanGroup[] = [];
     for (const n of narratives) {
       const first = (piece: PlanPiece) => Math.min(...piece.sites.flatMap((s) => s.crossedBy.filter((c) => c.narrative === n.title).map((c) => c.at)));
-      const pieces = [...left].filter((piece) => Number.isFinite(first(piece))).sort((a, b) => first(a) - first(b));
+      const crossed = [...left].filter((piece) => Number.isFinite(first(piece))).sort((a, b) => first(a) - first(b));
+      // A piece with no call left is told where its built places land, after the pieces still to build.
+      const builtAt = (piece: PlanPiece) => Math.min(...piece.lands.filter((l) => l.narrative === n.title).map((l) => l.step));
+      const built = [...left].filter((piece) => piece.sites.length === 0 && Number.isFinite(builtAt(piece))).sort((a, b) => builtAt(a) - builtAt(b));
+      const pieces = [...crossed, ...built];
       if (pieces.length === 0) continue;
       for (const s of pieces) left.delete(s);
       groups.push({ kind: 'narrative', narrative: n.title, pieces });
     }
-    // A piece all built has no place left: it is told last, by its name.
+    // A piece all built that lands in no narrative has no place left: it is told last, by its name.
     const place = (piece: PlanPiece): At | undefined => piece.sites[0] ?? [...piece.statics, ...piece.todos].sort(byPlace)[0];
     const inFileOrder = (pieces: PlanPiece[]) => pieces.sort((a, b) => {
       const [x, y] = [place(a), place(b)];
@@ -1623,11 +1919,28 @@ export function assemblePlans(input: PlanInput): Plan[] {
       builtCases,
       implementing,
       commits,
+      history: docs.commits?.history ?? [],
       unknownCommitPieces: commits.flatMap((c) => c.pieces.filter((slug) => !bySlug.has(slug)).map((slug) => ({ sha: c.sha, slug }))),
       baseKnown: docs.commits?.baseKnown ?? true,
       unknownRefs: doc ? doc.sections.flatMap((s) => [...new Set([...(s.piece === null ? [] : [s.piece]), ...s.slugs])].filter((slug) => !named(slug)).map((slug) => ({ slug, section: s.title, line: s.line }))) : [],
     };
   });
+}
+
+// ── What the archive leaves ────────────────────────────────────────────────────
+
+/** The lines of a file that still name a feature: a tag of it (`<feature>#…`: a `built` call, a test's title, a
+ *  comment) or a path into its folder, written from wherever (`specs/features/<feature>/…`, `../<feature>/…`: a
+ *  planned screen's mockup, a link, an ignore rule). What the strip of an archive reads a file for once it has
+ *  taken off what it can: a line left is settled by hand, or the folder's deletion leaves it naming nothing.
+ *  A path read back from a commit (`git show <commit>:<path>`) names what the history keeps, and is no such line. */
+export function namesFeature(text: string, feature: string): Array<{ line: number; text: string }> {
+  if (!text.includes(feature)) return [];
+  const name = feature.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
+  const tag = new RegExp(`(?<![a-z0-9-])${name}#`);
+  const path = new RegExp(`([^\\s"'\`()<>\\[\\]]*)(?<![a-z0-9-])${name}/`, 'g');
+  const inFolder = (line: string) => [...line.matchAll(path)].some((m) => !/^[0-9a-f]{7,40}:/.test(m[1]));
+  return text.split('\n').flatMap((line, i) => (tag.test(line) || inFolder(line) ? [{ line: i + 1, text: line.trim() }] : []));
 }
 
 // ── What `--check` says of a plan ──────────────────────────────────────────────
@@ -1637,8 +1950,10 @@ const at = (s: At) => `${s.file}:${s.line}`;
 /** `failures` exit 1; `info` is printed. A new function no site names fails, and so do a unit that is not as
  *  approved and says no `Changed:`, a `Changed:` standing on no difference, and a piece in no lot or in two once
  *  `plan.md` holds a "## Delivery". With `archive`, every planned call, comment and test to write left is a
- *  failure, and so are a journey case of the spec still a `todo` and a rule with neither an owner nor a waiver: an implemented piece holds code and a `narrate`, and its tests are
- *  written, still tagged. The archive then takes the tags off the titles. */
+ *  failure, and so are a journey case of the spec still a `todo` and a rule with neither an owner nor a waiver: an
+ *  implemented piece holds code, a `built` call a place and a `narrate`, and its tests are written, still
+ *  tagged. The gate passes with those marks standing: the strip then takes them off (`namesFeature` reads
+ *  what it left). */
 export function findings(plan: Plan, archive = false): { failures: string[]; info: string[] } {
   const failures: string[] = [];
   const info: string[] = [];
@@ -1649,6 +1964,13 @@ export function findings(plan: Plan, archive = false): { failures: string[]; inf
   // The budgets: each fact has one home, and each home is short.
   const over = (n: number, max: number, where: string, what: string, goes: string) => {
     if (n > max) failures.push(`planned: ${where} ${what} in ${n} words, and the budget is ${max} — ${goes}`);
+  };
+  // A paragraph names commits of the feature, each by a start of its hash that one commit has.
+  const namesCommits = (where: string, hashes: string[]) => {
+    for (const hash of hashes) {
+      const n = commitsNamed(plan.commits, hash).length;
+      if (n !== 1) failures.push(`planned: ${where} names the commit ${hash}, and ${n === 0 ? `no commit of ${plan.feature} has that hash` : `${n} commits of ${plan.feature} open with it`} — a paragraph names a commit whose message holds "Piece: ${plan.feature}#<piece>", by seven digits of its hash or more`);
+    }
   };
   for (const t of plan.unknownRules) failures.push(`planned: ${at(t)} claims [${t.rule}], which is no rule of ${plan.rulesFile ?? `specs/features/${plan.feature}/spec.md (no such file)`}`);
   for (const r of plan.rules) {
@@ -1674,13 +1996,20 @@ export function findings(plan: Plan, archive = false): { failures: string[]; inf
   const elsewhere = `the reason goes to plan.md's "## #slug" section, the cases to the test titles`;
   for (const s of plan.pieces) {
     for (const x of s.sites) over(words(x.sentence), BUDGET.clause, at(x), 'states its change', elsewhere);
-    for (const x of s.statics) over(words(x.text), BUDGET.clause, at(x), 'states its change', elsewhere);
+    // A comment's text runs over the comment lines under it (`plannedComments`): the count may hold a comment that
+    // was there before, which the message has to say, since the wording is then not what is over.
+    for (const x of s.statics) over(words(x.text), BUDGET.clause, at(x), 'states its change', `${elsewhere}; the count runs over the comment lines directly under the tag, so a blank line parts it from a comment that was there before`);
     for (const t of s.todos) over(words(t.title), BUDGET.title, at(t), 'is titled', 'a title names one behaviour, and its data is the test\'s');
     if (s.doc) {
       const where = `${plan.doc!.file}:${s.doc.section.line} #${s.slug}`;
       over(words(s.doc.what), BUDGET.what, where, 'states the piece', 'the statement is the first paragraph, the reason the next');
-      over(s.doc.why.reduce((n, b) => n + (b.kind === 'p' ? words(b.text) : b.items.reduce((m, i) => m + words(i.text), 0)), 0), BUDGET.why, where, 'gives its reason', 'what the sites and the titles already say is not said again');
+      // A proposal still to confirm is counted in the reason: a yes writes it there, as approved, and no one
+      // rewords it to fit afterwards.
+      const why = s.doc.why.reduce((n, b) => n + (b.kind === 'p' ? words(b.text) : b.items.reduce((m, i) => m + words(i.text), 0)), 0);
+      if (s.doc.ask) over(why + words(proposalLine(s.doc.ask)), BUDGET.why, where, 'gives its reason and the proposal a yes writes into it', 'what the sites and the titles already say is not said again');
+      else over(why, BUDGET.why, where, 'gives its reason', 'what the sites and the titles already say is not said again');
       if (s.doc.ask) over(words(`${s.doc.ask.question} ${s.doc.ask.detail}`), BUDGET.ask, `${plan.doc!.file}:${s.doc.ask.line} #${s.slug}`, 'asks its question', 'the proposal in bold, then the alternative');
+      if (s.doc.ask) namesCommits(`${plan.doc!.file}:${s.doc.ask.line} #${s.slug}`, s.doc.ask.commits);
       for (const n of s.doc.notes) {
         over(words(n.text), BUDGET.note, `${plan.doc!.file}:${n.line} #${s.slug}`, 'notes what it was built with', 'one point a note: a second point is a second "Note:"');
         if (n.what === null) failures.push(`planned: ${plan.doc!.file}:${n.line} #${s.slug} holds a note with no point — "Note: **the point.** what follows from it", so the reader knows what to keep before reading why`);
@@ -1717,6 +2046,39 @@ export function findings(plan: Plan, archive = false): { failures: string[]; inf
     const loose = d.edits.length > 1 ? d.unclaimed.filter((l) => !asksNoEdit(l.facet)) : [];
     if (loose.length) failures.push(`planned: ${where} holds ${d.edits.length} "Changed:" and ${loose.length} line${loose.length === 1 ? '' : 's'} of its delta that none of them names — an edit ends ' → kind "fragment"; …' naming its lines:${loose.map((l) => `\n      ${l.sign} ${kindOfLine(l)}: ${l.text}`).join('')}`);
   }
+  // A place that becomes code names itself, once in its piece, and the approval holds the name before the
+  // place is built: its `built` call is read by it.
+  for (const piece of plan.pieces) {
+    const tag = `${plan.feature}#${piece.slug}`;
+    const named = piece.sites.filter(takesAnId);
+    for (const site of named) {
+      if (site.place === undefined) failures.push(`planned: ${at(site)} names no place — planned('${tag}:<place>', …): the id of the place within #${piece.slug}, which its \`built\` call carries once it is code`);
+      else if (named.find((other) => other.place === site.place) !== site) failures.push(`planned: ${at(site)} is the second place of #${piece.slug} named "${site.place}" — a place has its own id`);
+      else if (piece.ids[site.place] !== undefined && piece.ids[site.place] !== siteLineOf(site) && piece.built.sites.includes(piece.ids[site.place])) failures.push(`planned: ${at(site)} takes the id "${site.place}", which a built place of #${piece.slug} holds — a place has its own id`);
+    }
+    for (const site of piece.unkept) failures.push(`planned: ${at(site)} the id "${site.place}" is not in the approval (${plan.approved?.file}) — an id is kept by the approval: approve again before the place is built, or its \`built\` call names nothing`);
+    // A place that is code keeps a call: the commit that took its `planned` off wrote it.
+    for (const [place, line] of Object.entries(piece.ids)) {
+      if (!piece.built.sites.includes(line) || piece.marks.some((mark) => mark.place === place)) continue;
+      const read = builtPlaceOf(line);
+      if (read === null || read.change === 'removed') continue;
+      failures.push(`planned: #${piece.slug} — the place "${place}" (${read.file} in ${read.fn}) is code and no built('${plan.feature}#${piece.slug}:${place}') stands for it — the commit that takes a \`planned\` call off writes the \`built\` call of its place where the change is; a place that was not built is taken back by a "Changed:" (→ unbuilt …)`);
+    }
+  }
+  // A `built` call names a place the approval holds as built, and one call a place.
+  for (const piece of plan.pieces) {
+    for (const mark of piece.marks) {
+      const line = mark.place === undefined ? undefined : piece.ids[mark.place];
+      const where = `planned: ${at(mark)} built('${plan.feature}#${piece.slug}:${mark.place}')`;
+      if (line === undefined) failures.push(`${where} names a place the approval does not hold — the places of #${piece.slug} with an id: ${Object.keys(piece.ids).join(', ') || 'none'}`);
+      else if (!piece.built.sites.includes(line)) failures.push(`${where} stands for a place that is not built — its \`planned\` call is still there, or a "Changed:" took the place back`);
+      else if (piece.marks.find((other) => other.place === mark.place) !== mark) failures.push(`${where} is the second call of that place — one call stands for a place`);
+    }
+  }
+  const marks = plan.pieces.flatMap((piece) => piece.marks);
+  // What is built keeps its marks through the gate: the strip takes them off once it passes.
+  const tagged = plan.pieces.flatMap((piece) => piece.todos.filter((t) => !isOpenTest(t)));
+  if (archive && marks.length + tagged.length) info.push(`archive ${plan.feature}: ${marks.length} built call${marks.length === 1 ? '' : 's'} and ${tagged.length} tagged test title${tagged.length === 1 ? '' : 's'} stand, for the strip to take off`);
   // A bug is what its pieces fix: one with no piece under it is fixed by nothing the plan holds.
   for (const section of plan.doc?.sections ?? []) {
     if (!section.bug) continue;
@@ -1728,6 +2090,7 @@ export function findings(plan: Plan, archive = false): { failures: string[]; inf
     for (const c of section.changed) {
       const where = `${plan.doc!.file}:${c.line} ${unitOf(section)}`;
       over(words(c.text), BUDGET.changed, where, 'says what moved and why', 'one edit a paragraph: a second edit is a second "Changed:"');
+      namesCommits(where, c.commits);
       if (c.what === null) failures.push(`planned: ${where} gives a reason and does not say what moved — "Changed: **what moved.** why", one edit a paragraph, so the reviewer knows which change the reason speaks of`);
       // A claim that takes a place back names one: checked whatever the number of edits, since nothing else would say.
       const took = section.piece === null ? [] : Object.values(plan.pieces.find((x) => x.slug === section.piece)?.takenBack ?? {}).flat();

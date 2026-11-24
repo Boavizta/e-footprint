@@ -55,11 +55,11 @@ what each is for and who approves what.
 1. **Specify** — `specs/features/<name>/spec.md`: the problem, the change, the rules no test shows by itself. Skill: `spec-specify`.
 2. **Plan** — the plan is written into the code as pieces (planned calls, planned tests) and a short `plan.md`; the reviewer reads the plan page generated from them and approves it. Skill: `spec-plan`.
 3. **Tasks** — the delivery: the pieces cut into lots, with the unit tests of each. Skill: `spec-tasks`.
-4. **Implement** — one lot a run: built, checked against the approved plan, reviewed. Skills: `feature-implement`, `task-implement`, `task-review`.
-5. **Archive** — durable facts promoted to the reference docs, the feature folder deleted. Skill: `feature-archive`.
+4. **Implement** — the delivery, lot by lot: each built, checked against the approved plan, reviewed; one lot alone when asked. Skills: `feature-implement`, `task-implement`, `task-review`.
+5. **Archive** — the few load-bearing decisions promoted to the reference docs, the feature's marks stripped off the code, the feature folder deleted. Skill: `feature-archive`.
 
-Stages 2 to 4 run on the Python stack of the comprehension tools: the `narrate`, `event` and
-`planned` calls of `efootprint/narrate.py`, and the test declarations and the three commands of
+Stages 2 to 4 run on the Python stack of the comprehension tools: the `narrate`, `event`,
+`planned` and `built` calls of `efootprint/narrate.py`, and the test declarations and the commands of
 `comprehension_harness/python/` (`.agents/repository.md` § "The stack" says how each is spelled,
 and where a call may stand). `efootprint/narrate.py` is this project's copy of the stack's
 reference file: the library imports the calls from it, and nothing of the harness. A feature in

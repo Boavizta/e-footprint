@@ -15,7 +15,7 @@ class Basket:
 def pay(basket):
     event("The customer presses Pay.")
     amount = basket.total()
-    planned("gift-cards#deduct-the-card", "The amount due **loses the card's balance**.")
+    planned("gift-cards#deduct-the-card:amount-due", "The amount due **loses the card's balance**.")
     return charge(amount)
 
 
@@ -25,7 +25,7 @@ def charge(amount):
 
 
 def refund(amount):
-    planned("gift-cards#refund-to-card", "A refund goes back to the card first.")
+    planned("gift-cards#refund-to-card:refund", "A refund goes back to the card first.")
     raise NotImplementedError("planned: gift-cards#refund-to-card")
 
 

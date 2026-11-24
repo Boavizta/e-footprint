@@ -106,6 +106,123 @@ async function handleDiff(uri) {
   );
 }
 
+/** The repository of an open workspace folder that holds a commit, and the commit's whole hash:
+ *  a link names a commit by its hash alone, so a page needs no path to it, served or not. */
+async function repositoryHolding(sha) {
+  for (const { uri } of vscode.workspace.workspaceFolders || []) {
+    try {
+      const { stdout } = await git("git", ["-C", uri.fsPath, "rev-parse", "--show-toplevel", "--verify", `${sha}^{commit}`]);
+      const [repoRoot, commit] = stdout.trim().split("\n");
+      return { repoRoot, commit };
+    } catch {
+      // Not a repository, or one that does not hold the commit: the next folder may.
+    }
+  }
+  throw new Error(`No open workspace folder holds the commit ${sha}; open its repository in VS Code first.`);
+}
+
+/** A commit's first parent, null for a root commit, and the files it changed from it: each with
+ *  its status letter. A rename reads as a file gone and a file come. */
+async function changedBy(repoRoot, commit) {
+  const parent = await git("git", ["-C", repoRoot, "rev-parse", "--verify", "--quiet", `${commit}^1^{commit}`])
+    .then(({ stdout }) => stdout.trim(), () => null);
+  // A root commit has no parent: every file it holds came with it.
+  const listed = parent
+    ? await git("git", ["-C", repoRoot, "diff", "--name-status", "--no-renames", "-z", parent, commit], { maxBuffer: 10 * 1024 * 1024 })
+    : await git("git", ["-C", repoRoot, "diff-tree", "--root", "--no-commit-id", "-r", "--name-status", "--no-renames", "-z", commit], { maxBuffer: 10 * 1024 * 1024 });
+  const fields = listed.stdout.split("\0").filter(Boolean);
+  const files = [];
+  for (let i = 0; i + 1 < fields.length; i += 2) files.push({ status: fields[i], relativePath: fields[i + 1] });
+  return { parent, files };
+}
+
+/** The changes editor on files of a repository, each between two revisions: a side is empty where
+ *  its revision is null, the file not being there. */
+async function openChanges(repoRoot, title, changes) {
+  const resources = changes.map(({ relativePath, was, now }) => {
+    const file = vscode.Uri.file(path.join(repoRoot, relativePath));
+    const at = (ref) => file.with({ scheme: originalScheme, query: JSON.stringify({ repoRoot, relativePath, ref }) });
+    return [file, at(was), at(now)];
+  });
+  await vscode.commands.executeCommand("vscode.changes", title.length > 90 ? `${title.slice(0, 89)}…` : title, resources);
+}
+
+/** A commit, every file it changed in one editor: each file as it was at the commit's first
+ *  parent beside what the commit left, a side empty where the file is not. */
+async function handleCommit(uri) {
+  if (uri.path !== "/commit") return false;
+  const sha = new URLSearchParams(uri.query).get("sha") || "";
+  if (!/^[0-9a-f]{7,40}$/.test(sha)) throw new Error("The link names a commit by seven hex digits of its hash or more.");
+  const { repoRoot, commit } = await repositoryHolding(sha);
+  const { parent, files } = await changedBy(repoRoot, commit);
+  if (files.length === 0) throw new Error(`The commit ${sha} changed no file.`);
+  const { stdout: subject } = await git("git", ["-C", repoRoot, "show", "-s", "--format=%s", commit]);
+  await openChanges(repoRoot, `${commit.slice(0, 8)} · ${subject.trim()}`, files.map(({ status, relativePath }) => (
+    { relativePath, was: status === "A" ? null : parent, now: status === "D" ? null : commit }
+  )));
+  return true;
+}
+
+/** Several commits as the one diff they come to, each file once: from before the first of them
+ *  that changed it to what the last that changed it left. That is the sum of what they did and
+ *  nothing more only while no other commit changed the file between them, so the route refuses
+ *  a list where one did, naming it, and a list that is not in the order of the history. A file
+ *  they leave as it was is not shown. */
+async function handleCommits(uri) {
+  if (uri.path !== "/commits") return false;
+  const query = new URLSearchParams(uri.query);
+  const shas = (query.get("shas") || "").split(",");
+  if (!shas.every((sha) => /^[0-9a-f]{7,40}$/.test(sha))) {
+    throw new Error("The link names its commits by seven hex digits of each hash or more, parted by commas.");
+  }
+  const { repoRoot } = await repositoryHolding(shas[0]);
+  const commits = [];
+  for (const sha of shas) {
+    const { stdout } = await git("git", ["-C", repoRoot, "rev-parse", "--verify", `${sha}^{commit}`])
+      .catch(() => { throw new Error(`The repository of ${shas[0]} holds no commit ${sha}.`); });
+    commits.push(stdout.trim());
+  }
+  const short = (commit) => commit.slice(0, 8);
+  for (let i = 1; i < commits.length; i += 1) {
+    const follows = commits[i] !== commits[i - 1]
+      && await git("git", ["-C", repoRoot, "merge-base", "--is-ancestor", commits[i - 1], commits[i]]).then(() => true, () => false);
+    if (!follows) throw new Error(`The link's commits are not in the order of the history: ${short(commits[i])} does not come after ${short(commits[i - 1])}.`);
+  }
+
+  // Each file, with the first and the last of the commits that changed it.
+  const spans = new Map();
+  for (const commit of commits) {
+    const { parent, files } = await changedBy(repoRoot, commit);
+    for (const { status, relativePath } of files) {
+      const end = { commit, parent, status };
+      const span = spans.get(relativePath);
+      if (span) span.last = end;
+      else spans.set(relativePath, { first: end, last: end });
+    }
+  }
+  const listed = new Set(commits);
+  const blob = (ref, relativePath) => (ref === null ? null
+    : git("git", ["-C", repoRoot, "rev-parse", "--verify", "--quiet", `${ref}:${relativePath}`]).then(({ stdout }) => stdout.trim(), () => null));
+  const changes = [];
+  for (const [relativePath, { first, last }] of [...spans].sort(([a], [b]) => (a < b ? -1 : 1))) {
+    if (first.commit !== last.commit) {
+      const { stdout } = await git("git", ["-C", repoRoot, "log", "--format=%H", `${first.commit}..${last.commit}`, "--", relativePath], { maxBuffer: 10 * 1024 * 1024 });
+      const other = stdout.split("\n").filter(Boolean).reverse().find((commit) => !listed.has(commit));
+      if (other) {
+        throw new Error(`These commits do not read as one diff: ${short(other)}, which is not one of them, changed ${relativePath} between ${short(first.commit)} and ${short(last.commit)}. Render the page again, or open them one at a time.`);
+      }
+    }
+    const was = first.status === "A" ? null : first.parent;
+    const now = last.status === "D" ? null : last.commit;
+    if (await blob(was, relativePath) !== await blob(now, relativePath)) changes.push({ relativePath, was, now });
+  }
+  if (changes.length === 0) throw new Error("These commits leave every file as it was: what one did, another undid.");
+  const range = commits.length === 1 ? short(commits[0]) : `${short(commits[0])} → ${short(commits[commits.length - 1])}`;
+  const named = query.get("title");
+  await openChanges(repoRoot, `${named ? `${named} · ` : ""}${commits.length} commit${commits.length === 1 ? "" : "s"} · ${range}`, changes);
+  return true;
+}
+
 /** One link shape for every stack, a test file and a line: the file says which runner the line
  *  belongs to. */
 async function handleDebugTest(uri) {
@@ -222,9 +339,12 @@ async function debugPytest(query, testOf) {
 function activate(context) {
   context.subscriptions.push(vscode.workspace.registerTextDocumentContentProvider(originalScheme, {
     async provideTextDocumentContent(uri) {
-      const { repoRoot, relativePath, existsOnMain } = JSON.parse(uri.query);
-      if (!existsOnMain) return "";
-      const { stdout } = await git("git", ["-C", repoRoot, "show", `main:${relativePath}`], {
+      // A side of a commit's diff names its revision (`ref`), null where the file is not; the
+      // `diff` route's side is the file on main.
+      const { repoRoot, relativePath, existsOnMain, ref } = JSON.parse(uri.query);
+      const revision = ref === undefined ? (existsOnMain ? "main" : null) : ref;
+      if (revision === null) return "";
+      const { stdout } = await git("git", ["-C", repoRoot, "show", `${revision}:${relativePath}`], {
         maxBuffer: 10 * 1024 * 1024,
       });
       return stdout;
@@ -236,6 +356,8 @@ function activate(context) {
         if (await handleOpen(uri)) return;
         if (await handleDebugTest(uri)) return;
         if (await handleDebugPytest(uri)) return;
+        if (await handleCommit(uri)) return;
+        if (await handleCommits(uri)) return;
         await handleDiff(uri);
       } catch (error) {
         vscode.window.showErrorMessage(`Plan review links: ${error.message}`);

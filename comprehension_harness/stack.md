@@ -29,7 +29,7 @@ every stack.
 ## Rules the four share
 
 - A path is relative to the repository root, with `/`. Lines and columns start at 1.
-- **A site is a file and a line.** One `narrate`, `event` or `planned` call per line. A template makes the
+- **A site is a file and a line.** One `narrate`, `event`, `planned` or `built` call per line. A template makes the
   calls too, where the stack reads them: there a site is a tag, in no function.
 - **A function has one name**: the one the stack's own frames print (V8's in JavaScript,
   `__qualname__` in Python). A story's frame and an indexed function are matched by `file` and
@@ -57,14 +57,14 @@ not: the tests reaching a site are counted over all of them.
 | `hits` | The calls crossed, in order |
 | `reproduction` | Optional. The test is declared to fail today, for a bug its piece fixes: it has a story whatever it crossed |
 | `failure` | Optional. How the test failed, of a failure the run expected too: `{ message, file, line }` |
-| `capped` | Optional. `[{ file, line, kept, omitted }]`: a site keeps its first 50 hits of a test and counts the rest |
+| `capped` | Optional. `[{ file, line, kept, omitted }]`: a site keeps its first 50 hits of a test and counts the rest. A `built` call keeps its first hit of a test and counts nothing: one crossing tells where the place lands |
 
 A hit:
 
 | Field | Holds |
 |---|---|
 | `kind` | `step`, `event` or `planned` |
-| `planned` | For a `planned` hit: `{ feature, slug, change }` |
+| `planned` | For a `planned` hit: `{ feature, slug, change }`, with `place` where the call's tag names one. A `built` call is a `planned` hit whose change is `built` |
 | `expect` | Optional, for a `planned` hit whose site says what it should see: that, at this crossing, a key of the watch each. `{ "error": "…" }` when computing it threw |
 | `sentence` | As passed to the call |
 | `watch` | The watch's value as plain JSON, or `null`. `{ "error": "…" }` when computing it threw, which never fails the test |
@@ -79,8 +79,10 @@ there: `mappedFn`, a source-mapped name, where `fn` is `null`.
 leave its file's stories with that test alone, worded for a terminal. With
 `COMPREHENSION_STORIES=off` in its environment a collector records as ever and leaves the story
 files as the last whole run wrote them; the editor extension starts its debug runs so. The tools
-run the files that hold a plan's reproductions themselves, whole and by `commands.tests` alone,
-before they draw or check a plan: a browser's are left out.
+run the files that hold a plan's reproductions themselves, whole, before they draw or check a
+plan: by `commands.tests`, or by the command `commands.testsUnder` gives the folder a file is
+under, so a runner configured apart from the unit tests installs the collector too. A browser's
+are left out, and so are those of a folder `testsUnder` gives null.
 
 The three calls are inert in production: none does anything unless a collector is installed,
 which only a test run does. The watch is passed as a function the collector calls, so nothing
@@ -94,7 +96,7 @@ row.
 
 | Asked | Answered with | How sure |
 |---|---|---|
-| The sites of a file | Each call: `kind`, `line`, `column`, `fn`, its sentence when it is a literal; for a `planned` call its tag, whether it changes, removes or adds, and a shell's signature | Exact |
+| The sites of a file | Each call: `kind`, `line`, `column`, `fn`, its sentence when it is a literal; for a `planned` call its tag, the place it names in it, whether it changes, removes or adds, and a shell's signature; a `built` call is a `planned` site whose change is `built`, with its tag, its place and an empty sentence | Exact |
 | A narrative's declaration | In its test file: the line, the first paragraph of the comment above it, the title of its first test. Also: which test files declare one | Exact |
 | Where a name of a sentence is declared, seen from a site | In order: an import of the file, a local of the functions around the call (nearest first), a top-level declaration of the file, one unique across the source. Otherwise the reason, for `--check` | Identities with a type checker, names without |
 | The same with no site | For a name `plan.md`, a test title or a page of rules gives: in the files named beside it, else unique across the source, else nearest to the piece's places | Same |
@@ -104,8 +106,9 @@ row.
 | The function around a site | The nearest named function, its first and last line, who refers to it and what it calls, each marked as holding a `narrate` or not (`map step`, `map around`) | Candidates in both |
 
 The stack's reader refuses, with the file and the line: a `planned` call whose tag or sentence is
-not a literal, a tag that is not `<feature>#<slug>`, a shell that throws anything but
-`planned: <tag>`.
+not a literal, a tag that is not `<feature>#<slug>` or `<feature>#<slug>:<place>`, a place named
+on a removing or an evidence call, a `built` call that is not one literal naming its place, a
+shell that throws anything but `planned: <feature>#<slug>`.
 
 The JSON form, for a stack that does not run in Node. The command prints it; it is asked for at
 each render. [`json-source.ts`](json-source.ts) answers the interface from it, and
@@ -138,8 +141,9 @@ source by the test.
   `RegExp` (`SourceReader.looksDeclared`).
 - `files` holds every file of the source folders and every test file that declares a narrative.
 - A `planned` site adds `"planned": { "feature", "slug", "change", "signature" }`, `change` being
-  `changed`, `removed`, `added` or `evidence`. Evidence is a place a bug shows: it marks no
-  change and goes with the fix. A changed or an evidence site may add `"expect"`: what the place
+  `changed`, `removed`, `added`, `evidence` or `built`, and `"place"` where its tag names one. A
+  `built` call is such a site, with its place and `"sentence": ""`. Evidence is a place a bug
+  shows: it marks no change and goes with the fix. A changed or an evidence site may add `"expect"`: what the place
   should see, a key of its watch each, as the source writes it. It is a literal, or an expression
   computed at each crossing as a watch is, so the same rule keeps it inert; its value is the
   story's, a crossing at a time. Either may add `"distinct"`: the keys of its watch each crossing
@@ -155,7 +159,8 @@ source by the test.
 - `imports` and `uses` give the declaration a name refers to, as far as the stack can tell; a
   reference it cannot place is left out, and so is what stands inside a `narrate`, `event` or
   `planned` call. Callers and callees are read from `uses`.
-- The project's configuration names the two commands in place of a module:
+- The project's configuration names the two commands in place of a module, and optionally a
+  third, `strip` ("The strip of an archive" below):
   `"stack": { "sourceIndex": ["python3", "…"], "titles": ["python3", "…"] }`.
 
 ## 3. Test titles: planned and written
@@ -206,6 +211,32 @@ has to see what the server crossed and which action it answers: the helper says 
 stack serves the app from the test process, and each request carries the number of the action
 before it). The types are `JourneyCase`,
 `ScreenRecord` and `Cause` of `stack.ts`.
+
+## Beside the four: the strip of an archive
+
+Optional. `strip(file, text, feature)` of a Node stack gives one file's text with what the archive
+of a feature takes off it, and the list of what went, each with its line:
+
+- each `built` call of the feature, with the line it stands on and the import the file no longer
+  uses;
+- the tag and the rule of each test titled `<feature>#<slug>: <title> [<rule-slug>]`, which
+  leaves `<title>`, the title's own escapes kept;
+- each planned screen of a journey that names the feature.
+
+A file the stack does not read comes back as it is. A `built` call that cannot go without
+changing the code around it (an expression's operand, the only body of a branch, a line shared
+with other code) is refused, with the file and the line. The strip reads the code and never a
+pattern over the text: another feature's marks, and a tag written in a comment or a string that
+is no title, stay. The tools choose the files, hold the strip to the archive gate, write the
+result and read what still names the feature (`render.ts --strip`). The type is `Stripped` of
+`stack.ts`. A stack that gives no strip has its marks listed, to take off by hand.
+
+A stack that does not run in Node gives its strip as a command, `"strip": [command…]` beside
+`sourceIndex` and `titles` in the configuration ([`json-strip.ts`](json-strip.ts)). It reads
+`{ "file", "text", "feature" }` on its input and prints
+`{ "text", "taken": [{ "line", "kind", "was" }] }`, `kind` being `built`, `title` or `screen`:
+one process a file. It refuses by failing, the file and the line on its error output, which
+the tools say as it is.
 
 ## Beside the four: a command that keeps the narrative tests running
 

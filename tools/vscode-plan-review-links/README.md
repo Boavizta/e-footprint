@@ -1,11 +1,13 @@
 # Plan Review Links
 
-A local VS Code extension behind the right-click menu of a plan or narrative page (`specs/review-links.js`), and behind plain clicks on a served one. It has four routes:
+A local VS Code extension behind the right-click menu of a plan or narrative page (`specs/review-links.js`), and behind plain clicks on a served one. It has six routes:
 
 | Route | What it does |
 |---|---|
 | `open` | Opens a file at a line. A plain click from a page served over HTTP goes through it |
 | `diff` | **Open diff vs main**: a linked source file's working copy beside its `main` revision. A file absent from `main` is compared against empty content |
+| `commit` | Opens a commit, every file it changed in one editor: a page's link on a commit's hash |
+| `commits` | Opens several commits as the one diff they come to, each file once: a page's link on the commits of a piece |
 | `debug-test` | **Debug this test**, on a link into a test file: starts the one test at the linked line under the debugger of its runner, vitest for a JavaScript or TypeScript file, pytest for a Python one |
 | `debug-pytest` | **Debug reproduction**, on a link that names its pytest test itself: starts that test under the Python debugger |
 
@@ -18,7 +20,7 @@ No route sets a breakpoint: set your own before clicking. The browser or VS Code
 ```bash
 cd tools/vscode-plan-review-links
 npx --yes @vscode/vsce package --allow-missing-repository
-code --install-extension plan-review-links-0.0.12.vsix
+code --install-extension plan-review-links-0.0.14.vsix
 ```
 
 If `code` is not on your PATH, use `"/Applications/Visual Studio Code.app/Contents/Resources/app/bin/code"`. `code --list-extensions | grep plan` confirms it: `local.plan-review-links`.
@@ -30,6 +32,16 @@ Open the repository in VS Code before using the menu: the extension refuses a fi
 ## What `diff` compares
 
 The local `main` commit against the working tree, uncommitted edits included. It never fetches and never changes the checkout.
+
+## What `commit` opens
+
+`vscode://local.plan-review-links/commit?sha=<hash>`, seven hex digits of the hash or more. The link carries no path: the route looks for the commit in each open workspace folder, so the same link works from a page opened as a file and from a served one. It opens VS Code's multi-file diff editor (`vscode.changes`) on every file the commit changed, each as the commit's first parent held it beside what the commit left. A file the commit added or deleted has an empty side, and a rename reads as a file gone and a file come. It never fetches and never changes the checkout.
+
+## What `commits` opens
+
+`vscode://local.plan-review-links/commits?shas=<hash>,<hash>,…`, oldest first, seven hex digits of each hash or more, and optionally `title=`, words that open the editor's title. The repository is the open workspace folder that holds the first commit. The route opens the same editor as `commit`, each file once: as it was before the first of the commits that changed it, beside what the last of them that changed it left. A file the commits leave as it was is not shown.
+
+That diff is the sum of what the commits did, and nothing more, only while no other commit changed one of those files between two of them. The route checks it and opens nothing otherwise, naming the commit and the file; it also refuses a list that is not in the order of the history. A commit that changed another file between them is no obstacle. A page that links several commits this way groups them so that the check holds (`commitBlocks`, `comprehension_harness/plan.ts`): a refusal means the page is older than the branch.
 
 ## Debugging a vitest case
 

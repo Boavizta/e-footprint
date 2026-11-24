@@ -56,9 +56,9 @@ describe('sites read from a document', () => {
       [16, 'event', 'shop/checkout.py#pay#1'],
       [23, 'step', 'shop/checkout.py#charge#1'],
     ]);
-    expect(index.plannedSites().map((s) => [s.planned!.slug, s.planned!.change, s.planned!.signature, s.planned!.sentence])).toEqual([
-      ['deduct-the-card', 'changed', null, 'The amount due **loses the card\'s balance**.'],
-      ['refund-to-card', 'added', 'def refund(amount):', 'A refund goes back to the card first.'],
+    expect(index.plannedSites().map((s) => [s.planned!.slug, s.planned!.place, s.planned!.change, s.planned!.signature, s.planned!.sentence])).toEqual([
+      ['deduct-the-card', 'amount-due', 'changed', null, 'The amount due **loses the card\'s balance**.'],
+      ['refund-to-card', 'refund', 'added', 'def refund(amount):', 'A refund goes back to the card first.'],
     ]);
     expect(index.sitesUnder(['shop/']).map((s) => s.id)).toEqual(['shop/checkout.py#Basket.total#1', 'shop/checkout.py#charge#1', 'shop/pricing.py#with_tax#1']);
   });

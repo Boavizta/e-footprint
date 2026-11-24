@@ -47,14 +47,14 @@
  * the scroll offsets a capture carries as attributes. The page is not committed (`.gitignore`).
  */
 import { existsSync, mkdirSync, readFileSync, readdirSync, statSync, writeFileSync } from 'node:fs';
-import { join, relative } from 'node:path';
+import { dirname, join, relative } from 'node:path';
 import { fileURLToPath } from 'node:url';
 import type { Cause, Control, JourneyCase, ScreenRecord, ServerCall, StorySite } from './stack';
 import { blocksHtml, parseIntent } from './intent-md';
 import { renderStamp } from './render-stamp';
 import { FEATURES as FEATURES_FOLDER, JOURNEYS, MAP_DIR, PAGES, ROOT, config, featureFolder, typed } from './config';
 import { openSource } from './project-stack';
-import { NO_STORIES, SourceIndex, deriveNarratives, readStories, type Narrative } from './render';
+import { INDEX_PAGE, NO_STORIES, SourceIndex, deriveNarratives, generatedPages, readStories, renderIndexPage, type Narrative } from './render';
 
 const OUT = join(ROOT, JOURNEYS);
 /** This script, from the root: an input of what it writes. */
@@ -222,14 +222,15 @@ function narrativeIndex(): { linkOf: (site: StorySite, sentence: string) => Step
   index.realign(stories);
   const narratives = deriveNarratives(stories, index);
   const byId = new Map<string, StepLink>();
+  const pageOf = (narrative: (typeof narratives)[number]) => `${TO_PAGES}/${narrative.kind === 'product' ? 'narratives' : 'mechanisms'}/${narrative.slug}.html`;
   for (const narrative of narratives) {
-    const page = narrative.kind === 'product' ? `${TO_PAGES}/narratives/${config.productPage}.html` : `${TO_PAGES}/mechanisms/${narrative.slug}.html`;
+    const page = pageOf(narrative);
     for (const step of narrative.steps) byId.set(step.id, { narrative, n: step.n, branch: null, href: `${page}#${narrative.slug}-step-${step.n}` });
   }
   // A canonical case takes one path. The `narrate` on a branch it does not take (the gate's offline exit, a
   // disabled live read) has no step number: it is told by the first other case of the narrative that reaches it.
   for (const narrative of narratives) {
-    const page = narrative.kind === 'product' ? `${TO_PAGES}/narratives/${config.productPage}.html` : `${TO_PAGES}/mechanisms/${narrative.slug}.html`;
+    const page = pageOf(narrative);
     for (const story of narrative.variants) for (const hit of story.hits) {
       if (hit.kind !== 'step') continue;
       const id = index.identity(hit.site).id;
@@ -873,3 +874,6 @@ for (const feature of [...new Set(loaded.flatMap((J) => [...featuresOf(J)]))].so
   writeFileSync(join(MAP_DIR, `spec-${feature}.json`), JSON.stringify(map));
   console.log(`journey-render: ${out} (${screens} screen${screens === 1 ? '' : 's'}, ${cases} case${cases === 1 ? '' : 's'}, ${(Buffer.byteLength(html) / 1024).toFixed(0)} kB)`);
 }
+
+// The index lists the pages this render wrote beside the narratives' and the plans'.
+writeFileSync(INDEX_PAGE, renderIndexPage(generatedPages(dirname(INDEX_PAGE))));

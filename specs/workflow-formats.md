@@ -37,7 +37,7 @@ repository's (`.agents/repository.md`).
 | `plan-draft.md` | specify, when the discussion held any | The technical decisions already made, a line each. The plan stage turns them into pieces and deletes the file |
 | `plan.md` | plan, then every later stage, in place | A section a piece, the decisions across pieces, the waivers, the delivery |
 | `plan.approved.json` | the approval command, on the reviewer's word | The plan as it was approved |
-| A proposed migration | plan | Where the stack has one: the file carries the piece's tag in a comment |
+| A proposed change of the database | plan | Where the stack has one: `.sql` files that state what the database becomes, a piece each, the piece's tag in a comment. They hold what changes the state and nothing else: no header, no change a reviewer has to see through. Read in name order, each is diffed against the state the earlier ones leave, and its card draws that diff, which is what the reviewer reads. They are no migrations: the implementer writes those around them. A file two pieces change carries a tag each, and both cards draw its whole diff |
 | `plan-feedback.json` | the served pages | The reviewer's answers. Ignored by git |
 | `gates.md`, or `run-<x>-gates.md` | implement | What only the user can do after a run |
 
@@ -69,13 +69,20 @@ One of three, each carrying `<feature>#<slug>`:
 - **A `planned` call**, on code that runs: on existing code where a change lands, its removing
   form in a function that goes, or as the only body of a **shell**, a new function with its real
   signature that fails loudly if reached. Its sentence is one clause saying what changes at this
-  place: no reason, no list of cases.
+  place: no reason, no list of cases. **A place that becomes code names itself**: its tag is
+  `<feature>#<slug>:<place>`, the place a short kebab-case name of its own within the piece, for
+  what changes there (`first-cut`, not `site-2`). A function that goes and a place a bug shows
+  take none: nothing stands for them once the piece is built. The id is no line of the plan: the
+  approval keeps it beside the place's line and never compares it, so naming a place asks no
+  `Changed:`, but an id written or changed after an approval is approved again before its place
+  is built.
 - **A planned test**: a test declared with no body, titled `<feature>#<slug>: <title>`. The title
   ends with `[<rule-slug>]` when the test owns a rule. Its tier is where its file stands.
 - **A comment opening `@planned <feature>#<slug>`**, where no line runs: a type, a schema, a
   migration, a doc made stale. `@planned.remove <feature>#<slug>` says that what stands under the
-  comment goes, and names what holds it instead. The comment is in the file's own syntax; leave a
-  blank line before an unrelated comment.
+  comment goes, and names what holds it instead. The comment is in the file's own syntax. Its text
+  runs over the comment lines directly under it, and all of it counts in the clause's budget: leave
+  a blank line before any comment that was there already, the one the tag is about included.
 
 On code that runs, a site is a call, never a comment: no test crosses a comment. A new function
 is named, in backticks, by the clause of the site that will call it; a shell no clause names is
@@ -125,8 +132,9 @@ in run order with the values it saw at each, then how it failed.
 
 The render and the check run the plans' reproductions first, whole files, so the page shows what
 they see now and not what the last run happened to leave: the served pages rerun them at each
-save. A reproduction a browser runs is left out, and its page says when no run tells it. A run
-under the debugger writes no story.
+save, those the unit command runs. A reproduction a browser runs is left out, and so is one under
+a folder the configuration gives no command (`commands.testsUnder`); its page says why it has no
+run. A run under the debugger writes no story.
 
 Under the chain, the piece lists what the chain does not show: the places no reproduction
 crosses, and the tests that are no reproduction.
@@ -163,14 +171,22 @@ Three paragraphs have a prefix:
 
 | Prefix | Is | Written when |
 |---|---|---|
-| `To confirm: **the proposal.** the alternative` | A point to decide, one per piece at most: the proposal stated as the plan would state it | Only the reviewer can decide. Answered as proposed on the page, the approval command writes the proposal in; another answer is the agent's to write in. Either way the paragraph goes |
-| `Changed: **what moved.** why → its lines` | One edit of an approved plan | A unit no longer reads as approved |
+| `To confirm: **the proposal.** the alternative → its commits` | A point to decide, one per piece at most: the proposal stated as the plan would state it | Only the reviewer can decide. Answered as proposed on the page, the approval command writes the proposal in; another answer is the agent's to write in. Either way the paragraph goes |
+| `Changed: **what moved.** why → its lines; its commits` | One edit of an approved plan | A unit no longer reads as approved |
 | `Note: **the point.** what follows from it` | Something to know, asking no answer | A piece was built with a choice no line of the plan says and a later lot stands on |
 
 After ` → `, a `Changed:` names the lines of the difference it comes to, parted by `;`: a kind
 (`code`, `test`, `statement`, `reason`, `text`, `unbuilt`) and a fragment the line holds, in double quotes
 when it has a space. `Changed: **Its narrative case leaves for #wrap-row.** It reads the row the
 other piece adds → test "a wrapped order"`. A section with one such paragraph needs no claim.
+
+**A paragraph names the commits that did what it says**: `commit` and seven digits of the hash
+or more, after the same ` → `: `→ test "a wrapped order"; commit 1a2b3c4d`. A `To confirm:`
+names commits the same way, and no line: what was built the proposed way. The pages list under the paragraph what each
+commit changed; its hash opens the commit in the editor, every file in one diff
+(`tools/vscode-plan-review-links`, the `commit` route). The commit is named whatever piece its
+message names: a fix is often a commit of another piece. The check fails a hash that no commit
+of the feature has, or that two open with.
 
 **A claim takes back a built place.** Once a place is code, nothing in the source marks it: the
 plan alone can say that the code does not do what its clause said, because a review undid it or
@@ -194,7 +210,11 @@ Each fact has one home, and each home a budget in words, which the check enforce
 | An edit, a note, a lot's reason | Its paragraph, its item | 40 |
 
 A word is a run of characters between spaces. The tag, the `[rule]` suffix, the prefixes and a
-`Changed:` paragraph's claims are not counted.
+paragraph's claims are not counted.
+
+**A proposal still to confirm is counted in its piece's reason too**: a "Yes, as proposed" writes
+it there as read, so whoever writes the point makes the reason fit with it, and no one rewords an
+approved line afterwards.
 
 ## A feature that changes two repositories
 
@@ -224,9 +244,18 @@ collects its own alone (`comprehension_harness/README.md` § "The Python stack")
 `plan.approved.json` is written by the approval command and by nothing else. It is committed: it
 is the approval. It holds the plan a unit at a time, with no line number, and for a piece that
 fixes a bug what each reproduction told that day (§ "A bug"), which is kept and never compared.
-The command first writes in each point answered "Yes, as proposed" on the page, and approves only
-if the plan then passes. It refuses while a `To confirm:` stands, saying what the page answered,
-and takes the `Changed:` paragraphs off `plan.md`.
+It keeps the same way the step of each narrative a place lands in, by its sentence: once the place
+is code no story crosses a `planned` call there, and the plan page goes on drawing the clause
+approved on its flow, under what the step tells now. Building a piece often gives its function one
+more step: the step kept is found again by its sentence, and where that was reworded among several
+the page draws the closest and says so. A place the approval froze nowhere (a function the plan added, a
+place built before the approval kept this) is drawn where its own function tells a step, or where
+a step's sentence names that function; where a function tells several steps and nothing says
+which, the page says so.
+The command approves a plan that passes the check, read before it writes anything: refused, it
+leaves `plan.md` as the reviewer read it. It refuses while a `To confirm:` stands that the page did
+not answer "Yes, as proposed", saying what the page answered. It then writes each accepted
+proposal in, word for word, and takes the `Changed:` paragraphs off `plan.md`.
 
 From then on the check lists every unit that is not as approved, and fails:
 
@@ -298,7 +327,16 @@ what it changes and nothing says how far down that goes.
 
 ## Implementing a piece
 
-- Each `planned` call becomes code, and each comment goes.
+- Each `planned` call becomes code, and each comment goes. **Where a place became code, a `built`
+  call stands for it**: `built('<feature>#<slug>:<place>')`, the tag of the `planned` call it
+  replaces and nothing else, on the line where the change is, written by the commit that takes
+  the `planned` call off. A new function holds it as its first line. It is inert, as the other
+  calls are, and stays until the archive. A story that crosses it tells which step the built
+  place lands in, and the plan page draws the clause approved there, linked to that line.
+- **The check holds a built place to its call.** A place the approval holds with an id, whose
+  `planned` call is gone and that no `built` call names, fails; so do a call that names no place
+  of the approval, a second call of one place, and a call left at a place a `Changed:` took back:
+  taking a place back is taking its call off.
 - Each planned test becomes a test under the same title, tag and `[rule]` kept until the archive.
 - Each evidence call goes, with nothing written in its place, and each reproduction passes and is
   declared as a written test, under the same title.
@@ -307,7 +345,11 @@ what it changes and nothing says how far down that goes.
   commit.
 
 The archive gate holds while a site, a planned test or a case to write remains, and while a rule
-has neither one owner nor a confirmed waiver. The archive then takes the tags off the titles.
+has neither one owner nor a confirmed waiver. It passes with what is built still marked. The
+archive then strips those marks with one command: each `built` call of the feature, the tag and
+the `[rule]` of each of its test titles, each planned screen of a journey that names it. The
+command refuses while the gate fails, and ends with every line outside the feature's folder that
+still names a tag of it or a path into the folder: one in the code fails it.
 
 ## A `narrate` sentence
 
@@ -335,6 +377,4 @@ prose names a step by its number: it moves.
 
 A feature planned before pieces keeps its `tasks.md` and its `plan.html`, with its callouts, until
 it is ported or finished by hand. No skill writes that form any more: a bug batch is diagnosed
-and planned in pieces (`bug-fixes`, `bug-fixes-plan`, § "A bug"). The batch `bug-fixes-2026-10`
-keeps the `plan.html` and the `tasks.md` it was first written in, as the baseline it is ported
-from: they are not run.
+and planned in pieces (`bug-fixes`, `bug-fixes-plan`, § "A bug").

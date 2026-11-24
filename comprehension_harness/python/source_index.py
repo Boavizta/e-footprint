@@ -8,8 +8,9 @@ declares a narrative or holds a site, each with its sites, functions, declaratio
 
 What this stack knows and the tools do not:
 
-- the three calls are those of the project's own copy of ``narrate.py``, the module ``stack.calls`` of the
-  configuration names, imported by name; a function of the same name from anywhere else is no site;
+- the calls (``narrate``, ``event``, ``planned``, ``built``) are those of the project's own copy of
+  ``narrate.py``, the module ``stack.calls`` of the configuration names, imported by name; a function of the
+  same name from anywhere else is no site;
 - a narrative is a test class under ``@narrative("…")`` of ``declare.py``; its summary is the first
   paragraph of the class docstring, its first test the first ``test_…`` method;
 - a function is named by its ``__qualname__``, which is what a frame of a story prints;
@@ -23,8 +24,14 @@ around them, a function or class of an enclosing function. A call on a value of 
 Refused, with the file and the line: a file the parser refuses, a call imported from the reference and not
 from the project's copy, two calls on one line, a tag or a sentence
 that is no literal string, a watch that is no lambda, an ``expect`` that is neither a literal dict nor a
-lambda, a ``distinct`` that is no literal string or tuple of them, a tag that is not ``<feature>#<slug>``, a shell that raises anything but ``planned: <tag>``, a narrative that is
-not declared on a class under one literal title.
+lambda, a ``distinct`` that is no literal string or tuple of them, a tag that is not ``<feature>#<slug>`` or
+``<feature>#<slug>:<place>``, a place named on a removing or an evidence call, a ``built`` call that is not one
+literal naming its place, a shell that raises anything but ``planned: <feature>#<slug>``, a narrative that is not
+declared on a class under one literal title.
+
+``planned("<feature>#<slug>:<place>", …)`` names the place of its piece the site is, which the site says as
+``place``. ``built("<feature>#<slug>:<place>")`` stands where such a call stood once the place is code: a planned
+site whose change is ``built``, with its place and an empty sentence.
 
 The literal and the lambda are what keeps the calls inert in production: Python computes a call's arguments
 before the call, and a call does nothing there. A literal and a lambda cost nothing to compute.
@@ -37,8 +44,9 @@ crossing should see a value of its own for, where the bug is a value two crossin
 as ``distinct``, and no run reads them.
 
 A template makes the calls as tags, and no ``ast`` reads it: an ``.html`` file of the source folders is read for
-``{% narrate "…" %}``, ``{% event "…" %}``, ``{% planned "<feature>#<slug>" "…" %}`` and ``{% evidence
-"<feature>#<slug>" "…" %}``, one a line, each a site of the file in no function. After the sentence a tag gives
+``{% narrate "…" %}``, ``{% event "…" %}``, ``{% planned "<feature>#<slug>:<place>" "…" %}``, ``{% evidence
+"<feature>#<slug>" "…" %}`` and ``{% built "<feature>#<slug>:<place>" %}``, one a line, each a site of the file in
+no function. After the sentence a tag gives
 its watch as ``key=value`` pairs, and after the word ``expect`` the values the place should see, as pairs too:
 ``{% evidence "a#b" "…" drawn_as="row" expect drawn_as=row.kind %}``. The template resolves both when a run
 collects. After the word ``distinct`` it names keys of its watch: ``{% planned "a#b" "…" id=row.id distinct id %}``.
@@ -61,12 +69,16 @@ from .titles import Refusal, declared_title, is_test_function, name_position, pa
 CONFIG_FILE = "comprehension.config.json"
 REFERENCE_CALLS = "comprehension_harness.python.narrate"
 DECLARE_MODULE = "comprehension_harness.python.declare"
-KINDS = {"narrate": "step", "event": "event", "planned": "planned"}
+# A `built` call is a site of the plan too: the place it stands for is code.
+KINDS = {"narrate": "step", "event": "event", "planned": "planned", "built": "planned"}
 # The shape of a name Python declares: a class in PascalCase, a function or a variable in snake_case, with the
 # underscores a private name opens with, a constant in CONSTANT_CASE. A backticked token of that shape that the
 # index cannot place fails `--check`. Written to be read the same by `re` and by JavaScript.
 LOOKS_DECLARED = r"^(?:[A-Z][A-Za-z0-9]{2,}|_*[a-z][a-z0-9]*(?:_[a-z0-9]+)+|[A-Z][A-Z0-9]*(?:_[A-Z0-9]+)+)$"
-PLANNED_TAG = re.compile(r"^([a-z0-9]+(?:-[a-z0-9]+)*)#([a-z0-9]+(?:-[a-z0-9]+)*)$")
+# A tag names its piece, then the place of the piece the site is: `<feature>#<slug>:<place>`.
+PLANNED_TAG = re.compile(r"^([a-z0-9]+(?:-[a-z0-9]+)*)#([a-z0-9]+(?:-[a-z0-9]+)*)(?::([a-z0-9]+(?:-[a-z0-9]+)*))?$")
+NOT_A_TAG = "is not <feature>#<slug> or <feature>#<slug>:<place>, kebab-case names"
+BUILT_SHAPE = 'takes one literal, "<feature>#<slug>:<place>"'
 FUNCTIONS = (ast.FunctionDef, ast.AsyncFunctionDef)
 # What has names of its own. A list, set or dict comprehension runs in its function's frame; a generator
 # expression and a lambda in a frame with no name.
@@ -387,8 +399,9 @@ class FileIndex(ast.NodeVisitor):
         return source[1] if source and source[0] == module else None
 
     def call_kind(self, node: ast.Call) -> tuple[str, str] | None:
-        """The kind of site a call is and the change it says, ``changed`` for any call that is not written
-        ``planned.<form>``; None for any other call."""
+        """The kind of site a call is and the change it says: that of its form for a call written
+        ``planned.<form>``, ``built`` for a ``built`` call, ``changed`` for any other; None for a call that is no
+        site."""
         callee = node.func
         if isinstance(callee, ast.Attribute):
             if self.imported_as(callee.value, self.calls) == "planned" and callee.attr in PLANNED_FORMS:
@@ -396,10 +409,11 @@ class FileIndex(ast.NodeVisitor):
             if callee.attr in KINDS and self.dotted_of(callee.value) == self.calls:
                 self.refuse(node, f"the calls are imported by name: from {self.calls} import {callee.attr}")
             return None
-        kind = KINDS.get(self.imported_as(callee, self.calls) or "")
+        name = self.imported_as(callee, self.calls) or ""
+        kind = KINDS.get(name)
         if kind is None and self.calls != REFERENCE_CALLS and self.imported_as(callee, REFERENCE_CALLS) in KINDS:
             self.refuse(node, f"the calls are imported from this project's copy, {self.calls}, not from the reference")
-        return (kind, "changed") if kind else None
+        return (kind, "built" if name == "built" else "changed") if kind else None
 
     def visit_Call(self, node) -> None:
         found = self.call_kind(node)
@@ -409,9 +423,16 @@ class FileIndex(ast.NodeVisitor):
         # A site, and nothing inside it is read as a use: a watch is documentation.
         kind, change = found
         if node.lineno in self.site_lines:
-            self.refuse(node, f"one narrate, event or planned call a line: a site is a file and a line, and this "
-                              f"line already holds a {self.site_lines[node.lineno]}")
+            self.refuse(node, f"one narrate, event, planned or built call a line: a site is a file and a line, and "
+                              f"this line already holds a {self.site_lines[node.lineno]}")
         self.site_lines[node.lineno] = kind
+        if change == "built":
+            tag = literal_argument(node, 0)
+            if tag is None or len(node.args) != 1 or node.keywords:
+                self.refuse(node, f"built(…) {BUILT_SHAPE}")
+            self.sites.append({"kind": kind, "line": node.lineno, "column": node.col_offset + 1,
+                               "fn": self.frame_name(), "sentence": "", "planned": self.planned(node, tag, "", change)})
+            return
         literals = 2 if kind == "planned" else 1
         site = {"kind": kind, "line": node.lineno, "column": node.col_offset + 1, "fn": self.frame_name(),
                 "sentence": literal_argument(node, literals - 1)}
@@ -463,11 +484,8 @@ class FileIndex(ast.NodeVisitor):
 
     def planned(self, node: ast.Call, tag: str | None, sentence: str | None, change: str) -> dict:
         if tag is None or sentence is None:
-            self.refuse(node, 'planned(…) needs a literal "<feature>#<slug>" and a literal sentence')
-        parsed = PLANNED_TAG.match(tag)
-        if parsed is None:
-            self.refuse(node, f'"{tag}" is not <feature>#<slug>, two kebab-case names around one #')
-        piece = {"feature": parsed.group(1), "slug": parsed.group(2)}
+            self.refuse(node, 'planned(…) needs a literal "<feature>#<slug>:<place>" and a literal sentence')
+        piece = planned_piece(tag, change, lambda what: self.refuse(node, what))
         if change != "changed":
             return {**piece, "change": change, "signature": None}
         shell = self.shell_around(node)
@@ -475,9 +493,11 @@ class FileIndex(ast.NodeVisitor):
             return {**piece, "change": "changed", "signature": None}
         raised = shell.body[-1].exc
         said = literal_argument(raised, 0) if isinstance(raised, ast.Call) else None
-        if said != f"planned: {tag}":
-            self.refuse(shell.body[-1], f'the shell must raise NotImplementedError("planned: {tag}") right after its '
-                                        f'planned(…) call{"" if said is None else f", not {said!r}"}')
+        # A shell raises its piece: the place is the call's to name.
+        named = f'{piece["feature"]}#{piece["slug"]}'
+        if said not in (f"planned: {named}", f"planned: {tag}"):
+            self.refuse(shell.body[-1], f'the shell must raise NotImplementedError("planned: {named}") right after '
+                                        f'its planned(…) call{"" if said is None else f", not {said!r}"}')
         return {**piece, "change": "added", "signature": self.signature(shell)}
 
     def shell_around(self, call: ast.Call):
@@ -519,6 +539,22 @@ class FileIndex(ast.NodeVisitor):
                 "summary": re.sub(r"\s+", " ", paragraph).strip(), "firstTest": first}
 
 
+def planned_piece(tag: str, change: str, refuse) -> dict:
+    """What a tag names: its feature and its piece, and the place of the piece where it names one. A place is
+    the id of a site that becomes code: a ``built`` call names one, a removing or an evidence call none, since
+    neither keeps a call once its piece is built."""
+    parsed = PLANNED_TAG.match(tag)
+    if parsed is None:
+        refuse(f'"{tag}" {NOT_A_TAG}')
+    feature, slug, place = parsed.groups()
+    if change == "built" and place is None:
+        refuse(f"a built call {BUILT_SHAPE}, and \"{tag}\" names no place")
+    if change in PLANNED_FORMS.values() and place is not None:
+        refuse(f'"{tag}" names a place, and only a place that becomes code has one: a function that goes and a '
+               f'place a bug shows are tagged "{feature}#{slug}"')
+    return {"feature": feature, "slug": slug, **({} if place is None else {"place": place})}
+
+
 def files_under(root: Path, folder: str, suffix: str) -> list[str]:
     """The files of one kind under a folder, as paths from the root."""
     found = []
@@ -533,7 +569,7 @@ def python_files(root: Path, folder: str) -> list[str]:
 
 
 # A call a template makes: a tag named after it. What a function is to a Python site, a template has none of.
-TEMPLATE_TAG = re.compile(r"\{%-?\s*(narrate|event|planned|evidence)\s+(.*?)\s*-?%\}")
+TEMPLATE_TAG = re.compile(r"\{%-?\s*(narrate|event|planned|evidence|built)\s+(.*?)\s*-?%\}")
 TEMPLATE_WORD = re.compile(r'''"(?:[^"\\]|\\.)*"|[^\s"]+(?:"(?:[^"\\]|\\.)*")?''')
 TEMPLATE_FN = "(template)"
 # The words of a tag that open what the place should see: values, then the keys that should differ at each crossing.
@@ -541,7 +577,8 @@ TEMPLATE_PARTS = ("expect", "distinct")
 
 
 def template_sites(file: str, text: str) -> list[dict]:
-    """The sites of a template: its ``narrate``, ``event``, ``planned`` and ``evidence`` tags, one a line."""
+    """The sites of a template: its ``narrate``, ``event``, ``planned``, ``evidence`` and ``built`` tags, one a
+    line."""
     sites = []
     for number, line in enumerate(text.split("\n"), start=1):
         found = list(TEMPLATE_TAG.finditer(line))
@@ -549,8 +586,20 @@ def template_sites(file: str, text: str) -> list[dict]:
             continue
         where = f"{file}:{number}"
         if len(found) > 1:
-            raise Refusal(f"{where} — one narrate, event, planned or evidence tag a line: a site is a file and a line")
+            raise Refusal(f"{where} — one narrate, event, planned, evidence or built tag a line: a site is a file "
+                          f"and a line")
         call, words = found[0].group(1), TEMPLATE_WORD.findall(found[0].group(2))
+
+        def refuse(what: str):
+            raise Refusal(f"{where} — {what}")
+
+        if call == "built":
+            if len(words) != 1 or not (words[0].startswith('"') and words[0].endswith('"') and len(words[0]) > 1):
+                refuse(f"{{% built %}} {BUILT_SHAPE}, in double quotes")
+            sites.append({"kind": "planned", "line": number, "column": found[0].start() + 1, "fn": TEMPLATE_FN,
+                          "sentence": "", "planned": {**planned_piece(words[0][1:-1], "built", refuse),
+                                                      "change": "built", "signature": None}})
+            continue
         literals = 2 if call in ("planned", "evidence") else 1
         said = [word[1:-1].replace('\\"', '"') for word in words[:literals] if word.startswith('"') and word.endswith('"')]
         if len(said) < literals:
@@ -577,11 +626,8 @@ def template_sites(file: str, text: str) -> list[dict]:
         site = {"kind": KINDS.get(call, "planned"), "line": number, "column": found[0].start() + 1,
                 "fn": TEMPLATE_FN, "sentence": said[-1]}
         if literals == 2:
-            parsed = PLANNED_TAG.match(said[0])
-            if parsed is None:
-                raise Refusal(f'{where} — "{said[0]}" is not <feature>#<slug>, two kebab-case names around one #')
-            site["planned"] = {"feature": parsed.group(1), "slug": parsed.group(2),
-                               "change": "evidence" if call == "evidence" else "changed", "signature": None}
+            change = "evidence" if call == "evidence" else "changed"
+            site["planned"] = {**planned_piece(said[0], change, refuse), "change": change, "signature": None}
             if expected:
                 site["planned"]["expect"] = " ".join(expected)
             if distinct:

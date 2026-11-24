@@ -1,4 +1,4 @@
-"""The three calls where no collector is installed, which is production: they do nothing, and their module
+"""The calls where no collector is installed, which is production: they do nothing, and their module
 imports nothing but the standard library. Both are held on the reference; a project's copy is held to it."""
 import json
 import subprocess
@@ -15,7 +15,7 @@ def run_python(script: str) -> subprocess.CompletedProcess:
 
 def test_without_a_collector_a_call_returns_nothing_and_its_watch_is_never_called():
     done = run_python("""
-        from comprehension_harness.python.narrate import event, narrate, planned, template_call
+        from comprehension_harness.python.narrate import built, event, narrate, planned, template_call
 
         def watch():
             raise AssertionError("the watch was called")
@@ -30,6 +30,11 @@ def test_without_a_collector_a_call_returns_nothing_and_its_watch_is_never_calle
         assert planned.evidence("gift-cards#deduct-the-card", "A bug shows.", watch, expect=watch) is None
         assert planned.evidence("gift-cards#deduct-the-card", "A bug shows.", watch, distinct="row") is None
         assert planned("gift-cards#deduct-the-card", "A change.", watch, distinct=("row", "of")) is None
+        assert planned("gift-cards#deduct-the-card:amount-due", "A change.", watch) is None
+        assert built("gift-cards#deduct-the-card:amount-due") is None
+        # Nothing is read where nothing collects, a tag that names no place included.
+        assert built("gift-cards#deduct-the-card") is None
+        assert template_call("built", "pages/rows.html", 2, "", tag="gift-cards#card-row:row-id") is None
     """)
 
     assert done.returncode == 0, done.stderr

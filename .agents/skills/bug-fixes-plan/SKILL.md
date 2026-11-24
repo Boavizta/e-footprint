@@ -48,8 +48,9 @@ Run it in a fresh session once `bug-fixes` has closed the batch; refine a plan i
   does not give or where two disagree. Do not diagnose a confirmed cause a second time.
 - **Check the batch is closed**: each `CONFIRMED` diagnostic has its reproductions or a stated
   reason for none, and they fail today as recorded. The check runs those the configuration's test
-  command reaches; have a `light` sub-agent run the others (a browser's, a layer with its own
-  runner) and report each failure. One that is missing, or that now passes or fails differently, is delegated
+  command reaches. Run the others (a browser's, a layer with its own runner) yourself when they
+  are a file or two, as `repository.md` says each layer is run; hand a longer list to a `light`
+  sub-agent, which reports each failure. One that is missing, or that now passes or fails differently, is delegated
   to a `diagnostician` under [the reproduction's rules](../bug-fixes/SKILL.md#the-reproduction).
   A diagnosed bug is never dropped silently.
 - **Group what one mechanism explains.** Two reports with one cause are one bug, or two bugs
@@ -78,7 +79,10 @@ carries. Its section says what changes, then why and what was refused: the diagn
 alternatives, in a clause each.
 
 - **Each place the fix changes is a `planned` call** with its clause, on the line the change
-  lands at. In a template it is a tag; where no line runs, a comment.
+  lands at. In a template it is a tag; where no line runs, a comment. Its tag names the place,
+  `<feature>#<slug>:<place>`, a short name of its own within the piece
+  (`workflow-formats.md` § "A site"): the fix leaves a `built` call of that tag there. An
+  evidence call names none.
 - **Each line the bug shows at and the fix does not change is an evidence call**: what is seen
   there today, with its watch. It marks no change, so it
   stands where the cause is even when the fix is elsewhere, and it goes with the fix.
@@ -146,12 +150,18 @@ what is left once the cause is known: a diagnosed fix is often `easy`).
 
 - `map check <feature>` in a screen, then the whole check once before the commit: it runs the
   reproductions itself, and fails on one that passes.
+- **Read each lot as its implementer will**: `map brief <feature>/<lot>`. A place that reads
+  wrong there, or a test under the wrong piece, is corrected now.
+- **Apply each proposed change of the database** with the repository's command (`repository.md`
+  § "Commands") and read what differs: it is what the reviewer will read on the card, so it holds
+  the change and nothing beside it. The check does not apply one, and the render only warns when
+  its SQL fails.
 - **Hand over only what the page does not hold**: where it is, what blocks the check or the
   commit, and any diagnosed bug the plan holds no piece for, with the reason. The reviewer reads
   the bugs, their pieces and the points to confirm on the page; do not restate them.
 - **The plan is approved with its delivery**, on the reviewer's word and by the approval command
   alone. The approval keeps each reproduction as written and what it saw that day. The next
-  stage is `feature-implement`, a lot a run, in a fresh session.
+  stage is `feature-implement`, in a fresh session.
 
 ## Guardrails
 
