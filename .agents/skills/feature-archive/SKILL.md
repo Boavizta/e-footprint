@@ -49,7 +49,9 @@ precondition 1 does not apply to it.
    each candidate, the first home that can hold it:
 
    1. **A test, or the code itself.** A rule a test owns, a shape a type refuses: nothing is
-      written.
+      written. A shape that a few lines in an existing test would hold, and that none holds, is
+      a test to write here, or to park when it is more than that: prose is no substitute for it,
+      and with the test in place at most one line stays at the place, saying why.
    2. **A narrative's sentence.** What happens, in order, is told by the steps: nothing is
       written, or the sentence is corrected.
    3. **The reason of one object**, where the repository keeps it (`repository.md` § "Archive"):

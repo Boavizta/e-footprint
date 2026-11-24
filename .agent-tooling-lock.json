@@ -1,6 +1,6 @@
 {
   "upstream": "https://github.com/Boavizta/e-footprint-interface",
-  "commit": "5c8858846199c059baf5e12f05a5af99ba4a4a45",
+  "commit": "490e12341888bdc6d7fc5962ddba0c06671e424d",
   "licence": "Apache-2.0",
   "notice": "The files under \"hashes\" are copied from the repository named in \"upstream\", at the commit named in \"commit\", where they are published under the licence named in \"licence\" (the LICENSE file of that repository). A file edited here differs from that commit until the next sync.",
   "lists": [
@@ -20,7 +20,7 @@
     ".agents/skills/bug-fixes-plan/SKILL.md": "56404f0ea09e4b96cbd709812cbf0b04e00232f47b8d49deeecd7b76683a5168",
     ".agents/skills/bug-fixes/SKILL.md": "c4060a134ccff7905174daa017e706bce1e2fdeca7285af8a0cad9359b4a2477",
     ".agents/skills/code-map/SKILL.md": "b175ada128228cf46bddc2b2229e4b36bf5f18cfb9190266daf171297062a249",
-    ".agents/skills/feature-archive/SKILL.md": "ba82ae3eb1549cd8a61102f2a3b526d54891589fe05147bfa9bec626e71f564c",
+    ".agents/skills/feature-archive/SKILL.md": "a60411f9962b435ea855892e11eab4775f500beac3201f1d948939ad643a3c71",
     ".agents/skills/feature-implement/SKILL.md": "647a4d5f4c8dca85e847cb8a870aee304ecc60fd2da41d5c1f9e5c3aa3b546f5",
     ".agents/skills/spec-plan/SKILL.md": "ab3b51c404a3a967c90799596a16dc0e7dac1232e88fd61bf6d2ba2d8bae8902",
     ".agents/skills/spec-specify/SKILL.md": "7f51114d41030b39b0f0451894278541c2105740ea9c57400a9c2acd7868c6bf",
