@@ -449,9 +449,16 @@ function testLine(file: string, test: string): number {
   return titles.read(file, readFileSync(abs, 'utf8')).tests.find((t) => t.title === test)?.line ?? 1;
 }
 
-function testLink(story: Story, extra = ''): string {
+function testLink(story: Story, extra = '', text = story.file.replace(/\.test\.tsx?$/, '')): string {
   const line = testLine(story.file, story.test);
-  return srcLink(story.file, line, 1, story.file.replace(/\.test\.tsx?$/, ''), extra);
+  return srcLink(story.file, line, 1, text, extra);
+}
+
+function readableTestTitle(story: Story, index: SourceIndex): string {
+  const test = story.test.startsWith('test_') ? story.test
+    : index.functions(story.file).find((f) => f.line === testLine(story.file, story.test))?.fn.split('.').pop() ?? story.test;
+  const title = test.replace(/^test_([^\[]+)/, (_, name: string) => name.replace(/_/g, ' '));
+  return title.charAt(0).toUpperCase() + title.slice(1);
 }
 
 function value(v: unknown): string {
@@ -716,7 +723,7 @@ function crosses(story: Story, ids: ReadonlySet<string>, index: SourceIndex): bo
   return story.hits.some((h) => h.kind === 'step' && ids.has(index.identity(h.site).id));
 }
 
-/** The product-step hits of a story and its hits on each mechanism, for the header line. */
+/** The narrative's own step hits and its hits on each mechanism. */
 function hitCounts(story: Story, ctx: RenderContext): { steps: number; mechanisms: Map<Narrative, number> } {
   let steps = 0;
   const mechanisms = new Map<Narrative, number>();
@@ -729,6 +736,24 @@ function hitCounts(story: Story, ctx: RenderContext): { steps: number; mechanism
   return { steps, mechanisms };
 }
 
+function runDetailsHtml(story: Story, steps: Step[], ctx: RenderContext, extra = ''): string {
+  const counts = hitCounts(story, ctx);
+  const segments = deriveSegments(story);
+  const plannedRows = segments.reduce((n, s) => n + new Set(s.hits.filter((h) => h.kind === 'planned').map((h) => ctx.index.identity(h.site).id)).size, 0);
+  const mechanisms = [...counts.mechanisms].map(([m, n]) => `<li>${plural(n, 'mechanism step hit')}: <a href="${ctx.links.mechanism(m)}">${esc(m.title)}</a></li>`).join('');
+  return `<details class="run-details">
+    <summary>Run details</summary>
+    <ul>
+      <li>${plural(segments.filter((s) => s.event).length, 'event')}</li>
+      <li>${plural(counts.steps, 'narrative step hit')} across ${plural(steps.length, 'distinct step')}</li>
+      ${mechanisms}
+      ${plannedRows ? `<li>${plural(plannedRows, 'planned row')}</li>` : ''}
+      <li>Result: ${esc(story.state ?? 'unknown')} · Test duration: ${story.durationMs ?? '?'} ms</li>
+      ${extra}
+    </ul>
+  </details>`;
+}
+
 function variantHtml(story: Story, ctx: RenderContext): string {
   const { index, narrative, owner } = ctx;
   const exclude = new Set([...owner].filter(([, m]) => m !== narrative).map(([id]) => id));
@@ -738,14 +763,12 @@ function variantHtml(story: Story, ctx: RenderContext): string {
   // The variant's own steps are numbered as the canonical numbers them, so the two read alike.
   for (const s of steps) s.n = narrative.steps.find((c) => c.id === s.id)?.n ?? s.n;
   const reached = steps.map((s) => `${label(s, index)} ×${s.stops.length}`).join(', ');
-  const events = story.hits.filter((h) => h.kind === 'event').length;
-  const counts = hitCounts(story, ctx);
-  const rides = [...counts.mechanisms].map(([m, n]) => `${n} on ${m.title}`).join(', ');
   return `
 <details class="fold">
-  <summary>${esc(story.test)} <small>— ${events} event${events === 1 ? '' : 's'} · ${counts.steps} step hits${rides ? ` · rides on: ${esc(rides)}` : ''} · ${esc(reached)}${missed.length ? ` · <span style="color:#b45309">not reached: ${esc(missed.map((m) => label(m, index)).join(', '))}</span>` : ' · every canonical step reached'}${beyond.length ? ` · <span style="color:#6d28d9">beyond the canonical: ${esc(beyond.map((b) => label(b, index)).join(', '))}</span>` : ''}</small></summary>
+  <summary>${esc(readableTestTitle(story, index))}${missed.length || beyond.length ? ` <small>${missed.length ? ` · <span style="color:#b45309">not reached: ${esc(missed.map((m) => label(m, index)).join(', '))}</span>` : ''}${beyond.length ? ` · <span style="color:#6d28d9">beyond the canonical: ${esc(beyond.map((b) => label(b, index)).join(', '))}</span>` : ''}</small>` : ''}</summary>
   <div class="fbody">
-    <p style="font-size:.8rem;color:var(--muted)">pinned by ${testLink(story)} · ${story.state ?? 'unknown'} in ${story.durationMs ?? '?'} ms</p>
+    <p class="source-test">Source test: ${testLink(story)}</p>
+    ${runDetailsHtml(story, steps, ctx, `<li>Steps reached: ${esc(reached)}</li>${missed.length ? '' : '<li>Every canonical step reached</li>'}`)}
     <div class="lane-head"><span>step</span><span>what happens, who calls it, and the rule it enacts</span><span>where to stop, what to check</span></div>
     ${stepsHtml(story, steps, [], { ...ctx, anchored: null })}
   </div>
@@ -770,19 +793,16 @@ function narrativeHtml(narrative: Narrative, stories: Story[], narratives: Narra
     return `<section class="narr" id="${esc(narrative.slug)}"><header><strong>${esc(narrative.title)}</strong><small>no story yet for its canonical case${narrative.canonicalTest ? ` "${esc(narrative.canonicalTest)}"` : ''} — run <code>npm run comprehension</code> or <code>${esc(typed(config.commands.tests, narrative.file))}</code></small></header></section>`;
   }
   const ctx: RenderContext = { index, narrative, owner: ownership(narratives), links, backlinks, anchored: new Set() };
-  const counts = hitCounts(canonical, ctx);
-  const rides = [...counts.mechanisms].map(([m, n]) => `${n} on <a href="${links.mechanism(m)}">${esc(m.title)}</a>`).join(', ');
-  const plannedRows = deriveSegments(canonical).reduce((n, s) => n + new Set(s.hits.filter((h) => h.kind === 'planned').map((h) => index.identity(h.site).id)).size, 0);
   return `
 <section class="narr" id="${esc(narrative.slug)}" data-narrative>
   <header>
-    <strong>${esc(narrative.title)}</strong>
-    <small>present tense · one screen · pinned by ${testLink(canonical, ' data-narrative-test')}, "${esc(canonical.test)}" · the data is the test's · ${deriveSegments(canonical).filter((s) => s.event).length} events, ${counts.steps} hits over ${steps.length} steps${rides ? `, ${rides}` : ''}${plannedRows ? `, ${plannedRows} planned row${plannedRows === 1 ? '' : 's'}` : ''} in ${canonical.durationMs ?? '?'} ms</small>
+    <strong>Main narrative test: ${testLink(canonical, ' data-narrative-test', readableTestTitle(canonical, index))}</strong>
   </header>
+  ${runDetailsHtml(canonical, steps, ctx)}
   <div class="lane-head"><span>step</span><span>what happens, who calls it, and the rule it enacts</span><span>where to stop, what to check</span></div>
 ${stepsHtml(canonical, steps, variants, ctx)}
 </section>
-${variants.length ? `<small class="kicker">Variants — the other cases of the same narrative, as they ran</small>${variants.map((v) => variantHtml(v, ctx)).join('')}` : ''}
+${variants.length ? `<small class="kicker">Variants</small>${variants.map((v) => variantHtml(v, ctx)).join('')}` : ''}
 ${narrative.kind === 'mechanism' ? `${namedByHtml(narrative, ctx)}\n${exercisedByHtml(narrative, narratives, index, links)}` : ''}
 ${elsewhereHtml(narrative, stories, index)}`;
 }
@@ -811,19 +831,8 @@ function ridesOnHtml(products: Narrative[], narratives: Narrative[], index: Sour
   const lines: string[] = [];
   for (const m of narratives) {
     if (m.kind !== 'mechanism') continue;
-    const by: string[] = [];
-    for (const p of products) {
-      if (!p.canonical) continue;
-      const crossed = new Set<Step>();
-      for (const h of p.canonical.hits) {
-        if (h.kind !== 'step') continue;
-        const id = index.identity(h.site).id;
-        if (owner.get(id) !== m) continue;
-        crossed.add(m.steps.find((s) => s.id === id)!);
-      }
-      if (crossed.size) by.push(`${esc(p.title)} crosses step${crossed.size === 1 ? '' : 's'} ${[...crossed].map((s) => s.n).sort((a, b) => a - b).join(', ')} of ${m.steps.length}`);
-    }
-    if (by.length) lines.push(`<li><a href="${links.mechanism(m)}">${esc(m.title)}</a>: ${esc(m.summary)} — ${by.join('; ')}.</li>`);
+    const crossed = products.some((p) => p.canonical?.hits.some((h) => h.kind === 'step' && owner.get(index.identity(h.site).id) === m));
+    if (crossed) lines.push(`<li><a href="${links.mechanism(m)}">${esc(m.title)}</a></li>`);
   }
   return lines.length
     ? `<ul class="rules">\n  ${lines.join('\n  ')}\n</ul>`
@@ -838,7 +847,7 @@ function pageStyle(): string {
 
 
 /** How the links of a narrative page and a mechanism page are used: the same on every page, so said once. */
-const LINK_HINT = '<p style="font-size:.8rem;color:var(--muted);margin:.2rem 0 .6rem">A dotted link opens VS Code at the line; right-click it for the diff against <code>main</code>, or, on a test, to debug that case. A narrative\'s "▶ debug this narrative" runs its test under the debugger: set breakpoints at the watch points you want first, then continue from one stop to the next beside the steps.</p>';
+const LINK_HINT = '<details class="link-help"><summary>Links and debugging</summary><p>A dotted link opens VS Code at the line. Right-click it for the diff against <code>main</code>, or, on a test, to debug that case.</p><p>“▶ debug this narrative” runs the main test under the debugger. Set breakpoints at the watch points you want first, then continue from one stop to the next beside the steps.</p></details>';
 
 function pageHtml(title: string, crumb: string, body: string, footerNote: string, extraStyle = ''): string {
   return `<!DOCTYPE html>
@@ -2361,12 +2370,13 @@ export function renderNarrativePage(narrative: Narrative, stories: Story[], narr
   const generatedAt = new Date().toISOString();
   const body = `
 <h1>${esc(narrative.title)}</h1>
-<p class="lede">${esc(narrative.summary)} <small>A product narrative, declared by ${srcLink(narrative.file, narrative.declaredAt, 1, narrative.file)}; nothing on this page is hand-written.</small></p>
+<p class="lede">${esc(narrative.summary)}</p>
 ${LINK_HINT}
 <h2 id="structure">Rides on</h2>
 ${ridesOnHtml([narrative], narratives, index, PRODUCT_LINKS)}
 
 <h2 id="narratives">Narrative</h2>
+<p class="source-test">Source test: ${srcLink(narrative.file, narrative.declaredAt, 1, narrative.file)}</p>
 ${narrativeHtml(narrative, stories, narratives, index, PRODUCT_LINKS, backlinks)}
 `;
   const crumb = `comprehension · narratives / ${esc(narrative.slug)} · <b>generated</b> from ${stories.length} stor${stories.length === 1 ? 'y' : 'ies'} at ${generatedAt} · <a href="../index.html">every page</a>`;
@@ -2377,9 +2387,10 @@ export function renderMechanismPage(mechanism: Narrative, stories: Story[], narr
   const generatedAt = new Date().toISOString();
   const body = `
 <h1>${esc(mechanism.title)}</h1>
-<p class="lede">${esc(mechanism.summary)} <small>A mechanism narrative: the sites are the mechanism's own code, declared by ${srcLink(mechanism.file, mechanism.declaredAt, 1, mechanism.file)}; nothing on this page is hand-written.</small></p>
+<p class="lede">${esc(mechanism.summary)}</p>
 ${LINK_HINT}
 <h2 id="narratives">Narrative</h2>
+<p class="source-test">Source test: ${srcLink(mechanism.file, mechanism.declaredAt, 1, mechanism.file)}</p>
 ${narrativeHtml(mechanism, stories, narratives, index, MECHANISM_LINKS, backlinks)}
 `;
   const crumb = `comprehension · mechanisms / ${esc(mechanism.slug)} · <b>generated</b> from ${stories.length} stor${stories.length === 1 ? 'y' : 'ies'} at ${generatedAt} · <a href="../index.html">every page</a>`;
