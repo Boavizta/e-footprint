@@ -12,7 +12,7 @@ from efootprint.abstract_modeling_classes.empty_explainable_object import EmptyE
 from efootprint.abstract_modeling_classes.input_values import input_values_match
 from efootprint.abstract_modeling_classes.utils import css_escape
 from efootprint.logger import logger
-from efootprint.narrate import event
+from efootprint.narrate import event, narrate
 from efootprint.abstract_modeling_classes.object_linked_to_modeling_obj import ObjectLinkedToModelingObjBase
 from efootprint.abstract_modeling_classes.reactive_core import (
     CONTAINERS_NODE_NAME, collect_invalidated_slots, computed_attribute, computed_slots, instance_slot_registry,
@@ -78,13 +78,16 @@ def get_canonical_class_for_cls(modeling_object_class: type) -> type:
 
 class AfterInitMeta(type):
     def __call__(cls, *args, **kwargs):
+        event("The modeler constructs a modeling object.", lambda: {"class": cls.__name__})
         instance = cls.__new__(cls)
         try:
+            narrate("The constructor attaches inputs through type, unit and choice checks and wraps their relationship links; its subclass hook finishes the object. **This phase is passive**, so attaching inputs starts no update transaction.", lambda: {"class": cls.__name__})
             instance.__init__(*args, **kwargs)
             instance.after_init()
+            narrate("The completed instance becomes live: **later input assignments use update transactions**, so construction's passive boundary cannot bypass validation of an edit.", lambda: {"class": cls.__name__})
             instance._mark_live()
         except Exception:
-            # Defense in depth: no current production path reuses failed graphs; failures can strand earlier links.
+            narrate("A failed constructor or hook releases cached values, dependency edges and attached inputs before re-raising: **surviving objects must not retain links to an incomplete owner**.", lambda: {"class": cls.__name__})
             for slot in list(instance_slot_registry(instance).values()):
                 slot._drop_value()
                 slot.replace_dependencies()

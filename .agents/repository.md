@@ -29,9 +29,10 @@ is particular to this one here. `AGENTS.md` stays the entry point and wins where
 ## The stack
 
 The Python stack of the comprehension harness is written to its contract
-(`comprehension_harness/stack.md`), and `comprehension.config.json` names its commands. Two narratives
-are told, the edit of a live model (`tests/narratives/test_model_edit.py`) and a system saved
-and loaded back (`tests/narratives/test_system_file.py`); the others are missing. A feature in flight on `plan.html` and `tasks.md` is finished by hand or
+(`comprehension_harness/stack.md`), and `comprehension.config.json` names its commands. Three narratives
+are told: model construction (`tests/narratives/test_model_construction.py`), the edit of a live
+model (`tests/narratives/test_model_edit.py`), and a system saved and loaded back
+(`tests/narratives/test_system_file.py`); the others are missing. A feature in flight on `plan.html` and `tasks.md` is finished by hand or
 ported; a bug batch is planned in pieces too (`bug-fixes`, `bug-fixes-plan`).
 
 | The method says | Here |

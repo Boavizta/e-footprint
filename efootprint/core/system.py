@@ -29,6 +29,7 @@ from efootprint.utils.optional_dependencies import requires_extra
 from efootprint.abstract_modeling_classes.reactive_core import (
     computed_attribute, computed_structure)
 from efootprint.core.attribution import attribution_sources, evict_attribution_source_intermediates
+from efootprint.narrate import narrate
 
 
 class System(ModelingObject):
@@ -54,9 +55,11 @@ class System(ModelingObject):
         self.check_no_object_to_link_is_already_linked_to_another_system()
 
     def check_no_object_to_link_is_already_linked_to_another_system(self):
+        narrate("The system checks ownership throughout its linked model: **every modeling object belongs to at most one system**, including objects reached through shared components.")
         for mod_obj in self.all_linked_objects:
             mod_obj_systems = mod_obj.systems
             if mod_obj_systems and mod_obj_systems[0].id != self.id:
+                narrate("An object already owned by another system is refused: **a second system cannot reuse the first system's live objects**.", lambda: {"object": mod_obj.name, "existing_system": mod_obj_systems[0].name, "new_system": self.name})
                 raise PermissionError(f"{mod_obj.name} is already linked to {mod_obj_systems[0].name}, so it is "
                                       f"impossible to link it to {self.name}")
             if len(mod_obj_systems) > 1:
@@ -68,6 +71,7 @@ class System(ModelingObject):
         return [self]
 
     def after_init(self):
+        narrate("The system pulls guards across the linked model before construction completes: **invalid capacity fails here**, while ordinary outputs are computed only when read.")
         for mod_obj in dict.fromkeys([self] + self.all_linked_objects):
             mod_obj.pull_guard_attributes()
 

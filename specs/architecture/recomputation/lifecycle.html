@@ -26,7 +26,7 @@ self.hourly_occurrences = hourly_occurrences.to(
     u.occurrence
 ).set_label("Hourly nb of pattern occurrences")
 self.country = country</code></pre>
-<p><code>AfterInitMeta</code> keeps the complete constructor and the subclass's <code>after_init()</code> hook passive. Input assignment and relationship-container mutation use explicit attachment/storage paths during this phase, so builder defaults can be created or replaced without invalidation, guards, or update transactions. The metaclass makes the finished instance live exactly once; there is no caller-controlled bypass for later writes.</p>
+<p>The passive construction boundary, transition to live assignments, system ownership and guard validation are told by <a href="../../comprehension_harness/mechanisms/a-model-is-constructed-from-inputs-and-linked-into-a-system.html">the model-construction narrative</a>.</p>
 <div class="tablewrap"><table><tr><th>Data</th><th>Where it lives after construction</th><th>Why</th></tr>
 <tr><td>Hourly-start input value</td><td><code>pattern.__dict__["hourly_occurrences"]</code></td><td>The actual <code>ExplainableHourlyQuantities</code>, attached to that object/attribute address.</td></tr>
 <tr><td>Country relationship</td><td><code>pattern.__dict__["country"]</code></td><td>A <code>ContextualModelingObjectAttribute</code> wrapper around the Country. The wrapper knows its owner is <code>pattern</code> and its field is <code>country</code>.</td></tr>
@@ -135,11 +135,9 @@ links and shared controllers, without relying on prior computed dependencies. Re
 then invalidates and pulls the restored eager boundary, including the guards the forward wave visited.</p>
 <p>Passive constructor assignments use a one-entry proposed-change map to validate the new value and already assigned
 dependents before attachment. Unassigned dependents are skipped; assigning a dependent before its required controller
-is available fails with the full path. The metaclass retains the instance while running its constructor and
-<code>after_init()</code>; if either fails, it passively detaches the instance's attached inputs and cached values,
-and removes its computed dependency edges
-before re-raising the original error. Previously attached relationships therefore cannot leave an incomplete
-dependent behind on a surviving controller. Hydration retains its explicit validation bypass until the graph is restored;
+is available fails with the full path. Failed-construction cleanup is told by
+<a href="../../comprehension_harness/mechanisms/a-model-is-constructed-from-inputs-and-linked-into-a-system.html">the model-construction narrative</a>.
+Hydration retains its explicit validation bypass until the graph is restored;
 subsequent live edits use the same conditional validation as newly constructed objects.</p>
 <p><code>input_values_match()</code> owns authored-input equality for transaction no-op detection and allowed-value
 validation. It distinguishes <code>EmptyExplainableObject</code> from explicit zero and preserves timeseries builder
