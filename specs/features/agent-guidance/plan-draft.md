@@ -7,27 +7,92 @@ and deletes this file.
 
 - The entry point is a module, `efootprint/agent_guide/`, run as `python -m efootprint.agent_guide`.
   An argument is tried as `examples`, then as a class name, then as a topic.
-- The guide is a hand-written Markdown file shipped as package data. Non-Python package data is
-  listed in `[tool.poetry] include` of `pyproject.toml`.
+- All substantive guidance is authored in its owning documentation, including a page on modeling
+  with an AI agent. Class semantics stay in doc-as-code metadata; runnable examples and recipes
+  stay in executable sources also used by the documentation. No substantive advice or independent
+  summaries are maintained only for the agent guide.
+- The guide assembles those sources. Only selection, reading order, minimal transitions and link
+  rendering are specific to the assembly. The plan chooses the simplest mechanism and when it
+  runs. The sources needed by the command ship as package data, listed in `[tool.poetry] include`
+  of `pyproject.toml`.
+- Around 10,000 tokens is a starting allowance, not a hard ceiling. Planning measures the preview;
+  coverage and reading order decide what stays. The trial briefs check whether the resulting
+  guide prevents mistakes and reduces further exploration.
 - It is written in documentation voice, never "You are…": an agent treats command output as data,
   and system-prompt voice inside a package reads as prompt injection.
-- Its one model is small. `efootprint/modeling_examples/introductory/_authoring/ecommerce.py` is
-  about 1.4k tokens by itself and stays an example the guide points at.
+- Include one full system script demonstrating broad web and edge object usage and the recommended
+  modeling practices. Planning evaluates porting `docs_sources/doc_utils/docs_case.py` into the
+  package as the canonical example, with the documentation generator consuming the same source.
+  Examples and API recipes are included from executable sources and checked against the library,
+  rather than copied into Markdown.
+- `docs_case.py` currently demonstrates object coverage, not every modeling pattern: it uses
+  random hourly volumes and raw recurrent arrays, leaves its device group outside the final
+  system, and lacks results inspection and export. Plan its adaptation to editable timeseries,
+  connected relationships and a complete modeling-to-export flow; settle optional integrations
+  against the core-install and runnable-example rules. Remove redundant `source=None` at the
+  canonical source if useful, rather than transforming the guide's copy; demonstrate meaningful
+  sources for assumptions too.
 - The guide tells agents to read the `_authoring` scripts, not to run them: their `__main__` block
   rewrites the example's JSON in the installed package.
 - Its export section names `system_to_json`, `systems_to_json`, `duplicate_system` and
   `materialize_serialized_state`. The interface's import computes what a file lacks, so an agent
-  need not materialize for it; it does when the saved values are the point.
-- Form-input timeseries are recommended as a library fact: their human parameters are kept, and
-  the input diff of a comparison reads them instead of arrays.
+  need not materialize for it; it does when the saved values are the point. Document one single-system
+  JSON file or one two-system comparison file, reference first and compared second, preserving
+  corresponding object ids through duplication.
+- The AI-modeling documentation owns the recommendation to use timeseries classes from
+  `builders.timeseries` that retain `form_inputs`: their human parameters remain editable in the
+  interface and readable in comparison input diffs. Custom arrays remain viewable but are not
+  editable there; the workflow explains this tradeoff to the user before choosing them. The
+  builders' own descriptions hold their class-specific constraints.
+
+## The guide's reading order
+
+- The reason for being and scope of the library, followed by its modeling methodology.
+- The workflow with the user, from boundaries and consequential assumptions to an agreed model
+  overview before coding; AI workloads include a question about the model being used.
+- Web versus edge modeling and their object relationships.
+- Builders: what defaults, external data or object wiring they supply, and what remains to check.
+- Shared conventions, including units, sources, defaults, countries and the editable-timeseries
+  recommendation before the example.
+- The full maintained system script, with broad object usage and recommended modeling practices.
+- How-tos by title and lookup command; class lookup commands for inputs, defaults, allowed values,
+  pitfalls, interactions and computed attributes. Generate titles and commands from the registries.
+- A short public explanation of lazy calculation, dependency tracking and recomputation. Ordinary
+  modeling uses the public API; engine internals are relevant when investigating a suspected bug.
+- Bug-report guidance: installed version, minimal reproducer, expected and actual behavior, and
+  a likely explanation only when supported. Propose reporting to
+  `https://github.com/Boavizta/e-footprint`; the user decides whether to submit.
+- Results interpretation: totals, overall scale, dominant contributors, uncertainty and possible
+  overprovisioning; finish with the single-system or ordered comparison-file output recipe.
+- Other examples stay available through `examples` when needed. The default guide need not carry
+  a second catalogue; object coverage in the full script does not establish coverage of every
+  modeling pattern.
 
 ## Where each piece of content goes
 
 | Content | Home |
 |---|---|
 | Anything owned by one class | That class's `pitfalls` / `interactions`, reached through the class lookup |
-| A cross-class how-to that has a documentation page | The page, shipped in the package and printed as a topic |
-| What is left | The guide |
+| Shared concepts, methodology and cross-class how-tos | The owning documentation page or section, reused in the guide where needed and printed as a topic where offered |
+| User workflow, timeseries editability and output conventions | A canonical documentation page on modeling with an AI agent |
+| Builders and public reactive-engine context | Owning user-facing documentation sections |
+| Bug reporting | Contributor or support documentation |
+| Runnable examples and API recipes | Executable sources shared by the documentation and the guide |
+| How-to titles and lookup commands | Generated from the corresponding registries |
+| Selection, reading order, minimal transitions and link rendering | The guide's assembly; the site shows the same assembled guide |
+
+## The planning preview
+
+- During planning, assemble a reviewable preview of the proposed default command output from the
+  existing documentation and examples, in reading order. It shows the actual text, not just a
+  table of contents, and marks missing sections explicitly.
+- The plan identifies the source of each included part, gaps to fill, changes needed in the owning
+  documentation, and checks for shared text and executable examples. Every substantive part must
+  have a canonical documentation home, including newly authored guidance. Review the preview for
+  repetition, missing context, website-only navigation and approximate token count.
+- The preview is a planning artifact: it does not wire the command or change product behavior.
+  Implementation improves the owning documentation, fills the marked gaps and builds the shared
+  assembly. The preview is not a separately maintained copy of the shipped guide.
 
 ## The class reference
 
@@ -49,10 +114,15 @@ and deletes this file.
 - Agreed list: `web_vs_edge`, `database_modeling`, `server_to_server_interaction`,
   `serverless_modeling`, `machine_learning_workflow`, `usage_edge_index`. Candidates the plan
   settles: `attributing_footprint` (a how-to of the site's navigation) and `hardware_edge_index`.
-- Not shipped: `why_efootprint.md`, `get_started.md`, `methodology.md` (its loop is condensed in
-  the guide), the tutorial, `docs_sources/doc_utils/docs_case.py`.
-- The guide's page on the site includes the package's file through `pymdownx.snippets`, already
-  enabled in `mkdocs.yml`.
+- `why_efootprint.md`, the scope documentation, `methodology.md` and `web_vs_edge.md` supply the
+  opening explanations. Planning settles which complete pages or sections to include and what
+  needs improving. These sources and the new guidance pages ship where needed by the assembly;
+  planning settles which also become topic lookups. Source location does not change their status
+  as canonical documentation.
+- `get_started.md` and the tutorial stay outside the shipped topics. `docs_case.py` is a candidate
+  for the shared package example, no longer excluded from package content.
+- The guide's page on the site and the command use the same assembled content. Reuse the existing
+  `pymdownx.snippets` support where it fits; the plan settles the rendering and inclusion mechanism.
 
 ## Pointers
 
@@ -68,10 +138,14 @@ and deletes this file.
 - `ai_base_prompt_web_chat.md` is harvested, then deleted:
   - the `raw_nb_of_instances` against `nb_of_instances` over-provisioning check goes to the server
     classes' `pitfalls`;
-  - the `form_inputs` constraint goes to the timeseries builders' descriptions;
-  - `system_to_json` and the comparison recipe go to the guide's export section;
-  - reading the scale of the emissions goes to the guide's results section;
-  - its behavioural lines become the way of working.
+  - class-specific `form_inputs` constraints go to the timeseries builders' descriptions; the
+    editability recommendation and user tradeoff go to the AI-modeling documentation;
+  - `system_to_json` and the comparison recipe go to maintained executable sources included in
+    the AI-modeling documentation and the guide's export section;
+  - reading the scale of the emissions goes to the owning documentation, reused in the guide's
+    results section;
+  - its behavioural lines become the user workflow in the AI-modeling documentation, reused as
+    the guide's way of working.
 - `HOWTO try e-footprint with AI/` (the folder name holds a narrow no-break space) is deleted. Git
   history keeps it, nothing public links to it, and the interface's `start-from-ai-agent` is its
   successor.

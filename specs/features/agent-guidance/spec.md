@@ -1,6 +1,6 @@
 # Agent guidance
 
-The library ships a short guide for coding agents and a command that prints it, so that an agent
+The library ships a guide for coding agents and a command that prints it, so that an agent
 models with the installed version from one instruction of its user.
 
 ## Problem
@@ -24,22 +24,48 @@ latest version, which may be ahead of the one installed.
 
 ## The change
 
-**A guide in the package.** `python -m efootprint.agent_guide` prints it. It is short enough to be
+**A guide in the package.** `python -m efootprint.agent_guide` prints it. It is intended to be
 read whole at the start of a task, written as documentation of the library, and it matches the
 installed version because it is installed with it. It holds what belongs to no single class:
 
-- what the library models;
-- the objects and how they are built on one another, for a web service and for a fleet of devices;
-- the conventions every class shares: values with a unit and a source, defaults, countries, usage
-  volumes given as a start date, a duration, a volume and a growth rate;
-- a way of working: a coarse model first, an overview before any code, the questions to ask the
-  user about scale and, for AI, about the model;
-- one small model, from the first object to the export, that runs as written;
-- how to read the results: where the totals are, what the size of the emissions calls for, how to
-  spot an oversized server;
-- how to export one system or several, with one line saying that the interface opens either file
-  as it is;
-- how to look up everything else.
+- why the library exists, what it models, and the methodology of coarse modeling, refinement and
+  comparison;
+- a workflow with the user: establish boundaries and scale, ask about consequential assumptions
+  and the model used for AI workloads, and agree on an overview before writing code;
+- the core distinction between web and edge modeling and how their objects fit together;
+- what builders provide beyond the underlying objects, and which assumptions remain to check;
+- the conventions every class shares: values with a unit and a source, defaults, countries and
+  usage volumes; prefer timeseries builders that retain form inputs so the interface can edit
+  them, and explain the viewable-but-not-editable tradeoff before using custom arrays;
+- one full runnable system script demonstrating broad web and edge object usage, maintained with
+  the documentation and showing the recommended practices;
+- how-to guides by title and the commands that print them, plus commands to inspect a class's
+  inputs, defaults, allowed values, pitfalls, interactions and computed attributes; further
+  examples are discoverable when needed;
+- enough context on lazy calculation, dependency tracking and recomputation to model through the
+  public API without reading the reactive engine, unless investigating a suspected bug;
+- how to prepare a bug report for the library's repository: a minimal reproducing script, the
+  installed version, expected and actual behavior, and an explanation supported by the evidence;
+  suggest submitting the report, leaving submission to the user;
+- how to read the results: where the totals are, the scale and uncertainty of the emissions,
+  dominant contributors and possible oversized servers;
+- the output for the interface: one JSON file containing a single system, or one comparison JSON
+  file containing the reference system first and the compared system second, preserving the
+  identities of corresponding objects; how to save calculated values when needed.
+
+All substantive guidance has its source of truth in the documentation. The guide assembles
+canonical pages or sections and executable examples used by the documentation; object semantics
+remain in the class metadata from which the reference is generated. A documentation page on
+modeling with an AI agent owns the user workflow, timeseries editability tradeoff and output
+conventions. Missing explanations are added to their owning documentation rather than written
+only for the guide. There are no independently maintained agent summaries or agent-only advice.
+Only selection, reading order, minimal transitions and presentation of lookup links are specific
+to the assembly. Exhaustive class references and specialized recipes remain available through
+lookups.
+
+Around 10,000 tokens is a starting allowance, not a hard ceiling. More is appropriate when it
+helps prevent modeling mistakes or further exploration. Coverage and a useful reading order take
+priority over compression; repeated explanations and unrelated detail do not belong in the guide.
 
 **The same command looks things up.** Each lookup prints text, and says how to reach what it
 refers to:
@@ -58,8 +84,8 @@ follow what it prints before writing a model. It also tells an agent reading it 
 
 **The guide is a page of the documentation site**, with the text the command prints.
 
-**The earlier prompt and kit leave the repository.** What they taught is in the guide, or in the
-reference of the class it concerns.
+**The earlier prompt and kit leave the repository.** What they taught is in the owning
+documentation or class reference, reused by the guide.
 
 **What the trial runs tripped on is fixed or said.**
 
@@ -74,7 +100,9 @@ reference of the class it concerns.
 
 ## Rules no screen shows
 
-- **guide-stays-short** The guide is at most 1,500 words.
+- **one-text-per-explanation** Every substantive explanation in the guide is drawn from its
+  canonical documentation source, including generated class references and executable examples,
+  with the same wording apart from presentation and lookup links.
 - **examples-run** Every code example of the guide runs as written on the installed library.
 - **core-install-is-enough** Every form of the command works on the core install, without the
   optional groups.
@@ -100,11 +128,12 @@ reference of the class it concerns.
 
 ## Not doing
 
-- A section of the guide on the interface. One line says what it opens; how to model is the same
-  whoever reads the file.
+- An interface walkthrough. The guide covers timeseries editability and the files the interface
+  opens, where these affect modeling and delivery.
 - New default values for the cloud server from Boavizta. Its idle power and its carbon intensity
   are said as pitfalls; changing them is a modeling decision of its own.
-- A change of what the export writes. The guide says how to save every value before exporting.
+- A change of what the export writes. The guide says when and how to save calculated values
+  before exporting.
 - An edge example, and the Industrial IoT starter moving from the interface into the package: the
   `edge-example` feature.
 - The interface's entry for starting from a conversation with an AI agent: `start-from-ai-agent`,
@@ -114,6 +143,6 @@ reference of the class it concerns.
 - A skill file for agents that load skills. It would save the two lines of the README and no more.
 - A server exposing the library as tools. An agent that writes Python does not need a second way
   in.
-- The pages of the documentation site written to convince or to organise a team, and the
-  tutorial, as topics.
+- Team-organization pages and the tutorial as topics. The library's reason for being belongs in
+  the guide.
 - A guide for a web chat that cannot run Python.
