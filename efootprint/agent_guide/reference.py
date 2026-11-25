@@ -1,8 +1,8 @@
-"""Shared textual reference rendering, independent of example instances and visualization packages."""
+"""Command class-reference formatting and lookup links, independent of example instances and visualization packages."""
 from efootprint.narrate import planned
 
 
-# @planned agent-guidance#class-reference Extend the existing class registry with Source, source values and timeseries builders needed by documentation lookups.
+# @planned agent-guidance#class-reference Build documentation lookup names from ALL_EFOOTPRINT_CLASSES_DICT plus Source, source-value wrappers and documented timeseries builders, leaving modeling registries unchanged.
 
 
 def render_lookup_links(text: str, *, target: str = "command") -> str:
@@ -10,6 +10,6 @@ def render_lookup_links(text: str, *, target: str = "command") -> str:
     raise NotImplementedError("planned: agent-guidance#class-reference")
 
 
-def render_class_reference(cls, *, target: str = "command") -> str:
-    planned("agent-guidance#class-reference:reference-text", "Render inherited class metadata, constructor defaults, units, choices and computed docstrings through `render_lookup_links`, without constructing objects.")
+def render_class_reference(cls) -> str:
+    planned("agent-guidance#class-reference:reference-text", "Format inherited class metadata, constructor and class defaults, units, choices and computed docstrings for command output through `render_lookup_links`, without constructing objects.")
     raise NotImplementedError("planned: agent-guidance#class-reference")

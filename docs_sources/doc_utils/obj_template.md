@@ -1,5 +1,3 @@
-<!-- @planned agent-guidance#class-reference Place shared semantic text before website-only example calculations and graphs. -->
-
 # {{ obj_dict["class"] }}
 {% if obj_dict["class_description"] %}
 {{ obj_dict["class_description"] | safe }}

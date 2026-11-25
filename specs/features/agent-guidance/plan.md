@@ -15,13 +15,13 @@ catalogue. Named Python snippets are expanded as text; documentation never execu
 
 ## #class-reference
 
-Render class semantics once from metadata for both the command and website, without constructing example objects.
+Read class metadata in both consumers, preserving website rendering and formatting command references without constructing example objects.
 
-Extract common metadata text; keep calculation examples and optional graphs in website tooling.
-Documentation generation must reject missing concrete-class examples rather than hide omissions.
-Abstract classes need no instance. Preserve inherited metadata, constructor versus class defaults,
-conditional choices and computed docstrings, including empty sample results. Keep the core renderer
-independent of Jinja2.
+Both consumers already have class metadata; sharing a rendered page would unnecessarily replace
+the website template contract. Keep obj_dict, obj_template.md and the layout unchanged. Reuse
+metadata-reading helpers only where useful. Missing concrete-class examples remain an error;
+an existing example's empty calculated attribute still needs its docstring. Command lookups
+construct no examples and need no Jinja2.
 
 ## #canonical-example
 
@@ -137,11 +137,12 @@ get_started, the notebook tutorial and team pages outside the command's topic re
 
 ## One reference for every emitted name
 
-#canonical-topics, #class-reference and #guide-assembly use the existing concrete-plus-canonical
-class registry. Supplement it with Source, source-value wrappers and timeseries builders referenced
-by the shipped documentation. These references describe their public constructors and docstrings;
-not every value class has ModelingObject metadata. Class and member links become the class lookup
-command, keeping the member label. Convert interface template links to absolute URLs.
+#canonical-topics, #class-reference and #guide-assembly use a documentation lookup set initialized
+from ALL_EFOOTPRINT_CLASSES_DICT, supplemented with Source, source-value wrappers and documented
+timeseries builders. Modeling registries remain unchanged; supplemental lookup types require no
+website page or example instance. Their references describe public constructors and docstrings.
+Class and member links become the class lookup command, keeping member labels. Convert interface
+template links to absolute URLs.
 
 ## Executable sources and package boundaries
 
@@ -149,8 +150,8 @@ command, keeping the member label. Convert interface template links to absolute 
 it. The reference script has a pure builder and a demonstration entry point writing to a supplied
 directory. Register its reproducible input JSON and standard authoring wrapper using existing
 example conventions. Replace handwritten topic sketches with executable named regions, including
-currently incomplete database and server-to-server sketches. Website-only plots remain outside
-the shared semantic renderer.
+currently incomplete database and server-to-server sketches. Website-only plots remain in
+documentation tooling.
 
 ## Documentation example completeness
 

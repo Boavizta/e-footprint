@@ -1,7 +1,7 @@
 import os
 from inspect import cleandoc
 
-from efootprint.agent_guide.reference import render_class_reference, render_lookup_links
+from efootprint.agent_guide.reference import render_lookup_links
 from efootprint.narrate import planned
 
 from jinja2 import Template
@@ -36,7 +36,7 @@ def _reject_ui(target: str) -> str:
 
 
 def _build_placeholder_handlers(documented_classes: set[str]) -> dict:
-    planned("agent-guidance#class-reference:website-links", "Delegate shared placeholder resolution to `render_lookup_links`, retaining website calculation-graph enrichment outside the package renderer.")
+    planned("agent-guidance#class-reference:website-links", "Resolve website placeholders through `render_lookup_links` while preserving website link targets.")
     def class_link(target: str) -> str:
         if target in documented_classes:
             return f"[{target}]({target}.md)"
@@ -188,7 +188,7 @@ def calc_attr_to_md(owning_class, input_obj: ExplainableObject, attr_name):
 
 
 def write_object_reference_file(mod_obj):
-    planned("agent-guidance#class-reference:website-reference", "Use `render_class_reference` for shared semantics and retain example values and optional calculation graphs as website-only additions.")
+    planned("agent-guidance#class-reference:website-reference", "Populate existing template fields from inherited class metadata, defaults and choices, retaining computed docstrings for empty example results and omitting their graphs.")
     if isinstance(mod_obj, ContextualModelingObjectAttribute):
         mod_obj = mod_obj._value
     cls = type(mod_obj)
@@ -275,7 +275,7 @@ def build_doc_placeholder_handlers() -> dict:
 
 
 def generate_object_reference(automatically_update_yaml=False):
-    planned("agent-guidance#class-reference:every-site-reference", "Require examples for every registered concrete class before generating shared references, naming missing classes and excluding abstract classes from the requirement.")
+    planned("agent-guidance#class-reference:every-site-reference", "Require examples for every registered concrete class before generating website references, naming missing classes and excluding abstract classes from the requirement.")
     global _PLACEHOLDER_HANDLERS
     mod_objs_to_document = _get_mod_objs_to_document()
     _PLACEHOLDER_HANDLERS = build_doc_placeholder_handlers()

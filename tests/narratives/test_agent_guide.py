@@ -19,7 +19,7 @@ def test_every_modeling_class_answers():
     pass
 
 
-@planned_test("agent-guidance#class-reference: Command and website class references preserve identical descriptions, defaults, allowed values and pitfalls [one-text-per-class]")
+@planned_test("agent-guidance#class-reference: Command and website references agree on descriptions, defaults, allowed values and pitfalls, retaining docstrings for empty calculated attributes [one-text-per-class]")
 def test_shared_class_reference():
     pass
 
