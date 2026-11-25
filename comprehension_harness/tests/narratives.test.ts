@@ -11,8 +11,9 @@ const SHOP = join(dirname(fileURLToPath(import.meta.url)), 'fixtures/shop');
 const FILE = 'shop/checkout.py';
 const TITLE = 'The customer pays a basket';
 
-function example() {
+function example(hasWatch = true) {
   const doc = JSON.parse(readFileSync(join(SHOP, 'source-index.json'), 'utf8')) as SourceIndexDocument;
+  doc.files[FILE].sites.find((s) => s.fn === 'charge')!.hasWatch = hasWatch;
   doc.narratives.push({ file: 'tests/test_basket.py', title: 'A basket is assembled', line: 1, summary: '', firstTest: 'test_builds' });
   const source = new JsonSource(checkSourceIndex(doc, 'the example'), (f) => !f.startsWith('tests/'));
   const index = new SourceIndex(source);
@@ -35,6 +36,35 @@ function example() {
 }
 
 describe('narratives scoped to the test body', () => {
+  it('gives a step without a declared watch the full text width and keeps its source link', () => {
+    const { index, stories } = example(false);
+    const narratives = deriveNarratives(stories, index);
+    const html = renderNarrativePage(narratives.find((n) => n.title === TITLE)!, stories, narratives, index, { entries: [], byKey: new Map() });
+    const rows = html.match(/<div class="step[^]*?\n  <\/div>/g)!;
+    expect(rows.length).toBeGreaterThan(1);
+    for (const row of rows) {
+      expect(row).toContain('without-watch');
+      expect(row).toContain('shop/checkout.py:23');
+      expect(row).not.toContain('class="watch"');
+      expect(row).not.toContain('Stop at');
+      expect(row).not.toContain('no watch');
+      expect(row).not.toContain(' ms');
+    }
+  });
+
+  it.each([null, {}, [], { amount: 0 }].map((watch) => ({ watch })))('keeps the watch panel when a declared watch returns $watch', ({ watch }) => {
+    const { index, stories } = example();
+    for (const story of stories) for (const hit of story.hits) hit.watch = watch;
+    const narratives = deriveNarratives(stories, index);
+    const html = renderNarrativePage(narratives.find((n) => n.title === TITLE)!, stories, narratives, index, { entries: [], byKey: new Map() });
+    const rows = html.match(/<div class="step[^]*?\n  <\/div>/g)!;
+    for (const row of rows) {
+      expect(row).not.toContain('without-watch');
+      expect(row).toContain('class="watch"');
+      expect(row).toContain('Stop at');
+    }
+  });
+
   it('excludes fixture steps, ownership and caps while keeping explicit construction and the original trace', () => {
     const { index, stories, canonical } = example();
     const narratives = deriveNarratives(stories, index);

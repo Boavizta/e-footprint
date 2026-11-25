@@ -90,6 +90,7 @@ export class JsonSource implements SourceReader {
   sites(file: string): RawSite[] {
     return this.tables(file).sites.map((s): RawSite => ({
       file, line: s.line, column: s.column, kind: s.kind, fn: s.fn, sentence: s.sentence,
+      ...(s.hasWatch ? { hasWatch: true } : {}),
       ...(s.planned ? { planned: { ...s.planned, sentence: s.sentence! } } : {}),
     }));
   }

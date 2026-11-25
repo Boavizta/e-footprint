@@ -79,7 +79,7 @@
  *  - backlinks: the pages that name code — `specs/backlog/tech-debt.md`, the constitution, the
  *    conventions — are indexed by `backlinks.ts` (their backticked tokens resolved with
  *    no step scope), and a step whose function, file or linked sentence symbol an entry names
- *    carries a marker in its watch column linking the entry; a mechanism page lists every
+ *    carries a marker in its watch column, or its text when no watch is declared, linking the entry; a mechanism page lists every
  *    entry that names any of its steps under "Named by". Nothing is cross-referenced by hand.
  *
  * Every source link carries the `data-review-source-href` the repo's `specs/review-links.js`
@@ -513,11 +513,13 @@ function stepHtml(step: Step, nested: boolean, story: Story, variants: Story[], 
   ctx.anchored?.add(step.id);
   const sentence = sentenceHtml(step.sentence, step.source, index, narrativeStories(ctx.narrative), ctx.narrative.steps.map((s) => s.source));
   const named = markersFor(ctx.backlinks, stepKeys(step, sentence.tokens));
+  const markers = markersHtml(named);
+  const hasWatch = step.source.hasWatch;
   return `
-  <div class="step${nested ? ' nested' : ''}" data-step="${esc(step.id)}"${anchor}><b>${step.n}</b>
-    <div>${chip(site.file)}${sentence.html}
-      <span class="test">${srcLink(site.file, site.line, site.column, `${site.file}:${site.line}`)} in <code>${esc(site.fn ?? site.mappedFn ?? '(anonymous)')}</code> · ${testLink(story)} · ${total} stop${total === 1 ? '' : 's'}${stops.length < total ? ` (${stops.length} here)` : ''}${variants.length ? ` · reached by ${reach} of ${variants.length} variant${variants.length === 1 ? '' : 's'}` : ''} · <span class="cost">free</span></span></div>
-    <div class="watch">${markersHtml(named)}Stop at ${srcLink(site.file, site.line, site.column, 'the call', ' data-watch')}.${shown}${folded}</div>
+  <div class="step${nested ? ' nested' : ''}${hasWatch ? '' : ' without-watch'}" data-step="${esc(step.id)}"${anchor}><b>${step.n}</b>
+    <div>${hasWatch ? '' : markers}${chip(site.file)}${sentence.html}
+      <span class="test">${srcLink(site.file, site.line, site.column, `${site.file}:${site.line}`)} in <code>${esc(site.fn ?? site.mappedFn ?? '(anonymous)')}</code> · ${testLink(story)} · ${total} stop${total === 1 ? '' : 's'}${stops.length < total ? ` (${stops.length} here)` : ''}${variants.length ? ` · reached by ${reach} of ${variants.length} variant${variants.length === 1 ? '' : 's'}` : ''}</span></div>
+    ${hasWatch ? `<div class="watch">${markers}Stop at ${srcLink(site.file, site.line, site.column, 'the call', ' data-watch')}.${shown}${folded}</div>` : ''}
   </div>`;
 }
 

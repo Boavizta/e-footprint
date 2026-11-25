@@ -449,6 +449,8 @@ class FileIndex(ast.NodeVisitor):
                               "computed in production, where the call does nothing")
         said = [*expected, *distinct] if kind == "planned" else []
         watches = [keyword.value for keyword in node.keywords if keyword not in said]
+        if node.args[literals:] or watches:
+            site["hasWatch"] = True
         for argument in [*node.args[literals:], *watches]:
             if not isinstance(argument, ast.Lambda):
                 self.refuse(argument, "the watch is a lambda (lambda: {…}): anything else is computed in production, "
@@ -625,6 +627,8 @@ def template_sites(file: str, text: str) -> list[dict]:
                           f"should see a value of its own for")
         site = {"kind": KINDS.get(call, "planned"), "line": number, "column": found[0].start() + 1,
                 "fn": TEMPLATE_FN, "sentence": said[-1]}
+        if watched:
+            site["hasWatch"] = True
         if literals == 2:
             change = "evidence" if call == "evidence" else "changed"
             site["planned"] = {**planned_piece(said[0], change, refuse), "change": change, "signature": None}

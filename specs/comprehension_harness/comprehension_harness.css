@@ -59,8 +59,8 @@
   .within { font-size: .8rem; color: var(--muted); padding: .5rem 0 .2rem 2.9rem; border-bottom: 1px solid var(--line); }
   .step.nested { padding-left: 1.2rem; border-left: 2px solid var(--adp-bg); }
   .step > b { color: var(--faint); font-weight: 700; }
+  .step.without-watch > div { grid-column: 2 / -1; }
   .step .test { display: inline-block; margin-top: .25rem; font-size: .74rem; color: var(--muted); }
-  .step .test .cost { font-weight: 700; color: #15803d; }
   .step .test .none { font-weight: 700; color: #b45309; }
   .watch { font-size: .86rem; color: #374151; background: #fafafa; border-left: 2px solid var(--line); padding: .15rem .6rem; }
   .narr header .debug-narrative { margin-left: auto; font-size: .85rem; font-weight: 600; white-space: nowrap; }

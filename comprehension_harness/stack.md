@@ -102,7 +102,7 @@ row.
 
 | Asked | Answered with | How sure |
 |---|---|---|
-| The sites of a file | Each call: `kind`, `line`, `column`, `fn`, its sentence when it is a literal; for a `planned` call its tag, the place it names in it, whether it changes, removes or adds, and a shell's signature; a `built` call is a `planned` site whose change is `built`, with its tag, its place and an empty sentence | Exact |
+| The sites of a file | Each call: `kind`, `line`, `column`, `fn`, its sentence when it is a literal, and `hasWatch: true` when it declares a watch (omitted otherwise); for a `planned` call its tag, the place it names in it, whether it changes, removes or adds, and a shell's signature; a `built` call is a `planned` site whose change is `built`, with its tag, its place and an empty sentence | Exact |
 | A narrative's declaration | In its test file: the line, the first paragraph of the comment above it, the title of its first test. Also: which test files declare one | Exact |
 | Where a name of a sentence is declared, seen from a site | In order: an import of the file, a local of the functions around the call (nearest first), a top-level declaration of the file, one unique across the source. Otherwise the reason, for `--check` | Identities with a type checker, names without |
 | The same with no site | For a name `plan.md`, a test title or a page of rules gives: in the files named beside it, else unique across the source, else nearest to the piece's places | Same |

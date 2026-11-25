@@ -137,6 +137,8 @@ export interface RawSite extends Location {
   fn: string;
   /** The call's sentence when it is a literal, else null. */
   sentence: string | null;
+  /** True when the call declares a watch, even if it returns null or an empty value. Omitted otherwise. */
+  hasWatch?: boolean;
   planned?: PlannedSite;
 }
 
@@ -236,6 +238,7 @@ export interface SourceFileIndex {
     column: number;
     fn: string;
     sentence: string | null;
+    hasWatch?: boolean;
     planned?: { feature: string; slug: string; change: PlannedChange; signature: string | null; expect?: string; distinct?: string[] };
   }>;
   /** Every named function, with the line its name is on and its last line. A site, a local or a use belongs to
