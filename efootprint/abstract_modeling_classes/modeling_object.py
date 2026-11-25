@@ -81,10 +81,10 @@ class AfterInitMeta(type):
         event("The modeler constructs a modeling object.", lambda: {"class": cls.__name__})
         instance = cls.__new__(cls)
         try:
-            narrate("The constructor attaches inputs through type, unit and choice checks and wraps their relationship links; its subclass hook finishes the object. **This phase is passive**, so attaching inputs starts no update transaction.", lambda: {"class": cls.__name__})
+            narrate("The constructor attaches inputs through type, unit and choice checks and wraps their relationship links; its subclass hook finishes the object. **This phase is passive**, so attaching inputs starts no update transaction.")
             instance.__init__(*args, **kwargs)
             instance.after_init()
-            narrate("The completed instance becomes live: **later input assignments use update transactions**, so construction's passive boundary cannot bypass validation of an edit.", lambda: {"class": cls.__name__})
+            narrate("The completed instance becomes live: **later input assignments use update transactions**, so construction's passive boundary cannot bypass validation of an edit.")
             instance._mark_live()
         except Exception:
             narrate("A failed constructor or hook releases cached values, dependency edges and attached inputs before re-raising: **surviving objects must not retain links to an incomplete owner**.", lambda: {"class": cls.__name__})
