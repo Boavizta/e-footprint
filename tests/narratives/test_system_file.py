@@ -54,7 +54,7 @@ class TestSystemFile:
         # this version no longer writes, so the upgrade runs on a document it accepts.
         system_dict["efootprint_version"] = "26.0.0"
 
-        loaded = load_system(system_dict)
+        loaded, = load_systems({"models": [system_dict]})
 
         assert not is_cached(loaded)
         assert loaded.has_version_baseline
@@ -83,7 +83,8 @@ class TestSystemFile:
         other.servers[0].base_ram_consumption = SourceValue(400 * u.MB_ram)
         other.total_footprint
 
-        loaded_systems = load_systems(systems_to_json([other, system]))
+        systems = [other, system, duplicate_system(system)]
+        loaded_systems = load_systems(systems_to_json(systems))
 
-        assert [system_to_json(loaded) for loaded in loaded_systems] == [system_to_json(other), system_to_json(system)]
+        assert [system_to_json(loaded) for loaded in loaded_systems] == [system_to_json(item) for item in systems]
         assert all(is_cached(loaded) for loaded in loaded_systems)

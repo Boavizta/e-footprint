@@ -1,30 +1,8 @@
 {
   "feature": "comparison-file",
-  "base": "db3dd7126f66f1742f012ed06c4826cc4ea76d77",
-  "approvedOn": "2026-11-23",
+  "base": "0928f3afd8a7381cabf2e3bc6345d324c605c84f",
+  "approvedOn": "2026-11-25",
   "units": [
-    {
-      "kind": "piece",
-      "name": "#load",
-      "facets": {
-        "statement": [
-          "`json_to_systems` returns a comparison file's systems in the file's order, each loaded from its document by `json_to_system`."
-        ],
-        "reason": [
-          "Systems alone are returned: a modeler compares systems, and each one reaches its objects. Two documents sharing a System id are not checked: only a file assembled by hand can, and their loads give separate objects. A single-system file given to the load fails with a KeyError on `models`: the mix-up gets no check of its own."
-        ],
-        "sites": [
-          "added efootprint/api_utils/json_to_system.py in json_to_systems — Loads each document under the models key through `json_to_system`, in order, and returns their systems."
-        ],
-        "comments": [],
-        "tests": [
-          "narrative tests/narratives/test_system_file.py — systems written by `systems_to_json` come back from `json_to_systems` in their order, each as its own save and load gives it [round-trip]"
-        ],
-        "reproductions": [],
-        "question": [],
-        "notes": []
-      }
-    },
     {
       "kind": "piece",
       "name": "#export",
@@ -49,13 +27,35 @@
       }
     },
     {
+      "kind": "piece",
+      "name": "#load",
+      "facets": {
+        "statement": [
+          "`load_systems` returns a comparison file's systems in the file's order, each loaded from its document by `load_system_document`."
+        ],
+        "reason": [
+          "Systems alone are returned: a modeler compares systems, and each one reaches its objects. Two documents sharing a System id are not checked: only a file assembled by hand can, and their loads give separate objects. A single-system file given to the load fails with a KeyError on `models`: the mix-up gets no check of its own."
+        ],
+        "sites": [
+          "added efootprint/api_utils/json_to_system.py in json_to_systems — Loads each document under the models key through `json_to_system`, in order, and returns their systems."
+        ],
+        "comments": [],
+        "tests": [
+          "narrative tests/narratives/test_system_file.py — systems written by `systems_to_json` come back from `load_systems` in their order, each as its own save and load gives it [round-trip]"
+        ],
+        "reproductions": [],
+        "question": [],
+        "notes": []
+      }
+    },
+    {
       "kind": "waivers",
       "name": "Rules no test holds",
       "facets": {
         "waivers": [
           "any-count — Both functions walk the list and neither counts it, so no limit can be reached.",
           "each-is-a-system-file — Each element of the list is what `system_to_json` returns for its system, unchanged.",
-          "old-files-upgrade — The load hands each document to `json_to_system`, whose earlier-version case of the save-and-load narrative holds the upgrade and the baseline."
+          "old-files-upgrade — The load hands each document to `load_system_document`, whose earlier-version case of the save-and-load narrative holds the upgrade and the baseline."
         ]
       }
     },

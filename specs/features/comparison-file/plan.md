@@ -23,14 +23,6 @@ documents sharing a System id are not checked: only a file assembled by hand can
 give separate objects. A single-system file given to the load fails with a KeyError on `models`:
 the mix-up gets no check of its own.
 
-Changed: **`duplicate_system` and the two example loaders now take a document's System through
-the new `load_system`, as `load_systems` does.** The feature had taken that line to five copies;
-`System`'s own loader keeps its own, needing the flat object dict. → code "file efootprint/comparison/duplication.py"; code "file efootprint/modeling_examples/__init__.py"
-
-Changed: **Review renames `json_to_system` to `load_system_document` and `json_to_systems` to
-`load_systems`.** The document loader retains every object, including disconnected objects; the
-System loaders return only Systems. Interface imports keep using the document loader. → statement "returns a comparison file's systems"; test "come back from"
-
 ## Rules no test holds
 
 - **any-count** Both functions walk the list and neither counts it, so no limit can be reached.

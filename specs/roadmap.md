@@ -18,13 +18,6 @@ as they are touched. The first read of a computed value sits in the reactive cor
 code: its narrative waits for a measure against the performance baselines. A feature in flight on
 `plan.html` and `tasks.md` (`edge-networks`, `workflow-improvements`) is finished by hand.
 
-### Comparison file — delivered, to review
-
-[`features/comparison-file/`](features/comparison-file/spec.md): the library exports an ordered
-list of systems to one file and loads it back, in the format the interface already saves a
-comparison in. Library-only: the interface opens the file as it is (its `start-from-ai-agent`
-feature checks it). It comes before `agent-guidance`, whose guide tells a coding agent how to hand over a comparison.
-
 ### Agent guidance — specified, awaiting the spec's approval
 
 [`features/agent-guidance/`](features/agent-guidance/spec.md): a short guide for coding agents ships
