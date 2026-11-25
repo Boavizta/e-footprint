@@ -151,6 +151,12 @@ example conventions. Replace handwritten topic sketches with executable named re
 currently incomplete database and server-to-server sketches. Website-only plots remain outside
 the shared semantic renderer.
 
+## Reference-script coverage
+
+#canonical-example relies on the existing serialization and comparison tests for JSON semantics,
+system ordering and identity preservation. Its smoke test checks that the published example is
+usable, without adding separate cases for each demonstrated API operation.
+
 ## Project contracts
 
 #trial-errors changes constructor diagnostics, without reactive-slot calls, unit policy or

@@ -34,7 +34,7 @@ def test_shared_topic_text():
     pass
 
 
-@planned_test("agent-guidance#canonical-example: `run_reference_example` and every included recipe execute as printed and produce loadable ordered comparison files [examples-run]")
+@planned_test("agent-guidance#canonical-example: `run_reference_example` runs as printed and produces loadable model files [examples-run]")
 def test_executable_guide_examples():
     pass
 
