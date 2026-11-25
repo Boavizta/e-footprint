@@ -54,7 +54,7 @@ class TestSystemFile:
         # this version no longer writes, so the upgrade runs on a document it accepts.
         system_dict["efootprint_version"] = "26.0.0"
 
-        loaded, = load_systems({"models": [system_dict]})
+        loaded = load_system(system_dict)
 
         assert not is_cached(loaded)
         assert loaded.has_version_baseline
@@ -67,8 +67,8 @@ class TestSystemFile:
         assert {obj.id for obj in copy.all_linked_objects} == {obj.id for obj in system.all_linked_objects}
         assert is_cached(copy)
 
-    @titled("comparison-file#export: `systems_to_json` refuses two systems sharing a System id, naming the id and "
-            "duplicate_system [distinct-systems]")
+    @titled("`systems_to_json` refuses two systems sharing a System id, naming the id and "
+            "duplicate_system")
     def test_two_systems_sharing_a_system_id_are_refused(self, system):
         with pytest.raises(ValueError) as error:
             systems_to_json([system, load_system(system_to_json(system))])
@@ -76,8 +76,8 @@ class TestSystemFile:
         assert system.id in str(error.value)
         assert "duplicate_system" in str(error.value)
 
-    @titled("comparison-file#load: systems written by `systems_to_json` come back from `load_systems` in their "
-            "order, each as its own save and load gives it [round-trip]")
+    @titled("systems written by `systems_to_json` come back from `load_systems` in their "
+            "order, each as its own save and load gives it")
     def test_systems_saved_to_one_file_load_back_in_their_order(self, system):
         other = duplicate_system(system)
         other.servers[0].base_ram_consumption = SourceValue(400 * u.MB_ram)
