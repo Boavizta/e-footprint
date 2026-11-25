@@ -1357,6 +1357,54 @@ function functionPlace(index: SourceIndex, file: string, fn: string): { file: st
   return lines ? { file, line: lines[0], column: 1 } : null;
 }
 
+const declarationKey = (file: string, fn: string) => `${file}#${fn}`;
+const declarationRow = (file: string, fn: string) => ` data-declaration="${esc(declarationKey(file, fn))}"`;
+
+/** Mark resolved references by their declaration, so aliases work and namesakes stay distinct. */
+function withIntroducedReferences(body: string, plan: Plan, index: SourceIndex): string {
+  const declarations = new Map<string, { key: string; file: string }>();
+  for (const piece of plan.pieces) {
+    const added = [
+      ...piece.sites.filter((s) => s.change === 'added'),
+      ...piece.built.sites.flatMap((line) => { const place = builtPlaceOf(line); return place?.change === 'added' ? [place] : []; }),
+    ];
+    for (const place of added) {
+      // The delivery page does not repeat declarations that are still only planned.
+      if (!body.includes(declarationRow(place.file, place.fn))) continue;
+      const at = functionPlace(index, place.file, place.fn);
+      if (at) declarations.set(sourceHref(at), { key: declarationKey(place.file, place.fn), file: place.file });
+    }
+  }
+  let marked = false;
+  const html = body.replace(/<a\b[^>]*\bdata-review-source-href="([^"]+)"[^>]*>([^<]*)<\/a>/g, (link, href: string, label: string) => {
+    const declaration = declarations.get(href);
+    if (!declaration || label === esc(basename(declaration.file)) || label.startsWith(`${esc(basename(declaration.file))}:`)) return link;
+    marked = true;
+    return `${link} <button type="button" class="mark added new-reference" data-new-declaration="${esc(declaration.key)}" title="Introduced by this change · highlight its declaration" aria-label="Highlight the declaration of ${label}">new</button>`;
+  });
+  return marked ? `${html}${DECLARATION_SCRIPT}` : html;
+}
+
+const DECLARATION_SCRIPT = `<script>
+(function () {
+  var highlighted, timer;
+  document.addEventListener('click', function (event) {
+    var button = event.target.closest('[data-new-declaration]');
+    if (!button) return;
+    var rows = Array.from(document.querySelectorAll('[data-declaration]')).filter(function (row) { return row.dataset.declaration === button.dataset.newDeclaration; });
+    var visible = function (row) { var rect = row.getBoundingClientRect(); return rect.height > 0 && rect.top >= 0 && rect.bottom <= window.innerHeight; };
+    var row = rows.find(visible) || rows[0];
+    if (!row) return;
+    clearTimeout(timer);
+    if (highlighted) highlighted.classList.remove('declaration-highlight');
+    highlighted = row;
+    row.classList.add('declaration-highlight');
+    if (!visible(row)) row.scrollIntoView({ block: 'nearest', inline: 'nearest', behavior: window.matchMedia('(prefers-reduced-motion: reduce)').matches ? 'auto' : 'smooth' });
+    timer = setTimeout(function () { row.classList.remove('declaration-highlight'); }, 2000);
+  });
+})();
+</script>`;
+
 /** A place's id, as its tag writes it after the piece: what its `built` call carries once it is code. */
 const placeId = (place: string | undefined) => (place === undefined ? '' : ` <small title="the place's id: planned('…:${esc(place)}', …), then built('…:${esc(place)}') once it is code">:${esc(place)}</small>`);
 
@@ -1535,12 +1583,12 @@ function flowHtml(flow: Flow, ctx: PlanContext): string {
   const rows = flow.rows.map((row) => {
     if (row.kind === 'cause') return `<div class="fcause">${clauseInline(headClause(row.sentence, true))}</div>`;
     if (row.kind === 'new') {
-      return `<div class="frow new"><span class="n">+</span><span class="today">${placeLink(row.site.file, row.site.line, row.site.column)} <code>${esc(row.site.fn)}</code></span>
+      return `<div class="frow new"${declarationRow(row.site.file, row.site.fn)}><span class="n">+</span><span class="today">${placeLink(row.site.file, row.site.line, row.site.column)} <code>${esc(row.site.fn)}</code></span>
         <span class="chg"><span class="mark added">new</span> ${siteClause(row.site, ctx)}</span>${pieceChip(row.of)}</div>`;
     }
     if (row.kind === 'newBuilt') {
       const at = functionPlace(ctx.index, row.built.file, row.built.fn);
-      return `<div class="frow new done"><span class="n">+</span><span class="today">${at ? placeLink(at.file, at.line, at.column) : esc(basename(row.built.file))} <code>${esc(row.built.fn)}</code></span>
+      return `<div class="frow new done"${declarationRow(row.built.file, row.built.fn)}><span class="n">+</span><span class="today">${at ? placeLink(at.file, at.line, at.column) : esc(basename(row.built.file))} <code>${esc(row.built.fn)}</code></span>
         <span class="chg"><span class="mark done">built</span> ${builtClause(row.built, row.of, ctx)}</span>${pieceChip(row.of)}</div>`;
     }
     const { step, changes } = row;
@@ -1576,7 +1624,7 @@ function siteLine(site: PlanSite, ctx: PlanContext, ofABug = false): string {
     : site.crossedBy.length === 0 ? ' <small class="pending" title="no narrative\'s reference case crosses this call">no narrative crosses it</small>'
       : '';
   const untested = site.change !== 'added' && site.reachedBy.length === 0 ? ' <small class="pending">no test reaches it</small>' : '';
-  return `<div class="pline" data-planned="${esc(site.id)}"><span class="mark ${site.change}">${CHANGE_MARK[site.change]}</span><span class="where">${placeLink(site.file, site.line, site.column)} <code>${esc(name)}</code>${placeId(site.place)}</span><span class="clause">${siteClause(site, ctx)}${flag}${untested}</span></div>`;
+  return `<div class="pline" data-planned="${esc(site.id)}"${site.change === 'added' ? declarationRow(site.file, site.fn) : ''}><span class="mark ${site.change}">${CHANGE_MARK[site.change]}</span><span class="where">${placeLink(site.file, site.line, site.column)} <code>${esc(name)}</code>${placeId(site.place)}</span><span class="clause">${siteClause(site, ctx)}${flag}${untested}</span></div>`;
 }
 
 /** A comment on a test says what becomes of the test under it: deleted, or changed. Elsewhere it says what the
@@ -1914,7 +1962,7 @@ ${across.length ? `
 ${REVIEW_SCRIPT}
 `;
   const crumb = `comprehension · plans / ${esc(plan.feature)} · <b>generated</b> from ${stories.length} stor${stories.length === 1 ? 'y' : 'ies'} at ${generatedAt}`;
-  return pageHtml(`Plan — ${plan.feature}`, crumb, body, `${doc ? 'each piece\'s statement and reason hand-written in plan.md' : 'no hand-written input'}; the places from the <code>planned</code> calls under ${APP} and the <code>@planned</code> comments, the tests from the tagged titles, which step a change lands in from the reference case of each narrative`, dbCss);
+  return pageHtml(`Plan — ${plan.feature}`, crumb, withIntroducedReferences(body, plan, index), `${doc ? 'each piece\'s statement and reason hand-written in plan.md' : 'no hand-written input'}; the places from the <code>planned</code> calls under ${APP} and the <code>@planned</code> comments, the tests from the tagged titles, which step a change lands in from the reference case of each narrative`, dbCss);
 }
 
 
@@ -2172,13 +2220,13 @@ function pieceState(piece: PlanPiece): { left: number; toWrite: number; built: n
 function builtLinesHtml(piece: PlanPiece, plan: Plan, index: SourceIndex, tests = true): string {
   const inline = (t: string) => codeInline(t, plan, filesOf(piece), index);
   const file = (f: string) => (existsSync(join(ROOT, f)) ? srcLink(f, 1, 1, basename(f), ` title="${esc(f)}"`) : `<span title="${esc(f)} is deleted">${esc(basename(f))}</span>`);
-  const row = (mark: string, where: string, clause: string) => `<div class="pline built"><span class="mark done">${mark}</span><span class="where">${where}</span><span class="clause">${clause}</span></div>`;
+  const row = (mark: string, where: string, clause: string, declaration = '') => `<div class="pline built"${declaration}><span class="mark done">${mark}</span><span class="where">${where}</span><span class="clause">${clause}</span></div>`;
   const rows: string[] = [];
   for (const line of piece.built.sites) {
     const m = /^(changed|added|removed) (\S+) in (\S+) — (.*)$/.exec(line);
     if (!m) continue;
     const at = markOf(piece, line) ?? functionPlace(index, m[2], m[3]);
-    rows.push(row('built', `${at ? placeLink(at.file, at.line, at.column) : file(m[2])} <code>${esc(m[3])}</code>${placeId(Object.keys(piece.ids).find((place) => piece.ids[place] === line))}${m[1] === 'added' ? ' <span class="badge">new function</span>' : ''}`, inline(m[4])));
+    rows.push(row('built', `${at ? placeLink(at.file, at.line, at.column) : file(m[2])} <code>${esc(m[3])}</code>${placeId(Object.keys(piece.ids).find((place) => piece.ids[place] === line))}${m[1] === 'added' ? ' <span class="badge">new function</span>' : ''}`, inline(m[4]), m[1] === 'added' ? declarationRow(m[2], m[3]) : ''));
   }
   for (const line of piece.built.comments) {
     const m = /^(changes|removes) (\S+) — (.*)$/.exec(line);
@@ -2383,7 +2431,7 @@ ${loose.length && lots.length ? `<h2 id="loose">In no lot</h2>${ledgerHtml(plan,
 ${REVIEW_SCRIPT}
 `;
   const crumb = `comprehension · plans / ${esc(plan.feature)} / delivery · <b>generated</b> from ${stories.length} stor${stories.length === 1 ? 'y' : 'ies'} at ${generatedAt}`;
-  return pageHtml(`Delivery — ${plan.feature}`, crumb, body, 'the lots hand-written in plan.md § "Delivery", each <code>Changed:</code> in its section; the approval read from plan.approved.json; every other line from the <code>planned</code> calls, the <code>@planned</code> comments and the tagged test titles; a piece\'s commits from git, by the line <code>Piece: feature#piece</code> of their message.');
+  return pageHtml(`Delivery — ${plan.feature}`, crumb, withIntroducedReferences(body, plan, index), 'the lots hand-written in plan.md § "Delivery", each <code>Changed:</code> in its section; the approval read from plan.approved.json; every other line from the <code>planned</code> calls, the <code>@planned</code> comments and the tagged test titles; a piece\'s commits from git, by the line <code>Piece: feature#piece</code> of their message.');
 }
 
 const anchorFor = (name: string) => name.toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/^-|-$/g, '');

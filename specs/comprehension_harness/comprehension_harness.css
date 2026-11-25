@@ -135,6 +135,10 @@
   .mark { display: inline-block; font: 700 .64rem/1.7 system-ui, sans-serif; letter-spacing: .06em; text-transform: uppercase; text-align: center;
           border-radius: 999px; padding: 0 .4rem; background: var(--dom-bg); color: var(--muted); white-space: nowrap; }
   .mark.changed { background: #fef3c7; color: #b45309; } .mark.added { background: #d1fae5; color: #047857; } .mark.removed { background: #fee2e2; color: #b91c1c; }
+  button.new-reference { border: 0; cursor: pointer; vertical-align: middle; }
+  button.new-reference:hover { background: #a7f3d0; }
+  button.new-reference:focus-visible { outline: 2px solid #047857; outline-offset: 2px; }
+  .pline.declaration-highlight, .frow.declaration-highlight { background: #d1fae5; outline: 2px solid #10b981; outline-offset: 2px; }
   .mark.tier { background: #dbeafe; color: #1d4ed8; }
   .flows { display: grid; grid-template-columns: repeat(auto-fit, minmax(min(26rem, 100%), 1fr)); gap: .8rem; align-items: start; }
   .flow { border: 1px solid var(--line); border-radius: 12px; background: var(--card); padding: .7rem .9rem; }
