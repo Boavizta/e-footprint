@@ -29,7 +29,7 @@ from efootprint.utils.optional_dependencies import requires_extra
 from efootprint.abstract_modeling_classes.reactive_core import (
     computed_attribute, computed_structure)
 from efootprint.core.attribution import attribution_sources, evict_attribution_source_intermediates
-from efootprint.narrate import narrate
+from efootprint.narrate import narrate, planned
 
 
 class System(ModelingObject):
@@ -60,6 +60,7 @@ class System(ModelingObject):
             mod_obj_systems = mod_obj.systems
             if mod_obj_systems and mod_obj_systems[0].id != self.id:
                 narrate("An object already owned by another system is refused: **a second system cannot reuse the first system's live objects**.", lambda: {"object": mod_obj.name, "existing_system": mod_obj_systems[0].name, "new_system": self.name})
+                planned("agent-guidance#trial-errors:reuse-error", "Recommend duplicate_system in the existing ownership error without changing object-ownership checks.")
                 raise PermissionError(f"{mod_obj.name} is already linked to {mod_obj_systems[0].name}, so it is "
                                       f"impossible to link it to {self.name}")
             if len(mod_obj_systems) > 1:

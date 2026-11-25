@@ -12,7 +12,7 @@ from efootprint.abstract_modeling_classes.empty_explainable_object import EmptyE
 from efootprint.abstract_modeling_classes.input_values import input_values_match
 from efootprint.abstract_modeling_classes.utils import css_escape
 from efootprint.logger import logger
-from efootprint.narrate import event, narrate
+from efootprint.narrate import event, narrate, planned
 from efootprint.abstract_modeling_classes.object_linked_to_modeling_obj import ObjectLinkedToModelingObjBase
 from efootprint.abstract_modeling_classes.reactive_core import (
     CONTAINERS_NODE_NAME, collect_invalidated_slots, computed_attribute, computed_slots, instance_slot_registry,
@@ -76,9 +76,15 @@ def get_canonical_class_for_cls(modeling_object_class: type) -> type:
     return modeling_object_class
 
 
+def reject_plain_quantity_input(cls, name, value, annotation):
+    planned("agent-guidance#trial-errors:quantity-error", "Reject plain numeric values for quantity annotations, including unions, with the class, input name and an explainable value-with-unit construction hint.")
+    raise NotImplementedError("planned: agent-guidance#trial-errors")
+
+
 class AfterInitMeta(type):
     def __call__(cls, *args, **kwargs):
         event("The modeler constructs a modeling object.", lambda: {"class": cls.__name__})
+        planned("agent-guidance#trial-errors:constructor-quantities", "Bind supplied constructor inputs to resolved annotations and call `reject_plain_quantity_input` before labels or conversions can obscure a plain-number error.")
         instance = cls.__new__(cls)
         try:
             narrate("The constructor attaches inputs through type, unit and choice checks and wraps their relationship links; its subclass hook finishes the object. **This phase is passive**, so attaching inputs starts no update transaction.")
@@ -369,6 +375,7 @@ class ModelingObject(metaclass=ABCAfterInitMeta):
         return cls._input_value_matches_annotation(input_value, annotation)
 
     def _check_input_value_type(self, name, input_value, annotation, replaced_value):
+        planned("agent-guidance#trial-errors:assigned-quantities", "Use `reject_plain_quantity_input` for the same actionable scalar-number error on live quantity-input assignments.")
         if isinstance(input_value, EmptyExplainableObject):
             return
         if self._replacement_matches_annotation(input_value, annotation, replaced_value):

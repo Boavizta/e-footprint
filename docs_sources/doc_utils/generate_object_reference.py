@@ -1,6 +1,9 @@
 import os
 from inspect import cleandoc
 
+from efootprint.agent_guide.reference import render_class_reference, render_lookup_links
+from efootprint.narrate import planned
+
 from jinja2 import Template
 import ruamel.yaml
 
@@ -33,6 +36,7 @@ def _reject_ui(target: str) -> str:
 
 
 def _build_placeholder_handlers(documented_classes: set[str]) -> dict:
+    planned("agent-guidance#class-reference:website-links", "Delegate shared placeholder resolution to `render_lookup_links`, retaining website calculation-graph enrichment outside the package renderer.")
     def class_link(target: str) -> str:
         if target in documented_classes:
             return f"[{target}]({target}.md)"
@@ -184,6 +188,7 @@ def calc_attr_to_md(owning_class, input_obj: ExplainableObject, attr_name):
 
 
 def write_object_reference_file(mod_obj):
+    planned("agent-guidance#class-reference:website-reference", "Use `render_class_reference` for shared semantics and retain example values and optional calculation graphs as website-only additions.")
     if isinstance(mod_obj, ContextualModelingObjectAttribute):
         mod_obj = mod_obj._value
     cls = type(mod_obj)
@@ -244,6 +249,7 @@ def write_object_reference_file(mod_obj):
 
 
 def _get_mod_objs_to_document():
+    planned("agent-guidance#canonical-example:documentation-examples", "Read example objects from the canonical reference model instead of maintaining a parallel model in docs_case.")
     country = usage_pattern.country
     device = usage_pattern.devices[0]
 
@@ -269,6 +275,7 @@ def build_doc_placeholder_handlers() -> dict:
 
 
 def generate_object_reference(automatically_update_yaml=False):
+    planned("agent-guidance#class-reference:every-site-reference", "Generate shared semantic references for every registered class, including classes without a documentation example instance.")
     global _PLACEHOLDER_HANDLERS
     mod_objs_to_document = _get_mod_objs_to_document()
     _PLACEHOLDER_HANDLERS = build_doc_placeholder_handlers()

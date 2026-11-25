@@ -1,3 +1,5 @@
+# @planned agent-guidance#guide-assembly Add the assembled guide and new canonical guidance pages to the navigation while retaining all existing topic URLs.
+
 theme:
   name: material
   features:

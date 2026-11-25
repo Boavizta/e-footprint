@@ -1,0 +1,1 @@
+<!-- @planned agent-guidance#support-results Own installed-version bug reporting with a minimal reproducer, expected and actual behavior, evidence-based explanation and submission left to the user. -->

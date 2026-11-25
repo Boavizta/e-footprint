@@ -1,3 +1,5 @@
+<!-- @planned agent-guidance#canonical-topics Move this canonical page into packaged documentation and serve it through the shared topic reader. -->
+
 # Why e-footprint ?
 
 **We define ecodesign as the process of building or maintaining a digital service while minimizing its environmental impact.** Doing it well is less a question of *what could I do?* than of *what should I do first, and what impact would that have?*: out of all the actions a team could take to reduce a service's footprint, only some move the needle — and on every service it is a *different* some. Answering *which, in what order, and with what impact* is the problem e-footprint exists to solve.
@@ -84,3 +86,5 @@ For a more in-depth discussion of e-footprint's genesis by its designer, watch t
 ## Get started
 
 Now that you understand the concepts on which e-footprint is built, read the [How to get started](get_started.md) article to start your ecodesign journey !
+
+<!-- @planned agent-guidance#guide-assembly Mark a named purpose section excluding website article-forward framing, so the guide selects canonical prose without rewriting it. -->

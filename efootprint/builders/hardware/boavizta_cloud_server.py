@@ -18,6 +18,7 @@ from efootprint.core.hardware.server import Server
 from efootprint.core.hardware.server_base import ServerTypes
 from efootprint.core.hardware.storage import Storage
 from efootprint.logger import logger
+from efootprint.narrate import planned
 from efootprint.abstract_modeling_classes.reactive_core import computed_attribute
 
 # Provider / instance-type enums are loaded from a bundled snapshot instead of the live Boavizta
@@ -41,6 +42,8 @@ instance_types_conditional_list_values_dict = {
 
 class BoaviztaCloudServer(Server):
     """A {class:Server} whose hardware specifications and embodied carbon are looked up automatically from the Boavizta cloud-instance API. Provider and instance type pick a reference profile; the remaining parameters mirror {class:Server}."""
+
+    # @planned agent-guidance#trial-pitfalls Document zero idle power and country-independent carbon intensity as inherited-default pitfalls without changing either default.
 
     disambiguation = (
         "Use {class:BoaviztaCloudServer} for managed cloud instances available in the Boavizta catalog "
@@ -158,6 +161,7 @@ class BoaviztaCloudServer(Server):
             nb_vcpu * u.cpu_core, "Compute",
             left_parent=self.api_call_response, operator="data extraction from", source=self.api_call_response.source)
 
+planned("agent-guidance#trial-errors:quiet-import", "Remove the BoaviztaCloudServer import-timing log and its unused timing setup.")
 logger.info(f"Imported BoaviztaCloudServer in {perf_counter() - start:.5f} seconds.")
 
 

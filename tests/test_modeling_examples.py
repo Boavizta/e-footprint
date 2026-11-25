@@ -1,3 +1,5 @@
+# @planned agent-guidance#canonical-example Use example metadata for authoring paths and validate the reference model with the existing editable-input and round-trip checks.
+
 """Tests for the ``efootprint.modeling_examples.how_to`` package.
 
 Each test is parametrized over ``HOW_TO_EXAMPLES`` so adding a new example

@@ -1,3 +1,5 @@
+<!-- @planned agent-guidance#canonical-topics Move this canonical page into packaged documentation and serve it through the shared topic reader. -->
+
 # How to model a database
 
 e-footprint does not have a first-class abstraction for databases. A

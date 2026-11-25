@@ -7,6 +7,8 @@ from efootprint.abstract_modeling_classes.explainable_recurrent_quantities impor
 from efootprint.abstract_modeling_classes.explainable_object_base_class import Source, ExplainableObject
 
 
+# @planned agent-guidance#python-guidance Document the exact constant form inputs and their interface editability alongside the builder.
+
 @ExplainableObject.register_subclass(
     lambda d: "form_inputs" in d and "constant_value" in d["form_inputs"] and "constant_unit" in d["form_inputs"]
 )

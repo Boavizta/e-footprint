@@ -81,6 +81,8 @@ class ServerBase(InfraHardware, AttributionSource):
 
     default_values = {}
 
+    # @planned agent-guidance#trial-pitfalls Add the raw-versus-provisioned-instance comparison as a sizing diagnostic, preserving provisioning semantics.
+
     pitfalls = (
         "{param:ServerBase.fixed_nb_of_instances} only applies when {param:ServerBase.server_type} is on-premise. "
         "Setting it on an autoscaling or serverless server has no effect; setting it too low on an on-premise "

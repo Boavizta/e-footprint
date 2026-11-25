@@ -18,7 +18,7 @@ as they are touched. The first read of a computed value sits in the reactive cor
 code: its narrative waits for a measure against the performance baselines. A feature in flight on
 `plan.html` and `tasks.md` (`edge-networks`, `workflow-improvements`) is finished by hand.
 
-### Agent guidance — specified, awaiting the spec's approval
+### Agent guidance — planned, awaiting plan review
 
 [`features/agent-guidance/`](features/agent-guidance/spec.md): a short guide for coding agents ships
 in the package, and `python -m efootprint.agent_guide` prints it, a class's reference, a how-to

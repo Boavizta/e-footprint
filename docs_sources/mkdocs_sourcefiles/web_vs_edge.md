@@ -1,3 +1,5 @@
+<!-- @planned agent-guidance#canonical-topics Move this canonical page into packaged documentation and serve it through the shared topic reader. -->
+
 # Web vs edge modeling
 
 e-footprint has two paradigms for sizing environmental impact, and they

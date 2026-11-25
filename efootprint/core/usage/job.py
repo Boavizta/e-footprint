@@ -11,7 +11,7 @@ from efootprint.abstract_modeling_classes.empty_explainable_object import EmptyE
 from efootprint.abstract_modeling_classes.modeling_object import ModelingObject
 from efootprint.abstract_modeling_classes.source_objects import SourceValue
 from efootprint.constants.units import u
-from efootprint.narrate import narrate
+from efootprint.narrate import narrate, planned
 from efootprint.core.hardware.gpu_server import GPUServer
 from efootprint.core.hardware.server import Server
 from efootprint.core.hardware.server_base import ServerBase
@@ -127,6 +127,7 @@ class JobBase(ModelingObject):
                  data_stored: ExplainableQuantity = None, request_duration: ExplainableQuantity = None,
                  compute_needed: ExplainableQuantity = None, ram_needed: ExplainableQuantity = None):
         super().__init__(name)
+        planned("agent-guidance#trial-errors:quantity-narrative", "Retell the labeling step after constructor preflight supplies the actionable quantity error.")
         narrate("Job inputs receive labels and the RAM quantity is converted to its canonical unit: **these operations expect explainable quantities before ordinary input attachment validates them**.")
         if data_transferred is not None:
             self.data_transferred = data_transferred.set_label(

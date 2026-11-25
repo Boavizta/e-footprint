@@ -1,0 +1,1 @@
+<!-- @planned agent-guidance#modeling-workflow Own boundaries, scale, consequential assumptions, AI-model questions, agreement before coding, timeseries editability and single-system or ordered-comparison delivery conventions. -->

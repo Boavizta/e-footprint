@@ -1,3 +1,5 @@
+<!-- @planned agent-guidance#support-results Link the canonical packaged bug-reporting page from contributor guidance. -->
+
 # Getting Started
 ## Fork the repository on GitHub.
 

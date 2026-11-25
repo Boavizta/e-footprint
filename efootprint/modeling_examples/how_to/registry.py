@@ -16,6 +16,8 @@ from pathlib import Path
 HERE = Path(__file__).parent
 
 
+# @planned agent-guidance#example-discovery Add script paths to existing example metadata; keep the two current registries as the catalogue owners.
+
 @dataclass(frozen=True)
 class HowToExample:
     id: str

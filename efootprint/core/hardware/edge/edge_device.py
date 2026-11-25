@@ -36,6 +36,8 @@ class EdgeDevice(ModelingObject, AttributionSource):
         "appliance-style hardware modeled as a single workload curve, prefer {class:EdgeAppliance}. For "
         "computer-like hardware composed of CPU, RAM, and storage, prefer {class:EdgeComputer}.")
 
+    # @planned agent-guidance#trial-pitfalls Explain partial manufacturing allocation when lifespan exceeds modeled usage, retaining the existing lifespan-capacity rule.
+
     pitfalls = (
         "{param:EdgeDevice.lifespan} must cover every {param:EdgeUsagePattern.usage_span} that deploys the "
         "device. Otherwise the hardware cannot last for the deployment and the model raises an error.")

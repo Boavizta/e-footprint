@@ -25,6 +25,8 @@ def _is_finite_float32_number(value) -> bool:
     return isinstance(value, Real) and not isinstance(value, bool) and np.isfinite(value) and abs(value) <= _FLOAT32_MAX
 
 
+# @planned agent-guidance#python-guidance Document weekly-profile form inputs and constraints as the editable alternative to custom recurrent arrays.
+
 @ExplainableObject.register_subclass(
     lambda data: isinstance(data.get("form_inputs"), dict)
     and "unit" in data["form_inputs"]

@@ -1,3 +1,5 @@
+<!-- @planned.remove agent-guidance#retire-chat-kit Canonical modeling documentation, class metadata and executable recipes hold this guidance before the prompt and trial kit leave the repository. -->
+
 I want you to help me create a modeling of the digital carbon footprint of a digital system using the e-footprint Python package (pip install efootprint). Here are the resources you can use to understand e-footprint and manipulate the package in an efficient way to help me do my modeling:
 
 - e-footprint reason for being: https://boavizta.github.io/e-footprint/why_efootprint/

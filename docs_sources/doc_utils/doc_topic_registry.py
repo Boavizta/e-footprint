@@ -1,3 +1,5 @@
+# @planned agent-guidance#canonical-topics Import DOC_TOPICS from the packaged topic registry instead of maintaining a documentation-only registry.
+
 """Topic-id → mkdocs source filename mapping for the ``{doc:topic}`` placeholder.
 
 Keys are the stable topic ids used in description strings; values are the

@@ -1,3 +1,5 @@
+<!-- @planned agent-guidance#entry-pointers Add agent setup instructions and replace repository-relative links and image paths with absolute destinations that work on PyPI. -->
+
 # e-footprint model
 
 A toolkit for exhaustively modeling the environmental impact of digital services.

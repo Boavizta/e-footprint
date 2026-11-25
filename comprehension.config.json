@@ -29,10 +29,18 @@
     "scan": [
       "efootprint",
       "tests",
-      "specs"
+      "specs",
+      "docs_sources",
+      "ai_skills",
+      "README.md",
+      "CONTRIBUTING.md",
+      "pyproject.toml",
+      "mkdocs.yml",
+      ".github/workflows/ci.yml"
     ],
     "app": [
-      "efootprint/"
+      "efootprint/",
+      "docs_sources/"
     ],
     "product": [
       "efootprint/"

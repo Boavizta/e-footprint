@@ -1,7 +1,7 @@
 """The construction narrative records the current success and failure paths, before agent-guidance changes errors."""
 import pytest
 
-from comprehension_harness.python.declare import narrative, titled
+from comprehension_harness.python.declare import narrative, titled, planned_test
 from efootprint.abstract_modeling_classes.reactive_core import computed_slots
 from efootprint.abstract_modeling_classes.source_objects import SourceValue
 from efootprint.builders.time_builders import create_source_hourly_values_from_list
@@ -47,6 +47,8 @@ class TestModelConstruction:
         assert computed_slots(System)["total_footprint"].peek(system) is None
         assert system.total_footprint.sum().to(u.kg).magnitude > 0
 
+    # @planned agent-guidance#trial-errors Replace the legacy exception assertion with the adjacent planned title's requirements; keep cleanup assertions.
+
     @titled("A plain job input currently fails during labeling, before input attachment can validate it")
     def test_a_plain_number_fails_before_quantity_validation(self):
         server = Server.from_defaults("server", storage=Storage.from_defaults("storage"))
@@ -55,6 +57,14 @@ class TestModelConstruction:
             Job.from_defaults("invalid job", server=server, data_transferred=1)
 
         assert server.jobs == []
+
+    # Extend test_a_plain_number_fails_before_quantity_validation above to check the input name and quantity hint;
+    # retitle it as below, accepting TypeError instead of AttributeError. No case is added.
+    @planned_test("agent-guidance#trial-errors: A plain quantity input names its parameter and explains the unit-bearing value to pass [number-needs-a-unit]")
+    def test_planned_quantity_error(self):
+        pass
+
+    # @planned agent-guidance#trial-errors Add the adjacent planned title's diagnostic assertion while retaining the original graph-preservation checks.
 
     def test_a_second_system_is_refused_and_leaves_the_first_model_linked(self):
         pattern, server, _ = build_pattern()
@@ -67,6 +77,12 @@ class TestModelConstruction:
         assert pattern.systems == [original]
         assert server.systems == [original]
         assert original.total_footprint == footprint
+
+    # Extend test_a_second_system_is_refused_and_leaves_the_first_model_linked above to check the duplication hint;
+    # retitle it as below. No case is added.
+    @planned_test("agent-guidance#trial-errors: Reusing the first model's objects names duplicate_system and preserves its links [second-system-says-duplicate]")
+    def test_planned_system_reuse_error(self):
+        pass
 
     def test_a_failed_guard_detaches_the_incomplete_system(self):
         pattern, server, _ = build_pattern(base_ram_consumption=SourceValue(200 * u.GB_ram))

@@ -1,3 +1,5 @@
+<!-- @planned agent-guidance#canonical-topics Move this canonical page into packaged documentation and serve it through the shared topic reader. -->
+
 # Edge usage
 
 The objects in this sub-bucket describe what a deployed fleet **does**

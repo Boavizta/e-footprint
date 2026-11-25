@@ -1,3 +1,5 @@
+<!-- @planned agent-guidance#canonical-topics Move this canonical page into packaged documentation and serve it through the shared topic reader. -->
+
 # How to read a footprint per tenant or per provider
 
 A loaded system's total footprint can be sliced two ways that are easy to

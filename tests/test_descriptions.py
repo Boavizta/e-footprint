@@ -1,3 +1,5 @@
+# @planned agent-guidance#canonical-topics Resolve registered topic paths from packaged documentation and import the shared registry.
+
 """Completeness checks for SSOT description metadata on every concrete class.
 
 These tests enforce the contract defined in

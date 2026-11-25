@@ -1,3 +1,5 @@
+<!-- @planned agent-guidance#canonical-topics Move this canonical page into packaged documentation and serve it through the shared topic reader. -->
+
 # The e-footprint methodology
 
 ## High-level modeling then refinement
@@ -14,3 +16,5 @@ If the system is big enough, and once the model has been refined enough, comes t
 When ecodesign opportunities or new features are considered, they are implemented as changes to the e-footprint model, e-footprint computes the new impact of the system, and the difference between the old and the new footprint is the **environmental return on investment of the action**. Since modeling often takes orders of magnitude less time than implementing, this approach allows for an efficient **prioritization of effort: you will finally be able to choose the most impactful best practice for your particular conditions** !
 
 This simulation loop should be re-triggered at every **structuring decision** of the service lifecycle — scaling up, adding a feature (typically an AI capability), considering an ecodesign action, changing hosting — not only once after the model is first refined. Modeling before deciding puts the trade-off back on informed ground.
+
+<!-- @planned agent-guidance#support-results Add a results-reading section on totals, dominant contributors, uncertainty and effort proportional to absolute savings, reusing executable result-inspection snippets. -->

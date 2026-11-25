@@ -8,6 +8,8 @@ from efootprint.abstract_modeling_classes.explainable_object_base_class import S
 from efootprint.constants.units import u
 
 
+# @planned agent-guidance#trial-pitfalls Document uniform hours within each day, 30-day months and 365-day years in the builder reference.
+
 @ExplainableObject.register_subclass(lambda d: "form_inputs" in d and "initial_volume" in d["form_inputs"]
                                                and "net_growth_rate_in_percentage" in d["form_inputs"])
 class ExplainableHourlyQuantitiesFromFormInputs(ExplainableHourlyQuantities):
@@ -22,6 +24,8 @@ class ExplainableHourlyQuantitiesFromFormInputs(ExplainableHourlyQuantities):
     @classmethod
     def from_json_dict(cls, d):
         return cls(form_inputs=d["form_inputs"], label=d["label"])
+
+    # @planned agent-guidance#trial-errors Remove the ignored initial_volume_unit key from this constructor docstring and the two test inputs that pass it.
 
     def __init__(self, form_inputs: dict, label: str = "no label",
                  left_parent=None, right_parent=None, operator: str = None, source: Source = None,

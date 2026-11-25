@@ -1,0 +1,1 @@
+<!-- @planned agent-guidance#python-guidance Own builder selection, sourced quantities, defaults, countries, volume conventions and the public reactive API, including executable snippets from the canonical reference script. -->

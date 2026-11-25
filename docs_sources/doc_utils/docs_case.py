@@ -1,3 +1,8 @@
+from efootprint.modeling_examples.reference_system import build_reference_system
+from efootprint.narrate import planned
+
+planned("agent-guidance#canonical-example:shared-model-source", "Replace this example body with `build_reference_system`, leaving optional Boavizta graph examples in documentation tooling.")
+
 from time import perf_counter
 
 import numpy as np
