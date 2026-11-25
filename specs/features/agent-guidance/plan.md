@@ -170,6 +170,14 @@ Installed command lookups still render metadata without constructing examples.
 system ordering and identity preservation. Its smoke test checks that the published example is
 usable, without adding separate cases for each demonstrated API operation.
 
+## Narratives to introduce
+
+#command and #class-reference use “An agent consults class metadata”, with the existing class-reference
+parity case as its reference. #canonical-topics and #guide-assembly use “Documentation is generated”,
+with a successful build and a missing-example failure variant. Intended step order lives on the
+reference tests; step sentences and linked change places live beside the code. Architecture pages
+retain structuring decisions; these narratives explain the execution flows.
+
 ## Command and lookup coverage
 
 #command has one installed-wheel smoke test for successful dispatch: no argument, examples,

@@ -1,5 +1,5 @@
 """Planned command-level acceptance cases for installed modeling guidance."""
-from comprehension_harness.python.declare import planned_test
+from comprehension_harness.python.declare import canonical, narrative, planned_test
 from efootprint.agent_guide.__main__ import main
 from efootprint.modeling_examples.reference_system import run_reference_example
 
@@ -16,16 +16,6 @@ def test_core_wheel_commands():
 
 @planned_test("agent-guidance#class-reference: Every modeling class, including abstract canonical classes, renders in-process without constructing a model [every-class-answers]")
 def test_every_modeling_class_answers():
-    pass
-
-
-@planned_test("agent-guidance#class-reference: Command and website references agree on descriptions, defaults, allowed values and pitfalls, retaining docstrings for empty calculated attributes [one-text-per-class]")
-def test_shared_class_reference():
-    pass
-
-
-@planned_test("agent-guidance#class-reference: Missing concrete-class examples stop documentation generation before pages are written and name every missing class")
-def test_missing_documentation_examples_fail_loudly():
     pass
 
 
@@ -67,3 +57,27 @@ def test_quiet_non_cloud_build():
 @planned_test("agent-guidance#entry-pointers: README URLs are absolute and repository destinations match tracked files [readme-links-resolve]")
 def test_readme_links():
     pass
+
+
+@narrative("An agent consults class metadata")
+class TestClassMetadata:
+    """A class lookup reads the installed class metadata and prints a reference with usable lookup links."""
+
+    @canonical(steps=("class-metadata:resolve-class", "class-metadata:read-metadata", "class-metadata:format-reference"))
+    @planned_test("agent-guidance#class-reference: Command and website references agree on descriptions, defaults, allowed values and pitfalls, retaining docstrings for empty calculated attributes [one-text-per-class]")
+    def test_shared_class_reference(self):
+        pass
+
+
+@narrative("Documentation is generated")
+class TestDocumentationGeneration:
+    """A website build combines class references, canonical topics and the guide; missing concrete examples stop reference generation."""
+
+    @canonical(steps=("documentation:prepare-output", "documentation:check-class-examples", "documentation:render-class-pages", "documentation:assemble-pages", "documentation:write-pages"))
+    @planned_test("agent-guidance#canonical-topics: Documentation generation writes class references, canonical topics and the guide through the existing website template")
+    def test_documentation_is_generated(self):
+        pass
+
+    @planned_test("agent-guidance#class-reference: Missing concrete-class examples stop documentation generation before reference pages are written and name every missing class")
+    def test_missing_documentation_examples_fail_loudly(self):
+        pass

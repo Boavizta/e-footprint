@@ -2,7 +2,7 @@ import os
 from inspect import cleandoc
 
 from efootprint.agent_guide.reference import render_lookup_links
-from efootprint.narrate import planned
+from efootprint.narrate import narrate, planned
 
 from jinja2 import Template
 import ruamel.yaml
@@ -275,11 +275,13 @@ def build_doc_placeholder_handlers() -> dict:
 
 
 def generate_object_reference(automatically_update_yaml=False):
+    narrate.planned("documentation:check-class-examples", "Documentation examples **cover every registered concrete class** before any class reference page is written.", changes=("agent-guidance#class-reference:every-site-reference",))
     planned("agent-guidance#class-reference:every-site-reference", "Require examples for every registered concrete class before generating website references, naming missing classes and excluding abstract classes from the requirement.")
     global _PLACEHOLDER_HANDLERS
     mod_objs_to_document = _get_mod_objs_to_document()
     _PLACEHOLDER_HANDLERS = build_doc_placeholder_handlers()
 
+    narrate.planned("documentation:render-class-pages", "Class metadata and example values **fill the existing reference template**, preserving descriptions even when a calculated example is empty.", changes=("agent-guidance#class-reference:website-reference",))
     nav_items = []
     for mod_obj in mod_objs_to_document:
         filename = write_object_reference_file(mod_obj)
