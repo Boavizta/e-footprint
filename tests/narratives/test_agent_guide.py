@@ -4,22 +4,17 @@ from efootprint.agent_guide.__main__ import main
 from efootprint.modeling_examples.reference_system import run_reference_example
 
 
-@planned_test("agent-guidance#command: `main` prints the default guide and dispatches examples, class names and topic identifiers")
-def test_command_dispatch():
-    pass
-
-
 @planned_test("agent-guidance#command: An unknown name lists every available lookup, ordered by similarity, without a traceback [unknown-name-helps]")
 def test_unknown_lookup():
     pass
 
 
-@planned_test("agent-guidance#command: Every command form answers from an installed core-only wheel outside the checkout [core-install-is-enough]")
+@planned_test("agent-guidance#command: `main` answers default, examples, class and topic forms from an installed core-only wheel outside the checkout [core-install-is-enough]")
 def test_core_wheel_commands():
     pass
 
 
-@planned_test("agent-guidance#class-reference: Every modeling class, including abstract canonical classes, answers without constructing a model [every-class-answers]")
+@planned_test("agent-guidance#class-reference: Every modeling class, including abstract canonical classes, renders in-process without constructing a model [every-class-answers]")
 def test_every_modeling_class_answers():
     pass
 
@@ -29,7 +24,7 @@ def test_shared_class_reference():
     pass
 
 
-@planned_test("agent-guidance#canonical-topics: Each topic's command text matches its website page after link presentation is normalized [one-text-per-topic]")
+@planned_test("agent-guidance#canonical-topics: Each topic renders in-process with matching command and website text after link presentation is normalized [one-text-per-topic]")
 def test_shared_topic_text():
     pass
 
@@ -49,7 +44,7 @@ def test_shared_guide_text():
     pass
 
 
-@planned_test("agent-guidance#guide-assembly: Every emitted class, member and topic lookup command answers, including commands nested in looked-up pages [references-resolve]")
+@planned_test("agent-guidance#guide-assembly: Emitted lookup commands target registered classes or topics [references-resolve]")
 def test_emitted_lookups():
     pass
 
@@ -64,6 +59,6 @@ def test_quiet_non_cloud_build():
     pass
 
 
-@planned_test("agent-guidance#entry-pointers: README links and images are absolute destinations that resolve from PyPI [readme-links-resolve]")
+@planned_test("agent-guidance#entry-pointers: README URLs are absolute and repository destinations match tracked files [readme-links-resolve]")
 def test_readme_links():
     pass

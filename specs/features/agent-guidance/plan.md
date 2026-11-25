@@ -157,6 +157,24 @@ the shared semantic renderer.
 system ordering and identity preservation. Its smoke test checks that the published example is
 usable, without adding separate cases for each demonstrated API operation.
 
+## Command and lookup coverage
+
+#command has one installed-wheel smoke test for successful dispatch: no argument, examples,
+one class and one topic, outside the checkout on a core install. It replaces a separate
+successful-dispatch test. Unknown-name behavior is checked in-process.
+
+#class-reference and #canonical-topics render every registered modeling class and topic
+in-process, retaining class completeness and website–command text checks. #guide-assembly
+checks emitted lookup targets against the registries across the guide, references and topics;
+it does not recursively execute every emitted command.
+
+## README link coverage
+
+#entry-pointers checks absolute URLs and maps repository link and image destinations to tracked
+files without network requests in the routine test. External destinations are verified once
+during implementation; remote availability is not a recurring CI dependency. The requirement
+that README links resolve from PyPI is unchanged.
+
 ## Project contracts
 
 #trial-errors changes constructor diagnostics, without reactive-slot calls, unit policy or
