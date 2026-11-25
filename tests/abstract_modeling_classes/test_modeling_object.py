@@ -801,7 +801,7 @@ def test_internal_containers_group_relationships_by_parent_and_ignore_detached_l
 
 def test_internal_containers_survive_serialization_without_persisted_metadata():
     from efootprint.api_utils.system_to_json import system_to_json
-    from efootprint.api_utils.json_to_system import json_to_system
+    from efootprint.api_utils.json_to_system import load_system_document
     from efootprint.builders.hardware.edge.edge_computer import EdgeComputer
     from efootprint.builders.hardware.edge.edge_appliance import EdgeAppliance
     from efootprint.builders.usage.edge.recurrent_edge_process import RecurrentEdgeProcess
@@ -811,7 +811,7 @@ def test_internal_containers_survive_serialization_without_persisted_metadata():
     appliance = EdgeAppliance.from_defaults("Appliance")
     process = RecurrentEdgeProcess.from_defaults("Process", edge_device=computer)
     for obj in (computer, appliance, process):
-        _, objects, _ = json_to_system(system_to_json(obj, save_computed_state=False))
+        _, objects, _ = load_system_document(system_to_json(obj, save_computed_state=False))
         loaded = objects[obj.id]
         assert loaded.internal_modeling_obj_containers == []
         if obj is computer:

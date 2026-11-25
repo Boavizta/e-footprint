@@ -15,8 +15,8 @@ hide which system is which.
 
 ## #load
 
-`json_to_systems` returns a comparison file's systems in the file's order, each loaded from its
-document by `json_to_system`.
+`load_systems` returns a comparison file's systems in the file's order, each loaded from its
+document by `load_system_document`.
 
 Systems alone are returned: a modeler compares systems, and each one reaches its objects. Two
 documents sharing a System id are not checked: only a file assembled by hand can, and their loads
@@ -24,15 +24,19 @@ give separate objects. A single-system file given to the load fails with a KeyEr
 the mix-up gets no check of its own.
 
 Changed: **`duplicate_system` and the two example loaders now take a document's System through
-the new `load_system`, as `json_to_systems` does.** The feature had taken that line to five copies;
-`System`'s own loader keeps its own, needing the flat object dict.
+the new `load_system`, as `load_systems` does.** The feature had taken that line to five copies;
+`System`'s own loader keeps its own, needing the flat object dict. → code "file efootprint/comparison/duplication.py"; code "file efootprint/modeling_examples/__init__.py"
+
+Changed: **Review renames `json_to_system` to `load_system_document` and `json_to_systems` to
+`load_systems`.** The document loader retains every object, including disconnected objects; the
+System loaders return only Systems. Interface imports keep using the document loader. → statement "returns a comparison file's systems"; test "come back from"
 
 ## Rules no test holds
 
 - **any-count** Both functions walk the list and neither counts it, so no limit can be reached.
 - **each-is-a-system-file** Each element of the list is what `system_to_json` returns for its
   system, unchanged.
-- **old-files-upgrade** The load hands each document to `json_to_system`, whose earlier-version
+- **old-files-upgrade** The load hands each document to `load_system_document`, whose earlier-version
   case of the save-and-load narrative holds the upgrade and the baseline.
 
 ## Delivery

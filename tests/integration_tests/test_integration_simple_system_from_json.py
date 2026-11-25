@@ -2,7 +2,7 @@ import json
 import os
 
 from efootprint.abstract_modeling_classes.reactive_core import observe_computations
-from efootprint.api_utils.json_to_system import json_to_system
+from efootprint.api_utils.json_to_system import load_system_document
 from efootprint.api_utils.system_to_json import system_to_json
 from efootprint.utils.calculus_graph import build_calculus_graph
 from tests.integration_tests.integration_simple_system_base_class import IntegrationTestSimpleSystemBaseClass
@@ -25,7 +25,7 @@ class IntegrationTestSimpleSystemFromJson(IntegrationTestSimpleSystemBaseClass, 
         system_to_json(system, output_filepath=cls.system_json_filepath)
         with open(cls.system_json_filepath, "r") as file:
             system_dict = json.load(file)
-        _, flat_obj_dict, _ = json_to_system(system_dict)
+        _, flat_obj_dict, _ = load_system_document(system_dict)
 
         # Get the reloaded system and use common setup
         reloaded_system = flat_obj_dict[system.id]
@@ -37,7 +37,7 @@ class IntegrationTestSimpleSystemFromJson(IntegrationTestSimpleSystemBaseClass, 
             system_dict = json.load(file)
         computed = []
         with observe_computations(computed.append):
-            class_obj_dict, flat_obj_dict, _ = json_to_system(system_dict)
+            class_obj_dict, flat_obj_dict, _ = load_system_document(system_dict)
         self.assertEqual([], computed)
         system = flat_obj_dict[self.system.id]
         self.assertFalse("None" in system.total_footprint.explain())

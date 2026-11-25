@@ -55,7 +55,7 @@ in evidence.
 - `efootprint/core/` — modeling primitives (servers, storage, networks, jobs, usage journeys, edge devices).
 - `efootprint/abstract_modeling_classes/` — optimization layer (dependency tracking, automatic recomputation, explainability graph).
 - `efootprint/builders/` — convenience builders with sensible defaults and external-data integrations (e.g. EcoLogits for LLM workloads).
-- `efootprint/api_utils/` — `system_to_json` / `json_to_system` round-trip and version migration.
+- `efootprint/api_utils/` — `system_to_json` / `load_system_document` round-trip and version migration.
 
 ## Distribution & ecosystem
 

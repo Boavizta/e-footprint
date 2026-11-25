@@ -3,7 +3,7 @@ import gc
 import psutil
 import logging
 
-from efootprint.api_utils.json_to_system import json_to_system
+from efootprint.api_utils.json_to_system import load_system_document
 from tests.performance_tests.generate_big_system import generate_big_system
 from efootprint.logger import ch
 
@@ -29,7 +29,7 @@ print(f'Baseline: {get_mem():.0f} MB')
 
 for i in range(20):
     data = json.loads(json.dumps(template_data))
-    system = json_to_system(data)
+    system = load_system_document(data)
 
     del system, data
     gc.collect()

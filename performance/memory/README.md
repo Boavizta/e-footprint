@@ -29,7 +29,7 @@ process, server need, and component-need set. This is the pressure case for prov
 `(pattern, need)` pairs instead of scalar bundle paths.
 
 Pass `--model /absolute/path/to/system.json` to load an existing e-footprint JSON model. Synthetic runs first serialize
-inputs only, release the authoring graph, and hydrate the payload with `json_to_system`; hydration therefore exercises
+inputs only, release the authoring graph, and hydrate the payload with `load_system_document`; hydration therefore exercises
 the same native library boundary without carrying warm calculated state.
 
 The three direct-attribution scenarios target the model's first edge usage pattern and require the loaded model to

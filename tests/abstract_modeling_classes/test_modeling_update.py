@@ -12,7 +12,7 @@ from efootprint.abstract_modeling_classes.modeling_update import ModelingUpdate
 from efootprint.abstract_modeling_classes.object_linked_to_modeling_obj import ObjectLinkedToModelingObj
 from efootprint.abstract_modeling_classes.reactive_core import ReactiveSlot
 from efootprint.abstract_modeling_classes.source_objects import SourceObject, SourceValue
-from efootprint.api_utils.json_to_system import json_to_system
+from efootprint.api_utils.json_to_system import load_system_document
 from efootprint.api_utils.system_to_json import system_to_json
 from efootprint.builders.hardware.edge.edge_computer import EdgeComputer
 from efootprint.builders.usage.edge.recurrent_edge_process import RecurrentEdgeProcess
@@ -71,7 +71,7 @@ class TestModelingUpdate(unittest.TestCase):
         self.assertTrue(all(wrapper.modeling_obj_container is None for wrapper in old_wrappers))
         self.assertEqual(len(second.contextual_modeling_obj_containers), 1)
         self.assertIs(second.contextual_modeling_obj_containers[0], function.recurrent_edge_device_needs[0])
-        _, restored, _ = json_to_system(system_to_json(function, save_computed_state=False))
+        _, restored, _ = load_system_document(system_to_json(function, save_computed_state=False))
         restored_second = restored[second.id]
         self.assertEqual(restored_second.modeling_obj_containers, [restored[function.id]])
         self.assertIs(restored_second.contextual_modeling_obj_containers[0],
@@ -96,7 +96,7 @@ class TestModelingUpdate(unittest.TestCase):
             self.assertEqual(len(need.contextual_modeling_obj_containers), 1)
             self.assertIs(need.contextual_modeling_obj_containers[0], wrapper)
             self.assertIs(wrapper.modeling_obj_container, function)
-        _, restored, _ = json_to_system(system_to_json(function, save_computed_state=False))
+        _, restored, _ = load_system_document(system_to_json(function, save_computed_state=False))
         for need in (first, second):
             self.assertEqual(restored[need.id].modeling_obj_containers, [restored[function.id]])
 
@@ -204,7 +204,7 @@ class TestModelingUpdate(unittest.TestCase):
                 update = ModelingUpdate([[pattern.hourly_occurrences, replacement]])
                 self.assertEqual(len(update.changes_list), 1)
                 self.assertIs(pattern.hourly_occurrences, replacement)
-                _, restored, _ = json_to_system(system_to_json(pattern, save_computed_state=False))
+                _, restored, _ = load_system_document(system_to_json(pattern, save_computed_state=False))
                 self.assertEqual(restored[pattern.id].hourly_occurrences.to_json(), replacement.to_json())
 
         current = pattern.hourly_occurrences
@@ -221,7 +221,7 @@ class TestModelingUpdate(unittest.TestCase):
             update = ModelingUpdate([[server.fixed_nb_of_instances, new_value]])
             self.assertEqual(len(update.changes_list), 1)
             self.assertIs(server.fixed_nb_of_instances, new_value)
-            _, restored, _ = json_to_system(system_to_json(server, save_computed_state=False))
+            _, restored, _ = load_system_document(system_to_json(server, save_computed_state=False))
             self.assertEqual(isinstance(restored[server.id].fixed_nb_of_instances, EmptyExplainableObject),
                              isinstance(new_value, EmptyExplainableObject))
 

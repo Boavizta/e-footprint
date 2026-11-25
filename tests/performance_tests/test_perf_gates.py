@@ -29,7 +29,7 @@ from efootprint.abstract_modeling_classes.modeling_object import (
     invalidate_slots_system_wide, pull_slots_system_wide)
 from efootprint.abstract_modeling_classes.modeling_update import ModelingUpdate
 from efootprint.abstract_modeling_classes.source_objects import SourceValue
-from efootprint.api_utils.json_to_system import json_to_system
+from efootprint.api_utils.json_to_system import load_system_document
 from efootprint.constants.units import u
 from efootprint.logger import logger
 from tests.performance_tests.generate_big_system import (
@@ -69,7 +69,7 @@ class TestPerformanceGates(TestCase):
             start = perf_counter()
             with open(BIG_SYSTEM_FIXTURE) as file:
                 system_dict = json.load(file)
-            json_to_system(system_dict)
+            load_system_document(system_dict)
             durations.append(perf_counter() - start)
         # Median: garbage collection of the previous iterations' object graphs can spike one sample.
         measured_ms = 1000 * median(durations)

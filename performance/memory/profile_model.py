@@ -11,7 +11,7 @@ import time
 import psutil
 
 from efootprint.abstract_modeling_classes.reactive_core import observe_computations
-from efootprint.api_utils.json_to_system import json_to_system
+from efootprint.api_utils.json_to_system import load_system_document
 from efootprint.api_utils.system_to_json import system_to_json
 from efootprint.core.system import System
 from performance.memory.inspection import materialized_state
@@ -108,7 +108,7 @@ def _load_payload(args) -> tuple[dict, dict]:
 
 
 def _hydrate(payload: dict) -> System:
-    class_objects, _, _ = json_to_system(payload)
+    class_objects, _, _ = load_system_document(payload)
     return next(iter(class_objects["System"].values()))
 
 

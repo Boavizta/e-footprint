@@ -2,7 +2,7 @@
 
 Examples are reference systems that ship with e-footprint and back the
 how-to pages in the mkdocs documentation. Each is regenerable from a Python
-constructor under ``how_to/_authoring/`` and loadable via ``json_to_system``.
+constructor under ``how_to/_authoring/`` and loadable via ``load_system_document``.
 
 Imports inside ``load_example_system`` are kept lazy so that authoring
 scripts (under ``how_to/_authoring/``) can flip ``_use_name_as_id`` on the

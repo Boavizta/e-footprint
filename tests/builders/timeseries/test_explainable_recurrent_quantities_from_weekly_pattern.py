@@ -9,7 +9,7 @@ from efootprint.abstract_modeling_classes.explainable_object_base_class import (
     Source,
     explainable_object_from_json,
 )
-from efootprint.api_utils.json_to_system import json_to_system
+from efootprint.api_utils.json_to_system import load_system_document
 from efootprint.api_utils.system_to_json import system_to_json
 from efootprint.builders.timeseries import (
     ExplainableRecurrentQuantitiesFromConstant,
@@ -269,7 +269,7 @@ class TestExplainableRecurrentQuantitiesFromWeeklyPattern(TestCase):
         ]
 
         serialized = json.loads(json.dumps(system_to_json(system, save_computed_state=False)))
-        _, flat_objects, _ = json_to_system(serialized)
+        _, flat_objects, _ = load_system_document(serialized)
         loaded_need = flat_objects[weekly_need.id].recurrent_need
 
         self.assertIsInstance(loaded_need, ExplainableRecurrentQuantitiesFromWeeklyPattern)

@@ -20,7 +20,7 @@ from efootprint.abstract_modeling_classes.explainable_quantity import Explainabl
 from efootprint.abstract_modeling_classes.explainable_recurrent_quantities import ExplainableRecurrentQuantities
 from efootprint.abstract_modeling_classes.explainable_timezone import ExplainableTimezone
 from efootprint.abstract_modeling_classes.reactive_core import computed_slots, serialized_slots
-from efootprint.api_utils.json_to_system import build_sources_dict_from_system_dict, json_to_system
+from efootprint.api_utils.json_to_system import build_sources_dict_from_system_dict, load_system_document
 from efootprint.api_utils.system_to_json import collect_referenced_source_ids, system_to_json
 from efootprint.builders.timeseries.explainable_hourly_quantities_from_form_inputs import (
     ExplainableHourlyQuantitiesFromFormInputs)
@@ -82,7 +82,7 @@ class TestTopLevelSourcesBlockRoundTrip(TestCase):
 
     def test_source_identity_restored_across_round_trip(self):
         system_dict = system_to_json(self.system, save_computed_state=False)
-        class_obj_dict, flat_obj_dict, _ = json_to_system(system_dict)
+        class_obj_dict, flat_obj_dict, _ = load_system_document(system_dict)
         sources_seen_by_id = {}
         for mod_obj in flat_obj_dict.values():
             for value in mod_obj.__dict__.values():
@@ -92,7 +92,7 @@ class TestTopLevelSourcesBlockRoundTrip(TestCase):
 
     def test_sentinels_re_identify_with_live_singletons(self):
         system_dict = system_to_json(self.system, save_computed_state=False)
-        class_obj_dict, flat_obj_dict, _ = json_to_system(system_dict)
+        class_obj_dict, flat_obj_dict, _ = load_system_document(system_dict)
         for mod_obj in flat_obj_dict.values():
             for value in mod_obj.__dict__.values():
                 if isinstance(value, ExplainableObject) and value.source is not None:

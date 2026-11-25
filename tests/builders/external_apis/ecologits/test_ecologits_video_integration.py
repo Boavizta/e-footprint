@@ -13,7 +13,7 @@ from datetime import datetime
 from efootprint.abstract_modeling_classes.empty_explainable_object import EmptyExplainableObject
 from efootprint.abstract_modeling_classes.explainable_hourly_quantities import ExplainableHourlyQuantities
 from efootprint.abstract_modeling_classes.source_objects import SourceObject, SourceValue
-from efootprint.api_utils.json_to_system import json_to_system
+from efootprint.api_utils.json_to_system import load_system_document
 from efootprint.api_utils.system_to_json import system_to_json
 from efootprint.builders.external_apis.ecologits.ecologits_video_external_api import (
     EcoLogitsVideoGenExternalAPI, EcoLogitsVideoGenExternalAPIJob)
@@ -115,7 +115,7 @@ class TestEcoLogitsVideoIntegration(unittest.TestCase):
                 system_to_json(system, output_filepath=path)
                 with open(path) as f:
                     system_dict = json.load(f)
-                _, flat_obj_dict, _ = json_to_system(system_dict)
+                _, flat_obj_dict, _ = load_system_document(system_dict)
 
             reloaded_api = flat_obj_dict[api.id]
             reloaded_job = flat_obj_dict[job.id]

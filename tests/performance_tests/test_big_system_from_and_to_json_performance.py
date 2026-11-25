@@ -7,7 +7,7 @@ from efootprint.abstract_modeling_classes.explainable_object_base_class import E
 from efootprint.abstract_modeling_classes.modeling_object import ModelingObject
 from efootprint.abstract_modeling_classes.object_linked_to_modeling_obj import ObjectLinkedToModelingObj
 from efootprint.abstract_modeling_classes.source_objects import SourceValue
-from efootprint.api_utils.json_to_system import json_to_system
+from efootprint.api_utils.json_to_system import load_system_document
 from efootprint.api_utils.system_to_json import system_to_json
 from efootprint.logger import logger
 from efootprint.constants.units import u
@@ -39,7 +39,7 @@ def update_on_system(
     system_to_json_duration = 0
     for i in range(nb_system_loadings):
         json_to_system_start = perf_counter()
-        class_obj_dict_computed, flat_obj_dict_computed, _ = json_to_system(system_dict)
+        class_obj_dict_computed, flat_obj_dict_computed, _ = load_system_document(system_dict)
         json_to_system_duration += perf_counter() - json_to_system_start
         first_object = next(iter(class_obj_dict_computed[object_type].values()))
         first_object.__setattr__(attr_to_change, new_value)
@@ -55,7 +55,7 @@ def update_on_system(
         f"deserializing system then editing {attr_to_change} in first {object_type} then reserializing system took\n"
         f"{avg_loading_editing_writing_time} ms on average for {nb_system_loadings} times, including "
         f"{avg_system_to_json_time} ms of system_to_json ({avg_system_to_json_time_percentage}%) "
-        f"and {avg_json_to_system_time} ms of json_to_system ({avg_json_to_system_time_percentage}%) ")
+        f"and {avg_json_to_system_time} ms of load_system_document ({avg_json_to_system_time_percentage}%) ")
 
     return avg_loading_editing_writing_time
 
@@ -70,7 +70,7 @@ class TestBigSystemFromAndToJsonPerformance(TestCase):
         start = perf_counter()
         nb_system_loadings = 2
         for i in range(nb_system_loadings):
-            class_obj_dict_computed, flat_obj_dict_computed, _ = json_to_system(system_dict)
+            class_obj_dict_computed, flat_obj_dict_computed, _ = load_system_document(system_dict)
         avg_loading_time = (perf_counter() - start) / nb_system_loadings
         logger.info(
             f"deserializing system took {round(avg_loading_time, 3)} seconds on average for {nb_system_loadings} times")

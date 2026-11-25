@@ -6,7 +6,7 @@ from unittest import TestCase
 from unittest.mock import patch
 
 from efootprint.all_classes_in_order import ALL_EFOOTPRINT_CLASSES
-from efootprint.api_utils.json_to_system import json_to_system
+from efootprint.api_utils.json_to_system import load_system_document
 from efootprint.api_utils.version_upgrade_handlers import upgrade_version_9_to_10, upgrade_version_10_to_11, \
     upgrade_version_11_to_12, upgrade_version_12_to_13, upgrade_version_13_to_14, upgrade_version_14_to_15, \
     upgrade_version_15_to_16, upgrade_version_16_to_17, upgrade_version_18_to_19, upgrade_version_19_to_20, \

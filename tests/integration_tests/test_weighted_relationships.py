@@ -7,7 +7,7 @@ from efootprint.abstract_modeling_classes.explainable_object_dict import (
     PositiveWeightedExplainableObjectDict, WeightedExplainableObjectDict, to_weighted_explainable_object_dict)
 from efootprint.abstract_modeling_classes.modeling_update import ModelingUpdate
 from efootprint.abstract_modeling_classes.source_objects import SourceValue
-from efootprint.api_utils.json_to_system import json_to_system
+from efootprint.api_utils.json_to_system import load_system_document
 from efootprint.api_utils.system_to_json import system_to_json
 from efootprint.builders.time_builders import create_source_hourly_values_from_list
 from efootprint.constants.countries import Countries
@@ -89,7 +89,7 @@ class TestWeightedRelationships(TestCase):
         pattern.usage_journeys[second_journey] = SourceValue(0.25 * u.dimensionless, Sources.USER_DATA)
         system_json = system_to_json(system, save_computed_state=False)
 
-        class_obj_dict, flat_obj_dict, _ = json_to_system(json.loads(json.dumps(system_json)))
+        class_obj_dict, flat_obj_dict, _ = load_system_document(json.loads(json.dumps(system_json)))
         reloaded_journey = flat_obj_dict[journey.id]
 
         self.assertIsInstance(reloaded_journey.uj_steps, WeightedExplainableObjectDict)
@@ -122,7 +122,7 @@ class TestWeightedRelationships(TestCase):
         system = System("round-trip edge system", [], [pattern])
         system_json = system_to_json(system, save_computed_state=False)
 
-        class_obj_dict, flat_obj_dict, _ = json_to_system(json.loads(json.dumps(system_json)))
+        class_obj_dict, flat_obj_dict, _ = load_system_document(json.loads(json.dumps(system_json)))
         reloaded_pattern = flat_obj_dict[pattern.id]
 
         self.assertEqual(

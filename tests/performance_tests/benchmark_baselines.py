@@ -27,7 +27,7 @@ from time import perf_counter
 
 import efootprint
 from efootprint.abstract_modeling_classes.source_objects import SourceValue
-from efootprint.api_utils.json_to_system import json_to_system
+from efootprint.api_utils.json_to_system import load_system_document
 from efootprint.constants.units import u
 from efootprint.logger import logger
 from tests.performance_tests.generate_big_system import (
@@ -96,7 +96,7 @@ def benchmark_load_to_ready(nb_iterations=5):
             system_dict = json.load(file)
         parse_durations.append(perf_counter() - start)
         start = perf_counter()
-        json_to_system(system_dict)
+        load_system_document(system_dict)
         build_durations.append(perf_counter() - start)
     json_parse_avg_ms = round(1000 * mean(parse_durations), 1)
     json_to_system_avg_ms = round(1000 * mean(build_durations), 1)

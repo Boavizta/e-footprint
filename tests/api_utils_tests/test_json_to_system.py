@@ -4,7 +4,7 @@ from copy import deepcopy
 from unittest.mock import patch
 
 from efootprint.abstract_modeling_classes.source_objects import SourceValue
-from efootprint.api_utils.json_to_system import json_to_system, compute_classes_generation_order
+from efootprint.api_utils.json_to_system import load_system_document, compute_classes_generation_order
 from efootprint.api_utils.system_to_json import system_to_json
 from efootprint.builders.time_builders import create_random_source_hourly_values
 from efootprint.constants.countries import Countries
@@ -33,7 +33,7 @@ class TestJsonToSystem(IntegrationTestBaseClass):
         from efootprint.builders.external_apis.ecologits.ecologits_video_external_api import (
             EcoLogitsVideoGenExternalAPI, EcoLogitsVideoGenExternalAPIJob)
 
-        _, objects, _ = json_to_system(self.base_system_dict)
+        _, objects, _ = load_system_document(self.base_system_dict)
         system = next(obj for obj in objects.values() if type(obj) is System)
         step = next(obj for obj in objects.values() if type(obj).__name__ == "UsageJourneyStep")
         api = EcoLogitsVideoGenExternalAPI("Video API", SourceObject("openai"), SourceObject("sora-2-pro"))
@@ -53,7 +53,7 @@ class TestJsonToSystem(IntegrationTestBaseClass):
                 snapshot["efootprint_version"] = "25.0.0"
                 snapshot["EcoLogitsVideoGenExternalAPIJob"][job.id]["resolution"]["value"] = "4K (3840 x 2160)"
                 original_snapshot = deepcopy(snapshot)
-                _, loaded, upgraded = json_to_system(snapshot)
+                _, loaded, upgraded = load_system_document(snapshot)
                 loaded_system, loaded_job = loaded[system.id], loaded[job.id]
                 self.assertEqual(original_snapshot, snapshot)
                 self.assertEqual("720p (1280 x 720)", loaded_job.resolution.value)
@@ -69,7 +69,7 @@ class TestJsonToSystem(IntegrationTestBaseClass):
                 self.assertEqual(expected_total, loaded_system.total_footprint.value.sum())
                 self.assertEqual("25.0.0", upgraded["efootprint_version"])
                 round_trip = system_to_json(loaded_system, save_computed_state=cached)
-                _, reloaded, _ = json_to_system(round_trip)
+                _, reloaded, _ = load_system_document(round_trip)
                 self.assertEqual(loaded_job.resolution.to_json(), reloaded[job.id].resolution.to_json())
                 self.assertEqual(expected_total, reloaded[system.id].total_footprint.value.sum())
 
@@ -87,19 +87,19 @@ class TestJsonToSystem(IntegrationTestBaseClass):
         self.assertEqual("27.1.0", snapshot["efootprint_version"])
         with patch.dict("efootprint.api_utils.version_upgrade_handlers.VERSION_UPGRADE_HANDLERS",
                         {25: lambda *_: self.fail("Current files must skip the historical handler")}):
-            _, loaded, upgraded = json_to_system(snapshot)
+            _, loaded, upgraded = load_system_document(snapshot)
         self.assertIs(snapshot, upgraded)
         self.assertEqual(job.resolution.to_json(), loaded[job.id].resolution.to_json())
 
     def test_version_26_file_with_stored_direct_ancestors_loads_and_saves_without_them(self):
-        _, objects, _ = json_to_system(self.base_system_dict)
+        _, objects, _ = load_system_document(self.base_system_dict)
         system = next(obj for obj in objects.values() if type(obj) is System)
         system.total_footprint.value  # computed so the snapshot carries the stored total
         snapshot = system_to_json(system, save_computed_state=True)
         snapshot["efootprint_version"] = "26.0.1"
         snapshot["System"][system.id]["total_footprint"]["direct_ancestors_with_id"] = ["('x', 'y', None)"]
 
-        _, loaded, _ = json_to_system(snapshot)
+        _, loaded, _ = load_system_document(snapshot)
         round_trip = system_to_json(loaded[system.id], save_computed_state=True)
 
         self.assertNotIn("direct_ancestors_with_id", json.dumps(round_trip))
@@ -126,7 +126,7 @@ class TestJsonToSystem(IntegrationTestBaseClass):
                 self.assertEqual(
                     {"id": "automatic_replacement", "name": "automatic replacement", "link": None},
                     source_payload)
-                _, loaded, _ = json_to_system(snapshot)
+                _, loaded, _ = load_system_document(snapshot)
                 loaded_api, loaded_job = loaded[api.id], loaded[job.id]
                 self.assertIs(Sources.USER_DATA, loaded_api.provider.source)
                 self.assertIs(Sources.HYPOTHESIS, loaded_api.model_name.source)
@@ -152,7 +152,7 @@ class TestJsonToSystem(IntegrationTestBaseClass):
             for save_computed_state in (False, True):
                 with self.subTest(save_computed_state=save_computed_state):
                     snapshot = system_to_json(job, save_computed_state=save_computed_state)
-                    _, loaded, _ = json_to_system(snapshot)
+                    _, loaded, _ = load_system_document(snapshot)
                     loaded_job, loaded_api = loaded[job.id], loaded[api.id]
                     self.assertEqual({(loaded_job, "resolution")}, dependent_inputs({(loaded_api, "model_name")}))
                     self.assertEqual({(loaded_api, "model_name")}, dependent_inputs({(loaded_api, "provider")}))
@@ -168,7 +168,7 @@ class TestJsonToSystem(IntegrationTestBaseClass):
         with open(os.path.join(API_UTILS_TEST_DIR, "server_not_linked_to_usage_journey.json"), "rb") as file:
             full_dict["Server"].update(json.load(file))
 
-        class_obj_dict, flat_obj_dict, _ = json_to_system(full_dict)
+        class_obj_dict, flat_obj_dict, _ = load_system_document(full_dict)
 
         self.assertEqual(2, len(list(class_obj_dict["Server"].values())))
 
@@ -186,7 +186,7 @@ class TestJsonToSystem(IntegrationTestBaseClass):
         for save_computed_state in (False, True):
             with self.subTest(save_computed_state=save_computed_state):
                 snapshot = system_to_json(job, save_computed_state=save_computed_state)
-                _, loaded, _ = json_to_system(snapshot)
+                _, loaded, _ = load_system_document(snapshot)
                 loaded_job, loaded_api = loaded[job.id], loaded[api.id]
                 server = loaded_api.server._value
                 footprint_slot = type(server).use_footprint.slot(server)
@@ -206,7 +206,7 @@ class TestJsonToSystem(IntegrationTestBaseClass):
                                 [loaded_api.model_name, SourceObject("ltx-2-t2v")],
                                 [loaded_api.provider, SourceObject("lightricks")]])
                 self.assertFalse(footprint_slot.has_cached_value)
-                _, reloaded, _ = json_to_system(system_to_json(loaded_job))
+                _, reloaded, _ = load_system_document(system_to_json(loaded_job))
                 self.assertEqual("576p (1024 x 576)", reloaded[job.id].resolution.value)
                 self.assertEqual("ltx-2-t2v", reloaded[api.id].model_name.value)
                 self.assertIs(reloaded[api.id], reloaded[job.id].external_api._value)
@@ -216,12 +216,12 @@ class TestJsonToSystem(IntegrationTestBaseClass):
         with open(os.path.join(API_UTILS_TEST_DIR, "uj_not_linked_to_usage_pattern.json"), "rb") as file:
             full_dict["UsageJourney"].update(json.load(file))
 
-        class_obj_dict, flat_obj_dict, _ = json_to_system(full_dict)
+        class_obj_dict, flat_obj_dict, _ = load_system_document(full_dict)
 
     def test_serialized_system_with_uj_steps_as_list_relationships_loads_as_weight_one_dicts(self):
         from efootprint.abstract_modeling_classes.explainable_object_dict import WeightedExplainableObjectDict
 
-        class_obj_dict, flat_obj_dict, _ = json_to_system(deepcopy(self.base_system_dict))
+        class_obj_dict, flat_obj_dict, _ = load_system_document(deepcopy(self.base_system_dict))
 
         usage_journey = list(class_obj_dict["UsageJourney"].values())[0]
         self.assertIsInstance(usage_journey.uj_steps, WeightedExplainableObjectDict)
@@ -232,12 +232,12 @@ class TestJsonToSystem(IntegrationTestBaseClass):
             self.assertEqual([1] * len(uj_step.jobs), [weight.magnitude for weight in uj_step.jobs.values()])
 
     def test_update_value_after_system_creation(self):
-        class_obj_dict, flat_obj_dict, _ = json_to_system(self.base_system_dict)
+        class_obj_dict, flat_obj_dict, _ = load_system_document(self.base_system_dict)
 
         list(class_obj_dict["Job"].values())[0].data_transferred = SourceValue(100 * u.GB, label="new value")
 
     def test_system_id_doesnt_change(self):
-        class_obj_dict, flat_obj_dict, _ = json_to_system(self.base_system_dict)
+        class_obj_dict, flat_obj_dict, _ = load_system_document(self.base_system_dict)
 
         self.assertEqual(
             list(class_obj_dict["System"].values())[0].id, list(self.base_system_dict["System"].values())[0]["id"])
@@ -246,37 +246,37 @@ class TestJsonToSystem(IntegrationTestBaseClass):
         with open(os.path.join(API_UTILS_TEST_DIR, "base_system_no_jobs.json"), "rb") as file:
             base_system_dict = json.load(file)
 
-        class_obj_dict, flat_obj_dict, _ = json_to_system(base_system_dict)
+        class_obj_dict, flat_obj_dict, _ = load_system_document(base_system_dict)
 
     def test_loads_version_9_system(self):
         with open(os.path.join(API_UTILS_TEST_DIR, "base_system_v9.json"), "rb") as file:
             base_system_dict = json.load(file)
 
-        class_obj_dict, flat_obj_dict, _ = json_to_system(base_system_dict)
+        class_obj_dict, flat_obj_dict, _ = load_system_document(base_system_dict)
 
     def test_loads_version_10_system(self):
         with open(os.path.join(API_UTILS_TEST_DIR, "base_system_v10.json"), "rb") as file:
             base_system_dict = json.load(file)
 
-        class_obj_dict, flat_obj_dict, _ = json_to_system(base_system_dict)
+        class_obj_dict, flat_obj_dict, _ = load_system_document(base_system_dict)
 
     def test_loads_version_11_system(self):
         with open(os.path.join(API_UTILS_TEST_DIR, "base_system_v11.json"), "rb") as file:
             base_system_dict = json.load(file)
 
-        class_obj_dict, flat_obj_dict, _ = json_to_system(base_system_dict)
+        class_obj_dict, flat_obj_dict, _ = load_system_document(base_system_dict)
 
     def test_loads_version_12_system(self):
         with open(os.path.join(API_UTILS_TEST_DIR, "base_system_v12.json"), "rb") as file:
             base_system_dict = json.load(file)
 
-        class_obj_dict, flat_obj_dict, _ = json_to_system(base_system_dict)
+        class_obj_dict, flat_obj_dict, _ = load_system_document(base_system_dict)
 
     def test_loads_version_13_system(self):
         with open(os.path.join(API_UTILS_TEST_DIR, "base_system_v13.json"), "rb") as file:
             base_system_dict = json.load(file)
 
-        class_obj_dict, flat_obj_dict, _ = json_to_system(base_system_dict)
+        class_obj_dict, flat_obj_dict, _ = load_system_document(base_system_dict)
 
     def test_loads_version_23_payload_with_plural_pattern_migration(self):
         fixture_path = os.path.join(API_UTILS_TEST_DIR, "base_system_v23.json")
@@ -288,7 +288,7 @@ class TestJsonToSystem(IntegrationTestBaseClass):
         if version_23_system_dict["efootprint_version"] != "23.0.0":
             self.skipTest("big-system fixture is not version 23")
 
-        _, _, upgraded_dict = json_to_system(version_23_system_dict)
+        _, _, upgraded_dict = load_system_document(version_23_system_dict)
 
         self.assertEqual("23.0.0", version_23_system_dict["efootprint_version"])
         self.assertTrue(all(
@@ -302,7 +302,7 @@ class TestJsonToSystem(IntegrationTestBaseClass):
     def test_json_to_system_doesnt_update_input_dict(self):
         input_dict = deepcopy(self.base_system_dict)
 
-        json_to_system(input_dict)
+        load_system_document(input_dict)
 
         self.assertDictEqual(input_dict, self.base_system_dict)
 
@@ -313,7 +313,7 @@ class TestJsonToSystem(IntegrationTestBaseClass):
         with self.assertRaisesRegex(
                 ValueError, r"Detected invalid data at `Job` level: \{\}. Only object dictionaries are valid at "
                             r"this level."):
-            json_to_system(input_dict)
+            load_system_document(input_dict)
 
     def test_json_to_system_raises_clear_error_when_object_key_does_not_match_embedded_id(self):
         input_dict = deepcopy(self.base_system_dict)
@@ -322,13 +322,13 @@ class TestJsonToSystem(IntegrationTestBaseClass):
 
         with self.assertRaisesRegex(
                 ValueError, r"Invalid JSON structure for `Job\.wrong_key`: embedded id is"):
-            json_to_system(input_dict)
+            load_system_document(input_dict)
 
     def test_json_to_system_ignores_unrelated_top_level_keys(self):
         input_dict = deepcopy(self.base_system_dict)
         input_dict["custom_metadata"] = []
 
-        class_obj_dict, flat_obj_dict, _ = json_to_system(input_dict)
+        class_obj_dict, flat_obj_dict, _ = load_system_document(input_dict)
 
         self.assertEqual(1, len(class_obj_dict["System"]))
 
@@ -358,7 +358,7 @@ class TestJsonToSystem(IntegrationTestBaseClass):
         with self.assertRaisesRegex(
                 ValueError,
                 r"Detected invalid data at `GenAIJob` level: \{\}. Only object dictionaries are valid at this level."):
-            json_to_system(input_dict)
+            load_system_document(input_dict)
 
     def test_name_matching_another_objects_id_is_not_resolved_into_a_reference(self):
         # A scalar string attribute is treated as a reference when it equals an existing object id. `name` must be
@@ -378,7 +378,7 @@ class TestJsonToSystem(IntegrationTestBaseClass):
             if usage_pattern.get("country") == original_country_id:
                 usage_pattern["country"] = "France"
 
-        class_obj_dict, flat_obj_dict, _ = json_to_system(full_dict)
+        class_obj_dict, flat_obj_dict, _ = load_system_document(full_dict)
 
         self.assertEqual("France", class_obj_dict["Country"]["second-france"].name)
         self.assertIsInstance(class_obj_dict["Country"]["second-france"].name, str)
@@ -425,4 +425,4 @@ class TestJsonToSystem(IntegrationTestBaseClass):
             system_dict = json.load(file)
 
         logger.warning(f"Loading system from json")
-        class_obj_dict, flat_obj_dict, _ = json_to_system(system_dict)
+        class_obj_dict, flat_obj_dict, _ = load_system_document(system_dict)

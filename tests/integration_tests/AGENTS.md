@@ -71,7 +71,7 @@ class IntegrationTestSimpleSystemFromJson(IntegrationTestSimpleSystemBaseClass, 
         system_to_json(system, output_filepath=cls.system_json_filepath)
         with open(cls.system_json_filepath, "r") as file:
             system_dict = json.load(file)
-        _, flat_obj_dict = json_to_system(system_dict)
+        _, flat_obj_dict = load_system_document(system_dict)
 
         # Reuse the same setup logic
         reloaded_system = flat_obj_dict[system.id]

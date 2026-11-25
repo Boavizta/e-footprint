@@ -1,7 +1,7 @@
 import json
 import os
 
-from efootprint.api_utils.json_to_system import json_to_system
+from efootprint.api_utils.json_to_system import load_system_document
 from efootprint.api_utils.system_to_json import system_to_json
 from tests.integration_tests.integration_services_base_class import IntegrationTestServicesBaseClass
 from tests.integration_tests.integration_test_base_class import INTEGRATION_TEST_DIR, AutoTestMethodsMeta
@@ -23,7 +23,7 @@ class IntegrationTestServicesFromJson(IntegrationTestServicesBaseClass, metaclas
         system_to_json(system, output_filepath=cls.system_json_filepath)
         with open(cls.system_json_filepath, "r") as file:
             system_dict = json.load(file)
-        _, flat_obj_dict, _ = json_to_system(system_dict)
+        _, flat_obj_dict, _ = load_system_document(system_dict)
 
         # Get the reloaded system and use common setup
         reloaded_system = flat_obj_dict[system.id]

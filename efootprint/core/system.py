@@ -336,14 +336,14 @@ class System(ModelingObject):
                 f"file saved by a different library version that stored computed values.")
         from copy import copy as copy_value
         from efootprint.abstract_modeling_classes.reactive_core import computed_slots, computed_structures
-        from efootprint.api_utils.json_to_system import json_to_system
+        from efootprint.api_utils.json_to_system import load_system_document
         from efootprint.api_utils.system_to_json import system_to_json
         from efootprint.comparison.duplication import assign_fresh_system_id
         from efootprint.comparison.system_comparison import SystemComparison
 
         # Inputs-only duplicate: the baseline system must carry the stored vX values and nothing
         # computed by the current version.
-        class_obj_dict, flat_obj_dict, _ = json_to_system(system_to_json(self, save_computed_state=False))
+        class_obj_dict, flat_obj_dict, _ = load_system_document(system_to_json(self, save_computed_state=False))
         baseline_system = assign_fresh_system_id(next(iter(class_obj_dict["System"].values())))
         baseline_system.name = f"{self.name} as computed by v{baseline['efootprint_version']}"
 

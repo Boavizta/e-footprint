@@ -13,7 +13,7 @@ import efootprint
 from efootprint.abstract_modeling_classes.reactive_core import ReactiveSlot, computed_slots, serialized_slots
 from efootprint.abstract_modeling_classes.modeling_update import ModelingUpdate
 from efootprint.abstract_modeling_classes.source_objects import SourceValue
-from efootprint.api_utils.json_to_system import json_to_system, upgrade_system_dict_to_current_version
+from efootprint.api_utils.json_to_system import load_system_document, upgrade_system_dict_to_current_version
 from efootprint.api_utils.system_to_json import materialize_serialized_state, system_to_json
 from efootprint.api_utils.version_upgrade_handlers import upgrade_version_22_to_23
 from efootprint.constants.units import u
@@ -53,7 +53,7 @@ class TestMinimalSerializationContract(TestCase):
         cls.canonical_dict = system_to_json(cls.system)
 
     def load_canonical(self):
-        _, flat_obj_dict, _ = json_to_system(json.loads(json.dumps(self.canonical_dict)))
+        _, flat_obj_dict, _ = load_system_document(json.loads(json.dumps(self.canonical_dict)))
         return flat_obj_dict[self.system.id]
 
     def test_trusted_load_attaches_stored_values_with_zero_compute(self):
@@ -152,7 +152,7 @@ class TestMinimalSerializationContract(TestCase):
 
         self.assertNotIn(edge_usage_pattern.id, saved_dict.get("EdgeUsagePattern", {}))
         self.assertNotIn(edge_usage_pattern.id, json.dumps(saved_dict["calculation_graph"]["nodes"]))
-        json_to_system(saved_dict)
+        load_system_document(saved_dict)
 
     def test_coordinate_node_referencing_an_absent_object_is_rejected(self):
         """Test that a coordinate node whose component is absent from the file raises like any corrupted node."""
@@ -163,7 +163,7 @@ class TestMinimalSerializationContract(TestCase):
         corrupted_node[2]["JobOccurrenceCoordinate"]["usage_pattern"] = "absent-usage-pattern"
 
         with self.assertRaisesRegex(ValueError, "references an object absent from the file"):
-            json_to_system(corrupted_dict)
+            load_system_document(corrupted_dict)
 
     @needs_viz
     def test_displaying_the_calculus_graph_leaves_a_later_save_unchanged(self):
@@ -183,7 +183,7 @@ class TestMinimalSerializationContract(TestCase):
         totals on read."""
         inputs_only_dict = system_to_json(self.system, save_computed_state=False)
         self.assertNotIn("calculation_graph", inputs_only_dict)
-        _, flat_obj_dict, _ = json_to_system(inputs_only_dict)
+        _, flat_obj_dict, _ = load_system_document(inputs_only_dict)
         loaded_system = flat_obj_dict[self.system.id]
 
         self.assertIsNone(computed_slots(type(loaded_system))["total_footprint"].peek(loaded_system))
@@ -284,7 +284,7 @@ class TestMinimalSerializationContract(TestCase):
         baseline exposed through the drift-comparison hook."""
         mismatched_dict = json.loads(json.dumps(self.canonical_dict))
         mismatched_dict["efootprint_version"] = f"{efootprint.__version__}-other"
-        _, flat_obj_dict, _ = json_to_system(mismatched_dict)
+        _, flat_obj_dict, _ = load_system_document(mismatched_dict)
         loaded_system = flat_obj_dict[self.system.id]
 
         self.assertTrue(loaded_system.has_version_baseline)
@@ -317,7 +317,7 @@ class TestMinimalSerializationContract(TestCase):
         upgraded_dict = upgrade_system_dict_to_current_version(json.loads(json.dumps(old_format_dict)))
         self.assertNotIn("use_footprint", next(iter(upgraded_dict["Server"].values())))
 
-        _, flat_obj_dict, _ = json_to_system(json.loads(json.dumps(old_format_dict)))
+        _, flat_obj_dict, _ = load_system_document(json.loads(json.dumps(old_format_dict)))
         loaded_system = flat_obj_dict[self.system.id]
         self.assertFalse(loaded_system.has_version_baseline)
         self.assertEqual(self.system.total_footprint, loaded_system.total_footprint)
@@ -385,7 +385,7 @@ class TestEdgeSystemSerializationContract(TestCase):
         cls.canonical_dict = system_to_json(cls.system)
 
     def load_canonical(self):
-        _, flat_obj_dict, _ = json_to_system(json.loads(json.dumps(self.canonical_dict)))
+        _, flat_obj_dict, _ = load_system_document(json.loads(json.dumps(self.canonical_dict)))
         return flat_obj_dict[self.system.id], flat_obj_dict[self.edge_device.id]
 
     def test_breakdown_summary_round_trips_as_dict(self):

@@ -164,8 +164,8 @@ def build_sources_dict_from_system_dict(system_dict):
     return sources_dict
 
 
-def json_to_system(system_dict, efootprint_classes_dict=None):
-    """Rebuild a system from its serialized form, without running any computation.
+def load_system_document(system_dict, efootprint_classes_dict=None):
+    """Rebuild every object in a serialized document, including disconnected objects, without computing.
 
     ``system_dict`` must come from :func:`system_to_json` or a supported version migration. Arbitrary
     untrusted JSON is not supported: this loader performs the structural checks needed for canonical
@@ -266,14 +266,14 @@ def json_to_system(system_dict, efootprint_classes_dict=None):
 
 
 def load_system(system_dict):
-    """The System of a single-system document: what ``json_to_system`` builds from it, the System alone."""
-    class_obj_dict, _, _ = json_to_system(system_dict)
+    """The System of a single-system document: what ``load_system_document`` builds from it, the System alone."""
+    class_obj_dict, _, _ = load_system_document(system_dict)
     return next(iter(class_obj_dict["System"].values()))
 
 
-def json_to_systems(comparison_dict):
+def load_systems(comparison_dict):
     """Loads the systems of a comparison file in the file's order: each document under the ``models`` key is loaded
-    by ``json_to_system``, as its own save and load would give it."""
+    by ``load_system_document``, as its own save and load would give it."""
     return [load_system(system_dict) for system_dict in comparison_dict["models"]]
 
 

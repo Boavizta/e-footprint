@@ -9,7 +9,7 @@ from efootprint.abstract_modeling_classes.empty_explainable_object import EmptyE
 from efootprint.abstract_modeling_classes.explainable_object_dict import ExplainableObjectDict
 from efootprint.abstract_modeling_classes.reactive_core import computed_dict
 from efootprint.abstract_modeling_classes.source_objects import SourceValue, SourceRecurrentValues
-from efootprint.api_utils.json_to_system import json_to_system
+from efootprint.api_utils.json_to_system import load_system_document
 from efootprint.api_utils.system_to_json import system_to_json
 from efootprint.builders.time_builders import create_source_hourly_values_from_list
 from efootprint.constants.countries import Countries
@@ -234,7 +234,7 @@ class TestEdgeComponentJsonRoundTrip(TestCase):
         # Save to JSON without calculated attributes and reload
         # That tests that the RAM dict calculated attributes have been duly initialized as dicts.
         system_json = system_to_json(system, save_computed_state=False)
-        _, flat_obj_dict, _ = json_to_system(system_json)
+        _, flat_obj_dict, _ = load_system_document(system_json)
 
 
 

@@ -22,7 +22,7 @@ from efootprint.abstract_modeling_classes.modeling_object import (
 from efootprint.abstract_modeling_classes.modeling_update import ModelingUpdate
 from efootprint.abstract_modeling_classes.reactive_core import computed_slots
 from efootprint.abstract_modeling_classes.source_objects import SourceValue
-from efootprint.api_utils.json_to_system import json_to_system
+from efootprint.api_utils.json_to_system import load_system_document
 from efootprint.api_utils.system_to_json import system_to_json
 from efootprint.core.hardware.edge.edge_storage import NegativeCumulativeStorageNeedError
 from efootprint.core.hardware.hardware_base import InsufficientCapacityError
@@ -304,7 +304,7 @@ class TestRandomizedMutationParity(TestCase):
 
     def assert_parity_with_from_scratch_rebuild(self, system):
         system_dict = system_to_json(system, save_computed_state=False)
-        _, flat_obj_dict, _ = json_to_system(system_dict)
+        _, flat_obj_dict, _ = load_system_document(system_dict)
         rebuilt_by_id = {obj.id: obj for obj in self.all_objects(flat_obj_dict[system.id])}
         live_by_id = {obj.id: obj for obj in self.all_objects(system)}
         self.assertEqual(set(live_by_id), set(rebuilt_by_id), "live and rebuilt systems link different objects")
@@ -373,7 +373,7 @@ class TestRandomizedMutationParity(TestCase):
                 # Fill serialize-flagged computed structures, like a session after its first Sankey render.
                 built_system.impact_repartition_matrix
                 canonical_dict = json.loads(json.dumps(system_to_json(built_system)))
-                _, flat_obj_dict, _ = json_to_system(canonical_dict)
+                _, flat_obj_dict, _ = load_system_document(canonical_dict)
                 system = flat_obj_dict[built_system.id]
                 mutation_log = []
                 for mutation_index in range(MUTATIONS_PER_SEQUENCE):

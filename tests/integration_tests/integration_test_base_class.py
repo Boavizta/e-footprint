@@ -15,7 +15,7 @@ from efootprint.abstract_modeling_classes.explainable_hourly_quantities import E
 from efootprint.abstract_modeling_classes.explainable_quantity import ExplainableQuantity
 from efootprint.abstract_modeling_classes.modeling_object import ModelingObject, get_instance_attributes
 from efootprint.abstract_modeling_classes.modeling_update import ModelingUpdate
-from efootprint.api_utils.json_to_system import json_to_system
+from efootprint.api_utils.json_to_system import load_system_document
 from efootprint.api_utils.system_to_json import system_to_json
 from efootprint.constants.units import u
 from efootprint.logger import logger
@@ -276,7 +276,7 @@ class IntegrationTestBaseClass(TestCase):
                 if obj.name == name:
                     return obj
 
-        class_obj_dict, flat_obj_dict, _ = json_to_system(full_dict)
+        class_obj_dict, flat_obj_dict, _ = load_system_document(full_dict)
 
         initial_mod_objs = input_system.all_linked_objects + [input_system]
         for obj_id, obj in flat_obj_dict.items():
@@ -315,7 +315,7 @@ class IntegrationTestBaseClass(TestCase):
 
         total = self.system.total_footprint
         system_dict = json.loads(json.dumps(system_to_json(self.system)))
-        _, flat_obj_dict, _ = json_to_system(system_dict)
+        _, flat_obj_dict, _ = load_system_document(system_dict)
         reloaded_system = flat_obj_dict[self.system.id]
         reloaded_total = reloaded_system.total_footprint
         nested_reloaded = next(
@@ -345,11 +345,11 @@ class IntegrationTestBaseClass(TestCase):
 
         # Start from an inputs-only reload: fixtures built from code may hold distinct objects sharing an id (the
         # complex system's countries), whose edges a save drops as foreign, and only the loaded model is unambiguous.
-        _, inputs_flat_obj_dict, _ = json_to_system(system_to_json(self.system, save_computed_state=False))
+        _, inputs_flat_obj_dict, _ = load_system_document(system_to_json(self.system, save_computed_state=False))
         _ = inputs_flat_obj_dict[self.system.id].total_footprint
         computed = []
         with observe_computations(computed.append):
-            _, flat_obj_dict, _ = json_to_system(
+            _, flat_obj_dict, _ = load_system_document(
                 json.loads(json.dumps(system_to_json(inputs_flat_obj_dict[self.system.id]))))
         self.assertEqual([], computed)
         system = flat_obj_dict[self.system.id]
@@ -419,7 +419,7 @@ class IntegrationTestBaseClass(TestCase):
             return voided, values
 
         for edited_class, attr_name in ((JobBase, "data_transferred"), (UsageJourneyStep, "user_time_spent")):
-            _, in_memory_flat_obj_dict, _ = json_to_system(json.loads(json.dumps(inputs_only)))
+            _, in_memory_flat_obj_dict, _ = load_system_document(json.loads(json.dumps(inputs_only)))
             in_memory_summaries = stored_summaries(in_memory_flat_obj_dict)
             saved = json.dumps(system_to_json(in_memory_flat_obj_dict[self.system.id]))
             in_memory = edit_then_report(in_memory_flat_obj_dict, in_memory_summaries, edited_class, attr_name)
@@ -428,7 +428,7 @@ class IntegrationTestBaseClass(TestCase):
             voided_in_memory, values_in_memory = in_memory
             self.assertIn((self.system.id, "impact_repartition_matrix"), voided_in_memory)
 
-            _, reloaded_flat_obj_dict, _ = json_to_system(json.loads(saved))
+            _, reloaded_flat_obj_dict, _ = load_system_document(json.loads(saved))
             reloaded_summaries = stored_summaries(reloaded_flat_obj_dict)
             self.assertTrue(all(slot.has_cached_value for slot in reloaded_summaries.values()))
             voided_after_reload, values_after_reload = edit_then_report(

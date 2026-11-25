@@ -14,7 +14,7 @@ from efootprint.abstract_modeling_classes.modeling_object import (
     invalidate_slots_system_wide, pull_slots_system_wide)
 from efootprint.abstract_modeling_classes.reactive_core import ReactiveSlot, _compute_stack
 from efootprint.abstract_modeling_classes.source_objects import SourceValue
-from efootprint.api_utils.json_to_system import json_to_system
+from efootprint.api_utils.json_to_system import load_system_document
 from tests.performance_tests.generate_big_system import BIG_SYSTEM_FIXTURE
 
 fixture_exists = os.path.exists(BIG_SYSTEM_FIXTURE)
@@ -36,7 +36,7 @@ class TestBigSystemFixture(TestCase):
             return original_compute(slot)
 
         with patch.object(ReactiveSlot, "_compute", counting_compute):
-            class_obj_dict, _, _ = json_to_system(system_dict)
+            class_obj_dict, _, _ = load_system_document(system_dict)
 
         self.assertEqual([], computed_slot_names)
         system = next(iter(class_obj_dict["System"].values()))
@@ -54,7 +54,7 @@ class TestBigSystemFixture(TestCase):
         with open(BIG_SYSTEM_FIXTURE) as file:
             system_dict = json.load(file)
 
-        class_obj_dict, _, _ = json_to_system(system_dict)
+        class_obj_dict, _, _ = load_system_document(system_dict)
         system = next(iter(class_obj_dict["System"].values()))
         invalidate_slots_system_wide([system])
 
