@@ -7,6 +7,9 @@
   write. It is skipped by a run and listed by the plan.
 - ``@titled("<feature>#<slug>: <title> [<rule>]")`` gives a written test the title a function name cannot hold.
   A test without it is titled by its function's name.
+- ``@canonical(steps=("<flow>:<step>", …))`` declares an intended reference order. Its sentences live in
+  ``narrate.planned`` calls beside the code. A written test keeps this order and promotes those calls to
+  ``narrate(sentence, step="<flow>:<step>")``; its test-body first crossings must match the declared order.
 - ``@reproduces("<feature>#<slug>: <title> [<rule>]")`` is a written test that fails today, for the bug its piece
   fixes: it asserts what should be. A run expects its failure, strictly: the fix cannot land without the
   declaration becoming ``@titled``, under the same title. Its story is the bug's evidence, so it observes

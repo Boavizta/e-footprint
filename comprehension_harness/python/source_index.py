@@ -404,6 +404,8 @@ class FileIndex(ast.NodeVisitor):
         site."""
         callee = node.func
         if isinstance(callee, ast.Attribute):
+            if self.imported_as(callee.value, self.calls) == "narrate" and callee.attr == "planned":
+                return "step", "intended"
             if self.imported_as(callee.value, self.calls) == "planned" and callee.attr in PLANNED_FORMS:
                 return "planned", PLANNED_FORMS[callee.attr]
             if callee.attr in KINDS and self.dotted_of(callee.value) == self.calls:
@@ -426,6 +428,21 @@ class FileIndex(ast.NodeVisitor):
             self.refuse(node, f"one narrate, event, planned or built call a line: a site is a file and a line, and "
                               f"this line already holds a {self.site_lines[node.lineno]}")
         self.site_lines[node.lineno] = kind
+        if change == "intended":
+            step = literal_argument(node, 0)
+            sentence = literal_argument(node, 1)
+            if len(node.args) != 2 or sentence is None or any(k.arg != "changes" for k in node.keywords):
+                self.refuse(node, 'narrate.planned takes a literal step id, sentence and optional changes tuple')
+            self.step_id(step, node)
+            changes = self.literal_strings(node.keywords[0].value) if node.keywords else []
+            for tag in changes:
+                piece = planned_piece(tag, "changed", lambda what: self.refuse(node, what))
+                if "place" not in piece:
+                    self.refuse(node, 'a narrative step links to a change place: <feature>#<piece>:<place>')
+            self.sites.append({"kind": "step", "line": node.lineno, "column": node.col_offset + 1,
+                               "fn": self.frame_name(), "sentence": sentence,
+                               "narration": {"id": step, "planned": True, "changes": changes}})
+            return
         if change == "built":
             tag = literal_argument(node, 0)
             if tag is None or len(node.args) != 1 or node.keywords:
@@ -447,7 +464,11 @@ class FileIndex(ast.NodeVisitor):
         elif site["sentence"] is None:
             self.refuse(node, "the sentence of a narrate or event call is a literal string: anything else is "
                               "computed in production, where the call does nothing")
-        said = [*expected, *distinct] if kind == "planned" else []
+        named_step = [k for k in node.keywords if k.arg == "step"] if kind == "step" else []
+        if named_step:
+            step = self.literal_step(named_step[0].value)
+            site["narration"] = {"id": step, "planned": False, "changes": []}
+        said = [*expected, *distinct] if kind == "planned" else named_step
         watches = [keyword.value for keyword in node.keywords if keyword not in said]
         if node.args[literals:] or watches:
             site["hasWatch"] = True
@@ -456,6 +477,26 @@ class FileIndex(ast.NodeVisitor):
                 self.refuse(argument, "the watch is a lambda (lambda: {…}): anything else is computed in production, "
                                       "where nobody reads it")
         self.sites.append(site)
+
+    def step_id(self, value, node) -> None:
+        if not isinstance(value, str) or not re.fullmatch(r"[a-z0-9]+(?:-[a-z0-9]+)*:[a-z0-9]+(?:-[a-z0-9]+)*", value):
+            self.refuse(node, 'a narrative step id is two kebab-case names: <flow>:<step>')
+
+    def literal_step(self, node) -> str:
+        value = node.value if isinstance(node, ast.Constant) else None
+        self.step_id(value, node)
+        return value
+
+    def literal_strings(self, node) -> list[str]:
+        try:
+            value = ast.literal_eval(node)
+        except (ValueError, SyntaxError):
+            value = None
+        if not isinstance(value, (tuple, list)) or not all(isinstance(x, str) for x in value):
+            self.refuse(node, 'step ids and change places are literal tuples or lists of strings')
+        if len(value) != len(set(value)):
+            self.refuse(node, 'step ids and change places are not repeated')
+        return list(value)
 
     def expect(self, node) -> str:
         """What ``expect=`` says, as written: a literal dict, or the body of a lambda, which costs production
@@ -493,12 +534,13 @@ class FileIndex(ast.NodeVisitor):
         shell = self.shell_around(node)
         if shell is None:
             return {**piece, "change": "changed", "signature": None}
-        raised = shell.body[-1].exc
+        raising = next(statement for statement in reversed(shell.body) if isinstance(statement, ast.Raise))
+        raised = raising.exc
         said = literal_argument(raised, 0) if isinstance(raised, ast.Call) else None
         # A shell raises its piece: the place is the call's to name.
         named = f'{piece["feature"]}#{piece["slug"]}'
         if said not in (f"planned: {named}", f"planned: {tag}"):
-            self.refuse(shell.body[-1], f'the shell must raise NotImplementedError("planned: {named}") right after '
+            self.refuse(raising, f'the shell must raise NotImplementedError("planned: {named}") right after '
                                         f'its planned(…) call{"" if said is None else f", not {said!r}"}')
         return {**piece, "change": "added", "signature": self.signature(shell)}
 
@@ -509,6 +551,8 @@ class FileIndex(ast.NodeVisitor):
         if function is None:
             return None
         body = function.body[1:] if ast.get_docstring(function, clean=False) is not None else function.body
+        body = [s for s in body if not (isinstance(s, ast.Expr) and isinstance(s.value, ast.Call)
+                and self.call_kind(s.value) == ("step", "intended"))]
         opens_with_the_call = len(body) == 2 and isinstance(body[0], ast.Expr) and body[0].value is call
         return function if opens_with_the_call and isinstance(body[1], ast.Raise) else None
 
@@ -535,10 +579,30 @@ class FileIndex(ast.NodeVisitor):
             self.refuse(decorator, "a narrative is declared under one literal title: @narrative(\"…\")")
         if not self.is_test or len(self.scopes) > 1:
             self.refuse(decorator, "a narrative is declared on a class at the top of a test file")
-        first = next((declared_title(node, self.file)[0] for node in cls.body if is_test_function(node)), None)
+        tests = [node for node in cls.body if is_test_function(node)]
+        marked = [(node, d) for node in tests for d in node.decorator_list
+                  if self.imported_as(d.func if isinstance(d, ast.Call) else d, self.declare) == "canonical"]
+        if len(marked) > 1:
+            self.refuse(cls, "a narrative has one canonical reference test")
+        reference = marked[0][0] if marked else next(iter(tests), None)
+        first, title_kind = declared_title(reference, self.file) if reference else (None, None)
         paragraph = (ast.get_docstring(cls) or "").split("\n\n")[0]
-        return {"file": self.file, "title": arguments[0].value, "line": decorator.lineno,
-                "summary": re.sub(r"\s+", " ", paragraph).strip(), "firstTest": first}
+        answer = {"file": self.file, "title": arguments[0].value, "line": decorator.lineno,
+                  "summary": re.sub(r"\s+", " ", paragraph).strip(),
+                  "firstTest": declared_title(tests[0], self.file)[0] if tests else None}
+        if isinstance(decorator.func, ast.Attribute):
+            answer["kind"] = "mechanism"
+        if marked and isinstance(marked[0][1], ast.Call):
+            marker = marked[0][1]
+            if marker.args or len(marker.keywords) != 1 or marker.keywords[0].arg != "steps":
+                self.refuse(marker, '@canonical takes only steps=("<flow>:<step>", …)')
+            steps = self.literal_strings(marker.keywords[0].value)
+            if not steps:
+                self.refuse(marker, "a planned narrative sequence has at least one step")
+            for step in steps:
+                self.step_id(step, marker)
+            answer["intended"] = {"steps": steps, "planned": title_kind == "planned_test", "test": first}
+        return answer
 
 
 def planned_piece(tag: str, change: str, refuse) -> dict:

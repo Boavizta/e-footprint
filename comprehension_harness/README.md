@@ -17,6 +17,43 @@ On plan and delivery pages, resolved references to declarations introduced by th
 small **NEW** button, derived from its added places (including those already built). Clicking it briefly
 highlights the declaration row, scrolling it into view only when needed; the symbol still opens its source.
 
+## Planning a narrative before its first run
+
+Keep the intended sequence on a narrative's reference test, and its sentences beside the code:
+
+```python
+# In the product's code (import narrate from the project's own copy).
+narrate.planned("class-lookup:read", "The class supplies its **metadata**.",
+                changes=("agent-guidance#class-reference:reference-text",))
+
+# In a test file, using narrative, canonical and planned_test from the stack's declare module.
+@narrative("An agent consults class metadata")
+class TestClassMetadata:
+    """A class lookup prints the installed metadata without constructing an example."""
+
+    @canonical(steps=("class-lookup:read",))
+    @planned_test("agent-guidance#class-reference: A lookup prints the class metadata")
+    def test_class_metadata(self):
+        pass
+```
+
+Step IDs are `<flow>:<step>`, two kebab-case names independent of a feature. `changes` is an optional
+literal tuple of existing `<feature>#<piece>:<place>` IDs; an existing-behaviour step can omit it.
+Several steps may link to one change, and one step to several changes. A shell may contain these
+declarations alongside its `planned` call and raise.
+
+The pages and `map narrative` label this sequence **intended, not observed**, even with no story file.
+It contributes no recorded steps, coverage or ownership. The feature plan shows the linked sequences,
+and its approval holds their IDs, sentences and order. The check rejects missing or duplicate step IDs,
+orphan planned steps and unknown change places.
+
+When building the narrative, replace each declaration with `narrate("…", step="class-lookup:read")`
+at the actual operation, and write the test under `@titled` instead of `@planned_test`. Keep
+`@canonical(steps=…)`: the collector checks the first crossings of those steps in the test body
+against that order. Setup and teardown do not satisfy it. The render check also rejects a written
+reference that still names a planned step or has no matching recorded sequence. Planned declarations
+are always inert, even with a collector installed; promoted steps retain their stable identities.
+
 ## What is copied
 
 | Files | What |

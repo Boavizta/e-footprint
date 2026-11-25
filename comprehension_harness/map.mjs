@@ -132,7 +132,7 @@ function neighbours(list, indent = '    ') {
 
 function narratives(map) {
   say('Narratives — what the code does for one action, told by the code step by step, in the order one test crosses it.', '');
-  for (const n of map.narratives) say(`${n.kind === 'mechanism' ? 'mechanism' : 'product  '}  ${n.slug}`, `           ${n.title} — ${plural(n.steps.length, 'step')}, ${plural(n.branches.length, 'branch').replace('branchs', 'branches')}, ${n.file}`);
+  for (const n of map.narratives) say(`${n.intended?.planned ? 'planned  ' : n.kind === 'mechanism' ? 'mechanism' : 'product  '}  ${n.slug}`, `           ${n.title} — ${n.intended?.planned ? `${plural(n.intended.steps.length, 'intended step')}, not observed` : `${plural(n.steps.length, 'step')}, ${plural(n.branches.length, 'branch').replace('branchs', 'branches')}`}, ${n.file}`);
   say('', `next: npm run map -- narrative <slug>   (any part of a slug that names one)`);
 }
 
@@ -144,6 +144,11 @@ const edited = (n) => (n.editedSince.length
 function narrative(map, name) {
   const n = pick(map, name);
   say(`# ${n.title}  [${n.kind}]`, `${n.file}:${n.line} — reference case "${n.canonical}"`, '', n.summary, '');
+  if (n.intended) {
+    say(n.intended.planned ? 'PLANNED — intended reference sequence, not an observed run:' : 'Declared reference sequence:');
+    for (const s of n.intended.steps) say(`  ${s.n}. ${s.sentence} [${s.planned ? 'planned' : 'code'}]`, `     ${at(s)}  in ${s.fn}${s.changes.length ? `\n     linked changes: ${s.changes.join(', ')}` : ''}`);
+    if (n.steps.length) say('', 'Observed steps:');
+  }
   let cause;
   for (const s of n.steps) {
     if (s.cause !== cause) { cause = s.cause; say(cause ? `▸ ${cause}` : '▸ (before any cause)'); }
@@ -163,6 +168,11 @@ function step(map, name) {
   const n = pick(map, name);
   const k = Number(name.split('#')[1]);
   const s = n.steps.find((x) => x.n === k);
+  if (!s && n.intended?.steps.some((x) => x.n === k)) {
+    const intended = n.intended.steps.find((x) => x.n === k);
+    say(`# ${n.title} — intended step ${k} (not observed)`, intended.sentence, '', `${at(intended)}  in ${intended.fn}`, `linked changes: ${intended.changes.join(', ') || 'existing behaviour; no change linked'}`);
+    return;
+  }
   if (!s) fail(`${n.slug} has steps 1 to ${n.steps.length}; ask for ${n.slug}#<n>`);
   say(`# ${n.title} — step ${s.n} of ${n.steps.length}`, s.sentence, '', `${at(s)}  in ${s.fn}${s.cause ? `\ncause: ${s.cause}` : ''}`, '');
   if (s.range) {
@@ -216,6 +226,7 @@ function where(map, what) {
   const match = (x) => (isFile ? x.file === what || x.file.endsWith(`/${what}`) : x.fn === what);
   const out = [];
   for (const n of map.narratives) {
+    for (const s of n.intended?.steps ?? []) if (match(s)) out.push(`  intended step ${s.n} of ${n.slug} (not an observed crossing)  ${at(s)}  in ${s.fn}\n     ${s.sentence}`);
     for (const s of n.steps) if (match(s)) out.push(`  step ${s.n} of ${n.slug}  ${at(s)}  in ${s.fn}\n     ${s.sentence}`);
     for (const b of n.branches) if (match(b)) out.push(`  a branch of ${n.slug}  ${at(b)}  in ${b.fn}, told by "${b.toldBy}"\n     ${b.sentence}`);
   }
@@ -230,7 +241,7 @@ function where(map, what) {
   if (out.length) say(`${what} carries ${plural(out.length, 'narrated site')}:`, ...out);
   if (near.size) say(out.length ? '' : `${what} holds no \`narrate\`, and is next to narrated code:`, ...(out.length ? ['Also next to narrated code, holding no `narrate` itself:'] : []), ...[...near.values()].slice(0, 20), ...(near.size > 20 ? [`  … and ${near.size - 20} more`] : []));
   const tests = new Set();
-  for (const n of map.narratives) if (n.steps.some(match) || n.branches.some(match)) tests.add(`${n.file} (the narrative's test)`);
+  for (const n of map.narratives) if (n.steps.some(match) || n.branches.some(match) || n.intended?.steps.some(match)) tests.add(`${n.file} (the narrative's test)`);
   if (tests.size) say('', 'Before editing, the tests that tell it:', ...[...tests].map((t) => `  ${t}`));
   say('', 'next: npm run map -- step <slug>#<n>');
 }
@@ -436,6 +447,12 @@ function plan(map, feature) {
   else say(`(no ${FEATURES}/${feature}/plan.md: the pieces have no statement and no reason)`, '');
   const bySlug = new Map(p.pieces.map((s) => [s.slug, s]));
   // A piece of a bug is told under its bug, below: the groups hold the others.
+  const intended = map.narratives.filter((n) => n.intended && (n.canonical?.startsWith(`${feature}#`) || n.intended.steps.some((s) => s.changes.some((tag) => tag.startsWith(`${feature}#`)))));
+  for (const n of intended) {
+    say(`Planned narrative — ${n.title} (intended, not observed)`, `  reference: ${n.file}`);
+    for (const step of n.intended.steps) say(`  ${step.n}. ${step.sentence}`, `     ${at(step)}${step.changes.length ? ` → ${step.changes.join(', ')}` : ''}`);
+    say('');
+  }
   for (const g of p.groups) {
     const slugs = g.slugs.filter((slug) => !bySlug.get(slug).bug);
     if (slugs.length === 0) continue;
@@ -540,6 +557,7 @@ function feedback(map, feature) {
 function check(map, feature) {
   if (!feature) fail('check <feature>');
   const p = pickPlan(map, feature);
+  const narrativeIssues = map.narrativeIssues ?? [];
   for (const lot of p.doc?.lots ?? []) say(lotLine(p, lot));
   if (!p.approved) say(p.doc ? 'never approved' : 'no plan.md');
   else {
@@ -548,8 +566,9 @@ function check(map, feature) {
   }
   for (const m of p.moves ?? []) say(`  moved, unchanged: ${m.from} → ${m.to} — ${m.facet}: ${m.text}`);
   for (const line of p.info) say(`info: ${line}`);
-  if (p.failures.length === 0) return say('', `check ${feature}: the plan passes. Its lines: npm run map -- brief ${feature}/<lot>`);
-  say('', `check ${feature}: ${plural(p.failures.length, 'failure')}`, ...p.failures.map((f) => `  ${f}`));
+  const failures = [...p.failures, ...narrativeIssues];
+  if (failures.length === 0) return say('', `check ${feature}: the plan passes. Its lines: npm run map -- brief ${feature}/<lot>`);
+  say('', `check ${feature}: ${plural(failures.length, 'failure')}`, ...failures.map((f) => `  ${f}`));
   process.exitCode = 1;
 }
 

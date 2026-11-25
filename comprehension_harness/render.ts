@@ -162,6 +162,8 @@ export interface Step {
 
 /** A narrative as the stories and the source declare it. */
 export interface Narrative {
+  /** Intended order from the reference test, separate from observed steps and ownership. */
+  intended?: { ids: string[]; sites: SourceSite[]; planned: boolean };
   kind: NarrativeKind;
   title: string;
   slug: string;
@@ -221,15 +223,24 @@ export function deriveNarratives(stories: Story[], index: SourceIndex): Narrativ
     groups.set(key, [...(groups.get(key) ?? []), body]);
   }
   const narratives: Narrative[] = [];
-  for (const group of groups.values()) {
-    const { file, narrative } = group[0];
-    const { title, kind } = narrative!;
+  const declaredNarratives = [...groups.values()].map((group) => ({ file: group[0].file, ...group[0].narrative! }));
+  for (const declaration of index.narrativeDeclarations()) {
+    if (declaration.intended && !groups.has(`${declaration.file}::${declaration.title}`)) {
+      declaredNarratives.push({ file: declaration.file, title: declaration.title, kind: declaration.kind ?? 'product' });
+    }
+  }
+  const namedSteps = index.namedSteps();
+  for (const { file, title, kind } of declaredNarratives) {
+    const group = groups.get(`${file}::${title}`) ?? [];
     const declared = index.declaration(file, title);
     const marked = group.filter((s) => s.canonical);
     if (marked.length > 1) throw new Error(`comprehension-render: "${title}" marks ${marked.length} cases canonical: ${marked.map((s) => s.test).join(' | ')}`);
-    const canonicalTest = marked[0]?.test ?? declared.firstTest;
+    const canonicalTest = declared.intended?.test ?? marked[0]?.test ?? declared.firstTest;
     const canonical = group.find((s) => s.test === canonicalTest) ?? null;
     narratives.push({
+      ...(declared.intended ? { intended: { ids: declared.intended.steps,
+        sites: declared.intended.steps.flatMap((id) => { const site = namedSteps.find((s) => s.id === id); return site ? [site] : []; }),
+        planned: declared.intended.planned } } : {}),
       kind, title, slug: slug(title), file,
       summary: declared.summary, declaredAt: declared.line,
       canonicalTest, canonical,
@@ -260,6 +271,35 @@ export function deriveNarratives(stories: Story[], index: SourceIndex): Narrativ
     if (n.kind === 'mechanism') for (const id of n.siteIds) owned.add(id);
   }
   return narratives;
+}
+
+/** Source links describe intent; only a written reference run can establish the sequence. */
+export function narrativePlanIssues(narratives: Narrative[], index: SourceIndex): string[] {
+  const issues: string[] = [];
+  const named = index.namedSteps();
+  const seen = new Set<string>();
+  const used = new Set(narratives.flatMap((n) => n.intended?.ids ?? []));
+  const places = new Set(index.plannedSites().map((s) => {
+    const p = s.planned!;
+    return `${p.feature}#${p.slug}${p.place ? `:${p.place}` : ''}`;
+  }));
+  for (const site of named) {
+    if (seen.has(site.id)) issues.push(`duplicate narrative step ${site.id} at ${site.file}:${site.line}`);
+    seen.add(site.id);
+    if (site.narration!.planned && !used.has(site.id)) issues.push(`planned narrative step ${site.id} is named by no reference sequence`);
+    for (const change of site.narration!.changes) if (!places.has(change)) issues.push(`${site.id} links to unknown change place ${change}`);
+  }
+  for (const n of narratives) {
+    if (!n.intended) continue;
+    for (const id of n.intended.ids) if (!seen.has(id)) issues.push(`${n.title}: no declaration for intended step ${id}`);
+    if (!n.intended.planned) {
+      const observed = [...new Set(n.canonical?.hits.filter((h) => h.kind === 'step').map((h) => h.step)
+        .filter((id): id is string => id !== undefined && n.intended!.ids.includes(id)) ?? [])];
+      if (JSON.stringify(observed) !== JSON.stringify(n.intended.ids)) issues.push(`${n.title}: reference sequence differs; expected ${n.intended.ids.join(' → ')}, observed ${observed.join(' → ') || 'no run'}`);
+      for (const site of n.intended.sites) if (site.narration!.planned) issues.push(`${n.title}: written reference still names planned step ${site.id}`);
+    }
+  }
+  return issues;
 }
 
 /** Which mechanism owns a site: the first whose stories hit it. */
@@ -806,13 +846,31 @@ function elsewhereHtml(narrative: Narrative, stories: Story[], index: SourceInde
   return `<small class="kicker">Also crossed by</small><div class="narr-list">${list}<small>${total} tests in ${elsewhere.size} files pass through at least one step of this narrative; their stories are written and not rendered.</small></div>`;
 }
 
+function intendedNarrativeHtml(n: Narrative, index: SourceIndex, feature?: string): string {
+  if (!n.intended) return '';
+  const pending = n.intended.planned;
+  const rows = n.intended.ids.map((id, i) => {
+    const site = n.intended!.sites.find((s) => s.id === id);
+    if (!site) return `<div class="pline"><span class="mark removed">missing</span><span>${esc(id)}</span></div>`;
+    const changes = site.narration!.changes.map((tag) => {
+      const [ofFeature] = tag.split('#');
+      const fragment = `#${encodeURIComponent(changePlaceAnchor(tag))}`;
+      const href = feature === ofFeature ? fragment : `../plans/${ofFeature}.html${fragment}`;
+      return `<a class="slug" href="${esc(href)}" title="Linked change place">${esc(tag)}</a>`;
+    }).join(' ');
+    return `<div class="pline" id="intended-${esc(n.slug)}-${i + 1}"><span class="mark ${site.narration!.planned ? 'added' : ''}">${i + 1} · ${site.narration!.planned ? 'planned' : 'code'}</span><span class="where">${placeLink(site.file, site.line, site.column)} <code>${esc(site.fn)}</code></span><span class="clause">${sentenceHtml(site.sentence!, site, index).html}${changes ? `<br>${changes}` : ''}</span></div>`;
+  }).join('');
+  return `<section class="pbox intended" data-planned-narrative="${esc(n.slug)}"><h3>${esc(n.title)}</h3><p class="legend">${pending ? 'Planned narrative · intended order, not an observed run' : 'Declared reference sequence · see the recorded run below'}. Reference test: ${srcLink(n.file, n.declaredAt, 1, n.canonicalTest ?? n.file)}.</p><div class="plines">${rows}</div></section>`;
+}
+
 function narrativeHtml(narrative: Narrative, stories: Story[], narratives: Narrative[], index: SourceIndex, links: PageLinks, backlinks: BacklinkIndex): string {
   const { canonical, variants, steps } = narrative;
   if (!canonical) {
+    if (narrative.intended) return intendedNarrativeHtml(narrative, index);
     return `<section class="narr" id="${esc(narrative.slug)}"><header><strong>${esc(narrative.title)}</strong><small>no story yet for its canonical case${narrative.canonicalTest ? ` "${esc(narrative.canonicalTest)}"` : ''} — run <code>npm run comprehension</code> or <code>${esc(typed(config.commands.tests, narrative.file))}</code></small></header></section>`;
   }
   const ctx: RenderContext = { index, narrative, owner: ownership(narratives), links, backlinks, anchored: new Set() };
-  return `
+  return `${intendedNarrativeHtml(narrative, index)}
 <section class="narr" id="${esc(narrative.slug)}" data-narrative>
   <header>
     <strong>Main narrative test: ${testLink(canonical, ' data-narrative-test', readableTestTitle(canonical, index))}</strong>
@@ -1226,6 +1284,13 @@ export function derivePlans(stories: Story[], narratives: Narrative[], index: So
     return story ? { ...todo, run: { state: story.state, failure: story.failure ?? null } } : todo;
   });
   return assemblePlans({
+    narrativePlans: narratives.filter((n) => n.intended).flatMap((n) => {
+      const features = new Set(n.intended!.sites.flatMap((s) => s.narration!.changes.map((tag) => tag.split('#')[0])));
+      if (n.canonicalTest?.includes('#')) features.add(n.canonicalTest.split('#')[0]);
+      return [...features].map((feature) => ({ feature, title: n.title,
+        steps: n.intended!.ids.map((id) => { const site = n.intended!.sites.find((s) => s.id === id); return `${id} — ${site?.sentence ?? 'MISSING DECLARATION'}`; }),
+      }));
+    }),
     sites,
     statics: sources.statics,
     todos,
@@ -1407,6 +1472,10 @@ const DECLARATION_SCRIPT = `<script>
 
 /** A place's id, as its tag writes it after the piece: what its `built` call carries once it is code. */
 const placeId = (place: string | undefined) => (place === undefined ? '' : ` <small title="the place's id: planned('…:${esc(place)}', …), then built('…:${esc(place)}') once it is code">:${esc(place)}</small>`);
+
+const changePlaceAnchor = (tag: string) => `change-${tag}`;
+const changeRow = (site: Pick<PlanSite, 'feature' | 'slug' | 'place'>) => site.place
+  ? ` id="${esc(changePlaceAnchor(`${site.feature}#${site.slug}:${site.place}`))}"` : '';
 
 /** A piece's chip: the link to its card, amber and marked `?` when the card holds a point to confirm. */
 function pieceChip(piece: PlanPiece): string {
@@ -1624,7 +1693,7 @@ function siteLine(site: PlanSite, ctx: PlanContext, ofABug = false): string {
     : site.crossedBy.length === 0 ? ' <small class="pending" title="no narrative\'s reference case crosses this call">no narrative crosses it</small>'
       : '';
   const untested = site.change !== 'added' && site.reachedBy.length === 0 ? ' <small class="pending">no test reaches it</small>' : '';
-  return `<div class="pline" data-planned="${esc(site.id)}"${site.change === 'added' ? declarationRow(site.file, site.fn) : ''}><span class="mark ${site.change}">${CHANGE_MARK[site.change]}</span><span class="where">${placeLink(site.file, site.line, site.column)} <code>${esc(name)}</code>${placeId(site.place)}</span><span class="clause">${siteClause(site, ctx)}${flag}${untested}</span></div>`;
+  return `<div class="pline" data-planned="${esc(site.id)}"${changeRow(site)}${site.change === 'added' ? declarationRow(site.file, site.fn) : ''}><span class="mark ${site.change}">${CHANGE_MARK[site.change]}</span><span class="where">${placeLink(site.file, site.line, site.column)} <code>${esc(name)}</code>${placeId(site.place)}</span><span class="clause">${siteClause(site, ctx)}${flag}${untested}</span></div>`;
 }
 
 /** A comment on a test says what becomes of the test under it: deleted, or changed. Elsewhere it says what the
@@ -1790,7 +1859,7 @@ function bugHtml(piece: PlanPiece, ctx: PlanContext): { html: string; shown: Set
   const told = reproductions.map((t) => {
     const crossed = placesCrossed(piece, t);
     for (const { site } of crossed) shown.add(site);
-    const rows = crossed.map(({ site, seen }) => `<div class="pline"><span class="mark ${site.change}">${CHANGE_MARK[site.change]}</span><span class="where">${placeLink(site.file, site.line, site.column)} <code>${esc(site.fn)}</code>${seen.crossings.length > 1 ? ` <small>crossed ×${seen.crossings.length}</small>` : ''}</span><span class="clause">${siteClause(site, ctx)}${seenValuesHtml(site, seen.crossings)}</span></div>`).join('');
+    const rows = crossed.map(({ site, seen }) => `<div class="pline"${changeRow(site)}><span class="mark ${site.change}">${CHANGE_MARK[site.change]}</span><span class="where">${placeLink(site.file, site.line, site.column)} <code>${esc(site.fn)}</code>${seen.crossings.length > 1 ? ` <small>crossed ×${seen.crossings.length}</small>` : ''}</span><span class="clause">${siteClause(site, ctx)}${seenValuesHtml(site, seen.crossings)}</span></div>`).join('');
     const failure = t.run?.failure;
     const failed = failure ? `<div class="failure"><small>it fails at ${failure.file ? placeLink(failure.file, failure.line) : `line ${failure.line}`}:</small><pre>${esc(failure.message)}</pre></div>`
       : t.run ? `<p class="also"><span class="flag">Its last run did not fail (${esc(t.run.state ?? 'no state')}):</span> a reproduction that passes is a test like another, declared as one.</p>`
@@ -1891,6 +1960,7 @@ function planRulesHtml(plan: Plan): string {
 export function renderPlanPage(plan: Plan, stories: Story[], narratives: Narrative[], index: SourceIndex, diffs: DbDiffs = new Map()): string {
   const generatedAt = new Date().toISOString();
   const ctx: PlanContext = { plan, index, narratives, diffs, lineCommits: new Map() };
+  const intended = narratives.filter((n) => n.intended && (n.canonicalTest?.startsWith(`${plan.feature}#`) || n.intended.sites.some((s) => s.narration!.changes.some((tag) => tag.startsWith(`${plan.feature}#`)))));
   const folder = `${featureFolder(plan.feature)}/`;
   const doc = plan.doc;
   const lede = doc
@@ -1941,6 +2011,7 @@ ${plan.pointers.length ? `
 <h2 id="elsewhere">Planned elsewhere — ${plural(plan.pointers.length, 'piece')}</h2>
 <div class="pbox outside">${plan.pointers.map((p) => pointerHtml(p, plan)).join('')}</div>
 <p class="legend">Each is planned, built and approved in its own repository, under this feature's name. This plan relies on it and holds none of it.</p>` : ''}
+${intended.length ? `<h2 id="planned-narratives">Planned narrative sequences</h2>${intended.map((n) => intendedNarrativeHtml(n, index, plan.feature)).join('')}` : ''}
 ${outside.length ? `
 <h2 id="outside">Outside the narratives — ${plural(outside.length, 'piece')}</h2>
 <div class="pbox outside">${byBug(outside, outsideRow, (bug) => `<div class="pline bugrow"><span class="where"><a href="#${bug.anchor}"><span class="mark failing">bug</span></a></span><span class="clause"><b>${planInline(bug.title, plan)}</b></span></div>`).join('')}</div>
@@ -2226,7 +2297,9 @@ function builtLinesHtml(piece: PlanPiece, plan: Plan, index: SourceIndex, tests 
     const m = /^(changed|added|removed) (\S+) in (\S+) — (.*)$/.exec(line);
     if (!m) continue;
     const at = markOf(piece, line) ?? functionPlace(index, m[2], m[3]);
-    rows.push(row('built', `${at ? placeLink(at.file, at.line, at.column) : file(m[2])} <code>${esc(m[3])}</code>${placeId(Object.keys(piece.ids).find((place) => piece.ids[place] === line))}${m[1] === 'added' ? ' <span class="badge">new function</span>' : ''}`, inline(m[4]), m[1] === 'added' ? declarationRow(m[2], m[3]) : ''));
+    const place = Object.keys(piece.ids).find((id) => piece.ids[id] === line);
+    const anchor = changeRow({ feature: plan.feature, slug: piece.slug, place });
+    rows.push(row('built', `${at ? placeLink(at.file, at.line, at.column) : file(m[2])} <code>${esc(m[3])}</code>${placeId(Object.keys(piece.ids).find((place) => piece.ids[place] === line))}${m[1] === 'added' ? ' <span class="badge">new function</span>' : ''}`, inline(m[4]), (m[1] === 'added' ? declarationRow(m[2], m[3]) : '') + anchor));
   }
   for (const line of piece.built.comments) {
     const m = /^(changes|removes) (\S+) — (.*)$/.exec(line);
@@ -2449,8 +2522,8 @@ ${ridesOnHtml([narrative], narratives, index, PRODUCT_LINKS)}
 <p class="source-test">Source test: ${srcLink(narrative.file, narrative.declaredAt, 1, narrative.file)}</p>
 ${narrativeHtml(narrative, stories, narratives, index, PRODUCT_LINKS, backlinks)}
 `;
-  const crumb = `comprehension · narratives / ${esc(narrative.slug)} · <b>generated</b> from test recordings at ${generatedAt} · <a href="../index.html">every page</a>`;
-  return pageHtml(narrative.title, crumb, body, 'no hand-written input; the narrative from the test that declares it; every step, link, chip, stop and value from the run, every symbol link from the source index, every "rides on" from the mechanisms\' own stories, every debt / rule / convention marker from the pages that name the code.');
+  const crumb = `comprehension · narratives / ${esc(narrative.slug)} · <b>generated</b> from ${narrative.intended?.planned ? 'source declarations (intended, not observed)' : 'test recordings'} at ${generatedAt} · <a href="../index.html">every page</a>`;
+  return pageHtml(narrative.title, crumb, body, narrative.intended?.planned ? 'the intended sequence from its reference test and planned narration beside the code; no execution has been observed' : 'no hand-written input; the narrative from the test that declares it; every step, link, chip, stop and value from the run, every symbol link from the source index, every "rides on" from the mechanisms\' own stories, every debt / rule / convention marker from the pages that name the code.');
 }
 
 export function renderMechanismPage(mechanism: Narrative, stories: Story[], narratives: Narrative[], index: SourceIndex, backlinks: BacklinkIndex): string {
@@ -2463,8 +2536,8 @@ ${LINK_HINT}
 <p class="source-test">Source test: ${srcLink(mechanism.file, mechanism.declaredAt, 1, mechanism.file)}</p>
 ${narrativeHtml(mechanism, stories, narratives, index, MECHANISM_LINKS, backlinks)}
 `;
-  const crumb = `comprehension · mechanisms / ${esc(mechanism.slug)} · <b>generated</b> from test recordings at ${generatedAt} · <a href="../index.html">every page</a>`;
-  return pageHtml(mechanism.title, crumb, body, 'no hand-written input; the narrative from the test that declares it; every step, link, chip, stop and value from the run, every symbol link from the source index.');
+  const crumb = `comprehension · mechanisms / ${esc(mechanism.slug)} · <b>generated</b> from ${mechanism.intended?.planned ? 'source declarations (intended, not observed)' : 'test recordings'} at ${generatedAt} · <a href="../index.html">every page</a>`;
+  return pageHtml(mechanism.title, crumb, body, mechanism.intended?.planned ? 'the intended sequence from its reference test and planned narration beside the code; no execution has been observed' : 'no hand-written input; the narrative from the test that declares it; every step, link, chip, stop and value from the run, every symbol link from the source index.');
 }
 
 /** A generated page, as the index lists it: its path from the folder the list is read from, and its own title. */
@@ -2605,7 +2678,7 @@ export function check(source: SourceReader = openSource(), archive: string | nul
   const stories = readStories();
   index.realign(stories);
   const narratives = deriveNarratives(stories, index);
-  const flagged: string[] = [];
+  const flagged: string[] = narrativePlanIssues(narratives, index);
   const calledHere = { total: 0, traced: 0, static: 0, caller: 0, sibling: 0, disagree: [] as string[] };
   for (const n of narratives) {
     console.log(`\n${n.kind} "${n.title}" — ${n.file}`);

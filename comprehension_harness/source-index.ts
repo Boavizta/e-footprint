@@ -45,7 +45,11 @@ export class SourceIndex {
     }
     for (const [fn, list] of byFn) {
       list.sort((a, b) => a.line - b.line);
-      list.forEach((s, i) => sites!.set(s.line, { ...s, ordinal: i + 1, id: `${s.file}#${fn}#${i + 1}` }));
+      let ordinal = 0;
+      for (const s of list) {
+        const n = s.narration?.planned ? 0 : ++ordinal;
+        sites.set(s.line, { ...s, ordinal: n, id: s.narration?.id ?? `${s.file}#${fn}#${n}` });
+      }
     }
     this.sitesByFile.set(file, sites);
     return sites;
@@ -137,4 +141,9 @@ export class SourceIndex {
   }
   siteFiles(): string[] { return this.reader.siteFiles(); }
   narrativeTestFiles(): string[] { return this.reader.narrativeTestFiles(); }
+  narrativeDeclarations() { return this.reader.narrativeDeclarations(); }
+
+  namedSteps(): SourceSite[] {
+    return this.reader.siteFiles().flatMap((file) => [...this.sites(file).values()].filter((s) => s.narration));
+  }
 }

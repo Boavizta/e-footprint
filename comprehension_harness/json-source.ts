@@ -38,11 +38,15 @@ export function checkSourceIndex(document: unknown, from: string): SourceIndexDo
   } catch (error) {
     return fail(`"looksDeclared" is not the source of a regular expression, the shape of a name the language declares — ${(error as Error).message}`);
   }
-  for (const n of doc.narratives) if (typeof n?.file !== 'string' || typeof n.title !== 'string' || typeof n.line !== 'number' || typeof n.summary !== 'string') fail(`a narrative is not { file, title, line, summary, firstTest }: ${JSON.stringify(n)}`);
+  for (const n of doc.narratives) {
+    if (typeof n?.file !== 'string' || typeof n.title !== 'string' || typeof n.line !== 'number' || typeof n.summary !== 'string') fail(`a narrative is not { file, title, line, summary, firstTest }: ${JSON.stringify(n)}`);
+    if (n.intended && (!Array.isArray(n.intended.steps) || !n.intended.steps.length || !n.intended.steps.every((id) => typeof id === 'string') || new Set(n.intended.steps).size !== n.intended.steps.length || typeof n.intended.planned !== 'boolean' || typeof n.intended.test !== 'string')) fail(`invalid intended reference sequence for ${n.title}`);
+  }
   if (doc.files === null || typeof doc.files !== 'object' || Array.isArray(doc.files)) return fail('"files" is not an object, a file each');
   for (const [file, tables] of Object.entries(doc.files)) {
     for (const table of TABLES) if (!Array.isArray((tables as Partial<SourceFileIndex>)?.[table])) fail(`"${table}" of ${file} is not a list`);
     for (const site of tables.sites) {
+      if (site.narration && (site.kind !== 'step' || typeof site.narration.id !== 'string' || typeof site.narration.planned !== 'boolean' || !Array.isArray(site.narration.changes) || !site.narration.changes.every((tag) => typeof tag === 'string'))) fail(`invalid narrative step at ${file}:${site.line}`);
       if (!['step', 'event', 'planned'].includes(site.kind) || typeof site.line !== 'number' || typeof site.column !== 'number' || typeof site.fn !== 'string') fail(`a site of ${file} is not { kind, line, column, fn, sentence }: ${JSON.stringify(site)}`);
       if (site.kind === 'planned' && (site.sentence === null || typeof site.planned?.feature !== 'string' || typeof site.planned.slug !== 'string' || !PLANNED_CHANGES.includes(site.planned.change))) {
         fail(`the planned call at ${file}:${site.line} needs a literal sentence and "planned": { feature, slug, change, signature }`);
@@ -90,6 +94,7 @@ export class JsonSource implements SourceReader {
   sites(file: string): RawSite[] {
     return this.tables(file).sites.map((s): RawSite => ({
       file, line: s.line, column: s.column, kind: s.kind, fn: s.fn, sentence: s.sentence,
+      ...(s.narration ? { narration: s.narration } : {}),
       ...(s.hasWatch ? { hasWatch: true } : {}),
       ...(s.planned ? { planned: { ...s.planned, sentence: s.sentence! } } : {}),
     }));
@@ -107,10 +112,12 @@ export class JsonSource implements SourceReader {
     return [...new Set(this.document.narratives.map((n) => n.file))].sort();
   }
 
+  narrativeDeclarations() { return this.document.narratives; }
+
   declaration(file: string, title: string): Declaration {
     const found = this.document.narratives.find((n) => n.file === file && n.title === title);
     if (!found) throw new Error(`comprehension-source: ${file} declares no narrative titled "${title}" — a story is older than the source; re-run its test`);
-    return { summary: found.summary, firstTest: found.firstTest, line: found.line };
+    return { summary: found.summary, firstTest: found.firstTest, line: found.line, ...(found.intended ? { intended: found.intended } : {}) };
   }
 
   /** The functions of a file whose lines hold `line`, the innermost first. */

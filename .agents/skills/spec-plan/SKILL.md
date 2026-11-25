@@ -108,6 +108,11 @@ This audits your reasoning. It is no section of `plan.md`.
   tagged when its change is a decision.
 - **Define a term where the plan first needs it**, and use only defined terms after.
 - **For a mechanism in two steps, the piece's reason says why one is not enough.**
+- **A useful new narrative can be planned before its reference run exists.** Use the stack's planned
+  narration at the code for its step IDs, sentences and optional links to change places. Its planned
+  reference test declares the IDs in intended order, without repeating the sentences. The page must label
+  this as intent, never an observed run or landing. On implementation the named steps become recorded
+  narration and the reference verifies their order. An existing-behaviour step needs no change link.
 - **Each fact once.** What a site's clause says, the section does not repeat; what a test title
   says, neither does.
 

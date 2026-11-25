@@ -1,6 +1,9 @@
 """The calls a flow tells itself with: ``narrate``, ``event``, ``planned`` and ``built``.
 
 - ``narrate(sentence, watch)`` is a step, written at the line it describes.
+- ``narrate.planned("<flow>:<step>", sentence, changes=("<feature>#<piece>:<place>", …))`` declares an
+  intended step, never a recorded hit. Its reference test names the IDs in ``@canonical(steps=(…))``.
+  On implementation, ``narrate(sentence, step="<flow>:<step>")`` keeps that identity on the actual operation.
 - ``event(sentence, watch)`` is a cause, written at its handler: the steps that follow answer it.
 - ``planned("<feature>#<slug>:<place>", sentence)`` is a place a feature's plan changes, written before the
   code: the place is the site's own id within its piece, which the ``built`` call that replaces it carries.
@@ -60,8 +63,7 @@ Expect = Any
 Distinct = Any
 # kind, sentence, watch, the frame of the call or the place a template says, and for a planned or a built call
 # (feature, slug, change, expect, place): the place is None where the tag names none.
-Collector = Callable[[str, str, Optional[Watch], "FrameType | Place",
-                      Optional[tuple[str, str, str, Expect, Optional[str]]]], None]
+Collector = Callable[..., None]
 
 # `<feature>#<slug>`, then `:<place>` where the site names the place of the piece it is: kebab-case names.
 PLANNED_TAG = re.compile(r"^([a-z0-9]+(?:-[a-z0-9]+)*)#([a-z0-9]+(?:-[a-z0-9]+)*)(?::([a-z0-9]+(?:-[a-z0-9]+)*))?$")
@@ -80,18 +82,28 @@ def _refuse(frame, what: str):
     raise TypeError(f"{where[0]}:{where[1]} — {what}")
 
 
-def _record(kind: str, sentence, watch, frame, planned_as=None) -> None:
+def _record(kind: str, sentence, watch, frame, planned_as=None, step=None) -> None:
     if not isinstance(sentence, str):
         _refuse(frame, f"the sentence of a {kind} call is a string, not {type(sentence).__name__}")
     if watch is not None and not callable(watch):
         _refuse(frame, f"the watch is passed as a function (lambda: {{…}}), not as {type(watch).__name__}")
-    _collector(kind, sentence, watch, frame, planned_as)
+    if step is not None:
+        _collector(kind, sentence, watch, frame, planned_as, step=step)
+    else:
+        _collector(kind, sentence, watch, frame, planned_as)
 
 
-def narrate(sentence: str, watch: Optional[Watch] = None) -> None:
+def narrate(sentence: str, watch: Optional[Watch] = None, *, step: Optional[str] = None) -> None:
     """A narrative step: what happens here, at the line it happens."""
     if _collector is not None:
-        _record("step", sentence, watch, sys._getframe(1))
+        _record("step", sentence, watch, sys._getframe(1), step=step)
+
+
+def _planned_step(step: str, sentence: str, *, changes: tuple[str, ...] = ()) -> None:
+    """An intended narrative step, read from source only; even a test run records no crossing."""
+
+
+narrate.planned = _planned_step
 
 
 def event(sentence: str, watch: Optional[Watch] = None) -> None:

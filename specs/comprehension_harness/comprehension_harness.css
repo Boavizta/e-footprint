@@ -160,6 +160,8 @@
   .card p { margin: 0 0 .45rem; } .card ul { margin: 0; padding-left: 1.1rem; } .card li { margin: 0 0 .3rem; }
   .card:target, .piece:target { box-shadow: 0 0 0 2px var(--accent-soft); border-color: var(--accent); }
   .piece, .pbox { border: 1px solid var(--line); border-radius: 12px; background: var(--card); padding: .7rem .9rem; margin: .7rem 0; scroll-margin-top: .5rem; }
+  .intended h3 { margin: 0 0 .35rem; }
+  .intended .legend { margin: 0; }
   .piece > header { display: flex; flex-wrap: wrap; gap: .3rem .7rem; align-items: baseline; margin-bottom: .35rem; }
   .piece > header small { color: var(--muted); font-size: .78rem; }
   .piece .what { font-size: 1rem; font-weight: 600; max-width: 54rem; margin: 0 0 .35rem; } .piece .what small { font-weight: 400; font-size: .72rem; }

@@ -24,7 +24,7 @@ import { openSource, toolSources } from './project-stack';
 import type { Neighbour } from './stack';
 import { PAGES, buildBacklinks, markersFor } from './backlinks';
 import { callersOf as sitesNaming, findings, lotLeft, reviewItems, type Plan, type ReviewItem } from './plan';
-import { ROOT, SourceIndex, deriveNarratives, derivePlans, readPlanSources, readStories, type Narrative } from './render';
+import { ROOT, SourceIndex, deriveNarratives, derivePlans, narrativePlanIssues, readPlanSources, readStories, type Narrative } from './render';
 
 export { MAP_DIR };
 export const NARRATIVE_MAP = join(MAP_DIR, 'narratives.json');
@@ -51,6 +51,7 @@ export interface MapStep {
 }
 
 export interface MapNarrative {
+  intended?: { planned: boolean; steps: Array<{ id: string; n: number; file: string; line: number; fn: string; sentence: string; changes: string[]; planned: boolean }> };
   slug: string;
   kind: 'product' | 'mechanism';
   title: string;
@@ -73,6 +74,7 @@ export interface MapNarrative {
 }
 
 export interface NarrativeMap {
+  narrativeIssues: string[];
   builtAt: string;
   /** Each input's modification time; null for a file that was not there, so that writing it rebuilds the map. */
   inputs: Record<string, number | null>;
@@ -144,6 +146,10 @@ function build(): NarrativeMap {
       branches.push({ file: site.file, line: site.line, fn: site.fn, sentence: hit.sentence, toldBy: story.test });
     }
     return {
+      ...(n.intended ? { intended: { planned: n.intended.planned, steps: n.intended.sites.map((s) => ({
+        id: s.id, n: n.intended!.ids.indexOf(s.id) + 1, file: s.file, line: s.line, fn: s.fn,
+        sentence: s.sentence!, changes: s.narration!.changes, planned: s.narration!.planned,
+      })) } } : {}),
       slug: n.slug,
       kind: n.kind,
       title: n.title,
@@ -212,7 +218,7 @@ function build(): NarrativeMap {
     };
   });
 
-  return { builtAt: new Date().toISOString(), inputs, narratives: out, plans, stale: [...stale].sort() };
+  return { builtAt: new Date().toISOString(), inputs, narratives: out, plans, stale: [...stale].sort(), narrativeIssues: narrativePlanIssues(narratives, index) };
 }
 
 // A failure the tooling words itself (a story older than its source, a malformed tag) is one line: its message

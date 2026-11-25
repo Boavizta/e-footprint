@@ -45,6 +45,11 @@ existing behaviour is chosen as planning context, tell it and have it read befor
 A narrative takes the place of the prose that told its steps: that prose goes, and a link to the
 narrative's page stands where it was. Prose about what no step tells stays.
 
+Architecture pages hold structuring decisions, including ownership and dependency boundaries;
+narratives explain execution flows. A useful new flow can be declared as an intended narrative
+during planning, with its ordered steps and change links visible before a reference run exists
+([the declarations](workflow-formats.md#a-site)).
+
 ## Scope
 
 Features go through the five stages. A user's clear request to implement an already agreed change

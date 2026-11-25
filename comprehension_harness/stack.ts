@@ -46,6 +46,8 @@ export interface StoryFrame extends Location {
 export type TestPhase = 'setup' | 'call' | 'teardown';
 
 export interface StoryHit {
+  /** Stable identity of an explicitly named narrative step. */
+  step?: string;
   /** A narrative step, the cause (`event`) the steps that follow answer, or a `planned` change on existing code. */
   kind: 'step' | 'event' | 'planned';
   sentence: string;
@@ -132,6 +134,8 @@ export interface PlannedSite {
 
 /** A `narrate`, `event` or `planned` call, as the source holds it. */
 export interface RawSite extends Location {
+  /** Intended steps are source declarations only; promoted steps keep the same id. */
+  narration?: { id: string; planned: boolean; changes: string[] };
   kind: 'step' | 'event' | 'planned';
   /** The function the call sits in, named as a frame of it would be. */
   fn: string;
@@ -151,6 +155,7 @@ export type Resolution =
 
 /** What a test file says about a narrative it declares: the first paragraph of the comment above it, its first test. */
 export interface Declaration {
+  intended?: { steps: string[]; planned: boolean; test: string };
   summary: string;
   firstTest: string | null;
   line: number;
@@ -192,6 +197,8 @@ export interface SourceReader {
   siteFiles(): string[];
   /** The test files that declare a narrative, found in the source: a cold start knows what to run. */
   narrativeTestFiles(): string[];
+  /** Source declarations, including narratives whose reference test has not run yet. */
+  narrativeDeclarations(): Array<Declaration & { file: string; title: string; kind?: NarrativeKind }>;
   /** The narrative `file` declares under `title`. Throws when it declares none. */
   declaration(file: string, title: string): Declaration;
   /** Where a name of a sentence is declared, seen from a site: an import of its file (rule 1), a local of the
@@ -228,7 +235,7 @@ export interface SourceIndexDocument {
    *  expression both the stack's language and JavaScript read the same. */
   looksDeclared: string;
   /** Every narrative a test file declares. */
-  narratives: Array<{ file: string; title: string; line: number; summary: string; firstTest: string | null }>;
+  narratives: Array<Declaration & { file: string; title: string; kind?: NarrativeKind }>;
   /** Every file of the source folders, and every test file that declares a narrative or holds a site. */
   files: Record<string, SourceFileIndex>;
 }
@@ -236,6 +243,7 @@ export interface SourceIndexDocument {
 export interface SourceFileIndex {
   /** The `narrate`, `event` and `planned` calls, in source order. A `planned` one says its piece and its change. */
   sites: Array<{
+    narration?: RawSite['narration'];
     kind: 'step' | 'event' | 'planned';
     line: number;
     column: number;

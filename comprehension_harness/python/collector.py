@@ -166,7 +166,7 @@ class StoryRecorder:
 
     # ── Hits ────────────────────────────────────────────────────────────────────────────────────────
 
-    def collect(self, kind, sentence, watch, frame, planned_as) -> None:
+    def collect(self, kind, sentence, watch, frame, planned_as, step=None) -> None:
         test = self.current
         if test is None:
             return  # Outside a test (an import, a fixture of the session): nobody's story.
@@ -193,6 +193,8 @@ class StoryRecorder:
         hit = {"kind": kind, "sentence": sentence, "watch": self.read(watch), "site": site, "stack": stack,
                "phase": test["phase"],
                "atMs": round((time.perf_counter() - test["started"]) * 1000, 1)}
+        if step is not None:
+            hit["step"] = step
         if planned_as is not None:
             feature, slug, change, expect, place = planned_as
             hit["planned"] = {"feature": feature, "slug": slug, **({} if place is None else {"place": place}),
@@ -267,7 +269,15 @@ class StoryRecorder:
     @pytest.hookimpl(hookwrapper=True, tryfirst=True)
     def pytest_runtest_call(self, item):
         self.start_phase("call")
-        yield
+        outcome = yield
+        marker = item.get_closest_marker("canonical")
+        expected = marker.kwargs.get("steps") if marker else None
+        if expected and outcome.excinfo is None and self.current is not None:
+            observed = list(dict.fromkeys(hit["step"] for hit in self.current["hits"]
+                                         if hit.get("phase") == "call" and hit.get("step") in expected))
+            if observed != list(expected):
+                outcome.force_exception(AssertionError(
+                    f"Narrative reference sequence differs: expected {list(expected)!r}, observed {observed!r}"))
 
     @pytest.hookimpl(hookwrapper=True, tryfirst=True)
     def pytest_runtest_teardown(self, item, nextitem):

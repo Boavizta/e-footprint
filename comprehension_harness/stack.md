@@ -94,6 +94,26 @@ The three calls are inert in production: none does anything unless a collector i
 which only a test run does. The watch is passed as a function the collector calls, so nothing
 is computed for it outside a test.
 
+### Intended narrative sequences
+
+A stack can declare a narrative before its reference case runs. The source declaration adds
+`intended: { steps: ["<flow>:<step>", …], test: "<reference test title>", planned: true }`;
+`kind` on the declaration distinguishes a product narrative from a mechanism without a story.
+`SourceReader.narrativeDeclarations()` returns these declarations, including those with no recording.
+The ordered IDs come from the reference test, not from source order or a guessed call graph.
+
+A named step adds `narration: { id, planned, changes: ["<feature>#<piece>:<place>", …] }` to its
+source site. Its `kind` remains `step`, but a planned declaration never writes a story hit. A
+promoted step keeps the ID with `planned: false`; a recorded hit may carry `step: "<flow>:<step>"`.
+Planned steps do not establish coverage, step ownership or observed landings. Their change links
+are explicit and optional, so a narrative can also describe existing behaviour.
+
+The Python forms are `narrate.planned(id, sentence, changes=(…))`, and `@canonical(steps=(…))`
+on the reference test under `@narrative`. A skipped `@planned_test` is intended; a written `@titled`
+reference is checked against the first occurrences of its named `narrate(sentence, step=id)` calls
+in the test body. Shell detection ignores the planned step declarations. A step ID is two kebab-case
+names parted by `:`, independent of the feature whose change places it may link.
+
 ## 2. The source index: what the source says without running
 
 What the tools ask (`SourceReader`). The identity of a step (`<file>#<function>#<ordinal>`), and

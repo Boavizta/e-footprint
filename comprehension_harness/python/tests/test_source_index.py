@@ -245,7 +245,7 @@ def test_a_narrative_is_a_test_class_with_its_summary_and_its_first_test(project
     index = indexed(project(PROJECT))
 
     assert index["narratives"] == [{
-        "file": "checks/test_engine.py", "title": "The engine starts", "line": 5,
+        "file": "checks/test_engine.py", "title": "The engine starts", "line": 5, "kind": "mechanism",
         "summary": "It starts under its limit, and stops.",
         "firstTest": "quiet-stop#drop-stop: the engine starts under its limit"}]
     # A test file is in the index when it declares a narrative or holds a site, and only then.

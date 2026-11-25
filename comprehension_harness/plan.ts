@@ -1735,6 +1735,8 @@ export interface FeatureDocs {
 }
 
 export interface PlanInput {
+  /** Intended sequences belong to the approval, without claiming an observed run or landing. */
+  narrativePlans?: Array<{ feature: string; title: string; steps: string[] }>;
   sites: PlanSite[];
   statics: StaticSite[];
   todos: PlanTodo[];
@@ -1869,7 +1871,7 @@ export function assemblePlans(input: PlanInput): Plan[] {
     // A built place a `Changed:` says is unbuilt is taken back before the plan is read: it is then a line the
     // piece lost, which the edit stands on.
     for (const piece of pieces) takeBack(piece, sectionOf('piece', `#${piece.slug}`)?.changed ?? []);
-    const snapshot = snapshotOf({ pieces, doc, journeyCases, builtCases }, narratives.flatMap((n) => (landed.has(n.title) && n.steps ? [{ title: n.title, steps: n.steps }] : [])));
+    const snapshot = snapshotOf({ pieces, doc, journeyCases, builtCases }, [...narratives.flatMap((n) => (landed.has(n.title) && n.steps ? [{ title: n.title, steps: n.steps }] : [])), ...(input.narrativePlans ?? []).filter((n) => n.feature === feature).map((n) => ({ title: `Intended narrative — ${n.title}`, steps: n.steps }))]);
     const bugOf = (name: string) => {
       const under = sectionOf('piece', name)?.under;
       const bug = under ? doc?.sections.find((x) => x.bug && x.anchor === under) : undefined;

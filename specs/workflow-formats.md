@@ -65,6 +65,14 @@ case is a screen, or a state of one, worth seeing; a criterion that is logic is 
 
 ## A site
 
+A narrative can be planned before it has a recording. Its reference test declares the intended
+step IDs in order; planned narration at the code declares each sentence and links to the change
+places it explains. These are separate from the change sites below: a step can describe existing
+behaviour, and several steps can explain one change. The stack spells the declarations
+([Python example](../comprehension_harness/README.md#planning-a-narrative-before-its-first-run)).
+The plan page labels the sequence as intended, without claiming observed crossings. Once built,
+the reference run must reach its declared steps in order.
+
 One of three, each carrying `<feature>#<slug>`:
 
 - **A `planned` call**, on code that runs: on existing code where a change lands, its removing
