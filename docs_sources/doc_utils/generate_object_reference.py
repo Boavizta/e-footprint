@@ -275,7 +275,7 @@ def build_doc_placeholder_handlers() -> dict:
 
 
 def generate_object_reference(automatically_update_yaml=False):
-    planned("agent-guidance#class-reference:every-site-reference", "Generate shared semantic references for every registered class, including classes without a documentation example instance.")
+    planned("agent-guidance#class-reference:every-site-reference", "Require examples for every registered concrete class before generating shared references, naming missing classes and excluding abstract classes from the requirement.")
     global _PLACEHOLDER_HANDLERS
     mod_objs_to_document = _get_mod_objs_to_document()
     _PLACEHOLDER_HANDLERS = build_doc_placeholder_handlers()

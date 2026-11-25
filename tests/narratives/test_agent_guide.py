@@ -24,6 +24,11 @@ def test_shared_class_reference():
     pass
 
 
+@planned_test("agent-guidance#class-reference: Missing concrete-class examples stop documentation generation before pages are written and name every missing class")
+def test_missing_documentation_examples_fail_loudly():
+    pass
+
+
 @planned_test("agent-guidance#canonical-topics: Each topic renders in-process with matching command and website text after link presentation is normalized [one-text-per-topic]")
 def test_shared_topic_text():
     pass

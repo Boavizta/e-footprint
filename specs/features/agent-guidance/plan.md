@@ -17,10 +17,11 @@ catalogue. Named Python snippets are expanded as text; documentation never execu
 
 Render class semantics once from metadata for both the command and website, without constructing example objects.
 
-The current renderer mixes semantic text with model construction and optional graph generation.
-Extract the common text; keep example calculations as website additions. Merge inherited metadata,
-show constructor and class defaults distinctly, preserve conditional choices, and include computed
-docstrings even when a sample result is empty. Use ordinary string rendering, without Jinja2 in core.
+Extract common metadata text; keep calculation examples and optional graphs in website tooling.
+Documentation generation must reject missing concrete-class examples rather than hide omissions.
+Abstract classes need no instance. Preserve inherited metadata, constructor versus class defaults,
+conditional choices and computed docstrings, including empty sample results. Keep the core renderer
+independent of Jinja2.
 
 ## #canonical-example
 
@@ -150,6 +151,17 @@ directory. Register its reproducible input JSON and standard authoring wrapper u
 example conventions. Replace handwritten topic sketches with executable named regions, including
 currently incomplete database and server-to-server sketches. Website-only plots remain outside
 the shared semantic renderer.
+
+## Documentation example completeness
+
+#class-reference compares the exact classes of unwrapped documentation-example objects against
+ALL_EFOOTPRINT_CLASSES before writing any reference pages. Missing classes raise an error listing
+all their names; a subclass instance does not substitute for an instance of a registered concrete
+parent. Abstract canonical classes and supplemental value-class lookups do not require instances.
+
+#canonical-example supplies the core-only model, supplemented by explicit documentation-only
+examples such as BoaviztaCloudServer. The completeness check covers that full documentation set.
+Installed command lookups still render metadata without constructing examples.
 
 ## Reference-script coverage
 
