@@ -18,7 +18,12 @@ A narrative test crosses the steps of one narrative in order so that its page ca
 (`npm run comprehension:render`, then `specs/comprehension_harness/`). The code tells it itself:
 `narrate` at each step and `event` at its cause, imported from `efootprint/narrate.py` and inert
 outside a test run of this repository. The test declares the narrative with
-`comprehension_harness/python/declare.py`:
+`comprehension_harness/python/declare.py`.
+
+The page tells the test body alone. Fixture setup and teardown remain recorded for coverage and plan
+evidence, with separate hit limits and clocks per phase; they contribute no narrative steps or statistics.
+
+Declarations:
 
 - `@narrative.mechanism("<title>")` on a test class for a narrative of the engine, `@narrative("<title>")`
   for one a modeler sets off; the first paragraph of its docstring is the summary.

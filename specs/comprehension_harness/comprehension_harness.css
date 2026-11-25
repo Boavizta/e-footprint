@@ -89,11 +89,13 @@
   .event .test .quiet { color: var(--muted); }
   .node.actor { color: #b45309; border-color: #b45309; background: #fffbeb; }
   .node.world { color: #1d4ed8; border-color: #1d4ed8; background: #eff6ff; }
-  .node.mech { color: #6d28d9; border-color: #6d28d9; background: #f5f3ff; }
   .segment { border-left: 3px solid #fde68a; padding-left: .6rem; margin: 0 0 .4rem .4rem; }
-  .rides { display: grid; grid-template-columns: 2rem 1fr; gap: 0 .9rem; padding: .35rem 0; font-size: .88rem; color: var(--muted); border-top: 1px dashed #ddd6fe; align-items: start; }
-  .rides > b { color: #6d28d9; }
-  .rides.nested { margin-left: 1.2rem; }
+  .rides { margin: .2rem 0 .3rem 2.9rem; font-size: .78rem; color: var(--muted); }
+  .rides > summary { margin: 0; font-size: inherit; }
+  .rides > summary a { color: inherit; }
+  .rides > summary a:hover { color: var(--accent); }
+  .rides.nested { margin-left: 4.1rem; }
+  .rides .ride-details { margin: .25rem 0 .4rem 1rem; }
   .rides .test { display: block; margin-top: .15rem; font-size: .74rem; color: var(--faint); }
   @media (max-width: 46rem) { .event { grid-template-columns: 1.6rem 1fr; } .event .watch { grid-column: 2; margin-top: .35rem; } }
   details > summary { cursor: pointer; font-size: .8rem; color: var(--muted); margin-top: .3rem; }

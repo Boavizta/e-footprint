@@ -47,6 +47,11 @@ and writes it when it ends, so a stale story is never read. A test that crosses 
 story, but for a reproduction; a file with no story writes no file. Every test is recorded, in a declared narrative or
 not: the tests reaching a site are counted over all of them.
 
+Collectors that observe fixtures mark each hit with its execution phase. Narratives are derived from
+`call` hits alone, before step ownership, variants, mechanism links and statistics are derived. Setup and
+teardown stay in the recorded story for coverage and plan evidence; a planned hit in setup is not a place
+crossed by the narrative. A collector that records the test body alone omits the phase.
+
 | Field | Holds |
 |---|---|
 | `file`, `test` | The test file and the test's title |
@@ -57,20 +62,21 @@ not: the tests reaching a site are counted over all of them.
 | `hits` | The calls crossed, in order |
 | `reproduction` | Optional. The test is declared to fail today, for a bug its piece fixes: it has a story whatever it crossed |
 | `failure` | Optional. How the test failed, of a failure the run expected too: `{ message, file, line }` |
-| `capped` | Optional. `[{ file, line, kept, omitted }]`: a site keeps its first 50 hits of a test and counts the rest. A `built` call keeps its first hit of a test and counts nothing: one crossing tells where the place lands |
+| `capped` | Optional. `[{ file, line, phase?, kept, omitted }]`: a site keeps its first 50 hits per phase and counts the rest. A `built` call keeps its first hit per phase and counts nothing: one crossing tells where the place lands. Without phases, the limits apply to the test |
 
 A hit:
 
 | Field | Holds |
 |---|---|
 | `kind` | `step`, `event` or `planned` |
+| `phase` | Optional. `setup`, `call` (the test body), or `teardown`; omitted when the collector records the test body alone |
 | `planned` | For a `planned` hit: `{ feature, slug, change }`, with `place` where the call's tag names one. A `built` call is a `planned` hit whose change is `built` |
 | `expect` | Optional, for a `planned` hit whose site says what it should see: that, at this crossing, a key of the watch each. `{ "error": "…" }` when computing it threw |
 | `sentence` | As passed to the call |
 | `watch` | The watch's value as plain JSON, or `null`. `{ "error": "…" }` when computing it threw, which never fails the test |
 | `site` | The frame of the call: `{ file, line, column, fn }`, `fn` `null` for a function with no name |
 | `stack` | The frames above it, nearest first, of the repository's own files only |
-| `atMs` | Milliseconds since the test began |
+| `atMs` | Milliseconds since the phase began, or since the test began when no phase is given |
 
 A collector may write fields of its own beside these. The tools read one of them when it is
 there: `mappedFn`, a source-mapped name, where `fn` is `null`.

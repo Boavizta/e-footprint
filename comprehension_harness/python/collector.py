@@ -5,8 +5,10 @@ conftest of its tests. For the lifetime of a run it is the collector of the proj
 ``stack.calls`` of the configuration names, and of no other project's: a dependency's calls stay inert. Each
 ``narrate``, ``event``, ``planned`` or ``built`` call a test crosses is a hit: its sentence, its watch's value, the
 frame of the call and the repository's frames above it. A ``built`` call is a ``planned`` hit whose change is
-``built``, and a test keeps its first crossing alone: one tells where the place lands. A call a template makes is a hit at its tag, under the frames
-that rendered the template. A test's hits are its story; a test file's stories are one JSON
+``built``, and a phase keeps its first crossing alone: one tells where the place lands. A call a template
+makes is a hit at its tag, under the frames that rendered the template. Each hit names its pytest phase
+(``setup``, ``call`` or ``teardown``), with timing and hit limits starting afresh for each phase. A test's
+hits are its story; a test file's stories are one JSON
 array at ``<cache>/stories/<the file, "/" written "__">.json``, deleted when the file's run starts and written
 when it ends. A test that crosses no call has no story, but for a reproduction (``@reproduces`` of
 ``declare.py``): its story is the bug's evidence, and holds how the test fails whatever it crossed.
@@ -38,7 +40,7 @@ import pytest
 from comprehension_harness.python.source_index import TEMPLATE_FN, TEMPLATE_TAG
 
 CONFIG_FILE = "comprehension.config.json"
-# A site keeps its first hits of a test in full and counts the rest: a test that loops over a narrated line
+# A site keeps its first hits of a phase in full and counts the rest: a test that loops over a narrated line
 # would otherwise pay a stack and a watch per pass.
 MAX_HITS_PER_SITE = 50
 # What a story keeps of the message a test failed with: an assertion's own lines, not the values it prints after.
@@ -172,10 +174,11 @@ class StoryRecorder:
         file = site["file"]
         # A `built` call stands for a place of a plan: its first crossing tells where the place lands, and the
         # others tell nothing more. A place on a path a test loops over is no loop over a narrated site.
-        if planned_as is not None and planned_as[2] == "built" and (file, site["line"]) in test["tallies"]:
+        key = (test["phase"], file, site["line"])
+        if planned_as is not None and planned_as[2] == "built" and key in test["tallies"]:
             return
-        counted = {"file": file, "line": site["line"], "kept": 0, "omitted": 0}
-        tally = test["tallies"].setdefault((file, site["line"]), counted)
+        counted = {"file": file, "line": site["line"], "phase": test["phase"], "kept": 0, "omitted": 0}
+        tally = test["tallies"].setdefault(key, counted)
         if tally["kept"] >= MAX_HITS_PER_SITE:
             tally["omitted"] += 1
             return
@@ -188,6 +191,7 @@ class StoryRecorder:
                 stack.append(self.frame(above, own))
             above = above.f_back
         hit = {"kind": kind, "sentence": sentence, "watch": self.read(watch), "site": site, "stack": stack,
+               "phase": test["phase"],
                "atMs": round((time.perf_counter() - test["started"]) * 1000, 1)}
         if planned_as is not None:
             feature, slug, change, expect, place = planned_as
@@ -240,7 +244,7 @@ class StoryRecorder:
             # A file's run rewrites its stories from nothing: a run that dies leaves none to be read as fresh.
             self.started.add(file)
             self.story_file(file).unlink(missing_ok=True)
-        self.current = {"hits": [], "tallies": {}, "started": time.perf_counter(), "reports": []}
+        self.current = {"hits": [], "tallies": {}, "phase": "setup", "started": time.perf_counter(), "reports": []}
         try:
             yield
         finally:
@@ -249,6 +253,26 @@ class StoryRecorder:
             self.pending.setdefault(file, []).append(self.story(item, file, test))
         if not self.is_worker and (nextitem is None or self.test_file(nextitem) != file):
             self.write(file)
+
+    def start_phase(self, phase: str) -> None:
+        if self.current is not None:
+            self.current["phase"] = phase
+            self.current["started"] = time.perf_counter()
+
+    @pytest.hookimpl(hookwrapper=True, tryfirst=True)
+    def pytest_runtest_setup(self, item):
+        self.start_phase("setup")
+        yield
+
+    @pytest.hookimpl(hookwrapper=True, tryfirst=True)
+    def pytest_runtest_call(self, item):
+        self.start_phase("call")
+        yield
+
+    @pytest.hookimpl(hookwrapper=True, tryfirst=True)
+    def pytest_runtest_teardown(self, item, nextitem):
+        self.start_phase("teardown")
+        yield
 
     @pytest.hookimpl(hookwrapper=True)
     def pytest_runtest_makereport(self, item, call):

@@ -140,7 +140,93 @@ def test_a_watch_that_raises_is_recorded_and_a_site_keeps_its_first_fifty_hits(p
     assert audit["hits"][0]["watch"] == {"error": "ZeroDivisionError: division by zero"}
     assert audit["hits"][1]["watch"] == {"ratio": 1.0}
     assert len(audit["hits"]) == 50
-    assert audit["capped"] == [{"file": "shop/checkout.py", "line": 18, "kept": 50, "omitted": 10}]
+    assert audit["capped"] == [{"file": "shop/checkout.py", "line": 18, "phase": "call", "kept": 50, "omitted": 10}]
+
+
+def test_fixture_phases_keep_their_traces_without_consuming_the_test_body_budget_or_clock(project):
+    root = project({
+        **{file: text for file, text in PROJECT.items() if not file.startswith("checks/")},
+        "conftest.py": '''
+            from types import SimpleNamespace
+            import pytest
+            import comprehension_harness.python.collector as collector
+            from shop.narrate import built, event, narrate
+
+            pytest_plugins = ["comprehension_harness.python.collector"]
+            clock = [0]
+            collector.time = SimpleNamespace(perf_counter=lambda: clock[0])
+
+            def touch():
+                event("A stage begins.")
+                narrate("The object **is touched**.")
+                built("phase-checks#touch:object")
+
+            @pytest.fixture
+            def model():
+                clock[0] = 10
+                for _ in range(60):
+                    touch()
+                clock[0] = 20
+                yield
+                clock[0] = 40
+                for _ in range(60):
+                    touch()
+        ''',
+        TEST_FILE: '''
+            from conftest import clock, touch
+            from comprehension_harness.python.declare import narrative
+
+            @narrative("An existing object is touched")
+            class TestTouch:
+                def test_touches(self, model):
+                    clock[0] = 21
+                    touch()
+                    clock[0] = 30
+        ''',
+    })
+    done = run_tests(root)
+    assert done.returncode == 0, done.stdout + done.stderr
+
+    [story] = stories_of(root)
+    hits = story["hits"]
+    assert {hit["phase"] for hit in hits} == {"setup", "call", "teardown"}
+    body = [hit for hit in hits if hit["phase"] == "call"]
+    assert [hit["kind"] for hit in body] == ["event", "step", "planned"]
+    assert {hit["atMs"] for hit in body} == {1000}
+    assert {hit["atMs"] for hit in hits if hit["phase"] in ("setup", "teardown")} == {10000}
+    assert [hit["phase"] for hit in hits if hit.get("planned", {}).get("change") == "built"] == [
+        "setup", "call", "teardown"]
+    assert [(cap["phase"], cap["kept"], cap["omitted"]) for cap in story["capped"]] == [
+        ("setup", 50, 10), ("setup", 50, 10), ("teardown", 50, 10), ("teardown", 50, 10)]
+
+
+@pytest.mark.parametrize("failed_phase", ["setup", "teardown"])
+def test_a_fixture_failure_still_reports_the_test_failure_and_its_trace(project, failed_phase):
+    root = project({
+        **{file: text for file, text in PROJECT.items() if not file.startswith("checks/")},
+        TEST_FILE: f'''
+            import pytest
+            from shop.checkout import pay
+
+            @pytest.fixture
+            def model():
+                pay(1)
+                if {failed_phase!r} == "setup":
+                    raise ValueError("fixture setup failed")
+                yield
+                pay(2)
+                raise ValueError("fixture teardown failed")
+
+            def test_uses_model(model):
+                pay(3)
+        ''',
+    })
+    done = run_tests(root)
+    assert done.returncode == 1, done.stdout + done.stderr
+    [story] = stories_of(root)
+    assert story["state"] == "failed"
+    assert f"fixture {failed_phase} failed" in story["failure"]["message"]
+    assert story["hits"][-1]["phase"] == failed_phase
 
 
 REPRODUCTIONS = '''

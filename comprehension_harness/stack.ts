@@ -43,6 +43,8 @@ export interface StoryFrame extends Location {
   mappedFn?: string | null;
 }
 
+export type TestPhase = 'setup' | 'call' | 'teardown';
+
 export interface StoryHit {
   /** A narrative step, the cause (`event`) the steps that follow answer, or a `planned` change on existing code. */
   kind: 'step' | 'event' | 'planned';
@@ -53,7 +55,9 @@ export interface StoryHit {
   site: StoryFrame;
   /** The frames above it, nearest first, of the repository's own files. */
   stack: StoryFrame[];
-  /** Milliseconds since the test began. */
+  /** Omitted by collectors that record the test body alone. */
+  phase?: TestPhase;
+  /** Milliseconds since the phase began, or the test began when no phase is given. */
   atMs: number;
   /** For a planned hit whose site says what it should see: that, at this crossing, a key of the watch each. */
   expect?: unknown;
@@ -63,6 +67,7 @@ export interface StoryHit {
 export interface CappedSite {
   file: string;
   line: number;
+  phase?: TestPhase;
   /** Hits of the site recorded in `hits`. */
   kept: number;
   /** Hits counted and not recorded. */

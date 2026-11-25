@@ -216,7 +216,9 @@ export function deriveNarratives(stories: Story[], index: SourceIndex): Narrativ
   for (const s of stories) {
     if (!s.narrative) continue;
     const key = `${s.file}::${s.narrative.title}`;
-    groups.set(key, [...(groups.get(key) ?? []), s]);
+    const body = { ...s, hits: s.hits.filter((h) => h.phase === undefined || h.phase === 'call'),
+      ...(s.capped ? { capped: s.capped.filter((c) => c.phase === undefined || c.phase === 'call') } : {}) };
+    groups.set(key, [...(groups.get(key) ?? []), body]);
   }
   const narratives: Narrative[] = [];
   for (const group of groups.values()) {
@@ -563,7 +565,7 @@ function namedByHtml(mechanism: Narrative, ctx: RenderContext): string {
   return `<small class="kicker">Named by</small><div class="narr-list">${rows.length ? rows.join('\n  ') : '<small>no debt entry, rule or convention names this mechanism\'s steps</small>'}</div>`;
 }
 
-/** The "rides on" row: a product story's hits at a mechanism's sites, collapsed, naming the mechanism's steps crossed. */
+/** The "rides on" disclosure keeps mechanism steps and timing out of the main story until opened. */
 function ridesHtml(mechanism: Narrative, hits: StoryHit[], nested: boolean, ctx: RenderContext): string {
   const crossed = new Map<Step, number>();
   const beyond = new Map<string, number>();
@@ -577,9 +579,10 @@ function ridesHtml(mechanism: Narrative, hits: StoryHit[], nested: boolean, ctx:
   const steps = [...crossed].sort(([a], [b]) => a.n - b.n).map(([s, n]) => `<a href="${page}#${esc(mechanism.slug)}-step-${s.n}">step ${s.n}</a> <code>${esc(label(s, ctx.index))}</code>${n > 1 ? ` ×${n}` : ''}`).join(', ');
   const extra = beyond.size ? `${steps ? '; ' : ''}beyond its canonical: ${[...beyond].map(([l, n]) => `<code>${esc(l)}</code>${n > 1 ? ` ×${n}` : ''}`).join(', ')}` : '';
   return `
-  <div class="rides${nested ? ' nested' : ''}" data-rides-on="${esc(mechanism.slug)}"><b>↳</b>
-    <div><span class="node mech">rides on</span><a href="${page}">${esc(mechanism.title)}</a> — ${steps}${extra} <span class="test">${hits.length} hit${hits.length === 1 ? '' : 's'} from +${hits[0].atMs} ms · the stops are on the mechanism's page</span></div>
-  </div>`;
+  <details class="rides${nested ? ' nested' : ''}" data-rides-on="${esc(mechanism.slug)}">
+    <summary>Rides on <a href="${page}">${esc(mechanism.title)}</a></summary>
+    <div class="ride-details">${steps}${extra}<span class="test">${hits.length} hit${hits.length === 1 ? '' : 's'} from +${hits[0].atMs} ms · the stops are on the mechanism's page</span></div>
+  </details>`;
 }
 
 /** The planned row: a `planned` site's hits in this segment, at the first — what this place will do once its
@@ -1187,10 +1190,12 @@ export function derivePlans(stories: Story[], narratives: Narrative[], index: So
       reachedBy.set(story.file, [...(reachedBy.get(story.file) ?? []), story.test]);
       // A bug's evidence is what a test that fails today saw at the place, every time it crossed it.
       if (story.reproduction) seenBy.push({ file: story.file, test: story.test, at, crossings: story.hits.filter(here).map((h) => ({ watch: h.watch, expect: h.expect ?? null })) });
-      const n = narratives.find((x) => x.canonical === story);
-      if (!n) continue;
-      const lands = landsIn(story, at, site, n, index);
-      crossedBy.push({ narrative: n.title, at, step: lands ? { n: lands.step.n, label: label(lands.step, index), how: lands.how } : null });
+      const n = narratives.find((x) => x.file === story.file && x.title === story.narrative?.title && x.canonical?.test === story.test);
+      if (!n?.canonical) continue;
+      const narrativeAt = n.canonical.hits.findIndex(here);
+      if (narrativeAt < 0) continue;
+      const lands = landsIn(n.canonical, narrativeAt, site, n, index);
+      crossedBy.push({ narrative: n.title, at: narrativeAt, step: lands ? { n: lands.step.n, label: label(lands.step, index), how: lands.how } : null });
     }
     return {
       feature: p.feature, slug: p.slug, id: site.id, file: site.file, line: site.line, column: site.column, fn: site.fn,
