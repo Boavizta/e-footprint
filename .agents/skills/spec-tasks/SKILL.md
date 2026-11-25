@@ -1,6 +1,6 @@
 ---
 name: spec-tasks
-description: Use after the user approves a feature's plan to prepare its delivery — third stage of the spec-driven workflow. Cuts the plan's pieces into lots (plan.md § Delivery), plans the unit tests each lot writes, changes and deletes, and edits the plan in place where grounding it shows a gap, each edit under a Changed paragraph. Writes no task list, no brief and no product code. Run in a fresh session.
+description: Use after the user approves a feature's plan to prepare its delivery — third stage of the spec-driven workflow. Cuts the plan's pieces into lots (plan.md § Delivery), plans the additional unit coverage and test changes of each lot, and edits the plan in place where grounding it shows a gap, each edit under a Changed paragraph. Writes no task list, no brief and no product code. Run in a fresh session.
 ---
 
 # spec-tasks
@@ -10,8 +10,8 @@ one reviewer reads: a few pieces, a commit each. You write:
 
 - **`plan.md` § "Delivery"**: the lots in order, each with its pieces in commit order, the screens
   whose journey cases it writes last, its difficulty and its reason;
-- **the unit tests of each lot**: titles to write, comments on the existing tests that change or
-  go. No bodies;
+- **the additional unit coverage of each lot**: titles to write, comments on the existing tests
+  that change or go. Rule owners were chosen during planning, in any appropriate tier. No bodies;
 - **edits of the plan, in place**, where reading it with the implementer's eyes shows a missing
   site, a wrong clause, a piece to split or a test under the wrong piece.
 
@@ -60,25 +60,29 @@ What does not set it: the consequences of a bug, a sensitive path, the number of
 decide how deep the review goes, which the reviewer sets from the diff. "Not looked at yet" is not
 difficulty: settle the plain questions now, then classify. When in doubt, `standard`.
 
-## The unit tests of a lot
+## The additional unit coverage of a lot
 
 For each lot, read `map reach <feature>/<lot>`: the tests that cross the lot's sites today.
 
-- **A unit test exists for two reasons**: the input combinations of a pure function, or a branch
-  no narrative case takes. Plan titles for those only, each naming the clause it holds. A title
-  whose reason is not plain from its words gets a comment above it.
-- **The case that takes a branch asserts it.** A clause whose branch a narrative case runs
-  through without asserting gets its assertion in that case, under an `@planned` comment. A unit
-  title is for a branch no narrative case runs through at all.
-- **An existing test that a narrative case holds, and that has neither reason, goes**: an
-  `@planned.remove` comment naming the case that holds it. An existing test that changes gets an
-  `@planned` comment. So the reviewer approves each deletion before one is made.
+- **Choose the clearest test owner and avoid duplicate coverage.** Ordinary tests can own a
+  complete behaviour, a boundary, a failure or input combinations, even when a narrative crosses
+  the same code. Start from the plan's rule owners and add only coverage they do not hold. A
+  title whose reason is not plain from its words gets a comment above it.
+- **Crossing a branch does not assign its assertions.** Extend a narrative case only when the
+  assertion helps answer its central question (`workflow.md` § "Narratives and test ownership").
+  Otherwise use an ordinary test at the appropriate level. A narrative still asserts the
+  behaviour it claims to explain.
+- **Remove an existing test only when another holds its necessary assertions.** Compare the
+  bodies, not just the paths they cross. Mark a deletion with an `@planned.remove` comment naming
+  the holder; move a case out of a narrative when it alone holds necessary coverage. An existing
+  test that changes gets an `@planned` comment. The reviewer approves the changes.
 - **Two holders together remove a test.** A test that replays a pure function through a screen
   checks the combination, which the function's own table holds, and the wiring, which one
-  narrative case holds. The comment names both. A journey case is never a holder.
+  narrative or ordinary integration case holds. The comment names both. A journey case is never
+  a holder.
 - **The assertion that holds a wiring would fail if the wiring were wrong.** One that passes
   whichever source the value comes from crosses the wiring and does not hold it. Check each
-  holder you name; plan the missing read into the narrative case.
+  holder you name; plan the missing assertion into the appropriate test.
 - **A removal that rests on a planned assertion says "planned"** in its comment.
 - **The prune is a piece of its own, heading the first lot that would break a test it deletes.**
   Its sites are the removal comments and the comments of the reads that hold the removed tests,
@@ -90,9 +94,10 @@ For each lot, read `map reach <feature>/<lot>`: the tests that cross the lot's s
 - **Prune around the feature only.** Bringing the whole suite down is a pass of its own.
 - **No mechanical duplicate finder.** Tests that cross the same sites are mostly distinct cases.
   The listing is the map's; the judgement is a reading of the bodies.
-- **Check each journey case against the narrative cases** the same way: a case that restates one
-  leaves, a state worth seeing stays as a screen, and what a leaving case alone held gets a
-  narrative owner first. One decision of `plan.md` says which case holds what.
+- **Check each journey case against the behaviour's test owners** the same way: a case that
+  restates one leaves, a state worth seeing stays as a screen, and what a leaving case alone
+  held gets an appropriate narrative or ordinary owner first. One decision of `plan.md` says
+  which case holds what.
 
 What `reach` cannot see: a comment on code that runs (make it a call), a test that throws before
 any site, a helper called on the line before a site. Search for those.

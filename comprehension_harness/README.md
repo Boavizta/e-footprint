@@ -9,6 +9,10 @@ The method it serves is `specs/workflow.md`; the forms it holds a feature's file
 `specs/workflow-formats.md`; what a stack must give it is [`stack.md`](stack.md), and as types
 `stack.ts`.
 
+Narratives are a small, curated set of guides through meaningful code flows. Their selection and
+test ownership follow [`workflow.md` § "Narratives and test ownership"](../specs/workflow.md#narratives-and-test-ownership).
+Ordinary tests can own behaviour without adding a page or a variant.
+
 ## What is copied
 
 | Files | What |

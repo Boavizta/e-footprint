@@ -7,15 +7,16 @@ repository's (`.agents/repository.md`).
 
 ## The words
 
-- A **narrative** is what the code does for one action on the product, told by the code itself:
-  one `narrate` call per **step**, and a test that crosses the steps in order. A narrative the
-  code does not tell yet is **missing**. An `event` call is a **cause**: something done to the
-  system.
+- A **narrative** guides a developer through one meaningful flow, told by the code itself:
+  one `narrate` call per **step**, and a test that crosses the steps in order. Its purpose and
+  selection are in [`workflow.md` § "Narratives and test ownership"](workflow.md#narratives-and-test-ownership).
+  A narrative chosen as useful but not told yet is **missing**; untold code alone is no gap.
+  An `event` call is a **cause**: something done to the system.
 - A **piece** is one statement about a feature, with its reason, its changes and its tests. It is
   atomic to read and to approve, not to ship. Its name is `<feature>#<slug>`, both kebab-case.
 - A **site** is one place tagged with a piece. Several sites share a piece; nothing is numbered.
-- A **rule** is a behaviour of the spec that no screen shows. One test owns it, or a **waiver**
-  says why none does.
+- A **rule** is a behaviour of the spec that no screen shows. One test in an appropriate tier
+  owns it, whether narrative or ordinary, or a **waiver** says why none does.
 - A **lot** is what one implementer delivers and one reviewer reads: a few pieces, a commit each.
 - A **bug** is what is wrong for whoever meets it, with the pieces that fix it: one, or several
   when the fix is several decisions.
@@ -85,9 +86,10 @@ One of three, each carrying `<feature>#<slug>`:
   a blank line before any comment that was there already, the one the tag is about included.
 
 On code that runs, a site is a call, never a comment: no test crosses a comment. A new function
-is named, in backticks, by the clause of the site that will call it; a shell no clause names is
-drawn in no narrative and fails the check. An entry point that nothing in the repository calls is
-named by the title of a planned test that calls it, as the test stands for its caller.
+is named, in backticks, by the clause of the site that will call it, so the check can connect it
+to its caller. An entry point that nothing in the repository calls is named by the title of a
+planned test that calls it, as the test stands for its caller. A shell named by neither fails
+the check; its caller need not be in a narrative.
 
 An existing test that changes carries an `@planned` comment. One a planned case now holds carries
 an `@planned.remove` comment naming the holder, and says "planned" when the holder is not written

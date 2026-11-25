@@ -7,13 +7,10 @@ round-trip gives, as any test does.
 """
 import pytest
 
-from comprehension_harness.python.declare import narrative, titled
+from comprehension_harness.python.declare import narrative
 from efootprint.abstract_modeling_classes.reactive_core import computed_slots
-from efootprint.abstract_modeling_classes.source_objects import SourceValue
-from efootprint.api_utils.json_to_system import load_systems, load_system
-from efootprint.api_utils.system_to_json import system_to_json, systems_to_json
-from efootprint.comparison.duplication import duplicate_system
-from efootprint.constants.units import u
+from efootprint.api_utils.json_to_system import load_system
+from efootprint.api_utils.system_to_json import system_to_json
 from tests.integration_tests.integration_simple_system_base_class import IntegrationTestSimpleSystemBaseClass
 
 
@@ -59,32 +56,3 @@ class TestSystemFile:
         assert not is_cached(loaded)
         assert loaded.has_version_baseline
         assert loaded.total_footprint == system.total_footprint
-
-    def test_a_duplicate_keeps_the_ids_of_its_objects_and_takes_a_system_id_of_its_own(self, system):
-        copy = duplicate_system(system)
-
-        assert copy.id != system.id
-        assert {obj.id for obj in copy.all_linked_objects} == {obj.id for obj in system.all_linked_objects}
-        assert is_cached(copy)
-
-    @titled("`systems_to_json` refuses two systems sharing a System id, naming the id and "
-            "duplicate_system")
-    def test_two_systems_sharing_a_system_id_are_refused(self, system):
-        with pytest.raises(ValueError) as error:
-            systems_to_json([system, load_system(system_to_json(system))])
-
-        assert system.id in str(error.value)
-        assert "duplicate_system" in str(error.value)
-
-    @titled("systems written by `systems_to_json` come back from `load_systems` in their "
-            "order, each as its own save and load gives it")
-    def test_systems_saved_to_one_file_load_back_in_their_order(self, system):
-        other = duplicate_system(system)
-        other.servers[0].base_ram_consumption = SourceValue(400 * u.MB_ram)
-        other.total_footprint
-
-        systems = [other, system, duplicate_system(system)]
-        loaded_systems = load_systems(systems_to_json(systems))
-
-        assert [system_to_json(loaded) for loaded in loaded_systems] == [system_to_json(item) for item in systems]
-        assert all(is_cached(loaded) for loaded in loaded_systems)

@@ -20,6 +20,14 @@ A narrative test crosses the steps of one narrative in order so that its page ca
 outside a test run of this repository. The test declares the narrative with
 `comprehension_harness/python/declare.py`.
 
+Select narratives and variants for their value as guides through the code, following
+[`workflow.md` § "Narratives and test ownership"](workflow.md#narratives-and-test-ownership).
+An ordinary unit or integration test can own a complete behaviour. Keep it outside
+`tests/narratives/` when it does not belong to a narrative's question. Crossing the same branch
+does not make two tests redundant: compare their assertions before deleting either. When removing
+a variant, keep necessary coverage in an existing ordinary test, or move the case if it alone
+holds that coverage.
+
 The page tells the test body alone. Fixture setup and teardown remain recorded for coverage and plan
 evidence, with separate hit limits and clocks per phase; they contribute no narrative steps or statistics.
 
@@ -28,7 +36,8 @@ Declarations:
 - `@narrative.mechanism("<title>")` on a test class for a narrative of the engine, `@narrative("<title>")`
   for one a modeler sets off; the first paragraph of its docstring is the summary.
 - Its first test is the reference case, the one the page tells step by step, unless another is
-  marked `@canonical`. The other tests are variants: another kind of edit, a failure.
+  marked `@canonical`. The other tests are variants that materially change the reader's
+  understanding of the same question, such as a different kind of edit or a consequential failure.
 - It builds real objects, never mocks, and asserts what the flow gives, as any test does. The
   steps are recorded, not asserted.
 

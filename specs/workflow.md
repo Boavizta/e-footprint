@@ -10,7 +10,7 @@ stage is for, who approves what, and what never happens without a person.
 
 **The plan is not a page someone keeps: it is written into the code, and the pages are generated.**
 
-- What the product does for one action is a **narrative**: the code tells it, one `narrate` call
+- A selected flow through the product is a **narrative**: the code tells it, one `narrate` call
   per step, and a test crosses the steps in order. Its page is rendered from the run, so it cannot drift.
 - A feature's plan is its **pieces**, each tagged at the places it changes: a `planned` call
   where a change lands, a test title with no body, a comment where no line runs. The plan page
@@ -25,10 +25,25 @@ stage is for, who approves what, and what never happens without a person.
 - **No edit of an approved plan is silent.** The approval is a committed file; whatever differs
   from it afterwards carries its reason, and the reviewer answers it.
 
-The narratives a feature lands in are told before it is planned: a missing one is written, and
-read by the reviewer, ahead of the plan that changes it. A narrative takes the place of the prose
-that told its steps: that prose goes, and a link to the narrative's page stands where it was.
-Prose about what no step tells stays.
+## Narratives and test ownership
+
+Narratives help developers navigate the code through a small, carefully curated set of meaningful
+flows. Each answers one coherent question through a representative reference case. Keep only
+variants that materially change the reader's understanding of that answer. Add a narrative only
+when its value as a guide justifies another page to maintain and read. A feature requirement or
+an additional code path alone does not justify a narrative, a step or a variant.
+
+Each rule has an appropriate test owner, or an explicit waiver. Use a narrative case when it helps
+explain the flow; otherwise use an ordinary test at the appropriate level. Narrative tests remain
+real, asserted examples. A narrative crossing a branch does not oblige it to own every assertion
+about that branch. Preserve necessary coverage when moving a case out of a narrative.
+
+Read the existing narratives a feature lands in before planning, and correct misleading steps
+before relying on them. Assess whether an untold flow would benefit from a narrative; planning
+can proceed with direct code links and ordinary tests when it would not. When a new narrative of
+existing behaviour is chosen as planning context, tell it and have it read before relying on it.
+A narrative takes the place of the prose that told its steps: that prose goes, and a link to the
+narrative's page stands where it was. Prose about what no step tells stays.
 
 ## Scope
 
@@ -54,9 +69,10 @@ against the project's priorities first, and split when it has grown. No product 
 
 ## 2. Plan — `spec-plan`
 
-Reads the map, then writes the pieces: the sites in the code, the titles of the narrative and
-server tests, and `plan.md` (a statement and a reason a piece, the decisions across pieces, the
-rules no test holds). Nothing the product does changes.
+Reads the map, then writes the pieces: the sites in the code, the test titles that own the rules
+in any appropriate tier, the narrative and server cases the change needs, and `plan.md` (a
+statement and a reason a piece, the decisions across pieces, the rules no test holds). Nothing
+the product does changes.
 
 How a plan is reviewed:
 
@@ -74,9 +90,10 @@ How a plan is reviewed:
 
 Prepares the delivery, in a fresh session. It cuts the pieces into **lots** (what one implementer
 delivers and one reviewer reads, a commit a piece), each of which compiles and stays green alone.
-It plans the unit tests of each lot: the titles to write, and the existing tests that change or
-go, each removal naming what holds the behaviour instead. Where grounding the plan shows a gap it
-edits the plan in place, each edit under a `Changed:` paragraph.
+It plans the additional unit coverage of each lot: the titles to write, and the existing tests
+that change or go, each removal naming what holds the behaviour instead. Rule owners are already
+chosen during planning. Where grounding the plan shows a gap it edits the plan in place, each
+edit under a `Changed:` paragraph.
 
 There is no task list and no hand-written brief: the map prints a lot's brief from the plan.
 

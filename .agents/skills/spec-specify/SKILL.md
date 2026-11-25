@@ -87,18 +87,21 @@ why, and ask. If the user prefers one spec, write one.
      whoever writes the screen's case reads it and not the mockup.
    - **A case to write is one criterion, as a title that says what the screen reads.** Its title
      must stay true through the plan's decisions; the plan stage re-reads each.
-   - **A journey shows, a narrative proves.** Plan a case for a screen, or a state of one, worth
-     seeing. A criterion that is logic (a range, a combination, what is saved) is a rule of
-     `spec.md`, for a narrative case to own. Written as a case too, the reviewer reads the same
-     behaviour twice.
+   - **A journey shows; each rule gets an appropriate test owner at planning.** Plan a case for
+     a screen, or a state of one, worth seeing. A criterion that is logic (a range, a combination,
+     what is saved) is a rule of `spec.md`, for a narrative or ordinary test to own. Narrative
+     membership depends on whether the case helps explain the flow (`workflow.md`
+     § "Narratives and test ownership"). Written as a screen case too, the reviewer reads the
+     same behaviour twice.
 
    Where the repository draws none, say what each changed screen reads in a section of `spec.md`,
    and point at the design page that shows it today.
 7. **Render and read what you wrote.** Run the journeys and draw the spec page
    (`repository.md` § "Commands"), then `map spec <feature>`. Its last part lists what the change
    rides on: the narratives a case crosses before a changed screen, and the code on that path
-   that tells nothing. Report both: the first is the plan's input, the second is worth a narrative
-   before the plan is written.
+   that tells nothing. Report the existing narratives as planning context. Assess untold flows
+   for their value as guides; propose one only when it materially helps a developer. Untold code
+   alone is no reason to add a narrative or delay planning.
 8. **Self-check.** Each rule: is it something the user experiences? Each case: is it a screen
    worth seeing, and not logic? Do the rules and the mockups reflect the trade-offs chosen, or
    bring back a convenience that shaping left out?

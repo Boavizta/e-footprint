@@ -54,7 +54,7 @@ what each is for and who approves what.
 
 1. **Specify** — `specs/features/<name>/spec.md`: the problem, the change, the rules no test shows by itself. Skill: `spec-specify`.
 2. **Plan** — the plan is written into the code as pieces (planned calls, planned tests) and a short `plan.md`; the reviewer reads the plan page generated from them and approves it. Skill: `spec-plan`.
-3. **Tasks** — the delivery: the pieces cut into lots, with the unit tests of each. Skill: `spec-tasks`.
+3. **Tasks** — the delivery: the pieces cut into lots, with their additional unit coverage and test changes. Skill: `spec-tasks`.
 4. **Implement** — the delivery, lot by lot: each built, checked against the approved plan, reviewed; one lot alone when asked. Skills: `feature-implement`, `task-implement`, `task-review`.
 5. **Archive** — the few load-bearing decisions promoted to the reference docs, the feature's marks stripped off the code, the feature folder deleted. Skill: `feature-archive`.
 

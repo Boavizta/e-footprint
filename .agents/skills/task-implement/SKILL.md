@@ -94,7 +94,12 @@ The reproductions are the piece's tests. Nothing else is written (rule 3 of "A p
 
 - **The steps**: write the `narrate` and `event` calls the lot's pieces add, remove those of what
   went, in one pass. A step is where a reader would stop, not every line that changed. Run the
-  narrative tests that cross them and read the story you changed.
+  narrative tests that cross them. Read the affected narrative as a guide through the code. Keep
+  it focused on one coherent question. Add a step where the reader needs an explanation; add a
+  variant when it materially changes their understanding of that question. A feature requirement
+  or an additional code path alone does not justify either. Keep other coverage in ordinary
+  tests. Apply this to the narrative the lot touches; report any changes to planned tests as
+  deviations under the rules above.
 - **The journey cases** of the lot's screens, each under its planned title.
 - **What the repository asks of production code that is delivered** (`repository.md` § "Gates":
   a changelog entry, where it asks one): the lot's part of it, said for whoever uses the product.

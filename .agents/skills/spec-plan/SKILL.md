@@ -13,12 +13,14 @@ changes, and the page is generated from them. You write:
   `@planned` comments where no line runs. A place that becomes code names itself in its tag,
   `<feature>#<slug>:<place>`: a short name for what changes there, its own within the piece
   (`workflow-formats.md` § "A site"). The check asks for it;
-- the **planned tests** of the narrative and server tiers, as titles with no body;
+- the **planned tests** that own the spec's rules, in any appropriate tier, and the narrative
+  and server cases the change needs, as titles with no body;
 - **`specs/features/<feature>/plan.md`**: a section a piece (its statement, its reason), the
   decisions across pieces, the waivers.
 
 Nothing the product does changes: a `planned` call is inert and a shell fails loudly if reached.
-You write no unit-tier title and no delivery; those are `spec-tasks`'.
+Additional unit coverage and the delivery belong to `spec-tasks`; a rule owner can be an ordinary
+test planned here.
 
 **Run it in a fresh session**, from the approved spec. A spec that cannot stand alone fails here,
 as a question to the user. Read `.agents/repository.md` (the stack's spellings, the commands, the
@@ -35,15 +37,16 @@ The `references/` and `assets/` beside this file belong to the earlier `plan.htm
   names, then `step` for the steps you will change. It gives a `file:line` for what matters, so
   you read ranges, not files. Then the spec, `plan-draft.md` if the spec stage left one, the
   project's rules and the architecture pages that own what the change touches.
-- **List the narratives the change lands in, missing ones included.** From the spec's rules,
-  name each action of the product the change enters and set it against the map: told, told
-  wrongly, or missing. `map spec` names only the told ones, so a missing one is found from the
-  rules. For each missing or wrong one, propose its narrative to the reviewer: its title, its
-  reference case, the branch cases the rules need, and the functions its steps stand in.
-- **The narratives the change lands in are reviewed before the plan is written.** A missing one,
-  or one whose steps read wrong, is told or corrected first, in its own commit and preferably its
-  own session, which takes out the prose it replaces (`workflow.md`); say so and stop. A plan written on a narrative nobody has read is
-  rewritten when someone does.
+- **Read the narratives the change lands in and assess untold flows.** From the spec's rules,
+  name the actions the change enters and set them against the map. Follow `workflow.md`
+  § "Narratives and test ownership": untold code alone is no gap. Propose a new narrative only
+  when a guide through that flow would materially help a developer. Give its question, its
+  reference case, the variants that change the reader's understanding, and its step functions.
+- **Review the narratives used as planning context before relying on them.** Correct misleading
+  steps first. When the reviewer chooses a new narrative of existing behaviour, tell it and have
+  it read first, in its own commit and preferably its own session, taking out the prose it
+  replaces (`workflow.md`). Planning can proceed with direct code links and ordinary tests when
+  a new narrative would add little value; its absence alone is no reason to stop.
 - **Trace the real code and tests** along every path the feature touches: success, error,
   cancellation, retry, rendering, persistence. A document is no evidence of what a function does
   today.
@@ -95,8 +98,9 @@ This audits your reasoning. It is no section of `plan.md`.
 - **A clause states the change at its place**, not what the code does today: one clause, no
   reason, no list of cases. The reason is the piece's, in `plan.md`.
 - **A new function is a shell, and the clause of the site that will call it names it in
-  backticks.** Without that the piece is drawn in no narrative, and the check fails. An entry
-  point nothing in the repository calls is named by the title of a planned test that calls it.
+  backticks.** This connects the new function to its caller; it does not require a narrative.
+  An entry point nothing in the repository calls is named by the title of a planned test that
+  calls it. A shell named by neither fails the check.
 - **On code that runs, a site is a call.** A comment is for a type, a schema, a migration, a doc.
   No test crosses a comment, so no narrative shows it and no test reaches it.
 - **A mechanical ripple is stated once, at its cause.** When one site makes twenty literals or
@@ -109,10 +113,15 @@ This audits your reasoning. It is no section of `plan.md`.
 
 ## Writing the tests
 
-Titles only, of the narrative and server tiers. A behaviour is proven by a narrative case; a unit
-title is `spec-tasks`' to plan.
+Titles only. Each rule has an appropriate test owner. Use a narrative case when it helps explain
+the flow; use an ordinary test for other behaviour, at the level the project's testing guidance
+calls for. Plan rule owners in any appropriate tier here; additional unit coverage is
+`spec-tasks`' to plan.
 
 - **Each rule of the spec has one owner**: the test whose title ends `[<rule-slug>]`.
+- **Narrative membership is an editorial choice.** Keep each narrative focused on one coherent
+  question. A requirement, an additional code path or a branch crossed by an existing case does
+  not oblige that narrative to own it. Put other behaviour in ordinary tests.
 - **No title repeats a case the feature's host already has.** When the new value only joins an
   existing whole, that whole's tests are extended, not copied with the value swapped in.
 - **An existing case extended is the owner**: a planned test beside it, under a comment saying

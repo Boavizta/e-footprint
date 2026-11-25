@@ -32,9 +32,9 @@ Run it in a fresh session once `bug-fixes` has closed the batch; refine a plan i
 - **The diagnostics stand where the spec does.** There is no `spec.md`, no rule to own and no
   journey case. A product fork a diagnostic left open is a `To confirm:` of the piece it concerns;
   what its `## Decisions` settled stays settled.
-- **A bug is in no narrative**, or it would not be one: the pieces are told a bug at a time, in
-  the order of `plan.md`, not in run order. A narrative the fix lands in is still read first,
-  when there is one.
+- **A bug batch is told a bug at a time**, in the order of `plan.md`, rather than in narrative
+  run order. Read the narratives the fix lands in first, when there are any; an existing
+  narrative may cross the faulty code without testing the behaviour that failed.
 - **The tests are written already.** A reproduction is the piece's test: you plan no other,
   unless a check the diagnostic lists beyond it is worth one.
 - **There is no tasks stage.** The reproductions are the unit tests and the diagnosis is the

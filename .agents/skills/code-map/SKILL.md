@@ -9,6 +9,10 @@ Some of what this app does is told as **narratives**: the code tells it itself, 
 per step, and a test crosses those steps in order. `npm run map` is that knowledge as text. Ask it
 before opening files: it gives the `file:line` of what matters, so you read ranges, not files.
 
+Narratives are a small, curated set of guides through meaningful flows. Each answers one coherent
+question; ordinary tests can own other behaviour. Selection follows
+[`workflow.md` § "Narratives and test ownership"](../../../specs/workflow.md#narratives-and-test-ownership).
+
 Call it as `node comprehension_harness/map.mjs <verb> …` (or `npm run map -- <verb> …`).
 
 | You need | Ask |
@@ -39,8 +43,9 @@ A slug can be any part that names one narrative (`checkout`, `sign-in`).
 3. **`step` only for the steps you will change.** It prints the function, so you rarely need to Read
    the file as well.
 4. **`where` before reading a file nothing pointed you to.** "unmapped" is a normal answer: most of
-   the app has no narrative yet. Then read the code directly — and if your change makes that code
-   worth telling, say in your report that a narrative is missing.
+   the app is outside narratives. Read the code directly. Propose a narrative only when a guide
+   through that flow would materially help a developer; an unmapped file alone is no gap and
+   does not block planning.
 
 Every line carries a `file:line`. When you do open a file, Read that range.
 

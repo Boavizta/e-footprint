@@ -14,6 +14,7 @@ These are the strong preferences and patterns the project follows. They are soft
 
 ## Narratives
 
+- **Curate for the reader.** Select flows, steps and variants by their value as guides through the code, following [the workflow's narrative and test ownership guidance](workflow.md#narratives-and-test-ownership). Feature requirements can be owned by ordinary tests.
 - **A narrative is told by its own code.** `narrate("…")` stands at the line of a step and `event("…")` at its cause (`from efootprint.narrate import …`, by name; one call a line). The sentence is present tense, sixty words at most, with one `**bold**` for the rule the step enacts and backticks for a symbol the file can name. The watch is a lambda, `lambda: {…}`, and holds counts and names. A sentence that is not a literal string, or a watch that is not a lambda, is refused by the source index: Python would compute it in production, where the calls do nothing. Moving or rewording a call changes the narrative's page: run `poetry run pytest tests/narratives` and `npx tsx comprehension_harness/render.ts --check`.
 - **No call in the reactive core's per-slot code.** A call stands where the code runs once per action of the modeler (an update transaction, a constructor, an import). `ReactiveSlot.pull`, `_compute`, the dependency recorders and the getters run per slot or per read: an inert call there is still a function call on the hottest path, and is measured against `tests/performance_tests/` before it is written.
 

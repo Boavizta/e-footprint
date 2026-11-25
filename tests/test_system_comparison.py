@@ -9,6 +9,7 @@ import numpy as np
 from efootprint.abstract_modeling_classes.source_objects import SourceValue
 from efootprint.abstract_modeling_classes.modeling_object import ModelingObject
 from efootprint.abstract_modeling_classes.explainable_recurrent_quantities import ExplainableRecurrentQuantities
+from efootprint.abstract_modeling_classes.reactive_core import computed_slots
 from efootprint.builders.timeseries import ExplainableRecurrentQuantitiesFromWeeklyPattern
 from efootprint.builders.time_builders import create_source_hourly_values_from_list
 from efootprint.comparison.duplication import assign_fresh_system_id, duplicate_system
@@ -97,6 +98,7 @@ class TestDuplicateSystem(TestCase):
     def test_duplicate_system_mints_fresh_system_id_and_preserves_object_ids(self):
         """Test duplicate_system gives a new System id while every other object keeps its id."""
         system = build_system("original", "server A")
+        system.total_footprint
 
         duplicate = duplicate_system(system)
 
@@ -104,6 +106,7 @@ class TestDuplicateSystem(TestCase):
         self.assertEqual(
             sorted(obj.id for obj in system.all_linked_objects),
             sorted(obj.id for obj in duplicate.all_linked_objects))
+        self.assertIsNotNone(computed_slots(type(duplicate))["total_footprint"].peek(duplicate))
 
     def test_assign_fresh_system_id_changes_only_the_system_id(self):
         """Test assign_fresh_system_id re-ids the System and leaves object ids intact."""
