@@ -46,6 +46,7 @@
   details.fold .fbody { padding: .3rem .95rem .7rem; font-size: .9rem; }
   /* the narrative */
   .source-test, .link-help, .run-details { font-size: .8rem; color: var(--muted); margin: .3rem 0 .7rem; }
+  .test-description { font-size: .88rem; color: var(--muted); margin: 0 0 .7rem; }
   .link-help p { margin: .4rem 0; }
   .run-details ul { margin: .4rem 0; padding-left: 1.2rem; }
   .narr { border: 1px solid var(--line); border-radius: 14px; background: var(--card); padding: 1rem 1.1rem 1.1rem; margin: 1rem 0; }

@@ -456,11 +456,18 @@ function testLink(story: Story, extra = '', text = story.file.replace(/\.test\.t
   return srcLink(story.file, line, 1, text, extra);
 }
 
-function readableTestTitle(story: Story, index: SourceIndex): string {
-  const test = story.test.startsWith('test_') ? story.test
+function testName(story: Story, index: SourceIndex): string {
+  return story.test.startsWith('test_') ? story.test
     : index.functions(story.file).find((f) => f.line === testLine(story.file, story.test))?.fn.split('.').pop() ?? story.test;
-  const title = test.replace(/^test_([^\[]+)/, (_, name: string) => name.replace(/_/g, ' '));
+}
+
+function readableTestTitle(story: Story, index: SourceIndex): string {
+  const title = testName(story, index).replace(/^test_([^\[]+)/, (_, name: string) => name.replace(/_/g, ' '));
   return title.charAt(0).toUpperCase() + title.slice(1);
+}
+
+function testDescriptionHtml(story: Story, index: SourceIndex): string {
+  return story.test === testName(story, index) ? '' : `<p class="test-description">${clauseInline(story.test)}</p>`;
 }
 
 function value(v: unknown): string {
@@ -772,6 +779,7 @@ function variantHtml(story: Story, ctx: RenderContext): string {
 <details class="fold">
   <summary>${esc(readableTestTitle(story, index))}${missed.length || beyond.length ? ` <small>${missed.length ? ` · <span style="color:#b45309">not reached: ${esc(missed.map((m) => label(m, index)).join(', '))}</span>` : ''}${beyond.length ? ` · <span style="color:#6d28d9">beyond the canonical: ${esc(beyond.map((b) => label(b, index)).join(', '))}</span>` : ''}</small>` : ''}</summary>
   <div class="fbody">
+    ${testDescriptionHtml(story, index)}
     <p class="source-test">Source test: ${testLink(story)}</p>
     ${runDetailsHtml(story, steps, ctx, `<li>Steps reached: ${esc(reached)}</li>${missed.length ? '' : '<li>Every canonical step reached</li>'}`)}
     <div class="lane-head"><span>step</span><span>what happens, who calls it, and the rule it enacts</span><span>where to stop, what to check</span></div>
@@ -803,6 +811,7 @@ function narrativeHtml(narrative: Narrative, stories: Story[], narratives: Narra
   <header>
     <strong>Main narrative test: ${testLink(canonical, ' data-narrative-test', readableTestTitle(canonical, index))}</strong>
   </header>
+  ${testDescriptionHtml(canonical, index)}
   ${runDetailsHtml(canonical, steps, ctx)}
   <div class="lane-head"><span>step</span><span>what happens, who calls it, and the rule it enacts</span><span>where to stop, what to check</span></div>
 ${stepsHtml(canonical, steps, variants, ctx)}
@@ -2386,7 +2395,7 @@ ${ridesOnHtml([narrative], narratives, index, PRODUCT_LINKS)}
 <p class="source-test">Source test: ${srcLink(narrative.file, narrative.declaredAt, 1, narrative.file)}</p>
 ${narrativeHtml(narrative, stories, narratives, index, PRODUCT_LINKS, backlinks)}
 `;
-  const crumb = `comprehension · narratives / ${esc(narrative.slug)} · <b>generated</b> from ${stories.length} stor${stories.length === 1 ? 'y' : 'ies'} at ${generatedAt} · <a href="../index.html">every page</a>`;
+  const crumb = `comprehension · narratives / ${esc(narrative.slug)} · <b>generated</b> from test recordings at ${generatedAt} · <a href="../index.html">every page</a>`;
   return pageHtml(narrative.title, crumb, body, 'no hand-written input; the narrative from the test that declares it; every step, link, chip, stop and value from the run, every symbol link from the source index, every "rides on" from the mechanisms\' own stories, every debt / rule / convention marker from the pages that name the code.');
 }
 
@@ -2400,7 +2409,7 @@ ${LINK_HINT}
 <p class="source-test">Source test: ${srcLink(mechanism.file, mechanism.declaredAt, 1, mechanism.file)}</p>
 ${narrativeHtml(mechanism, stories, narratives, index, MECHANISM_LINKS, backlinks)}
 `;
-  const crumb = `comprehension · mechanisms / ${esc(mechanism.slug)} · <b>generated</b> from ${stories.length} stor${stories.length === 1 ? 'y' : 'ies'} at ${generatedAt} · <a href="../index.html">every page</a>`;
+  const crumb = `comprehension · mechanisms / ${esc(mechanism.slug)} · <b>generated</b> from test recordings at ${generatedAt} · <a href="../index.html">every page</a>`;
   return pageHtml(mechanism.title, crumb, body, 'no hand-written input; the narrative from the test that declares it; every step, link, chip, stop and value from the run, every symbol link from the source index.');
 }
 
