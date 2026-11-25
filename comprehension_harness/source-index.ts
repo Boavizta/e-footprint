@@ -9,7 +9,7 @@
  *
  * Every other question goes to the reader as it is asked.
  */
-import type { Around, Declaration, Location, RawSite, Resolution, SourceReader, Story, StoryFrame } from './stack';
+import type { Around, Declaration, Location, RawSite, Resolution, SourceReader, Story, StoryFrame, SymbolContext } from './stack';
 
 export interface SourceSite extends RawSite {
   /** Among the `narrate`/`event` sites of the function; 0 for a planned site, which its piece's slug names. */
@@ -116,10 +116,10 @@ export class SourceIndex {
   // What follows is the reader's, asked as it is (`SourceReader` says what each answers).
 
   declaration(file: string, title: string): Declaration { return this.reader.declaration(file, title); }
-  resolve(site: RawSite, name: string): Resolution { return this.reader.resolve(site, name); }
+  resolve(site: SymbolContext, name: string): Resolution { return this.reader.resolve(site, name); }
   resolveUnscoped(name: string, files: readonly string[]): Location | null { return this.reader.resolveUnscoped(name, files); }
   resolveNear(name: string, places: ReadonlyArray<{ file: string; line: number }>): Location | null { return this.reader.resolveNear(name, places); }
-  useSite(site: RawSite, name: string, at: Location): Location | null { return this.reader.useSite(site, name, at); }
+  useSite(site: SymbolContext, name: string, at: Location): Location | null { return this.reader.useSite(site, name, at); }
   useIn(file: string, fn: string, name: string, at: Location): Location | null { return this.reader.useIn(file, fn, name, at); }
   sourceFile(token: string): string | null { return this.reader.sourceFile(token); }
   around(site: RawSite): Around | null { return this.reader.around(site); }

@@ -98,7 +98,7 @@ import { CONFIG_FILE, FEATURES, JOURNEYS, PAGES, ROOT, STORIES, STORIES_DIR, con
 import { blocksHtml, parseIntent, type MdBlock } from './intent-md';
 import { loadPlanDiff, openSource, strip, titles } from './project-stack';
 import { SourceIndex, type SourceSite } from './source-index';
-import type { Location, NarrativeKind, PlannedSite, Resolution, SourceReader, Story, StoryFrame, StoryHit, Stripped } from './stack';
+import type { Location, NarrativeKind, PlannedSite, Resolution, SourceReader, Story, StoryFrame, StoryHit, Stripped, SymbolContext } from './stack';
 import { approvalRefusal, assemblePlans, builtPlaceOf, idsToKeep, landingsToFreeze, markOf, type BuiltLanding, commitBlocks, commitsNamed, editItems, filesNamed, findings, isOpenTest, isOwnNotice, namesFeature, isStoryOf, lotLeft, names, shared, siteLineOf, unexpected, type CommitBlock, type Crossing, type FrozenChain, type FunctionLines, BESIDE, NOTES, asksNoEdit, changedAway, REPRODUCTIONS, UNPLANNED, chainsToFreeze, fixedChains, isBuiltPlace, placesCrossed, reproductionKeyOf, type PieceCommit, overSentenceBudget, parseTag, pieceDocOf, pieceQuestion, planDocOf, reviewItems, waiverQuestion, writeAcceptedAnswers, type PointerTarget, replaceSlugRefs, scanJourneyCases, scanPlannedComments, scanTodos, todosByTier, TIERS, type FeatureDocs, type JourneyCase, type PlanBaseline, type DeltaLine, type PlanChange, type PlanFeedback, type PlanLot, type PlanMove, type ReviewItem, type UnitDelta, type Plan, type PlanGroup, type PlanSite, type PlanSection, type PlanPiece, type PlanTodo, type StaticSite } from './plan';
 import { commitsOfLines, hunkReader, readPieceCommits, type HunkReader } from './commits';
 import { buildBacklinks, describeEntry, markersFor, unresolvedDeclaredLooking, untracedEntries, type BacklinkIndex, type Marker, type PageEntry, type StepKeys } from './backlinks';
@@ -340,7 +340,7 @@ interface SentenceToken {
 
 /** The line in the step's own function from which a narrated function was called, as the stories saw it: a hit at
  *  one of that function's own sites whose stack carries the step's function as a frame. */
-function tracedCall(site: SourceSite, name: string, at: Location, stories: Story[], index: SourceIndex): Location | null {
+function tracedCall(site: SymbolContext, name: string, at: Location, stories: Story[], index: SourceIndex): Location | null {
   if (!layout.isApp(at.file)) return null;
   const narrated = [...index.sites(at.file).values()].some((s) => s.kind !== 'planned' && s.fn === name);
   if (!narrated) return null;
@@ -358,7 +358,8 @@ function tracedCall(site: SourceSite, name: string, at: Location, stories: Story
  *  first `src/` frame above a hit at the step's site that is not the step's function, each caller tried once.
  *  A sentence may tell what the caller set up for its step — a decision made on what its reader read — and
  *  the caller may be no step of its own. */
-function callerCall(site: SourceSite, name: string, at: Location, stories: Story[], index: SourceIndex): { at: Location; fn: string } | null {
+function callerCall(site: SymbolContext, name: string, at: Location, stories: Story[], index: SourceIndex): { at: Location; fn: string } | null {
+  if (!('kind' in site)) return null;
   const tried = new Set<string>();
   for (const story of stories) {
     for (const h of story.hits) {
@@ -377,7 +378,7 @@ function callerCall(site: SourceSite, name: string, at: Location, stories: Story
 }
 
 /** The first use of a symbol inside another step's function of the narrative, each function tried once. */
-function siblingCall(site: SourceSite, name: string, at: Location, siblings: SourceSite[], index: SourceIndex): { at: Location; fn: string } | null {
+function siblingCall(site: SymbolContext, name: string, at: Location, siblings: SourceSite[], index: SourceIndex): { at: Location; fn: string } | null {
   const tried = new Set([`${site.file}#${site.fn}`]);
   for (const sibling of siblings) {
     const key = `${sibling.file}#${sibling.fn}`;
@@ -393,7 +394,7 @@ function siblingCall(site: SourceSite, name: string, at: Location, siblings: Sou
  *  function of the narrative uses it), <code> otherwise; nothing else. `stories` lets a traced call line win over
  *  the static one; `siblings` are the sites of the narrative's steps, searched when the step's own function
  *  never uses the symbol. */
-function sentenceHtml(sentence: string, site: SourceSite, index: SourceIndex, stories: Story[] = [], siblings: SourceSite[] = []): { html: string; tokens: SentenceToken[] } {
+function sentenceHtml(sentence: string, site: SymbolContext, index: SourceIndex, stories: Story[] = [], siblings: SourceSite[] = []): { html: string; tokens: SentenceToken[] } {
   const tokens: SentenceToken[] = [];
   const html = sentence.replace(/\*\*([^*]+)\*\*|`([^`]+)`|[^*`]+|[*`]/g, (m, bold?: string, code?: string) => {
     if (bold !== undefined) return `<b>${esc(bold)}</b>`;
@@ -467,7 +468,11 @@ function readableTestTitle(story: Story, index: SourceIndex): string {
 }
 
 function testDescriptionHtml(story: Story, index: SourceIndex): string {
-  return story.test === testName(story, index) ? '' : `<p class="test-description">${clauseInline(story.test)}</p>`;
+  if (story.test === testName(story, index)) return '';
+  const line = testLine(story.file, story.test);
+  const fn = index.functions(story.file).find((f) => f.line === line)!.fn;
+  const context = { file: story.file, line, column: 1, fn };
+  return `<p class="test-description">${sentenceHtml(story.test, context, index, [story]).html}</p>`;
 }
 
 function value(v: unknown): string {

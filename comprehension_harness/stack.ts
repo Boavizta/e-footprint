@@ -142,6 +142,9 @@ export interface RawSite extends Location {
   planned?: PlannedSite;
 }
 
+/** The source context for a symbol in a narrative sentence or a test description. */
+export type SymbolContext = Location & { fn: string };
+
 export type Resolution =
   | { linked: true; rule: 1 | '1b' | 2 | 3; at: Location }
   | { linked: false; reason: string };
@@ -194,13 +197,13 @@ export interface SourceReader {
   /** Where a name of a sentence is declared, seen from a site: an import of its file (rule 1), a local of the
    *  functions around the call, nearest first (1b), a top-level declaration of the file (2), one unique across
    *  the source (3). Otherwise the reason. */
-  resolve(site: RawSite, name: string): Resolution;
+  resolve(site: SymbolContext, name: string): Resolution;
   /** Rules 2 and 3 with no site: a top-level declaration in one of `files`, else one unique across the source. */
   resolveUnscoped(name: string, files: readonly string[]): Location | null;
   /** A declaration that is no top-level one (a local, a method, a field), in the files of `places`, nearest to one of them. */
   resolveNear(name: string, places: ReadonlyArray<{ file: string; line: number }>): Location | null;
   /** The first line where the site's own function uses the symbol declared at `at`, the call itself left out. */
-  useSite(site: RawSite, name: string, at: Location): Location | null;
+  useSite(site: SymbolContext, name: string, at: Location): Location | null;
   /** The same for the function `fn` of `file`; null when the file holds no single function of that name. */
   useIn(file: string, fn: string, name: string, at: Location): Location | null;
   /** The source file a path names, or a basename when exactly one source file has it. */

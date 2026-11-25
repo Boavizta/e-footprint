@@ -91,6 +91,18 @@ describe('a narrative\'s declaration', () => {
 describe('a name of a sentence', () => {
   const total = () => siteAt(CHECKOUT, 11);
 
+  it('resolves a test description in the test\'s imports and finds its call without a narrated site', () => {
+    const doc = document();
+    const file = 'tests/test_checkout.py';
+    const target = at(CHECKOUT, 15, 5);
+    doc.files[file].imports.push({ name: 'submit_payment', at: target });
+    doc.files[file].uses.push({ name: 'submit_payment', line: 10, column: 16, at: target });
+    const index = new SourceIndex(new JsonSource(checkSourceIndex(doc, 'the example'), isSource));
+    const context = { file, line: 9, column: 9, fn: 'TestPay.test_charges_the_total_with_tax' };
+    expect(index.resolve(context, 'submit_payment')).toEqual({ linked: true, rule: 1, at: target });
+    expect(index.useSite(context, 'submit_payment', target)).toEqual(at(file, 10, 16));
+  });
+
   it('is found in order: an import of the file, a local of the functions around the call, the file, the source', () => {
     expect(reader().resolve(total(), 'with_tax')).toEqual({ linked: true, rule: 1, at: at(PRICING, 6, 5) });
     expect(reader().resolve(total(), 'subtotal')).toEqual({ linked: true, rule: '1b', at: at(CHECKOUT, 10, 9) });

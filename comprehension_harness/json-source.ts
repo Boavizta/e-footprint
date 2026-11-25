@@ -14,7 +14,7 @@
  */
 import { execFileSync } from 'node:child_process';
 import { PLANNED_CHANGES } from './stack';
-import type { Around, Declaration, Location, Neighbour, RawSite, Resolution, SourceFileIndex, SourceIndexDocument, SourceReader } from './stack';
+import type { Around, Declaration, Location, Neighbour, RawSite, Resolution, SourceFileIndex, SourceIndexDocument, SourceReader, SymbolContext } from './stack';
 
 const IDENTIFIER = /^[A-Za-z_$][A-Za-z0-9_$]*$/;
 const TABLES = ['sites', 'functions', 'declarations', 'imports', 'locals', 'uses'] as const;
@@ -126,7 +126,7 @@ export class JsonSource implements SourceReader {
     return (this.declaredByName = index);
   }
 
-  resolve(site: RawSite, name: string): Resolution {
+  resolve(site: SymbolContext, name: string): Resolution {
     if (!IDENTIFIER.test(name)) return { linked: false, reason: 'not an identifier' };
     const tables = this.tables(site.file);
     const at = (x: { line: number; column: number }): Location => ({ file: site.file, line: x.line, column: x.column });
@@ -185,7 +185,7 @@ export class JsonSource implements SourceReader {
     return use ? { file: fn.file, line: use.line, column: use.column } : null;
   }
 
-  useSite(site: RawSite, name: string, at: Location): Location | null {
+  useSite(site: SymbolContext, name: string, at: Location): Location | null {
     this.tables(site.file);
     const fn = this.around_(site.file, site.line)[0];
     return fn ? this.firstUse(fn, name, at) : null;

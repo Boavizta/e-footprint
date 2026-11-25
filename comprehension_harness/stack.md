@@ -111,6 +111,10 @@ row.
 | The functions of a file | Each with the line its name is on and its last line. Optional: without it a place of a plan, and a change a lot made, are read by their file, not by their function | From `functions` |
 | The function around a site | The nearest named function, its first and last line, who refers to it and what it calls, each marked as holding a `narrate` or not (`map step`, `map around`) | Candidates in both |
 
+Symbol resolution and the static "Open call" lookup accept a source context (`SymbolContext`:
+`file`, `line`, `column`, `fn`). Test descriptions use the test's declaration as that context, sharing the
+sentence renderer's links and resolving names through the test's imports and local scope.
+
 The stack's reader refuses, with the file and the line: a `planned` call whose tag or sentence is
 not a literal, a tag that is not `<feature>#<slug>` or `<feature>#<slug>:<place>`, a place named
 on a removing or an evidence call, a `built` call that is not one literal naming its place, a
