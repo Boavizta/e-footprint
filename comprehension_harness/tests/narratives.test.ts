@@ -36,6 +36,26 @@ function example(hasWatch = true) {
 }
 
 describe('narratives scoped to the test body', () => {
+  it('links missing and additional steps to their calls with the narration as a plain-text tooltip', () => {
+    const { index, stories: allStories } = example();
+    const stories = allStories.filter((s) => s.file === 'tests/test_checkout.py');
+    const variant = stories.find((s) => s.test === 'test_builds_then_pays')!;
+    variant.hits = variant.hits.filter((h) => h.site.fn !== 'charge');
+    variant.hits.find((h) => h.site.fn === 'Basket.total')!.sentence = 'The "basket" **adds <its> & lines** before `with_tax`.';
+    const narratives = deriveNarratives(stories, index);
+    const html = renderNarrativePage(narratives[0], stories, narratives, index, { entries: [], byKey: new Map() });
+    const summary = html.match(/<summary>Builds then pays[^]*?<\/summary>/)![0];
+    expect(summary).toContain('Not reached: <a class="src" title="The amount is charged."');
+    expect(summary).toContain('shop/checkout.py:23:5"');
+    expect(summary).toContain('shop/checkout.py#L23:5"');
+    expect(summary).toContain('>charge</a>');
+    expect(summary).toContain('Additional step reached: <a class="src" title="The &quot;basket&quot; adds &lt;its&gt; &amp; lines before with_tax."');
+    expect(summary).toContain('shop/checkout.py:11:9"');
+    expect(summary).toContain('shop/checkout.py#L11:9"');
+    expect(summary).toContain('>Basket.total</a>');
+    expect(summary).not.toContain('beyond the canonical');
+  });
+
   it('gives a step without a declared watch the full text width and keeps its source link', () => {
     const { index, stories } = example(false);
     const narratives = deriveNarratives(stories, index);

@@ -772,12 +772,13 @@ function variantHtml(story: Story, ctx: RenderContext): string {
   const steps = deriveSteps(story, index, exclude);
   const missed = narrative.steps.filter((c) => !steps.some((s) => s.id === c.id));
   const beyond = steps.filter((s) => !narrative.stepIds.has(s.id));
+  const stepLink = (s: Step) => srcLink(s.source.file, s.source.line, s.source.column, label(s, index), ` title="${esc(s.sentence.replace(/\*\*|`/g, ''))}"`);
   // The variant's own steps are numbered as the canonical numbers them, so the two read alike.
   for (const s of steps) s.n = narrative.steps.find((c) => c.id === s.id)?.n ?? s.n;
   const reached = steps.map((s) => `${label(s, index)} ×${s.stops.length}`).join(', ');
   return `
 <details class="fold">
-  <summary>${esc(readableTestTitle(story, index))}${missed.length || beyond.length ? ` <small>${missed.length ? ` · <span style="color:#b45309">not reached: ${esc(missed.map((m) => label(m, index)).join(', '))}</span>` : ''}${beyond.length ? ` · <span style="color:#6d28d9">beyond the canonical: ${esc(beyond.map((b) => label(b, index)).join(', '))}</span>` : ''}</small>` : ''}</summary>
+  <summary>${esc(readableTestTitle(story, index))}${missed.length || beyond.length ? ` <small>${missed.length ? ` · <span style="color:#b45309">Not reached: ${missed.map(stepLink).join(', ')}</span>` : ''}${beyond.length ? ` · <span style="color:#6d28d9">Additional step${beyond.length === 1 ? '' : 's'} reached: ${beyond.map(stepLink).join(', ')}</span>` : ''}</small>` : ''}</summary>
   <div class="fbody">
     ${testDescriptionHtml(story, index)}
     <p class="source-test">Source test: ${testLink(story)}</p>
