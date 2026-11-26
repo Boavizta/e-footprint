@@ -37,7 +37,7 @@ Select imports and required earlier sections in source order, without inferred d
 
 ## #edge-tutorial
 
-Bring Industrial IoT into the library as an independent edge tutorial and packaged example, with one deployment representing a sensor site.
+Introduce `EdgeDeviceGroup` as a sensor-site template in the independent Industrial IoT tutorial and packaged example, with one deployment representing one site.
 
 Reuse sensor processes, uploads and the analyst dashboard. Model 15 sites containing 50 sensors each, replacing 750 individual sensor starts while preserving sensor-equivalent deployment volume. Retain the one-month rollout and six-year usage span explicitly; dashboard demand retains its three-year projection. Explain these different periods and constant weekly demand, rather than silently aligning them.
 
