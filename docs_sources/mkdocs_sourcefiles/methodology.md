@@ -10,6 +10,9 @@
 - **Decide that the model is detailed enough** to make decisions and got to the next step.
 
 ## Modeling analysis
+
+<!-- @planned executable-modeling-documentation#shared-guidance Link conceptual result interpretation to the tutorials' numerical inspection sections without copying executable recipes. -->
+
 If the system is big enough, and once the model has been refined enough, comes the analysis time. It consists in **diving into the results of the model to understand where emissions come from and what the emission reduction opportunities are**. For example, if the analysis shows that much of the impact comes from the network, I can look up the network ecodesign best practices for inspiration, or simply ask the tech team. 
 
 ## Simulation and priorisation

@@ -18,13 +18,15 @@ as they are touched. The first read of a computed value sits in the reactive cor
 code: its narrative waits for a measure against the performance baselines. A feature in flight on
 `plan.html` and `tasks.md` (`edge-networks`, `workflow-improvements`) is finished by hand.
 
-### Executable modeling documentation — specified, awaiting spec review
+### Executable modeling documentation — plan drafted, awaiting review
 
 [`features/executable-modeling-documentation/`](features/executable-modeling-documentation/spec.md):
 one Jupytext Python source per scenario produces its notebook, documentation, packaged model and
 reusable content for agents. E-commerce and Industrial IoT become independent web and edge
 tutorials; focused guides reuse those sources. Absorbs the former edge-example feature, including
-the IoT device group and interface starter handoff. Changes both repositories; the spec is here.
+the IoT device group and interface starter handoff. Changes both repositories; the spec and library
+plan are here. The interface companion plan must be authored in its own checkout before the
+shared-starter handoff is delivered.
 
 ### Agent guidance — on hold for executable modeling documentation
 

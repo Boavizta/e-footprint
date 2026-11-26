@@ -2,6 +2,8 @@
 
 # How to model server-to-server interaction
 
+<!-- @planned executable-modeling-documentation#focused-guides Generate the worked example from the e-commerce source's explicit web, database and journey prerequisites. -->
+
 > Load this scenario in the e-footprint interface:
 > [E-commerce web/database scenario]({{ config.extra.interface_base_url }}/example/ecommerce/)
 

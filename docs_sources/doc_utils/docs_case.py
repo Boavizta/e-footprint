@@ -2,6 +2,7 @@ from efootprint.modeling_examples.reference_system import build_reference_system
 from efootprint.narrate import planned
 
 planned("agent-guidance#canonical-example:shared-model-source", "Replace this example body with `build_reference_system`, leaving optional Boavizta graph examples in documentation tooling.")
+planned("executable-modeling-documentation#reference-examples:supplements", "Replace the overlapping documentation scenario with small class supplements to packaged scenario objects.")
 
 from time import perf_counter
 
@@ -294,3 +295,8 @@ edge_device_group = EdgeDeviceGroup(
 system = System("system", usage_patterns=[usage_pattern], edge_usage_patterns=[edge_usage_pattern])
 
 logger.info(f"computation took {round((perf_counter() - start), 3)} seconds")
+
+
+def build_documentation_examples():
+    planned("executable-modeling-documentation#reference-examples:example-set", "Load packaged baselines and combine their objects with explicit supplements, selecting one example per class already documented.")
+    raise NotImplementedError("planned: executable-modeling-documentation#reference-examples")

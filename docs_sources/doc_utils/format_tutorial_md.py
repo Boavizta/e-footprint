@@ -6,6 +6,7 @@ import shutil
 import sys
 
 from efootprint.logger import logger
+from efootprint.narrate import planned
 
 
 doc_utils_path = os.path.dirname(os.path.abspath(__file__))
@@ -15,6 +16,7 @@ generated_mkdocs_sourcefiles_path = os.path.join(doc_utils_path, "..", "generate
 
 
 def format_tutorial_and_save_to_mkdocs_sourcefiles(tutorial_doc_path):
+    planned.remove("executable-modeling-documentation#presentations", "Replace content-specific tutorial regex rewriting with notebook export and explicit resource handling in modeling_examples tooling.")
     with open(tutorial_doc_path.replace("ipynb", "md"), "r") as file:
         tutorial = file.read()
 
@@ -61,6 +63,7 @@ def format_tutorial_and_save_to_mkdocs_sourcefiles(tutorial_doc_path):
 
 
 def efootprint_tutorial_to_md():
+    planned.remove("executable-modeling-documentation#presentations", "Replace the single-notebook execution path with fresh-kernel generation from canonical scenario sources.")
     with open(efootprint_tutorial_path, "r") as file:
         tutorial_content = file.read()
 

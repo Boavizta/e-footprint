@@ -46,6 +46,10 @@ all = [
 ]
 
 [tool.poetry]
+# @planned executable-modeling-documentation#shared-guidance Ship the canonical modeling_from_python Markdown page as package data for direct reuse by documentation and future agent guidance.
+
+# @planned executable-modeling-documentation#catalogue Include generated example Markdown alongside packaged JSON in wheels and sdists; canonical Python sources remain normal package files.
+
 include = ["efootprint/constants/custom_units.txt",
     "efootprint/builders/services/ecobenchmark_analysis/ecobenchmark_data_for_job_defaults.csv",
     "efootprint/builders/hardware/boavizta_cloud_instances_snapshot.json",
@@ -79,6 +83,8 @@ exclude = '''
 '''
 
 [tool.poetry.group.dev.dependencies]
+# @planned executable-modeling-documentation#source-format Add Jupytext as development-only tooling and update the lockfile.
+
 pytest = '*'
 pytest-cov = '*'
 jupyter = "^1"

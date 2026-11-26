@@ -43,6 +43,8 @@ Checkout our open source [e-footprint modeling use cases](https://github.com/pub
 - `efootprint[boaviztapi]`: offline fallback for the Boavizta server builders, used when https://api.boavizta.org is unreachable;
 - `efootprint[all]`: both.
 
+<!-- @planned executable-modeling-documentation#presentations Replace old tutorial notebook links and launch commands with the derived web and edge notebooks and explicit generation instructions. -->
+
 You can then run the [jupyter notebook tutorial](tutorial.ipynb) to familiarize yourself with the object logic and generate an object relationship graph and a calculation graph as HTML files in the current folder.
 
 <figure>

@@ -2,6 +2,8 @@
 
 # How to model a machine-learning workflow
 
+<!-- @planned executable-modeling-documentation#ml-guide Replace the incomplete sketch and conflicting cadence claims with the executable ML source's explanation and generated presentation. -->
+
 > Load this scenario in the e-footprint interface:
 > [Machine learning workflow]({{ config.extra.interface_base_url }}/example/machine_learning_workflow/)
 

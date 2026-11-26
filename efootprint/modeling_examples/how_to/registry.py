@@ -19,6 +19,7 @@ HERE = Path(__file__).parent
 # @planned agent-guidance#example-discovery Add script paths to existing example metadata; keep the two current registries as the catalogue owners.
 
 @dataclass(frozen=True)
+# @planned executable-modeling-documentation#catalogue Add source_path and reading_path to how-to scenario metadata without merging scenarios with their guides.
 class HowToExample:
     id: str
     name: str
@@ -28,6 +29,8 @@ class HowToExample:
 
 
 HOW_TO_EXAMPLES: tuple[HowToExample, ...] = (
+    # @planned executable-modeling-documentation#streaming-guide Register video_streaming with its canonical source, generated reading and packaged baseline JSON.
+
     HowToExample(
         id="machine_learning_workflow",
         name="Machine learning workflow",
@@ -38,6 +41,7 @@ HOW_TO_EXAMPLES: tuple[HowToExample, ...] = (
 
 
 @dataclass(frozen=True)
+# @planned executable-modeling-documentation#catalogue Add section_ids to guide metadata and use explicit prerequisite-inclusive section selections for generated guide content.
 class HowToGuide:
     id: str
     name: str
@@ -46,6 +50,10 @@ class HowToGuide:
 
 
 HOW_TO_GUIDES: tuple[HowToGuide, ...] = (
+    # @planned executable-modeling-documentation#focused-guides Select the shared e-commerce imports and prerequisite sections explicitly for the database and server-to-server guides.
+
+    # @planned executable-modeling-documentation#streaming-guide Add the streaming service-builder guide backed by video_streaming.
+
     HowToGuide(
         id="machine_learning_workflow",
         name="How to model a machine learning workflow",

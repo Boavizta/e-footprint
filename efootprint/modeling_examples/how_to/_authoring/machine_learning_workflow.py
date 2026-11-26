@@ -20,9 +20,11 @@ from efootprint.core.usage.job import GPUJob
 from efootprint.core.usage.usage_journey import UsageJourney
 from efootprint.core.usage.usage_journey_step import UsageJourneyStep
 from efootprint.core.usage.usage_pattern import UsagePattern
+from efootprint.narrate import planned
 
 
 def build_system() -> System:
+    planned("executable-modeling-documentation#ml-guide:sequential-source", "Replace the constructor with a sequential percent-cell how-to whose retraining labels match editable annual demand and explain its temporal smoothing.")
     training_storage = Storage.from_defaults("Training dataset storage")
     training_server = GPUServer.from_defaults(
         "Training GPU server", server_type=ServerTypes.autoscaling(),

@@ -22,6 +22,11 @@ The same source produces its runnable notebook, documentation presentation and p
 Several focused guides can explain different parts of one scenario without maintaining copies
 of its code. Existing overlapping sources are consolidated as their scenarios move over.
 
+Each tutorial runs sequentially, with or without its plotting sections. Later comparisons start
+by duplicating the original model and changing that duplicate; they leave the original available
+for comparison and for the packaged example. The published documentation keeps executed charts
+and numerical outputs.
+
 E-commerce becomes the main web tutorial: describe the service, construct its infrastructure and
 usage, inspect results, explore a consequential change and deliver the model. Its database and
 server-to-server guides reuse that scenario. Industrial IoT becomes the independent edge tutorial,

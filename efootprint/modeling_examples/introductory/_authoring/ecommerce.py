@@ -20,9 +20,13 @@ from efootprint.core.usage.job import Job
 from efootprint.core.usage.usage_journey import UsageJourney
 from efootprint.core.usage.usage_journey_step import UsageJourneyStep
 from efootprint.core.usage.usage_pattern import UsagePattern
+from efootprint.narrate import planned
 
 
 def build_system() -> System:
+    planned("executable-modeling-documentation#ecommerce-tutorial:sequential-source", "Replace the constructor with sequential percent cells teaching e-commerce construction, numerical inspection, attribution, explainability and an experiment on a duplicate.")
+    planned("executable-modeling-documentation#focused-guides:shared-sections", "Tag shared imports, database, web and journey prose and code for prerequisite-complete focused guides.")
+    planned("executable-modeling-documentation#interface-exports:web-files", "Teach single-model and reference-first comparison exports with optional explicit materialization, separately from plotting and package regeneration.")
     db_storage = Storage.from_defaults(
         "Product database storage", base_storage_need=SourceValue(200 * u.GB_stored))
     db_server = BoaviztaCloudServer.from_defaults(

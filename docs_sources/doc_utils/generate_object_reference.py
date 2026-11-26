@@ -18,6 +18,7 @@ from efootprint.abstract_modeling_classes.modeling_object import ModelingObject
 from efootprint.abstract_modeling_classes.reactive_core import computed_slots
 from docs_sources.doc_utils.doc_topic_registry import DOC_TOPICS
 from docs_sources.doc_utils.docs_case import (
+    build_documentation_examples,
     system, usage_pattern, usage_journey, network, streaming_step, autoscaling_server, storage,
     serverless_server, on_premise_gpu_server, video_streaming, genai_model, genai_video_model,
     video_streaming_job, genai_model_job, genai_video_model_job, manually_written_job, custom_gpu_job, edge_computer,
@@ -249,6 +250,7 @@ def write_object_reference_file(mod_obj):
 
 
 def _get_mod_objs_to_document():
+    planned("executable-modeling-documentation#reference-examples:reference-inputs", "Use `build_documentation_examples` instead of importing the broad documentation model's named objects.")
     planned("agent-guidance#canonical-example:documentation-examples", "Read example objects from the canonical reference model instead of maintaining a parallel model in docs_case.")
     country = usage_pattern.country
     device = usage_pattern.devices[0]

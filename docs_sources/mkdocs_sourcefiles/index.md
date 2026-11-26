@@ -10,6 +10,8 @@ Ecodesigning a service is less about "what could I do?" than "what should I do f
 
 ## Start here
 
+<!-- @planned executable-modeling-documentation#shared-guidance Route new modelers to either the independent web or edge tutorial and the shared Python conventions page. -->
+
 - New to e-footprint? Read the [explanation section](explanation_overview.md), then follow the [tutorial](tutorial.md).
 - Every object, parameter, and calculated attribute is in the [object reference](object_reference.md).
 - The source code lives in the [e-footprint GitHub repository](https://github.com/Boavizta/e-footprint), and a [graphical interface](https://e-footprint.boavizta.org/) makes the model easy to use.

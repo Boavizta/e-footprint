@@ -30,6 +30,7 @@ from efootprint.modeling_examples.introductory.registry import (
     INTRODUCTORY_EXAMPLES,
     IntroductoryExample,
 )
+from comprehension_harness.python.declare import planned_test
 
 MKDOCS_SOURCEFILES = (
     Path(__file__).resolve().parent.parent / "docs_sources" / "mkdocs_sourcefiles")
@@ -54,6 +55,8 @@ def _modeling_object_ids(system_data: dict) -> list[str]:
         for payload in objects_by_id.values()
     ]
 
+
+# @planned executable-modeling-documentation#baseline-generation Accept constant and weekly-profile recurrent builders and preserve authored form inputs without imposing a three-year horizon on every hourly input.
 
 def _assert_input_timeseries_are_editable_builders(system, example_id: str) -> None:
     checked = []
@@ -119,6 +122,8 @@ def test_example_input_timeseries_are_editable_builders(example: HowToExample):
 
 
 @_example_params
+# @planned.remove executable-modeling-documentation#baseline-generation The planned baseline equality case below consolidates both authoring round-trip cases using source construction instead of importing constructors.
+
 def test_authoring_script_round_trips_to_committed_json(example: HowToExample):
     authoring = importlib.import_module(
         f"efootprint.modeling_examples.how_to._authoring.{example.id}")
@@ -163,6 +168,8 @@ def test_guide_example_id_resolves_to_a_loadable_example(guide: HowToGuide):
 
 
 @_guide_params
+# @planned executable-modeling-documentation#catalogue Resolve generated guide destinations through catalogue metadata rather than requiring a second handwritten Markdown page.
+
 def test_guide_doc_path_exists(guide: HowToGuide):
     target = MKDOCS_SOURCEFILES / guide.doc_path
     assert target.is_file(), (
@@ -171,6 +178,8 @@ def test_guide_doc_path_exists(guide: HowToGuide):
 
 
 @_guide_params
+# @planned executable-modeling-documentation#catalogue Check generated guide presentations retain their interface scenario links.
+
 def test_how_to_page_references_its_example(guide: HowToGuide):
     """The How-to page must deep-link to the picker example it walks through."""
     text = (MKDOCS_SOURCEFILES / guide.doc_path).read_text()
@@ -199,6 +208,8 @@ def test_introductory_example_input_timeseries_are_editable_builders(example: In
 
 
 @_introductory_example_params
+# @planned.remove executable-modeling-documentation#baseline-generation The planned baseline equality case below consolidates both authoring round-trip cases; no duplicate case is added.
+
 def test_introductory_authoring_script_round_trips_to_committed_json(example: IntroductoryExample):
     authoring = importlib.import_module(
         f"efootprint.modeling_examples.introductory._authoring.{example.id}")
@@ -210,3 +221,14 @@ def test_introductory_authoring_script_round_trips_to_committed_json(example: In
         f"Introductory example {example.id} JSON does not match the output of build_system(); "
         f"re-run `python -m efootprint.modeling_examples.introductory._authoring.{example.id}` "
         f"and commit the regenerated JSON.")
+
+
+# Consolidates the two authoring equality cases above across all catalogue entries, retitled; no duplicate case is added.
+@planned_test("executable-modeling-documentation#baseline-generation: Packaged inputs match construction and the original model after full tutorial runs with and without plots [starter-baseline]")
+def test_packaged_models_match_unmodified_tutorial_baselines():
+    pass
+
+
+@planned_test("executable-modeling-documentation#catalogue: Installed catalogue listing and source reading perform no modeling, network requests or output writes without notebook tooling [generation-is-explicit]")
+def test_installed_example_reading_is_passive():
+    pass

@@ -9,6 +9,8 @@ scripts (under ``how_to/_authoring/``) can flip ``_use_name_as_id`` on the
 ``Source`` class before ``api_utils.json_to_system`` triggers
 ``constants.sources`` to instantiate the source singletons.
 """
+# @planned executable-modeling-documentation#catalogue Describe canonical percent sources, generated readings and explicit regeneration without importing authoring modules during discovery.
+
 from efootprint.modeling_examples.how_to.registry import (
     HOW_TO_GUIDES,
     HOW_TO_EXAMPLES,

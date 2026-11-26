@@ -2,6 +2,8 @@
 
 # How to model a database
 
+<!-- @planned executable-modeling-documentation#focused-guides Generate the worked example and its assumptions from the prerequisite-complete database selection of the e-commerce source. -->
+
 e-footprint does not have a first-class abstraction for databases. A
 database is modeled by composing the primitives used for any backend
 workload: a {class:Server}, a {class:Storage}, and a set of {class:Job}s.

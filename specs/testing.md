@@ -4,6 +4,8 @@ This is the canonical testing guide. `tests/AGENTS.md` is a thin pointer to this
 
 ## Test layers
 
+<!-- @planned executable-modeling-documentation#presentations Describe fresh-session execution of generated example sequences and conversion-only freshness checks, with fixed external responses confined to tests. -->
+
 - **Unit tests** (in `tests/`) — individual `ModelingObject` classes in isolation. Focus: computed-attribute getters, validation logic, error handling.
 - **Integration tests** (in `tests/integration_tests/`) — complete system workflows. JSON serialization round-trips. Has its own `tests/integration_tests/AGENTS.md` for layer-specific patterns.
 - **Performance tests** (in `tests/performance_tests/`) — large-system benchmarks. The big-system fixture (`big_system.json`, canonical format with the repartition matrix filled) is gitignored (too heavy to commit) and regenerated locally with `python tests/performance_tests/generate_big_system.py`; the fixture-dependent tests skip when it is absent (e.g. in CI). `baseline_results.json` is the committed benchmark reference file (force-added past the repo-wide `*.json` ignore), recorded on the pre-overhaul eager engine; `test_perf_gates.py` diffs the pull engine's serialized weight, load-to-ready, nudge-and-read loop, engine overhead and peak memory against it.
