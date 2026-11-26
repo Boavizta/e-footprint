@@ -37,6 +37,6 @@ class TestNotebooks(unittest.TestCase):
         run_notebook(os.path.join(root_dir, "..", "tutorial.ipynb"))
 
     # Extends test_tutorial above across registered scenarios and guides, retitled; no case is added.
-    @planned_test("executable-modeling-documentation#presentations: Published notebook and Python sequences execute from fresh sessions with and without plots [selected-example-runs]")
+    @planned_test("executable-modeling-documentation#presentations: Published notebook and Python sequences execute in fresh sessions with fixed external responses, with and without plots [selected-example-runs]")
     def test_published_sequences_execute_from_fresh_sessions(self):
         pass

@@ -52,7 +52,7 @@ class HowToGuide:
 HOW_TO_GUIDES: tuple[HowToGuide, ...] = (
     # @planned executable-modeling-documentation#focused-guides Select the shared e-commerce imports and prerequisite sections explicitly for the database and server-to-server guides.
 
-    # @planned executable-modeling-documentation#streaming-guide Add the streaming service-builder guide backed by video_streaming.
+    # @planned executable-modeling-documentation#streaming-guide Add the streaming service-builder guide at video_streaming.md, backed by video_streaming.
 
     HowToGuide(
         id="machine_learning_workflow",

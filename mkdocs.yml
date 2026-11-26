@@ -27,7 +27,7 @@ extra:
   interface_base_url: https://e-footprint.boavizta.org
 
 nav:
-# @planned executable-modeling-documentation#presentations Publish independent web and edge tutorials and the streaming guide, retaining existing tutorial and focused-guide URLs.
+# @planned executable-modeling-documentation#presentations Group e-commerce and IoT under Tutorials; retain focused how-to guides and their existing URLs, adding the streaming guide.
 
 - Introduction: index.md
 - Tutorial: tutorial.md

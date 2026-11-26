@@ -5,20 +5,20 @@ from efootprint.narrate import narrate, planned
 
 
 def read_example_notebook(source_path: Path):
-    planned("executable-modeling-documentation#source-format:read-percent", "Read percent cells and their metadata with development-only Jupytext without importing the scenario.")
+    planned("executable-modeling-documentation#source-format:read-percent", "Read py:percent cells and JSON-form metadata with development-only Jupytext without importing the scenario.")
     narrate.planned("example-publication:read", "The scenario source supplies prose, code cells and presentation tags without importing or executing its modeling code.", changes=("executable-modeling-documentation#source-format:read-percent",))
     raise NotImplementedError("planned: executable-modeling-documentation#source-format")
 
 
 def select_example_cells(notebook, *, without_plots: bool = False, baseline_only: bool = False,
                          section_ids: tuple[str, ...] = ()):
-    planned("executable-modeling-documentation#source-format:ordered-selection", "Select source-order cells for full, without-plots, baseline or registered guide presentations.")
+    planned("executable-modeling-documentation#source-format:ordered-selection", "Select source-order cells using plot, notebook-setup, baseline-end and section:<name> tags; baseline-end marks the cell binding system.")
     narrate.planned("example-publication:select", "Selection preserves source order: plot-dependent prose follows its plot cells, and packaged-model generation stops at the initial construction boundary.", changes=("executable-modeling-documentation#source-format:ordered-selection",))
     raise NotImplementedError("planned: executable-modeling-documentation#source-format")
 
 
 def write_example_presentations(example, *, output_dir: Path, check: bool = False):
-    planned("executable-modeling-documentation#presentations:convert", "Use `read_example_notebook` and `select_example_cells` to derive cleared notebooks, runnable Python and output-free Markdown without execution.")
+    planned("executable-modeling-documentation#presentations:convert", "Use `read_example_notebook` and `select_example_cells` to write cleared notebooks and output-free Markdown/Python; convert --check compares committed artifacts without execution.")
     narrate.planned("example-publication:convert", "Conversion derives cleared notebooks and complete readings from the same source without running the scenario or contacting external services.", changes=("executable-modeling-documentation#presentations:convert",))
     raise NotImplementedError("planned: executable-modeling-documentation#presentations")
 
@@ -36,6 +36,6 @@ def regenerate_example(example, *, output_path: Path):
 
 
 def main():
-    planned("executable-modeling-documentation#source-format:command", "Dispatch explicit convert, build-docs and regenerate commands to `write_example_presentations`, `build_example_documentation` and `regenerate_example`.")
+    planned("executable-modeling-documentation#source-format:command", "Expose python -m docs_sources.doc_utils.modeling_examples with convert, build-docs and regenerate, dispatching to `write_example_presentations`, `build_example_documentation` and `regenerate_example`.")
     raise NotImplementedError("planned: executable-modeling-documentation#source-format")
 

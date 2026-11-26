@@ -9,6 +9,6 @@ class TestExamplePublication:
 
     @canonical(steps=("example-publication:read", "example-publication:select", "example-publication:convert",
                       "example-publication:baseline", "example-publication:publish"))
-    @planned_test("executable-modeling-documentation#generation-narrative: E-commerce conversion, model regeneration and documentation publication derive their artifacts from one source")
+    @planned_test("executable-modeling-documentation#generation-narrative: E-commerce generates notebooks, readings, packaged JSON and documentation from one source using real models and fixed API responses")
     def test_ecommerce_source_becomes_published_examples(self):
         pass

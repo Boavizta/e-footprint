@@ -9,7 +9,7 @@ independent experiment selection.
 
 Define percent-cell selection for complete tutorials, versions without plots, construction-only generation and the existing focused guides.
 
-Use Jupytext rather than another parser. A baseline-end tag closes construction; plot and notebook-setup tags select both code and accompanying prose. Section tags serve named guides with explicit prerequisites. There is no dependency inference or experiment scheduler.
+Keep the source valid Python. Plot-tagged cells include plotting imports and chart-dependent prose; without-plots also omits notebook setup. Use Jupytext instead of maintaining another parser. Selection accepts only the published views, without dependency inference.
 
 ## #catalogue
 
@@ -21,13 +21,13 @@ Keep introductory examples and how-to scenarios as their existing owners, with s
 
 Regenerate packaged inputs-only JSON explicitly from each source's initial construction, isolated from notebook execution and later experiments.
 
-Fresh kernels set name-based object and source ids before scenario imports, preserving the existing reviewable JSON convention without leaking process globals. Generation appends the save operation after construction; ordinary tutorial exports use a reader-selected output directory. Existing load, computation, editability and round-trip coverage follows the catalogue.
+Fresh kernels set name-based object and source ids before scenario imports, preserving reviewable JSON without leaking process globals. The regenerate command targets the catalogue JSON by scenario id and appends saving after construction. Construction-only execution omits plots and notebook setup.
 
 ## #ecommerce-tutorial
 
 Turn the existing e-commerce scenario into the main web tutorial, retaining its initial model and teaching a comparison on a duplicate.
 
-Teach service assumptions, infrastructure, jobs, journeys, geographic demand, numerical results, attribution and explainability before a traffic-change comparison. Keep Boavizta-backed servers and editable volumes. Each experiment starts from the original system; source order remains executable with plots removed. The original model owns the packaged example.
+Teach infrastructure, jobs, journeys, geographic demand, numerical results, attribution and explainability with explicit assumptions. Keep Boavizta-backed servers and editable volumes. Review this pilot's generated outputs before migrating IoT, ML and streaming.
 
 ## #focused-guides
 
@@ -39,7 +39,7 @@ Select imports and required earlier sections in source order, without inferred d
 
 Introduce `EdgeDeviceGroup` as a sensor-site template in the independent Industrial IoT tutorial and packaged example, with one deployment representing one site.
 
-Reuse sensor processes, uploads and the analyst dashboard. Model 15 sites containing 50 sensors each, replacing 750 individual sensor starts while preserving sensor-equivalent deployment volume. Retain the one-month rollout and six-year usage span explicitly; dashboard demand retains its three-year projection. Explain these different periods and constant weekly demand, rather than silently aligning them.
+Fifteen sites of fifty sensors preserve the existing 750-sensor rollout: one month of starts, six-year device usage, three-year dashboard demand. Keep these periods and constant recurrent demand explicit. The interface must consume the library entry and retire its local IoT source, JSON and regeneration entry through a companion plan authored there; picker presentation stays.
 
 ## #ml-guide
 
@@ -59,13 +59,13 @@ Retain service installation, derived job resources and an editable demand projec
 
 Teach single-model and ordered comparison exports independently of Python plotting, using duplicates that preserve corresponding object ids.
 
-E-commerce owns the general executable export explanation; IoT applies it to its own models and links back. Show system_to_json, systems_to_json and optional materialize_serialized_state for complete saved calculated values. Inputs-only import remains valid. Plotting never supplies required export state, and the first comparison model is explicitly the reference.
+E-commerce owns the general export explanation; IoT applies it and links back. Set output_dir near the source's start for reader-chosen destinations, separate from package regeneration. Use system_to_json, reference-first systems_to_json and optional materialize_serialized_state when complete calculated values are wanted; inputs-only import remains valid.
 
 ## #presentations
 
 Generate downloadable notebooks and output-free readings by conversion, and publish tutorials and guides with executed results through the existing documentation build.
 
-Commit cleared notebooks under notebooks/ and packaged readings beside JSON; check their freshness by pure conversion. Documentation execution uses fresh kernels and separate output directories, retaining charts, numerical output and HTML resources. Replace content-specific regex rewriting with notebook export and explicit resource embedding. A failed execution stops the build; no stale-output fallback is introduced.
+Commit cleared notebooks under notebooks/. Execute documentation in fresh kernels with separate output directories. Replace content-specific regex rewriting with notebook export and explicit resource embedding; a failed execution stops the build.
 
 ## #reference-examples
 
@@ -92,87 +92,3 @@ The source and recorded generation steps give authors the example to follow when
 Update existing documentation and links to direct readers to the web and edge tutorials and their relevant modeling sections.
 
 Keep methodology conceptual and link to executable result inspection; construction, comparisons and exports live in the tutorials. Reuse existing explanations and reference pages. Retain the short custom-hourly-timeseries capability and interface-editability note within tutorial content. AI-specific guidance remains for agent-guidance; development authoring patterns belong to the generation narrative.
-
-## Selection and execution contract
-
-#source-format, #baseline-generation, #focused-guides and #presentations share a small cell contract.
-Use JSON-form cell metadata with tags plot, notebook-setup, baseline-end and section:<name>.
-Every cell needed by construction precedes and includes baseline-end; that cell binds system.
-Code and prose that depend on a plot carry plot together. Plotting imports and generated chart files
-stay within those cells. Notebook setup documents installation; source code remains valid Python.
-
-Full and without-plots runs include every experiment in order. Without-plots also omits notebook
-setup, saved outputs and chart-dependent prose. Baseline generation stops at baseline-end and omits
-plotting and notebook setup. Guide section lists explicitly include their imports and prerequisites;
-they filter in source order. There is no public arbitrary cell-combination API.
-
-The development command is python -m docs_sources.doc_utils.modeling_examples, with convert,
-build-docs and regenerate subcommands. Convert writes notebooks, output-free Markdown and runnable
-Python to the requested output directory; --check compares committed notebooks and readings without
-executing them. Regenerate takes a scenario id and explicitly targets its catalogue JSON. Build-docs
-executes notebooks and exports Markdown and resources into the documentation build directory.
-Normal scripts and notebooks write demonstration exports beneath an output_dir variable the reader
-sets near the beginning. They never target package files. Regeneration and documentation execution
-do not depend on each other.
-
-## Content ownership and review
-
-#ecommerce-tutorial proves #source-format, #baseline-generation, #focused-guides,
-#interface-exports, #presentations and #generation-narrative together before the later scenario migrations are delivered.
-Review that pilot's generated tutorial, notebook, reading, guide excerpts and JSON together. If its
-authoring conventions need revision, update this plan before migrating IoT, ML and streaming.
-Delivery lots belong to the tasks stage.
-
-Each packaged scenario has a documentation destination: e-commerce uses tutorial.md, IoT uses
-tutorial_edge.md, ML retains machine_learning_workflow.md and streaming uses video_streaming.md.
-The existing database and server-to-server URLs remain. Retire tutorial.ipynb when the derived
-notebooks and replacement lessons exist, updating its README links in the same change.
-
-AI-specific collaboration guidance and installed guide assembly remain outside this feature.
-Preserve the suspended agent-guidance annotations and tests until its own replanning, following
-../agent-guidance/resume.md. Its proposed reference-system shell is not used as a dependency or
-turned into another canonical scenario.
-
-## Planning checks and verification
-
-#catalogue and #reference-examples preserve doc-as-code and the upward dependency direction:
-scenario loading stays above api_utils, and development notebook tooling never enters core imports.
-#ecommerce-tutorial, #edge-tutorial, #ml-guide and #streaming-guide consume existing modeling and
-timeseries APIs; they change no getters, dependency rules, guards, units or object lifecycle APIs.
-Their values retain units, sources and explanations, with declared hypotheses for illustrative inputs.
-
-#baseline-generation and #interface-exports use existing serialization, duplication and
-materialization APIs. No JSON format, schema version, migration or modeling class is added.
-The editable-input check must accept the constant and weekly-profile recurrent builders, preserve
-their form_inputs through load/save, and stop assuming every hourly input spans three years.
-
-The selected-example-runs owner replaces the single-notebook execution test with fresh-session
-execution of every published sequence in full and without plots, including generated plain Python.
-Use fixed API responses at the external-request boundary in automated execution, preserving real
-model construction and calculations. Published builds and manual runs use normal Boavizta behavior;
-external failures remain visible, without extra retries or a new response-cache mechanism.
-
-The starter-baseline owner consolidates the two authoring/JSON equality cases: compare regenerated
-construction with committed inputs and compare the original model after complete runs in both
-presentations. Generation uses isolated deterministic ids. Existing editable-input, load and compute
-tests extend to the new catalogue entries rather than adding a duplicate scenario suite.
-
-The generation-is-explicit owner exercises metadata listing and text reading in a fresh process
-without notebook or plotting tooling, refusing external requests and file creation. A conversion
-freshness case covers notebooks/readings; reference preservation is checked with its replacement.
-These remain ordinary rule owners. #generation-narrative adds one representative e-commerce case
-that converts the source, regenerates its initial model and publishes executed documentation,
-asserting the resulting artifacts with real modeling and fixed external responses. Its steps
-explain the pattern at the generation code, with direct links to the source to follow. It is
-declared as intended, not observed, until implemented; no existing narrative's behavior changes.
-
-## Interface handoff
-
-#edge-tutorial publishes iot_industrial through the library's existing introductory-example lookup.
-The interface must switch its IoT picker path to that library entry and remove its local IoT source,
-JSON and regeneration entry, retaining its picker presentation and other starters. Its existing
-e-commerce lookup is the precedent. This requires a plan in the interface checkout, authored there
-before coordinated delivery; none exists yet, so no invented cross-repository piece is linked here.
-Library preparation can proceed independently; the shared-starter handoff is not complete until
-that companion change is planned, approved, implemented and checked against this library checkout.
-

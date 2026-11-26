@@ -16,7 +16,9 @@ class IntroductoryExample:
 
 
 INTRODUCTORY_EXAMPLES: tuple[IntroductoryExample, ...] = (
-    # @planned executable-modeling-documentation#edge-tutorial Register iot_industrial with its library-owned source, generated JSON, reading and independent edge tutorial.
+    # @planned executable-modeling-documentation#edge-tutorial Register iot_industrial with its library-owned source, generated JSON and reading, and tutorial_edge.md as its tutorial destination.
+
+    # @planned executable-modeling-documentation#ecommerce-tutorial Publish the e-commerce tutorial as tutorial.md, retaining the existing scenario id and packaged model lookup.
 
     IntroductoryExample(
         id="ecommerce",
