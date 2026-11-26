@@ -26,7 +26,6 @@ This file orients agents and contributors. It is intentionally short. Substance 
 | The comprehension tools (the narrative and plan pages, the map), how they are installed, and what this project gives them | [`comprehension_harness/README.md`](comprehension_harness/README.md), `comprehension.config.json`, `.agents/repository.md` § "The stack" |
 | Active feature work | `specs/features/<feature-name>/` |
 | A bug batch's `plan.html`: source links, one-click reproduction debugging, decision indexes and callouts | `.agents/skills/spec-plan/references/plan-review-links.md` and `.agents/skills/spec-plan/references/plan-decision-callouts.md` |
-| A bug batch's final plan review guide (preserved structure, implementation links, consolidated decisions) | `.agents/skills/plan-review-guide/SKILL.md`; delegated at `feature-implement` close-out to the `plan-review-guide` agent, with supervisor-owned decisions |
 | Past investigations and dated decisions | `archives/` |
 
 In a bug batch's plan, HTML documentation links open in a new browser tab; production source links (including HTML templates) open in VS Code. See the plan-link convention above.
@@ -62,8 +61,9 @@ Stages 2 to 4 run on the Python stack of the comprehension tools: the `narrate`,
 `planned` and `built` calls of `efootprint/narrate.py`, and the test declarations and the commands of
 `comprehension_harness/python/` (`.agents/repository.md` § "The stack" says how each is spelled,
 and where a call may stand). `efootprint/narrate.py` is this project's copy of the stack's
-reference file: the library imports the calls from it, and nothing of the harness. A feature in
-flight on `plan.html` and `tasks.md` is finished by hand.
+reference file: the library imports the calls from it, and nothing of the harness.
+An older handwritten `plan.html` and its `tasks.md` are ported to the current format before
+delivery resumes.
 
 Investigations and ad-hoc design work are exempt; the staged flow is for features that ship.
 Conversational bug batches use `bug-fixes` (diagnostics plus `tasks.md`), then `bug-fixes-plan` (`plan.html` grouping the bugs and ordering the runs), followed by the implement, review and archive stages.

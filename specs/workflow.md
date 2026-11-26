@@ -160,8 +160,7 @@ archive: no per-feature summary is ever written.
 - **A fresh session for each of specify, plan, tasks, and for each implementation run.** A
   decision that exists only in a conversation is a gap to resolve, not something to infer.
 - The roles are `implementer`, `implementer-easy`, `implementer-hard`, `reviewer`,
-  `reviewer-global` and `light`, with `diagnostician` for a bug batch and `plan-review-guide` for
-  a `plan.html` of the earlier form.
+  `reviewer-global` and `light`, with `diagnostician` for a bug batch.
   A role's text is `.agents/roles/<role>.md`. Its model and effort are pinned in the runtime's
   agent definition and named nowhere else: skills and documents name roles.
 - Stateful test suites and mutable application databases are never shared between parallel

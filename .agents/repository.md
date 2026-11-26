@@ -161,8 +161,7 @@ publication to PyPI or of the documentation), a force push, a branch deletion or
   `.codex/agents/<role>.toml`, and named nowhere else (`specs/agent-tooling.md` § "Agent roles").
 - A spawn is labelled `<feature>--impl-lot-<lot>`, `--review-lot-<lot>`, `--review-global`,
   `--gate-full`, `<lot>` being the lot's slug; a bug batch adds `--diag-<bug>` and
-  `--smell-sweep`, and a `plan.html` of the earlier form `--plan-review-guide`. The ledger reads the
-  feature and the role from the label.
+  `--smell-sweep`. The ledger reads the feature and the role from the label.
 - In Claude Code the label opens the spawn's description, and a spawn takes no name: a named
   agent inherits the session's effort and loses its own. Under Codex, bind the session
   (`specs/agent-tooling.md` § "Attribute current work").

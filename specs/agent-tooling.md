@@ -25,7 +25,7 @@ The method is [`workflow.md`](workflow.md); the forms of a feature's files are
 | `core` | The comprehension tools and their tests, the stylesheet and the script of the generated pages, the method's two documents, the stage skills and the bug-batch skills, the roles' instructions, the review-link extension, the synchronization script and its test | Every project that uses the method |
 | `python` | The Python stack of the comprehension tools, `comprehension_harness/python/`, with its tests: the calls, the test declarations, the pytest plugin, the source index, the title reader, the watch loop and the strip of an archive | Every Python project that uses the method |
 | `python-journeys` | The journey helper of the Python stack, with its page script and its tests: a journey drawn from a run of a browser test | A Python project whose browser tests run on pytest and Playwright |
-| `e-footprint` | The references, the role and the link converter of the earlier `plan.html` form, the usage collector, the Codex hooks, this page | The library |
+| `e-footprint` | The references and the link converter of the earlier `plan.html` form, the usage collector, the Codex hooks, this page | The library |
 
 A project that takes lists runs the script from its own checkout, with this one as upstream:
 
@@ -64,8 +64,7 @@ The runtime agent definitions are the single source of truth for each role's mod
 each repository's own. Read the selected runtime's agent definition at dispatch time; do not
 infer one runtime's settings from the other or copy them into workflow guidance. The configured
 roles are `implementer-easy`, `implementer`, `implementer-hard`, `reviewer`, `reviewer-global`
-and `light`, with `diagnostician` for a bug batch and `plan-review-guide` for a `plan.html` of the
-earlier form.
+and `light`, with `diagnostician` for a bug batch.
 The supervisor/planning session preferably uses the configured `implementer-hard` settings.
 An explicit user model choice overrides that workflow recommendation.
 
@@ -83,11 +82,6 @@ never claim an unobserved model pin worked. A role description is not a tool per
 The `reviewer` role reads one lot's commits; `reviewer-global` reads
 the whole delivery once its last lot is reviewed. Both can apply approved fixes. `light` runs a
 suite or a lookup and reports the evidence.
-The plan-review-guide role performs the final documentation pass of a delivered `plan.html` of the earlier form;
-it preserves the approved plan and adds implementation evidence. The supervisor owns consequential
-decisions and checks changed claims. Substantial unresolved tracing escalates to the standard
-implementer; see [the skill](../.agents/skills/plan-review-guide/SKILL.md). Adjust its agent
-definition when observed correction effort warrants a different model or effort.
 
 Use a fresh context for each of specification, plan and tasks, and for each implementation run. This is a
 handoff convention, not authority to create new user-owned Codex tasks without a request.

@@ -28,8 +28,8 @@ gates, § "Planning checks") and [`specs/workflow-formats.md`](../../../specs/wo
 § "A site" and § "`plan.md`": the form is stated there and its budgets are checked. Do not read
 the tools' source to learn it. `map …` below is the map's command (`code-map` skill).
 
-The `references/` and `assets/` beside this file belong to the earlier `plan.html` form, which
-`plan-review-guide` still reads.
+The `references/` and `assets/` beside this file describe the earlier handwritten `plan.html`
+format. Port an older plan to the current format before delivery resumes.
 
 ## Before writing
 

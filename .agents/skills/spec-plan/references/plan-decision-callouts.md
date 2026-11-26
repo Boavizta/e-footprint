@@ -69,8 +69,7 @@ run/task and the decisive evidence or trade-off. Keep this focused on the conseq
 not a file inventory or a copy of task checks. Include a rejected review suggestion only when
 retaining the existing design is itself consequential. Link to the decision from `tasks.md`
 when needed; do not duplicate its explanation. The supervisor owns decision resolution and records
-the rationale as choices stabilize; do not postpone it until close-out. Document editing and final
-code-link consolidation may be delegated to the plan-review-guide agent.
+the rationale as choices stabilize; do not postpone it until close-out.
 
 When several functions or repositories participate, map each distinct change from its previous
 behavior to its current behavior at the named call site; separate a shared helper from the callers
@@ -89,7 +88,7 @@ For every `IMPL-DECISION` and changed plan passage, follow
 [the shared plan-link convention](plan-review-links.md) for source links,
 the right-click diff menu and link refresh. Refresh review links after the consolidated plan edit,
 unless a link problem requires another pass. The supervisor checks changed claims and decision
-consolidation, including edits delegated to the plan-review-guide agent.
+consolidation.
 
 Keep the plan's left reading-order and changed-file column collapsible during review. Use the
 native `details/summary` pattern in [the starter](../assets/plan.html): collapsing it should leave a
