@@ -17,7 +17,7 @@ Convert selected cells into cleared notebooks and output-free readings, and exec
 
 Keep conversion independent of execution. Preserve notebook-exported outputs and explicitly embed generated chart and graph resources; execution failures propagate. These functions accept scenario metadata before the website switches to them.
 
-Changed: **Build conversion and execution before switching the website.** The e-commerce pilot needs generated artifacts for review while the current tutorial remains published.
+Changed: **Build conversion and execution before switching the website.** The approved plan grouped notebook conversion, documentation execution and website integration in one piece. Separate the generation functions so they can produce the e-commerce pilot's notebook, reading and executed documentation for review first. Keep website integration for the final publication lot, after the other scenarios have been converted.
 
 ## #catalogue
 
@@ -31,7 +31,7 @@ Execute the selected construction in a fresh kernel with deterministic object an
 
 Set both id flags before scenario imports. Tests use a small real model to verify stable serialization and process isolation; catalogue-wide equality belongs to #baseline-generation.
 
-Changed: **Separate isolated construction from migrating the sources.** The generation function can be verified before removing either existing constructor or its writer.
+Changed: **Test isolated construction before replacing the existing constructors.** The approved plan grouped the new regeneration function with removal of the old constructor-based writers. Build and test the function first using a small model. Later, remove each writer when its last scenario is converted. This lets us verify deterministic ids and kernel isolation before changing how the packaged examples are constructed.
 
 ## #baseline-generation
 
@@ -71,7 +71,7 @@ Extract the streaming service-builder lesson into a focused executable scenario.
 
 Retain service installation, derived job resources and an editable demand projection. Explain replacement of the old synthetic daily and seasonal arrays with the hourly-volume builder's smooth projection. Move reusable inspection, comparison, attribution and explainability teaching into e-commerce; move introductory edge teaching into IoT. Multiple chart variants and reset demonstrations need not survive.
 
-Changed: **Retire the old notebook during publication.** Its existing execution test still needs it while the new scenarios are being converted.
+Changed: **Keep the old notebook until the final publication lot.** The approved streaming piece also retired the introductory notebook. Extract the focused streaming scenario first, while retaining that notebook for its existing execution test. Move retirement into the publication piece, where the replacement test will execute all published sequences. Deleting the notebook earlier would leave the old test pointing at a missing file.
 
 ## #interface-exports
 
@@ -85,7 +85,7 @@ Apply the e-commerce export lesson to the IoT source, producing single-model and
 
 Keep the shared export explanation in e-commerce and link back from IoT. Land this after #edge-tutorial so its source and duplicates already exist.
 
-Changed: **Deliver IoT exports with the edge tutorial.** Its source is introduced after the e-commerce pilot, so the two export examples cannot share an earlier commit.
+Changed: **Deliver the two export lessons with their respective tutorials.** The approved plan grouped e-commerce and IoT exports in one piece. Complete and review the e-commerce export lesson during the web pilot, then add IoT exports after constructing its tutorial in the next lot. This lets the pilot include the complete web lesson without requiring the IoT source to be converted before the pilot review.
 
 ## #presentations
 
@@ -93,7 +93,7 @@ Generate downloadable notebooks and output-free readings by conversion, and publ
 
 Commit cleared notebooks under notebooks/. Execute documentation in fresh kernels with separate output directories. Replace content-specific regex rewriting with notebook export and explicit resource embedding; a failed execution stops the build. Retire the old tutorial notebook with its execution-test replacement.
 
-Changed: **Keep notebook retirement with the test replacement.** Removing it during streaming extraction would break the still-active tutorial test.
+Changed: **Retire the old notebook together with its execution test.** The approved publication piece replaced the single-notebook test with execution checks for every published sequence, but left notebook retirement in the earlier streaming piece. Move retirement here so the old file and its test disappear in the same commit. Until that replacement is ready, the existing test continues to exercise the old notebook.
 
 ## #publication-command
 
@@ -101,7 +101,7 @@ Expose conversion, documentation execution and packaged-model regeneration throu
 
 Use the existing command shell and dispatch to the tested generation functions. Keep command availability together with the website switch, after all scenarios are migrated.
 
-Changed: **Expose the command after source migration.** Before then, the registered ML source still has its constructor and cannot supply a construction-only cell selection.
+Changed: **Expose the authoring command after all registered sources are converted.** The approved plan grouped command dispatch with the percent-cell reader and selector. Build those functions first, and expose the command in the final publication lot. Before ML is converted, its source defines a constructor rather than binding the initial system in a marked cell, so the new construction-only regeneration command could not process it.
 
 ## #reference-examples
 
@@ -133,13 +133,13 @@ Keep methodology conceptual and link to executable result inspection; constructi
 
 #baseline-generation starts its equality case with e-commerce, replacing the introductory constructor check. #ml-guide adds ML and removes its constructor check; #edge-tutorial and #streaming-guide add their registrations. Compare every input and relationship, normalizing only generated ids in full runs; also check retained originals.
 
-Changed: **Keep equality coverage green at each conversion.** The old constructor tests cannot run after their sources become sequential; expanding one owner avoids duplicate baseline tests.
+Changed: **Update each example's test when its source is converted.** The approved plan grouped both constructor-test replacements together. Existing tests call build_system() and compare the resulting model with packaged JSON. Converting e-commerce removes that function, so replace its test at the same time by executing its construction cells and comparing the result with the JSON. Add ML to that same test when ML is converted, then add IoT and streaming as they arrive.
 
 ## Pilot artifacts and catalogue readings
 
 #catalogue supplies every required field at every existing registry entry. #presentation-tools converts both existing sources into packaged readings; the unchanged ML constructor remains executable until #ml-guide replaces it. #generation-narrative generates the e-commerce pilot for review without switching website navigation.
 
-Changed: **Make catalogue paths usable before all sources migrate.** Reading conversion needs no construction boundary; ML's existing source can supply its temporary reading without executing it or adding a compatibility branch.
+Changed: **Provide a readable file for every catalogue entry during the web pilot.** The approved plan required packaged readings but did not explain how to supply ML's reading before its later conversion. Generate a reading from its existing constructor source when adding catalogue paths; reading conversion only processes text. Regenerate that file when ML becomes sequential. This keeps every advertised reading path usable throughout delivery without running ML during catalogue discovery.
 
 ## Delivery
 
