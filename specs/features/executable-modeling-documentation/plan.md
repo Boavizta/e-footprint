@@ -75,11 +75,17 @@ Replace the overlapping broad documentation model with packaged scenario objects
 
 Load packaged baselines for reference examples; supplement only classes those tasks do not supply. Select one object per concrete class for page generation, preserving metadata as semantic truth. Consolidation is required to remove competing scenario definitions; it does not depend on the suspended agent guide's completeness or metadata-lookup changes.
 
+## #generation-narrative
+
+Tell how e-commerce becomes the notebook, reading, packaged model and published documentation as a doc-scoped narrative of the recurring generation pattern.
+
+The source and recorded generation steps give authors the example to follow when adding another scenario. Deliberate selection and execution boundaries are explained where they apply. Architecture retains source ownership and the runtime/development boundary, linking to the narrative. No separate contributor instructions are maintained.
+
 ## #shared-guidance
 
 Give shared Python conventions a short canonical entry page, and route methodology and getting-started links to the two executable tutorials.
 
-Keep this page to units, sources, defaults, archetypes and choosing a tutorial, linking to their executable demonstrations rather than copying recipes. Methodology remains conceptual and links to numerical result inspection. Retain only the short custom-hourly-timeseries capability and interface-editability note. AI-specific collaboration guidance remains for agent-guidance.
+Serve library users modeling from Python: units, sources, defaults, archetypes and choosing a tutorial, linking to executable demonstrations. Methodology remains conceptual and links to numerical result inspection. Retain only the short custom-hourly-timeseries capability and interface-editability note. AI-specific collaboration guidance remains for agent-guidance; development authoring patterns belong to the generation narrative.
 
 ## Selection and execution contract
 
@@ -106,7 +112,7 @@ do not depend on each other.
 ## Content ownership and review
 
 #ecommerce-tutorial proves #source-format, #baseline-generation, #focused-guides,
-#interface-exports and #presentations together before the later scenario migrations are delivered.
+#interface-exports, #presentations and #generation-narrative together before the later scenario migrations are delivered.
 Review that pilot's generated tutorial, notebook, reading, guide excerpts and JSON together. If its
 authoring conventions need revision, update this plan before migrating IoT, ML and streaming.
 Delivery lots belong to the tasks stage.
@@ -150,8 +156,11 @@ tests extend to the new catalogue entries rather than adding a duplicate scenari
 The generation-is-explicit owner exercises metadata listing and text reading in a fresh process
 without notebook or plotting tooling, refusing external requests and file creation. A conversion
 freshness case covers notebooks/readings; reference preservation is checked with its replacement.
-These are ordinary tests: a new developer narrative would duplicate this short execution contract,
-and no existing narrative's behavior changes. New shells have no observed run order yet.
+These remain ordinary rule owners. #generation-narrative adds one representative e-commerce case
+that converts the source, regenerates its initial model and publishes executed documentation,
+asserting the resulting artifacts with real modeling and fixed external responses. Its steps
+explain the pattern at the generation code, with direct links to the source to follow. It is
+declared as intended, not observed, until implemented; no existing narrative's behavior changes.
 
 ## Interface handoff
 
