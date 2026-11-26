@@ -98,7 +98,7 @@ import { CONFIG_FILE, FEATURES, JOURNEYS, PAGES, ROOT, STORIES, STORIES_DIR, con
 import { blocksHtml, parseIntent, type MdBlock } from './intent-md';
 import { loadPlanDiff, openSource, strip, titles } from './project-stack';
 import { SourceIndex, type SourceSite } from './source-index';
-import type { Location, NarrativeKind, PlannedSite, Resolution, SourceReader, Story, StoryFrame, StoryHit, Stripped, SymbolContext } from './stack';
+import type { Location, NarrativeKind, NarrativeScope, PlannedSite, Resolution, SourceReader, Story, StoryFrame, StoryHit, Stripped, SymbolContext } from './stack';
 import { approvalRefusal, assemblePlans, builtPlaceOf, idsToKeep, landingsToFreeze, markOf, type BuiltLanding, commitBlocks, commitsNamed, editItems, filesNamed, findings, isOpenTest, isOwnNotice, namesFeature, isStoryOf, lotLeft, names, shared, siteLineOf, unexpected, type CommitBlock, type Crossing, type FrozenChain, type FunctionLines, BESIDE, NOTES, asksNoEdit, changedAway, REPRODUCTIONS, UNPLANNED, chainsToFreeze, fixedChains, isBuiltPlace, placesCrossed, reproductionKeyOf, type PieceCommit, overSentenceBudget, parseTag, pieceDocOf, pieceQuestion, planDocOf, reviewItems, waiverQuestion, writeAcceptedAnswers, type PointerTarget, replaceSlugRefs, scanJourneyCases, scanPlannedComments, scanTodos, todosByTier, TIERS, type FeatureDocs, type JourneyCase, type PlanBaseline, type DeltaLine, type PlanChange, type PlanFeedback, type PlanLot, type PlanMove, type ReviewItem, type UnitDelta, type Plan, type PlanGroup, type PlanSite, type PlanSection, type PlanPiece, type PlanTodo, type StaticSite } from './plan';
 import { commitsOfLines, hunkReader, readPieceCommits, type HunkReader } from './commits';
 import { buildBacklinks, describeEntry, markersFor, unresolvedDeclaredLooking, untracedEntries, type BacklinkIndex, type Marker, type PageEntry, type StepKeys } from './backlinks';
@@ -162,6 +162,7 @@ export interface Step {
 
 /** A narrative as the stories and the source declare it. */
 export interface Narrative {
+  scope?: NarrativeScope;
   /** Intended order from the reference test, separate from observed steps and ownership. */
   intended?: { ids: string[]; sites: SourceSite[]; planned: boolean };
   kind: NarrativeKind;
@@ -242,6 +243,7 @@ export function deriveNarratives(stories: Story[], index: SourceIndex): Narrativ
         sites: declared.intended.steps.flatMap((id) => { const site = namedSteps.find((s) => s.id === id); return site ? [site] : []; }),
         planned: declared.intended.planned } } : {}),
       kind, title, slug: slug(title), file,
+      ...(declared.scope ? { scope: declared.scope } : {}),
       summary: declared.summary, declaredAt: declared.line,
       canonicalTest, canonical,
       variants: group.filter((s) => s !== canonical).sort((a, b) => a.order - b.order),
@@ -468,6 +470,7 @@ function watchKeys(step: Step): Set<string> {
 // ── HTML ───────────────────────────────────────────────────────────────────────
 
 const esc = (s: string) => s.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;');
+const scopeBadge = (scope?: NarrativeScope) => scope === 'doc' ? ' <span class="badge" data-narrative-scope="doc">doc</span>' : '';
 
 /** A named alternate target of a source link, listed in the right-click menu beside the primary. */
 interface Alternate {
@@ -860,7 +863,7 @@ function intendedNarrativeHtml(n: Narrative, index: SourceIndex, feature?: strin
     }).join(' ');
     return `<div class="pline" id="intended-${esc(n.slug)}-${i + 1}"><span class="mark ${site.narration!.planned ? 'added' : ''}">${i + 1} · ${site.narration!.planned ? 'planned' : 'code'}</span><span class="where">${placeLink(site.file, site.line, site.column)} <code>${esc(site.fn)}</code></span><span class="clause">${sentenceHtml(site.sentence!, site, index).html}${changes ? `<br>${changes}` : ''}</span></div>`;
   }).join('');
-  return `<section class="pbox intended" data-planned-narrative="${esc(n.slug)}"><h3>${esc(n.title)}</h3><p class="legend">${pending ? 'Planned narrative · intended order, not an observed run' : 'Declared reference sequence · see the recorded run below'}. Reference test: ${srcLink(n.file, n.declaredAt, 1, n.canonicalTest ?? n.file)}.</p><div class="plines">${rows}</div></section>`;
+  return `<section class="pbox intended" data-planned-narrative="${esc(n.slug)}"><h3>${esc(n.title)}${scopeBadge(n.scope)}</h3><p class="legend">${pending ? 'Planned narrative · intended order, not an observed run' : 'Declared reference sequence · see the recorded run below'}. Reference test: ${srcLink(n.file, n.declaredAt, 1, n.canonicalTest ?? n.file)}.</p><div class="plines">${rows}</div></section>`;
 }
 
 function narrativeHtml(narrative: Narrative, stories: Story[], narratives: Narrative[], index: SourceIndex, links: PageLinks, backlinks: BacklinkIndex): string {
@@ -1675,7 +1678,7 @@ function flowHtml(flow: Flow, ctx: PlanContext): string {
     const state = changes.length === 0 ? 'same' : changes.every((c) => 'built' in c) ? 'done' : 'touched';
     return `<div class="frow ${state}"><span class="n">${step.n}</span><span class="today"><a class="stepref" href="${narrativeHref(n).split('#')[0]}#${esc(n.slug)}-step-${step.n}" title="the step on its narrative page">↗</a> ${today}</span>${lines}</div>`;
   });
-  return `<div class="flow"><h3><a href="${narrativeHref(n)}">${esc(n.title)}</a></h3>
+  return `<div class="flow"><h3><a href="${narrativeHref(n)}">${esc(n.title)}</a>${scopeBadge(n.scope)}</h3>
 ${rows.join('\n')}
 </div>`;
 }
@@ -2514,7 +2517,7 @@ const anchorFor = (name: string) => name.toLowerCase().replace(/[^a-z0-9]+/g, '-
 export function renderNarrativePage(narrative: Narrative, stories: Story[], narratives: Narrative[], index: SourceIndex, backlinks: BacklinkIndex): string {
   const generatedAt = new Date().toISOString();
   const body = `
-<h1>${esc(narrative.title)}</h1>
+<h1>${esc(narrative.title)}${scopeBadge(narrative.scope)}</h1>
 <p class="lede">${esc(narrative.summary)}</p>
 ${LINK_HINT}
 <h2 id="structure">Rides on</h2>
@@ -2531,7 +2534,7 @@ ${narrativeHtml(narrative, stories, narratives, index, PRODUCT_LINKS, backlinks)
 export function renderMechanismPage(mechanism: Narrative, stories: Story[], narratives: Narrative[], index: SourceIndex, backlinks: BacklinkIndex): string {
   const generatedAt = new Date().toISOString();
   const body = `
-<h1>${esc(mechanism.title)}</h1>
+<h1>${esc(mechanism.title)}${scopeBadge(mechanism.scope)}</h1>
 <p class="lede">${esc(mechanism.summary)}</p>
 ${LINK_HINT}
 <h2 id="narratives">Narrative</h2>
@@ -2543,14 +2546,18 @@ ${narrativeHtml(mechanism, stories, narratives, index, MECHANISM_LINKS, backlink
 }
 
 /** A generated page, as the index lists it: its path from the folder the list is read from, and its own title. */
-export interface ListedPage { href: string; title: string }
+export interface ListedPage { href: string; title: string; scope?: NarrativeScope }
 
 /** Every generated page on disk, by kind, each with the path from `from` and the title it gives itself. A spec page
  *  is listed when it is a generated one: a feature folder may hold a hand-written `spec.html` of an earlier method. */
 export function generatedPages(from: string): Array<{ kind: string; pages: ListedPage[] }> {
   const htmlOf = (dir: string, keep: (f: string) => boolean = () => true) => (existsSync(dir) ? readdirSync(dir).filter((f) => f.endsWith('.html') && !f.endsWith('.skeleton.html') && keep(f)).sort().map((f) => join(dir, f)) : []);
   // A page's own title, without what every generated page's title says.
-  const titled = (file: string): ListedPage => ({ href: relative(from, file), title: /<title>([^<]*)<\/title>/.exec(readFileSync(file, 'utf8'))?.[1].replace(/^.*? comprehension — | \(generated\)$/g, '').trim() || relative(from, file) });
+  const titled = (file: string, narrativePage: boolean): ListedPage => {
+    const html = readFileSync(file, 'utf8');
+    return { href: relative(from, file), title: /<title>([^<]*)<\/title>/.exec(html)?.[1].replace(/^.*? comprehension — | \(generated\)$/g, '').trim() || relative(from, file),
+      ...(narrativePage && html.includes('data-narrative-scope="doc"') ? { scope: 'doc' as const } : {}) };
+  };
   const features = join(ROOT, FEATURES);
   const specs = existsSync(features) ? readdirSync(features).map((f) => join(features, f, 'spec.html')).filter((f) => existsSync(f) && readFileSync(f, 'utf8').includes('<meta name="generator"')).sort() : [];
   return [
@@ -2560,13 +2567,13 @@ export function generatedPages(from: string): Array<{ kind: string; pages: Liste
     { kind: 'Deliveries', pages: htmlOf(PLANS_DIR, (f) => f.endsWith('-delivery.html')) },
     { kind: 'Journeys', pages: htmlOf(join(ROOT, JOURNEYS)) },
     { kind: 'Specs', pages: specs },
-  ].map(({ kind, pages }) => ({ kind, pages: pages.map(titled) })).filter((group) => group.pages.length > 0);
+  ].map(({ kind, pages }) => ({ kind, pages: pages.map((file) => titled(file, kind === "Narratives" || kind === "Mechanisms")) })).filter((group) => group.pages.length > 0);
 }
 
 /** The list of every generated page, by kind. `prefix` goes before each path: `/` where a server serves it from the
  *  documents' folder, nothing in the file under the pages' folder. */
 export function renderIndexPage(groups: Array<{ kind: string; pages: ListedPage[] }>, prefix = ''): string {
-  const list = groups.map(({ kind, pages }) => `<h2>${kind}</h2><ul>${pages.map((x) => `<li><a href="${esc(prefix + x.href)}">${esc(x.title)}</a> <small>${esc(x.href)}</small></li>`).join('')}</ul>`).join('');
+  const list = groups.map(({ kind, pages }) => `<h2>${kind}</h2><ul>${pages.map((x) => `<li><a href="${esc(prefix + x.href)}">${esc(x.title)}</a>${scopeBadge(x.scope)} <small>${esc(x.href)}</small></li>`).join('')}</ul>`).join('');
   return `<!doctype html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1"><meta name="generator" content="${esc(SELF)}"><title>${esc(config.name)} — generated pages</title>
 <style>body{font:15px/1.5 system-ui,sans-serif;max-width:52rem;margin:2rem auto;padding:0 1rem}h2{font-size:1rem;margin:1.4rem 0 .3rem}ul{margin:0;padding-left:1.2rem}small{color:#6b7280;margin-left:.4rem}</style></head>
 <body><h1>${esc(config.name)} — generated pages</h1>${HUB ? `<p>${HUB}</p>` : ''}${list || '<p>No page yet: the first render follows the first test run.</p>'}</body></html>

@@ -13,6 +13,12 @@ Narratives are a small, curated set of guides through meaningful code flows. The
 test ownership follow [`workflow.md` § "Narratives and test ownership"](../specs/workflow.md#narratives-and-test-ownership).
 Ordinary tests can own behaviour without adding a page or a variant.
 
+Narratives may declare scope="doc" for documentation generation and authoring flows:
+`@narrative("A scenario becomes published examples", scope="doc")` (also on
+`narrative.mechanism`). The doc label appears on narrative pages, the index and map output;
+`npm run map -- narrative --scope doc` lists that scope. Scope describes the subject area,
+independently of product/mechanism kind, recorded/planned status and test ownership.
+
 Detailed plan cards follow the authored piece-section order in `plan.md`; narrative diagrams retain
 execution order. Authors introduce concepts before pieces rely on them. The tasks stage chooses
 implementation order separately in the delivery's lots and pieces.

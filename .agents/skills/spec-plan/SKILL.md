@@ -39,14 +39,20 @@ format. Port an older plan to the current format before delivery resumes.
   project's rules and the architecture pages that own what the change touches.
 - **Read the narratives the change lands in and assess untold flows.** From the spec's rules,
   name the actions the change enters and set them against the map. Follow `workflow.md`
-  § "Narratives and test ownership": untold code alone is no gap. Propose a new narrative only
-  when a guide through that flow would materially help a developer. Give its question, its
-  reference case, the variants that change the reader's understanding, and its step functions.
+  § "Narratives and test ownership": untold code alone is no gap. Consider recurring kinds of
+  change too: when another developer will need a pattern to follow, choose a representative
+  example and assess whether a narrative would make that pattern clear. Give its question,
+  reference case, useful variants and step functions. Use the doc scope for documentation flows.
 - **Review the narratives used as planning context before relying on them.** Correct misleading
-  steps first. When the reviewer chooses a new narrative of existing behaviour, tell it and have
-  it read first, in its own commit and preferably its own session, taking out the prose it
-  replaces (`workflow.md`). Planning can proceed with direct code links and ordinary tests when
-  a new narrative would add little value; its absence alone is no reason to stop.
+  steps first. When a new narrative of existing behaviour is chosen as planning context, tell it
+  and have it read first, in its own commit and preferably its own session, taking out the prose
+  it replaces. A new flow can be planned with intended narration when the stack supports it.
+  Planning can proceed with direct code links and ordinary tests when a narrative adds little.
+- **Keep documentation in its owning form.** Apply `workflow.md` § "Documentation ownership":
+  patterns and execution belong in narratives, structuring decisions in architecture, local
+  semantics beside code. State deliberate conventions and their reasons at the relevant steps.
+  Link the representative example; remove prose the narrative replaces when it is delivered.
+  Add only information needed to understand or evolve the change, once in its canonical home.
 - **Trace the real code and tests** along every path the feature touches: success, error,
   cancellation, retry, rendering, persistence. A document is no evidence of what a function does
   today.

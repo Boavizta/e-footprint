@@ -39,11 +39,15 @@ def _title(decorator: str, title) -> str:
 
 
 class _Narrative:
-    def __call__(self, title: str):
-        return pytest.mark.narrative(_title("narrative", title), kind="product")
+    def __call__(self, title: str, *, scope: str | None = None):
+        if scope not in (None, "doc"):
+            raise ValueError('a narrative scope is "doc" or None')
+        return pytest.mark.narrative(_title("narrative", title), kind="product", **({"scope": scope} if scope else {}))
 
-    def mechanism(self, title: str):
-        return pytest.mark.narrative(_title("narrative.mechanism", title), kind="mechanism")
+    def mechanism(self, title: str, *, scope: str | None = None):
+        if scope not in (None, "doc"):
+            raise ValueError('a narrative scope is "doc" or None')
+        return pytest.mark.narrative(_title("narrative.mechanism", title), kind="mechanism", **({"scope": scope} if scope else {}))
 
 
 narrative = _Narrative()

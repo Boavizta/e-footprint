@@ -574,7 +574,12 @@ class FileIndex(ast.NodeVisitor):
         return self.imported_as(callee, self.declare) == "narrative"
 
     def narrative(self, cls: ast.ClassDef, decorator) -> dict:
-        arguments = decorator.args if isinstance(decorator, ast.Call) and not decorator.keywords else []
+        arguments = decorator.args if isinstance(decorator, ast.Call) else []
+        scope = None
+        for keyword in decorator.keywords if isinstance(decorator, ast.Call) else []:
+            if keyword.arg != "scope" or not isinstance(keyword.value, ast.Constant) or keyword.value.value not in (None, "doc"):
+                self.refuse(decorator, 'a narrative takes only an optional literal scope="doc"')
+            scope = keyword.value.value
         if len(arguments) != 1 or not isinstance(arguments[0], ast.Constant) or not isinstance(arguments[0].value, str):
             self.refuse(decorator, "a narrative is declared under one literal title: @narrative(\"…\")")
         if not self.is_test or len(self.scopes) > 1:
@@ -590,6 +595,8 @@ class FileIndex(ast.NodeVisitor):
         answer = {"file": self.file, "title": arguments[0].value, "line": decorator.lineno,
                   "summary": re.sub(r"\s+", " ", paragraph).strip(),
                   "firstTest": declared_title(tests[0], self.file)[0] if tests else None}
+        if scope:
+            answer["scope"] = scope
         if isinstance(decorator.func, ast.Attribute):
             answer["kind"] = "mechanism"
         if marked and isinstance(marked[0][1], ast.Call):

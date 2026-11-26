@@ -51,10 +51,24 @@ existing behaviour is chosen as planning context, tell it and have it read befor
 A narrative takes the place of the prose that told its steps: that prose goes, and a link to the
 narrative's page stands where it was. Prose about what no step tells stays.
 
-Architecture pages hold structuring decisions, including ownership and dependency boundaries;
-narratives explain execution flows. A useful new flow can be declared as an intended narrative
-during planning, with its ordered steps and change links visible before a reference run exists
-([the declarations](workflow-formats.md#a-site)).
+A useful new flow can be declared as an intended narrative during planning, with its ordered steps
+and change links visible before a reference run exists ([the declarations](workflow-formats.md#a-site)).
+
+## Documentation ownership
+
+Narratives explain execution flows and recurring implementation patterns through representative,
+tested examples. Architecture pages explain system structure, responsibilities, ownership,
+boundaries and consequential decisions across flows. Local semantics and rationale stay beside
+the code they describe. Each fact has one authoritative home; other surfaces link to it.
+Keep content lean: a feature does not automatically require another explanation or documentation
+section. When a recurring kind of change needs a pattern to follow, consider a narrative and its
+linked example. Make deliberate conventions and their reasons clear at the relevant steps.
+Documentation generation and authoring flows can carry the doc scope label; this describes their
+subject, without introducing another narrative kind or contributor category.
+
+In a brownfield project, retain useful handwritten explanations until a narrative replaces them.
+Then remove the overlapping prose and leave a link; retain structuring decisions the flow does not
+express. Consolidate material as it is touched, without requiring a wholesale documentation rewrite.
 
 ## Scope
 

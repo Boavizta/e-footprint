@@ -44,7 +44,15 @@ const JOURNEYS = typed(config.commands.journeys);
 
 const args = process.argv.slice(2);
 const staleOk = args.includes('--stale-ok');
-const [verb = 'narratives', ...rest] = args.filter((a) => !a.startsWith('--'));
+const positional = [];
+let selectedScope;
+for (let i = 0; i < args.length; i++) {
+  if (args[i] === '--scope') {
+    selectedScope = args[++i];
+    if (selectedScope !== 'doc') { console.error('map: --scope takes doc'); process.exit(1); }
+  } else if (!args[i].startsWith('--')) positional.push(args[i]);
+}
+const [verb = 'narratives', ...rest] = positional;
 const arg = rest.join(' ');
 
 // What a call cost and gave, logged when the process ends (`comprehension_harness/map-log.mjs`).
@@ -133,7 +141,7 @@ function neighbours(list, indent = '    ') {
 
 function narratives(map) {
   say('Narratives — what the code does for one action, told by the code step by step, in the order one test crosses it.', '');
-  for (const n of map.narratives) say(`${n.intended?.planned ? 'planned  ' : n.kind === 'mechanism' ? 'mechanism' : 'product  '}  ${n.slug}`, `           ${n.title} — ${n.intended?.planned ? `${plural(n.intended.steps.length, 'intended step')}, not observed` : `${plural(n.steps.length, 'step')}, ${plural(n.branches.length, 'branch').replace('branchs', 'branches')}`}, ${n.file}`);
+  for (const n of map.narratives.filter((n) => !selectedScope || n.scope === selectedScope)) say(`${n.intended?.planned ? 'planned  ' : n.kind === 'mechanism' ? 'mechanism' : 'product  '}  ${n.slug}${n.scope ? ` [${n.scope}]` : ''}`, `           ${n.title} — ${n.intended?.planned ? `${plural(n.intended.steps.length, 'intended step')}, not observed` : `${plural(n.steps.length, 'step')}, ${plural(n.branches.length, 'branch').replace('branchs', 'branches')}`}, ${n.file}`);
   say('', `next: npm run map -- narrative <slug>   (any part of a slug that names one)`);
 }
 
@@ -144,7 +152,7 @@ const edited = (n) => (n.editedSince.length
 
 function narrative(map, name) {
   const n = pick(map, name);
-  say(`# ${n.title}  [${n.kind}]`, `${n.file}:${n.line} — reference case "${n.canonical}"`, '', n.summary, '');
+  say(`# ${n.title}  [${n.kind}${n.scope ? `, ${n.scope}` : ''}]`, `${n.file}:${n.line} — reference case "${n.canonical}"`, '', n.summary, '');
   if (n.intended) {
     say(n.intended.planned ? 'PLANNED — intended reference sequence, not an observed run:' : 'Declared reference sequence:');
     for (const s of n.intended.steps) say(`  ${s.n}. ${s.sentence} [${s.planned ? 'planned' : 'code'}]`, `     ${at(s)}  in ${s.fn}${s.changes.length ? `\n     linked changes: ${s.changes.join(', ')}` : ''}`);

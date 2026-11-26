@@ -229,7 +229,7 @@ class StoryRecorder:
                 if not isinstance(node, pytest.Class):
                     raise pytest.UsageError(f"{where} — a narrative is declared on a test class: "
                                             f"@narrative(\"…\") above `class Test…`")
-                if len(mark.args) != 1 or not isinstance(mark.args[0], str) or mark.kwargs.get("kind") not in KINDS:
+                if len(mark.args) != 1 or not isinstance(mark.args[0], str) or mark.kwargs.get("kind") not in KINDS or mark.kwargs.get("scope") not in (None, "doc"):
                     raise pytest.UsageError(f"{where} — a narrative is declared with declare.py: "
                                             f"@narrative(\"<title>\") or @narrative.mechanism(\"<title>\")")
             if item.get_closest_marker("canonical") and not item.get_closest_marker("narrative"):
@@ -311,7 +311,8 @@ class StoryRecorder:
         story = {
             "file": file,
             "test": title_of(item),
-            "narrative": {"title": narrative.args[0], "kind": narrative.kwargs["kind"]} if narrative else None,
+            "narrative": {"title": narrative.args[0], "kind": narrative.kwargs["kind"],
+                          **({"scope": narrative.kwargs["scope"]} if narrative.kwargs.get("scope") else {})} if narrative else None,
             "canonical": item.get_closest_marker("canonical") is not None,
             "order": self.order.get(item.nodeid, len(self.order) + 1),
             "state": state,
@@ -361,7 +362,7 @@ class StoryRecorder:
 
 
 def pytest_configure(config):
-    config.addinivalue_line("markers", "narrative(title, kind): the test class tells a narrative (declare.py)")
+    config.addinivalue_line("markers", "narrative(title, kind, scope): the test class tells a narrative (declare.py)")
     config.addinivalue_line("markers", "canonical: the reference case of its narrative (declare.py)")
     config.addinivalue_line("markers", "titled(title): the test's title, when its name cannot hold it (declare.py)")
     config.addinivalue_line("markers", "planned_test(title): a test to write, with an empty body (declare.py)")

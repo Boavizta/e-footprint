@@ -70,7 +70,9 @@ Conversational bug batches use `bug-fixes` (diagnostics plus `tasks.md`), then `
 
 ## Documentation upkeep
 
-When you implement a non-trivial pattern (new relationship type, new calculated-attribute pattern, serialization change), update the owning page under `specs/architecture/`, `specs/conventions.md`, or `specs/testing.md` — a one-line mention in the right section is enough. The goal is to keep specs accurate so future agents don't rediscover patterns from code.
+Keep explanations in their canonical homes, following `specs/workflow.md` § "Documentation ownership":
+execution and recurring patterns in narratives, structuring decisions in architecture, local semantics
+beside code. Update the owning explanation when it changes, removing duplication as material is touched.
 
 ## Git commit style
 

@@ -28,6 +28,20 @@ function example() {
 }
 
 describe('intended narrative sequences', () => {
+  it('shows documentation scope on intended narrative and plan pages before any run exists', () => {
+    const { doc, build } = example();
+    doc.narratives[0].scope = 'doc';
+    const { index, narratives } = build();
+    const [n] = narratives;
+    expect(n.scope).toBe('doc');
+    expect(n.canonical).toBeNull();
+    const html = renderNarrativePage(n, [], narratives, index, { entries: [], byKey: new Map() });
+    expect(html).toContain('data-narrative-scope="doc">doc</span>');
+    expect(html).toContain('intended order, not an observed run');
+    const [plan] = derivePlans([], narratives, index, { statics: [], todos: [], journeyCases: [] });
+    expect(renderPlanPage(plan, [], narratives, index)).toContain('data-narrative-scope="doc">doc</span>');
+  });
+
   it('derives a source-only narrative without inventing observed steps, crossings or ownership', () => {
     const { index, narratives } = example();
     expect(narratives).toHaveLength(1);

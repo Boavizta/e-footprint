@@ -55,7 +55,7 @@ crossed by the narrative. A collector that records the test body alone omits the
 | Field | Holds |
 |---|---|
 | `file`, `test` | The test file and the test's title |
-| `narrative` | `{ title, kind }` of the narrative the test is declared in, `kind` being `product` or `mechanism`; `null` outside one |
+| `narrative` | `{ title, kind, scope? }` of the narrative the test is declared in, `kind` being `product` or `mechanism`; `null` outside one |
 | `canonical` | The test marked itself the narrative's reference case |
 | `order` | A number growing with the run: variants are told in that order |
 | `state`, `durationMs` | Shown on the page, never judged. `xfailed` for a failure the run expected |
@@ -113,6 +113,10 @@ on the reference test under `@narrative`. A skipped `@planned_test` is intended;
 reference is checked against the first occurrences of its named `narrate(sentence, step=id)` calls
 in the test body. Shell detection ignores the planned step declarations. A step ID is two kebab-case
 names parted by `:`, independent of the feature whose change places it may link.
+
+A narrative's optional `scope` is `"doc"` for documentation generation and authoring.
+Declare it on the narrative, emit it in its story and source declaration, and omit it otherwise.
+It is subject-area metadata: ownership, execution and intended/observed status remain unchanged.
 
 ## 2. The source index: what the source says without running
 
