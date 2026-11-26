@@ -125,6 +125,11 @@ This audits your reasoning. It is no section of `plan.md`.
   reference test declares the IDs in intended order, without repeating the sentences. The page must label
   this as intent, never an observed run or landing. On implementation the named steps become recorded
   narration and the reference verifies their order. An existing-behaviour step needs no change link.
+- **Cross-piece sections hold genuinely shared decisions, stated once.** Keep one only when it
+  constrains several named pieces and has no clear owning piece or site. Put owned details with
+  their pieces and sites, and test expectations in their cases. Remove repeated overviews,
+  verification reports, unchanged guarantees and process commentary. Omit empty sections; never
+  use them to bypass piece budgets.
 - **Each fact once.** What a site's clause says, the section does not repeat; what a test title
   says, neither does.
 
