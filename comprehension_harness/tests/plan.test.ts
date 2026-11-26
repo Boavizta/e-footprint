@@ -919,6 +919,16 @@ describe('the approved plan', () => {
     expect(findings(now({}, says(MD, 'nothing did.'), null)).failures).toEqual(['planned: specs/features/demo/plan.md:9 #cut says "Changed:" and the plan was never approved — there is nothing to have changed from']);
   });
 
+  it.each([40, 80, 81])('checks an explanation of %i words against the 80-word Changed limit, excluding its claims', (count) => {
+    const opening = '**The clause changes.**';
+    const explanation = `${opening} ${Array(count - 3).fill('context').join(' ')}`;
+    const md = MD.replace('The reader cuts.', 'The reader trims.');
+    const plan = now({}, says(md, `${explanation} → statement "The reader trims."`, ''));
+    expect(findings(plan).failures).toEqual(count <= 80 ? [] : [
+      'planned: specs/features/demo/plan.md:9 #cut says what moved and why in 81 words, and the budget is 80 — one edit a paragraph: a second edit is a second "Changed:"',
+    ]);
+  });
+
   it('reads what moved off the bold opening, and fails a reason that says no what', () => {
     const reworded = { sites: [{ ...crossedSite, sentence: 'reworded.' }] };
     expect(now(reworded, says(MD, 'No site named it.', '**The clause names `latestPriors`.** ')).doc!.sections[0].changed).toEqual([

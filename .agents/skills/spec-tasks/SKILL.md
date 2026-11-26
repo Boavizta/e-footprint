@@ -109,7 +109,10 @@ any site, a helper called on the line before a site. Search for those.
 No edit of an approved plan is silent: a unit that differs from the approval carries a `Changed:`
 paragraph or the check fails.
 
-- **A `Changed:` is one edit**: what moved, in bold, why, then the lines it comes to.
+- **A `Changed:` is one edit**: the proposed change in bold, then what the approved plan said,
+  what is proposed instead, and why. For a new decision, explain what was previously unspecified.
+  Include the concrete actions and consequences needed to judge it; use up to 80 words, with no
+  minimum (`workflow-formats.md` § "`plan.md`"). Then name the lines it comes to.
 - **Written for a reader who has not read the code.** Use only words the plan has defined, or
   name the function. Say what happens to the user or to the code, in the order it happens, then
   what it costs. The method's own words (ripple, site, facet, claim) stay out of it.

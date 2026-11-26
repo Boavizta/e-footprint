@@ -158,7 +158,8 @@ The plan is the only record of a decision. No callout, no list in a report.
 
 - **`Changed:`** for whatever changes a line of the plan: a deviation you accept, a fix that
   moves a clause, a test beyond the plan. One paragraph an edit, in the piece's section, in words
-  the reviewer can read without the code. **A fix that undoes a built place takes it back**, by an
+  the reviewer can read without the code. Explain the approved plan, the proposed change and why,
+  following `workflow-formats.md` § "`plan.md`". **A fix that undoes a built place takes it back**, by an
   `unbuilt` claim on its line, and takes its `built` call off: the check fails one left standing. The check asks for it when the fix left nothing at the place; a
   fix that leaves code there which no longer does what the clause says is seen by no tool, and
   the pages read the place as built until you write it.

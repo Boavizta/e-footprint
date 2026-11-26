@@ -211,6 +211,13 @@ Three paragraphs have a prefix:
 | `Changed: **what moved.** why → its lines; its commits` | One edit of an approved plan | A unit no longer reads as approved |
 | `Note: **the point.** what follows from it` | Something to know, asking no answer | A piece was built with a choice no line of the plan says and a later lot stands on |
 
+**Write each `Changed:` for a reviewer who has not read the code.** Start with the proposed
+change in bold, then explain what the approved plan said, what is proposed instead, and why.
+For a newly added decision, explain what the approved plan left unspecified. Name concrete actions,
+functions or tests rather than relying on workflow terms such as "expanding one owner". Include
+any consequence needed to judge the change. Use up to 80 words, with no minimum; keep simple edits
+short and use the space when context is needed. One paragraph still explains one edit.
+
 After ` → `, a `Changed:` names the lines of the difference it comes to, parted by `;`: a kind
 (`code`, `test`, `statement`, `reason`, `kind`, `text`, `unbuilt`) and a fragment the line holds, in double quotes
 when it has a space. `Changed: **Its narrative case leaves for #wrap-row.** It reads the row the
@@ -244,7 +251,8 @@ Each fact has one home, and each home a budget in words, which the check enforce
 | Why, and what was refused | The rest of the section | 60 |
 | A point to confirm, a waiver | Its paragraph, its item | 60 |
 | What is wrong, for whoever meets a bug | The bug's section | 60 |
-| An edit, a note, a lot's reason | Its paragraph, its item | 40 |
+| An edit | Its `Changed:` paragraph | 80 |
+| A note, a lot's reason | Its paragraph, its item | 40 |
 
 A word is a run of characters between spaces. The tag, the `[rule]` suffix, the prefixes and a
 paragraph's claims are not counted.

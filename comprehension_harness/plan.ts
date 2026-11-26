@@ -444,7 +444,7 @@ export interface PlanNote {
 }
 
 /** Words at most. A piece over its budget fails `--check`: the page is read, so it stays short. */
-export const BUDGET = { clause: 25, title: 20, what: 30, why: 60, ask: 60, bug: 60, changed: 40, lot: 40, note: 40, pointer: 40 } as const;
+export const BUDGET = { clause: 25, title: 20, what: 30, why: 60, ask: 60, bug: 60, changed: 80, lot: 40, note: 40, pointer: 40 } as const;
 
 export const words = (text: string) => text.trim().split(/\s+/).filter(Boolean).length;
 
