@@ -67,17 +67,3 @@ class TestClassMetadata:
     @planned_test("agent-guidance#class-reference: Command and website references agree on descriptions, defaults, allowed values and pitfalls, retaining docstrings for empty calculated attributes [one-text-per-class]")
     def test_shared_class_reference(self):
         pass
-
-
-@narrative("Documentation is generated")
-class TestDocumentationGeneration:
-    """A website build combines class references, canonical topics and the guide; missing concrete examples stop reference generation."""
-
-    @canonical(steps=("documentation:prepare-output", "documentation:check-class-examples", "documentation:render-class-pages", "documentation:assemble-pages", "documentation:write-pages"))
-    @planned_test("agent-guidance#canonical-topics: Documentation generation writes class references, canonical topics and the guide through the existing website template")
-    def test_documentation_is_generated(self):
-        pass
-
-    @planned_test("agent-guidance#class-reference: Missing concrete-class examples stop documentation generation before reference pages are written and name every missing class")
-    def test_missing_documentation_examples_fail_loudly(self):
-        pass

@@ -65,11 +65,10 @@ thresholds as universal cutoffs. Server sizing diagnostics remain in server meta
 
 Assemble the default guide and its website page from the same selected sections, example source and registry-generated lookup catalogues.
 
-The preview fixes reading order and marks missing canonical text. Selection uses explicit page
-headings, not line offsets or summaries. Reuse named snippet markers already supported by
-pymdownx; expand the same Python regions for command output. Only transitions, selection and link
-presentation belong to the assembly. Compare text after normalizing links, never separately
-maintained snapshots.
+The preview fixes reading order and marks missing canonical text. Select sections by heading.
+Use PyMdown Snippets' named Python-comment regions for website includes and expand the same
+regions for command output. Assembly owns transitions, selection and link presentation. Compare
+text after normalizing links, without separately maintained snapshots.
 
 ## #example-discovery
 
@@ -173,10 +172,17 @@ usable, without adding separate cases for each demonstrated API operation.
 ## Narratives to introduce
 
 #command and #class-reference use “An agent consults class metadata”, with the existing class-reference
-parity case as its reference. #canonical-topics and #guide-assembly use “Documentation is generated”,
-with a successful build and a missing-example failure variant. Intended step order lives on the
-reference tests; step sentences and linked change places live beside the code. Architecture pages
-retain structuring decisions; these narratives explain the execution flows.
+parity case as its reference. Intended step order lives on the reference test; step sentences and
+linked change places live beside the code. Architecture pages retain structuring decisions; this
+narrative explains the class-lookup execution flow.
+
+## Documentation generation coverage
+
+#canonical-topics, #class-reference and #guide-assembly use fresh documentation generation followed
+by `poetry run mkdocs build --strict` as the overall documentation success gate. Keep the focused
+class, topic and guide parity tests for content agreement. The missing-concrete-example failure
+remains an ordinary test of #class-reference. No separate documentation success test or generation
+narrative is planned.
 
 ## Command and lookup coverage
 

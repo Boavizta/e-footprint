@@ -3,7 +3,7 @@ import shutil
 
 from efootprint.agent_guide.topics import read_topic
 from efootprint.agent_guide.guide import render_guide
-from efootprint.narrate import narrate, planned
+from efootprint.narrate import planned
 
 from docs_sources.doc_utils.format_tutorial_md import efootprint_tutorial_to_md, \
     format_tutorial_and_save_to_mkdocs_sourcefiles
@@ -30,7 +30,6 @@ def wipe_out_folder_while_keeping_file(folder_path, file_to_keep):
             shutil.rmtree(item_path)  # Recursively delete the directory
 
 
-narrate.planned("documentation:prepare-output", "The generator **prepares the output directory and notebook tutorial** for the website.")
 logger.info("Wiping out generated_mkdocs_sourcefiles")
 wipe_out_folder_while_keeping_file(generated_mkdocs_sourcefiles, file_to_keep=".gitignore")
 logger.info("Converting e-footprint tutorial to markdown")
@@ -49,11 +48,9 @@ with open(os.path.join(generated_mkdocs_sourcefiles, "Changelog.md"), "w") as fi
     file.write(changelog)
 
 # Copy the entire directory tree, resolving placeholders in hand-written .md files
-narrate.planned("documentation:assemble-pages", "Canonical packaged topics and the guide **join the website sources** alongside the existing documentation pages.", changes=("agent-guidance#canonical-topics:website-topics", "agent-guidance#guide-assembly:website-guide"))
 planned("agent-guidance#canonical-topics:website-topics", "Copy packaged canonical pages through `read_topic`, preserving their existing website URLs and avoiding duplicate source pages.")
 planned("agent-guidance#guide-assembly:website-guide", "Write the guide page with `render_guide` using website links and the same canonical sections as command output.")
 placeholder_handlers = build_doc_placeholder_handlers()
-narrate.planned("documentation:write-pages", "The website sources **resolve their links and are written** into the generated documentation directory.", changes=("agent-guidance#canonical-topics:website-topics", "agent-guidance#class-reference:website-links"))
 for root, _, files in os.walk(mkdocs_sourcefiles):
     rel_dir = os.path.relpath(root, mkdocs_sourcefiles)
     dest_dir = os.path.join(generated_mkdocs_sourcefiles, rel_dir) if rel_dir != "." \
