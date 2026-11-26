@@ -1,5 +1,8 @@
 # Agent guide — planning preview
 
+On hold with the [plan](plan.md). Its example sources, ownership map and tutorial exclusion must
+be revised after executable-modeling-documentation; see the [resumption instructions](resume.md).
+
 This is the proposed reading order with the actual existing source text and explicitly marked gaps.
 It is a review artifact, not another maintained guide. Implementation improves the owning canonical
 sources and assembles them; this file does not ship. Preview-source notes and GAP blocks are not

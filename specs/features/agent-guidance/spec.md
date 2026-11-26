@@ -1,5 +1,9 @@
 # Agent guidance
 
+On hold until [Executable modeling documentation](../executable-modeling-documentation/spec.md)
+is delivered and reviewed. This spec must then be revised using the
+[resumption instructions](resume.md) before planning or implementation continues.
+
 The library ships a guide for coding agents and a command that prints it, so that an agent
 models with the installed version from one instruction of its user.
 
@@ -134,8 +138,8 @@ documentation or class reference, reused by the guide.
   are said as pitfalls; changing them is a modeling decision of its own.
 - A change of what the export writes. The guide says when and how to save calculated values
   before exporting.
-- An edge example, and the Industrial IoT starter moving from the interface into the package: the
-  `edge-example` feature.
+- Authoring the shared tutorials and examples, including the Industrial IoT starter's move into
+  the package: [Executable modeling documentation](../executable-modeling-documentation/spec.md).
 - The interface's entry for starting from a conversation with an AI agent: `start-from-ai-agent`,
   in the interface.
 - A text file at the root of the documentation site for AI assistants to fetch. Chat assistants

@@ -18,18 +18,23 @@ as they are touched. The first read of a computed value sits in the reactive cor
 code: its narrative waits for a measure against the performance baselines. A feature in flight on
 `plan.html` and `tasks.md` (`edge-networks`, `workflow-improvements`) is finished by hand.
 
-### Agent guidance — planned, awaiting plan review
+### Executable modeling documentation — specified, awaiting spec review
+
+[`features/executable-modeling-documentation/`](features/executable-modeling-documentation/spec.md):
+one Jupytext Python source per scenario produces its notebook, documentation, packaged model and
+reusable content for agents. E-commerce and Industrial IoT become independent web and edge
+tutorials; focused guides reuse those sources. Absorbs the former edge-example feature, including
+the IoT device group and interface starter handoff. Changes both repositories; the spec is here.
+
+### Agent guidance — on hold for executable modeling documentation
 
 [`features/agent-guidance/`](features/agent-guidance/spec.md): a short guide for coding agents ships
 in the package, and `python -m efootprint.agent_guide` prints it, a class's reference, a how-to
 topic or the list of examples. The how-to pages move into the package, the earlier web-chat prompt
 and kit leave the repository, and the defects three trial runs met are fixed. Library-only.
-
-### Edge example — specified, awaiting the spec's approval
-
-[`features/edge-example/`](features/edge-example/spec.md): the Industrial IoT starter moves from
-the interface into the package's examples, with a group of devices. Changes both repositories; the
-interface's plan is written in its worktree. Independent of `agent-guidance`.
+Resume only after executable modeling documentation is delivered and reviewed, following
+[`resume.md`](features/agent-guidance/resume.md): revise the spec, plan, source annotations and
+preview to consume its canonical examples before seeking approval again.
 
 ### Not yet wired: `mkdocs build --strict` in CI
 

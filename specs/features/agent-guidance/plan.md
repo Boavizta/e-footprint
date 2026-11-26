@@ -1,5 +1,9 @@
 # Agent guidance — plan
 
+On hold until [Executable modeling documentation](../executable-modeling-documentation/spec.md)
+is delivered and reviewed. The pieces below retain the previous planning context; follow the
+[resumption instructions](resume.md) to revise them before approval, tasking or implementation.
+
 Ship installed-version guidance assembled from canonical documentation and executable sources. The
 construction narrative is approved; this plan changes no modeling behavior yet. Read the
 [guide preview](guide-preview.md) alongside the pieces. The new command has no existing run order:
@@ -236,7 +240,8 @@ that README links resolve from PyPI is unchanged.
 lifecycle changes. #class-reference preserves doc-as-code and upward-only imports. #canonical-example
 uses current save/load and duplication APIs; neither JSON shape nor cached-state policy changes.
 No registry of modeling classes changes and no migration is needed. Interface behavior is
-documented, not changed; edge-example and start-from-ai-agent remain independent features.
+documented, not changed; shared examples now belong to executable-modeling-documentation, and
+start-from-ai-agent remains independent. Reconcile these boundaries when resuming this plan.
 
 ## Acceptance beyond deterministic checks
 
