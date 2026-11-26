@@ -126,13 +126,13 @@ describe('tierOf', () => {
 });
 
 describe('parseIntent', () => {
-  const md = ['# The cap', '', 'Lead line one', 'and two.', '', '## Rules no screen shows', '', '- **rule-a** The first rule,', '  continued.', '- **rule-b** The second.', '', '## Decision', '', '#cut-to-cap opens a paragraph and is no heading.'].join('\n');
+  const md = ['# The cap', '', 'Lead line one', 'and two.', '', '## Behavioral requirements', '', '- **rule-a** The first rule,', '  continued.', '- **rule-b** The second.', '', '## Decision', '', '#cut-to-cap opens a paragraph and is no heading.'].join('\n');
 
   it('parses the title, the lead, the sections, and takes an item\'s slug off its text', () => {
     const intent = parseIntent(md, 'spec.md');
     expect(intent.title).toBe('The cap');
     expect(intent.lead).toEqual([{ kind: 'p', text: 'Lead line one and two.', line: 3 }]);
-    expect(sluggedItems(intent, 'Rules no screen shows')).toEqual([
+    expect(sluggedItems(intent, 'Behavioral requirements')).toEqual([
       { slug: 'rule-a', text: 'The first rule, continued.', line: 8 },
       { slug: 'rule-b', text: 'The second.', line: 10 },
     ]);
@@ -145,9 +145,15 @@ describe('parseIntent', () => {
   });
 
   it('holds every rule to a slug, and to a slug of its own', () => {
-    expect(() => rulesOf(parseIntent('# T\n\n## Rules no screen shows\n\n- **rule-a** One.\n- A rule with no name.', 'spec.md'), 'spec.md')).toThrow(/spec\.md:6/);
-    expect(() => rulesOf(parseIntent('# T\n\n## Rules no screen shows\n\n- **rule-a** One.\n- **rule-a** Two.', 'spec.md'), 'spec.md')).toThrow(/spec\.md:6 — two rules are named "rule-a"/);
+    expect(() => rulesOf(parseIntent('# T\n\n## Behavioral requirements\n\n- **rule-a** One.\n- A rule with no name.', 'spec.md'), 'spec.md')).toThrow(/spec\.md:6/);
+    expect(() => rulesOf(parseIntent('# T\n\n## Behavioral requirements\n\n- **rule-a** One.\n- **rule-a** Two.', 'spec.md'), 'spec.md')).toThrow(/spec\.md:6 — two rules are named "rule-a"/);
     expect(rulesOf(parseIntent('# T\n\n## Other\n\n- x', 'spec.md'), 'spec.md')).toEqual([]);
+  });
+
+  it('allows a spec without additional requirements, but never silently drops the former section', () => {
+    expect(rulesOf(parseIntent('# T\n\n## The change\n\nUse one source.\n', 'spec.md'), 'spec.md')).toEqual([]);
+    expect(() => rulesOf(parseIntent('# T\n\n## Rules no screen shows\n\n- **still-required** Preserve this.\n', 'spec.md'), 'spec.md'))
+      .toThrow(/spec\.md:3 — rename .* to "Behavioral requirements"/);
   });
 });
 
@@ -168,7 +174,7 @@ const comment = (slug: string, file: string, line: number, removes = false): Sta
 const todo = (slug: string, file: string, line: number, rule: string | null = null, tier: PlanTodo['tier'] = 'unit'): PlanTodo => ({ feature: 'demo', slug, file, line, column: 3, title: `${slug} is tested`, rule, tier, written: false, reproduction: false, run: null, body: null });
 const crossed = (narrative: string, at: number) => ({ narrative, at, step: null });
 
-const SPEC = '# Demo\n\n## Rules no screen shows\n\n- **owned-once** One owner.\n- **owned-twice** Two owners.\n- **owned-by-none** No owner.\n';
+const SPEC = '# Demo\n\n## Behavioral requirements\n\n- **owned-once** One owner.\n- **owned-twice** Two owners.\n- **owned-by-none** No owner.\n';
 const PLAN = '# The plan\n\nLead.\n\n## Where the cap is applied\n\nIn the reader: #cut and #save.\n\n## The column\n\n- #cap-column is nullable.\n- #ghost is named and does not exist.\n';
 const docs = (plan: string | null = PLAN, spec: string | null = SPEC, folderExists = true) => (feature: string): FeatureDocs => ({
   folderExists,
@@ -440,7 +446,7 @@ describe('findings', () => {
   });
 
   it('at the archive gate, passes once nothing is planned and every rule is owned by a written test', () => {
-    const spec = '# S\n\n## Rules no screen shows\n\n- **one-rule** A rule.\n- **other-rule** Another.\n';
+    const spec = '# S\n\n## Behavioral requirements\n\n- **one-rule** A rule.\n- **other-rule** Another.\n';
     const written = (rule: string | null) => ({ ...todo('cut', 'tests/x.test.ts', rule === 'other-rule' ? 9 : 3, rule), written: true });
     const [unowned] = assemble({ todos: [written('one-rule')], docs: docs(null, spec) });
     expect(findings(unowned).failures).toEqual([]);

@@ -30,7 +30,7 @@
  * first crosses them. Then the pieces whose calls no canonical story crosses (a shell is one), then the pieces
  * with no runtime line, both in file order.
  *
- * Ownership: each rule of `spec.md` § "Rules no screen shows" opens with a slug, and the one test that owns it
+ * Ownership: each rule of `spec.md` § "Behavioral requirements" opens with a slug, and the one test that owns it
  * ends its title with `[slug]`. `findings` fails a `[slug]` that names no rule and a rule with two owners; a
  * rule with no owner is listed. A rule the plan gives no test is waived in `plan.md` § "Rules no test holds",
  * with the reason; it then has no owner, and a rule with both fails.
@@ -654,7 +654,7 @@ export interface PlanGroup {
   pieces: PlanPiece[];
 }
 
-/** A rule of `spec.md` § "Rules no screen shows" and the tests that claim it. One owner is the rule, or a
+/** A rule of `spec.md` § "Behavioral requirements" and the tests that claim it. One owner is the rule, or a
  *  waiver of `plan.md` and no test. */
 export interface PlanRule {
   slug: string;
@@ -1270,10 +1270,12 @@ export function pieceDocOf(section: PlanSection, file: string): PlanPieceDoc {
   return { section, kind, what: first.text, why: rest.filter((b) => b !== asks[0] && !(b.kind === 'p' && (CHANGED.test(b.text) || NOTE.test(b.text)))), ask, notes };
 }
 
-export const RULES_SECTION = 'Rules no screen shows';
+export const RULES_SECTION = 'Behavioral requirements';
 
-/** The rules of a `spec.md`: every item of its "Rules no screen shows" section, each opening with its slug. */
+/** The rules of a `spec.md`: every item of its "Behavioral requirements" section, each opening with its slug. */
 export function rulesOf(intent: Intent, file: string): Array<Omit<PlanRule, 'owners' | 'waiver'>> {
+  const obsolete = intent.sections.find((s) => s.title === 'Rules no screen shows');
+  if (obsolete) throw new Error(`comprehension-plan: ${file}:${obsolete.line} — rename "${obsolete.title}" to "${RULES_SECTION}"`);
   const section = intent.sections.find((s) => s.title === RULES_SECTION);
   if (!section) return [];
   for (const b of section.blocks) {

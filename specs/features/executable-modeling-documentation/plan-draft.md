@@ -11,6 +11,16 @@
   and catalogue metadata. Reuse the existing introductory/how-to registries and their relationship
   between one scenario and several guides; settle exact paths and any registry simplification
   during planning. Do not maintain a separate handwritten script for the same scenario.
+- Construct authored input timeseries throughout tutorials and packaged scenarios with the
+  `efootprint.builders.timeseries` classes and their `form_inputs`:
+  `ExplainableHourlyQuantitiesFromFormInputs`, `ExplainableRecurrentQuantitiesFromConstant`,
+  and `ExplainableRecurrentQuantitiesFromWeeklyPattern`, as the scenario requires. Explain the
+  temporal assumptions where each builder is used, including uniform demand within each day for
+  the hourly-volume builder; hourly resolution does not imply arbitrary hourly variation.
+  Retain only a short note that custom timeseries at hourly resolution are supported, but their
+  values cannot be edited manually in the interface and must be updated in Python and re-exported.
+  Do not carry custom-array construction or synthetic-array composition into the tutorial/how-to
+  migrations. Custom arrays remain a supported option for data the builders cannot express.
 - Generate both full documentation/notebooks and a coherent selection without plotting from the
   same source, preserving cell order and source wording apart from presentation and links. Split
   cells that both build the model and plot it. Select the accompanying prose too; chart-dependent
@@ -28,8 +38,7 @@
   Boavizta-backed web/database servers and editable hourly volumes. It becomes the web tutorial
   scenario. Preserve useful content from `tutorial.ipynb` through that tutorial or focused guides,
   including service builders, comparisons, attribution and explainability; do not keep a competing
-  large streaming introduction. Multiple plot variants and synthetic-array composition need not
-  remain on the introductory path.
+  large streaming introduction. Multiple plot variants need not remain on the introductory path.
 - The IoT source currently lives in the interface at
   `scripts/intro_example_scenarios/iot_industrial.py`; its JSON and picker registry are under
   `model_builder/domain/reference_data/modeling_examples/introductory/`.
@@ -58,10 +67,11 @@
   entry points overwrite packaged JSON; distinguish regeneration from demonstration exports to a
   user-selected location. Decide whether generated notebooks stay committed for direct use, and
   how stale generated artifacts are detected, in the plan.
-- Reuse actual scenario objects for class-reference examples where useful and keep small explicit
-  supplements for missing concrete classes. `docs_sources/doc_utils/docs_case.py` and
-  `generate_object_reference.py` currently supply that coverage. Retire overlapping model
-  definitions once replaced; do not expand tutorials merely to satisfy the class catalogue.
+- When replacing overlapping definitions in `docs_sources/doc_utils/docs_case.py`, preserve the
+  class-reference examples they currently supply to `generate_object_reference.py`. Reuse actual
+  scenario objects where useful and keep small explicit supplements for examples the scenarios
+  do not supply. Check preservation with that replacement; do not expand tutorials merely to
+  satisfy the class catalogue.
 - General methodology remains conceptual and links to tutorial result inspection. Shared Python
   conventions have one canonical home; decide whether the remaining common material warrants the
   short `modeling_from_python` page after outlining the two tutorials. Workflow specific to

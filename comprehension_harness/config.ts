@@ -53,7 +53,8 @@ export interface Config extends LayoutSettings {
     tests: string[];
     /** Keeps test files running at each save, their paths following. */
     watch: string[];
-    /** Runs the journeys. */
+    /** Runs screen journeys. An empty list disables this optional integration, regardless of whether
+     *  the product has a UI. Its spec is then spec.md alone and needs no journey run or captures. */
     journeys: string[];
     /** Optional: the test folders `tests` does not run, each as a path from the root ending in `/`, with the
      *  command that runs a file of it once, its paths following, or null for a folder no tool runs (a server

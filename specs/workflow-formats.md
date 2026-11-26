@@ -15,8 +15,9 @@ repository's (`.agents/repository.md`).
 - A **piece** is one statement about a feature, with its reason, its changes and its tests. It is
   atomic to read and to approve, not to ship. Its name is `<feature>#<slug>`, both kebab-case.
 - A **site** is one place tagged with a piece. Several sites share a piece; nothing is numbered.
-- A **rule** is a behaviour of the spec that no screen shows. One test in an appropriate tier
-  owns it, whether narrative or ordinary, or a **waiver** says why none does.
+- A **rule** is an observable requirement in the spec's optional **Behavioral requirements**
+  section. One existing or new test in an appropriate tier owns it, or a **waiver** says why
+  none does. Screen criteria declared in configured journeys are not repeated as rules.
 - A **lot** is what one implementer delivers and one reviewer reads: a few pieces, a commit each.
 - A **bug** is what is wrong for whoever meets it, with the pieces that fix it: one, or several
   when the fix is several decisions.
@@ -33,7 +34,7 @@ repository's (`.agents/repository.md`).
 
 | File | Written by | Holds |
 |---|---|---|
-| `spec.md` | specify | The intent, and the rules no screen shows |
+| `spec.md` | specify | The intent, and any additional behavioral requirements |
 | Mockup fragments | specify | One per decision on screen, where the repository draws journeys |
 | `plan-draft.md` | specify, when the discussion held any | The technical decisions already made, a line each. The plan stage turns them into pieces and deletes the file |
 | `plan.md` | plan, then every later stage, in place | A section a piece, the decisions across pieces, the waivers, the delivery |
@@ -52,16 +53,27 @@ A title, a lead, then sections of paragraphs and `- ` lists, nothing else. It st
 as it is agreed now and is edited in place: no dated note, no record of a decision.
 
 - **Problem**, then **The change**, in the user's terms. No file, no function, no type.
-- **Rules no screen shows**: one item a rule, opening with its bold slug.
+- **Behavioral requirements**, optional: one item a rule, opening with its bold slug.
   `- **free-by-default** An order is not wrapped unless the buyer asks.`
-  A rule is a behaviour a test can hold. A constraint on the implementation is worded as what the
-  user would observe, or the plan will waive it.
+  Record consequential, observable requirements of the agreed feature that **The change** leaves
+  ambiguous. A rule must belong to this feature's scope and responsibility and remain necessary
+  under any valid implementation. Being testable, or describing a possible failure, is not enough.
+  Risks introduced by a possible implementation or migration belong with that choice in the
+  plan. Unchanged guarantees of existing code and responsibilities of other components do not
+  become new feature requirements. Keep architectural decisions and editorial instructions in
+  their owning explanation or plan; remove paraphrases rather than turning them into test
+  obligations. Omit the section when it adds nothing. Planning assigns an existing or new test,
+  or an explicit justified waiver; a rule does not demand a new test of its own.
 - **Not doing**: what was considered and left out.
 
-Where the repository draws journeys, what changes on screen is not described here. It is declared
-in the journey tests: a **planned screen** names the feature and a mockup fragment, and each
-criterion on a screen is a **case to write**, a title tagged with the feature and the screen. A
-case is a screen, or a state of one, worth seeing; a criterion that is logic is a rule.
+Screen journeys are an optional verification capability, enabled by a nonempty
+`commands.journeys` in `comprehension.config.json`, independently of whether the product has a UI.
+Where configured, criteria best demonstrated visually are declared in the journey tests: a
+**planned screen** names the feature and a mockup fragment, and each criterion is a **case to
+write**, a title tagged with the feature and screen. Do not repeat that criterion in the spec.
+Other behavior uses appropriate tests regardless of UI presence. Without configured journeys,
+the spec stands alone; describe any relevant visible changes in its prose without requiring
+captures or a browser run. Local conventions and test tiers belong in `.agents/repository.md`.
 
 ## A site
 

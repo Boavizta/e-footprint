@@ -33,10 +33,16 @@ variants that materially change the reader's understanding of that answer. Add a
 when its value as a guide justifies another page to maintain and read. A feature requirement or
 an additional code path alone does not justify a narrative, a step or a variant.
 
-Each rule has an appropriate test owner, or an explicit waiver. Use a narrative case when it helps
-explain the flow; otherwise use an ordinary test at the appropriate level. Narrative tests remain
-real, asserted examples. A narrative crossing a branch does not oblige it to own every assertion
-about that branch. Preserve necessary coverage when moving a case out of a narrative.
+The spec's optional **Behavioral requirements** section records agreed feature outcomes that the
+explanation leaves ambiguous and that hold independently of implementation choices. Possible
+regression risks, unchanged existing guarantees and another component's responsibilities are not
+new feature requirements; `workflow-formats.md` § "`spec.md`" gives the selection criteria. Each
+rule has an appropriate existing or new test owner, or an explicit justified waiver; it does not
+demand a new test by itself.
+Use a narrative case when it helps explain the flow; otherwise use an ordinary test at the
+appropriate level. Narrative tests remain real, asserted examples. A narrative crossing a branch
+does not oblige it to own every assertion about that branch. Preserve necessary coverage when
+moving a case out of a narrative.
 
 Read the existing narratives a feature lands in before planning, and correct misleading steps
 before relying on them. Assess whether an untold flow would benefit from a narrative; planning
@@ -65,10 +71,14 @@ action beyond what the user granted.
 
 ## 1. Specify — `spec-specify`
 
-Writes `spec.md`: the problem, the change, the rules no screen shows, what is left out. Where the
-repository draws journeys, what changes on screen is declared in the journey tests: the changed
-screens with a mockup, and a case to write for each criterion a screen shows. The scope is shaped
-against the project's priorities first, and split when it has grown. No product code.
+Writes `spec.md`: the problem, the change, any additional behavioral requirements, what is left
+out. Screen journeys are optional, enabled by the repository's `commands.journeys` configuration,
+not by an assumption that every product has a UI. Where configured, criteria best demonstrated
+visually are declared in journey tests: changed screens with a mockup, and cases to write. Those
+criteria are not repeated in the spec. Without journeys, the spec stands alone, including any
+visible changes in its prose; no browser run or captures are required. Local commands and
+verification surfaces belong in repository settings. The scope is shaped against the project's
+priorities first, and split when it has grown. No product code.
 
 **Gate:** the user approves the spec. Planning starts in a fresh session, from the committed spec.
 

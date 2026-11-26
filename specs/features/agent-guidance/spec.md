@@ -102,7 +102,7 @@ documentation or class reference, reused by the guide.
 - The usage volume's documentation no longer lists an input that nothing reads.
 - The links of the README work from the package's page.
 
-## Rules no screen shows
+## Behavioral requirements
 
 - **one-text-per-explanation** Every substantive explanation in the guide is drawn from its
   canonical documentation source, including generated class references and executable examples,

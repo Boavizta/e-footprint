@@ -7,7 +7,7 @@
  *   npm run map -- step <slug>#<n>               one step: its function's source, who refers to it, its tests, the debts naming it
  *   npm run map -- where <file | function>       the steps a file or a function carries, or "unmapped"
  *   npm run map -- around <slug>                 the functions next to a narrative that hold no `narrate`
- *   npm run map -- spec <feature>                a feature's spec: intent, changed screens, cases to add, what it rides on
+ *   npm run map -- spec <feature>                a feature's spec; configured screen journeys add cases and recorded crossings
  *   npm run map -- plan <feature>                a feature's plan: plan.md, its pieces in run order with their sites and planned tests, the rules' owners
  *   npm run map -- brief <feature>#<piece>         one piece of a plan, with the code at each of its sites
  *   npm run map -- brief <feature>/<lot>           a lot of the plan's delivery: its pieces with their code, the decisions that bind them, its journey cases, what the spec plans at its screens
@@ -22,7 +22,8 @@
  * `map/` of the project's cache, so an answer costs a process start. Each snapshot lists the
  * files it was read from with their modification times; when one moved, the snapshot is rebuilt
  * first (a few seconds), and when source moved under the stories, the narrative tests are run again
- * before that. What cannot be refreshed from here (a journey test newer than its captures needs a
+ * before that. With screen journeys disabled, `spec` reads spec.md directly and needs no snapshot.
+ * What cannot be refreshed from here (a journey test newer than its captures needs a
  * browser run) fails with the command to run. `--stale-ok` answers from what is there.
  */
 import { spawnSync } from 'node:child_process';
@@ -248,6 +249,14 @@ function where(map, what) {
 
 function specText(feature) {
   if (!feature) fail('spec <feature>');
+  if (config.commands.journeys.length === 0) {
+    const file = `${FEATURES}/${feature}/spec.md`;
+    if (!existsSync(join(ROOT, file))) fail(`no spec ${file}`);
+    say(readFileSync(join(ROOT, file), 'utf8').trim(), '',
+      'Screen journeys are not configured in this repository. The spec is its spec.md; no journey run is required.',
+      'next: npm run map   (choose relevant narratives as planning context)');
+    return;
+  }
   const m = spec(feature);
   const t = snapshot();
   say(m.intent.trim(), '', '─'.repeat(60), `What changes on screen — declared in the journey tests`, '');

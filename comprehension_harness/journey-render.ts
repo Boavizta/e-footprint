@@ -843,6 +843,10 @@ ${rides.html()}
 
 // A checkout no journey test has run on has nothing to draw. That is a cold start, not a failure:
 // `npm run docs` ends with this script and makes no browser run, as it makes no unit run for the narratives.
+if (config.commands.journeys.length === 0) {
+  console.log('journey-render: screen journeys are not configured in this repository; nothing to render');
+  process.exit(0);
+}
 const slugs = existsSync(OUT) ? readdirSync(OUT).filter((d) => existsSync(join(OUT, d, 'journey.json'))) : [];
 if (slugs.length === 0) {
   console.log(`journey-render: no journey run on this checkout, no page rendered — ${typed(config.commands.journeys)}, then npm run journey:render`);

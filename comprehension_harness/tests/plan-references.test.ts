@@ -65,6 +65,23 @@ describe('plan review order', () => {
   });
 });
 
+describe('optional behavioral requirements', () => {
+  it('omits an empty ownership panel without hiding undeclared rule claims', () => {
+    const { index, plan } = example();
+    plan.rulesFile = 'specs/features/gift-cards/spec.md';
+    expect(renderPlanPage(plan, [], [], index)).not.toContain('id="rules"');
+    plan.unknownRules = [{
+      feature: plan.feature, slug: plan.pieces[0].slug, file: 'tests/test_checkout.py',
+      line: 1, column: 1, title: 'Preserve a balance', rule: 'missing-rule',
+      tier: 'unit', written: false, body: null, reproduction: false, run: null,
+    }];
+    const html = renderPlanPage(plan, [], [], index);
+    expect(html).toContain('id="rules"');
+    expect(html).toContain('[missing-rule]');
+    expect(html).toContain('is no rule of spec.md');
+  });
+});
+
 describe('references to declarations introduced by a plan', () => {
   it('labels refactoring on plan and delivery cards without presenting its marker as prose', () => {
     const { plan, index } = example(false, true);

@@ -100,6 +100,19 @@ They are written for any project. What a project is to them is the three things 
    test folders `tests` does not run, each with the command that runs a plan's reproduction
    there, or null for a folder left to a run by hand.
 
+   **Screen journeys are optional.** `commands.journeys: []` disables that integration;
+   `map spec <feature>` reads the feature's `spec.md` directly, without captures, a narrative
+   snapshot or a browser run. With a journey command configured, it also reads planned screens,
+   cases and their recorded narrative crossings. This declares a verification capability, not
+   whether the product has a UI. Keep local paths, commands and available test tiers in this
+   configuration, with guidance in `.agents/repository.md`; shared tools and skills use those
+   settings without project-specific branches.
+
+   Specs use the optional **Behavioral requirements** section for additional observable rules;
+   planning links each to an existing or new test, or a justified waiver. When syncing an older
+   checkout, rename `Rules no screen shows` to `Behavioral requirements` in its specs. The plan
+   reader rejects the former heading so that requirements cannot silently disappear.
+
 3. **The stack**, which gives the tools four things ([`stack.md`](stack.md) is its contract):
    - the calls (`narrate`, `event`, `planned`, and `built` where a planned place became code) in
      the product's code, inert in production, and its own: a project's code imports nothing of

@@ -124,7 +124,12 @@ This audits your reasoning. It is no section of `plan.md`.
 
 ## Writing the tests
 
-Titles only. Each rule has an appropriate test owner. Use a narrative case when it helps explain
+Titles only. Rules are the spec's optional **Behavioral requirements**, not a checklist of its
+architecture or prose. Keep design choices in their owning explanation or plan decision;
+do not invent tests to restate them. A regression risk introduced by a plan choice is verified
+with that choice, not promoted into a spec rule; unchanged guarantees stay with their existing
+coverage. Each rule has an appropriate existing or new test owner,
+or an explicit justified waiver. Use a narrative case when it helps explain
 the flow; use an ordinary test for other behaviour, at the level the project's testing guidance
 calls for. Plan rule owners in any appropriate tier here; additional unit coverage is
 `spec-tasks`' to plan.
@@ -141,7 +146,8 @@ calls for. Plan rule owners in any appropriate tier here; additional unit covera
   holds`, proposed with `To confirm:`. A test that restates the implementation is not written.
 - **A planned case goes to the piece at whose commit it can be written.**
 - **Re-read each journey case of the spec against the plan's decisions**, and reword one a
-  decision made false.
+  decision made false. Screen journeys apply only when `commands.journeys` is nonempty in
+  `comprehension.config.json`; available tiers and commands come from repository settings.
 
 ## Guards and states
 

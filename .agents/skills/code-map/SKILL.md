@@ -17,7 +17,7 @@ Call it as `node comprehension_harness/map.mjs <verb> …` (or `npm run map -- <
 
 | You need | Ask |
 |---|---|
-| What a feature changes: intent, changed screens, cases to add, narrative steps it rides on, server steps a stub answered | `spec <feature>` |
+| What a feature changes: its spec, plus changed screens, cases and recorded crossings where screen journeys are configured | `spec <feature>` |
 | The list of narratives | *(no verb)* |
 | One narrative, step by step, under its causes; branches; mechanisms it rides on | `narrative <slug>` |
 | One step: its function's source, who refers to it, what it calls, the tests reaching it, the debts and rules naming it | `step <slug>#<n>` |
@@ -34,8 +34,11 @@ A slug can be any part that names one narrative (`checkout`, `sign-in`).
 
 ## How to read with it
 
-1. **Planning or tasking a feature: start at `spec <feature>`.** Its last lines name the narratives to
-   open next. Once the plan has sites (`planned` calls, `@planned` comments, tests to write under a tagged title),
+1. **Planning or tasking a feature: start at `spec <feature>`.** With screen journeys configured,
+   its last lines name the narratives crossed. With `commands.journeys: []` in
+   `comprehension.config.json`, it reads `spec.md` directly without captures or a test run;
+   use the narrative list to select relevant planning context. Once the plan has sites
+   (`planned` calls, `@planned` comments, tests to write under a tagged title),
    `plan <feature>` shows it as it stands, its delivery in lots, and what differs from the approved
    plan (`plan.approved.json`); an implementer starts at `brief <feature>/<lot>`.
 2. **`narrative`, then `around`.** The narrative is what the code says it does; `around` is the code
@@ -62,7 +65,8 @@ Every line carries a `file:line`. When you do open a file, Read that range.
 
 ## Freshness
 
-The answers are read from a snapshot. When a file it was read from has moved, the command rebuilds
+With screen journeys disabled, `spec` reads the current `spec.md` directly. Other answers are
+read from a snapshot. When a file it was read from has moved, the command rebuilds
 it first and says so on stderr: 4 to 5 s. A step whose line moved is found again by its sentence; the
 answer then ends with a note naming the test to run if you need the narrative observed again (after a
 change of behaviour, not after adding a comment or a `planned` call). Two cases it will not fix by

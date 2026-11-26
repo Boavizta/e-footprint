@@ -1940,7 +1940,7 @@ function planPieceHtml(piece: PlanPiece, ctx: PlanContext): string {
  *  plan waives reads "no test" and its reason, with the amber mark and the reviewer's answer under it while the
  *  waiver is to confirm. */
 function planRulesHtml(plan: Plan): string {
-  if (plan.rulesFile === null) return '';
+  if (plan.rulesFile === null || (plan.rules.length === 0 && plan.unknownRules.length === 0)) return '';
   const owner = (todo: PlanTodo) => `${todo.tier} · ${placeLink(todo.file, todo.line, todo.column)} <a class="slug" href="#piece-${todo.slug}">#${todo.slug}</a>`;
   const rows = plan.rules.map((r) => {
     const waived = r.waiver
@@ -1957,7 +1957,7 @@ function planRulesHtml(plan: Plan): string {
   const owned = plan.rules.filter((r) => r.owners.length === 1 && !r.waiver).length;
   const waivedCount = plan.rules.filter((r) => r.waiver && r.owners.length === 0).length;
   return `
-<h2 id="rules">The spec's rules no screen shows — ${owned} of ${plan.rules.length} owned by one test${waivedCount ? `, ${waivedCount} held by no test` : ''}</h2>
+<h2 id="rules">Behavioral requirements — ${owned} of ${plan.rules.length} owned by one test${waivedCount ? `, ${waivedCount} held by no test` : ''}</h2>
 <div class="pbox rules">${[...rows, ...stray].join('')}</div>`;
 }
 
