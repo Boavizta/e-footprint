@@ -58,6 +58,8 @@ def _calculated_attribute_names(cls) -> List[str]:
     return list(computed_slots(cls))
 
 
+# @planned agent-guidance#python-guidance Traverse nested form_inputs descriptions to collect string leaves with field paths for placeholder checks.
+
 def _collect_description_strings(cls) -> List[Tuple[str, str]]:
     """All description strings owned by ``cls``, paired with a source label.
 
@@ -131,6 +133,8 @@ _class_params = pytest.mark.parametrize(
     "cls", ALL_EFOOTPRINT_CLASSES, ids=lambda c: c.__name__)
 
 
+# @planned agent-guidance#python-guidance Include the three timeseries builders in constructor-description completeness checks without changing modeling registries.
+
 def _classes_for_param_descriptions_test():
     """Concrete classes plus abstract bases that have user-facing __init__ params.
 
@@ -159,6 +163,8 @@ def test_class_has_docstring(cls):
     assert cls.__doc__ and cls.__doc__.strip(), (
         f"{cls.__name__} has no class docstring")
 
+
+# @planned agent-guidance#python-guidance Require nonempty dictionaries with nested string leaves for form_inputs and nonempty strings for all other constructor parameters.
 
 @_param_descriptions_class_params
 def test_param_descriptions_cover_init_params(cls):
@@ -202,6 +208,8 @@ def test_param_interactions_keys_subset(cls):
         f"{cls.__name__}.param_interactions has keys not in param_descriptions: "
         f"{sorted(extra)}")
 
+
+# @planned agent-guidance#python-guidance Include the three timeseries builders' nested input descriptions in placeholder resolution checks.
 
 @_class_params
 def test_placeholders_resolve(cls):

@@ -158,7 +158,7 @@ impose on the web infrastructure.
 
 > Preview source: modeling_with_ai.md — Timeseries
 
-> **GAP — canonical text to author.** #modeling-workflow recommends form-input hourly, constant and weekly-profile builders; custom arrays require an explicit discussion of being viewable but not editable in the interface. Builder schemas remain in their docstrings.
+> **GAP — canonical text to author.** #modeling-workflow recommends form-input hourly, constant and weekly-profile builders; custom arrays require an explicit discussion of being viewable but not editable in the interface. Exact builder inputs come from class lookups rendering param_descriptions, including structured form_inputs fields; they are not repeated here.
 
 ## Full mixed model — current source to adapt
 

@@ -25,7 +25,7 @@ class ExplainableHourlyQuantitiesFromFormInputs(ExplainableHourlyQuantities):
     def from_json_dict(cls, d):
         return cls(form_inputs=d["form_inputs"], label=d["label"])
 
-    # @planned agent-guidance#trial-errors Remove the ignored initial_volume_unit key from this constructor docstring and the two test inputs that pass it.
+    # @planned agent-guidance#python-guidance Move constructor input descriptions into param_descriptions with structured form_inputs fields, omitting the ignored initial_volume_unit key; remove the redundant constructor docstring.
 
     def __init__(self, form_inputs: dict, label: str = "no label",
                  left_parent=None, right_parent=None, operator: str = None, source: Source = None,

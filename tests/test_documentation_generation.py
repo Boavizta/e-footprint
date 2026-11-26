@@ -7,6 +7,11 @@ def test_missing_documentation_examples_fail_loudly():
     pass
 
 
+@planned_test("agent-guidance#class-reference: Timeseries lookups print nested form-input field descriptions with resolved links without constructing examples")
+def test_timeseries_lookup_fields():
+    pass
+
+
 @planned_test("agent-guidance#executable-doc-examples: Converted how-to examples execute their documented operations against real models")
 def test_executable_topic_examples():
     pass

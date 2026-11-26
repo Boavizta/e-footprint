@@ -402,6 +402,8 @@ Label L + Label R
         self.assertIs(source, loaded.source)
 
     def test_copy_propagates_confidence_and_comment(self):
+        # @planned agent-guidance#trial-errors Remove the ignored initial_volume_unit key from this hourly-timeseries fixture.
+
         form_inputs_hourly = {
             "start_date": "2024-01-01", "modeling_duration": 1, "modeling_duration_unit": "year",
             "initial_volume": 10, "initial_volume_unit": "occurrence", "initial_volume_timespan": "day",

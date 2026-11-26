@@ -49,8 +49,8 @@ Make public Python-modeling documentation own builders, shared input conventions
 
 Values carry units and meaningful assumption sources; defaults are starting hypotheses. Country
 selection controls user-side electricity and timezone, not server electricity. Explain hourly
-volumes and weekly recurrent demand before showing the model. Builder-specific form schemas stay
-in builder docstrings. Public reads compute lazily, edits invalidate dependencies, and ordinary
+volumes and weekly recurrent demand before showing the model. Timeseries input descriptions live
+in param_descriptions. Public reads compute lazily, edits invalidate dependencies, and ordinary
 assignments validate transactionally; no engine implementation guide is added.
 
 ## #modeling-workflow
@@ -150,9 +150,27 @@ get_started, the notebook tutorial and team pages outside the command's topic re
 #canonical-topics, #class-reference and #guide-assembly use a documentation lookup set initialized
 from ALL_EFOOTPRINT_CLASSES_DICT, supplemented with Source, source-value wrappers and documented
 timeseries builders. Modeling registries remain unchanged; supplemental lookup types require no
-website page or example instance. Their references describe public constructors and docstrings.
+website page or example instance. Their references describe public constructors, metadata and class docstrings.
 Class and member links become the class lookup command, keeping member labels. Convert interface
 template links to absolute URLs.
+
+## Timeseries input metadata
+
+#python-guidance gives the hourly, constant and weekly-profile builders param_descriptions covering
+their constructor parameters. The form_inputs entry must be a nonempty dictionary of field
+descriptions, with nested dictionaries and nonempty string leaves; every other parameter description
+is a nonempty string. Document list containers, item fields and constraints explicitly. These
+dictionaries describe inputs; they do not drive validation or forms.
+
+Move input explanations out of constructor docstrings; class docstrings retain overall behavior
+and preservation of editable inputs. Correct the constant builder's inaccurate lazy-computation
+claim. The hourly metadata omits the ignored initial_volume_unit key; #trial-errors removes it
+from the existing test fixtures. Record the format in the architecture's existing metadata contract.
+
+#class-reference renders these fields as a nested tree, resolving lookup links in each text leaf.
+Extend the existing metadata completeness and placeholder checks to the three builders, and cover
+nested field output in a focused lookup case. The guide points to builder lookups for exact inputs;
+interface consumers and modeling registries remain unchanged.
 
 ## Executable sources and package boundaries
 
