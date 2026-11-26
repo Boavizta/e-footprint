@@ -165,7 +165,8 @@ gate holds.
 
 A title, a lead, then:
 
-- **One `## #slug` section per piece**: its statement in the first paragraph, then its reason
+- **One `## #slug` section per piece**: optionally a standalone `Kind: refactoring` paragraph
+  immediately after the heading, then its statement in the first prose paragraph, its reason
   and what was refused.
 - **A `## Bug: <what is wrong>` section**, in a plan that fixes bugs: the sections of the pieces
   that fix it follow it. A piece of no bug stands above the first. A bug with no piece under it
@@ -177,6 +178,14 @@ A title, a lead, then:
   relies on`, for a feature that changes two repositories. Below.
 - **`## Delivery`**: the lots, below.
 
+`Kind: refactoring` marks a piece that reorganizes existing code or documentation while preserving
+its behavior or meaning. The marker is metadata, excluded from prose and word budgets, shown as a
+Refactoring badge on plan and delivery cards and in map answers and implementation briefs, and held
+by approval. No marker means no classification; no other kind is defined. Refactoring need not be
+optional: its reason says why it belongs in the delivery and whether the feature depends on it.
+Adding or removing the marker changes the approved piece. Behavior corrections remain separate
+pieces.
+
 Three paragraphs have a prefix:
 
 | Prefix | Is | Written when |
@@ -186,9 +195,10 @@ Three paragraphs have a prefix:
 | `Note: **the point.** what follows from it` | Something to know, asking no answer | A piece was built with a choice no line of the plan says and a later lot stands on |
 
 After ` → `, a `Changed:` names the lines of the difference it comes to, parted by `;`: a kind
-(`code`, `test`, `statement`, `reason`, `text`, `unbuilt`) and a fragment the line holds, in double quotes
+(`code`, `test`, `statement`, `reason`, `kind`, `text`, `unbuilt`) and a fragment the line holds, in double quotes
 when it has a space. `Changed: **Its narrative case leaves for #wrap-row.** It reads the row the
-other piece adds → test "a wrapped order"`. A section with one such paragraph needs no claim.
+other piece adds → test "a wrapped order"`. A classification change can use `→ kind "refactoring"`.
+A section with one such paragraph needs no claim.
 
 **A paragraph names the commits that did what it says**: `commit` and seven digits of the hash
 or more, after the same ` → `: `→ test "a wrapped order"; commit 1a2b3c4d`. A `To confirm:`

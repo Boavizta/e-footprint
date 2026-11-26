@@ -390,9 +390,9 @@ export interface PlanChange {
 }
 
 /** The kinds a claim names a line by: a place in the code, a test (to write, changing or going), the piece's
- *  statement, its reason, a decision's text — and `unbuilt`, a place that reads as built and is not
+ *  statement, its reason, its classification, a decision's text — and `unbuilt`, a place that reads as built and is not
  *  (`takeBack`). */
-export const CLAIM_KINDS = ['code', 'test', 'statement', 'reason', 'text', 'unbuilt'] as const;
+export const CLAIM_KINDS = ['code', 'test', 'statement', 'reason', 'kind', 'text', 'unbuilt'] as const;
 /** The claim that takes a built place back. It is a kind of its own: a `code` claim names a line of the
  *  difference, and must never drop a built place whose line happens to hold its fragment. */
 export const UNBUILT = 'unbuilt';
@@ -419,7 +419,9 @@ export interface PlanLot {
 /** What `plan.md` says of one piece, read off its `## #slug` section. */
 export interface PlanPieceDoc {
   section: PlanSection;
-  /** The statement: the section's first paragraph. */
+  /** Optional piece-level classification, declared before its statement by `Kind: refactoring`. */
+  kind: 'refactoring' | null;
+  /** The statement: the first paragraph after the optional classification. */
   what: string;
   /** The reason, and what was refused: the blocks after the statement. */
   why: MdBlock[];
@@ -1088,6 +1090,7 @@ export function replaceSlugRefs(text: string, link: (slug: string) => string): s
 const ASK = /^To confirm:\s*/;
 const CHANGED = /^Changed:\s*/;
 const NOTE = /^Note:\s*/;
+const PIECE_KIND = /^Kind:/;
 
 /** The facet of a piece that holds its notes. */
 export const NOTES = 'notes';
@@ -1216,6 +1219,10 @@ export function planDocOf(intent: Intent, file: string): PlanDoc {
   const sections = intent.sections.filter((s) => !RESERVED_SECTIONS.includes(s.title)).map((s): PlanSection => {
     const texts = s.blocks.flatMap((b) => (b.kind === 'p' ? [b.text] : b.items.map((i) => i.text)));
     const piece = PIECE_TITLE.exec(s.title)?.[1] ?? null;
+    if (piece === null) {
+      const marker = s.blocks.find((b) => b.kind === 'p' && PIECE_KIND.test(b.text));
+      if (marker && marker.kind === 'p') throw new Error(`comprehension-plan: ${file}:${marker.line} — "Kind:" belongs to a piece's section, "## #the-slug"`);
+    }
     const bug = BUG_TITLE.exec(s.title);
     if (bug && bug[1] === '') throw new Error(`comprehension-plan: ${file}:${s.line} — "## ${s.title}": a bug's section is titled with what is wrong, "## Bug: <what whoever meets it sees>"`);
     const title = bug ? bug[1] : s.title;
@@ -1235,10 +1242,16 @@ export function planDocOf(intent: Intent, file: string): PlanDoc {
   return { file, title: intent.title, lead: intent.lead, sections, waivers, lots, pointers };
 }
 
-/** A piece's section taken apart. It opens with a paragraph, the statement; at most one paragraph opens
+/** A piece's section taken apart. After optional metadata it opens with its statement; at most one paragraph opens
  *  `To confirm:`. A paragraph opening `Changed:` is the section's (`PlanSection.changed`), not the reason's. */
 export function pieceDocOf(section: PlanSection, file: string): PlanPieceDoc {
-  const [first, ...rest] = section.blocks;
+  const markers = section.blocks.filter((b): b is Extract<MdBlock, { kind: 'p' }> => b.kind === 'p' && PIECE_KIND.test(b.text));
+  for (const marker of markers) {
+    if (marker.text !== 'Kind: refactoring') throw new Error(`comprehension-plan: ${file}:${marker.line} — the piece kind is "Kind: refactoring", a paragraph of its own`);
+    if (marker !== section.blocks[0]) throw new Error(`comprehension-plan: ${file}:${marker.line} — "Kind: refactoring" stands once, immediately after "## ${section.title}", before its statement`);
+  }
+  const kind = markers.length ? 'refactoring' : null;
+  const [first, ...rest] = kind ? section.blocks.slice(1) : section.blocks;
   if (!first || first.kind !== 'p' || ASK.test(first.text) || CHANGED.test(first.text) || NOTE.test(first.text)) throw new Error(`comprehension-plan: ${file}:${section.line} — "## ${section.title}" opens with its statement, one paragraph saying what the piece changes`);
   const asks = rest.filter((b): b is Extract<MdBlock, { kind: 'p' }> => b.kind === 'p' && ASK.test(b.text));
   if (asks.length > 1) throw new Error(`comprehension-plan: ${file}:${asks[1].line} — "## ${section.title}" holds ${asks.length} "To confirm:" paragraphs, and a piece asks one thing`);
@@ -1254,7 +1267,7 @@ export function pieceDocOf(section: PlanSection, file: string): PlanPieceDoc {
     const bold = /^\*\*(.+?)\*\*\s*/.exec(text);
     return [{ what: bold ? bold[1].replace(/\.$/, '') : null, detail: bold ? text.slice(bold[0].length) : text, text, line: b.line }];
   });
-  return { section, what: first.text, why: rest.filter((b) => b !== asks[0] && !(b.kind === 'p' && (CHANGED.test(b.text) || NOTE.test(b.text)))), ask, notes };
+  return { section, kind, what: first.text, why: rest.filter((b) => b !== asks[0] && !(b.kind === 'p' && (CHANGED.test(b.text) || NOTE.test(b.text)))), ask, notes };
 }
 
 export const RULES_SECTION = 'Rules no screen shows';
@@ -1303,6 +1316,7 @@ export function snapshotOf(plan: Pick<Plan, 'pieces' | 'doc' | 'journeyCases'> &
     kind: 'piece',
     name: `#${piece.slug}`,
     facets: {
+      ...(piece.doc?.kind ? { kind: [piece.doc.kind] } : {}),
       statement: piece.doc ? [piece.doc.what] : [],
       reason: piece.doc ? blockTexts(piece.doc.why) : [],
       sites: [...piece.sites.map(siteLineOf), ...piece.built.sites],
@@ -1323,7 +1337,7 @@ export function snapshotOf(plan: Pick<Plan, 'pieces' | 'doc' | 'journeyCases'> &
       if (section.piece !== null) {
         if (plan.pieces.some((x) => x.slug === section.piece)) continue;
         const own = pieceDocOf(section, doc.file);
-        units.push({ kind: 'piece', name: `#${section.piece}`, facets: { statement: [own.what], reason: blockTexts(own.why), sites: [], comments: [], tests: [] } });
+        units.push({ kind: 'piece', name: `#${section.piece}`, facets: { ...(own.kind ? { kind: [own.kind] } : {}), statement: [own.what], reason: blockTexts(own.why), sites: [], comments: [], tests: [] } });
       } else units.push({ kind: 'decision', name: unitNameOf(section), facets: { text: blockTexts(section.blocks.filter((b) => !(b.kind === 'p' && CHANGED.test(b.text)))) } });
     }
     if (doc.waivers.length) units.push({ kind: 'waivers', name: WAIVERS_SECTION, facets: { waivers: doc.waivers.map((w) => `${w.rule} — ${w.toConfirm ? 'To confirm: ' : ''}${w.reason}`) } });
@@ -1339,7 +1353,7 @@ export function snapshotOf(plan: Pick<Plan, 'pieces' | 'doc' | 'journeyCases'> &
 
 /** The facets of a piece whose lost line is a change of the plan. A site or a comment that went was
  *  implemented, or dropped: the delta lists it and asks nothing. */
-const LOSS_IS_A_CHANGE = ['statement', 'reason', 'tests'];
+const LOSS_IS_A_CHANGE = ['statement', 'reason', 'kind', 'tests'];
 /** A question is its own notice: it is listed, and answered, and asks for no `Changed:` beside it. So is a
  *  note: it is listed, and read. */
 const ASKS_NOTHING = ['question', NOTES];
@@ -1392,6 +1406,8 @@ export function diffSnapshots(approved: PlanSnapshot, now: PlanSnapshot, explain
   const pieces = raw.filter((u) => u.kind === 'piece');
   for (const from of pieces) {
     for (const lost of from.facets) {
+      // Classification belongs to each piece: moving a badge is two changes, not a moved clause.
+      if (lost.facet === 'kind') continue;
       for (const text of [...lost.removed]) {
         const to = pieces.find((u) => u !== from && u.facets.some((f) => f.facet === lost.facet && f.added.includes(text)));
         if (!to) continue;

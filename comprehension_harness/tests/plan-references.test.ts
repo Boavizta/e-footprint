@@ -14,7 +14,7 @@ import { LAYOUT } from './layout';
 const FILE = 'shop/checkout.py';
 const SHOP = join(dirname(fileURLToPath(import.meta.url)), 'fixtures/shop');
 
-function example(samePiece = false) {
+function example(samePiece = false, refactoring = false) {
   const doc = JSON.parse(readFileSync(join(SHOP, 'source-index.json'), 'utf8')) as SourceIndexDocument;
   const target = { file: FILE, line: 27, column: 5 };
   doc.files[FILE].imports.push({ name: 'refund_later', at: target });
@@ -27,7 +27,7 @@ function example(samePiece = false) {
   }));
   const [plan] = assemblePlans({
     sites, statics: [], todos: [], narratives: [], layout: LAYOUT,
-    docs: () => ({ folderExists: true, spec: null, plan: { file: 'specs/features/gift-cards/plan.md', intent: parseIntent('# Gift cards\n\n## #deduct-the-card\n\nDeduct the balance.\n\n## #refund-to-card\n\nReturn the amount.\n', 'plan.md') } }),
+    docs: () => ({ folderExists: true, spec: null, plan: { file: 'specs/features/gift-cards/plan.md', intent: parseIntent(`# Gift cards\n\n## #deduct-the-card\n\n${refactoring ? 'Kind: refactoring\n\n' : ''}Deduct the balance.\n\n## #refund-to-card\n\nReturn the amount.\n`, 'plan.md') } }),
   });
   plan.doc!.lots = [{ slug: 'renderers', difficulty: 'standard', pieces: plan.pieces.map((p) => p.slug), screens: [], reason: 'Shared reference rendering.', line: 12 }];
   return { index, plan };
@@ -36,6 +36,17 @@ function example(samePiece = false) {
 const markers = (html: string) => [...html.matchAll(/<button[^>]*data-new-declaration="([^"]+)"[^>]*>/g)].map((m) => m[1]);
 
 describe('references to declarations introduced by a plan', () => {
+  it('labels refactoring on plan and delivery cards without presenting its marker as prose', () => {
+    const { plan, index } = example(false, true);
+    for (const html of [renderPlanPage(plan, [], [], index), renderDeliveryPage(plan, [], index)]) {
+      const header = html.match(/<section[^>]*id="piece-deduct-the-card"[^>]*>\s*<header>([\s\S]*?)<\/header>/)![1];
+      expect(header).toContain('<span class="badge">Refactoring</span>');
+      expect(html).not.toContain('Kind: refactoring');
+      const unmarked = html.match(/<section[^>]*id="piece-refund-to-card"[^>]*>\s*<header>([\s\S]*?)<\/header>/)![1];
+      expect(unmarked).not.toContain('Refactoring');
+    }
+  });
+
   it.each([false, true])('marks references and aliases, with the declaration in the same piece: %s', (samePiece) => {
     const { plan, index } = example(samePiece);
     const html = renderPlanPage(plan, [], [], index);

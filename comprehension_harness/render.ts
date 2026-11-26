@@ -1477,9 +1477,13 @@ const changePlaceAnchor = (tag: string) => `change-${tag}`;
 const changeRow = (site: Pick<PlanSite, 'feature' | 'slug' | 'place'>) => site.place
   ? ` id="${esc(changePlaceAnchor(`${site.feature}#${site.slug}:${site.place}`))}"` : '';
 
+function pieceKindHtml(piece: PlanPiece): string {
+  return piece.doc?.kind === 'refactoring' ? '<span class="badge">Refactoring</span>' : '';
+}
+
 /** A piece's chip: the link to its card, amber and marked `?` when the card holds a point to confirm. */
 function pieceChip(piece: PlanPiece): string {
-  return `<a class="slug${piece.doc?.ask ? ' ask' : ''}" href="#piece-${piece.slug}">#${piece.slug}${piece.doc?.ask ? ' ?' : ''}</a>`;
+  return `<a class="slug${piece.doc?.ask ? ' ask' : ''}" href="#piece-${piece.slug}">#${piece.slug}${piece.doc?.ask ? ' ?' : ''}</a>${pieceKindHtml(piece)}`;
 }
 
 /**
@@ -1916,7 +1920,7 @@ function planPieceHtml(piece: PlanPiece, ctx: PlanContext): string {
   const across = piece.decidedIn.length ? `<p class="also">Also decided in ${piece.decidedIn.map((s) => `<a href="#${s.anchor}">${esc(s.title)}</a>`).join(', ')}.</p>` : '';
   return `
 <section class="piece" id="piece-${piece.slug}" data-piece="${esc(plan.feature)}#${piece.slug}">
-  <header><a class="slug big" href="#piece-${piece.slug}">#${piece.slug}</a><small>${landsLabel(piece, group, ctx.narratives, plan)}</small>${moved ? `<a class="slug ask" href="${deliveryPage(plan.feature)}#piece-${piece.slug}">${moved.state === 'new' ? 'new' : 'modified'} since your approval</a>` : ''}</header>
+  <header><a class="slug big" href="#piece-${piece.slug}">#${piece.slug}</a>${pieceKindHtml(piece)}<small>${landsLabel(piece, group, ctx.narratives, plan)}</small>${moved ? `<a class="slug ask" href="${deliveryPage(plan.feature)}#piece-${piece.slug}">${moved.state === 'new' ? 'new' : 'modified'} since your approval</a>` : ''}</header>
   ${statement}
   ${notesHtml(piece, plan, (t) => planInline(t, plan))}
   ${pieceAskHtml(piece, plan)}
@@ -2078,7 +2082,7 @@ const filesOf = (piece: PlanPiece | undefined) => [
 ].filter((x) => layout.isApp(x.file));
 
 /** What a line of the delta is, in the reader's words: the facet says how the plan stores it, this says what it is. */
-const LINE_KIND: Record<string, string> = { statement: 'statement', reason: 'reason', question: 'question', text: 'text', waivers: 'waiver', pointers: 'planned elsewhere', lots: 'lot', cases: 'journey case', steps: 'story step', tests: 'test to write', [UNPLANNED]: 'beyond the plan', [NOTES]: 'note', [REPRODUCTIONS]: 'reproduction', [BESIDE]: 'at no place of the plan' };
+const LINE_KIND: Record<string, string> = { kind: 'piece kind', statement: 'statement', reason: 'reason', question: 'question', text: 'text', waivers: 'waiver', pointers: 'planned elsewhere', lots: 'lot', cases: 'journey case', steps: 'story step', tests: 'test to write', [UNPLANNED]: 'beyond the plan', [NOTES]: 'note', [REPRODUCTIONS]: 'reproduction', [BESIDE]: 'at no place of the plan' };
 const commentKind = (file: string, removes: boolean) => (removes ? 'test goes' : layout.isTest(file) ? 'test changes' : file.endsWith('.sql') ? 'migration' : /\.(?:md|html)$/.test(file) ? 'doc' : 'code');
 
 /**
@@ -2446,7 +2450,7 @@ function deliveryPieceHtml(piece: PlanPiece | undefined, slug: string, plan: Pla
   const builtLines = builtLinesHtml(piece, plan, index, false);
   return `
 <section class="piece${d ? ' moved' : ''}${done ? ' built' : ''}" id="piece-${slug}">
-  <header>${card}<small>${state}${d ? ` · <b>${d.state === 'new' ? 'new' : 'modified'} since your approval</b>` : ' · as approved'}</small></header>
+  <header>${card}${pieceKindHtml(piece)}<small>${state}${d ? ` · <b>${d.state === 'new' ? 'new' : 'modified'} since your approval</b>` : ' · as approved'}</small></header>
   ${piece.doc ? `<p class="what">${codeInline(piece.doc.what, plan, filesOf(piece), index)}</p>` : ''}
   ${notesHtml(piece, plan, (t) => codeInline(t, plan, filesOf(piece), index))}
   ${pieceAskHtml(piece, plan)}

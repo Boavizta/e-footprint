@@ -17,6 +17,11 @@ On plan and delivery pages, resolved references to declarations introduced by th
 small **NEW** button, derived from its added places (including those already built). Clicking it briefly
 highlights the declaration row, scrolling it into view only when needed; the symbol still opens its source.
 
+A piece marked `Kind: refactoring` before its statement in `plan.md` carries a **Refactoring** badge
+on plan and delivery cards and a label in the map and implementation briefs. Its reason explains why
+it belongs in the delivery and whether the feature depends on it; classification alone does not mean
+optional work. Approval holds the marker too. The syntax is in `specs/workflow-formats.md`.
+
 ## Planning a narrative before its first run
 
 Keep the intended sequence on a narrative's reference test, and its sentences beside the code:

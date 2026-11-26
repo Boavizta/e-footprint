@@ -311,7 +311,7 @@ function blockLines(blocks, first) {
  *  the next piece stands on. A place has no line once it is code: it is its file and its function. `whole` (one
  *  piece asked for by name) adds the reason to a piece with nothing left. */
 function pieceText(plan, piece, code, whole = false, printed = new Map()) {
-  const out = [`#${piece.slug}${piece.doc ? ` — ${piece.doc.what}` : ''}`];
+  const out = [`#${piece.slug}${piece.doc?.kind === 'refactoring' ? ' [refactoring]' : ''}${piece.doc ? ` — ${piece.doc.what}` : ''}`];
   // A comment standing on a test this piece writes is a note on that test: it is told under the test's title,
   // once, and is no place of its own.
   const fullTitle = (t) => `${t.feature}#${t.slug}: ${t.title}${t.rule ? ` [${t.rule}]` : ''}`;

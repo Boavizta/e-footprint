@@ -71,6 +71,9 @@ a smaller extension of what exists. Remove what has no demonstrated need.
 - Before planning a refresh, a preserved draft or a background sync, check which surfaces are
   visible. Showing an error is not keeping an edit.
 - No framework inferred from one helper, no second model of data owned elsewhere.
+- Put adjacent cleanup in its own piece, marked `Kind: refactoring`. Its reason states why it
+  belongs in this delivery and whether the feature depends on it. Separate behavior corrections
+  from changes that only reorganize existing code or documentation.
 - No recovery for a failure inside a failure handler by reflex: each adds branches of its own.
 - A confirmed bug found on the way is reported with its evidence, and a deferred concern parked
   where the repository parks them. Nothing is fixed during planning.
