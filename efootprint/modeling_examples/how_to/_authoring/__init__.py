@@ -12,13 +12,13 @@ from efootprint.abstract_modeling_classes.explainable_object_base_class import S
 from efootprint.abstract_modeling_classes.modeling_object import ModelingObject
 from efootprint.narrate import planned
 
-planned("executable-modeling-documentation#baseline-generation:explicit-howto-ids", "Move name-based id setup from package import into the explicit regeneration kernel before scenario imports.")
+planned("executable-modeling-documentation#ml-guide:explicit-howto-ids", "Move name-based id setup from package import into the explicit regeneration kernel before scenario imports.")
 ModelingObject._use_name_as_id = True
 Source._use_name_as_id = True
 
 
 def _write_example(example_id, build_system):
-    planned.remove("executable-modeling-documentation#baseline-generation", "Replace the duplicate constructor writer with explicit percent-source baseline regeneration in documentation tooling.")
+    planned.remove("executable-modeling-documentation#ml-guide", "Replace the duplicate constructor writer with explicit percent-source baseline regeneration in documentation tooling.")
     from efootprint.api_utils.system_to_json import system_to_json
     from efootprint.modeling_examples.how_to.registry import HOW_TO_EXAMPLES
 

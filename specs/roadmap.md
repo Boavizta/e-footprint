@@ -18,7 +18,7 @@ as they are touched. The first read of a computed value sits in the reactive cor
 code: its narrative waits for a measure against the performance baselines. A feature in flight on
 `plan.html` and `tasks.md` (`edge-networks`, `workflow-improvements`) is finished by hand.
 
-### Executable modeling documentation — plan drafted, awaiting review
+### Executable modeling documentation — delivery prepared, awaiting review
 
 [`features/executable-modeling-documentation/`](features/executable-modeling-documentation/spec.md):
 one Jupytext Python source per scenario produces its notebook, documentation, packaged model and

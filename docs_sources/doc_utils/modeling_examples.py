@@ -18,24 +18,24 @@ def select_example_cells(notebook, *, without_plots: bool = False, baseline_only
 
 
 def write_example_presentations(example, *, output_dir: Path, check: bool = False):
-    planned("executable-modeling-documentation#presentations:convert", "Use `read_example_notebook` and `select_example_cells` to write cleared notebooks and output-free Markdown/Python; convert --check compares committed artifacts without execution.")
-    narrate.planned("example-publication:convert", "Conversion derives cleared notebooks and complete readings from the same source without running the scenario or contacting external services.", changes=("executable-modeling-documentation#presentations:convert",))
-    raise NotImplementedError("planned: executable-modeling-documentation#presentations")
+    planned("executable-modeling-documentation#presentation-tools:convert", "Use `read_example_notebook` and `select_example_cells` to write cleared notebooks and output-free Markdown/Python; convert --check compares committed artifacts without execution.")
+    narrate.planned("example-publication:convert", "Conversion derives cleared notebooks and complete readings from the same source without running the scenario or contacting external services.", changes=("executable-modeling-documentation#presentation-tools:convert",))
+    raise NotImplementedError("planned: executable-modeling-documentation#presentation-tools")
 
 
 def build_example_documentation(example, *, output_dir: Path):
-    planned("executable-modeling-documentation#presentations:execute-docs", "Use `read_example_notebook` and `select_example_cells` to execute fresh notebooks and retain their outputs and resources in generated documentation.")
-    narrate.planned("example-publication:publish", "Documentation execution publishes numerical outputs, charts and their resources from a fresh session; its results never overwrite the packaged model.", changes=("executable-modeling-documentation#presentations:execute-docs",))
-    raise NotImplementedError("planned: executable-modeling-documentation#presentations")
+    planned("executable-modeling-documentation#presentation-tools:execute-docs", "Use `read_example_notebook` and `select_example_cells` to execute fresh notebooks and retain their outputs and resources in generated documentation.")
+    narrate.planned("example-publication:publish", "Documentation execution publishes numerical outputs, charts and their resources from a fresh session; its results never overwrite the packaged model.", changes=("executable-modeling-documentation#presentation-tools:execute-docs",))
+    raise NotImplementedError("planned: executable-modeling-documentation#presentation-tools")
 
 
 def regenerate_example(example, *, output_path: Path):
-    planned("executable-modeling-documentation#baseline-generation:regenerate", "Use `read_example_notebook` and `select_example_cells` to execute construction with deterministic ids in a fresh kernel and save inputs-only JSON.")
-    narrate.planned("example-publication:baseline", "Explicit regeneration saves the initial model with stable ids in an isolated session, leaving later experiments and visualizations outside the packaged example.", changes=("executable-modeling-documentation#baseline-generation:regenerate",))
-    raise NotImplementedError("planned: executable-modeling-documentation#baseline-generation")
+    planned("executable-modeling-documentation#baseline-tools:regenerate", "Use `read_example_notebook` and `select_example_cells` to execute construction with deterministic ids in a fresh kernel and save inputs-only JSON.")
+    narrate.planned("example-publication:baseline", "Explicit regeneration saves the initial model with stable ids in an isolated session, leaving later experiments and visualizations outside the packaged example.", changes=("executable-modeling-documentation#baseline-tools:regenerate",))
+    raise NotImplementedError("planned: executable-modeling-documentation#baseline-tools")
 
 
 def main():
-    planned("executable-modeling-documentation#source-format:command", "Expose python -m docs_sources.doc_utils.modeling_examples with convert, build-docs and regenerate, dispatching to `write_example_presentations`, `build_example_documentation` and `regenerate_example`.")
-    raise NotImplementedError("planned: executable-modeling-documentation#source-format")
+    planned("executable-modeling-documentation#publication-command:command", "Expose python -m docs_sources.doc_utils.modeling_examples with convert, build-docs and regenerate, dispatching to `write_example_presentations`, `build_example_documentation` and `regenerate_example`.")
+    raise NotImplementedError("planned: executable-modeling-documentation#publication-command")
 

@@ -2,6 +2,7 @@
 from comprehension_harness.python.declare import planned_test
 
 
+# Capture the existing concrete-class set before consolidation; the suspended agent guide owns broader registry-completeness work.
 @planned_test("executable-modeling-documentation#reference-examples: Scenario objects and explicit supplements preserve every currently documented class without duplicate class pages")
 def test_scenario_reference_examples_preserve_documented_classes():
     pass

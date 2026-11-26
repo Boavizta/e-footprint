@@ -122,7 +122,7 @@ def test_example_input_timeseries_are_editable_builders(example: HowToExample):
 
 
 @_example_params
-# @planned.remove executable-modeling-documentation#baseline-generation The planned baseline equality case below consolidates both authoring round-trip cases using source construction instead of importing constructors.
+# @planned.remove executable-modeling-documentation#ml-guide The planned baseline equality case below consolidates both authoring round-trip cases using source construction instead of importing constructors.
 
 def test_authoring_script_round_trips_to_committed_json(example: HowToExample):
     authoring = importlib.import_module(
@@ -223,12 +223,37 @@ def test_introductory_authoring_script_round_trips_to_committed_json(example: In
         f"and commit the regenerated JSON.")
 
 
-# Consolidates the two authoring equality cases above across all catalogue entries, retitled; no duplicate case is added.
+# Retitles the introductory equality case for e-commerce first; later migrations extend the same case.
+# The case owns source-to-JSON equality and preservation of the original; sequence execution is owned in test_notebooks.py.
+# @planned executable-modeling-documentation#ml-guide Extend the shared baseline equality case to converted ML, replacing its constructor round-trip check.
+
+# @planned executable-modeling-documentation#edge-tutorial Extend the shared baseline equality case to the registered IoT source and its packaged model.
+
+# @planned executable-modeling-documentation#streaming-guide Extend the shared baseline equality case to the registered streaming source and its packaged model.
+
 @planned_test("executable-modeling-documentation#baseline-generation: Packaged inputs match construction and the original model after full tutorial runs with and without plots [starter-baseline]")
 def test_packaged_models_match_unmodified_tutorial_baselines():
     pass
 
 
+# Build and install an artifact in isolation; block notebook tooling and networking while listing entries and reading their packaged content.
 @planned_test("executable-modeling-documentation#catalogue: Installed catalogue listing and source reading perform no modeling, network requests or output writes without notebook tooling [generation-is-explicit]")
 def test_installed_example_reading_is_passive():
+    pass
+
+
+# @planned executable-modeling-documentation#edge-exports Extend the shared export case to IoT, checking its source actually writes comparable files without plotting.
+
+@planned_test("executable-modeling-documentation#interface-exports: Tutorial exports use matching duplicate ids, reference-first comparison order and reader-chosen directories with inputs-only and materialized values")
+def test_tutorial_exports_keep_models_comparable():
+    pass
+
+
+@planned_test("executable-modeling-documentation#edge-tutorial: Fifteen grouped sites retain 750 sensors, one-month starts, six-year usage and three-year dashboard demand with editable recurrent inputs")
+def test_iot_site_grouping_preserves_deployment_assumptions():
+    pass
+
+
+@planned_test("executable-modeling-documentation#ml-guide: Training retains twelve annual runs with uniform hourly demand and editable inference growth")
+def test_ml_example_retains_annual_training_volume():
     pass
