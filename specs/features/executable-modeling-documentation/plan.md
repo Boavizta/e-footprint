@@ -89,9 +89,9 @@ The source and recorded generation steps give authors the example to follow when
 
 ## #shared-guidance
 
-Give shared Python conventions a short canonical entry page, and route methodology and getting-started links to the two executable tutorials.
+Update existing documentation and links to direct readers to the web and edge tutorials and their relevant modeling sections.
 
-Serve library users modeling from Python: units, sources, defaults, archetypes and choosing a tutorial, linking to executable demonstrations. Methodology remains conceptual and links to numerical result inspection. Retain only the short custom-hourly-timeseries capability and interface-editability note. AI-specific collaboration guidance remains for agent-guidance; development authoring patterns belong to the generation narrative.
+Keep methodology conceptual and link to executable result inspection; construction, comparisons and exports live in the tutorials. Reuse existing explanations and reference pages. Retain the short custom-hourly-timeseries capability and interface-editability note within tutorial content. AI-specific guidance remains for agent-guidance; development authoring patterns belong to the generation narrative.
 
 ## Selection and execution contract
 
@@ -128,12 +128,10 @@ tutorial_edge.md, ML retains machine_learning_workflow.md and streaming uses vid
 The existing database and server-to-server URLs remain. Retire tutorial.ipynb when the derived
 notebooks and replacement lessons exist, updating its README links in the same change.
 
-#shared-guidance keeps modeling_from_python short; modeling_with_ai and installed guide assembly
-remain outside this feature. Use the existing efootprint/documentation/modeling_from_python.md
-location, copying it into the website without an agent-guide dependency. Preserve the suspended
-agent-guidance annotations and tests until its
-own replanning, following ../agent-guidance/resume.md. Its proposed reference-system shell is not
-used as a dependency or turned into another canonical scenario.
+AI-specific collaboration guidance and installed guide assembly remain outside this feature.
+Preserve the suspended agent-guidance annotations and tests until its own replanning, following
+../agent-guidance/resume.md. Its proposed reference-system shell is not used as a dependency or
+turned into another canonical scenario.
 
 ## Planning checks and verification
 

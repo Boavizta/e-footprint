@@ -29,8 +29,6 @@ extra:
 nav:
 # @planned executable-modeling-documentation#presentations Publish independent web and edge tutorials and the streaming guide, retaining existing tutorial and focused-guide URLs.
 
-# @planned executable-modeling-documentation#shared-guidance Add the short Python-modeling entry page to the navigation.
-
 - Introduction: index.md
 - Tutorial: tutorial.md
 - Explanation:

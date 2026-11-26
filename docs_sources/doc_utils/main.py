@@ -41,7 +41,6 @@ format_tutorial_and_save_to_mkdocs_sourcefiles(md_doc_tuto_path)
 logger.info("Generating object reference")
 generate_object_reference()
 logger.info("Copying changelog and manually written doc files to generated_mkdocs_sourcefiles")
-planned("executable-modeling-documentation#shared-guidance:python-page", "Copy the packaged Python conventions page into generated documentation without depending on the suspended agent-guide topic reader.")
 with open(os.path.join(file_path, "..", "..", "CHANGELOG.md"), "r") as file:
     changelog = file.read()
 

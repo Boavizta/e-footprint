@@ -46,8 +46,6 @@ all = [
 ]
 
 [tool.poetry]
-# @planned executable-modeling-documentation#shared-guidance Ship the canonical modeling_from_python Markdown page as package data for direct reuse by documentation and future agent guidance.
-
 # @planned executable-modeling-documentation#catalogue Include generated example Markdown alongside packaged JSON in wheels and sdists; canonical Python sources remain normal package files.
 
 include = ["efootprint/constants/custom_units.txt",
