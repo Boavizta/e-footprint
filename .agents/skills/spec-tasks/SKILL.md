@@ -35,6 +35,8 @@ commit.
   shape changes in a scratch copy and run the type check. For a type that gains a required
   field, every literal of it is a site of the same lot, and the tests asserting the whole value
   change with it.
+- **Choose implementation order here; `plan.md` piece sections keep their review order.**
+  Order lots and their pieces by what must be built first.
 - **Pieces in the order their commits can be made**: each commit passes the types and the tests
   related to what it changed. A piece that cannot hold alone is committed with the piece it
   needs; say so in the lot's reason.

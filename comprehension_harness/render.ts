@@ -1973,11 +1973,9 @@ export function renderPlanPage(plan: Plan, stories: Story[], narratives: Narrati
       ? `<span class="flag">${esc(folder)}plan.md does not exist</span>: the pieces have no statement and no reason.`
       : `<span class="flag">${esc(folder)} does not exist — <code>--check</code> fails on it.</span>`}</p>`;
   const { flows, shown } = planFlows(ctx);
-  // What no flow shows is read first: a piece no narrative crosses, one with no place in this repository. A
-  // flow gives such a piece no context, so nothing else on the page points the reader at it. A piece whose
-  // places all became code is no such piece.
-  const outside = plan.pieces.filter((s) => !s.sites.some((x) => shown.has(x)) && !pieceState(s).done && !(s.sites.length === 0 && s.built.sites.length > 0));
-  const cards = [...outside, ...plan.pieces.filter((s) => !outside.includes(s))];
+  // Review order is authored independently of execution order. Undocumented pieces stay visible at the end.
+  const cards = [...plan.pieces].sort((a, b) => (a.doc?.section.line ?? Infinity) - (b.doc?.section.line ?? Infinity));
+  const outside = cards.filter((s) => !s.sites.some((x) => shown.has(x)) && !pieceState(s).done && !(s.sites.length === 0 && s.built.sites.length > 0));
   const asks = plan.pieces.filter((s) => s.doc?.ask);
   const waiversToConfirm = plan.rules.filter((r) => r.waiver?.toConfirm);
   const points = asks.length + waiversToConfirm.length;
@@ -2019,7 +2017,7 @@ ${intended.length ? `<h2 id="planned-narratives">Planned narrative sequences</h2
 ${outside.length ? `
 <h2 id="outside">Outside the narratives — ${plural(outside.length, 'piece')}</h2>
 <div class="pbox outside">${byBug(outside, outsideRow, (bug) => `<div class="pline bugrow"><span class="where"><a href="#${bug.anchor}"><span class="mark failing">bug</span></a></span><span class="clause"><b>${planInline(bug.title, plan)}</b></span></div>`).join('')}</div>
-<p class="legend">No narrative${flows.length ? ' below' : ''} shows ${outside.length === 1 ? 'this piece' : 'these pieces'}: ${bugs.length ? `${outside.length === 1 ? 'its card stands' : 'their cards stand'} below in the order of plan.md, a bug at a time` : `${outside.length === 1 ? 'its card is' : 'their cards are'} the first of the pieces`}.</p>` : ''}
+<p class="legend">No narrative${flows.length ? ' below' : ''} shows ${outside.length === 1 ? 'this piece' : 'these pieces'}; the detailed cards follow the order of plan.md${bugs.length ? ', a bug at a time' : ''}.</p>` : ''}
 ${flows.length ? `
 <h2 id="flows">The change, in the ${flows.length === 1 ? 'narrative' : `${flows.length} narratives`} it lands in</h2>
 <div class="flows">

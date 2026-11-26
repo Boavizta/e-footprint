@@ -81,8 +81,10 @@ the product does changes.
 
 How a plan is reviewed:
 
-- The reviewer reads the plan page top down: the narratives, then the cards. They ask in the session
-  that holds the plan; each answer is an edit in place and a commit.
+- The reviewer reads the plan page top down: the overview of pieces outside narratives, the
+  narratives, then the detailed cards in `plan.md` section order. That order introduces concepts
+  before pieces rely on them; a brief overview can establish context first. They ask in the
+  session that holds the plan; each answer is an edit in place and a commit.
 - A simplification of the underlying code found on the way is made in another session, and the
   plan is then rewritten against it.
 - **The plan is approved when no question is left and the reviewer says so.** The session then
@@ -95,6 +97,8 @@ How a plan is reviewed:
 
 Prepares the delivery, in a fresh session. It cuts the pieces into **lots** (what one implementer
 delivers and one reviewer reads, a commit a piece), each of which compiles and stays green alone.
+It chooses implementation order in the delivery's lots and pieces; the piece sections retain
+their authored review order.
 It plans the additional unit coverage of each lot: the titles to write, and the existing tests
 that change or go, each removal naming what holds the behaviour instead. Rule owners are already
 chosen during planning. Where grounding the plan shows a gap it edits the plan in place, each

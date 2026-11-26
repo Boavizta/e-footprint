@@ -5,10 +5,10 @@ import { runInNewContext } from 'node:vm';
 import { afterEach, describe, expect, it, vi } from 'vitest';
 import { JsonSource, checkSourceIndex } from '../json-source';
 import { parseIntent } from '../intent-md';
-import { renderDeliveryPage, renderPlanPage } from '../render';
+import { deriveNarratives, renderDeliveryPage, renderPlanPage } from '../render';
 import { assemblePlans, type PlanSite } from '../plan';
 import { SourceIndex } from '../source-index';
-import type { SourceIndexDocument } from '../stack';
+import type { SourceIndexDocument, Story } from '../stack';
 import { LAYOUT } from './layout';
 
 const FILE = 'shop/checkout.py';
@@ -34,6 +34,36 @@ function example(samePiece = false, refactoring = false) {
 }
 
 const markers = (html: string) => [...html.matchAll(/<button[^>]*data-new-declaration="([^"]+)"[^>]*>/g)].map((m) => m[1]);
+
+describe('plan review order', () => {
+  it.each([false, true])('follows authored sections across source locations and narrative membership (with a flow: %s)', (withFlow) => {
+    const { index, plan: sourcePlan } = example();
+    const sites = sourcePlan.pieces.flatMap((p) => p.sites).map((s) => ({ ...s, sentence: 'Update the balance.' }));
+    const step = index.sites(FILE).get(23)!;
+    const story: Story = {
+      file: 'tests/test_checkout.py', test: 'test_charges_the_total_with_tax',
+      narrative: { title: 'The customer pays a basket', kind: 'product' },
+      canonical: true, order: 1, state: 'passed', durationMs: 1,
+      hits: [{ kind: 'step', site: step, sentence: step.sentence!, watch: null, stack: [], atMs: 1 }],
+    };
+    const narratives = deriveNarratives(withFlow ? [story] : [], index);
+    if (withFlow) sites.find((s) => s.slug === 'deduct-the-card')!.crossedBy = [
+      { narrative: narratives[0].title, at: 0, step: { n: narratives[0].steps[0].n, label: 'charge', how: 'via' } },
+    ];
+    const order = withFlow ? ['deduct-the-card', 'refund-to-card', 'explain-balances'] : ['explain-balances', 'refund-to-card', 'deduct-the-card'];
+    const [plan] = assemblePlans({
+      sites, todos: [], narratives: narratives.map(({ title, kind }) => ({ title, kind })), layout: LAYOUT,
+      statics: [{ feature: 'gift-cards', slug: 'explain-balances', file: 'docs/balances.md', line: 1, column: 1, text: 'Explain balances.', removes: false, on: null }],
+      docs: () => ({ folderExists: true, spec: null, plan: {
+        file: 'specs/features/gift-cards/plan.md',
+        intent: parseIntent(`# Gift cards\n\n${order.map((slug) => `## #${slug}\n\nDescribe the change.\n`).join('\n')}`, 'plan.md'),
+      } }),
+    });
+    const html = renderPlanPage(plan, withFlow ? [story] : [], narratives, index);
+    expect([...html.matchAll(/<section[^>]*id="piece-([^"]+)"/g)].map((m) => m[1])).toEqual(order);
+    if (withFlow) expect(html).toContain('id="flows"');
+  });
+});
 
 describe('references to declarations introduced by a plan', () => {
   it('labels refactoring on plan and delivery cards without presenting its marker as prose', () => {

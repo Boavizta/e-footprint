@@ -53,7 +53,7 @@ format. Port an older plan to the current format before delivery resumes.
 - **Look for the existing mechanism** before proposing a new one. For each interaction, make the
   checks of `repository.md` § "Planning checks" and say which it touches.
 - A feature that lands in no code that runs today has shells that never run, so its pieces have no
-  run order on the page. Tell the reviewer; the order is then `plan.md`'s.
+  observed run order on the page. Tell the reviewer.
 
 ## Audit complexity before the review
 
@@ -109,6 +109,9 @@ This audits your reasoning. It is no section of `plan.md`.
 - **A mechanical ripple is stated once, at its cause.** When one site makes twenty literals or
   assertions change the same way, its clause says so, and the twenty carry no tag. A place is
   tagged when its change is a decision.
+- **Order the piece sections in `plan.md` for review**, introducing concepts before pieces rely
+  on them; a brief overview can establish context first. The detailed cards preserve this order;
+  narrative diagrams retain execution order. Implementation order belongs to `spec-tasks`.
 - **Define a term where the plan first needs it**, and use only defined terms after.
 - **For a mechanism in two steps, the piece's reason says why one is not enough.**
 - **A useful new narrative can be planned before its reference run exists.** Use the stack's planned
@@ -175,7 +178,7 @@ calls for. Plan rule owners in any appropriate tier here; additional unit covera
 ## The review, and the approval
 
 - The reviewer reads the page top down: the pieces no narrative shows, the narratives the change lands in,
-  then a card a piece, those of the first block first. They ask in this session, and answer each
+  then a card a piece in `plan.md` section order. They ask in this session, and answer each
   point to confirm under it on the served page (`npm run comprehension`). Read those answers with
   `map feedback <feature>`; each answer is an edit in place and a commit.
 - A simplification of the underlying code found on the way is made in another session, and the

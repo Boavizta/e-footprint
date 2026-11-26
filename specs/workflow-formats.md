@@ -163,6 +163,11 @@ gate holds.
 
 ## `plan.md`
 
+A piece's section order is its authored review order, preserved by the detailed cards on the plan
+page. Introduce concepts before pieces rely on them; a brief overview can establish context first.
+Narrative diagrams retain execution order. Implementation order is chosen during tasks and written
+in the delivery's ordered lots and pieces, without rearranging the review sections.
+
 A title, a lead, then:
 
 - **One `## #slug` section per piece**: optionally a standalone `Kind: refactoring` paragraph
