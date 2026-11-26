@@ -7,11 +7,23 @@ its shells are reviewed in the order below.
 
 ## #canonical-topics
 
-Move the documentation needed by the command into the package and give the website and command one topic reader.
+Package canonical topics for both consumers and complete currently incomplete database and server-to-server examples.
 
-Keep the existing website filenames. Include both candidate topics: hardware composition complements
-edge usage, and attribution explains results. Use the existing topic registry rather than another
-catalogue. Named Python snippets are expanded as text; documentation never executes during a lookup.
+Keep website filenames and the existing topic registry. Include hardware composition and attribution
+alongside the other topics. Complete database and server-to-server examples against the current API,
+preserving their modeling assumptions. Named Python snippets expand as text; lookups never execute
+documentation. Moving existing how-to code blocks to executable sources belongs to #executable-doc-examples.
+
+## #executable-doc-examples
+
+Kind: refactoring
+
+Replace handwritten how-to code blocks with named regions from executable packaged examples, preserving their documented modeling meaning.
+
+This adjacent cleanup keeps displayed examples executable and maintained in one place. The guide
+can ship without converting existing how-to blocks; its required shared reference example remains
+#canonical-example. Complete invalid or incomplete examples under #canonical-topics before moving
+their code unchanged. Use existing example modules and PyMdown Snippets' named-region syntax.
 
 ## #class-reference
 
@@ -145,12 +157,11 @@ template links to absolute URLs.
 
 ## Executable sources and package boundaries
 
-#canonical-example, #canonical-topics and #guide-assembly include source text without importing
+#canonical-example, #canonical-topics, #executable-doc-examples and #guide-assembly include source text without importing
 it. The reference script has a pure builder and a demonstration entry point writing to a supplied
 directory. Register its reproducible input JSON and standard authoring wrapper using existing
-example conventions. Replace handwritten topic sketches with executable named regions, including
-currently incomplete database and server-to-server sketches. Website-only plots remain in
-documentation tooling.
+example conventions. Named-region extraction uses the standard library; PyMdown and website-only
+plots remain in documentation tooling.
 
 ## Documentation example completeness
 

@@ -33,6 +33,9 @@ and canonical query templates — that would be a welcome contribution.
 
 ## Python sketch
 
+<!-- @planned agent-guidance#canonical-topics Complete this database example against the current public API, retaining its modeling assumptions. -->
+<!-- @planned agent-guidance#executable-doc-examples Replace handwritten topic code blocks with named regions from executable packaged examples, preserving the displayed modeling meaning. -->
+
 ```python
 storage = Storage(
     "PostgreSQL storage",

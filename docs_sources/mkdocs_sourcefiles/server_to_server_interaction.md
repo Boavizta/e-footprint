@@ -32,6 +32,8 @@ The action triggers an API call to a web server, which in turn queries
 the PostgreSQL database from the previous page. The journey step lists
 both jobs:
 
+<!-- @planned agent-guidance#canonical-topics Complete this server-to-server example against the current public API, retaining its modeling assumptions. -->
+
 ```python
 # Reusing db_server, storage, read_query from {doc:database_modeling}.
 web_server = Server(
