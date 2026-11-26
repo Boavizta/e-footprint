@@ -47,7 +47,7 @@ Convert machine learning into a complete executable how-to with editable demand 
 
 Keep training and inference as separate patterns and document the hourly builder's smoothing; do not claim it creates scheduled training bursts.
 
-To confirm: **Keep 12 training runs per year and describe an annual retraining volume spread uniformly across hours, correcting the weekly and monthly labels.** Alternatively change the modeled demand to a weekly equivalent, increasing the training footprint relative to the current saved example.
+Keep 12 training runs per year and describe an annual retraining volume spread uniformly across hours, correcting the weekly and monthly labels.
 
 ## #streaming-guide
 

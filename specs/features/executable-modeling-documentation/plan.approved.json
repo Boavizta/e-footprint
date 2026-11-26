@@ -1,0 +1,412 @@
+{
+  "feature": "executable-modeling-documentation",
+  "base": "4261c6a9a93da6c6e1f143ccf64d58f43cd33e5e",
+  "approvedOn": "2026-11-26",
+  "units": [
+    {
+      "kind": "piece",
+      "name": "#reference-examples",
+      "facets": {
+        "kind": [
+          "refactoring"
+        ],
+        "statement": [
+          "Replace the overlapping broad documentation model with packaged scenario objects and small explicit supplements, preserving the existing class-reference coverage."
+        ],
+        "reason": [
+          "Load packaged baselines for reference examples; supplement only classes those tasks do not supply. Select one object per concrete class for page generation, preserving metadata as semantic truth. Consolidation is required to remove competing scenario definitions; it does not depend on the suspended agent guide's completeness or metadata-lookup changes."
+        ],
+        "sites": [
+          "changed docs_sources/doc_utils/docs_case.py in (module) — Replace the overlapping documentation scenario with small class supplements to packaged scenario objects.",
+          "added docs_sources/doc_utils/docs_case.py in build_documentation_examples — Load packaged baselines and combine their objects with explicit supplements, selecting one example per class already documented.",
+          "changed docs_sources/doc_utils/generate_object_reference.py in _get_mod_objs_to_document — Use `build_documentation_examples` instead of importing the broad documentation model's named objects."
+        ],
+        "comments": [],
+        "tests": [
+          "unit tests/test_documentation_generation.py — Scenario objects and explicit supplements preserve every currently documented class without duplicate class pages"
+        ],
+        "reproductions": [],
+        "question": [],
+        "notes": []
+      }
+    },
+    {
+      "kind": "piece",
+      "name": "#presentations",
+      "facets": {
+        "statement": [
+          "Generate downloadable notebooks and output-free readings by conversion, and publish tutorials and guides with executed results through the existing documentation build."
+        ],
+        "reason": [
+          "Commit cleared notebooks under notebooks/. Execute documentation in fresh kernels with separate output directories. Replace content-specific regex rewriting with notebook export and explicit resource embedding; a failed execution stops the build."
+        ],
+        "sites": [
+          "removed docs_sources/doc_utils/format_tutorial_md.py in format_tutorial_and_save_to_mkdocs_sourcefiles — Replace content-specific tutorial regex rewriting with notebook export and explicit resource handling in modeling_examples tooling.",
+          "removed docs_sources/doc_utils/format_tutorial_md.py in efootprint_tutorial_to_md — Replace the single-notebook execution path with fresh-kernel generation from canonical scenario sources.",
+          "changed docs_sources/doc_utils/main.py in (module) — Call `build_example_documentation` for registered tutorial and guide presentations after copying handwritten pages so generated content retains precedence.",
+          "added docs_sources/doc_utils/modeling_examples.py in write_example_presentations — Use `read_example_notebook` and `select_example_cells` to write cleared notebooks and output-free Markdown/Python; convert --check compares committed artifacts without execution.",
+          "added docs_sources/doc_utils/modeling_examples.py in build_example_documentation — Use `read_example_notebook` and `select_example_cells` to execute fresh notebooks and retain their outputs and resources in generated documentation."
+        ],
+        "comments": [
+          "changes mkdocs.yml — Group e-commerce and IoT under Tutorials; retain focused how-to guides and their existing URLs, adding the streaming guide.",
+          "changes README.md — Replace old tutorial notebook links and launch commands with the derived web and edge notebooks and explicit generation instructions.",
+          "changes specs/testing.md — Describe fresh-session execution of generated example sequences and conversion-only freshness checks, with fixed external responses confined to tests.",
+          "removes tests/test_notebooks.py — The planned published-sequence execution case below replaces this single-notebook case; no duplicate case is added."
+        ],
+        "tests": [
+          "unit tests/test_example_presentations.py — Conversion reproduces committed cleared notebooks and output-free readings without executing scenarios",
+          "unit tests/test_notebooks.py — Published notebook and Python sequences execute in fresh sessions with fixed external responses, with and without plots [selected-example-runs]"
+        ],
+        "reproductions": [],
+        "question": [],
+        "notes": []
+      }
+    },
+    {
+      "kind": "piece",
+      "name": "#reference-context",
+      "facets": {
+        "statement": [
+          "Show the selected example object's name and a link to its originating tutorial or how-to on generated object-reference pages when that origin exists."
+        ],
+        "reason": [
+          "Builds on #reference-examples. Keep origin as documentation-only metadata paired with selected objects. Resolve link text and destination from catalogue entries, choosing the scenario's canonical tutorial or how-to. Supplementary objects have no origin and display no context block. Class semantics remain in class metadata; neither modeling objects nor saved JSON acquire provenance fields."
+        ],
+        "sites": [
+          "changed docs_sources/doc_utils/generate_object_reference.py in write_object_reference_file — Supply the selected object's name and optional catalogue page title and destination to the reference template.",
+          "changed docs_sources/doc_utils/generate_object_reference.py in _get_mod_objs_to_document — Retain each selected object's originating catalogue tutorial or guide entry alongside it, with no origin for supplementary examples.",
+          "changed docs_sources/doc_utils/generate_object_reference.py in generate_object_reference — Forward optional example origins to reference-page rendering while retaining object-only class discovery for placeholder links."
+        ],
+        "comments": [
+          "changes docs_sources/doc_utils/obj_template.md — Show the example object's name and its tutorial or how-to context link near the top when a catalogue origin exists."
+        ],
+        "tests": [
+          "unit tests/test_documentation_generation.py — Reference pages name their example and link its tutorial or how-to, omitting the context block for supplements"
+        ],
+        "reproductions": [],
+        "question": [],
+        "notes": []
+      }
+    },
+    {
+      "kind": "piece",
+      "name": "#source-format",
+      "facets": {
+        "statement": [
+          "Define percent-cell selection for complete tutorials, versions without plots, construction-only generation and the existing focused guides."
+        ],
+        "reason": [
+          "Keep the source valid Python. Plot-tagged cells include plotting imports and chart-dependent prose; without-plots also omits notebook setup. Use Jupytext instead of maintaining another parser. Selection accepts only the published views, without dependency inference."
+        ],
+        "sites": [
+          "added docs_sources/doc_utils/modeling_examples.py in read_example_notebook — Read py:percent cells and JSON-form metadata with development-only Jupytext without importing the scenario.",
+          "added docs_sources/doc_utils/modeling_examples.py in select_example_cells — Select source-order cells using plot, notebook-setup, baseline-end and section:<name> tags; baseline-end marks the cell binding system.",
+          "added docs_sources/doc_utils/modeling_examples.py in main — Expose python -m docs_sources.doc_utils.modeling_examples with convert, build-docs and regenerate, dispatching to `write_example_presentations`, `build_example_documentation` and `regenerate_example`."
+        ],
+        "comments": [
+          "changes pyproject.toml — Add Jupytext as development-only tooling and update the lockfile.",
+          "changes specs/architecture/layers-and-modeling.html — Record scenario-source ownership and the development-only notebook dependency; link generation mechanics to the documentation narrative."
+        ],
+        "tests": [
+          "unit tests/test_example_presentations.py — `main` exposes explicit conversion, documentation execution and packaged-model regeneration commands"
+        ],
+        "reproductions": [],
+        "question": [],
+        "notes": []
+      }
+    },
+    {
+      "kind": "piece",
+      "name": "#baseline-generation",
+      "facets": {
+        "statement": [
+          "Regenerate packaged inputs-only JSON explicitly from each source's initial construction, isolated from notebook execution and later experiments."
+        ],
+        "reason": [
+          "Fresh kernels set name-based object and source ids before scenario imports, preserving reviewable JSON without leaking process globals. The regenerate command targets the catalogue JSON by scenario id and appends saving after construction. Construction-only execution omits plots and notebook setup."
+        ],
+        "sites": [
+          "added docs_sources/doc_utils/modeling_examples.py in regenerate_example — Use `read_example_notebook` and `select_example_cells` to execute construction with deterministic ids in a fresh kernel and save inputs-only JSON.",
+          "changed efootprint/modeling_examples/how_to/_authoring/__init__.py in (module) — Move name-based id setup from package import into the explicit regeneration kernel before scenario imports.",
+          "removed efootprint/modeling_examples/how_to/_authoring/__init__.py in _write_example — Replace the duplicate constructor writer with explicit percent-source baseline regeneration in documentation tooling.",
+          "changed efootprint/modeling_examples/introductory/_authoring/__init__.py in (module) — Move name-based id setup from package import into the explicit regeneration kernel before scenario imports.",
+          "removed efootprint/modeling_examples/introductory/_authoring/__init__.py in _write_example — Replace the constructor writer with explicit percent-source baseline regeneration in documentation tooling."
+        ],
+        "comments": [
+          "changes tests/test_modeling_examples.py — Accept constant and weekly-profile recurrent builders and preserve authored form inputs without imposing a three-year horizon on every hourly input.",
+          "removes tests/test_modeling_examples.py — The planned baseline equality case below consolidates both authoring round-trip cases using source construction instead of importing constructors.",
+          "removes tests/test_modeling_examples.py — The planned baseline equality case below consolidates both authoring round-trip cases; no duplicate case is added."
+        ],
+        "tests": [
+          "unit tests/test_modeling_examples.py — Packaged inputs match construction and the original model after full tutorial runs with and without plots [starter-baseline]"
+        ],
+        "reproductions": [],
+        "question": [],
+        "notes": []
+      }
+    },
+    {
+      "kind": "piece",
+      "name": "#ml-guide",
+      "facets": {
+        "statement": [
+          "Convert machine learning into a complete executable how-to with editable demand and consistent retraining labels."
+        ],
+        "reason": [
+          "Keep training and inference as separate patterns and document the hourly builder's smoothing; do not claim it creates scheduled training bursts.",
+          "Keep 12 training runs per year and describe an annual retraining volume spread uniformly across hours, correcting the weekly and monthly labels."
+        ],
+        "sites": [
+          "changed efootprint/modeling_examples/how_to/_authoring/machine_learning_workflow.py in build_system — Replace the constructor with a sequential percent-cell how-to whose retraining labels match editable annual demand and explain its temporal smoothing."
+        ],
+        "comments": [
+          "changes docs_sources/mkdocs_sourcefiles/machine_learning_workflow.md — Replace the incomplete sketch and conflicting cadence claims with the executable ML source's explanation and generated presentation."
+        ],
+        "tests": [],
+        "reproductions": [],
+        "question": [],
+        "notes": []
+      }
+    },
+    {
+      "kind": "piece",
+      "name": "#streaming-guide",
+      "facets": {
+        "statement": [
+          "Extract the streaming service-builder lesson into a focused executable scenario and retire the competing introductory notebook."
+        ],
+        "reason": [
+          "Retain service installation, derived job resources and an editable demand projection. Explain replacement of the old synthetic daily and seasonal arrays with the hourly-volume builder's smooth projection. Move reusable inspection, comparison, attribution and explainability teaching into e-commerce; move introductory edge teaching into IoT. Multiple chart variants and reset demonstrations need not survive."
+        ],
+        "sites": [
+          "changed efootprint/modeling_examples/how_to/_authoring/video_streaming.py in (module) — Extract streaming service and job construction into sequential percent cells with editable demand, explicit assumptions, numerical inspection and export."
+        ],
+        "comments": [
+          "changes efootprint/modeling_examples/how_to/registry.py — Register video_streaming with its canonical source, generated reading and packaged baseline JSON.",
+          "changes efootprint/modeling_examples/how_to/registry.py — Add the streaming service-builder guide at video_streaming.md, backed by video_streaming."
+        ],
+        "tests": [],
+        "reproductions": [],
+        "question": [],
+        "notes": []
+      }
+    },
+    {
+      "kind": "piece",
+      "name": "#ecommerce-tutorial",
+      "facets": {
+        "statement": [
+          "Turn the existing e-commerce scenario into the main web tutorial, retaining its initial model and teaching a comparison on a duplicate."
+        ],
+        "reason": [
+          "Teach infrastructure, jobs, journeys, geographic demand, numerical results, attribution and explainability with explicit assumptions. Keep Boavizta-backed servers and editable volumes. Review this pilot's generated outputs before migrating IoT, ML and streaming."
+        ],
+        "sites": [
+          "changed efootprint/modeling_examples/introductory/_authoring/ecommerce.py in build_system — Replace the constructor with sequential percent cells teaching e-commerce construction, numerical inspection, attribution, explainability and an experiment on a duplicate."
+        ],
+        "comments": [
+          "changes efootprint/modeling_examples/introductory/registry.py — Publish the e-commerce tutorial as tutorial.md, retaining the existing scenario id and packaged model lookup."
+        ],
+        "tests": [],
+        "reproductions": [],
+        "question": [],
+        "notes": []
+      }
+    },
+    {
+      "kind": "piece",
+      "name": "#focused-guides",
+      "facets": {
+        "statement": [
+          "Replace the database and server-to-server sketches with explicitly selected prose and code from e-commerce."
+        ],
+        "reason": [
+          "Select imports and required earlier sections in source order, without inferred dependencies. Explain the same on-premise database and autoscaling web server as the tutorial, replacing the conflicting serverless sketch. Each guide includes its prerequisites and links to the full tutorial for result inspection and delivery; neither invents another model."
+        ],
+        "sites": [
+          "changed efootprint/modeling_examples/introductory/_authoring/ecommerce.py in build_system — Tag shared imports, database, web and journey prose and code for prerequisite-complete focused guides."
+        ],
+        "comments": [
+          "changes docs_sources/mkdocs_sourcefiles/database_modeling.md — Generate the worked example and its assumptions from the prerequisite-complete database selection of the e-commerce source.",
+          "changes docs_sources/mkdocs_sourcefiles/server_to_server_interaction.md — Generate the worked example from the e-commerce source's explicit web, database and journey prerequisites.",
+          "changes efootprint/modeling_examples/how_to/registry.py — Select the shared e-commerce imports and prerequisite sections explicitly for the database and server-to-server guides."
+        ],
+        "tests": [],
+        "reproductions": [],
+        "question": [],
+        "notes": []
+      }
+    },
+    {
+      "kind": "piece",
+      "name": "#interface-exports",
+      "facets": {
+        "statement": [
+          "Teach single-model and ordered comparison exports independently of Python plotting, using duplicates that preserve corresponding object ids."
+        ],
+        "reason": [
+          "E-commerce owns the general export explanation; IoT applies it and links back. Set output_dir near the source's start for reader-chosen destinations, separate from package regeneration. Use system_to_json, reference-first systems_to_json and optional materialize_serialized_state when complete calculated values are wanted; inputs-only import remains valid."
+        ],
+        "sites": [
+          "changed efootprint/modeling_examples/introductory/_authoring/ecommerce.py in build_system — Teach single-model and reference-first comparison exports with optional explicit materialization, separately from plotting and package regeneration.",
+          "changed efootprint/modeling_examples/introductory/_authoring/iot_industrial.py in (module) — Demonstrate single and comparison exports from IoT models into a reader-selected directory independently of plotting."
+        ],
+        "comments": [],
+        "tests": [],
+        "reproductions": [],
+        "question": [],
+        "notes": []
+      }
+    },
+    {
+      "kind": "piece",
+      "name": "#edge-tutorial",
+      "facets": {
+        "statement": [
+          "Introduce `EdgeDeviceGroup` as a sensor-site template in the independent Industrial IoT tutorial and packaged example, with one deployment representing one site."
+        ],
+        "reason": [
+          "Fifteen sites of fifty sensors preserve the existing 750-sensor rollout: one month of starts, six-year device usage, three-year dashboard demand. Keep these periods and constant recurrent demand explicit. The interface must consume the library entry and retire its local IoT source, JSON and regeneration entry through a companion plan authored there; picker presentation stays."
+        ],
+        "sites": [
+          "changed efootprint/modeling_examples/introductory/_authoring/iot_industrial.py in (module) — Author sequential Industrial IoT percent cells teaching EdgeDeviceGroup site composition, editable deployment and recurrent demand, plus an experiment on a duplicate."
+        ],
+        "comments": [
+          "changes efootprint/modeling_examples/introductory/registry.py — Register iot_industrial with its library-owned source, generated JSON and reading, and tutorial_edge.md as its tutorial destination."
+        ],
+        "tests": [],
+        "reproductions": [],
+        "question": [],
+        "notes": []
+      }
+    },
+    {
+      "kind": "piece",
+      "name": "#shared-guidance",
+      "facets": {
+        "statement": [
+          "Update existing documentation and links to direct readers to the web and edge tutorials and their relevant modeling sections."
+        ],
+        "reason": [
+          "Keep methodology conceptual and link to executable result inspection; construction, comparisons and exports live in the tutorials. Reuse existing explanations and reference pages. Retain the short custom-hourly-timeseries capability and interface-editability note within tutorial content. AI-specific guidance remains for agent-guidance; development authoring patterns belong to the generation narrative."
+        ],
+        "sites": [],
+        "comments": [
+          "changes docs_sources/mkdocs_sourcefiles/index.md — Route new modelers to the independent web or edge tutorial and relevant existing reference pages.",
+          "changes docs_sources/mkdocs_sourcefiles/methodology.md — Link conceptual result interpretation to the tutorials' numerical inspection sections without copying executable recipes."
+        ],
+        "tests": [],
+        "reproductions": [],
+        "question": [],
+        "notes": []
+      }
+    },
+    {
+      "kind": "piece",
+      "name": "#catalogue",
+      "facets": {
+        "statement": [
+          "Extend the existing example and guide registries with source and reading paths, tutorial destinations and explicit guide sections."
+        ],
+        "reason": [
+          "Keep introductory examples and how-to scenarios as their existing owners, with several guides allowed per scenario. Output-free Markdown beside each packaged JSON gives installed consumers complete explanations without Jupytext, execution or notebook outputs. Listing metadata and reading paths remain passive."
+        ],
+        "sites": [],
+        "comments": [
+          "changes efootprint/modeling_examples/__init__.py — Describe canonical percent sources, generated readings and explicit regeneration without importing authoring modules during discovery.",
+          "changes efootprint/modeling_examples/how_to/registry.py — Add source_path and reading_path to how-to scenario metadata without merging scenarios with their guides.",
+          "changes efootprint/modeling_examples/how_to/registry.py — Add section_ids to guide metadata and use explicit prerequisite-inclusive section selections for generated guide content.",
+          "changes efootprint/modeling_examples/introductory/registry.py — Add names, descriptions, source_path, reading_path and doc_path to introductory entries while retaining their existing ids and JSON lookup.",
+          "changes pyproject.toml — Include generated example Markdown alongside packaged JSON in wheels and sdists; canonical Python sources remain normal package files.",
+          "changes tests/test_modeling_examples.py — Resolve generated guide destinations through catalogue metadata rather than requiring a second handwritten Markdown page.",
+          "changes tests/test_modeling_examples.py — Check generated guide presentations retain their interface scenario links."
+        ],
+        "tests": [
+          "unit tests/test_modeling_examples.py — Installed catalogue listing and source reading perform no modeling, network requests or output writes without notebook tooling [generation-is-explicit]"
+        ],
+        "reproductions": [],
+        "question": [],
+        "notes": []
+      }
+    },
+    {
+      "kind": "piece",
+      "name": "#generation-narrative",
+      "facets": {
+        "statement": [
+          "Tell how e-commerce becomes the notebook, reading, packaged model and published documentation as a doc-scoped narrative of the recurring generation pattern."
+        ],
+        "reason": [
+          "The source and recorded generation steps give authors the example to follow when adding another scenario. Deliberate selection and execution boundaries are explained where they apply. Architecture retains source ownership and the runtime/development boundary, linking to the narrative. No separate contributor instructions are maintained."
+        ],
+        "sites": [],
+        "comments": [],
+        "tests": [
+          "narrative tests/narratives/test_example_publication.py — E-commerce generates notebooks, readings, packaged JSON and documentation from one source using real models and fixed API responses"
+        ],
+        "reproductions": [],
+        "question": [],
+        "notes": []
+      }
+    },
+    {
+      "kind": "story",
+      "name": "Intended narrative — A modeling scenario becomes published examples",
+      "facets": {
+        "steps": [
+          "example-publication:read — The scenario source supplies prose, code cells and presentation tags without importing or executing its modeling code.",
+          "example-publication:select — Selection preserves source order: plot-dependent prose follows its plot cells, and packaged-model generation stops at the initial construction boundary.",
+          "example-publication:convert — Conversion derives cleared notebooks and complete readings from the same source without running the scenario or contacting external services.",
+          "example-publication:baseline — Explicit regeneration saves the initial model with stable ids in an isolated session, leaving later experiments and visualizations outside the packaged example.",
+          "example-publication:publish — Documentation execution publishes numerical outputs, charts and their resources from a fresh session; its results never overwrite the packaged model."
+        ]
+      }
+    }
+  ],
+  "ids": {
+    "reference-examples": {
+      "supplements": "changed docs_sources/doc_utils/docs_case.py in (module) — Replace the overlapping documentation scenario with small class supplements to packaged scenario objects.",
+      "example-set": "added docs_sources/doc_utils/docs_case.py in build_documentation_examples — Load packaged baselines and combine their objects with explicit supplements, selecting one example per class already documented.",
+      "reference-inputs": "changed docs_sources/doc_utils/generate_object_reference.py in _get_mod_objs_to_document — Use `build_documentation_examples` instead of importing the broad documentation model's named objects."
+    },
+    "presentations": {
+      "docs-build": "changed docs_sources/doc_utils/main.py in (module) — Call `build_example_documentation` for registered tutorial and guide presentations after copying handwritten pages so generated content retains precedence.",
+      "convert": "added docs_sources/doc_utils/modeling_examples.py in write_example_presentations — Use `read_example_notebook` and `select_example_cells` to write cleared notebooks and output-free Markdown/Python; convert --check compares committed artifacts without execution.",
+      "execute-docs": "added docs_sources/doc_utils/modeling_examples.py in build_example_documentation — Use `read_example_notebook` and `select_example_cells` to execute fresh notebooks and retain their outputs and resources in generated documentation."
+    },
+    "reference-context": {
+      "page-context": "changed docs_sources/doc_utils/generate_object_reference.py in write_object_reference_file — Supply the selected object's name and optional catalogue page title and destination to the reference template.",
+      "example-origins": "changed docs_sources/doc_utils/generate_object_reference.py in _get_mod_objs_to_document — Retain each selected object's originating catalogue tutorial or guide entry alongside it, with no origin for supplementary examples.",
+      "forward-origins": "changed docs_sources/doc_utils/generate_object_reference.py in generate_object_reference — Forward optional example origins to reference-page rendering while retaining object-only class discovery for placeholder links."
+    },
+    "source-format": {
+      "read-percent": "added docs_sources/doc_utils/modeling_examples.py in read_example_notebook — Read py:percent cells and JSON-form metadata with development-only Jupytext without importing the scenario.",
+      "ordered-selection": "added docs_sources/doc_utils/modeling_examples.py in select_example_cells — Select source-order cells using plot, notebook-setup, baseline-end and section:<name> tags; baseline-end marks the cell binding system.",
+      "command": "added docs_sources/doc_utils/modeling_examples.py in main — Expose python -m docs_sources.doc_utils.modeling_examples with convert, build-docs and regenerate, dispatching to `write_example_presentations`, `build_example_documentation` and `regenerate_example`."
+    },
+    "baseline-generation": {
+      "regenerate": "added docs_sources/doc_utils/modeling_examples.py in regenerate_example — Use `read_example_notebook` and `select_example_cells` to execute construction with deterministic ids in a fresh kernel and save inputs-only JSON.",
+      "explicit-howto-ids": "changed efootprint/modeling_examples/how_to/_authoring/__init__.py in (module) — Move name-based id setup from package import into the explicit regeneration kernel before scenario imports.",
+      "explicit-intro-ids": "changed efootprint/modeling_examples/introductory/_authoring/__init__.py in (module) — Move name-based id setup from package import into the explicit regeneration kernel before scenario imports."
+    },
+    "ml-guide": {
+      "sequential-source": "changed efootprint/modeling_examples/how_to/_authoring/machine_learning_workflow.py in build_system — Replace the constructor with a sequential percent-cell how-to whose retraining labels match editable annual demand and explain its temporal smoothing."
+    },
+    "streaming-guide": {
+      "scenario": "changed efootprint/modeling_examples/how_to/_authoring/video_streaming.py in (module) — Extract streaming service and job construction into sequential percent cells with editable demand, explicit assumptions, numerical inspection and export."
+    },
+    "ecommerce-tutorial": {
+      "sequential-source": "changed efootprint/modeling_examples/introductory/_authoring/ecommerce.py in build_system — Replace the constructor with sequential percent cells teaching e-commerce construction, numerical inspection, attribution, explainability and an experiment on a duplicate."
+    },
+    "focused-guides": {
+      "shared-sections": "changed efootprint/modeling_examples/introductory/_authoring/ecommerce.py in build_system — Tag shared imports, database, web and journey prose and code for prerequisite-complete focused guides."
+    },
+    "interface-exports": {
+      "web-files": "changed efootprint/modeling_examples/introductory/_authoring/ecommerce.py in build_system — Teach single-model and reference-first comparison exports with optional explicit materialization, separately from plotting and package regeneration.",
+      "edge-files": "changed efootprint/modeling_examples/introductory/_authoring/iot_industrial.py in (module) — Demonstrate single and comparison exports from IoT models into a reader-selected directory independently of plotting."
+    },
+    "edge-tutorial": {
+      "scenario": "changed efootprint/modeling_examples/introductory/_authoring/iot_industrial.py in (module) — Author sequential Industrial IoT percent cells teaching EdgeDeviceGroup site composition, editable deployment and recurrent demand, plus an experiment on a duplicate."
+    }
+  }
+}
