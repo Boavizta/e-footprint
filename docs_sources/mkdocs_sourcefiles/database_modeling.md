@@ -33,8 +33,7 @@ and canonical query templates — that would be a welcome contribution.
 
 ## Python sketch
 
-<!-- @planned agent-guidance#canonical-topics Complete this database example against the current public API, retaining its modeling assumptions. -->
-<!-- @planned agent-guidance#executable-doc-examples Replace handwritten topic code blocks with named regions from executable packaged examples, preserving the displayed modeling meaning. -->
+<!-- @planned agent-guidance#executable-doc-examples Replace how-to blocks with named executable-source regions; correct database and server-to-server constructors, storage units and required setup while retaining modeling assumptions. -->
 
 ```python
 storage = Storage(

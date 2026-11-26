@@ -7,23 +7,22 @@ its shells are reviewed in the order below.
 
 ## #canonical-topics
 
-Package canonical topics for both consumers and complete currently incomplete database and server-to-server examples.
+Package canonical topics for both the installed command and documentation website.
 
 Keep website filenames and the existing topic registry. Include hardware composition and attribution
-alongside the other topics. Complete database and server-to-server examples against the current API,
-preserving their modeling assumptions. Named Python snippets expand as text; lookups never execute
-documentation. Moving existing how-to code blocks to executable sources belongs to #executable-doc-examples.
+alongside the other topics. Named Python snippets expand as text; lookups never execute documentation.
+Example corrections and shared executable sources belong to #executable-doc-examples.
 
 ## #executable-doc-examples
 
 Kind: refactoring
 
-Replace handwritten how-to code blocks with named regions from executable packaged examples, preserving their documented modeling meaning.
+Replace handwritten how-to blocks with named regions from executable packaged examples, correcting API mismatches and supplying setup while preserving modeling assumptions.
 
-This adjacent cleanup keeps displayed examples executable and maintained in one place. The guide
-can ship without converting existing how-to blocks; its required shared reference example remains
-#canonical-example. Complete invalid or incomplete examples under #canonical-topics before moving
-their code unchanged. Use existing example modules and PyMdown Snippets' named-region syntax.
+Keep examples runnable and maintained once. Correct database and server-to-server constructors and
+storage units; supply imports and shared setup without changing modeling assumptions. Use existing
+example modules and PyMdown Snippets' named regions. The guide can ship without this cleanup; its
+required full example remains #canonical-example.
 
 ## #class-reference
 
