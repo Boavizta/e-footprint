@@ -189,6 +189,7 @@ def calc_attr_to_md(owning_class, input_obj: ExplainableObject, attr_name):
 
 
 def write_object_reference_file(mod_obj):
+    planned("executable-modeling-documentation#reference-context:page-context", "Supply the selected object's name and optional catalogue page title and destination to the reference template.")
     planned("agent-guidance#class-reference:website-reference", "Populate existing template fields from inherited class metadata, defaults and choices, retaining computed docstrings for empty example results and omitting their graphs.")
     if isinstance(mod_obj, ContextualModelingObjectAttribute):
         mod_obj = mod_obj._value
@@ -250,6 +251,7 @@ def write_object_reference_file(mod_obj):
 
 
 def _get_mod_objs_to_document():
+    planned("executable-modeling-documentation#reference-context:example-origins", "Retain each selected object's originating catalogue tutorial or guide entry alongside it, with no origin for supplementary examples.")
     planned("executable-modeling-documentation#reference-examples:reference-inputs", "Use `build_documentation_examples` instead of importing the broad documentation model's named objects.")
     planned("agent-guidance#canonical-example:documentation-examples", "Read example objects from the canonical reference model instead of maintaining a parallel model in docs_case.")
     country = usage_pattern.country
@@ -277,6 +279,7 @@ def build_doc_placeholder_handlers() -> dict:
 
 
 def generate_object_reference(automatically_update_yaml=False):
+    planned("executable-modeling-documentation#reference-context:forward-origins", "Forward optional example origins to reference-page rendering while retaining object-only class discovery for placeholder links.")
     planned("agent-guidance#class-reference:every-site-reference", "Require examples for every registered concrete class before generating website references, naming missing classes and excluding abstract classes from the requirement.")
     global _PLACEHOLDER_HANDLERS
     mod_objs_to_document = _get_mod_objs_to_document()

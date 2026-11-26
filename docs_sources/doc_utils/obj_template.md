@@ -2,6 +2,9 @@
 {% if obj_dict["class_description"] %}
 {{ obj_dict["class_description"] | safe }}
 {% endif %}
+
+<!-- @planned executable-modeling-documentation#reference-context Show the example object's name and its tutorial or how-to context link near the top when a catalogue origin exists. -->
+
 {% if obj_dict["disambiguation"] %}
 ## When to use this class
 {{ obj_dict["disambiguation"] | safe }}

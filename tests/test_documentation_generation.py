@@ -7,6 +7,11 @@ def test_scenario_reference_examples_preserve_documented_classes():
     pass
 
 
+@planned_test("executable-modeling-documentation#reference-context: Reference pages name their example and link its tutorial or how-to, omitting the context block for supplements")
+def test_reference_pages_link_their_example_context():
+    pass
+
+
 @planned_test("agent-guidance#class-reference: Missing concrete-class examples stop documentation generation before reference pages are written and name every missing class")
 def test_missing_documentation_examples_fail_loudly():
     pass

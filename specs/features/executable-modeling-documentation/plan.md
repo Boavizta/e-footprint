@@ -75,6 +75,12 @@ Replace the overlapping broad documentation model with packaged scenario objects
 
 Load packaged baselines for reference examples; supplement only classes those tasks do not supply. Select one object per concrete class for page generation, preserving metadata as semantic truth. Consolidation is required to remove competing scenario definitions; it does not depend on the suspended agent guide's completeness or metadata-lookup changes.
 
+## #reference-context
+
+Show the selected example object's name and a link to its originating tutorial or how-to on generated object-reference pages when that origin exists.
+
+Builds on #reference-examples. Keep origin as documentation-only metadata paired with selected objects. Resolve link text and destination from catalogue entries, choosing the scenario's canonical tutorial or how-to. Supplementary objects have no origin and display no context block. Class semantics remain in class metadata; neither modeling objects nor saved JSON acquire provenance fields.
+
 ## #generation-narrative
 
 Tell how e-commerce becomes the notebook, reading, packaged model and published documentation as a doc-scoped narrative of the recurring generation pattern.
